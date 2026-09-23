@@ -1,7 +1,7 @@
 {
  "source": "podcasts",
- "updated": "2026-09-23T21:47:56Z",
- "attempted": "2026-09-23T21:47:56Z",
+ "updated": "2026-09-23T22:14:28Z",
+ "attempted": "2026-09-23T22:14:28Z",
  "ok": true,
  "error": null,
  "stats": {
@@ -38,7 +38,7 @@
     "spotify": "https://open.spotify.com/show/2jk469TmDC31spPqf8L0SF"
    }
   ],
-  "seconds": 3.1,
+  "seconds": 2.1,
   "artwork": 3,
   "artwork_missing": 0,
   "artwork_removed": 0
