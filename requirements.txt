@@ -1,0 +1,17 @@
+# Content-sync pipeline (runs daily in GitHub Actions). All open source.
+# Each package may update within its current major version; a new major version (which can
+# change how the package behaves) is only installed after someone raises the upper bound here.
+# yt-dlp is deliberately unbounded: it must keep up with YouTube changes.
+requests>=2.32,<3
+beautifulsoup4>=4.12,<5
+lxml>=5.2,<7
+protego>=0.3,<1         # robots.txt parser (Scrapy project) — honors Crawl-delay
+feedparser>=6.0,<7      # RSS/Atom (YouTube, podcasts)
+python-dateutil>=2.9,<3
+PyYAML>=6.0,<7
+ctranslate2>=4.4,<5     # offline neural translation runtime (Argos / OPUS-MT models)
+sentencepiece>=0.2,<1
+yt-dlp>=2025.1.1        # YouTube channel/playlist listing without API keys
+pypdfium2>=4.30,<6      # PDF metadata, text sample, first-page thumbnail
+Pillow>=10.4,<13
+icalendar>=6.0,<8       # optional external .ics calendar feeds

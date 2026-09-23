@@ -1,0 +1,154 @@
+---
+pagination: { data: languages, size: 1, alias: lang }
+permalink: "{{ '/' if lang == 'en' else '/es/' }}search/index.html"
+layout: layouts/base.njk
+pageKey: search
+titleKey: nav.search
+descKey: search.meta_desc
+pageScripts: ["/assets/vendor/minisearch.js", "/assets/js/search.js"]
+---
+{#- SITE-WIDE SEARCH — /assets/js/search.js loads /search-index.json
+    (src/pages/search-index.11ty.js: every article, PDF, episode, video, post,
+    committee file/album/announcement/event and the site's own pages) and
+    searches it with MiniSearch. Reads ?q= (the header search icon links here)
+    and ?type=. Everything below the hero is progressive: without JS the
+    "browse" links still work. -#}
+{% import "macros/ui.njk" as ui with context %}
+{%- set counts = db | searchKindCounts(nav, lang, site) -%}
+{%- set nDocs = (counts.pdf or 0) + (counts.document or 0) + (counts.slides or 0) + (counts.form or 0) -%}
+{#- Events page count = what it lists as upcoming (committee meetings included). -#}
+{%- set nEvents = (db.events.items | where("extra.past", false)) | length -%}
+{%- set kinds = ["all", "pages", "articles", "docs", "podcasts", "videos", "instagram", "committee"] -%}
+
+{% call ui.pageHero(lang, "nav.search" | t(lang), "search.subtitle" | t(lang), "search", "search.eyebrow" | t(lang)) %}
+  <form id="ss-form" role="search" class="max-w-2xl" action="{{ '/search/' | lurl(lang) }}" method="get" autocomplete="off">
+    <label for="ss-q" class="sr-only">{{ "search.label" | t(lang) }}</label>
+    <div class="relative">
+      <span class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-faint">{% icon "search", "size-5" %}</span>
+      <input id="ss-q" name="q" type="search" enterkeyhint="search" spellcheck="false" autocapitalize="off"
+             placeholder="{{ 'search.placeholder' | t(lang) }}"
+             class="ss-q h-14 w-full rounded-2xl border border-white/25 bg-surface pl-12 pr-14 text-base text-ink shadow-[0_18px_40px_-18px_rgb(0_0_0/0.7)] placeholder:text-faint focus:outline-none focus:ring-4 focus:ring-white/35 sm:h-16 sm:text-lg"
+             aria-controls="ss-results" aria-describedby="ss-status">
+      <button type="button" id="ss-clear" class="absolute right-2.5 top-1/2 grid size-11 -translate-y-1/2 place-items-center rounded-full text-muted transition hover:bg-surface-2 hover:text-ink" aria-label="{{ 'search.clear' | t(lang) }}" hidden>{% icon "x", "size-5" %}</button>
+    </div>
+  </form>
+  <p class="mt-4 hidden items-center gap-1.5 text-sm text-white/70 md:flex">{% icon "keyboard", "size-4 mr-1" %}{{ "search.kbd_hint" | t(lang) }}</p>
+{% endcall %}
+
+<section class="container-page section-tight" id="site-search" aria-label="{{ 'nav.search' | t(lang) }}">
+  <div id="ss-kinds-wrap" class="max-w-4xl" hidden>
+    <div class="ss-kinds" role="group" aria-label="{{ 'search.filter_aria' | t(lang) }}">
+      {%- for k in kinds %}
+      <button type="button" class="chip" data-kind="{{ k }}" aria-pressed="{{ 'true' if k == 'all' else 'false' }}"><span>{{ ("search.kind." + k) | t(lang) }}</span><span class="lib-chip-n" data-n></span></button>
+      {%- endfor %}
+    </div>
+  </div>
+
+  <p id="ss-status" class="mt-5 max-w-4xl text-sm font-medium text-muted empty:hidden" role="status" aria-live="polite"></p>
+  <p id="ss-loading" class="mt-5 inline-flex items-center gap-2 text-sm text-muted" hidden>{% icon "loader-circle", "size-4 animate-spin" %} {{ "search.loading" | t(lang) }}</p>
+  <div id="ss-error" class="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-line bg-surface px-4 py-3 text-sm text-muted" role="alert" hidden>
+    <span class="inline-flex items-center gap-2">{% icon "circle-x", "size-4 text-danger" %} {{ "search.error" | t(lang) }}</span>
+    <button type="button" id="ss-retry" class="btn-secondary btn-sm">{% icon "refresh-cw", "size-4" %} {{ "search.retry" | t(lang) }}</button>
+  </div>
+  <p id="ss-partial" class="mt-4 flex max-w-4xl items-start gap-2 rounded-xl bg-lv-soft px-4 py-3 text-sm text-lv-strong" hidden>{% icon "info", "size-4 mt-0.5" %}<span>{{ "search.partial" | t(lang) }}</span></p>
+
+  <div id="ss-jump-wrap" class="mt-6 max-w-4xl" hidden>
+    <h2 class="eyebrow mb-3 font-sans">{{ "search.jump" | t(lang) }}</h2>
+    <div id="ss-jump" class="ss-jump"></div>
+  </div>
+
+  <p id="ss-none-kind" class="mt-6 max-w-4xl rounded-xl border border-dashed border-line px-4 py-3 text-sm text-muted" hidden>
+    <button type="button" class="link text-left" data-show-all id="ss-none-kind-btn"></button>
+  </p>
+
+  <ol id="ss-results" class="ss-results mt-5 -mx-3 max-w-4xl sm:-mx-4" aria-label="{{ 'nav.search' | t(lang) }}"></ol>
+  <div class="mt-6 max-w-4xl text-center"><button type="button" id="ss-more" class="btn-secondary min-w-48" hidden>{% icon "arrow-down", "size-4" %} {{ "search.show_more" | t(lang) }}</button></div>
+
+  {#- no results -#}
+  <div id="ss-none" class="mt-6 max-w-4xl" hidden>
+    <div class="empty-state">
+      <span class="mx-auto mb-3 grid size-12 place-items-center rounded-full bg-surface-2 text-faint">{% icon "search-x", "size-6" %}</span>
+      <p class="font-semibold text-ink" id="ss-none-title">{{ "search.none_title" | t(lang, {q: ""}) }}</p>
+      <p id="ss-did" class="mt-2 text-sm" hidden>{{ "search.did_you_mean" | t(lang) }} <button type="button" class="link font-semibold" data-q=""></button>{{ "search.did_you_mean_end" | t(lang) }}</p>
+      <p class="mx-auto mt-2 max-w-md text-sm">{{ "search.none_text" | t(lang) }}</p>
+      <div class="mt-4 flex flex-wrap justify-center gap-2">
+        <a class="btn-secondary btn-sm" href="{{ '/library/' | lurl(lang) }}">{% icon "library", "size-4" %} {{ "nav.library" | t(lang) }}</a>
+        <a class="btn-ghost btn-sm" href="{{ '/whats-new/' | lurl(lang) }}">{% icon "sparkles", "size-4" %} {{ "nav.whats_new" | t(lang) }}</a>
+      </div>
+    </div>
+  </div>
+
+  {#- start state (no query yet) -#}
+  <div id="ss-start">
+    <div class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.35fr)] lg:gap-12">
+      <div>
+        <h2 class="h-section">{{ "search.start_title" | t(lang) }}</h2>
+        <p class="mt-2 max-w-xl text-muted">{{ "search.start_text" | t(lang) }}</p>
+        <h3 class="eyebrow mt-6 mb-3 font-sans">{{ "search.try" | t(lang) }}</h3>
+        <div class="flex flex-wrap gap-2">
+          {%- for s in ("search.suggestions" | t(lang)).split("|") %}
+          <a class="chip" href="{{ '/search/' | lurl(lang) }}?q={{ s | urlencode }}" data-q="{{ s }}">{% icon "search", "size-3.5" %}{{ s }}</a>
+          {%- endfor %}
+        </div>
+        <p class="mt-6 inline-flex items-center gap-2 text-xs text-faint">{% icon "refresh-cw", "size-3.5" %} {{ "search.index_note" | t(lang) }}</p>
+      </div>
+      <div>
+        <h2 class="h-section text-2xl sm:text-2xl">{{ "search.browse_title" | t(lang) }}</h2>
+        {%- set browse = [
+          ["/library/", "nav.library", "library", "gv", nDocs],
+          ["/read/", "nav.read", "book-open", "gv", counts.article or 0],
+          ["/listen/", "nav.listen", "headphones", "grape", counts.episode or 0],
+          ["/watch/", "nav.watch", "circle-play", "grape", counts.video or 0],
+          ["/instagram/", "nav.instagram", "instagram", "grape", counts.post or 0],
+          ["/events/", "nav.events", "calendar-days", "vine", nEvents],
+          ["/meeting/", "nav.meeting", "video", "gv", 0],
+          ["/whats-new/", "nav.whats_new", "sparkles", "vine", 0]
+        ] -%}
+        <div class="ss-browse mt-4">
+          {%- for b in browse %}
+          <a href="{{ b[0] | lurl(lang) }}" data-tone="{{ b[3] }}">
+            <span class="ss-b-icon">{% icon b[2], "size-5" %}</span>
+            <span class="min-w-0"><span class="ss-b-t">{{ b[1] | t(lang) }}</span><span class="ss-b-n">{% if b[4] == 1 %}{{ "search.browse_one" | t(lang) }}{% elif b[4] %}{{ "search.browse_n" | t(lang, {n: b[4] | libNum(lang)}) }}{% else %}{{ "common.updates_daily" | t(lang) }}{% endif %}</span></span>
+          </a>
+          {%- endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{#- icons + strings for search.js -#}
+<template id="ss-icons">
+  {%- for name in ["file-text", "book-open", "pen-line", "presentation", "file-pen-line", "headphones", "circle-play", "instagram", "images", "megaphone", "calendar-days", "video", "languages", "arrow-up-right", "house", "sparkles", "library", "users", "folder-open", "badge-check", "map", "mail-open", "info", "mail", "qr-code", "search", "activity", "hand-heart"] %}
+  <i data-icon="{{ name }}">{% icon name, "size-4" %}</i>
+  {%- endfor %}
+</template>
+<script type="application/json" id="ss-config">{{ {
+  lang: lang,
+  locale: "es-US" if lang == "es" else "en-US",
+  index: "/search-index.json" | lurl(lang),
+  title: ("nav.search" | t(lang)) + " · " + (site | pick(lang, "title")) + " — NETA 65",
+  kinds: {
+    page: "search.kind_label.page" | t(lang), article: "kind.article" | t(lang), topic: "kind.topic" | t(lang),
+    pdf: "kind.pdf" | t(lang), document: "kind.document" | t(lang), slides: "kind.slides" | t(lang), form: "kind.form" | t(lang),
+    episode: "kind.episode" | t(lang), video: "kind.video" | t(lang), video_file: "kind.video_file" | t(lang), post: "kind.post" | t(lang),
+    album: "search.kind_label.album" | t(lang), announcement: "kind.announcement" | t(lang), event: "kind.event" | t(lang),
+    meeting: "search.kind_label.meeting" | t(lang)
+  },
+  groups: {
+    pages: "search.kind.pages" | t(lang), articles: "search.kind.articles" | t(lang), docs: "search.kind.docs" | t(lang),
+    podcasts: "search.kind.podcasts" | t(lang), videos: "search.kind.videos" | t(lang), instagram: "search.kind.instagram" | t(lang),
+    committee: "search.kind.committee" | t(lang)
+  },
+  src: {
+    gv: "search.src.gv" | t(lang), lv: "search.src.lv" | t(lang), neta: "search.src.neta" | t(lang),
+    podcast: "search.src.podcast" | t(lang), youtube: "search.src.youtube" | t(lang)
+  },
+  langTitle: { en: "library.lang_title.en" | t(lang), es: "library.lang_title.es" | t(lang), fr: "library.lang_title.fr" | t(lang) },
+  s: {
+    count: "search.count" | t(lang), countOne: "search.count_one" | t(lang), countIn: "search.count_in" | t(lang),
+    noneTitle: "search.none_title" | t(lang), noneKind: "search.none_kind" | t(lang), isNew: "common.new" | t(lang),
+    auto: "common.auto_translated" | t(lang), autoHelp: "common.auto_translated_help" | t(lang), external: "search.external" | t(lang),
+    subscriber: "search.subscriber" | t(lang), subscriberTitle: "search.subscriber_title" | t(lang)
+  }
+} | jsonScript | safe }}</script>

@@ -1,0 +1,173 @@
+/* =====================================================================
+   Area styles — Read, Share Your Story, Subscribe, GVR/RLV Corner, About.
+   Owned by the "read" area. Templates use Tailwind utilities first; only
+   what utilities can't express lives here. Colors come from theme tokens
+   (var(--c-*)) so dark mode works; the dark "cover" panels keep white
+   text on a deep gradient in both themes.
+   ===================================================================== */
+
+/* ---------- Magazine "cover" panels (GV = navy/blue, LV = deep amber) ---------- */
+.read-cover--gv {
+  background:
+    radial-gradient(120% 80% at 100% 0%, rgb(255 255 255 / 0.12), transparent 55%),
+    linear-gradient(155deg, #0f1730 0%, #0b3f73 52%, #0a5fa8 100%);
+}
+.read-cover--lv {
+  background:
+    radial-gradient(120% 80% at 100% 0%, rgb(255 255 255 / 0.12), transparent 55%),
+    linear-gradient(155deg, #33130a 0%, #7a2a05 50%, #b0410b 100%);
+}
+.read-cover-art {
+  position: absolute; right: -2.75rem; bottom: -3rem; z-index: -1;
+  width: 14rem; height: auto; color: #fff; opacity: 0.1; transform: rotate(-14deg);
+  pointer-events: none;
+}
+
+/* Real magazine cover: a blurred, darkened copy fills the panel (so each issue
+   gets its own colors) and the sharp cover sits on top like a printed copy.
+   The dark overlay keeps white text at AA contrast whatever the cover colors. */
+.read-cover-blur {
+  position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; max-width: none;
+  object-fit: cover; transform: scale(1.35);
+  filter: blur(26px) saturate(1.25) brightness(0.62);
+  pointer-events: none; user-select: none;
+}
+.read-cover.has-cover::after {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: linear-gradient(180deg, rgb(8 10 24 / 0.42) 0%, rgb(8 10 24 / 0.58) 55%, rgb(8 10 24 / 0.74) 100%);
+}
+.read-cover-frame {
+  border-radius: 0.4rem;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.35), 0 18px 40px -12px rgb(0 0 0 / 0.65), 0 0 0 1px rgb(255 255 255 / 0.14);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.read-cover-frame:hover { transform: translateY(-3px) rotate(-0.6deg); box-shadow: 0 1px 2px rgb(0 0 0 / 0.35), 0 26px 50px -14px rgb(0 0 0 / 0.7), 0 0 0 1px rgb(255 255 255 / 0.22); }
+.read-cover-frame:focus-visible { outline-color: #fff; }
+
+/* Table of contents: small group headings; phones show the first 6 stories until "Show all" is opened */
+.read-toc-head {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem;
+  padding: 0.5rem 0.75rem 0.25rem; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+}
+@media (width < 40rem) {
+  .read-toc:not(:has(.read-more[open])) .read-sm-extra { display: none; }
+}
+
+/* Issue description beside the table of contents */
+.read-blurb { border-left: 3px solid var(--read-accent, var(--c-gv)); padding: 0.15rem 0 0.15rem 1rem; }
+
+/* "Subscriber story" — quiet, friendly, never alarming */
+.read-sub-badge {
+  display: inline-flex; align-items: center; gap: 0.25rem; border-radius: 999px;
+  padding: 0.05rem 0.55rem; font-size: 0.7rem; line-height: 1.25rem; font-weight: 600;
+  color: var(--c-muted); background: var(--c-surface-2); box-shadow: inset 0 0 0 1px var(--c-line);
+}
+
+/* Tiny cover in archive rows */
+.read-mini-cover {
+  width: 2.25rem; aspect-ratio: 7 / 10; height: auto; flex-shrink: 0; object-fit: cover;
+  border-radius: 0.2rem; box-shadow: 0 1px 2px rgb(0 0 0 / 0.2), 0 0 0 1px var(--c-line);
+}
+
+/* ---------- <details> disclosure widgets (archive issues, "show all", FAQ) ---------- */
+.read-past > summary,
+.read-more > summary,
+.read-faq > summary { list-style: none; }
+.read-past > summary::-webkit-details-marker,
+.read-more > summary::-webkit-details-marker,
+.read-faq > summary::-webkit-details-marker { display: none; }
+.read-past > summary:hover .read-past-bar { transform: scaleY(1.15); }
+.read-past-bar { width: 0.3rem; align-self: stretch; min-height: 2.25rem; border-radius: 999px; transition: transform 0.2s ease; }
+.read-past[open] { box-shadow: var(--shadow-lift); }
+
+/* La Viña chip uses the amber accent when active */
+.read-chip-lv[aria-pressed="true"] { background: var(--c-lv); border-color: var(--c-lv); }
+.read-chip-rlv[aria-pressed="true"] { background: var(--c-lv); border-color: var(--c-lv); }
+
+/* "Our meeting in print" band: faint oversized quotation mark */
+.read-print::before {
+  content: "\201C"; position: absolute; right: 1.5rem; top: -2.5rem;
+  font-family: var(--font-display); font-size: 16rem; line-height: 1; color: var(--c-gv); opacity: 0.07;
+  pointer-events: none;
+}
+
+/* ---------- Editorial deadlines ---------- */
+.read-deadline-next { position: relative; overflow: hidden; }
+.read-deadline-next::after {
+  content: ""; position: absolute; inset: 0 auto 0 0; width: 0.35rem; background: var(--read-accent, var(--c-gv));
+}
+/* Closed deadlines: muted text (still 4.5:1 contrast) + struck-through date — no opacity, which would fail contrast */
+.read-deadline-row.is-past, .read-deadline-row.is-past .text-ink { color: var(--c-muted); }
+.read-deadline-row.is-past .read-deadline-date { text-decoration: line-through; text-decoration-thickness: 1px; }
+
+/* ---------- PDF placeholder "covers" (when no thumbnail was generated) ---------- */
+/* Position comes from utilities (absolute inset-0 / relative) — not set here so it never overrides them. */
+.read-pdf-ph {
+  display: grid; place-items: center; overflow: hidden;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--read-accent, var(--c-gv)) 16%, var(--c-surface)) 0%, var(--c-surface-2) 100%);
+  color: var(--read-accent, var(--c-gv));
+}
+.read-pdf-ph::before {
+  content: ""; position: absolute; inset: 0 0 auto auto; width: 22%; aspect-ratio: 1;
+  background: linear-gradient(225deg, var(--c-paper) 50%, color-mix(in srgb, var(--read-accent, var(--c-gv)) 22%, var(--c-surface)) 50%);
+}
+.read-accent-gv { --read-accent: var(--c-gv); }
+.read-accent-lv { --read-accent: var(--c-lv); }
+.read-accent-grape { --read-accent: var(--c-grape); }
+.read-accent-vine { --read-accent: var(--c-vine); }
+
+/* Resource kits: phones show 3 files per group (desktop 6) until "Show more" or a search */
+@media (width < 40rem) {
+  .read-kit-group:not(.is-more) .read-kit-sm-extra { display: none; }
+}
+
+/* ---------- GVR checklist ---------- */
+.read-check { accent-color: var(--c-vine); width: 1.35rem; height: 1.35rem; flex-shrink: 0; cursor: pointer; }
+.read-check-row.is-done .read-check-label { color: var(--c-faint); text-decoration: line-through; text-decoration-color: color-mix(in srgb, var(--c-faint) 60%, transparent); }
+.read-progress { height: 0.5rem; border-radius: 999px; background: var(--c-surface-2); overflow: hidden; }
+.read-progress > span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--c-vine), var(--c-gv)); transition: width 0.35s ease; }
+
+/* ---------- "How this site stays up to date" flow diagram ---------- */
+.read-flow { display: grid; gap: 2.25rem; }
+.read-flow-step { position: relative; }
+@media (width < 64rem) {
+  .read-flow-step:not(:last-child)::after {
+    content: ""; position: absolute; left: 50%; bottom: -2rem; width: 2px; height: 1.75rem; transform: translateX(-50%);
+    background: repeating-linear-gradient(to bottom, var(--c-gv) 0 5px, transparent 5px 9px);
+  }
+  .read-flow-step:not(:last-child)::before {
+    content: ""; position: absolute; left: 50%; bottom: -2.2rem; width: 0.6rem; height: 0.6rem; z-index: 1;
+    transform: translateX(-50%) rotate(45deg); border-right: 2px solid var(--c-gv); border-bottom: 2px solid var(--c-gv);
+  }
+}
+@media (width >= 64rem) {
+  .read-flow { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 2.5rem; }
+  .read-flow-step:not(:last-child)::after {
+    content: ""; position: absolute; top: 3.1rem; right: -2.3rem; width: 2.1rem; height: 2px;
+    background: repeating-linear-gradient(to right, var(--c-gv) 0 5px, transparent 5px 9px);
+  }
+  .read-flow-step:not(:last-child)::before {
+    content: ""; position: absolute; top: calc(3.1rem - 0.27rem); right: -2.35rem; width: 0.6rem; height: 0.6rem; z-index: 1;
+    transform: rotate(-45deg); border-right: 2px solid var(--c-gv); border-bottom: 2px solid var(--c-gv);
+  }
+}
+/* moving dots along the connectors (decorative; off for reduced motion) */
+@media (prefers-reduced-motion: no-preference) {
+  .read-flow-pulse { animation: read-pulse 2.4s ease-in-out infinite; }
+  @keyframes read-pulse { 0%, 100% { opacity: 0.55; transform: scale(0.92); } 50% { opacity: 1; transform: scale(1); } }
+}
+
+/* Timeline (About) */
+.read-timeline { position: relative; }
+.read-timeline::before {
+  content: ""; position: absolute; left: 0.6rem; top: 0.5rem; bottom: 0.5rem; width: 2px;
+  background: linear-gradient(to bottom, var(--c-gv), var(--c-lv), var(--c-vine));
+}
+@media (width >= 48rem) {
+  .read-timeline::before { left: 0; right: 0; top: 0.6rem; bottom: auto; width: auto; height: 2px;
+    background: linear-gradient(to right, var(--c-gv), var(--c-lv), var(--c-vine)); }
+}
+
+/* Big number (deadlines, stats) uses tabular figures */
+.read-num { font-variant-numeric: tabular-nums; }

@@ -1,0 +1,834 @@
+{
+  "library.meta_desc": {
+    "en": "Every PDF from AA Grapevine and La Viña plus NETA 65 committee documents — GVR and RLV kits, catalogs, flyers, order forms and reports. Searchable in English and Spanish, updated automatically every day.",
+    "es": "Todos los PDF de La Viña y AA Grapevine, más los documentos del comité de NETA 65: kits para RLV y GVR, catálogos, volantes, formularios de pedido e informes. Búsqueda en español e inglés, actualizada automáticamente cada día."
+  },
+  "library.eyebrow": {
+    "en": "Grapevine · La Viña · NETA 65",
+    "es": "La Viña · Grapevine · NETA 65"
+  },
+  "library.subtitle": {
+    "en": "Every PDF published by Grapevine and La Viña, plus our committee's own documents — found automatically, in one searchable place.",
+    "es": "Todos los PDF que publican La Viña y Grapevine, más los documentos de nuestro comité — encontrados automáticamente, en un solo lugar donde puedes buscar."
+  },
+  "library.search_label": {
+    "en": "Search the library",
+    "es": "Buscar en la biblioteca"
+  },
+  "library.search_placeholder": {
+    "en": "Search titles, e.g. “workbook”",
+    "es": "Busca títulos, p. ej. “catálogo”"
+  },
+  "library.search_submit": {
+    "en": "Search",
+    "es": "Buscar"
+  },
+  "library.search_clear": {
+    "en": "Clear search",
+    "es": "Borrar búsqueda"
+  },
+  "library.stat_total": {
+    "en": "PDFs & documents",
+    "es": "PDF y documentos"
+  },
+  "library.stat_new": {
+    "en": "New this month",
+    "es": "Nuevos este mes"
+  },
+  "library.stat_sources": {
+    "en": "Sources",
+    "es": "Fuentes"
+  },
+  "library.stat_daily": {
+    "en": "Checked for new files every day",
+    "es": "Revisamos si hay archivos nuevos cada día"
+  },
+  "library.collections_title": {
+    "en": "Quick collections",
+    "es": "Colecciones rápidas"
+  },
+  "library.collections_sub": {
+    "en": "One tap to the kits and files people ask for most.",
+    "es": "Con un toque, los kits y archivos que más se piden."
+  },
+  "library.col.gvr-kit": {
+    "en": "GVR kit",
+    "es": "Kit del GVR"
+  },
+  "library.col.gvr-kit_desc": {
+    "en": "Grapevine rep guides, workbooks & forms",
+    "es": "Guías, cuadernos y formularios para el GVR"
+  },
+  "library.col.rlv-kit": {
+    "en": "RLV kit",
+    "es": "Kit del RLV"
+  },
+  "library.col.rlv-kit_desc": {
+    "en": "La Viña rep manual, guides & forms",
+    "es": "Manual, guías y formularios para el RLV"
+  },
+  "library.col.catalogs": {
+    "en": "Catalogs",
+    "es": "Catálogos"
+  },
+  "library.col.catalogs_desc": {
+    "en": "Books, audio & gifts from GV and LV",
+    "es": "Libros, audios y regalos de LV y GV"
+  },
+  "library.col.flyers": {
+    "en": "Flyers & postcards",
+    "es": "Volantes y postales"
+  },
+  "library.col.flyers_desc": {
+    "en": "Print-ready handouts for your group",
+    "es": "Material listo para imprimir en tu grupo"
+  },
+  "library.col.news": {
+    "en": "News & notices",
+    "es": "Noticias y avisos"
+  },
+  "library.col.news_desc": {
+    "en": "GV & LV News sheets, price notices and official letters",
+    "es": "Hojas de noticias de GV y LV, avisos de precios y cartas oficiales"
+  },
+  "library.col.reports": {
+    "en": "Committee reports",
+    "es": "Informes del comité"
+  },
+  "library.col.reports_desc": {
+    "en": "NETA 65 reports & meeting notes",
+    "es": "Informes y notas de reunión de NETA 65"
+  },
+  "library.col_empty_title": {
+    "en": "Nothing in “{name}” yet",
+    "es": "Todavía no hay nada en “{name}”"
+  },
+  "library.col_empty_text": {
+    "en": "New files appear here automatically as soon as they're published. Check back soon!",
+    "es": "Los archivos nuevos aparecen aquí automáticamente en cuanto se publican. ¡Vuelve pronto!"
+  },
+  "library.col_empty_reports": {
+    "en": "Reports and meeting notes appear here automatically after the committee uploads them to its shared Drive folder.",
+    "es": "Los informes y las notas de reunión aparecen aquí automáticamente cuando el comité los sube a su carpeta compartida de Drive."
+  },
+  "library.filters": {
+    "en": "Filters",
+    "es": "Filtros"
+  },
+  "library.filters_title": {
+    "en": "Refine",
+    "es": "Filtrar"
+  },
+  "library.facet_src": {
+    "en": "Source",
+    "es": "Fuente"
+  },
+  "library.facet_lang": {
+    "en": "Language",
+    "es": "Idioma"
+  },
+  "library.facet_cat": {
+    "en": "Document type",
+    "es": "Tipo de documento"
+  },
+  "library.facet_year": {
+    "en": "Year",
+    "es": "Año"
+  },
+  "library.clear_all": {
+    "en": "Clear all",
+    "es": "Borrar todo"
+  },
+  "library.remove_filter": {
+    "en": "Remove filter: {label}",
+    "es": "Quitar filtro: {label}"
+  },
+  "library.collection": {
+    "en": "Collection",
+    "es": "Colección"
+  },
+  "library.sort_label": {
+    "en": "Sort by",
+    "es": "Ordenar por"
+  },
+  "library.sort_relevance": {
+    "en": "Best match",
+    "es": "Más relevantes"
+  },
+  "library.sort_new": {
+    "en": "Newest first",
+    "es": "Más recientes"
+  },
+  "library.sort_old": {
+    "en": "Oldest first",
+    "es": "Más antiguos"
+  },
+  "library.sort_az": {
+    "en": "Title A–Z",
+    "es": "Título A–Z"
+  },
+  "library.view_label": {
+    "en": "Layout",
+    "es": "Vista"
+  },
+  "library.view_grid": {
+    "en": "Cards",
+    "es": "Tarjetas"
+  },
+  "library.view_list": {
+    "en": "List",
+    "es": "Lista"
+  },
+  "library.count_all": {
+    "en": "{n} documents",
+    "es": "{n} documentos"
+  },
+  "library.count_one": {
+    "en": "1 document",
+    "es": "1 documento"
+  },
+  "library.count_shown": {
+    "en": "Showing {shown} of {n}",
+    "es": "Mostrando {shown} de {n}"
+  },
+  "library.count_match": {
+    "en": "{n} matching documents",
+    "es": "{n} documentos coinciden"
+  },
+  "library.count_match_one": {
+    "en": "1 matching document",
+    "es": "1 documento coincide"
+  },
+  "library.load_more": {
+    "en": "Load more",
+    "es": "Cargar más"
+  },
+  "library.partial": {
+    "en": "No document contains every word you typed — showing the closest matches.",
+    "es": "Ningún documento contiene todas las palabras — te mostramos los más parecidos."
+  },
+  "library.src.gv": {
+    "en": "Grapevine",
+    "es": "Grapevine"
+  },
+  "library.src.lv": {
+    "en": "La Viña",
+    "es": "La Viña"
+  },
+  "library.src.neta": {
+    "en": "NETA 65 committee",
+    "es": "Comité de NETA 65"
+  },
+  "library.src_short.neta": {
+    "en": "NETA 65",
+    "es": "NETA 65"
+  },
+  "library.lang.en": {
+    "en": "English",
+    "es": "Inglés"
+  },
+  "library.lang.es": {
+    "en": "Spanish",
+    "es": "Español"
+  },
+  "library.lang.fr": {
+    "en": "French",
+    "es": "Francés"
+  },
+  "library.lang_title.en": {
+    "en": "Document in English",
+    "es": "Documento en inglés"
+  },
+  "library.lang_title.es": {
+    "en": "Document in Spanish",
+    "es": "Documento en español"
+  },
+  "library.lang_title.fr": {
+    "en": "Document in French",
+    "es": "Documento en francés"
+  },
+  "library.cat.rep": {
+    "en": "Rep resources",
+    "es": "Recursos para representantes"
+  },
+  "library.cat.catalog": {
+    "en": "Catalogs",
+    "es": "Catálogos"
+  },
+  "library.cat.flyer": {
+    "en": "Flyers",
+    "es": "Volantes"
+  },
+  "library.cat.postcard": {
+    "en": "Postcards",
+    "es": "Postales"
+  },
+  "library.cat.news": {
+    "en": "News & announcements",
+    "es": "Noticias y comunicados"
+  },
+  "library.cat.guidelines": {
+    "en": "Guidelines",
+    "es": "Guías y pautas"
+  },
+  "library.cat.order-form": {
+    "en": "Order forms",
+    "es": "Formularios de pedido"
+  },
+  "library.cat.workbook": {
+    "en": "Workbooks & handbooks",
+    "es": "Cuadernos y manuales"
+  },
+  "library.cat.service": {
+    "en": "Service",
+    "es": "Servicio"
+  },
+  "library.cat.literature": {
+    "en": "Literature",
+    "es": "Literatura"
+  },
+  "library.cat.other": {
+    "en": "Other",
+    "es": "Otros"
+  },
+  "library.cat.reports": {
+    "en": "Committee reports",
+    "es": "Informes del comité"
+  },
+  "library.cat.notes": {
+    "en": "Meeting notes",
+    "es": "Notas de reunión"
+  },
+  "library.cat.slides": {
+    "en": "Slides",
+    "es": "Presentaciones"
+  },
+  "library.cat.workshops": {
+    "en": "Workshops",
+    "es": "Talleres"
+  },
+  "library.cat.forms": {
+    "en": "Forms",
+    "es": "Formularios"
+  },
+  "library.ft.pdf": {
+    "en": "PDF",
+    "es": "PDF"
+  },
+  "library.ft.doc": {
+    "en": "Doc",
+    "es": "Doc"
+  },
+  "library.ft.slides": {
+    "en": "Slides",
+    "es": "Diapositivas"
+  },
+  "library.ft.form": {
+    "en": "Form",
+    "es": "Formulario"
+  },
+  "library.ft.image": {
+    "en": "Image",
+    "es": "Imagen"
+  },
+  "library.ft.file": {
+    "en": "File",
+    "es": "Archivo"
+  },
+  "library.found_on": {
+    "en": "Found on",
+    "es": "Encontrado en"
+  },
+  "library.original_title": {
+    "en": "Original title",
+    "es": "Título original"
+  },
+  "library.open_aria": {
+    "en": "Open “{title}” in a new tab",
+    "es": "Abrir “{title}” en una pestaña nueva"
+  },
+  "library.download_aria": {
+    "en": "Download “{title}”",
+    "es": "Descargar “{title}”"
+  },
+  "library.copy_aria": {
+    "en": "Copy link to “{title}”",
+    "es": "Copiar el enlace de “{title}”"
+  },
+  "library.share_aria": {
+    "en": "Share “{title}”",
+    "es": "Compartir “{title}”"
+  },
+  "library.preview_aria": {
+    "en": "Preview “{title}”",
+    "es": "Vista previa de “{title}”"
+  },
+  "library.preview_hint": {
+    "en": "Preview provided by Google Drive. If it doesn't load, use “Open”.",
+    "es": "Vista previa de Google Drive. Si no carga, usa “Abrir”."
+  },
+  "library.empty_title": {
+    "en": "The library is filling up",
+    "es": "La biblioteca se está llenando"
+  },
+  "library.empty_text": {
+    "en": "Our robot visits aagrapevine.org and aalavina.org every day and adds every PDF it finds. The first documents will appear here after the next daily update.",
+    "es": "Nuestro robot visita aagrapevine.org y aalavina.org cada día y agrega todos los PDF que encuentra. Los primeros documentos aparecerán aquí después de la próxima actualización diaria."
+  },
+  "library.none_title": {
+    "en": "No documents match",
+    "es": "Ningún documento coincide"
+  },
+  "library.none_text": {
+    "en": "Try fewer words, remove a filter, or search in the other language — titles are indexed in English and Spanish.",
+    "es": "Prueba con menos palabras, quita un filtro o busca en el otro idioma — los títulos están en español e inglés."
+  },
+  "library.search_site": {
+    "en": "Search the whole site",
+    "es": "Buscar en todo el sitio"
+  },
+  "library.load_error": {
+    "en": "Couldn't load the full library. Showing the newest documents only.",
+    "es": "No se pudo cargar la biblioteca completa. Solo se muestran los documentos más recientes."
+  },
+  "library.retry": {
+    "en": "Try again",
+    "es": "Reintentar"
+  },
+  "library.noscript": {
+    "en": "Showing the {shown} newest documents. Turn on JavaScript to search and filter all {n}.",
+    "es": "Se muestran los {shown} documentos más recientes. Activa JavaScript para buscar y filtrar los {n}."
+  },
+  "library.how_title": {
+    "en": "How this library keeps itself up to date",
+    "es": "Cómo se mantiene al día esta biblioteca"
+  },
+  "library.how_crawl_title": {
+    "en": "Daily crawl",
+    "es": "Revisión diaria"
+  },
+  "library.how_crawl": {
+    "en": "Every day a polite robot reads aagrapevine.org and aalavina.org page by page and records every PDF — new flyers, order forms and news sheets show up on their own.",
+    "es": "Cada día un robot respetuoso recorre aagrapevine.org y aalavina.org página por página y registra cada PDF — los volantes, formularios y hojas de noticias nuevos aparecen solos."
+  },
+  "library.how_crawl_progress": {
+    "en": "So far the robot has checked {crawled} of the {known} pages it knows about — it picks up where it left off each day.",
+    "es": "Hasta ahora el robot ha revisado {crawled} de las {known} páginas que conoce — cada día continúa donde se quedó."
+  },
+  "library.how_drive_title": {
+    "en": "Committee uploads",
+    "es": "Archivos del comité"
+  },
+  "library.how_drive": {
+    "en": "Reports, notes, slides and workshop files the committee saves to its shared Google Drive folder are added automatically.",
+    "es": "Los informes, notas, presentaciones y archivos de talleres que el comité guarda en su carpeta compartida de Google Drive se agregan automáticamente."
+  },
+  "library.how_lang_title": {
+    "en": "English & Spanish",
+    "es": "Español e inglés"
+  },
+  "library.how_lang": {
+    "en": "Titles are translated automatically, so you can search in either language. The documents themselves stay in their original language.",
+    "es": "Los títulos se traducen automáticamente, así que puedes buscar en cualquiera de los dos idiomas. Los documentos se quedan en su idioma original."
+  },
+  "library.how_status": {
+    "en": "See today's update status",
+    "es": "Ver el estado de la actualización de hoy"
+  },
+  "library.ask": {
+    "en": "Looking for something that isn't here? Write to the committee and we'll help you find it.",
+    "es": "¿Buscas algo que no está aquí? Escríbele al comité y te ayudamos a encontrarlo."
+  },
+  "library.ask_cta": {
+    "en": "Email the committee",
+    "es": "Escribir al comité"
+  },
+  "library.copyright": {
+    "en": "Grapevine and La Viña files open on their official websites and remain © AA Grapevine, Inc.",
+    "es": "Los archivos de La Viña y Grapevine se abren en sus sitios oficiales y siguen siendo © AA Grapevine, Inc."
+  },
+  "library.results_title": {
+    "en": "All documents",
+    "es": "Todos los documentos"
+  },
+  "search.meta_desc": {
+    "en": "Search everything on the NETA 65 Grapevine / La Viña site — articles, PDFs, podcasts, videos, Instagram posts, committee documents and pages — in English and Spanish.",
+    "es": "Busca todo en el sitio de La Viña / Grapevine de NETA 65 — artículos, PDF, podcasts, videos, publicaciones de Instagram, documentos del comité y páginas — en español e inglés."
+  },
+  "search.eyebrow": {
+    "en": "Everything on this site",
+    "es": "Todo el sitio"
+  },
+  "search.subtitle": {
+    "en": "Articles, PDFs, podcasts, videos, Instagram posts, committee files and pages — in English and Spanish.",
+    "es": "Artículos, PDF, podcasts, videos, publicaciones de Instagram, archivos del comité y páginas — en español e inglés."
+  },
+  "search.label": {
+    "en": "Search the site",
+    "es": "Buscar en el sitio"
+  },
+  "search.placeholder": {
+    "en": "Stories, PDFs, podcasts, Zoom…",
+    "es": "Historias, PDF, podcasts, Zoom…"
+  },
+  "search.clear": {
+    "en": "Clear search",
+    "es": "Borrar búsqueda"
+  },
+  "search.kbd_hint": {
+    "en": "Press / to search · ↑ ↓ to move · Enter to open",
+    "es": "Pulsa / para buscar · ↑ ↓ para moverte · Enter para abrir"
+  },
+  "search.filter_aria": {
+    "en": "Filter results by type",
+    "es": "Filtrar resultados por tipo"
+  },
+  "search.kind.all": {
+    "en": "All",
+    "es": "Todo"
+  },
+  "search.kind.pages": {
+    "en": "Pages",
+    "es": "Páginas"
+  },
+  "search.kind.articles": {
+    "en": "Articles",
+    "es": "Artículos"
+  },
+  "search.kind.docs": {
+    "en": "PDFs & documents",
+    "es": "PDF y documentos"
+  },
+  "search.kind.podcasts": {
+    "en": "Podcasts",
+    "es": "Podcasts"
+  },
+  "search.kind.videos": {
+    "en": "Videos",
+    "es": "Videos"
+  },
+  "search.kind.instagram": {
+    "en": "Instagram",
+    "es": "Instagram"
+  },
+  "search.kind.committee": {
+    "en": "Committee & events",
+    "es": "Comité y eventos"
+  },
+  "search.kind_label.page": {
+    "en": "Page",
+    "es": "Página"
+  },
+  "search.kind_label.album": {
+    "en": "Photo album",
+    "es": "Álbum de fotos"
+  },
+  "search.kind_label.meeting": {
+    "en": "Meeting",
+    "es": "Reunión"
+  },
+  "search.src.gv": {
+    "en": "Grapevine",
+    "es": "Grapevine"
+  },
+  "search.src.lv": {
+    "en": "La Viña",
+    "es": "La Viña"
+  },
+  "search.src.neta": {
+    "en": "NETA 65",
+    "es": "NETA 65"
+  },
+  "search.src.podcast": {
+    "en": "Podcast",
+    "es": "Podcast"
+  },
+  "search.src.youtube": {
+    "en": "YouTube",
+    "es": "YouTube"
+  },
+  "search.src.site": {
+    "en": "This site",
+    "es": "Este sitio"
+  },
+  "search.count": {
+    "en": "{n} results for “{q}”",
+    "es": "{n} resultados para “{q}”"
+  },
+  "search.count_one": {
+    "en": "1 result for “{q}”",
+    "es": "1 resultado para “{q}”"
+  },
+  "search.count_in": {
+    "en": "{n} of {total} results for “{q}” in {kind}",
+    "es": "{n} de {total} resultados para “{q}” en {kind}"
+  },
+  "search.loading": {
+    "en": "Loading the search index…",
+    "es": "Cargando el índice de búsqueda…"
+  },
+  "search.error": {
+    "en": "Search couldn't load. Check your connection and try again.",
+    "es": "No se pudo cargar la búsqueda. Revisa tu conexión e inténtalo de nuevo."
+  },
+  "search.retry": {
+    "en": "Try again",
+    "es": "Reintentar"
+  },
+  "search.start_title": {
+    "en": "What are you looking for?",
+    "es": "¿Qué estás buscando?"
+  },
+  "search.start_text": {
+    "en": "Type a few words — a story topic, a PDF name, a podcast guest, “Zoom”… Spanish and English both work.",
+    "es": "Escribe unas palabras — un tema, el nombre de un PDF, un invitado del podcast, “Zoom”… Funciona en español y en inglés."
+  },
+  "search.try": {
+    "en": "Popular searches",
+    "es": "Búsquedas populares"
+  },
+  "search.suggestions": {
+    "en": "GVR|Zoom|catalog|order form|podcast|sponsorship|La Viña|subscribe|workbook|Carry the Message",
+    "es": "RLV|Zoom|catálogo|formulario|podcast|padrinazgo|Grapevine|suscripción|Lleva el Mensaje|taller"
+  },
+  "search.browse_title": {
+    "en": "Or browse everything",
+    "es": "O explora todo"
+  },
+  "search.browse_n": {
+    "en": "{n} items",
+    "es": "{n} elementos"
+  },
+  "search.none_title": {
+    "en": "No results for “{q}”",
+    "es": "No hay resultados para “{q}”"
+  },
+  "search.none_text": {
+    "en": "Check the spelling, try fewer or different words, or search in the other language — everything is indexed in English and Spanish.",
+    "es": "Revisa la ortografía, prueba con menos palabras o palabras distintas, o busca en el otro idioma — todo está indexado en español e inglés."
+  },
+  "search.none_kind": {
+    "en": "Nothing in {kind} matches — see results in all types.",
+    "es": "Nada en {kind} coincide — mira los resultados de todos los tipos."
+  },
+  "search.did_you_mean": {
+    "en": "Did you mean",
+    "es": "¿Quisiste decir"
+  },
+  "search.did_you_mean_end": {
+    "en": "?",
+    "es": "?"
+  },
+  "search.jump": {
+    "en": "Jump to a page",
+    "es": "Ir a una página"
+  },
+  "search.show_more": {
+    "en": "Show more results",
+    "es": "Mostrar más resultados"
+  },
+  "search.partial": {
+    "en": "No result contains every word — showing the closest matches.",
+    "es": "Ningún resultado contiene todas las palabras — te mostramos los más parecidos."
+  },
+  "search.deadline": {
+    "en": "Deadline {date}",
+    "es": "Fecha límite: {date}"
+  },
+  "search.photos_n": {
+    "en": "{n} photos",
+    "es": "{n} fotos"
+  },
+  "search.album_loose": {
+    "en": "Committee photos",
+    "es": "Fotos del comité"
+  },
+  "search.external": {
+    "en": "Opens the official source in a new tab",
+    "es": "Abre la fuente oficial en una pestaña nueva"
+  },
+  "search.index_note": {
+    "en": "The search index is rebuilt automatically every day with everything new.",
+    "es": "El índice de búsqueda se reconstruye automáticamente cada día con todo lo nuevo."
+  },
+  "search.page_desc.home": {
+    "en": "The newest Grapevine and La Viña stories, podcasts, videos and service resources — updated every day.",
+    "es": "Lo más reciente de La Viña y Grapevine: historias, podcasts, videos y recursos de servicio — actualizado cada día."
+  },
+  "search.page_desc.whats-new": {
+    "en": "Everything new from every source, newest first.",
+    "es": "Todo lo nuevo de todas las fuentes, lo más reciente primero."
+  },
+  "search.page_desc.read": {
+    "en": "The latest Grapevine and La Viña issues and articles.",
+    "es": "Los números y artículos más recientes de La Viña y Grapevine."
+  },
+  "search.page_desc.listen": {
+    "en": "Every episode of AA Grapevine's Podcast.",
+    "es": "Todos los episodios del podcast de AA Grapevine."
+  },
+  "search.page_desc.watch": {
+    "en": "Grapevine and La Viña videos from YouTube.",
+    "es": "Videos de La Viña y Grapevine en YouTube."
+  },
+  "search.page_desc.library": {
+    "en": "Every Grapevine and La Viña PDF plus committee documents.",
+    "es": "Todos los PDF de La Viña y Grapevine, más los documentos del comité."
+  },
+  "search.page_desc.about": {
+    "en": "Who we are and how this self-updating site works.",
+    "es": "Quiénes somos y cómo funciona este sitio que se actualiza solo."
+  },
+  "search.page_desc.digest": {
+    "en": "A weekly summary of everything new, ready to forward to your district.",
+    "es": "Un resumen semanal de todo lo nuevo, listo para reenviar a tu distrito."
+  },
+  "search.page_desc.share": {
+    "en": "QR codes, links and ready-to-print material to share this site.",
+    "es": "Códigos QR, enlaces y material para imprimir y compartir este sitio."
+  },
+  "search.page_desc.search": {
+    "en": "Search everything on this site.",
+    "es": "Busca todo en este sitio."
+  },
+  "search.page_desc.status": {
+    "en": "When each source was last updated automatically.",
+    "es": "Cuándo se actualizó automáticamente cada fuente por última vez."
+  },
+  "search.kw.home": {
+    "en": "home start welcome grapevine la vina committee neta 65 area",
+    "es": "inicio bienvenida comité área"
+  },
+  "search.kw.whats-new": {
+    "en": "new latest recent updates news feed rss",
+    "es": "novedades nuevo reciente actualizaciones noticias"
+  },
+  "search.kw.read": {
+    "en": "read magazine issue articles stories grapevine monthly",
+    "es": "leer revista número artículos historias la viña bimestral"
+  },
+  "search.kw.listen": {
+    "en": "listen podcast audio episodes spotify apple",
+    "es": "escuchar podcast audio episodios"
+  },
+  "search.kw.watch": {
+    "en": "watch video videos youtube asl",
+    "es": "ver video videos youtube"
+  },
+  "search.kw.library": {
+    "en": "library pdf pdfs documents files download flyers catalog forms kit",
+    "es": "biblioteca pdf documentos archivos descargar volantes catálogo formularios kit"
+  },
+  "search.kw.meeting": {
+    "en": "meeting zoom monthly committee meeting id passcode password link join countdown third wednesday",
+    "es": "reunión zoom mensual comité id contraseña clave enlace unirse cuenta regresiva tercer miércoles"
+  },
+  "search.kw.events": {
+    "en": "events calendar workshop booth assembly conference ics",
+    "es": "eventos calendario taller mesa asamblea conferencia"
+  },
+  "search.kw.documents": {
+    "en": "committee documents reports minutes notes slides workshops drive",
+    "es": "documentos del comité informes actas notas presentaciones talleres drive"
+  },
+  "search.kw.photos": {
+    "en": "photos pictures albums gallery booth",
+    "es": "fotos imágenes álbumes galería mesa"
+  },
+  "search.kw.announcements": {
+    "en": "announcements news committee updates",
+    "es": "anuncios noticias comité avisos"
+  },
+  "search.kw.gvr": {
+    "en": "gvr rlv grapevine representative group rep kit handbook workbook register become",
+    "es": "rlv gvr representante de la viña representante de grupo kit manual cuaderno registrarse"
+  },
+  "search.kw.districts": {
+    "en": "districts district dcm group share email rss",
+    "es": "distritos distrito mcd grupo compartir correo"
+  },
+  "search.kw.contribute": {
+    "en": "share your story write submit contribute editorial themes deadlines guidelines record",
+    "es": "comparte tu historia escribir enviar contribuir temas editoriales fechas límite pautas grabar"
+  },
+  "search.kw.subscribe": {
+    "en": "subscribe subscription magazine app gift carry the message store buy order",
+    "es": "suscribirse suscripción revista app regalo lleva el mensaje tienda comprar pedido"
+  },
+  "search.kw.instagram": {
+    "en": "instagram posts social media photos",
+    "es": "instagram publicaciones redes sociales"
+  },
+  "search.kw.about": {
+    "en": "about who we are contact email chair",
+    "es": "acerca de quiénes somos contacto correo coordinador"
+  },
+  "search.kw.digest": {
+    "en": "weekly digest email summary newsletter",
+    "es": "resumen semanal correo boletín"
+  },
+  "search.kw.share": {
+    "en": "share kit qr code print poster link",
+    "es": "compartir kit código qr imprimir cartel enlace"
+  },
+  "search.kw.search": {
+    "en": "search find",
+    "es": "buscar encontrar"
+  },
+  "search.kw.status": {
+    "en": "status update sync automatic health last updated",
+    "es": "estado actualización sincronización automática"
+  },
+  "search.kw.weekly_open": {
+    "en": "weekly open meeting online wednesday",
+    "es": "reunión abierta semanal en línea miércoles"
+  },
+  "library.col.reports_empty": {
+    "en": "Added here as soon as the committee uploads them",
+    "es": "Aparecerán aquí en cuanto el comité los suba"
+  },
+  "library.page_one": {
+    "en": "1 page",
+    "es": "1 página"
+  },
+  "library.orphan": {
+    "en": "No longer linked on the official site — it may be out of date.",
+    "es": "Ya no aparece enlazado en el sitio oficial; puede estar desactualizado."
+  },
+  "library.event_on": {
+    "en": "Event: {date}",
+    "es": "Evento: {date}"
+  },
+  "library.opens_on": {
+    "en": "Opens on {host}",
+    "es": "Se abre en {host}"
+  },
+  "library.how_drive_empty": {
+    "en": "Nothing has been uploaded for this panel yet — the first files will show up here on their own.",
+    "es": "Todavía no se ha subido nada en este panel; los primeros archivos aparecerán aquí solos."
+  },
+  "library.col_empty_reports_cta": {
+    "en": "Committee documents",
+    "es": "Documentos del comité"
+  },
+  "search.topic_open": {
+    "en": "Open topic — send your story any time",
+    "es": "Tema abierto: envía tu historia cuando quieras"
+  },
+  "search.subscriber": {
+    "en": "Subscribers",
+    "es": "Suscriptores"
+  },
+  "search.subscriber_title": {
+    "en": "Subscriber story: the full text needs a Grapevine or La Viña subscription",
+    "es": "Historia para suscriptores: el texto completo requiere una suscripción a La Viña o Grapevine"
+  },
+  "search.photos_one": {
+    "en": "1 photo",
+    "es": "1 foto"
+  },
+  "search.browse_one": {
+    "en": "1 item",
+    "es": "1 elemento"
+  }
+}

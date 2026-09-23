@@ -1,0 +1,49 @@
+{
+ "source": "weekly_open",
+ "updated": "2026-09-23T21:49:15Z",
+ "attempted": "2026-09-23T21:49:15Z",
+ "ok": true,
+ "error": null,
+ "stats": {
+  "found": [
+   "zoom_id",
+   "passcode",
+   "day",
+   "time"
+  ],
+  "missing": []
+ },
+ "items": [
+  {
+   "id": "weekly_open",
+   "source": "grapevine",
+   "kind": "meeting",
+   "url": "https://www.aagrapevine.org/grapevine-weekly-open",
+   "title": "Grapevine Weekly Open AA Meeting",
+   "summary": "Each week AA Grapevine holds an open virtual AA meeting with a host and two speakers. We record the meeting to create this podcast.",
+   "lang": "en",
+   "date": null,
+   "first_seen": "2026-09-23T16:30:28Z",
+   "last_seen": "2026-09-23T16:30:28Z",
+   "image": null,
+   "tags": [],
+   "category": null,
+   "status": "ok",
+   "extra": {
+    "zoom_id": "871 2036 8287",
+    "passcode": "238047",
+    "day": "Wednesdays",
+    "time": "Noon Eastern",
+    "url": "https://www.aagrapevine.org/grapevine-weekly-open",
+    "weekday": "wednesday",
+    "zoom_url": "https://zoom.us/j/87120368287",
+    "player_url": "https://player.captivate.fm/show/ba06341c-a708-43df-a334-1cc9f7266f63",
+    "sentence": "To join the meeting live on Wednesdays at Noon Eastern, use Zoom code 871 2036 8287 with password 238047",
+    "start_local": "12:00",
+    "timezone": "America/New_York",
+    "time_central": "11 AM Central",
+    "next_start": "2026-09-30T16:00:00Z"
+   }
+  }
+ ]
+}

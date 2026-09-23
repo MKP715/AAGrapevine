@@ -1,0 +1,256 @@
+/* =====================================================================
+   Area styles: media (/listen/, /watch/, /instagram/).
+   Owned by the media pages. Templates use Tailwind utilities; this file
+   holds what utilities can't express well: range inputs, the audio player,
+   episode rows, video cards, the modal, Instagram tiles.
+   Colors come ONLY from theme tokens (var(--c-…)) so dark mode just works;
+   the Instagram "text post" tiles are dark bands (white text) in both themes.
+   ===================================================================== */
+
+@layer components {
+  /* ------------------------------------------------ shared: chip rows */
+  /* One-line, horizontally scrollable chip row on phones; wraps on desktop. */
+  .media-chips {
+    @apply flex min-w-0 flex-1 gap-2 overflow-x-auto py-0.5;
+    scroll-snap-type: x proximity;
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 2rem), transparent);
+    mask-image: linear-gradient(to right, #000 calc(100% - 2rem), transparent);
+    padding-right: 2rem;
+  }
+  .media-chips > * { flex-shrink: 0; scroll-snap-align: start; }
+  @media (width >= 64rem) {
+    .media-chips { flex-wrap: wrap; overflow: visible; -webkit-mask-image: none; mask-image: none; padding-right: 0; }
+  }
+
+  /* ------------------------------------------------ LISTEN: featured card */
+  .media-feature-art {
+    @apply relative flex items-center justify-center p-6 md:p-7;
+    background:
+      radial-gradient(120% 90% at 20% 10%, color-mix(in srgb, var(--c-gv) 18%, transparent), transparent 60%),
+      radial-gradient(90% 80% at 90% 100%, color-mix(in srgb, var(--c-grape) 16%, transparent), transparent 60%),
+      var(--c-surface-2);
+  }
+  .media-feature-art > img {
+    @apply aspect-square w-44 rounded-2xl object-cover ring-1 ring-black/5 sm:w-52 md:w-full;
+    box-shadow: 0 18px 40px -18px rgb(10 20 60 / 0.55);
+  }
+
+  /* player block */
+  .media-player { @apply rounded-2xl border border-line p-4 sm:p-5; background: color-mix(in srgb, var(--c-surface-2) 60%, var(--c-surface)); }
+
+  .media-pbtn {
+    @apply relative grid size-11 shrink-0 place-items-center rounded-full text-ink no-underline transition;
+  }
+  .media-pbtn:hover { background: color-mix(in srgb, var(--c-gv) 10%, transparent); color: var(--c-gv); }
+  /* "15" / "30" numerals inside the circular-arrow icons */
+  .media-skip > span {
+    position: absolute; left: 50%; top: 50%; transform: translate(-50%, -42%);
+    font-size: 0.56rem; font-weight: 800; line-height: 1; letter-spacing: -0.02em; pointer-events: none;
+  }
+  .media-play {
+    @apply grid size-16 shrink-0 place-items-center rounded-full bg-gv text-white transition dark:text-paper;
+    box-shadow: 0 10px 24px -10px color-mix(in srgb, var(--c-gv) 80%, transparent);
+  }
+  .media-play:hover { background: var(--c-gv-strong); transform: scale(1.04); }
+  .media-play:active { transform: scale(0.96); }
+  .media-play-sm { @apply size-12; }
+  .media-rate {
+    @apply inline-flex h-11 min-w-14 items-center justify-center rounded-full border border-line bg-surface px-3 text-sm font-bold tabular-nums text-ink transition;
+  }
+  .media-rate:hover { border-color: var(--c-gv); color: var(--c-gv); }
+
+  /* ------------------------------------------------ range (scrub bar) */
+  .media-range {
+    --pct: 0%;
+    -webkit-appearance: none; appearance: none;
+    height: 1.75rem; min-width: 0; background: transparent; cursor: pointer; border-radius: 999px;
+  }
+  .media-range::-webkit-slider-runnable-track {
+    height: 6px; border-radius: 999px;
+    background: linear-gradient(to right, var(--c-gv) var(--pct), var(--c-line) var(--pct));
+  }
+  .media-range::-moz-range-track { height: 6px; border-radius: 999px; background: var(--c-line); }
+  .media-range::-moz-range-progress { height: 6px; border-radius: 999px; background: var(--c-gv); }
+  .media-range::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none; width: 16px; height: 16px; margin-top: -5px; border-radius: 50%;
+    background: var(--c-gv); border: 2px solid var(--c-surface); box-shadow: 0 1px 4px rgb(0 0 0 / 0.35); transition: transform 0.15s;
+  }
+  .media-range::-moz-range-thumb {
+    width: 14px; height: 14px; border-radius: 50%; background: var(--c-gv); border: 2px solid var(--c-surface); box-shadow: 0 1px 4px rgb(0 0 0 / 0.35);
+  }
+  .media-range:hover::-webkit-slider-thumb, .media-range:active::-webkit-slider-thumb { transform: scale(1.2); }
+  .media-range:focus-visible { outline: 3px solid var(--c-gv); outline-offset: 2px; }
+  /* thin variant across the top of the mini-player */
+  .media-range-mini { display: block; width: 100%; height: 1.125rem; padding-inline: 0.75rem; margin-top: 0.25rem; }
+  .media-range-mini::-webkit-slider-runnable-track { height: 4px; }
+  .media-range-mini::-moz-range-track, .media-range-mini::-moz-range-progress { height: 4px; }
+  .media-range-mini::-webkit-slider-thumb { width: 12px; height: 12px; margin-top: -4px; }
+
+  /* ------------------------------------------------ LISTEN: mini-player */
+  .media-mini {
+    @apply pointer-events-none fixed inset-x-0 bottom-0 z-40 px-2 sm:px-4;
+    padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+  }
+  .media-mini-card {
+    @apply pointer-events-auto mx-auto max-w-3xl rounded-2xl border border-line;
+    background: color-mix(in srgb, var(--c-surface) 94%, transparent);
+    box-shadow: 0 -2px 6px rgb(20 16 40 / 0.05), 0 18px 40px -12px rgb(20 16 40 / 0.35);
+    -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+  }
+
+  /* ------------------------------------------------ LISTEN: episode rows */
+  .ep-list { @apply divide-y divide-line overflow-hidden; }
+  .ep-row { @apply relative flex items-start gap-3 p-3 transition-colors sm:gap-4 sm:p-4; }
+  .ep-row:hover { background: color-mix(in srgb, var(--c-surface-2) 55%, transparent); }
+  .ep-row.is-current { background: var(--c-gv-soft); box-shadow: inset 3px 0 0 var(--c-gv); }
+
+  .ep-art { @apply relative size-16 shrink-0 overflow-hidden rounded-xl bg-surface-2 sm:size-20; }
+  .ep-art > img { @apply size-full object-cover; }
+  .ep-art-ph { @apply grid size-full place-items-center bg-grape-soft text-grape; }
+  .ep-art-overlay {
+    @apply absolute inset-0 grid place-items-center text-white opacity-0 transition;
+    background: rgb(8 12 30 / 0.35);
+  }
+  .ep-art-play { @apply grid size-9 place-items-center rounded-full; background: rgb(0 0 0 / 0.45); }
+  .ep-art:hover .ep-art-overlay,
+  .ep-art:focus-visible .ep-art-overlay,
+  .ep-row.is-current .ep-art-overlay { opacity: 1; }
+  /* touch screens have no hover: always hint that the artwork is a play button */
+  @media (hover: none) { .ep-art-overlay { opacity: 1; background: rgb(8 12 30 / 0.12); } }
+  .ep-progress { @apply absolute inset-x-0 bottom-0 h-1; background: rgb(0 0 0 / 0.35); }
+  .ep-progress > span { display: block; height: 100%; background: var(--c-lv); border-radius: 0 2px 2px 0; }
+
+  .ep-pill {
+    @apply inline-flex min-h-10 items-center gap-1.5 rounded-full border border-line bg-surface px-3.5 text-xs font-semibold whitespace-nowrap text-ink transition;
+  }
+  .ep-pill:hover { border-color: var(--c-gv); color: var(--c-gv); }
+  .ep-row.is-playing .ep-pill { @apply border-gv bg-gv text-white dark:text-paper; }
+
+  /* tiny equalizer for the playing row */
+  .ep-eq { display: inline-flex; align-items: flex-end; gap: 3px; height: 18px; }
+  .ep-eq i { display: block; width: 4px; height: 40%; border-radius: 2px; background: currentColor; animation: media-eq 0.9s ease-in-out infinite; }
+  .ep-eq i:nth-child(2) { animation-delay: -0.3s; }
+  .ep-eq i:nth-child(3) { animation-delay: -0.6s; }
+
+  /* ------------------------------------------------ LISTEN: show cards */
+  .show-card-head {
+    background:
+      radial-gradient(90% 120% at 0% 0%, color-mix(in srgb, var(--show-accent) 14%, transparent), transparent 65%),
+      linear-gradient(to bottom, color-mix(in srgb, var(--show-accent) 5%, transparent), transparent);
+  }
+  .show-card.is-podcast { --show-accent: var(--c-gv); }
+  .show-card.is-weekly { --show-accent: var(--c-grape); }
+  .show-card-art {
+    @apply size-24 shrink-0 rounded-2xl object-cover ring-1 ring-black/5 sm:size-28;
+    box-shadow: 0 14px 30px -16px rgb(10 20 60 / 0.55);
+  }
+  /* "Follow in your app" pills (links + the copy-RSS button) */
+  .media-plat {
+    @apply inline-flex min-h-10 items-center gap-2 rounded-full border border-line bg-surface py-1.5 pr-3.5 pl-1.5 text-sm font-medium text-ink no-underline transition;
+  }
+  .media-plat:hover { border-color: var(--c-gv); color: var(--c-gv); }
+  .media-plat.is-active { border-color: var(--c-vine); color: var(--c-vine); }
+  .media-plat-icon { @apply grid size-7 shrink-0 place-items-center rounded-full bg-surface-2; }
+
+  /* "Tell your group" card */
+  .media-anywhere {
+    background:
+      radial-gradient(60% 80% at 100% 0%, color-mix(in srgb, var(--c-grape) 9%, transparent), transparent 70%),
+      radial-gradient(50% 70% at 0% 100%, color-mix(in srgb, var(--c-lv) 8%, transparent), transparent 70%),
+      var(--c-surface);
+  }
+
+  /* ------------------------------------------------ WATCH */
+  /* (the featured <lite-youtube> player is styled OUTSIDE this layer — see the
+     bottom of the file) */
+
+  /* filter-chip counts: smaller + bolder than the label, same color as the chip
+     text (inherited), so they meet WCAG AA in every chip state and theme —
+     never fade them with opacity */
+  .media-chip-n { font-size: 0.75rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+  .vid-thumb > img { transition: transform 0.4s ease; }
+  .group:hover .vid-thumb > img { transform: scale(1.04); }
+  .vid-dur {
+    @apply absolute right-2 bottom-2 rounded-md px-1.5 py-0.5 text-[0.7rem] font-semibold tabular-nums text-white;
+    background: rgb(0 0 0 / 0.72);
+  }
+  .vid-play {
+    @apply grid size-12 place-items-center rounded-full text-white transition;
+    background: rgb(0 0 0 / 0.55); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
+  }
+  .group:hover .vid-play { background: #e62117; transform: scale(1.08); }
+
+  /* video modal (<dialog>) */
+  .media-dialog {
+    @apply m-auto w-[min(64rem,calc(100vw-1.5rem))] max-w-none overflow-visible rounded-2xl border-0 bg-transparent p-0 text-ink;
+    max-height: calc(100dvh - 1.5rem);
+  }
+  .media-dialog::backdrop { background: rgb(6 8 20 / 0.82); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); }
+  .media-dialog[open] { animation: media-pop 0.18s ease-out; }
+  .media-dialog-frame { @apply relative mx-auto w-full overflow-hidden rounded-t-2xl bg-black bg-cover bg-center; aspect-ratio: 16 / 9; max-height: calc(100dvh - 9rem); }
+  /* vertical Shorts: a narrow dialog with a 9:16 frame */
+  .media-dialog:has(.is-short) { width: min(24rem, calc(100vw - 1.5rem)); }
+  .media-dialog-frame.is-short { aspect-ratio: 9 / 16; max-height: calc(100dvh - 10rem); }
+
+  /* playlist picker: highlighted while a playlist is chosen */
+  .media-select.is-set { border-color: var(--c-gv); box-shadow: 0 0 0 1px var(--c-gv); color: var(--c-ink); font-weight: 600; }
+
+  /* ------------------------------------------------ INSTAGRAM */
+  .ig-profile-band { height: 5.5rem; }
+  .ig-profile-band.is-gv { background: linear-gradient(135deg, #0f1730 0%, #0b3f73 55%, #0a5fa8 100%); }
+  .ig-profile-band.is-lv { background: linear-gradient(135deg, #3a1405 0%, #8f3207 55%, #c9611d 100%); }
+  .ig-avatar { @apply relative -mt-9 grid size-[4.5rem] place-items-center overflow-hidden rounded-full bg-surface ring-4 ring-surface; }
+  .ig-avatar > span { @apply grid size-full place-items-center rounded-full text-white; }
+  /* the account's real profile picture (cached by the sync) covers the fallback grapes */
+  .ig-avatar > img { @apply absolute inset-0 size-full rounded-full bg-white object-cover; }
+  .ig-avatar.is-gv > span { background: linear-gradient(135deg, #0b3f73, #0a5fa8); }
+  .ig-avatar.is-lv > span { background: linear-gradient(135deg, #8f3207, #d9752e); }
+
+  /* "text post" tiles when no cached image exists */
+  .ig-tile { @apply relative flex flex-col justify-between gap-1 overflow-hidden p-3 text-white no-underline sm:p-4; aspect-ratio: 4 / 5; }
+  .ig-tile.is-gv { background: radial-gradient(120% 90% at 100% 0%, rgb(108 176 239 / 0.35), transparent 55%), linear-gradient(150deg, #0f1730 0%, #0b3f73 60%, #0a5fa8 100%); }
+  .ig-tile.is-lv { background: radial-gradient(120% 90% at 100% 0%, rgb(245 154 91 / 0.4), transparent 55%), linear-gradient(150deg, #3a1405 0%, #8f3207 60%, #c9611d 100%); }
+  /* three subtle variations so a wall of tiles doesn't look copy-pasted */
+  .ig-tile.ig-v1 { background-position: 0 0; filter: saturate(1.08); }
+  .ig-tile.is-gv.ig-v1 { background: radial-gradient(110% 80% at 0% 100%, rgb(143 208 138 / 0.22), transparent 55%), linear-gradient(200deg, #0f1730 0%, #0b3f73 55%, #0a5fa8 100%); }
+  .ig-tile.is-lv.ig-v1 { background: radial-gradient(110% 80% at 0% 100%, rgb(194 154 232 / 0.25), transparent 55%), linear-gradient(200deg, #3a1405 0%, #8f3207 55%, #c9611d 100%); }
+  .ig-tile.is-gv.ig-v2 { background: radial-gradient(90% 70% at 50% 0%, rgb(194 154 232 / 0.3), transparent 60%), linear-gradient(160deg, #1b1440 0%, #0b3f73 60%, #0a5fa8 100%); }
+  .ig-tile.is-lv.ig-v2 { background: radial-gradient(90% 70% at 50% 0%, rgb(248 184 138 / 0.35), transparent 60%), linear-gradient(160deg, #2e1030 0%, #8f3207 60%, #c9611d 100%); }
+  .ig-tile-art { position: absolute; right: -1.25rem; bottom: -1.25rem; width: 62%; height: auto; opacity: 0.14; pointer-events: none; transition: transform 0.5s ease; }
+  .ig-tile:hover .ig-tile-art { transform: rotate(-6deg) scale(1.05); }
+  /* photo posts: 4:5 frame (Instagram's own grid shape); the whole picture stays
+     visible (object-fit: contain) and a blurred copy of it fills any margin */
+  .ig-photo { @apply relative block overflow-hidden bg-surface-2; aspect-ratio: 4 / 5; }
+  .ig-photo-bg { @apply absolute inset-0 size-full object-cover; filter: blur(18px) saturate(1.15); transform: scale(1.25); opacity: 0.75; }
+  .ig-photo-img { @apply relative size-full object-contain; transition: transform 0.4s ease; }
+  .ig-photo:hover .ig-photo-img { transform: scale(1.03); }
+  /* video / carousel marker: readable on white flyers and dark photos alike */
+  .ig-type { @apply absolute top-2 right-2 z-10 grid size-8 place-items-center rounded-full text-white; background: rgb(0 0 0 / 0.5); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); }
+  .ig-embed iframe { display: block; width: 100%; min-height: 32rem; border: 0; background: var(--c-surface); }
+}
+
+/* While the sticky mini-player is visible (media.js sets html.has-player and
+   --player-h = its height), the page gets that much extra room at the bottom so
+   the footer is never hidden behind it. The language banner uses the same
+   variable to sit above the player. */
+html.has-player body { padding-bottom: calc(var(--player-h, 6rem) + env(safe-area-inset-bottom) + 0.5rem); }
+
+/* WATCH: the featured "Latest video" player. These rules must stay UNLAYERED:
+   the vendor lite-yt-embed.css is unlayered too, and an unlayered rule always
+   beats a rule inside @layer, whatever its specificity. The element sits in a
+   flex row and sizes its height from its width (16:9), so it needs an explicit
+   width or it collapses to 0×0. */
+lite-youtube.media-lyt { width: 100%; max-width: none; border-radius: inherit; }
+lite-youtube.media-lyt::before { display: none; } /* title overlay: the title is shown next to the player */
+lite-youtube.media-lyt > .lyt-playbtn { filter: none; }
+lite-youtube.media-lyt > .lyt-playbtn:focus-visible { outline: 3px solid #fff; outline-offset: -6px; }
+
+@keyframes media-eq { 0%, 100% { height: 30%; } 50% { height: 100%; } }
+@keyframes media-pop { from { opacity: 0; transform: translateY(8px) scale(0.98); } to { opacity: 1; transform: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .ep-eq i { animation: none; }
+  .ep-eq i:nth-child(1) { height: 55%; } .ep-eq i:nth-child(2) { height: 100%; } .ep-eq i:nth-child(3) { height: 70%; }
+  .media-play:hover, .media-play:active, .group:hover .vid-play, .ig-photo:hover .ig-photo-img { transform: none; }
+}

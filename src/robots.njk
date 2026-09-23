@@ -1,0 +1,17 @@
+---
+permalink: /robots.txt
+eleventyExcludeFromCollections: true
+---
+{#- The Sitemap line needs an absolute URL: site.url comes from config/site.yml
+    (or the SITE_URL the GitHub Action sets). Without one it is left out.
+    IMPORTANT: crawlers only read robots.txt at the ROOT of a host. On the GitHub
+    Pages project site (https://mkp715.github.io/AAGrapevine/) this file is
+    published at /AAGrapevine/robots.txt, so search engines never see it and do
+    not find the sitemap through it. It only takes effect with a custom domain
+    (README §12). Until then, submit <site url>/sitemap.xml by hand in Google
+    Search Console and Bing Webmaster Tools. -#}
+User-agent: *
+Allow: /
+{% if site.url %}
+Sitemap: {{ site.url }}/sitemap.xml
+{% endif %}

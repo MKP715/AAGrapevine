@@ -1,0 +1,219 @@
+/* Area styles: community — What's New, Digest, Districts, Share Kit, Status, 404,
+   language banner. Owned by the community page agent. Prefer Tailwind utilities
+   in templates; this file holds what utilities cannot express (timeline rail,
+   print layouts, poster scaling, responsive table). All classes are prefixed
+   "cm-" and print rules are scoped to this area's body classes. */
+
+/* ------------------------------------------------------------------ */
+/*  What's New timeline                                                */
+/* ------------------------------------------------------------------ */
+.cm-timeline { position: relative; }
+.cm-timeline::before {
+  /* vertical rail through the icon bubbles (icon = 2.5rem wide at x = 0) */
+  content: ""; position: absolute; left: calc(1.25rem - 1px); top: 1.25rem; bottom: 1.25rem;
+  width: 2px; background: linear-gradient(to bottom, var(--c-line), color-mix(in srgb, var(--c-line) 30%, transparent));
+  border-radius: 2px;
+}
+.cm-entry {
+  display: flex; align-items: flex-start; gap: 0.875rem;
+  margin-inline: -0.75rem; padding: 0.75rem; border-radius: 0.9rem;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease;
+}
+.cm-entry:hover, .cm-entry:focus-within { background: var(--c-surface); box-shadow: var(--shadow-card); }
+.cm-entry-icon { position: relative; z-index: 1; box-shadow: 0 0 0 4px var(--c-paper); }
+.cm-entry:hover .cm-entry-icon, .cm-entry:focus-within .cm-entry-icon { box-shadow: 0 0 0 4px var(--c-surface); }
+/* whole row is clickable; the title link stretches over it */
+.cm-entry-link::after { content: ""; position: absolute; inset: 0; border-radius: 0.9rem; }
+.cm-entry-link:focus-visible { outline: none; }
+.cm-entry-link:focus-visible::after { outline: 3px solid var(--c-gv); outline-offset: 2px; }
+.cm-thumb { position: relative; flex-shrink: 0; overflow: hidden; border-radius: 0.6rem; background: var(--c-surface-2); align-self: center; }
+.cm-thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+/* NOTE: the committee area also uses the "cm-" prefix, so classes new in this
+   file are "cm-wn-*" (What's New) to avoid clashes (e.g. its .cm-mosaic). */
+/* photo-album group: up to 4 thumbnails in one square */
+.cm-wn-mosaic { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 2px; }
+.cm-wn-mosaic img { position: static; min-width: 0; min-height: 0; }
+.cm-wn-mosaic[data-n="1"] { grid-template: 1fr / 1fr; }
+.cm-wn-mosaic[data-n="2"] { grid-template-rows: 1fr; }
+.cm-wn-mosaic[data-n="3"] img:first-child { grid-row: span 2; }
+/* filter-chip counts (solid colors: AA contrast in both chip states and themes) */
+.cm-wn-count {
+  display: inline-grid; place-items: center; min-width: 1.35rem; height: 1.35rem; padding: 0 0.35rem; border-radius: 9999px;
+  font-size: 0.7rem; font-weight: 700; font-variant-numeric: tabular-nums; background: var(--c-surface-2); color: var(--c-ink);
+}
+[aria-pressed="true"] > .cm-wn-count { background: var(--c-surface); color: var(--c-gv); }
+.cm-rel:empty { display: none; }
+@media (width < 40rem) {
+  .cm-entry { gap: 0.75rem; }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Language suggestion banner (partials/lang-banner.njk, every page)  */
+/*  Contract with the podcast mini-player (media.js): while the player */
+/*  is visible it sets --player-h (px) on <html> (+ class has-player), */
+/*  so the banner floats just above it and the two never overlap.      */
+/* ------------------------------------------------------------------ */
+.cm-lang-banner {
+  bottom: calc(var(--player-h, 0px) + env(safe-area-inset-bottom, 0px) + 0.75rem);
+  transition: bottom 0.25s ease;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Shared bits (segmented control, text previews)                     */
+/* ------------------------------------------------------------------ */
+.cm-seg { display: block; }
+.cm-seg > span {
+  display: flex; min-height: 2.5rem; align-items: center; justify-content: center; padding: 0.25rem 0.6rem;
+  border-radius: 9999px; font-size: 0.8rem; font-weight: 600; line-height: 1.15; text-align: center;
+  color: var(--c-muted); cursor: pointer; transition: background-color 0.15s, color 0.15s;
+}
+.cm-seg > span:hover { color: var(--c-ink); }
+.cm-seg > input:checked + span { background: var(--c-surface); color: var(--c-ink); box-shadow: var(--shadow-card); }
+.cm-seg > input:focus-visible + span { outline: 3px solid var(--c-gv); outline-offset: 2px; }
+.cm-pre {
+  margin: 0; padding: 0.25rem 1rem 1rem; max-height: 24rem; overflow: auto;
+  white-space: pre-wrap; overflow-wrap: anywhere; font-family: ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;
+  font-size: 0.74rem; line-height: 1.55; color: var(--c-muted);
+}
+.cm-preview > summary { list-style: none; }
+.cm-preview > summary::-webkit-details-marker { display: none; }
+.cm-preview > summary::after { content: "+"; margin-left: auto; font-weight: 700; color: var(--c-faint); }
+.cm-preview[open] > summary::after { content: "–"; }
+.cm-report {
+  white-space: pre-wrap; overflow-wrap: anywhere; font-size: 0.92rem; line-height: 1.7; color: var(--c-ink);
+  background-image: repeating-linear-gradient(to bottom, transparent 0 calc(1.7em - 1px), color-mix(in srgb, var(--c-gv) 10%, transparent) calc(1.7em - 1px) 1.7em);
+  background-position: 0 0.35em;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Print: shared (digest + share kit)                                 */
+/* ------------------------------------------------------------------ */
+@media print {
+  /* Always print light, whatever the screen theme. */
+  html:root:has(body.cm-print-light) {
+    --c-paper: #ffffff; --c-surface: #ffffff; --c-surface-2: #f3f3f3; --c-ink: #000000; --c-muted: #333333;
+    --c-faint: #555555; --c-line: #cccccc; --c-gv: #0a4f8f; --c-gv-strong: #07457c; --c-gv-soft: #eef4fa;
+    --c-lv: #9a3a0a; --c-lv-soft: #fbefe6; --c-grape: #4a2270; --c-grape-soft: #f3edf8; --c-vine: #245a22; --c-vine-soft: #eef6eb;
+    color-scheme: light;
+  }
+  body.cm-print-light { background: #fff !important; color: #000; }
+  body.cm-print-light > header, body.cm-print-light > footer, body.cm-print-light > a[href="#main"],
+  body.cm-print-light .page-hero, body.cm-print-light .cm-no-print, .cm-lang-banner { display: none !important; }
+  body.cm-print-light .section { padding: 0 !important; }
+  body.cm-print-light .container-page { max-width: none; padding: 0; }
+  body.cm-print-light a { text-decoration: none; }
+  .cm-avoid-break { break-inside: avoid; }
+}
+
+/* Digest print: the newsletter card becomes the page. */
+@media print {
+  .cm-page-digest main > section > .grid { display: block; }
+  .cm-page-digest .cm-digest { border: 0; box-shadow: none; border-radius: 0; overflow: visible; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .cm-page-digest .cm-digest-mast { padding: 0 0 0.9rem; }
+  .cm-page-digest .cm-digest > div { padding: 1rem 0; }
+  .cm-page-digest .cm-digest > footer { padding: 0.9rem 0 0; background: none; break-inside: avoid; }
+  .cm-page-digest .cm-digest h3 { break-after: avoid; }
+  .cm-page-digest .cm-digest-group ul { break-before: avoid; }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Districts                                                          */
+/* ------------------------------------------------------------------ */
+/* Spanish-language districts get a warm La Viña accent. */
+.cm-district-es { border-color: color-mix(in srgb, var(--c-lv) 35%, var(--c-line)); background:
+  linear-gradient(160deg, color-mix(in srgb, var(--c-lv-soft) 85%, transparent) 0%, var(--c-surface) 55%); }
+.cm-district-es::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 4px; background: var(--c-lv); }
+/* Narrow screens: let long URLs wrap without leaving orphaned indentation. */
+@media (width < 40rem) { .cm-report { white-space: pre-line; } }
+
+/* ------------------------------------------------------------------ */
+/*  Share kit: poster + table tent                                     */
+/*  The on-screen preview IS the print layout. Everything inside a     */
+/*  .cm-frame is sized in container units (cqw) so it scales from the  */
+/*  preview card to a full letter page. Paper colors are fixed (white  */
+/*  paper in dark mode too) — this is print art, not UI chrome.        */
+/* ------------------------------------------------------------------ */
+.cm-frame {
+  --pk-ink: #16213a; --pk-muted: #4b5567; --pk-blue: #0a5fa8; --pk-navy: #0b3f73; --pk-amber: #b8430b; --pk-grape: #5b2a86; --pk-line: #d8dde6;
+  position: relative; width: 100%; max-width: 34rem; margin-inline: auto; aspect-ratio: 8.5 / 11;
+  overflow: hidden; border-radius: 0.5rem; background: #fff; color: var(--pk-ink);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.08), 0 28px 50px -26px rgb(0 0 0 / 0.45);
+  container-type: inline-size; font-family: var(--font-sans);
+  -webkit-print-color-adjust: exact; print-color-adjust: exact;
+}
+.cm-sheet { position: absolute; inset: 0; display: flex; flex-direction: column; }
+
+/* Poster */
+.cm-p-band {
+  display: grid; grid-template-columns: auto 1fr; align-items: center; column-gap: 4cqw; row-gap: 3cqw;
+  padding: 5.5cqw 7cqw 5cqw; color: #fff;
+  background: radial-gradient(120% 140% at 100% 0%, #0a5fa8 0%, #0b3f73 45%, #0f1730 100%);
+}
+.cm-p-logo { display: inline-flex; border-radius: 1.6cqw; background: #fff; padding: 1.2cqw 1.8cqw; }
+.cm-p-logo img { height: 7.5cqw; width: auto; }
+.cm-p-kicker { font-size: 2.5cqw; font-weight: 700; line-height: 1.35; letter-spacing: 0.16em; text-transform: uppercase; opacity: 0.88; }
+.cm-p-title { grid-column: 1 / -1; font-family: var(--font-display); font-size: 8.6cqw; font-weight: 600; line-height: 1; letter-spacing: -0.01em; white-space: nowrap; }
+.cm-p-title em, .cm-t-title em { font-style: italic; font-weight: 500; }
+.cm-p-title em { color: #f7b27c; }
+.cm-p-main { flex: 1; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: space-evenly; gap: 1.8cqw; padding: 4cqw 8cqw 2.5cqw; text-align: center; }
+.cm-p-head { max-width: 80cqw; font-family: var(--font-display); font-size: 4.9cqw; font-weight: 600; line-height: 1.15; color: var(--pk-ink); text-wrap: balance; }
+.cm-p-alt { color: var(--pk-amber); font-style: italic; }
+.cm-p-main .cm-p-alt { font-size: 4cqw; }
+.cm-p-sub { max-width: 72cqw; font-size: 2.7cqw; line-height: 1.45; color: var(--pk-muted); text-wrap: balance; }
+.cm-p-qrwrap { display: flex; flex-direction: column; align-items: center; gap: 1.3cqw; }
+.cm-p-qr { display: block; width: 34cqw; height: 34cqw; padding: 1.8cqw; border: 0.5cqw solid var(--pk-line); border-radius: 3cqw; background: #fff; }
+.cm-p-scan { font-size: 2.7cqw; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--pk-blue); }
+.cm-p-url { font-size: 3.5cqw; font-weight: 700; color: var(--pk-ink); }
+.cm-p-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1cqw 4cqw; padding: 3cqw 7cqw; border-top: 0.4cqw solid var(--pk-line); font-size: 2.2cqw; color: var(--pk-muted); }
+.cm-p-daily { font-weight: 700; line-height: 1.4; color: var(--pk-ink); }
+.cm-p-ico { width: 3.2cqw; height: 3.2cqw; margin-right: 0.6cqw; vertical-align: -0.8cqw; color: var(--pk-grape); }
+
+/* Table tent: two halves, the top one upside-down so both read upright once folded */
+.cm-t-half { flex: 1; display: flex; align-items: center; gap: 5cqw; padding: 5cqw 7cqw; border-bottom: 1.4cqw solid var(--pk-navy); }
+.cm-t-flip { transform: rotate(180deg); }
+.cm-t-fold { position: relative; height: 0; border-top: 0.35cqw dashed #97a0ae; }
+.cm-t-fold span { position: absolute; left: 50%; top: 0; transform: translate(-50%, -50%); padding: 0 2cqw; background: #fff; font-size: 1.9cqw; letter-spacing: 0.12em; text-transform: uppercase; color: #6b7280; white-space: nowrap; }
+.cm-t-qr { flex-shrink: 0; padding: 1.4cqw; border: 0.4cqw solid var(--pk-line); border-radius: 2.4cqw; background: #fff; }
+.cm-t-qr svg { display: block; width: 29cqw; height: 29cqw; }
+.cm-t-text { display: flex; min-width: 0; flex-direction: column; gap: 1.4cqw; }
+.cm-t-top { display: flex; align-items: center; gap: 2cqw; font-size: 2.1cqw; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--pk-muted); }
+.cm-t-top img { height: 6cqw; width: auto; }
+.cm-t-title { font-family: var(--font-display); font-size: 7cqw; font-weight: 600; line-height: 1; color: var(--pk-navy); }
+.cm-t-title em { color: var(--pk-amber); }
+.cm-t-head { font-size: 3.1cqw; font-weight: 600; line-height: 1.3; color: var(--pk-ink); }
+.cm-t-head.cm-p-alt { font-size: 2.8cqw; font-weight: 500; }
+.cm-t-scan { font-size: 2.5cqw; color: var(--pk-blue); overflow-wrap: anywhere; }
+.cm-t-daily { font-size: 2.1cqw; font-weight: 600; color: var(--pk-muted); }
+/* bilingual tent carries twice the words: tighten it */
+.cm-t-bi { gap: 4cqw; padding-block: 4cqw; }
+.cm-t-bi .cm-t-qr svg { width: 25cqw; height: 25cqw; }
+.cm-t-bi .cm-t-text { gap: 1cqw; }
+.cm-t-bi .cm-t-title { font-size: 5.8cqw; }
+.cm-t-bi .cm-t-head { font-size: 2.6cqw; }
+.cm-t-bi .cm-t-head.cm-p-alt { font-size: 2.4cqw; }
+.cm-t-bi .cm-t-daily { display: none; }
+
+@page cm-letter { size: letter portrait; margin: 0.35in; }
+@media print {
+  .cm-page-share .cm-print-root { padding: 0 !important; background: none !important; }
+  .cm-page-share .cm-print-flat { display: block !important; max-width: none !important; margin: 0 !important; padding: 0 !important; }
+  .cm-page-share .cm-frame { page: cm-letter; width: 7.8in; max-width: none; height: 10.25in; aspect-ratio: auto; margin: 0; border-radius: 0; box-shadow: none; }
+  /* Ctrl+P prints the poster; the "Print table tent" button sets html[data-print="tent"]. */
+  html:not([data-print="tent"]) .cm-page-share figure:has(.cm-frame-tent),
+  html[data-print="tent"] .cm-page-share figure:has(.cm-frame-poster) { display: none !important; }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Status                                                             */
+/* ------------------------------------------------------------------ */
+.cm-meter-fill { min-width: 0.75rem; transition: width 0.6s ease; }
+/* Sources table → stacked cards on narrow screens (labels from data-label). */
+@media (width < 48rem) {
+  .cm-st-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .cm-st-table, .cm-st-table tbody, .cm-st-table tr { display: block; width: 100%; }
+  .cm-st-table tr { display: grid; grid-template-columns: 1fr 1fr; gap: 0.35rem 1rem; padding: 1rem 1.25rem; }
+  .cm-st-table tr.cm-st-err { display: block; padding-top: 0; }
+  .cm-st-table th[scope="row"], .cm-st-table td { display: block; padding: 0 !important; text-align: left !important; }
+  .cm-st-table th[scope="row"] { grid-column: 1 / -1; margin-bottom: 0.35rem; }
+  .cm-st-table td[data-label]::before { content: attr(data-label); display: block; margin-bottom: 0.1rem; font-size: 0.68rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--c-faint); }
+}

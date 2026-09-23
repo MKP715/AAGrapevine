@@ -1,0 +1,214 @@
+/* =====================================================================
+   NETA 65 Grapevine / La Viña — design system (Tailwind CSS v4)
+   Tokens → base → shared components. Page-area styles live in
+   ./areas/*.css (one file per area, imported at the bottom).
+   ===================================================================== */
+@import "tailwindcss";
+
+@source "../../_includes";
+@source "../../pages";
+@source "../js";
+@source "../../../eleventy";
+
+/* Dark mode is driven by <html data-theme="dark"> (set by app.js from
+   the saved choice or the OS preference). */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* ---------- Fonts (self-hosted, OFL) ---------- */
+@font-face { font-family: "Inter Variable"; font-style: normal; font-display: swap; font-weight: 100 900;
+  src: url("../fonts/inter-latin-wght-normal.woff2") format("woff2-variations");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "Inter Variable"; font-style: normal; font-display: swap; font-weight: 100 900;
+  src: url("../fonts/inter-latin-ext-wght-normal.woff2") format("woff2-variations");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: "Inter Variable"; font-style: italic; font-display: swap; font-weight: 100 900;
+  src: url("../fonts/inter-latin-wght-italic.woff2") format("woff2-variations"); }
+@font-face { font-family: "Fraunces Variable"; font-style: normal; font-display: swap; font-weight: 100 900;
+  src: url("../fonts/fraunces-latin-full-normal.woff2") format("woff2-variations");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "Fraunces Variable"; font-style: normal; font-display: swap; font-weight: 100 900;
+  src: url("../fonts/fraunces-latin-ext-full-normal.woff2") format("woff2-variations");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1E00-1E9F, U+2020, U+2113, U+A720-A7FF; }
+@font-face { font-family: "Fraunces Variable"; font-style: italic; font-display: swap; font-weight: 100 900;
+  src: url("../fonts/fraunces-latin-full-italic.woff2") format("woff2-variations"); }
+
+/* ---------- Theme tokens ----------
+   Use as Tailwind utilities: bg-paper, bg-surface, text-ink, text-muted,
+   border-line, bg-gv, text-gv, bg-gv-soft, bg-lv, text-lv, bg-grape,
+   text-vine, … They automatically switch in dark mode. */
+@theme {
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Fraunces Variable", ui-serif, Georgia, "Times New Roman", serif;
+
+  --color-paper: var(--c-paper);
+  --color-surface: var(--c-surface);
+  --color-surface-2: var(--c-surface-2);
+  --color-ink: var(--c-ink);
+  --color-muted: var(--c-muted);
+  --color-faint: var(--c-faint);
+  --color-line: var(--c-line);
+  --color-gv: var(--c-gv);            /* Grapevine / NETA blue — primary */
+  --color-gv-strong: var(--c-gv-strong);
+  --color-gv-soft: var(--c-gv-soft);
+  --color-lv: var(--c-lv);            /* La Viña — warm amber */
+  --color-lv-strong: var(--c-lv-strong);
+  --color-lv-soft: var(--c-lv-soft);
+  --color-grape: var(--c-grape);      /* accent */
+  --color-grape-soft: var(--c-grape-soft);
+  --color-vine: var(--c-vine);        /* success / fresh */
+  --color-vine-soft: var(--c-vine-soft);
+  --color-danger: var(--c-danger);
+  --color-on-accent: #ffffff;
+
+  --radius-card: 1rem;
+  --shadow-card: 0 1px 2px rgb(20 16 40 / 0.05), 0 4px 16px -6px rgb(20 16 40 / 0.10);
+  --shadow-lift: 0 2px 4px rgb(20 16 40 / 0.06), 0 16px 32px -12px rgb(20 16 40 / 0.22);
+  --container-page: 76rem;
+}
+
+:root {
+  --c-paper: #fbf8f2;
+  --c-surface: #ffffff;
+  --c-surface-2: #f4efe6;
+  --c-ink: #1d1a26;
+  --c-muted: #57526a;
+  --c-faint: #6e6980;
+  --c-line: #e6dfd2;
+  --c-gv: #0a5fa8;
+  --c-gv-strong: #07457c;
+  --c-gv-soft: #e5f0fa;
+  --c-lv: #b8430b;
+  --c-lv-strong: #8f3207;
+  --c-lv-soft: #fdeee3;
+  --c-grape: #5b2a86;
+  --c-grape-soft: #f1e8f8;
+  --c-vine: #2f6e2c;
+  --c-vine-soft: #e7f3e3;
+  --c-danger: #b42318;
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  --c-paper: #121019;
+  --c-surface: #1b1825;
+  --c-surface-2: #231f30;
+  --c-ink: #eeeaf6;
+  --c-muted: #b3adc4;
+  --c-faint: #948ea6;
+  --c-line: #312c40;
+  --c-gv: #6cb0ef;
+  --c-gv-strong: #9ccbf5;
+  --c-gv-soft: #16283d;
+  --c-lv: #f59a5b;
+  --c-lv-strong: #f8b88a;
+  --c-lv-soft: #33200f;
+  --c-grape: #c29ae8;
+  --c-grape-soft: #2a1f3a;
+  --c-vine: #8fd08a;
+  --c-vine-soft: #16281a;
+  --c-danger: #f97066;
+  color-scheme: dark;
+}
+
+/* ---------- Base ---------- */
+@layer base {
+  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; scroll-padding-top: 5.5rem; }
+  body { @apply bg-paper text-ink font-sans antialiased; font-feature-settings: "cv11", "ss01"; }
+  h1, h2, h3, .font-display { font-family: var(--font-display); font-optical-sizing: auto; letter-spacing: -0.01em; }
+  a { color: inherit; }
+  p, li, td, dd { overflow-wrap: break-word; }
+  :focus-visible { outline: 3px solid var(--c-gv); outline-offset: 2px; border-radius: 0.375rem; }
+  ::selection { background: color-mix(in srgb, var(--c-gv) 25%, transparent); }
+  [x-cloak] { display: none !important; }
+  img { max-width: 100%; height: auto; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+  }
+}
+
+/* ---------- Shared components (usable as classes AND with @apply) ---------- */
+@utility container-page { margin-inline: auto; width: 100%; max-width: var(--container-page); padding-inline: 1rem;
+  @media (width >= 40rem) { padding-inline: 1.5rem; } @media (width >= 64rem) { padding-inline: 2rem; } }
+@utility section { @apply py-12 sm:py-16; }
+@utility section-tight { @apply py-8 sm:py-10; }
+
+@utility eyebrow { @apply text-xs font-semibold uppercase tracking-[0.14em] text-muted; }
+@utility h-display { @apply font-display text-4xl font-semibold leading-[1.05] sm:text-5xl; }
+@utility h-section { @apply font-display text-2xl font-semibold leading-tight text-ink sm:text-3xl; }
+@utility h-card { @apply font-display text-lg font-semibold leading-snug text-ink; }
+@utility lead { @apply text-lg leading-relaxed text-muted; }
+
+@utility card { @apply rounded-[var(--radius-card)] border border-line bg-surface shadow-[var(--shadow-card)]; }
+@utility card-pad { @apply p-5 sm:p-6; }
+@utility card-link { @apply transition duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-lift)] focus-within:shadow-[var(--shadow-lift)]; }
+@utility card-media { @apply relative aspect-video overflow-hidden rounded-t-[var(--radius-card)] bg-surface-2;
+  & > img { @apply absolute inset-0 size-full object-cover; } }
+
+@utility btn { @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold no-underline transition disabled:opacity-50; }
+@utility btn-primary { @apply btn bg-gv text-white hover:bg-gv-strong dark:text-paper; }
+@utility btn-lv { @apply btn bg-lv text-white hover:bg-lv-strong dark:text-paper; }
+@utility btn-secondary { @apply btn border border-line bg-surface text-ink hover:border-gv hover:text-gv; }
+@utility btn-ghost { @apply btn text-ink hover:bg-surface-2; }
+@utility btn-sm { @apply min-h-9 px-3.5 py-1.5 text-xs; }
+@utility btn-on-dark { @apply btn border border-white/25 bg-white/10 text-white backdrop-blur hover:bg-white/20; }
+@utility btn-light { @apply btn bg-white text-[#07457c] hover:bg-white/90; }
+
+@utility badge { @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[0.7rem] leading-5 font-semibold; }
+@utility badge-gv { @apply badge bg-gv-soft text-gv; }
+@utility badge-lv { @apply badge bg-lv-soft text-lv; }
+@utility badge-grape { @apply badge bg-grape-soft text-grape; }
+@utility badge-vine { @apply badge bg-vine-soft text-vine; }
+@utility badge-muted { @apply badge bg-surface-2 text-muted; }
+@utility badge-new { @apply badge bg-vine text-white dark:text-paper; }
+
+@utility chip { @apply inline-flex min-h-9 cursor-pointer items-center gap-1.5 rounded-full border border-line bg-surface px-3.5 text-sm font-medium text-muted transition hover:border-gv hover:text-ink;
+  &[aria-pressed="true"], &.is-active { @apply border-gv bg-gv text-white dark:text-paper; } }
+
+@utility input { @apply min-h-11 w-full rounded-xl border border-line bg-surface px-4 text-ink placeholder:text-faint focus:border-gv focus:ring-2 focus:ring-gv/30 focus:outline-none; }
+
+@utility link { @apply font-medium text-gv underline decoration-gv/30 underline-offset-2 hover:decoration-gv; }
+@utility icon { display: inline-block; flex-shrink: 0; }
+
+@utility grid-cards { @apply grid gap-5 sm:grid-cols-2 lg:grid-cols-3; }
+@utility grid-cards-4 { @apply grid gap-5 sm:grid-cols-2 lg:grid-cols-4; }
+
+@utility empty-state { @apply rounded-[var(--radius-card)] border border-dashed border-line bg-surface/60 p-8 text-center text-muted; }
+@utility auto-note { @apply inline-flex items-center gap-1 text-[0.7rem] text-faint; }
+
+/* Long-form text (announcements, about) */
+@utility prose-site { @apply text-[1.02rem] leading-relaxed text-ink;
+  & p { @apply my-3; }
+  & a { @apply link; }
+  & ul { @apply my-3 list-disc pl-6; }
+  & ol { @apply my-3 list-decimal pl-6; }
+  & h2 { @apply mt-8 mb-2 font-display text-2xl font-semibold; }
+  & h3 { @apply mt-6 mb-2 font-display text-xl font-semibold; }
+  & strong { @apply font-semibold; } }
+
+/* Page hero (inner pages) */
+@utility page-hero { @apply relative overflow-hidden text-white; background: linear-gradient(135deg, #0f1730 0%, #0b3f73 55%, #0a5fa8 100%);
+  &::after { content: ""; position: absolute; inset: auto 0 0 0; height: 3.5rem; background: linear-gradient(to top, var(--c-paper), transparent); pointer-events: none; } }
+
+@utility page-hero-vine { position: absolute; right: -2rem; top: 3rem; width: min(30rem, 62vw); height: auto; opacity: 0.2; pointer-events: none; }
+
+/* Hero stats — ui.heroStats(): number (display serif) over label, same on every page */
+@utility hero-stats { @apply mt-8 flex flex-wrap gap-x-10 gap-y-4 text-white; }
+@utility hero-stat { @apply flex flex-col-reverse gap-1;
+  & > dt { @apply text-sm leading-snug text-white/70; }
+  & > dd { @apply font-display text-3xl leading-none font-semibold text-white; } }
+
+/* Page start after the hero — use exactly one of these on the first block below ui.pageHero:
+   page-overlap: a card / sub-nav that tucks into the hero's faded bottom edge;
+   page-start:   a normal section (use it INSTEAD of "section", it keeps the bottom padding). */
+@utility page-overlap { @apply relative z-10 -mt-6 sm:-mt-10; }
+@utility page-start { @apply pt-8 pb-12 sm:pt-10 sm:pb-16; }
+
+/* Utility: hide scrollbar on horizontal scrollers */
+@utility no-scrollbar { scrollbar-width: none; &::-webkit-scrollbar { display: none; } }
+
+/* ---------- Page-area styles (one owner per file) ---------- */
+@import "./areas/home.css";
+@import "./areas/library.css";
+@import "./areas/media.css";
+@import "./areas/committee.css";
+@import "./areas/read.css";
+@import "./areas/community.css";

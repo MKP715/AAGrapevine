@@ -1,0 +1,486 @@
+{
+  "site.tagline": {
+    "en": "NETA 65 Grapevine & La Viña Committee",
+    "es": "Comité de Grapevine y La Viña de NETA 65"
+  },
+  "site.description": {
+    "en": "Northeast Texas Area 65 Grapevine and La Viña Committee — the newest stories, podcasts, videos, PDFs and service resources for GVRs, RLVs, districts and groups. Updated automatically every day, in English and Spanish.",
+    "es": "Comité de Grapevine y La Viña del Área 65 del Noreste de Texas — las historias, podcasts, videos, PDF y recursos de servicio más recientes para RLV, GVR, distritos y grupos. Se actualiza automáticamente cada día, en inglés y español."
+  },
+  "site.committee_short": {
+    "en": "NETA 65 Committee",
+    "es": "Comité de NETA 65"
+  },
+  "a11y.skip": {
+    "en": "Skip to content",
+    "es": "Saltar al contenido"
+  },
+  "nav.home": {
+    "en": "Home",
+    "es": "Inicio"
+  },
+  "nav.home_aria": {
+    "en": "Grapevine / La Viña — NETA 65 home",
+    "es": "Grapevine / La Viña — inicio de NETA 65"
+  },
+  "nav.primary_aria": {
+    "en": "Main navigation",
+    "es": "Navegación principal"
+  },
+  "nav.whats_new": {
+    "en": "What's New",
+    "es": "Novedades"
+  },
+  "nav.read": {
+    "en": "Read",
+    "es": "Leer"
+  },
+  "nav.listen": {
+    "en": "Listen",
+    "es": "Escuchar"
+  },
+  "nav.watch": {
+    "en": "Watch",
+    "es": "Ver"
+  },
+  "nav.library": {
+    "en": "Library",
+    "es": "Biblioteca"
+  },
+  "nav.committee": {
+    "en": "Committee",
+    "es": "Comité"
+  },
+  "nav.meeting": {
+    "en": "Committee Meeting",
+    "es": "Reunión del Comité"
+  },
+  "nav.meeting_desc": {
+    "en": "Monthly Zoom meeting, countdown & details",
+    "es": "Reunión mensual por Zoom, cuenta regresiva y detalles"
+  },
+  "nav.events": {
+    "en": "Events",
+    "es": "Eventos"
+  },
+  "nav.events_desc": {
+    "en": "Workshops, booths, assemblies & calendar",
+    "es": "Talleres, mesas, asambleas y calendario"
+  },
+  "nav.documents": {
+    "en": "Committee Documents",
+    "es": "Documentos del Comité"
+  },
+  "nav.documents_desc": {
+    "en": "Reports, notes, slides & workshop files",
+    "es": "Informes, notas, presentaciones y talleres"
+  },
+  "nav.photos": {
+    "en": "Photos",
+    "es": "Fotos"
+  },
+  "nav.photos_desc": {
+    "en": "Booths, workshops & service in action",
+    "es": "Mesas, talleres y servicio en acción"
+  },
+  "nav.announcements": {
+    "en": "Announcements",
+    "es": "Anuncios"
+  },
+  "nav.announcements_desc": {
+    "en": "News from the committee",
+    "es": "Noticias del comité"
+  },
+  "nav.service": {
+    "en": "Service",
+    "es": "Servicio"
+  },
+  "nav.gvr": {
+    "en": "GVR / RLV Corner",
+    "es": "Rincón del RLV / GVR"
+  },
+  "nav.gvr_desc": {
+    "en": "Everything a group representative needs",
+    "es": "Todo lo que necesita un representante de grupo"
+  },
+  "nav.districts": {
+    "en": "Districts",
+    "es": "Distritos"
+  },
+  "nav.districts_desc": {
+    "en": "Keep your district informed, automatically",
+    "es": "Mantén informado a tu distrito, automáticamente"
+  },
+  "nav.contribute": {
+    "en": "Share Your Story",
+    "es": "Comparte tu Historia"
+  },
+  "nav.contribute_desc": {
+    "en": "Write for Grapevine or La Viña",
+    "es": "Escribe para La Viña o Grapevine"
+  },
+  "nav.subscribe": {
+    "en": "Subscribe",
+    "es": "Suscríbete"
+  },
+  "nav.subscribe_desc": {
+    "en": "Magazines, apps, gifts & Carry the Message",
+    "es": "Revistas, apps, regalos y Lleva el Mensaje"
+  },
+  "nav.instagram": {
+    "en": "Instagram",
+    "es": "Instagram"
+  },
+  "nav.instagram_desc": {
+    "en": "Latest posts from GV & LV",
+    "es": "Publicaciones recientes de LV y GV"
+  },
+  "nav.about": {
+    "en": "About",
+    "es": "Acerca de"
+  },
+  "nav.digest": {
+    "en": "Weekly Digest",
+    "es": "Resumen Semanal"
+  },
+  "nav.share": {
+    "en": "Share Kit & QR",
+    "es": "Kit para Compartir y QR"
+  },
+  "nav.search": {
+    "en": "Search",
+    "es": "Buscar"
+  },
+  "nav.status": {
+    "en": "Update Status",
+    "es": "Estado de Actualización"
+  },
+  "nav.more": {
+    "en": "More",
+    "es": "Más"
+  },
+  "nav.menu": {
+    "en": "Menu",
+    "es": "Menú"
+  },
+  "nav.switch_lang": {
+    "en": "Ver en español",
+    "es": "View in English"
+  },
+  "nav.switch_lang_aria": {
+    "en": "Ver este sitio en español",
+    "es": "View this site in English"
+  },
+  "nav.theme_aria": {
+    "en": "Switch light / dark mode",
+    "es": "Cambiar modo claro / oscuro"
+  },
+  "footer.about": {
+    "en": "The Grapevine & La Viña Committee of Northeast Texas Area 65 helps groups and districts carry the message through AA's meeting in print — in English and Spanish.",
+    "es": "El Comité de Grapevine y La Viña del Área 65 del Noreste de Texas ayuda a grupos y distritos a llevar el mensaje a través de la reunión impresa de AA — en español y en inglés."
+  },
+  "footer.explore": {
+    "en": "Explore",
+    "es": "Explorar"
+  },
+  "footer.committee": {
+    "en": "Committee & Service",
+    "es": "Comité y Servicio"
+  },
+  "footer.stay_updated": {
+    "en": "Stay updated",
+    "es": "Mantente al día"
+  },
+  "footer.last_updated": {
+    "en": "Last updated",
+    "es": "Última actualización"
+  },
+  "footer.disclaimer": {
+    "en": "Maintained by NETA 65 service volunteers. Articles, podcasts, videos, PDFs and posts shown here link to their official sources; AA Grapevine and La Viña content is © AA Grapevine, Inc. This site is not an official AA Grapevine website. Spanish/English versions of synced content are machine-translated and marked as such.",
+    "es": "Mantenido por voluntarios de servicio de NETA 65. Los artículos, podcasts, videos, PDF y publicaciones enlazan a sus fuentes oficiales; el contenido de La Viña y AA Grapevine es © AA Grapevine, Inc. Este no es un sitio oficial de AA Grapevine. Las versiones en español/inglés del contenido sincronizado se traducen automáticamente y se indican como tales."
+  },
+  "feeds.rss_title": {
+    "en": "NETA 65 Grapevine / La Viña — What's New",
+    "es": "NETA 65 Grapevine / La Viña — Novedades"
+  },
+  "feeds.rss": {
+    "en": "RSS feed",
+    "es": "Canal RSS"
+  },
+  "feeds.ics": {
+    "en": "Calendar feed (.ics)",
+    "es": "Calendario (.ics)"
+  },
+  "common.close": {
+    "en": "Close",
+    "es": "Cerrar"
+  },
+  "common.new": {
+    "en": "New",
+    "es": "Nuevo"
+  },
+  "common.auto_translated": {
+    "en": "Auto-translated",
+    "es": "Traducción automática"
+  },
+  "common.auto_translated_help": {
+    "en": "Translated automatically from the original language. Tap the original link for the source text.",
+    "es": "Traducido automáticamente del idioma original. Abre el enlace original para ver el texto fuente."
+  },
+  "common.original": {
+    "en": "Original",
+    "es": "Original"
+  },
+  "common.read_more": {
+    "en": "Read more",
+    "es": "Leer más"
+  },
+  "common.view_all": {
+    "en": "View all",
+    "es": "Ver todo"
+  },
+  "common.see_more": {
+    "en": "See more",
+    "es": "Ver más"
+  },
+  "common.show_more": {
+    "en": "Show more",
+    "es": "Mostrar más"
+  },
+  "common.show_less": {
+    "en": "Show less",
+    "es": "Mostrar menos"
+  },
+  "common.listen": {
+    "en": "Listen",
+    "es": "Escuchar"
+  },
+  "common.watch": {
+    "en": "Watch",
+    "es": "Ver"
+  },
+  "common.play": {
+    "en": "Play",
+    "es": "Reproducir"
+  },
+  "common.pause": {
+    "en": "Pause",
+    "es": "Pausa"
+  },
+  "common.download": {
+    "en": "Download",
+    "es": "Descargar"
+  },
+  "common.open": {
+    "en": "Open",
+    "es": "Abrir"
+  },
+  "common.open_pdf": {
+    "en": "Open PDF",
+    "es": "Abrir PDF"
+  },
+  "common.preview": {
+    "en": "Preview",
+    "es": "Vista previa"
+  },
+  "common.share": {
+    "en": "Share",
+    "es": "Compartir"
+  },
+  "common.copy": {
+    "en": "Copy",
+    "es": "Copiar"
+  },
+  "common.copied": {
+    "en": "Copied!",
+    "es": "¡Copiado!"
+  },
+  "common.copy_link": {
+    "en": "Copy link",
+    "es": "Copiar enlace"
+  },
+  "common.add_to_calendar": {
+    "en": "Add to calendar",
+    "es": "Agregar al calendario"
+  },
+  "common.visit": {
+    "en": "Visit",
+    "es": "Visitar"
+  },
+  "common.source": {
+    "en": "Source",
+    "es": "Fuente"
+  },
+  "common.updated": {
+    "en": "Updated",
+    "es": "Actualizado"
+  },
+  "common.published": {
+    "en": "Published",
+    "es": "Publicado"
+  },
+  "common.all": {
+    "en": "All",
+    "es": "Todo"
+  },
+  "common.filter": {
+    "en": "Filter",
+    "es": "Filtrar"
+  },
+  "common.search": {
+    "en": "Search",
+    "es": "Buscar"
+  },
+  "common.search_placeholder": {
+    "en": "Search articles, PDFs, podcasts, videos…",
+    "es": "Busca artículos, PDF, podcasts, videos…"
+  },
+  "common.no_results": {
+    "en": "Nothing matches that yet.",
+    "es": "Todavía no hay resultados."
+  },
+  "common.results": {
+    "en": "{n} results",
+    "es": "{n} resultados"
+  },
+  "common.loading": {
+    "en": "Loading…",
+    "es": "Cargando…"
+  },
+  "common.pages": {
+    "en": "{n} pages",
+    "es": "{n} páginas"
+  },
+  "common.minutes": {
+    "en": "{n} min",
+    "es": "{n} min"
+  },
+  "common.by": {
+    "en": "By {name}",
+    "es": "Por {name}"
+  },
+  "common.back_to_top": {
+    "en": "Back to top",
+    "es": "Volver arriba"
+  },
+  "common.english": {
+    "en": "English",
+    "es": "Inglés"
+  },
+  "common.spanish": {
+    "en": "Spanish",
+    "es": "Español"
+  },
+  "common.today": {
+    "en": "Today",
+    "es": "Hoy"
+  },
+  "common.tomorrow": {
+    "en": "Tomorrow",
+    "es": "Mañana"
+  },
+  "common.days": {
+    "en": "Days",
+    "es": "Días"
+  },
+  "common.hours": {
+    "en": "Hours",
+    "es": "Horas"
+  },
+  "common.min": {
+    "en": "Min",
+    "es": "Min"
+  },
+  "common.sec": {
+    "en": "Sec",
+    "es": "Seg"
+  },
+  "common.updates_daily": {
+    "en": "Updates itself every day",
+    "es": "Se actualiza sola cada día"
+  },
+  "common.follow": {
+    "en": "Follow",
+    "es": "Seguir"
+  },
+  "common.external": {
+    "en": "opens a new tab",
+    "es": "abre una pestaña nueva"
+  },
+  "kind.article": {
+    "en": "Article",
+    "es": "Artículo"
+  },
+  "kind.pdf": {
+    "en": "PDF",
+    "es": "PDF"
+  },
+  "kind.video": {
+    "en": "Video",
+    "es": "Video"
+  },
+  "kind.episode": {
+    "en": "Podcast",
+    "es": "Podcast"
+  },
+  "kind.post": {
+    "en": "Instagram post",
+    "es": "Publicación de Instagram"
+  },
+  "kind.photo": {
+    "en": "Photo",
+    "es": "Foto"
+  },
+  "kind.document": {
+    "en": "Document",
+    "es": "Documento"
+  },
+  "kind.slides": {
+    "en": "Slides",
+    "es": "Presentación"
+  },
+  "kind.form": {
+    "en": "Sign-up form",
+    "es": "Formulario"
+  },
+  "kind.announcement": {
+    "en": "Announcement",
+    "es": "Anuncio"
+  },
+  "kind.event": {
+    "en": "Event",
+    "es": "Evento"
+  },
+  "kind.video_file": {
+    "en": "Video",
+    "es": "Video"
+  },
+  "kind.topic": {
+    "en": "Editorial theme",
+    "es": "Tema editorial"
+  },
+  "lang.en": {
+    "en": "Originally in English",
+    "es": "Original en inglés"
+  },
+  "lang.es": {
+    "en": "Originally in Spanish",
+    "es": "Original en español"
+  },
+  "lang.fr": {
+    "en": "In French",
+    "es": "En francés"
+  },
+  "lang.und": {
+    "en": "",
+    "es": ""
+  },
+  "nav.light_mode": {
+    "en": "Light mode",
+    "es": "Modo claro"
+  },
+  "nav.dark_mode": {
+    "en": "Dark mode",
+    "es": "Modo oscuro"
+  }
+}

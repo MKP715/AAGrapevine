@@ -1,0 +1,30 @@
+# =====================================================================
+#  Translation fixes. The site machine-translates titles and summaries
+#  (open-source Argos/OPUS-MT models). If one comes out wrong, add the
+#  exact original text and the translation you want. Overrides always win.
+#
+#  Format (quotes are safest):
+#    "Original text exactly as on the site": { es: "Spanish you want" }
+#    "Texto original en español":             { en: "English you want" }
+#  A fix for a whole title also fixes it when a " [Season …]" or
+#  " (Spanish)" tail follows, because those tails are translated apart.
+#  For a word or phrase that appears in many texts, use glossary.yml.
+# =====================================================================
+
+# --- English → Spanish ------------------------------------------------
+"Retrofit Completion Return to Office": { es: "Finalización de la remodelación: regreso a la oficina" }
+"Laughing Our way to Jail": { es: "Riéndonos camino a la cárcel" }
+"Coming in": { es: "Llegando a AA" }                       # YouTube playlist
+"Sponsorship: “Willing to go to any length.”": { es: "Padrinazgo: “Dispuestos a llegar hasta donde sea necesario”" }
+"Introducing The Grapevine Open AA Meeting": { es: "Presentamos la Grapevine Open AA Meeting" }
+"GV Plays: “A Grapevine Christmas Carol”": { es: "Obras de GV: “Un cuento de Navidad de Grapevine”" }
+
+# --- Spanish → English ------------------------------------------------
+"Tocaron Fondo": { en: "Hitting Bottom" }                  # YouTube playlist
+"Atados por la misma enfermedad": { en: "Bound by the Same Illness" }
+"Reparando relaciones": { en: "Repairing Relationships" }
+"De condado en condado": { en: "From County to County" }
+"Como rezo": { en: "How I Pray" }
+"Cómo rezo": { en: "How I Pray" }
+"Tiempos de fiesta en sobriedad (elige uno)": { en: "Holidays in Sobriety (Choose One)" }
+"Llamada de esperanza": { en: "A Call of Hope" }

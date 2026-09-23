@@ -1,0 +1,253 @@
+---
+pagination: { data: languages, size: 1, alias: lang }
+permalink: "{{ '/' if lang == 'en' else '/es/' }}digest/index.html"
+layout: layouts/base.njk
+pageKey: digest
+titleKey: nav.digest
+descKey: community.digest.meta_desc
+bodyClass: "cm-page-digest cm-print-light"
+pageScripts: ["/assets/js/community.js"]
+---
+{% import "macros/ui.njk" as ui with context %}
+{#- Weekly digest: last 7 days of new items + next 30 days of events + writing
+    deadlines. Plain-text versions (WhatsApp / e-mail, one language or both)
+    are generated at build time by the digestText filter. -#}
+{%- set dg = db | cmDigest(meeting, 7, 30) -%}
+{%- set other = lang | otherLang -%}
+{%- set biLangs = [lang, other] -%}
+{%- set homeAbs = '/' | lurl(lang) | siteUrl(site) -%}
+{%- set PER_GROUP = 10 -%}
+{%- set toneCls = { gv: "bg-gv-soft text-gv", lv: "bg-lv-soft text-lv", grape: "bg-grape-soft text-grape", vine: "bg-vine-soft text-vine", muted: "bg-surface-2 text-muted" } -%}
+{%- set range = dg.since | cmDateRange(dg.until, lang) -%}
+{%- set igProfiles = db.instagram.profiles or {} -%}
+
+{% call ui.pageHero(lang, "nav.digest" | t(lang), "community.digest.hero_sub" | t(lang), "newspaper", "community.digest.eyebrow" | t(lang)) %}
+<div class="flex flex-wrap items-center gap-2 text-sm">
+  <span class="inline-flex min-h-9 items-center gap-2 rounded-full bg-white/10 px-4 font-semibold text-white ring-1 ring-white/20">{% icon "calendar-range", "size-4" %} {{ "community.digest.week_of" | t(lang, { range: range }) }}</span>
+  <span class="inline-flex min-h-9 items-center gap-2 rounded-full bg-white/10 px-4 text-white/90 ring-1 ring-white/20">{% icon "sparkles", "size-4" %} {{ ("community.digest.summary_none" if not dg.total else ("community.digest.summary_one" if dg.total == 1 else "community.digest.summary")) | t(lang, { n: dg.total | cmNum(lang) }) }}</span>
+</div>
+{% endcall %}
+
+<section class="section container-page pt-6 sm:pt-8" x-data="digestPage()">
+  <div class="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_21rem] xl:gap-12">
+
+    {#- ============ Share panel (first on mobile) ============ -#}
+    <aside class="cm-no-print order-first lg:order-last lg:sticky lg:top-24 lg:self-start" aria-label="{{ 'community.digest.toolbar_aria' | t(lang) }}">
+      <div class="card card-pad">
+        <fieldset>
+          <legend class="text-sm font-semibold text-ink">{{ "community.digest.lang_label" | t(lang) }}</legend>
+          <div class="mt-2 grid grid-cols-2 gap-1 rounded-full border border-line bg-surface-2 p-1">
+            <label class="cm-seg"><input type="radio" name="digest-lang" value="one" class="sr-only" :checked="!bi" @change="bi = false" checked><span>{{ "community.digest.lang_only" | t(lang) }}</span></label>
+            <label class="cm-seg"><input type="radio" name="digest-lang" value="bi" class="sr-only" :checked="bi" @change="bi = true"><span>{{ "community.digest.lang_bi" | t(lang) }}</span></label>
+          </div>
+          <p class="mt-2 text-xs leading-relaxed text-muted">{{ "community.digest.lang_bi_help" | t(lang) }}</p>
+        </fieldset>
+        <div class="mt-5 grid gap-2">
+          <button type="button" class="btn-primary w-full" data-copy-from="#digest-wa-one" :data-copy-from="src('wa')">{% icon "message-circle", "size-4" %} {{ "community.digest.copy_wa" | t(lang) }}</button>
+          <button type="button" class="btn-secondary w-full" data-copy-from="#digest-email-one" :data-copy-from="src('email')">{% icon "mail", "size-4" %} {{ "community.digest.copy_email" | t(lang) }}</button>
+          <button type="button" class="btn-secondary w-full" onclick="window.print()">{% icon "printer", "size-4" %} {{ "community.digest.print" | t(lang) }}</button>
+        </div>
+        <h2 class="mt-6 text-sm font-semibold text-ink">{{ "community.digest.how_title" | t(lang) }}</h2>
+        <ol class="mt-2 space-y-2 text-sm text-muted">
+          {% for k in ["how_1", "how_2", "how_3"] %}
+          <li class="flex gap-3"><span class="grid size-6 shrink-0 place-items-center rounded-full bg-gv-soft text-xs font-bold text-gv">{{ loop.index }}</span><span>{{ ("community.digest." + k) | t(lang) }}</span></li>
+          {% endfor %}
+        </ol>
+        <details class="cm-preview mt-6 rounded-xl border border-line">
+          <summary class="flex min-h-11 cursor-pointer items-center gap-2 px-4 text-sm font-semibold text-ink">{% icon "message-circle", "size-4 text-vine" %} {{ "community.digest.preview" | t(lang) }}</summary>
+          <pre id="digest-wa-one" class="cm-pre" x-show="!bi" aria-label="{{ 'community.digest.wa_label' | t(lang) }}">{{ dg | cmDigestText([lang], "whatsapp", site) }}</pre>
+          <pre id="digest-wa-bi" class="cm-pre" x-show="bi" x-cloak aria-label="{{ 'community.digest.wa_label' | t(lang) }}">{{ dg | cmDigestText(biLangs, "whatsapp", site) }}</pre>
+        </details>
+        <details class="cm-preview mt-2 rounded-xl border border-line">
+          <summary class="flex min-h-11 cursor-pointer items-center gap-2 px-4 text-sm font-semibold text-ink">{% icon "mail", "size-4 text-gv" %} {{ "community.digest.preview_email" | t(lang) }}</summary>
+          <pre id="digest-email-one" class="cm-pre" x-show="!bi" aria-label="{{ 'community.digest.email_label' | t(lang) }}">{{ dg | cmDigestText([lang], "email", site) }}</pre>
+          <pre id="digest-email-bi" class="cm-pre" x-show="bi" x-cloak aria-label="{{ 'community.digest.email_label' | t(lang) }}">{{ dg | cmDigestText(biLangs, "email", site) }}</pre>
+        </details>
+      </div>
+    </aside>
+
+    {#- ============ The digest itself (this is what prints) ============ -#}
+    <article class="cm-digest card min-w-0 overflow-hidden" aria-labelledby="digest-title">
+      <header class="cm-digest-mast flex items-start justify-between gap-4 border-b border-line px-5 py-5 sm:px-8 sm:py-7">
+        <div class="min-w-0">
+          <p class="eyebrow">NETA 65 · Grapevine / La Viña</p>
+          <h2 id="digest-title" class="mt-1 font-display text-3xl font-semibold leading-tight text-ink sm:text-4xl">{{ "community.digest.masthead" | t(lang) }}</h2>
+          <p class="mt-1 text-muted">{{ "community.digest.week_of" | t(lang, { range: range }) }}<span x-show="bi" x-cloak lang="{{ other }}"> · {{ "community.digest.week_of" | t(other, { range: dg.since | cmDateRange(dg.until, other) }) }}</span></p>
+        </div>
+        <img src="/assets/img/logo-wide.png" alt="NETA 65" width="128" height="63" class="hidden h-14 w-auto shrink-0 rounded-md bg-white p-1 ring-1 ring-line sm:block print:block">
+      </header>
+
+      <div class="space-y-9 px-5 py-6 sm:px-8 sm:py-8">
+        {#- Next committee meeting -#}
+        {% if dg.next %}
+        <section class="cm-avoid-break flex flex-col gap-4 rounded-2xl bg-gv-soft p-5 sm:flex-row sm:items-center">
+          <div class="cm-datebox grid w-16 shrink-0 place-items-center rounded-xl bg-surface py-2 text-center shadow-sm ring-1 ring-line">
+            <span class="text-[0.68rem] font-bold uppercase tracking-wider text-gv">{{ dg.next.start | fmtDate(lang, "monthShort") }}</span>
+            <span class="font-display text-2xl font-semibold leading-none text-ink">{{ dg.next.start | fmtDate(lang, "day") }}</span>
+          </div>
+          <div class="min-w-0 flex-1">
+            <h3 class="font-display text-lg font-semibold text-ink">{{ "community.digest.next_meeting" | t(lang) }}<span x-show="bi" x-cloak lang="{{ other }}" class="font-normal text-muted"> / {{ "community.digest.next_meeting" | t(other) }}</span></h3>
+            <p class="text-sm font-semibold text-gv">{{ dg.next.start | fmtDate(lang, "long") }} · {{ dg.next.start | fmtDate(lang, "time") }} · Zoom</p>
+            <p class="mt-0.5 text-sm text-muted">{{ "community.digest.meeting_text" | t(lang) }}</p>
+          </div>
+          <a class="btn-secondary btn-sm cm-no-print shrink-0" href="{{ '/meeting/' | lurl(lang) }}">{{ "community.digest.meeting_btn" | t(lang) }} {% icon "arrow-right", "size-4" %}</a>
+        </section>
+        {% endif %}
+
+        {#- New this week, by type -#}
+        {% for g in dg.groups %}
+        <section class="cm-digest-group" aria-labelledby="dg-{{ g.key }}">
+          <h3 id="dg-{{ g.key }}" class="flex items-center gap-2.5 border-b border-line pb-2 font-display text-xl font-semibold text-ink">
+            <span class="grid size-8 place-items-center rounded-lg {{ toneCls[g.tone] }}">{% icon g.icon, "size-4" %}</span>
+            {{ ("community.group." + g.key) | t(lang) }}{% if (("community.group." + g.key) | t(other)) != (("community.group." + g.key) | t(lang)) %}<span x-show="bi" x-cloak lang="{{ other }}" class="font-normal text-muted">/ {{ ("community.group." + g.key) | t(other) }}</span>{% endif %}
+            <span class="ml-auto rounded-full bg-surface-2 px-2.5 py-0.5 font-sans text-xs font-semibold text-muted">{{ g.items | length }}</span>
+          </h3>
+          {% if g.key == "article" %}
+          {#- Articles: one block per magazine issue, titles in a compact 2-column list -#}
+          {% for iss in g.items | cmByIssue %}
+          {%- set first = iss.items[0] -%}
+          {%- set isLv = first.source == "lavina" or first.extra.publication == "lv" -%}
+          {%- set titles = iss.items | cmUniqTitle(lang) -%}
+          <div class="cm-avoid-break pt-4">
+            <p class="flex flex-wrap items-center gap-2 text-sm">
+              <span class="{{ 'badge-lv' if isLv else 'badge-gv' }}">{{ "La Viña" if isLv else "Grapevine" }}</span>
+              {% if iss.key != "other" %}<span class="font-semibold text-ink">{{ first | cmItemIssue(lang) }}</span>{% endif %}
+              <span class="text-muted">· {{ iss.items | length }}</span>
+              {%- set nFree = iss.items | where("extra.free", true) | length -%}
+              {%- if nFree %}<span class="text-muted">· {{ "community.wn.free_n" | t(lang, { n: nFree }) }}</span>
+              {%- elif iss.items | where("extra.free", false) | length %}<span class="inline-flex items-center gap-1 text-muted" title="{{ 'community.wn.subscriber_help' | t(lang) }}">{% icon "lock", "size-3" %} {{ "community.wn.subscriber_all" | t(lang) }}</span>{% endif %}
+            </p>
+            <ul class="mt-2 grid gap-x-8 gap-y-2 sm:grid-cols-2" role="list">
+              {% for it in titles | limit(12) %}
+              {%- set title = it | tx("title", lang) -%}
+              {%- set otherTitle = it | tx("title", other) -%}
+              <li class="flex items-start gap-2.5 text-[0.95rem]">
+                <span class="mt-2 size-1.5 shrink-0 rounded-full {{ 'bg-lv' if isLv else 'bg-gv' }}" aria-hidden="true"></span>
+                <span class="min-w-0">
+                  <a class="font-medium leading-snug text-ink no-underline hover:text-gv" href="{{ it | cmHref(lang) }}" target="_blank" rel="noopener">{{ title }}</a>
+                  {% if otherTitle and otherTitle != title %}<span class="block text-sm italic text-muted" x-show="bi" x-cloak lang="{{ other }}">{{ otherTitle }}</span>{% endif %}
+                </span>
+              </li>
+              {% endfor %}
+            </ul>
+            {% if (titles | length) > 12 %}<p class="mt-2 text-sm"><a class="link" href="{{ '/read/' | lurl(lang) }}">{{ "community.digest.and_more" | t(lang, { n: (titles | length) - 12 }) }} — {{ "community.digest.see_all" | t(lang, { n: titles | length }) }}</a></p>{% endif %}
+            {% if first | machineFor(lang) %}<p class="mt-1">{{ ui.autoNote(first, lang) }}</p>{% endif %}
+          </div>
+          {% endfor %}
+          {% else %}
+          <ul class="divide-y divide-line" role="list">
+            {% for it in g.items | limit(PER_GROUP) %}
+            {#- Podcast episodes / videos: the shared media titles (as on Home, Listen and
+                Watch — no "[Season 11, Episode 12]" tail) + an "S11 · E12" badge. -#}
+            {%- set isMedia = it.kind == "episode" or it.kind == "video" -%}
+            {%- set title = (it | mediaTitle(lang)) if isMedia else (it | tx("title", lang)) -%}
+            {%- set otherTitle = (it | mediaTitle(other)) if isMedia else (it | tx("title", other)) -%}
+            {%- set se = (it | mediaSE(lang)) if isMedia else "" -%}
+            {%- set isWeeklyVideo = it.kind == "video" and (it | mediaVideoKind) == "weekly" -%}
+            <li class="cm-avoid-break flex items-start gap-3 py-3">
+              <span class="mt-1.5 size-1.5 shrink-0 rounded-full bg-faint" aria-hidden="true"></span>
+              <div class="min-w-0 flex-1">
+                <a class="font-semibold leading-snug text-ink no-underline hover:text-gv" href="{{ it | cmHref(lang) }}"{% if it._ext %} target="_blank" rel="noopener"{% endif %}>{{ title }}</a>
+                {% if otherTitle and otherTitle != title %}<p class="text-sm italic text-muted" x-show="bi" x-cloak lang="{{ other }}">{{ otherTitle }}</p>{% endif %}
+                <p class="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-muted">
+                  {% if se %}<span class="badge-gv">{{ se }}</span>{% endif %}
+                  <span>{% if it.source == "podcast" %}{{ it.extra.show_name or "Podcast" }}{% elif it.source == "youtube" %}YouTube{% if isWeeklyVideo %} ·&nbsp;{{ "media.show_short_weekly" | t(lang) }}{% endif %}{% elif it.source == "instagram" %}Instagram ·&nbsp;{{ (igProfiles[it.extra.account].name if igProfiles[it.extra.account]) or ("La Viña" if it.category == "lv" else "AA Grapevine") }}{% elif it.source == "drive" or it.source == "committee" %}NETA 65{% elif it.source == "lavina" or it.category == "lv" or (it.extra.host and "lavina" in it.extra.host) %}La Viña{% else %}Grapevine{% endif %}</span>
+                  {#- separator + value in one unbreakable item: a wrap never leaves a dangling "·" -#}
+                  {% if it._when %}<span class="inline-flex gap-x-2 whitespace-nowrap"><span aria-hidden="true">·</span><time datetime="{{ it._when | isoDate }}">{{ it._when | fmtDate(lang, "month" if it._approx else "short") }}</time></span>{% endif %}
+                  {% if it.kind == "article" and it.extra.issue_label %}<span class="inline-flex gap-x-2"><span aria-hidden="true">·</span><span>{{ it | cmItemIssue(lang) }}</span></span>{% endif %}
+                  {{ ui.autoNote(it, lang) }}
+                </p>
+              </div>
+            </li>
+            {% endfor %}
+          </ul>
+          {% if (g.items | length) > PER_GROUP %}
+          <p class="mt-1 text-sm"><a class="link" href="{{ g.page | lurl(lang) }}">{{ "community.digest.and_more" | t(lang, { n: (g.items | length) - PER_GROUP }) }} — {{ "community.digest.see_all" | t(lang, { n: g.items | length }) }}</a></p>
+          {% endif %}
+          {% endif %}
+        </section>
+        {% else %}
+        {{ ui.emptyState("coffee", "community.digest.quiet_title" | t(lang), "community.digest.quiet_text" | t(lang), "/whats-new/" | lurl(lang), "nav.whats_new" | t(lang)) }}
+        {% endfor %}
+
+        {#- Coming up -#}
+        <section class="cm-digest-group" aria-labelledby="dg-events">
+          <h3 id="dg-events" class="flex items-center gap-2.5 border-b border-line pb-2 font-display text-xl font-semibold text-ink">
+            <span class="grid size-8 place-items-center rounded-lg bg-vine-soft text-vine">{% icon "calendar-days", "size-4" %}</span>
+            {{ "community.digest.coming_up" | t(lang) }}<span x-show="bi" x-cloak lang="{{ other }}" class="font-normal text-muted">/ {{ "community.digest.coming_up" | t(other) }}</span>
+            <span class="ml-auto font-sans text-xs font-medium text-muted">{{ "community.digest.coming_up_sub" | t(lang) }}</span>
+          </h3>
+          {% if dg.events | length %}
+          <ul class="divide-y divide-line" role="list">
+            {% for ev in dg.events %}
+            {%- set title = ev | tx("title", lang) -%}
+            {%- set otherTitle = ev | tx("title", other) -%}
+            <li class="cm-avoid-break flex items-start gap-4 py-3">
+              <span class="cm-datebox grid w-12 shrink-0 place-items-center rounded-lg bg-surface-2 py-1.5 text-center">
+                <span class="text-[0.62rem] font-bold uppercase tracking-wider text-vine">{{ (ev.extra.start or ev.date) | fmtDate(lang, "monthShort") }}</span>
+                <span class="font-display text-lg font-semibold leading-none text-ink">{{ (ev.extra.start or ev.date) | fmtDate(lang, "day") }}</span>
+              </span>
+              <div class="min-w-0 flex-1">
+                {% if ev.url %}<a class="font-semibold leading-snug text-ink no-underline hover:text-gv" href="{{ ev | cmHref(lang) }}"{% if ev._ext %} target="_blank" rel="noopener"{% endif %}>{{ title }}</a>{% else %}<span class="font-semibold text-ink">{{ title }}</span>{% endif %}
+                {% if otherTitle and otherTitle != title %}<p class="text-sm italic text-muted" x-show="bi" x-cloak lang="{{ other }}">{{ otherTitle }}</p>{% endif %}
+                <p class="mt-0.5 text-xs text-muted">{{ ev | cmEventWhen(lang) }}{% if ev.extra.location %} ·&nbsp;{{ ev.extra.location }}{% endif %} {{ ui.autoNote(ev, lang) }}</p>
+              </div>
+            </li>
+            {% endfor %}
+          </ul>
+          {% else %}
+          <p class="py-3 text-sm text-muted">{{ "community.digest.no_events" | t(lang) }}</p>
+          {% endif %}
+          <p class="cm-no-print mt-1 text-sm"><a class="link" href="{{ '/events/' | lurl(lang) }}">{{ "community.digest.events_link" | t(lang) }}</a></p>
+        </section>
+
+        {#- Writing deadlines -#}
+        {% if dg.deadlines | length or dg.lvThemes | length %}
+        <section class="cm-digest-group" aria-labelledby="dg-deadlines">
+          <h3 id="dg-deadlines" class="flex items-center gap-2.5 border-b border-line pb-2 font-display text-xl font-semibold text-ink">
+            <span class="grid size-8 place-items-center rounded-lg bg-lv-soft text-lv">{% icon "pen-line", "size-4" %}</span>
+            {{ "community.digest.deadlines" | t(lang) }}
+          </h3>
+          {% if dg.deadlines | length %}
+          <ul class="grid gap-3 pt-3 sm:grid-cols-2" role="list">
+            {% for d in dg.deadlines %}
+            <li class="cm-avoid-break rounded-xl border border-line p-4">
+              <p class="flex flex-wrap items-center gap-2 text-xs">
+                <span class="{{ 'badge-lv' if d.extra.publication == 'lv' else 'badge-gv' }}">{{ "La Viña" if d.extra.publication == "lv" else "Grapevine" }}</span>
+                <span class="text-muted">{{ d | cmItemIssue(lang) }}</span>
+              </p>
+              <p class="mt-2 font-display text-lg font-semibold leading-snug text-ink">{{ d | tx("title", lang) }}</p>
+              {% if (d | tx("title", other)) != (d | tx("title", lang)) %}<p class="text-sm italic text-muted" x-show="bi" x-cloak lang="{{ other }}">{{ d | tx("title", other) }}</p>{% endif %}
+              <p class="mt-1 text-sm font-semibold text-lv">{{ "community.digest.deadline_due" | t(lang, { date: d.extra.deadline | fmtDate(lang, "medium") }) }}</p>
+              {% if d | machineFor(lang) %}<p class="mt-1">{{ ui.autoNote(d, lang) }}</p>{% endif %}
+            </li>
+            {% endfor %}
+          </ul>
+          {% endif %}
+          {% if dg.lvThemes | length %}
+          {#- La Viña's suggested themes never close — two of them, rotating weekly -#}
+          <div class="cm-avoid-break mt-3 rounded-xl border border-[color-mix(in_srgb,var(--c-lv)_30%,var(--c-line))] bg-lv-soft/60 p-4">
+            <p class="flex flex-wrap items-center gap-2 text-sm"><span class="badge-lv">La Viña</span><span class="text-ink">{{ "community.digest.lv_anytime" | t(lang) }}</span></p>
+            <ul class="mt-2 space-y-1" role="list">
+              {% for d in dg.lvThemes %}
+              <li class="font-display text-lg font-semibold leading-snug text-ink">“{{ d | tx("title", lang) }}”{% if lang != "es" %} <span class="font-sans text-sm font-normal italic text-muted" lang="es">— {{ d | tx("title", "es") }}</span>{% endif %}</li>
+              {% endfor %}
+            </ul>
+          </div>
+          {% endif %}
+          <p class="cm-no-print mt-3 text-sm"><a class="link" href="{{ '/contribute/' | lurl(lang) }}">{{ "nav.contribute" | t(lang) }}</a></p>
+        </section>
+        {% endif %}
+      </div>
+
+      <footer class="flex items-center gap-4 border-t border-line bg-surface-2/50 px-5 py-5 sm:px-8">
+        <span class="cm-qr-sm size-20 shrink-0 overflow-hidden rounded-lg bg-white p-1 ring-1 ring-line">{{ homeAbs | qrSvg("", "size-full") | safe }}</span>
+        <div class="min-w-0 text-sm">
+          <p class="font-semibold text-ink">{{ "community.digest.scan" | t(lang) }}</p>
+          <p class="break-all text-gv">{{ homeAbs | cmShortUrl }}</p>
+          <p class="mt-1 text-xs text-muted">{{ "community.digest.generated" | t(lang, { date: site.built | fmtDate(lang, "medium") }) }}</p>
+        </div>
+      </footer>
+    </article>
+  </div>
+</section>

@@ -1,0 +1,333 @@
+/* =====================================================================
+   Area styles: HOME page (owned by the home page).
+   Only what Tailwind utilities can't express nicely lives here. Colors come
+   from the theme tokens (var(--c-*)) so dark mode works; the hero and the
+   service band are always dark, so they use fixed white-on-navy values.
+   ===================================================================== */
+
+/* ---------- 1. Hero ---------- */
+.home-hero {
+  /* The committee's original hero palette: deep navy → NETA blue */
+  background: linear-gradient(155deg, #0f172a 0%, #0b2f55 38%, #025a94 72%, #0170b9 100%);
+  min-height: 34rem;
+}
+/* Darkens the area behind the text so the glowing string lights never cost contrast. */
+.home-hero-scrim {
+  background:
+    radial-gradient(120% 90% at 0% 40%, rgb(8 16 36 / 0.62) 0%, rgb(8 16 36 / 0.35) 45%, transparent 75%),
+    linear-gradient(to bottom, rgb(8 16 36 / 0.35), transparent 30%);
+}
+@media (width < 64rem) {
+  /* Stacked layout: text and card sit over the full canvas → even scrim */
+  .home-hero-scrim { background: linear-gradient(to bottom, rgb(8 16 36 / 0.5), rgb(8 16 36 / 0.38) 60%, rgb(8 16 36 / 0.25)); }
+}
+.home-hero-fade {
+  height: 5.5rem;
+  background: linear-gradient(to top, var(--c-paper) 0%, color-mix(in srgb, var(--c-paper) 55%, transparent) 45%, transparent 100%);
+}
+/* Phones use a shorter bottom padding (pb-16): keep the fade below the meeting card. */
+@media (width < 40rem) { .home-hero-fade { height: 3.5rem; } }
+.home-hero-copy { text-shadow: 0 1px 2px rgb(0 0 0 / 0.28); }
+.home-hero-title { text-wrap: balance; letter-spacing: -0.02em; }
+.home-hero-title em {
+  font-style: italic;
+  font-weight: 500;
+  color: #ffd79a; /* warm "vine light" gold — 11:1 on the navy */
+}
+
+/* Glassy "next meeting" card — dark glass so contrast holds over bright lights */
+.home-glass {
+  background: linear-gradient(160deg, rgb(15 30 60 / 0.72), rgb(8 20 45 / 0.6));
+  border: 1px solid rgb(255 255 255 / 0.18);
+  box-shadow: 0 24px 60px -24px rgb(0 0 0 / 0.55), inset 0 1px 0 rgb(255 255 255 / 0.12);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  backdrop-filter: blur(14px) saturate(140%);
+}
+.home-count {
+  background: rgb(255 255 255 / 0.08);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.14);
+}
+.home-live-pill {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  border-radius: 9999px;
+  padding: 0.2rem 0.7rem;
+  font-size: 0.72rem; font-weight: 700;
+  background: rgb(74 222 128 / 0.18);
+  color: #bbf7d0;
+  box-shadow: inset 0 0 0 1px rgb(74 222 128 / 0.45);
+}
+.home-live-pill::before {
+  content: ""; width: 0.45rem; height: 0.45rem; border-radius: 9999px; background: #4ade80;
+  animation: home-pulse 1.6s ease-out infinite;
+}
+@keyframes home-pulse {
+  0% { box-shadow: 0 0 0 0 rgb(74 222 128 / 0.55); }
+  70% { box-shadow: 0 0 0 0.55rem rgb(74 222 128 / 0); }
+  100% { box-shadow: 0 0 0 0 rgb(74 222 128 / 0); }
+}
+
+/* ---------- 2. Fresh strip ---------- */
+.home-trust {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem 0.6rem;
+  width: fit-content; max-width: 100%;
+  border: 1px solid var(--c-line);
+  background: var(--c-surface);
+  border-radius: 9999px;
+  padding: 0.45rem 1rem;
+  font-size: 0.85rem;
+  color: var(--c-muted);
+}
+@media (width < 40rem) { .home-trust { border-radius: 1rem; } }
+.home-trust-dot {
+  width: 0.5rem; height: 0.5rem; border-radius: 9999px; flex-shrink: 0;
+  background: var(--c-vine);
+  animation: home-pulse-vine 2.4s ease-out infinite;
+}
+@keyframes home-pulse-vine {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--c-vine) 55%, transparent); }
+  70%, 100% { box-shadow: 0 0 0 0.5rem transparent; }
+}
+
+/* Mobile: horizontal scroll-snap row that bleeds to the screen edges.
+   ≥ 40rem: a regular grid (2 → 4 columns). */
+.home-rail {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(15.5rem, 78%);
+  gap: 1rem;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: 1rem;
+  margin-inline: -1rem;
+  padding: 0.25rem 1rem 1rem;
+}
+.home-rail-item { scroll-snap-align: start; min-width: 0; }
+@media (width >= 40rem) {
+  .home-rail {
+    grid-auto-flow: row;
+    grid-auto-columns: auto;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+    overflow: visible;
+    margin-inline: 0;
+    padding: 0;
+  }
+}
+@media (width >= 64rem) { .home-rail { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+
+/* Tone families used by tiles, date tiles, magazine heads, IG placeholders */
+.home-tone-gv { --tone: var(--c-gv); --tone-soft: var(--c-gv-soft); }
+.home-tone-lv { --tone: var(--c-lv); --tone-soft: var(--c-lv-soft); }
+.home-tone-grape { --tone: var(--c-grape); --tone-soft: var(--c-grape-soft); }
+.home-tone-vine { --tone: var(--c-vine); --tone-soft: var(--c-vine-soft); }
+
+/* Decorative tile for items without a picture (soft tone + dotted texture) */
+.home-tile {
+  color: var(--tone);
+  background-color: var(--tone-soft);
+  background-image:
+    radial-gradient(circle at 1px 1px, color-mix(in srgb, var(--tone) 16%, transparent) 1px, transparent 1.4px),
+    radial-gradient(120% 90% at 100% 0%, color-mix(in srgb, var(--tone) 14%, transparent), transparent 60%);
+  background-size: 14px 14px, 100% 100%;
+}
+/* A little "paper sheet" for PDFs without a thumbnail */
+.home-sheet {
+  position: relative;
+  width: 3.4rem; height: 4.4rem;
+  border-radius: 0.35rem;
+  background:
+    linear-gradient(var(--tone), var(--tone)) 0.55rem 0.8rem / 55% 0.22rem no-repeat,
+    linear-gradient(color-mix(in srgb, var(--c-ink) 14%, transparent), color-mix(in srgb, var(--c-ink) 14%, transparent)) 0.55rem 1.4rem / 70% 0.16rem no-repeat,
+    linear-gradient(color-mix(in srgb, var(--c-ink) 14%, transparent), color-mix(in srgb, var(--c-ink) 14%, transparent)) 0.55rem 1.8rem / 62% 0.16rem no-repeat,
+    linear-gradient(color-mix(in srgb, var(--c-ink) 14%, transparent), color-mix(in srgb, var(--c-ink) 14%, transparent)) 0.55rem 2.2rem / 68% 0.16rem no-repeat,
+    linear-gradient(color-mix(in srgb, var(--c-ink) 14%, transparent), color-mix(in srgb, var(--c-ink) 14%, transparent)) 0.55rem 2.6rem / 48% 0.16rem no-repeat,
+    var(--c-surface);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.08), 0 10px 22px -10px rgb(0 0 0 / 0.35);
+  transform: rotate(-4deg);
+  transition: transform 0.3s ease;
+}
+.group:hover .home-sheet { transform: rotate(0deg) translateY(-2px); }
+.home-sheet-tag {
+  position: absolute; right: -0.55rem; bottom: 0.55rem;
+  padding: 0.05rem 0.4rem;
+  border-radius: 0.3rem;
+  font: 700 0.62rem/1.4 var(--font-sans);
+  letter-spacing: 0.06em;
+  color: #fff;
+  background: var(--tone);
+}
+[data-theme="dark"] .home-sheet-tag { color: var(--c-paper); }
+
+/* ---------- 3. Announcements ---------- */
+.home-ann::before {
+  content: ""; position: absolute; inset: 0 auto 0 0; width: 4px;
+  background: linear-gradient(to bottom, var(--c-vine), var(--c-gv));
+}
+
+/* ---------- 4. Magazines ---------- */
+.home-mag-head {
+  color: var(--tone);
+  background:
+    radial-gradient(90% 120% at 100% 0%, color-mix(in srgb, var(--tone) 16%, transparent), transparent 60%),
+    var(--tone-soft);
+}
+.home-mag-head h3 { color: color-mix(in srgb, var(--tone) 85%, var(--c-ink)); }
+.home-mag-grapes {
+  position: absolute; right: 1rem; top: 0.75rem;
+  width: 7.5rem; height: 7.5rem;
+  opacity: 0.13;
+  transform: rotate(12deg);
+  pointer-events: none;
+}
+.home-mag-chip {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  max-width: 100%;
+  margin: 0 0.35rem 0.5rem 0;
+  vertical-align: middle;
+  border-radius: 9999px;
+  padding: 0.25rem 0.75rem;
+  line-height: 1.35;
+}
+/* The real magazine cover (portrait, cached locally by the sync) */
+.home-mag-cover {
+  display: block;
+  width: 5.25rem;
+  aspect-ratio: 480 / 686;
+  border-radius: 0.4rem;
+  overflow: hidden;
+  background: var(--tone-soft);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.12), 0 14px 28px -12px rgb(0 0 0 / 0.45);
+  transform: rotate(3deg);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.home-mag-cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.home-mag-cover:hover, .home-mag-cover:focus-visible { transform: rotate(0deg) translateY(-3px) scale(1.03); box-shadow: 0 2px 4px rgb(0 0 0 / 0.14), 0 22px 38px -14px rgb(0 0 0 / 0.5); }
+@media (width >= 40rem) { .home-mag-cover { width: 7.25rem; } }
+/* "Auto-translated from …" note above a magazine's story list */
+.home-mag-mt { background: color-mix(in srgb, var(--c-surface-2) 60%, transparent); }
+@media (width >= 80rem) { .home-mag-cover { width: 8rem; } }
+
+/* ---------- 5. Listen & watch ---------- */
+.home-episode::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(70% 90% at 100% 0%, color-mix(in srgb, var(--c-grape) 10%, transparent), transparent 70%);
+}
+.home-audio { height: 3rem; border-radius: 9999px; }
+[data-theme="dark"] .home-audio { color-scheme: dark; }
+.home-play:hover, .home-play.is-playing { background: var(--c-grape); color: #fff; }
+[data-theme="dark"] .home-play:hover, [data-theme="dark"] .home-play.is-playing { color: var(--c-paper); }
+
+lite-youtube.home-yt {
+  max-width: none;
+  width: 100%;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+lite-youtube.home-yt:hover { box-shadow: var(--shadow-lift); transform: translateY(-2px); }
+lite-youtube.home-yt::before { display: none; } /* title is shown under the video instead */
+lite-youtube.home-yt > .lyt-playbtn:focus-visible { outline: 3px solid #fff; outline-offset: -6px; }
+
+/* ---------- 6. Events: date tiles ---------- */
+.home-datetile {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  width: 4.25rem; flex-shrink: 0;
+  padding: 0.55rem 0.25rem 0.5rem;
+  border-radius: 0.9rem;
+  color: var(--tone);
+  background: var(--tone-soft);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tone) 22%, transparent);
+  line-height: 1;
+  text-align: center;
+  align-self: flex-start;
+}
+.home-datetile-month { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }
+.home-datetile-day { margin-top: 0.2rem; font-family: var(--font-display); font-size: 1.9rem; font-weight: 600; }
+/* No opacity here: blending the tone into the soft tile drops the small text below 4.5:1. */
+.home-datetile-wd { margin-top: 0.25rem; font-size: 0.68rem; font-weight: 500; text-transform: capitalize; }
+@media (width >= 40rem) {
+  .home-datetile { flex-direction: row; align-items: baseline; justify-content: flex-start; gap: 0.5rem; width: auto; align-self: flex-start; padding: 0.5rem 0.8rem; }
+  .home-datetile-day { margin-top: 0; font-size: 1.6rem; }
+  .home-datetile-wd { margin-top: 0; }
+}
+
+/* ---------- 7. Library band ---------- */
+.home-lib {
+  background:
+    radial-gradient(60% 80% at 0% 0%, color-mix(in srgb, var(--c-gv) 7%, transparent), transparent 70%),
+    radial-gradient(50% 70% at 100% 100%, color-mix(in srgb, var(--c-lv) 6%, transparent), transparent 70%),
+    var(--c-surface-2);
+}
+
+/* ---------- 8. Instagram ---------- */
+.home-ig-ph {
+  color: var(--tone);
+  background:
+    radial-gradient(110% 80% at 100% 0%, color-mix(in srgb, var(--tone) 22%, transparent), transparent 65%),
+    radial-gradient(90% 70% at 0% 100%, color-mix(in srgb, var(--c-grape) 14%, transparent), transparent 70%),
+    var(--tone-soft);
+}
+.home-ig-meta { color: var(--tone); }
+.home-ig-meta.has-pic { color: #fff; background: linear-gradient(to top, rgb(10 8 20 / 0.72), rgb(10 8 20 / 0.35) 60%, transparent); }
+/* A cached picture that fails to load removes itself (onerror): then the tile shows the
+   text placeholder, so the bar follows the live page, not the build data. (Only the post
+   picture is a direct <img> child of .home-ig.) */
+.home-ig:not(:has(> img)) .home-ig-meta.has-pic { color: var(--tone); background: none; }
+.home-ig:not(:has(> img)) .home-ig-meta.has-pic > :first-child { visibility: hidden; } /* the placeholder already names the account */
+.home-ig:focus-visible { outline-offset: 3px; }
+/* Account avatar in the follow buttons (the Instagram icon shows if the image fails) */
+.home-ig-avatar { position: relative; display: grid; place-items: center; width: 1.5rem; height: 1.5rem; flex-shrink: 0; margin-left: -0.35rem; }
+.home-ig-avatar img { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; border-radius: 9999px; object-fit: cover; box-shadow: 0 0 0 1px var(--c-line); }
+
+/* ---------- 9. Service band ---------- */
+.home-band { background: linear-gradient(135deg, #0f172a 0%, #0b2f55 50%, #025a94 100%); }
+.home-band::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(40% 60% at 90% 10%, rgb(142 108 201 / 0.28), transparent 70%),
+    radial-gradient(35% 55% at 5% 100%, rgb(245 154 91 / 0.18), transparent 70%);
+}
+.home-band-link {
+  background: rgb(255 255 255 / 0.06);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.14);
+  transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+.home-band-link:hover { background: rgb(255 255 255 / 0.12); box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.28); transform: translateY(-1px); }
+.home-band-link:focus-visible { outline-color: #fff; }
+.home-band :focus-visible { outline-color: #fff; }
+.home-hero :focus-visible { outline-color: #fff; }
+/* Amber La Viña button that reads well on the dark band in both themes */
+.home-btn-amber { background: #f59a5b; color: #2a1606; }
+.home-btn-amber:hover { background: #f8b88a; }
+
+/* ---------- 6b. "Calendar on your phone" filler card ---------- */
+.home-cal-cta {
+  background:
+    radial-gradient(90% 70% at 100% 0%, color-mix(in srgb, var(--c-vine) 10%, transparent), transparent 70%),
+    var(--c-surface);
+  border-style: dashed;
+}
+
+/* ---------- 10. Drive (empty state) ---------- */
+.home-drive-empty::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(40% 80% at 100% 0%, color-mix(in srgb, var(--c-vine) 9%, transparent), transparent 70%),
+    radial-gradient(30% 70% at 0% 100%, color-mix(in srgb, var(--c-gv) 6%, transparent), transparent 70%);
+}
+/* A faint hand-drawn vine in the corner: decoration only */
+.home-drive-vine {
+  position: absolute; right: -1.5rem; bottom: -1rem;
+  width: 15rem; height: 10rem;
+  color: var(--c-vine);
+  opacity: 0.1;
+  pointer-events: none;
+}
+@media (width < 48rem) { .home-drive-vine { width: 10rem; height: 7rem; opacity: 0.08; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .home-live-pill::before, .home-trust-dot { animation: none; }
+  .home-sheet, lite-youtube.home-yt, .home-mag-cover { transition: none; }
+}

@@ -1,0 +1,30 @@
+# =====================================================================
+#  Instagram: MANUAL posts (optional, usually leave this empty)
+#
+#  You do NOT need to add posts here. Every day the site checks
+#  @alcoholicsanonymous_gv (Grapevine) and @alcoholicosanonimos_lv
+#  (La Viña) by itself and keeps their newest posts, with the caption,
+#  date and a small picture, translated into English and Spanish.
+#
+#  Use this list only to ADD a post the automatic check did not pick up:
+#    * an older post you want to feature, or
+#    * a post that went up on a day when Instagram blocked the check.
+#
+#  How to add one:
+#    1. On Instagram, open the post, then "..." > "Copy link".
+#    2. Add an entry below (keep the two-space indent and the dash).
+#    3. On github.com, click "Commit changes". The post shows up after
+#       the next daily update (or run the daily update workflow by
+#       hand: GitHub "Actions" tab > the workflow > "Run workflow").
+#
+#    posts:
+#      - url: https://www.instagram.com/p/ABCdef12345/
+#        account: gv          # gv = Grapevine, lv = La Viña (optional)
+#        caption: "Optional text to show instead of Instagram's caption"
+#
+#  Reels work too: https://www.instagram.com/reel/ABCdef12345/
+#  To remove a post from the site, delete its entry here.
+#  Posts listed here are never removed automatically.
+#  Caption and picture are filled in automatically when possible.
+# =====================================================================
+posts: []

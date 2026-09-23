@@ -1,0 +1,217 @@
+# =====================================================================
+#  Weekly link check (never blocks anything — it only reports).
+#
+#  1. Builds the site and checks every link on every page with lychee
+#     (open source, MIT/Apache-2.0): internal links between our pages plus
+#     outbound links such as district websites.
+#     High-volume hosts are skipped on purpose: aagrapevine.org /
+#     aalavina.org (thousands of PDF links — the daily crawler already
+#     tracks those politely, 5 s apart), YouTube, Instagram, Google Drive,
+#     podcast hosts and Zoom (they rate-limit robots).
+#  2. Checks the official links in config/site.yml one by one with the
+#     site's polite bot (honors robots.txt and the 5-second crawl delay),
+#     so a moved Grapevine / La Viña page is noticed.
+#
+#  Result: the run summary, plus ONE GitHub issue titled "Broken links
+#  found by the weekly check" that is updated while problems remain and
+#  closed automatically once everything is fine again.
+# =====================================================================
+name: Weekly link check
+
+on:
+  schedule:
+    - cron: "40 12 * * 0"      # Sundays 12:40 UTC (7:40 AM CDT / 6:40 AM CST)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write                # to open / update / close the report issue
+
+concurrency:
+  group: link-check
+  cancel-in-progress: true
+
+env:
+  PYTHONIOENCODING: utf-8
+  ISSUE_TITLE: "Broken links found by the weekly check"
+
+jobs:
+  links:
+    name: Check links
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Build the site (for checking only — nothing is published)
+        run: |
+          npm ci --no-audit --no-fund
+          # PATH_PREFIX "/" so links like /es/library/ map straight onto _site/
+          PATH_PREFIX=/ npx @11ty/eleventy
+
+      - name: Remember recent results (fewer repeat requests)
+        uses: actions/cache@v6
+        with:
+          path: .lycheecache
+          key: lychee-${{ github.run_id }}
+          restore-keys: lychee-
+
+      - name: Check links on every page
+        id: lychee
+        uses: lycheeverse/lychee-action@v2
+        with:
+          fail: false                # report only; never fail the workflow
+          failIfEmpty: false
+          format: markdown
+          output: lychee/out.md
+          jobSummary: true
+          # args go through `eval` inside lychee-action: keep regexes/globs in single quotes.
+          args: >-
+            --no-progress
+            --root-dir ${{ github.workspace }}/_site
+            --cache --max-cache-age 3d
+            --max-concurrency 8
+            --host-concurrency 2
+            --host-request-interval 1s
+            --timeout 30
+            --max-retries 2
+            --accept 100..=103,200..=299,403,429
+            --exclude-path '_site/assets'
+            --exclude 'aagrapevine\.org'
+            --exclude 'aalavina\.org'
+            --exclude 'youtube\.com'
+            --exclude 'youtu\.be'
+            --exclude 'ytimg\.com'
+            --exclude 'instagram\.com'
+            --exclude 'cdninstagram\.com'
+            --exclude 'fbcdn\.net'
+            --exclude 'google\.com'
+            --exclude 'googleusercontent\.com'
+            --exclude 'googleapis\.com'
+            --exclude 'zoom\.us'
+            --exclude 'captivate\.fm'
+            --exclude 'podcasts\.apple\.com'
+            --exclude 'spotify\.com'
+            --exclude 'amazon\.com'
+            --exclude 'linkedin\.com'
+            --exclude 'facebook\.com'
+            --exclude 'twitter\.com'
+            --exclude '^https?://(www\.)?x\.com'
+            '_site/**/*.html'
+
+      - name: Set up Python (for the official-links check)
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Check the official links in config/site.yml (politely)
+        id: official
+        continue-on-error: true
+        run: |
+          python -m pip install --quiet -r requirements.txt
+          python - <<'PY'
+          """Check every URL in config/site.yml `links:` (plus a few site-level links) with the
+          project's PoliteSession: robots.txt + 5 s Crawl-delay for aagrapevine.org / aalavina.org."""
+          import os
+          from urllib.parse import urlparse
+          from scripts.sync.common import load_config, shared_session
+
+          cfg = load_config()
+          urls = set()
+          for v in (cfg.get("links") or {}).values():
+              if isinstance(v, str) and v.startswith("http"):
+                  urls.add(v)
+          site = cfg.get("site") or {}
+          for k in ("area_website", "committee_page"):
+              if str(site.get(k, "")).startswith("http"):
+                  urls.add(site[k])
+          for p in (cfg.get("sources") or {}).get("podcasts") or []:
+              if str(p.get("web", "")).startswith("http"):
+                  urls.add(p["web"])
+          # These block robots or need a login — a 4xx from them says nothing.
+          skip_hosts = ("instagram.com", "youtube.com", "spotify.com", "amazon.com", "apple.com", "zoom.us")
+
+          bot = shared_session()
+          broken, blocked, ok = [], [], 0
+          for u in sorted(urls):
+              host = urlparse(u).netloc.lower()
+              if any(host.endswith(h) for h in skip_hosts):
+                  continue
+              if not bot.allowed(u):
+                  blocked.append((u, "robots.txt asks bots not to visit"))
+                  continue
+              r = bot.get(u, timeout=40)
+              if r is None:
+                  broken.append((u, "no response (site down or address wrong?)"))
+              elif r.status_code in (404, 410) or r.status_code >= 500:
+                  broken.append((u, f"HTTP {r.status_code}"))
+              elif r.status_code in (401, 403, 429):
+                  blocked.append((u, f"HTTP {r.status_code} (site refuses robots — check by hand)"))
+              else:
+                  ok += 1
+          lines = ["", "## Official links in config/site.yml", "",
+                   f"{ok} OK · {len(broken)} broken · {len(blocked)} could not be checked", ""]
+          if broken:
+              lines += ["Fix these addresses in **config/site.yml**:", ""]
+              lines += [f"- [ ] {u} — {why}" for u, why in broken]
+          if blocked:
+              lines += ["", "Could not be checked automatically (please click to confirm):", ""]
+              lines += [f"- {u} — {why}" for u, why in blocked]
+          text = "\n".join(lines) + "\n"
+          print(text)
+          os.makedirs("lychee", exist_ok=True)
+          with open("lychee/official.md", "w", encoding="utf-8") as f:
+              f.write(text)
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as f:
+              f.write(text)
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as f:
+              f.write(f"broken={len(broken)}\n")
+          PY
+
+      - name: Open, update or close the report issue
+        continue-on-error: true      # e.g. Issues switched off in the repository settings
+        env:
+          GH_TOKEN: ${{ github.token }}
+          LYCHEE_EXIT: ${{ steps.lychee.outputs.exit_code }}
+          OFFICIAL_BROKEN: ${{ steps.official.outputs.broken }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -uo pipefail
+          problems=0
+          if [ "${LYCHEE_EXIT:-0}" != "0" ]; then problems=1; fi
+          if [ "${OFFICIAL_BROKEN:-0}" != "0" ] && [ -n "${OFFICIAL_BROKEN:-}" ]; then problems=1; fi
+
+          # Find an open report issue from an earlier week (by exact title).
+          num="$(gh issue list --state open --limit 50 --json number,title \
+                  --jq ".[] | select(.title == \"${ISSUE_TITLE}\") | .number" 2>/dev/null | head -n1 || true)"
+
+          if [ "$problems" = "1" ]; then
+            mkdir -p lychee
+            {
+              echo "The weekly link check found problems. Most can be fixed in **config/site.yml** or **content/districts.yml**;"
+              echo "links inside synced content fix themselves when the source site is corrected."
+              echo
+              echo "Run: ${RUN_URL}"
+              echo
+              [ -f lychee/out.md ] && cat lychee/out.md
+              [ -f lychee/official.md ] && cat lychee/official.md
+            } | head -c 60000 > lychee/issue.md
+            if [ -n "$num" ]; then
+              gh issue comment "$num" --body-file lychee/issue.md && echo "Updated issue #$num"
+            else
+              gh issue create --title "$ISSUE_TITLE" --body-file lychee/issue.md && echo "Opened a new issue"
+            fi
+          elif [ -n "$num" ]; then
+            gh issue close "$num" --comment "All links look good now (${RUN_URL}). Closing automatically." && echo "Closed issue #$num"
+          else
+            echo "No broken links."
+          fi

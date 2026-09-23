@@ -1,0 +1,307 @@
+---
+pagination: { data: languages, size: 1, alias: lang }
+permalink: "{{ '/' if lang == 'en' else '/es/' }}gvr/index.html"
+layout: layouts/base.njk
+pageKey: gvr
+titleKey: nav.gvr
+descKey: read.gvr.meta_desc
+pageScripts: ["/assets/js/read.js"]
+---
+{#- GVR / RLV CORNER — the group representative's home: what the job is, a
+    first-steps checklist (saved in the browser), the official GVR and RLV
+    resource kits pulled AUTOMATICALLY from db.pdfs (category gvr/rlv or found
+    on /gvr-resources and /recursos), ideas for the home group, and links. -#}
+{% import "macros/ui.njk" as ui with context %}
+{%- set L = site.links -%}
+{%- set gvrKit = db.pdfs | readKit("gvr") -%}
+{%- set rlvKit = db.pdfs | readKit("rlv") -%}
+{%- set gvHandbook = (db.pdfs | readPdfsMatching("\\bhandbook\\b|gvr handbook", 1))[0] -%}
+{%- set lvHandbook = (db.pdfs | readPdfsMatching("manual del representante|manual del rlv|\\bmanual\\b", 1))[0] -%}
+{%- set handbooks = ([lvHandbook, gvHandbook] if lang == "es" else [gvHandbook, lvHandbook]) | select -%}
+{%- set gvIssues = db.articles | readIssues("gv") -%}
+{%- set lvIssues = db.articles | readIssues("lv") -%}
+{%- set gvCur = (gvIssues[0] | readIssueView(lang)) if gvIssues.length else null -%}
+{%- set lvCur = (lvIssues[0] | readIssueView(lang)) if lvIssues.length else null -%}
+{%- set kitOrder = ["rlv", "gvr"] if lang == "es" else ["gvr", "rlv"] -%}
+{%- set PER_GROUP = 6 -%}{#- files shown per group before "Show more" (3 on phones, see .read-kit-group in read.css) -#}
+{%- set PER_GROUP_SM = 3 -%}
+{%- set groupIcons = { news: "newspaper", guides: "book-marked", flyers: "image", forms: "clipboard-list", other: "sparkles" } -%}
+
+{#- One PDF in a kit -#}
+{% macro kitCard(p, kit, lang, extra=false, group="", smExtra=false) %}
+{%- set info = p | readPdfTitleInfo(lang) -%}
+{%- set ex = p.extra or {} -%}
+{%- set dl = p | readDocLang -%}
+<li data-kit-item data-kit="{{ kit }}" data-text="{{ (info.title + ' ' + (info.gloss or '') + ' ' + (p.title or '') + ' ' + group + ' ' + ((p.tags or []) | join(' '))) | lower }}" {% if extra %}data-extra{% endif %}{% if smExtra %} class="read-kit-sm-extra"{% endif %}
+    x-show="match($el) && (more || q || !$el.hasAttribute('data-extra'))">
+  <a href="{{ p.url }}" target="_blank" rel="noopener" class="card card-link group flex h-full items-start gap-3 p-2.5 no-underline sm:p-3">
+    <span class="relative aspect-[3/4] w-11 shrink-0 overflow-hidden rounded-lg border border-line bg-surface-2 sm:w-14">
+      {% if ex.thumb %}<img src="{{ ex.thumb }}" alt="" loading="lazy" decoding="async" class="absolute inset-0 size-full object-cover object-top">
+      {% else %}<span class="read-pdf-ph {{ 'read-accent-lv' if kit == 'rlv' else 'read-accent-gv' }} absolute inset-0">{% icon "file-text", "relative size-5" %}</span>{% endif %}
+    </span>
+    <span class="flex min-w-0 flex-1 flex-col gap-1">
+      <span class="line-clamp-2 text-sm font-semibold leading-snug text-ink transition {{ 'group-hover:text-lv' if kit == 'rlv' else 'group-hover:text-gv' }}" lang="{{ info.lang or p.lang }}">{{ info.title }}</span>
+      {% if info.gloss %}<span class="flex items-center gap-1 text-xs leading-snug text-muted" title="{{ 'common.auto_translated' | t(lang) }} — {{ 'common.auto_translated_help' | t(lang) }}">{% icon "languages", "size-3 shrink-0" %}<span class="sr-only">{{ "common.auto_translated" | t(lang) }}:</span><span class="line-clamp-1" lang="{{ info.glossLang }}">{{ info.gloss }}</span></span>{% endif %}
+      <span class="flex flex-wrap items-center gap-1.5 text-xs text-muted">
+        {% if p.is_new %}<span class="badge-new">{{ "common.new" | t(lang) }}</span>{% endif %}
+        {% if dl and dl != lang %}<span class="badge-muted uppercase" title="{{ ('lang.' + dl) | t(lang) }}">{{ dl }}</span>{% endif %}
+        {% if ex.upload_month %}<span>{{ ex.upload_month | readMonth(lang) }}</span>{% elif p.date %}<span>{{ p.date | readMonth(lang) }}</span>{% endif %}
+        {% if ex.pages %}<span>· {{ ("read.one_page" if ex.pages == 1 else "common.pages") | t(lang, {n: ex.pages}) }}</span>{% endif %}
+      </span>
+    </span>
+    <span class="sr-only">(PDF, {{ "common.external" | t(lang) }})</span>
+  </a>
+</li>
+{% endmacro %}
+
+{#- One official kit (GVR or RLV), grouped by type -#}
+{% macro kitBlock(kit, items, lang) %}
+{%- set isLv = kit == "rlv" -%}
+<div class="scroll-mt-24" id="kit-{{ kit }}" x-show="kitVisible('{{ kit }}')">
+  <div class="read-cover {{ 'read-cover--lv' if isLv else 'read-cover--gv' }} relative isolate flex flex-wrap items-center justify-between gap-4 overflow-hidden rounded-[var(--radius-card)] px-5 py-5 text-white sm:px-7">
+    <svg class="read-cover-art w-32! -bottom-10!" viewBox="0 0 200 240" fill="none" aria-hidden="true"><g fill="currentColor"><circle cx="82" cy="96" r="17"/><circle cx="116" cy="96" r="17"/><circle cx="66" cy="126" r="17"/><circle cx="100" cy="126" r="17"/><circle cx="134" cy="128" r="17"/><circle cx="82" cy="156" r="17"/><circle cx="116" cy="156" r="17"/><circle cx="100" cy="186" r="17"/></g></svg>
+    <div>
+      <h3 class="flex items-center gap-2 font-display text-2xl font-semibold">{% icon "badge-check", "size-6" %} {{ ("read.gvr.kit_rlv" if isLv else "read.gvr.kit_gvr") | t(lang) }}</h3>
+      <p class="mt-1 text-sm text-white/80">{{ ("read.gvr.kit_rlv_sub" if isLv else "read.gvr.kit_gvr_sub") | t(lang, {n: items.length}) }}</p>
+    </div>
+    <a class="btn-on-dark btn-sm" href="{{ L.rlv_resources if isLv else L.gvr_resources }}" target="_blank" rel="noopener">{{ "read.gvr.official_page" | t(lang) }} {% icon "arrow-up-right", "size-4" %}</a>
+  </div>
+  {% if items.length %}
+  <div class="mt-5 space-y-8">
+    {% for g in items | readKitGroups %}
+    <div role="group" class="read-kit-group" x-data="{ more: false }" :class="{ 'is-more': more || q }" x-show="groupHas($el)" aria-labelledby="kit-{{ kit }}-{{ g.key }}">
+      <h4 id="kit-{{ kit }}-{{ g.key }}" class="mb-3 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.12em] text-muted">
+        <span class="{{ 'text-lv' if isLv else 'text-gv' }}">{% icon groupIcons[g.key], "size-4" %}</span>{{ ("read.gvr.g_" + g.key) | t(lang) }}
+        <span class="badge-muted normal-case tracking-normal">{{ g.items.length }}</span>
+      </h4>
+      <ul class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {% for p in g.items %}{{ kitCard(p, kit, lang, loop.index > PER_GROUP, ("read.gvr.g_" + g.key) | t(lang), loop.index > PER_GROUP_SM and loop.index <= PER_GROUP) }}{% endfor %}
+      </ul>
+      {% if g.items.length > PER_GROUP_SM %}
+      <button type="button" class="btn-ghost btn-sm mt-2 {{ 'text-lv' if isLv else 'text-gv' }}{{ ' sm:hidden' if g.items.length <= PER_GROUP }}" x-show="!q" x-cloak @click="more = !more" :aria-expanded="more.toString()">
+        <span x-show="!more"><span class="sm:hidden">{{ "read.gvr.show_more" | t(lang, {n: g.items.length - PER_GROUP_SM}) }}</span><span class="hidden sm:inline">{{ "read.gvr.show_more" | t(lang, {n: g.items.length - PER_GROUP}) }}</span></span>
+        <span x-show="more">{{ "common.show_less" | t(lang) }}</span>
+        {% icon "chevron-down", "size-4 transition" %}
+      </button>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="mt-5">
+    {{ ui.emptyState("folder-open", "read.gvr.kit_empty" | t(lang), "read.gvr.kit_empty_text" | t(lang), (L.rlv_resources if isLv else L.gvr_resources), "read.gvr.official_page" | t(lang)) }}
+  </div>
+  {% endif %}
+</div>
+{% endmacro %}
+
+{% call ui.pageHero(lang, "nav.gvr" | t(lang), "read.gvr.subtitle" | t(lang), "badge-check", "read.gvr.eyebrow" | t(lang)) %}
+  <div class="flex flex-wrap gap-2.5">
+    <a class="btn-light" href="{{ L.rlv_register if lang == 'es' else L.gvr_register }}" target="_blank" rel="noopener">{% icon "user-plus", "size-4" %} {{ ("read.gvr.register_rlv" if lang == "es" else "read.gvr.register_gvr") | t(lang) }}</a>
+    <a class="btn-on-dark" href="{{ L.gvr_register if lang == 'es' else L.rlv_register }}" target="_blank" rel="noopener">{% icon "user-plus", "size-4" %} {{ ("read.gvr.register_gvr" if lang == "es" else "read.gvr.register_rlv") | t(lang) }}</a>
+    <a class="btn-on-dark" href="#kits">{% icon "folder-open", "size-4" %} {{ "read.gvr.see_kits" | t(lang) }}</a>
+  </div>
+  {% if gvrKit.length or rlvKit.length %}
+  <dl class="mt-8 flex flex-wrap gap-x-8 gap-y-3 text-white/80">
+    <div class="flex flex-row-reverse items-baseline justify-end gap-2"><dt class="text-sm">{{ "read.gvr.stat_gvr" | t(lang) }}</dt><dd class="font-display text-2xl font-semibold text-white">{{ gvrKit.length }}</dd></div>
+    <div class="flex flex-row-reverse items-baseline justify-end gap-2"><dt class="text-sm">{{ "read.gvr.stat_rlv" | t(lang) }}</dt><dd class="font-display text-2xl font-semibold text-white">{{ rlvKit.length }}</dd></div>
+    <div class="flex items-center text-sm"><dt class="sr-only">{{ "common.updated" | t(lang) }}</dt><dd class="flex items-center gap-2"><span class="relative flex size-2"><span class="absolute inline-flex size-full animate-ping rounded-full bg-white/70 opacity-60"></span><span class="relative inline-flex size-2 rounded-full bg-white"></span></span>{{ "common.updates_daily" | t(lang) }}</dd></div>
+  </dl>
+  {% endif %}
+{% endcall %}
+
+{#- ---------- The job ---------- -#}
+<section class="section container-page pt-6 sm:pt-8" aria-labelledby="job-title">
+  <div class="grid grid-cols-1 gap-10 lg:grid-cols-[1fr_1.35fr]">
+    <div>
+      <p class="eyebrow">{{ "read.gvr.job_eyebrow" | t(lang) }}</p>
+      <h2 id="job-title" class="h-section mt-2">{{ "read.gvr.job_title" | t(lang) }}</h2>
+      <p class="lead mt-4">{{ "read.gvr.job_text" | t(lang) }}</p>
+      <div class="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <div class="rounded-2xl border border-line bg-surface p-4">
+          <p class="flex items-center gap-2 font-display text-lg font-semibold text-gv">GVR</p>
+          <p class="mt-1 text-sm text-muted">{{ "read.gvr.gvr_def" | t(lang) }}</p>
+        </div>
+        <div class="rounded-2xl border border-line bg-surface p-4">
+          <p class="flex items-center gap-2 font-display text-lg font-semibold text-lv">RLV</p>
+          <p class="mt-1 text-sm text-muted">{{ "read.gvr.rlv_def" | t(lang) }}</p>
+        </div>
+      </div>
+      <p class="mt-5 flex items-start gap-2 text-sm leading-relaxed text-muted">{% icon "users-round", "mt-0.5 size-4 shrink-0 text-vine" %}<span><strong class="text-ink">{{ "read.gvr.who_t" | t(lang) }}</strong> {{ "read.gvr.who" | t(lang) }}</span></p>
+    </div>
+    <ul class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      {% for d in [["library", "bg-gv-soft text-gv"], ["megaphone", "bg-lv-soft text-lv"], ["gift", "bg-vine-soft text-vine"], ["pen-line", "bg-grape-soft text-grape"], ["map", "bg-gv-soft text-gv"], ["languages", "bg-lv-soft text-lv"]] %}
+      <li class="card card-pad">
+        <span class="grid size-11 place-items-center rounded-xl {{ d[1] }}">{% icon d[0], "size-5" %}</span>
+        <h3 class="h-card mt-3">{{ ("read.gvr.d" + loop.index + "_t") | t(lang) }}</h3>
+        <p class="mt-1 text-sm leading-relaxed text-muted">{{ ("read.gvr.d" + loop.index) | t(lang) }}</p>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>
+
+{#- ---------- First steps checklist ---------- -#}
+{%- set steps = [
+  { id: "register", icon: "user-plus" },
+  { id: "handbook", icon: "book-marked" },
+  { id: "meeting", icon: "video" },
+  { id: "table", icon: "library" },
+  { id: "announce", icon: "megaphone" },
+  { id: "subscribe", icon: "gift" },
+  { id: "updates", icon: "rss" },
+  { id: "district", icon: "map" }
+] -%}
+<section class="border-y border-line bg-surface-2/60" aria-labelledby="steps-title">
+  <div class="container-page section grid grid-cols-1 gap-10 lg:grid-cols-[1.4fr_1fr]">
+    <div class="card overflow-hidden" x-data="gvrChecklist('gvr-checklist-v1', {{ steps.length }})">
+      <div class="border-b border-line p-5 sm:p-6">
+        <div class="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h2 id="steps-title" class="h-section flex items-center gap-2.5"><span class="text-vine">{% icon "list-checks", "size-6" %}</span>{{ "read.gvr.steps_title" | t(lang) }}</h2>
+            <p class="mt-1 text-sm text-muted">{{ "read.gvr.steps_sub" | t(lang) }}</p>
+          </div>
+          <button type="button" class="btn-ghost btn-sm text-muted" x-show="count() > 0" x-cloak @click="reset()">{% icon "rotate-ccw", "size-4" %} {{ "read.gvr.reset" | t(lang) }}</button>
+        </div>
+        <div class="mt-4 flex items-center gap-3">
+          <div class="read-progress flex-1" role="progressbar" aria-valuemin="0" aria-valuemax="{{ steps.length }}" aria-valuenow="0" :aria-valuenow="count()" aria-label="{{ 'read.gvr.progress_label' | t(lang) }}"><span style="width:0%" :style="'width:' + pct() + '%'"></span></div>
+          <p class="read-num shrink-0 text-sm font-semibold text-ink" aria-live="polite" data-t="{{ 'read.gvr.progress' | t(lang) }}" x-text="$el.dataset.t.replace('{n}', count()).replace('{total}', total)">{{ "read.gvr.progress" | t(lang, {n: 0, total: steps.length}) }}</p>
+        </div>
+        <p class="mt-3 text-sm font-semibold text-vine" x-show="count() === total" x-cloak>{% icon "party-popper", "size-4 inline -mt-0.5" %} {{ "read.gvr.all_done" | t(lang) }}</p>
+      </div>
+      <ol class="divide-y divide-line">
+        {% for s in steps %}
+        <li class="read-check-row flex items-start gap-3 px-5 py-4 transition sm:px-6" :class="{ 'is-done': isDone('{{ s.id }}') }">
+          <input type="checkbox" id="chk-{{ s.id }}" class="read-check mt-0.5" :checked="isDone('{{ s.id }}')" @change="toggle('{{ s.id }}')">
+          <div class="min-w-0 flex-1">
+            <label for="chk-{{ s.id }}" class="read-check-label flex cursor-pointer items-center gap-2 font-semibold text-ink">{{ ("read.gvr.s_" + s.id + "_t") | t(lang) }}</label>
+            <p class="mt-0.5 text-sm leading-relaxed text-muted">{{ ("read.gvr.s_" + s.id) | t(lang) }}</p>
+            <p class="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-sm">
+              {% if s.id == "register" %}
+                {% for k in (["rlv", "gvr"] if lang == "es" else ["gvr", "rlv"]) %}
+                <a class="link" href="{{ L.rlv_register if k == 'rlv' else L.gvr_register }}" target="_blank" rel="noopener">{{ ("read.gvr.register_" + k) | t(lang) }}</a>
+                {% endfor %}
+              {% elif s.id == "handbook" %}
+                {% for h in handbooks %}<a class="link" href="{{ h.url }}" target="_blank" rel="noopener" lang="{{ h.lang }}">{{ h | readPdfTitle(lang) }} (PDF)</a>{% else %}<a class="link" href="#kits">{{ "read.gvr.see_kits" | t(lang) }}</a>{% endfor %}
+              {% elif s.id == "meeting" %}
+                <a class="link" href="{{ '/meeting/' | lurl(lang) }}">{% if meeting.next %}{{ "read.gvr.next_meeting" | t(lang, {date: meeting.next.start | fmtDate(lang, "medium")}) }}{% else %}{{ "nav.meeting" | t(lang) }}{% endif %}</a>
+              {% elif s.id == "table" %}
+                <a class="link" href="{{ '/subscribe/' | lurl(lang) }}#cat-title">{{ "read.subs.cat_title" | t(lang) }}</a>
+                <a class="link" href="#kit-{{ 'rlv' if lang == 'es' else 'gvr' }}">{{ "read.gvr.g_flyers" | t(lang) }}</a>
+              {% elif s.id == "announce" %}
+                <a class="link" href="{{ '/read/' | lurl(lang) }}">{{ "read.gvr.current_issues" | t(lang) }}</a>
+                <a class="link" href="{{ '/contribute/' | lurl(lang) }}#deadlines">{{ "read.contrib.deadlines_title" | t(lang) }}</a>
+              {% elif s.id == "subscribe" %}
+                <a class="link" href="{{ '/subscribe/' | lurl(lang) }}#carry">{{ "read.subs.ctm_eyebrow" | t(lang) }}</a>
+              {% elif s.id == "updates" %}
+                <a class="link" href="{{ '/digest/' | lurl(lang) }}">{{ "nav.digest" | t(lang) }}</a>
+                <a class="link" href="{{ '/feed.xml' | lurl(lang) }}">{{ "feeds.rss" | t(lang) }}</a>
+              {% elif s.id == "district" %}
+                <a class="link" href="{{ '/districts/' | lurl(lang) }}">{{ "nav.districts" | t(lang) }}</a>
+                <a class="link" href="{{ '/share/' | lurl(lang) }}">{{ "nav.share" | t(lang) }}</a>
+              {% endif %}
+            </p>
+          </div>
+          <span class="mt-0.5 hidden text-muted sm:block">{% icon s.icon, "size-5" %}</span>
+        </li>
+        {% endfor %}
+      </ol>
+      <p class="border-t border-line bg-surface-2 px-5 py-3 text-xs text-muted sm:px-6">{% icon "lock", "size-3 inline -mt-0.5" %} {{ "read.gvr.saved_note" | t(lang) }}</p>
+    </div>
+
+    <aside class="space-y-5 self-start lg:sticky lg:top-24">
+      <div class="card card-pad">
+        <span class="grid size-12 place-items-center rounded-2xl bg-gv-soft text-gv">{% icon "video", "size-6" %}</span>
+        <h3 class="mt-4 font-display text-xl font-semibold">{{ "read.gvr.help_title" | t(lang) }}</h3>
+        <p class="mt-1.5 text-sm leading-relaxed text-muted">{{ "read.gvr.help_text" | t(lang) }}</p>
+        {% if meeting.next %}
+        <p class="mt-4 rounded-xl bg-surface-2 p-3 text-sm">
+          <span class="eyebrow block">{{ "read.gvr.next_label" | t(lang) }}</span>
+          <time class="mt-0.5 block font-semibold text-ink" datetime="{{ meeting.next.start }}">{{ meeting.next.start | fmtDate(lang, "long") }}</time>
+          <span class="text-muted">{{ meeting.next.start | fmtDate(lang, "time") }} · {{ site.meeting.platform }}</span>
+        </p>
+        {% endif %}
+        <a class="btn-primary mt-4" href="{{ '/meeting/' | lurl(lang) }}">{{ "read.gvr.help_btn" | t(lang) }} {% icon "arrow-right", "size-4" %}</a>
+      </div>
+      <div class="card card-pad">
+        <p class="font-display text-lg font-semibold">{{ "read.gvr.contact_title" | t(lang) }}</p>
+        <p class="mt-1 text-sm text-muted">{{ "read.gvr.contact_text" | t(lang) }}</p>
+        <a class="link mt-2 inline-block break-all" href="mailto:{{ site.meeting.chair_email or site.contact_email }}">{{ site.meeting.chair_email or site.contact_email }}</a>
+      </div>
+    </aside>
+  </div>
+</section>
+
+{#- ---------- Official kits (auto) ---------- -#}
+<section class="section container-page scroll-mt-16" id="kits" aria-labelledby="kits-title" x-data="kitFilter('all')">
+  <div class="mb-6 flex flex-wrap items-end justify-between gap-4">
+    <div>
+      <h2 id="kits-title" class="h-section flex items-center gap-2.5"><span class="text-gv">{% icon "folder-open", "size-6" %}</span>{{ "read.gvr.kits_title" | t(lang) }}</h2>
+      <p class="mt-1.5 max-w-2xl text-muted">{{ "read.gvr.kits_sub" | t(lang) }}</p>
+    </div>
+    <span class="badge-vine py-1!">{% icon "refresh-cw", "size-3" %} {{ "common.updates_daily" | t(lang) }}</span>
+  </div>
+
+  {% if gvrKit.length or rlvKit.length %}
+  <div class="mb-8 flex flex-col gap-3 rounded-[var(--radius-card)] border border-line bg-surface p-3 sm:flex-row sm:items-center">
+    <div class="flex flex-wrap gap-2" role="group" aria-label="{{ 'read.gvr.kit_filter' | t(lang) }}">
+      <button type="button" class="chip" aria-pressed="true" :aria-pressed="(kit === 'all').toString()" @click="kit = 'all'">{{ "read.gvr.both_kits" | t(lang) }}</button>
+      {% for k in kitOrder %}
+      <button type="button" class="chip {{ 'read-chip-rlv' if k == 'rlv' else '' }}" aria-pressed="false" :aria-pressed="(kit === '{{ k }}').toString()" @click="kit = '{{ k }}'">{{ ("read.gvr.kit_rlv" if k == "rlv" else "read.gvr.kit_gvr") | t(lang) }}</button>
+      {% endfor %}
+    </div>
+    <label class="relative flex-1 sm:ml-auto sm:max-w-sm">
+      <span class="sr-only">{{ "read.gvr.search_label" | t(lang) }}</span>
+      <span class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted">{% icon "search", "size-4" %}</span>
+      <input type="search" class="input pl-10" x-model.debounce.150ms="q" placeholder="{{ 'read.gvr.search_ph' | t(lang) }}" autocomplete="off">
+    </label>
+    <p class="read-num shrink-0 px-2 text-sm text-muted" aria-live="polite" x-show="q || kit !== 'all'" x-cloak data-t="{{ 'read.gvr.shown' | t(lang) }}" x-text="$el.dataset.t.replace('{n}', shown)"></p>
+  </div>
+
+  <div class="space-y-12">
+    {% for k in kitOrder %}{{ kitBlock(k, (rlvKit if k == "rlv" else gvrKit), lang) }}{% endfor %}
+  </div>
+  <div class="mt-6" x-show="shown === 0" x-cloak>
+    {{ ui.emptyState("search-x", "read.gvr.no_match" | t(lang), "read.gvr.no_match_text" | t(lang)) }}
+  </div>
+  {% else %}
+    {{ ui.emptyState("folder-open", "read.gvr.kits_empty" | t(lang), "read.gvr.kits_empty_text" | t(lang), L.gvr_resources, "read.gvr.kit_gvr" | t(lang)) }}
+    <p class="mt-3 text-center text-sm"><a class="link" href="{{ L.rlv_resources }}" target="_blank" rel="noopener">{{ "read.gvr.kit_rlv" | t(lang) }}</a></p>
+  {% endif %}
+</section>
+
+{#- ---------- Ideas for the home group ---------- -#}
+<section class="section container-page pt-0" aria-labelledby="ideas-title">
+  {{ ui.sectionHead("read.gvr.ideas_title" | t(lang), "read.gvr.ideas_sub" | t(lang), "", "", "lightbulb") }}
+  <div class="grid-cards">
+    {% for i in [["library", "bg-gv-soft text-gv", "/subscribe/"], ["clipboard-list", "bg-lv-soft text-lv", "/subscribe/"], ["gift", "bg-vine-soft text-vine", "/subscribe/"], ["pen-line", "bg-grape-soft text-grape", "/contribute/"], ["headphones", "bg-grape-soft text-grape", "/listen/"], ["book-open", "bg-gv-soft text-gv", "/read/"]] %}
+    <a href="{{ i[2] | lurl(lang) }}" class="card card-link card-pad group flex flex-col no-underline">
+      <span class="grid size-11 place-items-center rounded-xl {{ i[1] }}">{% icon i[0], "size-5" %}</span>
+      <h3 class="h-card mt-3">{{ ("read.gvr.i" + loop.index + "_t") | t(lang) }}</h3>
+      <p class="mt-1 text-sm leading-relaxed text-muted">{{ ("read.gvr.i" + loop.index) | t(lang) }}</p>
+      {% if loop.index == 6 and ((gvCur and gvCur.topic) or (lvCur and lvCur.topic)) %}
+      <p class="mt-3 space-y-1 rounded-xl bg-surface-2 p-3 text-xs">
+        {% for cur in ([lvCur, gvCur] if lang == "es" else [gvCur, lvCur]) %}{% if cur and cur.topic %}
+        <span class="block"><span class="font-semibold {{ 'text-lv' if cur.pub == 'lv' else 'text-gv' }}">{{ "La Viña" if cur.pub == "lv" else "Grapevine" }} · {{ cur.label }}:</span> <span lang="{{ cur.topicLang }}">{{ cur.topic }}</span></span>
+        {% endif %}{% endfor %}
+      </p>
+      {% endif %}
+      <span class="mt-auto inline-flex items-center gap-1 pt-3 text-sm font-semibold text-gv">{{ "common.see_more" | t(lang) }} {% icon "arrow-right", "size-4 transition group-hover:translate-x-0.5" %}</span>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+
+{#- ---------- Stay connected ---------- -#}
+<section class="section container-page pt-0" aria-labelledby="connect-title">
+  <h2 id="connect-title" class="h-section mb-6">{{ "read.gvr.connect_title" | t(lang) }}</h2>
+  <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+    {% for c in [["video", "/meeting/", "nav.meeting", "nav.meeting_desc"], ["calendar-days", "/events/", "nav.events", "nav.events_desc"], ["share-2", "/share/", "nav.share", "read.gvr.c_share"], ["mail", "/digest/", "nav.digest", "read.gvr.c_digest"], ["map", "/districts/", "nav.districts", "nav.districts_desc"], ["sparkles", "/whats-new/", "nav.whats_new", "read.gvr.c_new"]] %}
+    <a href="{{ c[1] | lurl(lang) }}" class="card card-link group flex items-center gap-4 p-4 no-underline">
+      <span class="grid size-11 shrink-0 place-items-center rounded-xl bg-gv-soft text-gv">{% icon c[0], "size-5" %}</span>
+      <span class="min-w-0 flex-1"><span class="block font-semibold text-ink group-hover:text-gv">{{ c[2] | t(lang) }}</span><span class="block text-sm text-muted">{{ c[3] | t(lang) }}</span></span>
+      {% icon "chevron-right", "size-5 shrink-0 text-faint transition group-hover:translate-x-0.5" %}
+    </a>
+    {% endfor %}
+  </div>
+</section>

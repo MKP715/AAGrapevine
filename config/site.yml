@@ -1,0 +1,208 @@
+# =====================================================================
+#  NETA 65 Grapevine / La Viña Committee — SITE SETTINGS
+#  This is the ONE file you edit for settings. Everything else
+#  (articles, PDFs, podcasts, videos, Instagram, Drive uploads,
+#  translations) updates itself every day via GitHub Actions.
+#
+#  Tip: edit right on github.com (pencil icon) → "Commit changes".
+#  The site rebuilds automatically in about 10–20 minutes.
+# =====================================================================
+
+site:
+  title: "Grapevine / La Viña"
+  title_es: "Grapevine / La Viña"
+  committee: "NETA 65 Grapevine & La Viña Committee"
+  committee_es: "Comité de Grapevine y La Viña de NETA 65"
+  area: "Northeast Texas Area 65"
+  area_es: "Área 65 del Noreste de Texas"
+  # Full public URL of the site (used in feeds, QR codes, share links).
+  # GitHub Pages default: https://<user>.github.io/<repo>/
+  url: "https://mkp715.github.io/AAGrapevine"
+  timezone: "America/Chicago"
+  default_lang: "en"
+  languages: ["en", "es"]
+  contact_email: "grapevine@neta65.org"
+  area_website: "https://neta65.org"
+  committee_page: "https://neta65.org/trusted-servants/grapevine-la-vina/"
+
+# ---------------------------------------------------------------------
+#  Committee meeting (next date + countdown are computed automatically)
+# ---------------------------------------------------------------------
+meeting:
+  # Recurrence: which weekday of the month (1-5, or -1 for "last").
+  week_of_month: 3
+  weekday: "wednesday"
+  start: "19:00"          # 24h, Central time
+  end: "20:00"
+  platform: "Zoom"
+  zoom_url: "https://zoom.us/j/9494767497?pwd=neta65"
+  meeting_id: "949 476 7497"
+  passcode: "neta65"
+  chair_title: "Grapevine / La Viña Chair"
+  chair_title_es: "Coordinador(a) de Grapevine / La Viña"
+  chair_email: "grapevine@neta65.org"
+  note: "All AA members are welcome to attend. No registration required."
+  # Dates to skip (e.g. a holiday) — "YYYY-MM-DD"
+  skip_dates: []
+
+# ---------------------------------------------------------------------
+#  Google Drive — the committee's upload area
+#  Upload PDFs / photos / slides into the category folders inside your
+#  Panel folder. Sub-folders are followed automatically (a sub-folder
+#  inside "photos" becomes its own album).
+#
+#  Recognized category folder names (any capitalization; English or
+#  Spanish): reports/informes, notes/notas/minutes/actas,
+#  slides/presentaciones, flyers/volantes, photos/fotos,
+#  workshops/talleres, announcements/anuncios, forms/formularios.
+#  Any other folder name shows up in the Library under its own name.
+#
+#  FLYERS → EVENTS: name a flyer with its date and it becomes an event.
+#  You can add a time and a place too:
+#    "2027-03-14 Spring Assembly GV booth.pdf"
+#    "2027-03-14 Spring Assembly booth 9am @ Tyler Civic Center.pdf"
+#  ANNOUNCEMENTS: put a Google Doc (or .txt/.docx) in "announcements"; the
+#  doc's name is the headline. Start the name with a date to set it:
+#  "2027-01-10 Welcome new GVRs". Add "(pinned)" / "(fijado)" to keep it
+#  on top, and "(until 2027-02-01)" / "(hasta 2027-02-01)" to hide it
+#  after that date.
+#  PHOTOS: each sub-folder inside "photos" becomes an album. Please only
+#  upload photos where no AA member's face can be identified.
+# ---------------------------------------------------------------------
+drive:
+  # The shared "A65_GV" folder (must be "Anyone with the link: Viewer").
+  root_folder_id: "1cTCFxTujRm-m8Xn0OobJGH2EIWI753S1"
+  # Sub-folders whose name matches this pattern are PANEL folders.
+  panel_folder_pattern: "Panel\\s*(\\d+)"
+  # Only show panels this number or newer (older panels are ignored).
+  min_panel: 77
+  # Also include category folders that sit directly in the root
+  # (outside any Panel folder)? false = start clean with the new panel.
+  include_loose_folders: false
+  # Never publish these file types (response spreadsheets can contain
+  # personal info).
+  exclude_mime_contains: ["spreadsheet"]
+  # Exclude any file/folder whose name contains one of these (case-insensitive)
+  exclude_name_contains: ["(Responses)", "(Respuestas)", "PRIVATE", "PRIVADO", "wrong size"]
+  # Optional: a Google API key makes dates exact (else dates come from
+  # file names / first-seen). Set as GitHub secret GOOGLE_API_KEY.
+
+# ---------------------------------------------------------------------
+#  Content sources (checked daily)
+# ---------------------------------------------------------------------
+sources:
+  grapevine:
+    base: "https://www.aagrapevine.org"
+    magazine_hub: "/magazine"
+    contribute: "/contribute"
+    weekly_open: "/grapevine-weekly-open"
+    gvr_resources: "/gvr-resources"
+  lavina:
+    base: "https://www.aalavina.org"
+    magazine_hub: "/la-revista"
+    contribute: "/temas-sugeridos"
+    rlv_resources: "/recursos"
+  crawler:
+    hosts: ["www.aagrapevine.org", "www.aalavina.org"]
+    user_agent: "NETA65-GrapevineCommitteeBot/2.0 (+https://github.com/MKP715/AAGrapevine)"
+    # Minutes of crawling per daily run. The sites ask for 5 s between
+    # requests, so ~40 min ≈ 450 pages/day; the crawler resumes daily.
+    # 0 = pause the PDF search (everything else keeps updating).
+    minutes_per_run: 40
+    # Re-check each already-known page at most every N days.
+    recheck_days: 21
+    # Download new PDFs for title/page-count/thumbnail (per run cap).
+    pdf_details_per_run: 40
+    pdf_max_mb: 60        # the monthly GV News PDF is ~43 MB
+  youtube:
+    channels:
+      - id: "UCI9uFLJ__aXT3-At0PlPWUQ"
+        handle: "@AAGrapevine"
+        name: "AA Grapevine & La Viña"
+  podcasts:
+    - key: "gv"
+      name: "AA Grapevine's Podcast"
+      feed: "https://feeds.captivate.fm/aa-grapevine/"
+      apple: "https://podcasts.apple.com/us/podcast/aa-grapevines-podcast/id1591924167"
+      spotify: "https://open.spotify.com/show/714djcL57SFf0Nzf40CL8Q"
+      amazon: "https://music.amazon.com/podcasts/de231bfa-837b-4a27-a331-a927019cb5d7"
+      web: "https://www.aagrapevine.org/podcasts"
+    - key: "wo"
+      name: "Grapevine Weekly Open AA Meeting"
+      feed: "https://feeds.captivate.fm/grapevine-weekly-open/"
+      web: "https://www.aagrapevine.org/grapevine-weekly-open"
+      apple: "https://podcasts.apple.com/us/podcast/grapevine-weekly-open-aa-meeting/id1874809908"
+      spotify: "https://open.spotify.com/show/2jk469TmDC31spPqf8L0SF"
+      amazon: "https://music.amazon.com/podcasts/8dfb5269-8733-42f3-b075-2d9e596bf4c5/grapevine-weekly-open-aa-meeting"
+  instagram:
+    accounts:
+      - key: "gv"
+        username: "alcoholicsanonymous_gv"
+        name: "AA Grapevine"
+      - key: "lv"
+        username: "alcoholicosanonimos_lv"
+        name: "La Viña"
+    # Optional official API (most reliable, and the method Instagram's
+    # terms allow). Set GitHub secrets IG_ACCESS_TOKEN and IG_BUSINESS_ID
+    # to enable Business Discovery (steps in README).
+    # anonymous: true  → also read Instagram's public embed pages without
+    #   an API key (tiny volume, but Instagram's terms discourage automated
+    #   collection). Set to false to use ONLY the official API + the manual
+    #   list in content/instagram.yml.
+    anonymous: true
+    keep_per_account: 60     # newest posts kept per account
+    enrich_per_run: 25       # max post look-ups per daily run
+    graph_version: "v21.0"
+    # Optional public RSSHub mirrors to try (leave empty to skip).
+    rsshub_instances: []
+  # Optional: public Google Calendar / .ics feeds to merge into Events.
+  ics_feeds: []
+
+# ---------------------------------------------------------------------
+#  Links used across the site (official, public)
+# ---------------------------------------------------------------------
+links:
+  gv_home: "https://www.aagrapevine.org"
+  lv_home: "https://www.aalavina.org"
+  gv_subscribe: "https://www.aagrapevine.org/store/grapevine-subscriptions"
+  lv_subscribe: "https://www.aalavina.org/suscripciones"
+  gv_store: "https://www.aagrapevine.org/store"
+  lv_store: "https://www.aalavina.org/tienda"
+  carry_the_message: "https://www.aagrapevine.org/carry-the-message"
+  gv_share_story: "https://www.aagrapevine.org/share"
+  gv_audio_project: "https://www.aagrapevine.org/audioproject"
+  gv_photo_contest: "https://www.aagrapevine.org/photocontest"
+  lv_share_story: "https://www.aalavina.org/comparte"
+  gv_contribute: "https://www.aagrapevine.org/contribute"
+  gv_guidelines: "https://www.aagrapevine.org/guidelines-contributing-grapevine"
+  lv_guidelines: "https://www.aalavina.org/guia-para-contribuciones"
+  gvr_register: "https://www.aagrapevine.org/get-involved/become-grapevine-rep"
+  rlv_register: "https://www.aalavina.org/servicio/conviertete-en-rlv"
+  gvr_resources: "https://www.aagrapevine.org/gvr-resources"
+  rlv_resources: "https://www.aalavina.org/recursos"
+  gv_apps: "https://www.aagrapevine.org/apps"
+  lv_apps: "https://www.aalavina.org/aplicaciones"
+  sobriety_calculator: "https://www.aagrapevine.org/sobriety-calculator"
+  weekly_open: "https://www.aagrapevine.org/grapevine-weekly-open"
+  podcasts_page: "https://www.aagrapevine.org/podcasts"
+  youtube_channel: "https://www.youtube.com/@AAGrapevine"
+  instagram_gv: "https://www.instagram.com/alcoholicsanonymous_gv/"
+  instagram_lv: "https://www.instagram.com/alcoholicosanonimos_lv/"
+  aa_org: "https://www.aa.org"
+  aa_org_es: "https://www.aa.org/es"
+  gv_email_editorial: "editorial@aagrapevine.org"
+  lv_email_editorial: "lavina@aagrapevine.org"
+  gv_mail: "Grapevine Editorial, 475 Riverside Drive, New York, NY 10115"
+  lv_mail: "La Viña Editorial, 475 Riverside Drive, New York, NY 10115"
+  support_phone_us: "(800) 631-6025"
+  support_phone_es: "(800) 640-8781"
+  support_phone_intl: "+1 (570) 567-0437"
+
+# ---------------------------------------------------------------------
+#  Optional weekly e-mail digest (off unless these GitHub secrets exist):
+#  SMTP_SERVER, SMTP_PORT, SMTP_USERNAME, SMTP_PASSWORD, DIGEST_TO
+#  (DIGEST_TO can be a Google Group address that reaches all districts)
+# ---------------------------------------------------------------------
+digest:
+  weekday: "monday"
+  days: 7

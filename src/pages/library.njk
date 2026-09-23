@@ -1,0 +1,315 @@
+---
+pagination: { data: languages, size: 1, alias: lang }
+permalink: "{{ '/' if lang == 'en' else '/es/' }}library/index.html"
+layout: layouts/base.njk
+pageKey: library
+titleKey: nav.library
+descKey: library.meta_desc
+pageScripts: ["/assets/vendor/minisearch.js", "/assets/js/search.js", "/assets/js/library.js"]
+---
+{#- LIBRARY — every PDF crawled from aagrapevine.org + aalavina.org and every
+    committee Drive document. The newest SSR_COUNT are rendered here (no-JS / SEO);
+    /assets/js/library.js then loads /library-index.json (see library-index.11ty.js)
+    and takes over search, facets, collections, sorting and paging.
+    Card markup below is mirrored in library.js → renderCard(); keep them in sync. -#}
+{% import "macros/ui.njk" as ui with context %}
+{%- set SSR_COUNT = 30 -%}
+{%- set docs = db | libDocs(lang) -%}
+{%- set facets = docs | libFacets(lang) -%}
+{%- set cols = docs | libCollections(lang) -%}
+{%- set stats = docs | libStats -%}
+{%- set updated = db.pdfs.updated or db.drive.updated -%}
+{%- set ssrShown = SSR_COUNT if docs.length > SSR_COUNT else docs.length -%}
+
+{#- ---------- macros ---------- -#}
+{% macro srcBadge(s, lang) -%}
+{%- if s == "lv" %}<span class="badge-lv">{% icon "grapes", "size-3" %} La Viña</span>
+{%- elif s == "neta" %}<span class="badge-vine">{% icon "users", "size-3" %} NETA 65</span>
+{%- else %}<span class="badge-gv">{% icon "grapes", "size-3" %} Grapevine</span>{% endif -%}
+{%- endmacro %}
+
+{% macro docCard(d, lang) -%}
+{%- set dateStyle = "month" if d.dp == "m" else "medium" -%}
+{%- set catIcon = d.c | libCatIcon -%}
+<article class="lib-card{{ ' is-orphan' if d.or }}" id="doc-{{ d.id | replace(':', '-') }}">
+  <div class="lib-media">
+    <div class="lib-tile" data-tone="{{ d.s }}" aria-hidden="true">
+      <span class="lib-sheet"><span class="lib-sheet-icon">{% icon catIcon, "size-6" %}</span><span class="lib-sheet-lines"></span><span class="lib-sheet-ft">{{ ("library.ft." + d.ft) | t(lang) }}</span></span>
+    </div>
+    {%- if d.th %}{% if d.tf %}<img class="lib-th-blur" src="{{ d.th }}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.remove()">{% endif %}<img{% if d.tf %} class="lib-th-fit"{% endif %} src="{{ d.th }}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.remove()">{% endif %}
+    {%- if d.n and not d.or %}<span class="badge-new lib-new">{{ "common.new" | t(lang) }}</span>{% endif %}
+  </div>
+  <div class="lib-body">
+    <div class="lib-badges">{{ srcBadge(d.s, lang) }}<span class="badge-muted">{{ d.c | libCatLabel(lang) }}</span>{% if d.l != lang %}<span class="badge-muted uppercase" title="{{ ('library.lang_title.' + d.l) | t(lang) }}">{{ d.l }}</span>{% endif %}</div>
+    {#- d.o is set only when d.t is a translation; otherwise d.t IS the original title, in language d.tl. -#}
+    <h3 class="lib-title"{% if not d.o and d.tl != lang %} lang="{{ d.tl }}"{% endif %}><a href="{{ d.u }}" target="_blank" rel="noopener">{{ d.t }}</a></h3>
+    {%- if d.o %}<p class="lib-orig"><span class="sr-only">{{ "library.original_title" | t(lang) }}: </span><span lang="{{ d.tl }}">{{ d.o }}</span></p>{% endif %}
+    {%- if d.ev %}<p class="lib-event">{% icon "calendar-days", "size-3.5" %}<time datetime="{{ d.ev }}">{{ "library.event_on" | t(lang, {date: d.ev | fmtDate(lang, "medium")}) }}</time></p>{% endif %}
+    {%- if d.d or d.pg or d.sz or d.hx %}
+    <p class="lib-meta">{% if d.d %}<time datetime="{{ d.d }}">{{ d.d | fmtDate(lang, dateStyle) }}</time>{% endif %}{% if d.pg %}<span>{{ ("library.page_one" | t(lang)) if d.pg == 1 else ("common.pages" | t(lang, {n: d.pg | libNum(lang)})) }}</span>{% endif %}{% if d.sz %}<span>{{ d.sz | fileSize }}</span>{% endif %}{% if d.hx %}<span>{{ "library.opens_on" | t(lang, {host: d.hx}) }}</span>{% endif %}</p>
+    {%- endif %}
+    {%- if d.r %}<p class="lib-ref">{{ "library.found_on" | t(lang) }} <a href="{{ d.r.url }}" target="_blank" rel="noopener">{{ d.r.title }}</a></p>{% endif %}
+    {%- if d.or %}<p class="lib-orphan">{% icon "unlink", "size-3.5" %}<span>{{ "library.orphan" | t(lang) }}</span></p>{% endif %}
+    {%- if d.m %}<p class="lib-auto"><span class="auto-note" title="{{ 'common.auto_translated_help' | t(lang) }}">{% icon "languages", "size-3" %} {{ "common.auto_translated" | t(lang) }}</span></p>{% endif %}
+    <div class="lib-actions">
+      {%- if d.pv %}
+      <button type="button" class="lib-btn lib-btn-main" data-lib-preview="{{ d.pv }}" data-title="{{ d.t }}" data-open="{{ d.u }}" data-dl="{{ d.dl }}" aria-label="{{ 'library.preview_aria' | t(lang, {title: d.t}) }}">{% icon "eye", "size-4" %}<span>{{ "common.preview" | t(lang) }}</span></button>
+      <a class="lib-btn lib-icon" href="{{ d.u }}" target="_blank" rel="noopener" aria-label="{{ 'library.open_aria' | t(lang, {title: d.t}) }}" title="{{ 'common.open' | t(lang) }}">{% icon "external-link", "size-4" %}</a>
+      {%- else %}
+      <a class="lib-btn lib-btn-main" href="{{ d.u }}" target="_blank" rel="noopener" aria-label="{{ 'library.open_aria' | t(lang, {title: d.t}) }}">{% icon "external-link", "size-4" %}<span>{{ "common.open" | t(lang) }}</span></a>
+      {%- endif %}
+      <a class="lib-btn lib-icon" href="{{ d.dl or d.u }}" download target="_blank" rel="noopener" aria-label="{{ 'library.download_aria' | t(lang, {title: d.t}) }}" title="{{ 'common.download' | t(lang) }}">{% icon "download", "size-4" %}</a>
+      {%- if not d.pv %}
+      <button type="button" class="lib-btn lib-icon" data-lib-copy="{{ d.u }}" aria-label="{{ 'library.copy_aria' | t(lang, {title: d.t}) }}" title="{{ 'common.copy_link' | t(lang) }}">{% icon "link", "size-4" %}</button>
+      {%- endif %}
+      <button type="button" class="lib-btn lib-icon" data-lib-share="{{ d.u }}" data-title="{{ d.t }}" aria-label="{{ 'library.share_aria' | t(lang, {title: d.t}) }}" title="{{ 'common.share' | t(lang) }}">{% icon "share-2", "size-4" %}</button>
+    </div>
+  </div>
+</article>
+{%- endmacro %}
+
+{% macro chip(facet, v, lang) -%}
+<button type="button" class="chip lib-chip" data-f="{{ facet }}" data-v="{{ v.key }}" aria-pressed="false">
+  {%- if facet == "src" %}<span class="lib-dot" data-tone="{{ v.key }}" aria-hidden="true"></span>{% endif -%}
+  <span>{{ v.label }}</span><span class="lib-chip-n" data-n>{{ v.count | libNum(lang) }}</span>
+</button>
+{%- endmacro %}
+
+{#- ---------- hero ---------- -#}
+<div id="library" class="lib-page">
+{% call ui.pageHero(lang, "nav.library" | t(lang), "library.subtitle" | t(lang), "library", "library.eyebrow" | t(lang)) %}
+  <form id="lib-form" role="search" class="max-w-2xl" action="{{ '/library/' | lurl(lang) }}" method="get" autocomplete="off">
+    <label for="lib-q" class="sr-only">{{ "library.search_label" | t(lang) }}</label>
+    <div class="relative">
+      <span class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-faint">{% icon "search", "size-5" %}</span>
+      <input id="lib-q" name="q" type="search" enterkeyhint="search" spellcheck="false" autocapitalize="off"
+             placeholder="{{ 'library.search_placeholder' | t(lang) }}"
+             class="lib-q h-14 w-full rounded-2xl border border-white/25 bg-surface pl-12 pr-14 text-base text-ink shadow-[0_18px_40px_-18px_rgb(0_0_0/0.7)] placeholder:text-faint focus:outline-none focus:ring-4 focus:ring-white/35 sm:h-16 sm:text-lg"
+             aria-controls="lib-results" aria-describedby="lib-status">
+      <button type="button" id="lib-clear" class="absolute right-2.5 top-1/2 grid size-11 -translate-y-1/2 place-items-center rounded-full text-muted transition hover:bg-surface-2 hover:text-ink" aria-label="{{ 'library.search_clear' | t(lang) }}" hidden>{% icon "x", "size-5" %}</button>
+      <kbd id="lib-kbd" class="pointer-events-none absolute right-4 top-1/2 hidden -translate-y-1/2 rounded-md border border-line bg-surface-2 px-2 py-0.5 font-sans text-xs font-semibold text-muted sm:block" aria-hidden="true">/</kbd>
+    </div>
+  </form>
+  {% if stats.total %}
+  <dl class="lib-stats mt-6 grid max-w-3xl grid-cols-2 gap-2.5 sm:grid-cols-4 sm:gap-3">
+    <div class="lib-stat"><dt>{{ "library.stat_total" | t(lang) }}</dt><dd>{{ stats.total | libNum(lang) }}</dd></div>
+    <div class="lib-stat"><dt>{{ "library.stat_new" | t(lang) }}</dt><dd class="flex items-center gap-2">{{ stats.recent | libNum(lang) }}{% if stats.recent %}<span class="size-2 rounded-full bg-[#8fd08a]" aria-hidden="true"></span>{% endif %}</dd></div>
+    <div class="lib-stat col-span-2">
+      <dt>{{ "library.stat_sources" | t(lang) }}</dt>
+      <dd class="lib-stat-sources">
+        {#- A source with nothing yet (the committee Drive before its first upload) is simply left out. -#}
+        {%- for sk in [["gv", "Grapevine"], ["lv", "La Viña"], ["neta", "NETA 65"]] %}{% if stats.bySrc[sk[0]] %}
+        <span><span class="lib-dot" data-tone="{{ sk[0] }}" aria-hidden="true"></span>{{ sk[1] }} <b>{{ stats.bySrc[sk[0]] | libNum(lang) }}</b></span>
+        {%- endif %}{% endfor %}
+      </dd>
+    </div>
+  </dl>
+  {% endif %}
+  <p class="mt-4 flex items-start gap-2 text-sm text-white/75">
+    {% icon "refresh-cw", "size-4 mt-0.5" %}<span>{{ "library.stat_daily" | t(lang) }}{% if updated %} · <time datetime="{{ updated }}" data-relative>{{ updated | fmtDate(lang, "short") }}</time>{% endif %}</span>
+  </p>
+{% endcall %}
+
+{#- ---------- quick collections ---------- -#}
+{% if docs.length %}
+<section class="container-page relative z-10 -mt-6 sm:-mt-10" aria-labelledby="lib-cols-h">
+  <h2 id="lib-cols-h" class="sr-only">{{ "library.collections_title" | t(lang) }}</h2>
+  <div class="lib-cols">
+    {% for c in cols %}
+    <button type="button" class="lib-col" data-col="{{ c.key }}" data-tone="{{ c.tone }}" aria-pressed="false"{% if not c.count %} data-zero{% endif %}>
+      <span class="lib-col-icon">{% icon c.icon, "size-5" %}</span>
+      <span class="lib-col-text">
+        <span class="lib-col-label">{{ c.label }}</span>
+        <span class="lib-col-desc">{{ c.desc }}</span>
+      </span>
+      <span class="lib-col-n">{{ c.count | libNum(lang) }}</span>
+    </button>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+{#- ---------- browse: facets + results ---------- -#}
+<section class="container-page section-tight" id="lib-main" aria-labelledby="lib-results-h">
+  {% if not docs.length %}
+    <h2 id="lib-results-h" class="sr-only">{{ "library.results_title" | t(lang) }}</h2>
+    {{ ui.emptyState("library", "library.empty_title" | t(lang), "library.empty_text" | t(lang), "/status/" | lurl(lang), "library.how_status" | t(lang)) }}
+  {% else %}
+  <div class="grid gap-6 lg:grid-cols-[15.5rem_minmax(0,1fr)] lg:gap-10">
+    {#- facets -#}
+    <div>
+      <button type="button" id="lib-facets-toggle" class="btn-secondary w-full justify-between lg:hidden" aria-expanded="false" aria-controls="lib-facets">
+        <span class="inline-flex items-center gap-2">{% icon "sliders-horizontal", "size-4" %} {{ "library.filters" | t(lang) }} <span id="lib-facets-n" class="badge-gv" hidden>0</span></span>
+        {% icon "chevron-down", "size-4 lib-chev" %}
+      </button>
+      <aside id="lib-facets" class="lib-facets hidden lg:block" aria-label="{{ 'library.filters' | t(lang) }}">
+        <h2 class="mb-4 hidden font-display text-xl font-semibold lg:block">{{ "library.filters_title" | t(lang) }}</h2>
+        {% set groups = [["src", "library.facet_src", facets.src], ["lang", "library.facet_lang", facets.lang], ["cat", "library.facet_cat", facets.cat], ["year", "library.facet_year", facets.year]] %}
+        {% for g in groups %}{% if g[2].length %}
+        <div class="lib-facet" role="group" aria-labelledby="lib-f-{{ g[0] }}">
+          <h3 id="lib-f-{{ g[0] }}" class="eyebrow mb-2.5 font-sans">{{ g[1] | t(lang) }}</h3>
+          <div class="flex flex-wrap gap-2">{% for v in g[2] %}{{ chip(g[0], v, lang) }}{% endfor %}</div>
+        </div>
+        {% endif %}{% endfor %}
+        <button type="button" id="lib-clear-all" class="btn-ghost btn-sm mt-2 w-full" hidden>{% icon "x", "size-4" %} {{ "library.clear_all" | t(lang) }}</button>
+      </aside>
+    </div>
+
+    {#- results -#}
+    <div class="min-w-0">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <h2 id="lib-results-h" class="font-display text-xl font-semibold sm:text-2xl">{{ "library.results_title" | t(lang) }}
+          <span id="lib-status" class="mt-0.5 block font-sans text-sm font-normal text-muted" role="status" aria-live="polite">{{ ("library.count_one" | t(lang)) if docs.length == 1 else ("library.count_all" | t(lang, {n: docs.length | libNum(lang)})) }}</span>
+        </h2>
+        <div class="flex items-center gap-2">
+          <label class="sr-only" for="lib-sort">{{ "library.sort_label" | t(lang) }}</label>
+          <div class="relative">
+            <select id="lib-sort" class="input lib-select h-11 w-auto cursor-pointer appearance-none py-0 pr-9 pl-3.5 text-sm font-medium">
+              <option value="rel" hidden>{{ "library.sort_relevance" | t(lang) }}</option>
+              <option value="new" selected>{{ "library.sort_new" | t(lang) }}</option>
+              <option value="old">{{ "library.sort_old" | t(lang) }}</option>
+              <option value="az">{{ "library.sort_az" | t(lang) }}</option>
+            </select>
+            <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-muted">{% icon "chevron-down", "size-4" %}</span>
+          </div>
+          <div class="lib-view" role="group" aria-label="{{ 'library.view_label' | t(lang) }}">
+            <button type="button" data-view="grid" aria-pressed="true" title="{{ 'library.view_grid' | t(lang) }}"><span class="sr-only">{{ "library.view_grid" | t(lang) }}</span>{% icon "layout-grid", "size-[1.1rem]" %}</button>
+            <button type="button" data-view="list" aria-pressed="false" title="{{ 'library.view_list' | t(lang) }}"><span class="sr-only">{{ "library.view_list" | t(lang) }}</span>{% icon "list", "size-[1.1rem]" %}</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="lib-active" class="mt-4 flex flex-wrap items-center gap-2" hidden></div>
+      <p id="lib-partial" class="mt-4 flex items-start gap-2 rounded-xl bg-lv-soft px-4 py-3 text-sm text-lv-strong" hidden>{% icon "info", "size-4 mt-0.5" %}<span>{{ "library.partial" | t(lang) }}</span></p>
+      <div id="lib-error" class="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-line bg-surface px-4 py-3 text-sm text-muted" role="alert" hidden>
+        <span class="inline-flex items-center gap-2">{% icon "circle-x", "size-4 text-danger" %} {{ "library.load_error" | t(lang) }}</span>
+        <button type="button" id="lib-retry" class="btn-secondary btn-sm">{% icon "refresh-cw", "size-4" %} {{ "library.retry" | t(lang) }}</button>
+      </div>
+
+      <div id="lib-results" class="lib-results mt-5" data-view="grid" aria-labelledby="lib-results-h">
+        {#- Pick the saved / URL / phone-default layout before the cards paint (no flash). Removed by library.js on re-render. -#}
+        <script>(function(e){try{var v=new URLSearchParams(location.search).get("view");try{v=v||localStorage.getItem("lib-view")}catch(x){}v=v||(innerWidth<640?"list":"grid");e.parentNode.setAttribute("data-view",v==="list"?"list":"grid")}catch(x){}})(document.currentScript)</script>
+        {%- for d in docs | limit(SSR_COUNT) %}
+        {{ docCard(d, lang) }}
+        {%- endfor %}
+      </div>
+
+      <div id="lib-empty" class="mt-5" hidden>
+        <div class="empty-state">
+          <span class="lib-empty-icon mx-auto mb-3 grid size-12 place-items-center rounded-full bg-surface-2 text-faint" data-empty-icon>{% icon "search-x", "size-6" %}</span>
+          <p class="font-semibold text-ink" data-empty-title>{{ "library.none_title" | t(lang) }}</p>
+          <p class="mx-auto mt-1 max-w-md text-sm" data-empty-text>{{ "library.none_text" | t(lang) }}</p>
+          <div class="mt-4 flex flex-wrap justify-center gap-2">
+            <button type="button" class="btn-secondary btn-sm" data-lib-reset>{% icon "x", "size-4" %} {{ "library.clear_all" | t(lang) }}</button>
+            <a class="btn-ghost btn-sm" id="lib-site-search" href="{{ '/search/' | lurl(lang) }}">{% icon "search", "size-4" %} {{ "library.search_site" | t(lang) }}</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-8 flex flex-col items-center gap-2" id="lib-more-wrap"{% if docs.length <= SSR_COUNT %} hidden{% endif %}>
+        <button type="button" id="lib-more" class="btn-secondary min-w-48">{% icon "arrow-down", "size-4" %} {{ "library.load_more" | t(lang) }}</button>
+        <p id="lib-shown" class="text-xs text-faint">{{ "library.count_shown" | t(lang, {shown: ssrShown | libNum(lang), n: docs.length | libNum(lang)}) }}</p>
+      </div>
+      <noscript><p class="mt-6 rounded-xl bg-surface-2 px-4 py-3 text-center text-sm text-muted">{{ "library.noscript" | t(lang, {shown: ssrShown | libNum(lang), n: docs.length | libNum(lang)}) }}</p></noscript>
+    </div>
+  </div>
+  {% endif %}
+</section>
+
+{#- ---------- how it works ---------- -#}
+<section class="container-page pb-4" aria-labelledby="lib-how-h">
+  <div class="lib-how">
+    <h2 id="lib-how-h" class="h-section text-2xl">{{ "library.how_title" | t(lang) }}</h2>
+    <div class="mt-6 grid gap-4 md:grid-cols-3">
+      <div class="lib-how-item">
+        <span class="lib-how-icon" data-tone="gv">{% icon "bot", "size-5" %}</span>
+        <h3 class="h-card">{{ "library.how_crawl_title" | t(lang) }}</h3>
+        <p>{{ "library.how_crawl" | t(lang) }}</p>
+        {% if db.status.crawl and db.status.crawl.known_pages %}
+        <p class="lib-how-note">{% icon "activity", "size-3.5" %}<span>{{ "library.how_crawl_progress" | t(lang, {crawled: (db.status.crawl.crawled_pages or 0) | libNum(lang), known: db.status.crawl.known_pages | libNum(lang)}) }}</span></p>
+        {% endif %}
+      </div>
+      <div class="lib-how-item">
+        <span class="lib-how-icon" data-tone="neta">{% icon "folder-open", "size-5" %}</span>
+        <h3 class="h-card">{{ "library.how_drive_title" | t(lang) }}</h3>
+        <p>{{ "library.how_drive" | t(lang) }}</p>
+        {% if docs.length and not stats.bySrc.neta %}<p class="lib-how-note">{% icon "hourglass", "size-3.5" %}<span>{{ "library.how_drive_empty" | t(lang) }}</span></p>{% endif %}
+      </div>
+      <div class="lib-how-item">
+        <span class="lib-how-icon" data-tone="lv">{% icon "languages", "size-5" %}</span>
+        <h3 class="h-card">{{ "library.how_lang_title" | t(lang) }}</h3>
+        <p>{{ "library.how_lang" | t(lang) }}</p>
+      </div>
+    </div>
+    <div class="mt-6 flex flex-col gap-4 border-t border-line pt-5 sm:flex-row sm:items-center sm:justify-between">
+      <p class="text-sm text-muted">{{ "library.ask" | t(lang) }}</p>
+      <div class="flex flex-wrap gap-2">
+        <a class="btn-secondary btn-sm" href="mailto:{{ site.contact_email }}">{% icon "mail", "size-4" %} {{ "library.ask_cta" | t(lang) }}</a>
+        <a class="btn-ghost btn-sm" href="{{ '/status/' | lurl(lang) }}">{% icon "activity", "size-4" %} {{ "library.how_status" | t(lang) }}</a>
+      </div>
+    </div>
+    <p class="mt-4 text-xs text-faint">{{ "library.copyright" | t(lang) }}</p>
+  </div>
+</section>
+</div>
+
+{#- ---------- Drive preview dialog (native <dialog>: focus trap + Esc built in) ---------- -#}
+<dialog id="lib-preview" class="lib-dialog m-auto" aria-labelledby="lib-preview-title">
+  <div class="flex h-full flex-col">
+    <div class="flex items-center gap-3 border-b border-line px-4 py-3 sm:px-5">
+      <span class="grid size-9 shrink-0 place-items-center rounded-lg bg-vine-soft text-vine">{% icon "eye", "size-[1.1rem]" %}</span>
+      <h2 id="lib-preview-title" class="min-w-0 flex-1 truncate font-display text-lg font-semibold">{{ "common.preview" | t(lang) }}</h2>
+      <a id="lib-preview-open" class="btn-secondary btn-sm hidden sm:inline-flex" href="#" target="_blank" rel="noopener">{% icon "external-link", "size-4" %} {{ "common.open" | t(lang) }}</a>
+      <a id="lib-preview-dl" class="btn-secondary btn-sm hidden sm:inline-flex" href="#" target="_blank" rel="noopener" download>{% icon "download", "size-4" %} {{ "common.download" | t(lang) }}</a>
+      <button type="button" class="grid size-11 shrink-0 place-items-center rounded-full hover:bg-surface-2" data-lib-close aria-label="{{ 'common.close' | t(lang) }}">{% icon "x", "size-5" %}</button>
+    </div>
+    <div class="relative flex-1 bg-surface-2">
+      <iframe id="lib-preview-frame" title="{{ 'common.preview' | t(lang) }}" class="absolute inset-0 size-full border-0" loading="lazy" allow="autoplay" referrerpolicy="no-referrer"></iframe>
+    </div>
+    <div class="flex items-center justify-between gap-2 border-t border-line px-4 py-2.5 text-xs text-faint sm:px-5">
+      <span>{{ "library.preview_hint" | t(lang) }}</span>
+      <span class="flex gap-2 sm:hidden">
+        <a id="lib-preview-open-m" class="btn-secondary btn-sm" href="#" target="_blank" rel="noopener">{% icon "external-link", "size-4" %} {{ "common.open" | t(lang) }}</a>
+      </span>
+    </div>
+  </div>
+</dialog>
+
+{#- ---------- icons + strings for library.js ---------- -#}
+<template id="lib-icons">
+  {%- for name in ["grapes", "users", "external-link", "download", "link", "share-2", "eye", "check", "x", "languages", "badge-check", "book-open", "newspaper", "megaphone", "mail", "list-checks", "notebook-pen", "clipboard-list", "hand-heart", "book-marked", "file-chart-column", "notepad-text", "presentation", "graduation-cap", "file-pen-line", "file-text", "folder-open", "calendar-days", "unlink", "search-x"] %}
+  <i data-icon="{{ name }}">{% icon name, "size-4" %}</i>
+  {%- endfor %}
+</template>
+<script type="application/json" id="lib-config">{{ {
+  lang: lang,
+  locale: "es-US" if lang == "es" else "en-US",
+  index: "/library-index.json" | lurl(lang),
+  docsPage: "/documents/" | lurl(lang),
+  search: "/search/" | lurl(lang),
+  pageSize: SSR_COUNT,
+  ssr: ssrShown,
+  total: docs.length,
+  catIcons: facets.cat | libCatIconMap,
+  src: { gv: "Grapevine", lv: "La Viña", neta: "NETA 65" },
+  srcLong: { gv: "library.src.gv" | t(lang), lv: "library.src.lv" | t(lang), neta: "library.src.neta" | t(lang) },
+  langs: { en: "library.lang.en" | t(lang), es: "library.lang.es" | t(lang), fr: "library.lang.fr" | t(lang) },
+  langTitle: { en: "library.lang_title.en" | t(lang), es: "library.lang_title.es" | t(lang), fr: "library.lang_title.fr" | t(lang) },
+  ft: { pdf: "library.ft.pdf" | t(lang), doc: "library.ft.doc" | t(lang), slides: "library.ft.slides" | t(lang), form: "library.ft.form" | t(lang), image: "library.ft.image" | t(lang), file: "library.ft.file" | t(lang) },
+  cols: cols | libColsConfig,
+  s: {
+    countAll: "library.count_all" | t(lang), countOne: "library.count_one" | t(lang),
+    countMatch: "library.count_match" | t(lang), countMatchOne: "library.count_match_one" | t(lang),
+    countShown: "library.count_shown" | t(lang), pages: "common.pages" | t(lang), pageOne: "library.page_one" | t(lang),
+    orphan: "library.orphan" | t(lang), eventOn: "library.event_on" | t(lang), opensOn: "library.opens_on" | t(lang),
+    isNew: "common.new" | t(lang), auto: "common.auto_translated" | t(lang), autoHelp: "common.auto_translated_help" | t(lang),
+    foundOn: "library.found_on" | t(lang), original: "library.original_title" | t(lang),
+    open: "common.open" | t(lang), download: "common.download" | t(lang), preview: "common.preview" | t(lang),
+    copyLink: "common.copy_link" | t(lang), share: "common.share" | t(lang), copied: "common.copied" | t(lang),
+    openAria: "library.open_aria" | t(lang), downloadAria: "library.download_aria" | t(lang), copyAria: "library.copy_aria" | t(lang),
+    shareAria: "library.share_aria" | t(lang), previewAria: "library.preview_aria" | t(lang),
+    removeFilter: "library.remove_filter" | t(lang), collection: "library.collection" | t(lang),
+    noneTitle: "library.none_title" | t(lang), noneText: "library.none_text" | t(lang),
+    colEmptyTitle: "library.col_empty_title" | t(lang), colEmptyText: "library.col_empty_text" | t(lang), colEmptyReports: "library.col_empty_reports" | t(lang), colEmptyReportsCta: "library.col_empty_reports_cta" | t(lang)
+  }
+} | jsonScript | safe }}</script>

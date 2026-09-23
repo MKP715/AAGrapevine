@@ -1,0 +1,73 @@
+{#- Base layout. Every page sets in front matter:
+      lang (via pagination alias), pageKey, titleKey (i18n key) or title, descKey/description,
+      optional: pageScripts [..], pageStyles [..], bodyClass, noHero -#}
+{%- set L = lang or "en" -%}
+{%- set pageTitle = (titleKey | t(L)) if titleKey else (title or "") -%}
+{%- set siteTitle = site | pick(L, "title") -%}
+{%- set fullTitle = (pageTitle + " · " + siteTitle + " — NETA 65") if (pageTitle and pageKey != "home") else (siteTitle + " — " + ("site.tagline" | t(L))) -%}
+{%- set desc = (descKey | t(L)) if descKey else (description or ("site.description" | t(L))) -%}
+{%- set alt = page.url | altLangUrl(L) -%}
+<!doctype html>
+<html lang="{{ L }}" data-theme="light" class="scroll-smooth">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>{{ fullTitle }}</title>
+  <meta name="description" content="{{ desc }}">
+  <link rel="canonical" href="{{ page.url | siteUrl(site) }}">
+  <link rel="alternate" hreflang="{{ L }}" href="{{ page.url | siteUrl(site) }}">
+  <link rel="alternate" hreflang="{{ L | otherLang }}" href="{{ alt | siteUrl(site) }}">
+  <link rel="alternate" hreflang="x-default" href="{{ (alt if L == 'es' else page.url) | siteUrl(site) }}">
+  <link rel="alternate" type="application/rss+xml" title="{{ 'feeds.rss_title' | t(L) }}" href="{{ '/feed.xml' | lurl(L) }}">
+  <meta name="theme-color" content="#0b3f73">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="{{ siteTitle }} — NETA 65">
+  <meta property="og:title" content="{{ fullTitle }}">
+  <meta property="og:description" content="{{ desc }}">
+  <meta property="og:url" content="{{ page.url | siteUrl(site) }}">
+  <meta property="og:image" content="{{ (ogImage or '/assets/img/og-default.png') | siteUrl(site) }}">
+  <meta property="og:locale" content="{{ 'es_US' if L == 'es' else 'en_US' }}">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/logo-32x32.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/assets/img/logo-192x192.png">
+  <link rel="apple-touch-icon" href="/assets/img/logo-180x180.png">
+  <link rel="preload" href="/assets/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/assets/fonts/fraunces-latin-full-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <script>
+    // Theme before paint (no flash): saved choice → OS preference.
+    (function () {
+      try {
+        var t = localStorage.getItem("theme");
+        if (!t) t = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        document.documentElement.setAttribute("data-theme", t);
+      } catch (e) {}
+      // Remember language choice for the "/" auto-redirect helper
+      try { localStorage.setItem("lang", "{{ L }}"); } catch (e) {}
+    })();
+    window.SITE = { lang: "{{ L }}", base: "{{ '/' | url }}", tz: "{{ site.timezone }}" };
+  </script>
+  <link rel="stylesheet" href="/assets/css/main.css">
+  {%- for s in pageStyles %}
+  <link rel="stylesheet" href="{{ s }}">
+  {%- endfor %}
+</head>
+<body class="min-h-screen flex flex-col {{ bodyClass }}">
+  <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[100] focus:rounded-lg focus:bg-gv focus:px-4 focus:py-2 focus:text-white">{{ "a11y.skip" | t(L) }}</a>
+
+  {% include "partials/header.njk" %}
+  {% include "partials/lang-banner.njk" ignore missing %}
+
+  <main id="main" class="flex-1" tabindex="-1">
+    {{ content | safe }}
+  </main>
+
+  {% include "partials/footer.njk" %}
+
+  <script src="/assets/js/app.js" defer></script>
+  {%- for s in pageScripts %}
+  <script src="{{ s }}" defer></script>
+  {%- endfor %}
+  <script src="/assets/vendor/alpine.min.js" defer></script>
+</body>
+</html>

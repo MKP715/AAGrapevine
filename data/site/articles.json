@@ -1,0 +1,3540 @@
+{
+ "updated": "2026-09-23T21:49:00Z",
+ "fixture": false,
+ "issues": [
+  {
+   "id": "gv:2026-10",
+   "publication": "gv",
+   "key": "2026-10",
+   "label": "October 2026",
+   "theme": "Loneliness",
+   "description": "October’s special section is about “Loneliness.” AA members share touching, helpful stories about dealing with a common feeling that’s rarely discussed.",
+   "url": "https://www.aagrapevine.org/magazine-issue/october-2026",
+   "image": "https://www.aagrapevine.org/sites/default/files/styles/issue_feature_image/public/2026-09/Hero%20GV%20Oct%202026.jpg?itok=aCokASYg",
+   "cover": "/assets/cache/articles/4af15bfa155b69a0.webp",
+   "hub": "https://www.aagrapevine.org/magazine",
+   "i18n": {
+    "theme": {
+     "en": "Loneliness",
+     "es": "Soledad"
+    },
+    "description": {
+     "en": "October’s special section is about “Loneliness.” AA members share touching, helpful stories about dealing with a common feeling that’s rarely discussed.",
+     "es": "La sección especial de octubre es sobre “Soledad”. Los miembros de AA comparten historias interesantes y útiles sobre tratar con un sentimiento común que rara vez se discute."
+    },
+    "label": {
+     "en": "October 2026",
+     "es": "Octubre 2026"
+    }
+   },
+   "machine": [
+    "es"
+   ],
+   "lang": "en"
+  },
+  {
+   "id": "lv:2026-09",
+   "publication": "lv",
+   "key": "2026-09",
+   "label": "Septiembre / Octubre 2026",
+   "theme": "Servicio en AA",
+   "description": "La recuperación nos regala mucho más que la sobriedad. Nos ofrece la oportunidad de reconstruir relaciones, descubrir un nuevo propósito y recuperar la alegría de vivir. En esta edición, miembros de AA comparten cómo la acción puede transformar nuestras vidas, fortalecer nuestra sobriedad y reafirmar el propósito de llevar el mensaje a otros. Porque al tender la mano y ayudar a los demás, también seguimos transformándonos.",
+   "url": "https://www.aalavina.org/edicion-de-revista/septiembre-octubre-2026",
+   "image": "https://www.aalavina.org/sites/default/files/styles/issue_feature_image/public/2026-08/Hero-LV-SepOct-2026.jpg?itok=uElVyyeX",
+   "cover": "/assets/cache/articles/5f6983cc446a5d6a.webp",
+   "hub": "https://www.aalavina.org/la-revista",
+   "i18n": {
+    "theme": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "description": {
+     "en": "The recovery gives us much more than the sobriety. It offers us the opportunity to rebuild relationships, discover a new purpose and recover the joy of living. In this edition, members of AA share how action can transform our lives, strengthen our sobriety and reaffirm the purpose of bringing the message to others. Because by reaching out and helping others, we also continue to transform.",
+     "es": "La recuperación nos regala mucho más que la sobriedad. Nos ofrece la oportunidad de reconstruir relaciones, descubrir un nuevo propósito y recuperar la alegría de vivir. En esta edición, miembros de AA comparten cómo la acción puede transformar nuestras vidas, fortalecer nuestra sobriedad y reafirmar el propósito de llevar el mensaje a otros. Porque al tender la mano y ayudar a los demás, también seguimos transformándonos."
+    },
+    "label": {
+     "en": "September / October 2026",
+     "es": "Septiembre / Octubre 2026"
+    }
+   },
+   "machine": [
+    "en"
+   ],
+   "lang": "es"
+  }
+ ],
+ "items": [
+  {
+   "id": "gv:2026-10:wits-end",
+   "source": "grapevine",
+   "kind": "article",
+   "url": "https://www.aagrapevine.org/magazine/2026/oct/wits-end",
+   "title": "At Wit's End",
+   "summary": "Group conscience",
+   "lang": "en",
+   "date": "2026-09-23",
+   "first_seen": "2026-09-23T16:34:47Z",
+   "image": "/assets/cache/articles/5d6e7cef030cc128.webp",
+   "tags": [],
+   "category": "gv",
+   "status": "ok",
+   "extra": {
+    "publication": "gv",
+    "issue_label": "October 2026",
+    "issue_key": "2026-10",
+    "issue_date": "2026-10-01",
+    "issue_theme": "Loneliness",
+    "issue_url": "https://www.aagrapevine.org/magazine-issue/october-2026",
+    "topic": "Loneliness",
+    "section": "In Every Issue",
+    "author": null,
+    "author_location": null,
+    "subtitle": null,
+    "teaser": "Group conscience",
+    "free": false,
+    "online_exclusive": false,
+    "department": true
+   },
+   "i18n": {
+    "title": {
+     "en": "At Wit's End",
+     "es": "At Wit's End"
+    },
+    "summary": {
+     "en": "Group conscience",
+     "es": "Conciencia de grupo"
+    },
+    "section": {
+     "en": "In Every Issue",
+     "es": "En cada edición"
+    },
+    "topic": {
+     "en": "Loneliness",
+     "es": "Soledad"
+    },
+    "issue_theme": {
+     "en": "Loneliness",
+     "es": "Soledad"
+    },
+    "issue_label": {
+     "en": "October 2026",
+     "es": "Octubre 2026"
+    }
+   },
+   "machine": [
+    "es"
+   ],
+   "is_new": true
+  },
+  {
+   "id": "gv:2026-10:whos-girl",
+   "source": "grapevine",
+   "kind": "article",
+   "url": "https://www.aagrapevine.org/magazine/2026/oct/whos-girl",
+   "title": "Who’s That Girl?",
+   "summary": "Finding a newcomer’s journal and reluctantly reading it led to a pleasant surprise. Time to pick up a pen again",
+   "lang": "en",
+   "date": "2026-09-23",
+   "first_seen": "2026-09-23T16:34:47Z",
+   "image": "https://www.aagrapevine.org/sites/default/files/styles/card_image/public/2026-09/GettyImages-2255844237.jpg?itok=U0JZ3eGT",
+   "tags": [],
+   "category": "gv",
+   "status": "ok",
+   "extra": {
+    "publication": "gv",
+    "issue_label": "October 2026",
+    "issue_key": "2026-10",
+    "issue_date": "2026-10-01",
+    "issue_theme": "Loneliness",
+    "issue_url": "https://www.aagrapevine.org/magazine-issue/october-2026",
+    "topic": "Loneliness",
+    "section": "Step Ten",
+    "author": "Liz H.",
+    "author_location": "Bellingham, Washington",
+    "subtitle": "Finding a newcomer’s journal and reluctantly reading it led to a pleasant surprise. Time to pick up a pen again",
+    "teaser": "A while back, I found a journal tucked in a bookcase.",
+    "free": false,
+    "online_exclusive": false,
+    "department": false
+   },
+   "i18n": {
+    "title": {
+     "en": "Who’s That Girl?",
+     "es": "¿Quién es esa chica?"
+    },
+    "summary": {
+     "en": "Finding a newcomer’s journal and reluctantly reading it led to a pleasant surprise. Time to pick up a pen again",
+     "es": "Encontrar un diario de recién llegado y leerlo reticentemente llevó a una agradable sorpresa. Hora de recoger un bolígrafo otra vez"
+    },
+    "section": {
+     "en": "Step Ten",
+     "es": "Paso Diez"
+    },
+    "topic": {
+     "en": "Loneliness",
+     "es": "Soledad"
+    },
+    "issue_theme": {
+     "en": "Loneliness",
+     "es": "Soledad"
+    },
+    "issue_label": {
+     "en": "October 2026",
+     "es": "Octubre 2026"
+    }
+   },
+   "machine": [
+    "es"
+   ],
+   "is_new": true
+  },
+  {
+   "id": "gv:2026-10:when-loneliness-comes",
+   "source": "grapevine",
+   "kind": "article",
+   "url": "https://www.aagrapevine.org/magazine/2026/oct/when-loneliness-comes",
+   "title": "When Loneliness Comes",
+   "summary": "Getting sober and living alone after a 27-year marriage was tough. In AA, she began to learn who she is and what makes her happy",
+   "lang": "en",
+   "date": "2026-09-23",
+   "first_seen": "2026-09-23T16:34:47Z",
+   "image": "https://www.aagrapevine.org/sites/default/files/styles/card_image/public/2026-09/GettyImages-1394903461.jpg?itok=RBVSRtRY",
+   "tags": [],
+   "category": "gv",
+   "status": "ok",
+   "extra": {
+    "publication": "gv",
+    "issue_label": "October 2026",
+    "issue_key": "2026-10",
+    "issue_date": "2026-10-01",
+    "issue_theme": "Loneliness",
+    "issue_url": "https://www.aagrapevine.org/magazine-issue/october-2026",
+    "topic": "Loneliness",
+    "section": "Featured Section",
+    "author": "Tracy A.",
+    "author_location": "Scarborough, Ontario",
+    "subtitle": "Getting sober and living alone after a 27-year marriage was tough. In AA, she began to learn who she is and what makes her happy",
+    "teaser": "My alcoholism ended up costing me everything. Because of my poor choices and skewed priorities, my 27-year marriage ended a couple of years ago, right before I found the rooms of AA.",
+    "free": false,
+    "online_exclusive": false,
+    "department": false
+   },
+   "i18n": {
+    "title": {
+     "en": "When Loneliness Comes",
+     "es": "Cuando la soledad viene"
+    },
+    "summary": {
+     "en": "Getting sober and living alone after a 27-year marriage was tough. In AA, she began to learn who she is and what makes her happy",
+     "es": "Ser sobrio y vivir solo después de un matrimonio de 27 años fue duro. En AA, comenzó a aprender quién es y lo que la hace feliz"
+    },
+    "section": {
+     "en": "Featured Section",
+     "es": "Sección destacada"
+    },
+    "topic": {
+     "en": "Loneliness",
+     "es": "Soledad"
+    },
+    "issue_theme": {
+     "en": "Loneliness",
+     "es": "Soledad"
+    },
+    "issue_label": {
+     "en": "October 2026",
+     "es": "Octubre 2026"
+    }
+   },
+   "machine": [
+    "es"
+   ],
+   "is_new": true
+  },
+  {
+   "id": "gv:2026-10:watch-what-we-say",
+   "source": "grapevine",
+   "kind": "article",
+   "url": "https://www.aagrapevine.org/magazine/2026/oct/watch-what-we-say",
+   "title": "Watch What We Say",
+   "summary": "He thought it was OK to share his politics because he assumed everyone agreed. Luckily, Chimney Dave didn’t",
+   "lang": "en",
+   "date": "2026-09-23",
+   "first_seen": "2026-09-23T16:34:47Z",
+   "image": "https://www.aagrapevine.org/sites/default/files/styles/card_image/public/2026-09/bahia_cheerful_cartoon_guy_talking_hand_it_the_air_finger_poi_670dd36d-381a-47c3-9d77-d26b2a0043e0_2.jpg?itok=vP_ns03M",
+   "tags": [],
+   "category": "gv",
+   "status": "ok",
+   "extra": {
+    "publication": "gv",
+    "issue_label": "October 2026",
+    "issue_key": "2026-10",
+    "issue_date": "2026-10-01",
+    "issue_theme": "Loneliness",
+    "issue_url": "https://www.aagrapevine.org/magazine-issue/october-2026",
+    "topic": "Loneliness",
+    "section": "Tradition Ten",
+    "author": "Anonymous",
+    "author_location": "Oslo",
+    "subtitle": "He thought it was OK to share his politics because he assumed everyone agreed. Luckily, Chimney Dave didn’t",
+    "teaser": "I got sober in a small AA meeting in the little town I grew up in. I thought everyone there had the same beliefs I had.",
+    "free": false,
+    "online_exclusive": false,
+    "department": false
+   },
+   "i18n": {
+    "title": {
+     "en": "Watch What We Say",
+     "es": "Mira lo que decimos"
+    },
+    "summary": {
+     "en": "He thought it was OK to share his politics because he assumed everyone agreed. Luckily, Chimney Dave didn’t",
+     "es": "Pensó que estaba bien compartir su política porque asumió que todos estaban de acuerdo. Por suerte, Chimney Dave no"
+    },
+    "section": {
+     "en": "Tradition Ten",
+     "es": "Décima Tradición"
+    },
+    "topic": {
+     "en": "Loneliness",
+     "es": "Soledad"
+    },
+    "issue_theme": {
+     "en": "Loneliness",
+     "es": "Soledad"
+    },
+    "issue_label": {
+     "en": "October 2026",
+     "es": "Octubre 2026"
+    }
+   },
+   "machine": [
+    "es"
+   ],
+   "is_new": true
+  },
+  {
+   "id": "gv:2026-10:step-ten-rescue",
+   "source": "grapevine",
+   "kind": "article",
+   "url": "https://www.aagrapevine.org/magazine/2026/oct/step-ten-rescue",
+   "title": "Step Ten to the Rescue",
+   "summary": "I walked with trepidation into our second business meeting of the year at one of my home groups, a speaker/discussion topic meeting. I didn’t want to be there.",
+   "lang": "en",
+   "date": "2026-09-23",
+   "first_seen": "2026-09-23T16:34:47Z",
+   "image": "https://www.aagrapevine.org/sites/default/files/styles/card_image/public/2026-09/GettyImages-2144244593%20%5BConverted%5D%20copy.jpg?itok=Gep5F20E",
+   "tags": [],
+   "category": "gv",
+   "status": "ok",
+   "extra": {
+    "publication": "gv",
+    "issue_label": "October 2026",
+    "issue_key": "2026-10",
+    "issue_date": "2026-10-01",
+    "issue_theme": "Loneliness",
+    "issue_url": "https://www.aagrapevine.org/magazine-issue/october-2026",
+    "topic": "Loneliness",
+    "section": "Step Ten",
+    "author": "L.C.",
+    "author_location": "Florida",
+    "subtitle": null,
+    "teaser": "I walked with trepidation into our second business meeting of the year at one of my home groups, a speaker/discussion topic meeting. I didn’t want to be there.",
+    "free": false,
+    "online_exclusive": false,
+    "department": false
+   },
+   "i18n": {
+    "title": {
+     "en": "Step Ten to the Rescue",
+     "es": "Paso Diez al rescate"
+    },
+    "summary": {
+     "en": "I walked with trepidation into our second business meeting of the year at one of my home groups, a speaker/discussion topic meeting. I didn’t want to be there.",
+     "es": "Caminé con temblor en nuestra segunda reunión de negocios del año en uno de mi grupos base, una reunión de altavoces/discusión. No quería estar allí."
+    },
+    "section": {
+     "en": "Step Ten",
+     "es": "Paso Diez"
+    },
+    "topic": {
+     "en": "Loneliness",
+     "es": "Soledad"
+    },
+    "issue_theme": {
+     "en": "Loneliness",
+     "es": "Soledad"
+    },
+    "issue_label": {
+     "en": "October 2026",
+     "es": "Octubre 2026"
+    }
+   },
+   "machine": [
+    "es"
+   ],
+   "is_new": true
+  },
+  {
+   "id": "gv:2026-10:sense-belonging",
+   "source": "grapevine",
+   "kind": "article",
+   "url": "https://www.aagrapevine.org/magazine/2026/oct/sense-belonging",
+   "title": "A Sense of Belonging",
+   "summary": "After he lost his best friend alcohol, loneliness set in. Luckily, he had a sponsor and AA tools to help",
+   "lang": "en",
+   "date": "2026-09-23",
+   "first_seen": "2026-09-23T16:34:47Z",
+   "image": "https://www.aagrapevine.org/sites/default/files/styles/card_image/public/2026-09/GettyImages-607280514.jpg?itok=QjkADkgv",
+   "tags": [],
+   "category": "gv",
+   "status": "ok",
+   "extra": {
+    "publication": "gv",
+    "issue_label": "October 2026",
+    "issue_key": "2026-10",
+    "issue_date": "2026-10-01",
+    "issue_theme": "Loneliness",
+    "issue_url": "https://www.aagrapevine.org/magazine-issue/october-2026",
+    "topic": "Loneliness",
+    "section": "Featured Section",
+    "author": "Jake B.",
+    "author_location": "Cheyenne, Wyoming",
+    "subtitle": "After he lost his best friend alcohol, loneliness set in. Luckily, he had a sponsor and AA tools to help",
+    "teaser": "Loneliness is the “L” in the AA slogan H.A.L.T.—one of the four dangerous states that can lead to relapse. In my early days, I understood the other letters: Hungry, Angry and Tired.",
+    "free": false,
+    "online_exclusive": false,
+    "department": false
+   },
+   "i18n": {
+    "title": {
+     "en": "A Sense of Belonging",
+     "es": "Un sentido de pertenencia"
+    },
+    "summary": {
+     "en": "After he lost his best friend alcohol, loneliness set in. Luckily, he had a sponsor and AA tools to help",
+     "es": "Después de perder el alcohol de su mejor amigo, la soledad se puso. Por suerte, tenía herramientas padrino y AA para ayudar"
+    },
+    "section": {
+     "en": "Featured Section",
+     "es": "Sección destacada"
+    },
+    "topic": {
+     "en": "Loneliness",
+     "es": "Soledad"
+    },
+    "issue_theme": {
+     "en": "Loneliness",
+     "es": "Soledad"
+    },
+    "issue_label": {
+     "en": "October 2026",
+     "es": "Octubre 2026"
+    }
+   },
+   "machine": [
+    "es"
+   ],
+   "is_new": true
+  },
+  {
+   "id": "gv:2026-10:searching-trusting",
+   "source": "grapevine",
+   "kind": "article",
+   "url": "https://www.aagrapevine.org/magazine/2026/oct/searching-trusting",
+   "title": "Searching & Trusting",
+   "summary": "He looked to fill the ache of loneliness through people and things. Now he turns to his Higher Power",
+   "lang": "en",
+   "date": "2026-09-23",
+   "first_seen": "2026-09-23T16:34:47Z",
+   "image": "https://www.aagrapevine.org/sites/default/files/styles/card_image/public/2026-09/GettyImages-844503712.jpg?itok=1P2YgunJ",
+   "tags": [],
+   "category": "gv",
+   "status": "ok",
+   "extra": {
+    "publication": "gv",
+    "issue_label": "October 2026",
+    "issue_key": "2026-10",
+    "issue_date": "2026-10-01",
+    "issue_theme": "Loneliness",
+    "issue_url": "https://www.aagrapevine.org/magazine-issue/october-2026",
+    "topic": "Loneliness",
+    "section": "Featured Section",
+    "author": "Sean S.",
+    "author_location": "New York, New York",
+    "subtitle": "He looked to fill the ache of loneliness through people and things. Now he turns to his Higher Power",
+    "teaser": "One of the things I always identify with in AA meetings is when people describe that alcoholic sense of “anxious apartness,” as it’s called in the Step Five chapter of our “Twelve and Twelve”",
+    "free": false,
+    "online_exclusive": false,
+    "department": false
+   },
+   "i18n": {
+    "title": {
+     "en": "Searching & Trusting",
+     "es": "Búsqueda y confianza"
+    },
+    "summary": {
+     "en": "He looked to fill the ache of loneliness through people and things. Now he turns to his Higher Power",
+     "es": "Buscaba llenar el dolor de soledad a través de la gente y las cosas. Ahora se convierte en su Poder Superior"
+    },
+    "section": {
+     "en": "Featured Section",
+     "es": "Sección destacada"
+    },
+    "topic": {
+     "en": "Loneliness",
+     "es": "Soledad"
+    },
+    "issue_theme": {
+     "en": "Loneliness",
+     "es": "Soledad"
+    },
+    "issue_label": {
+     "en": "October 2026",
+     "es": "Octubre 2026"
+    }
+   },
+   "machine": [
+    "es"
+   ],
+   "is_new": true
+  },
+  {
+   "id": "gv:2026-10:right-door",
+   "source": "grapevine",
+   "kind": "article",
+   "url": "https://www.aagrapevine.org/magazine/2026/oct/right-door",
+   "title": "The Right Door",
+   "summary": "She found herself crying in the Vancouver Intergroup office, with no idea how she got there. It was the day that changed her life",
+   "lang": "en",
+   "date": "2026-09-23",
+   "first_seen": "2026-09-23T16:34:47Z",
+   "image": "https://www.aagrapevine.org/sites/default/files/styles/card_image/public/2026-09/InterGroupOfc01.jpg?itok=EdXbSl8m",
+   "tags": [],
+   "category": "gv",
+   "status": "ok",
+   "extra": {
+    "publication": "gv",
+    "issue_label": "October 2026",
+    "issue_key": "2026-10",
+    "issue_date": "2026-10-01",
+    "issue_theme": "Loneliness",
+    "issue_url": "https://www.aagrapevine.org/magazine-issue/october-2026",
+    "topic": "Loneliness",
+    "section": "Our Personal Stories",
+    "author": "Christina M.",
+    "author_location": "Lake County, British Columbia",
+    "subtitle": "She found herself crying in the Vancouver Intergroup office, with no idea how she got there. It was the day that changed her life",
+    "teaser": "I spent most of my life feeling like I was always on the outside looking in—face pressed to the glass, watching everyone else live life like it made sense.",
+    "free": false,
+    "online_exclusive": false,
+    "department": false
+   },
+   "i18n": {
+    "title": {
+     "en": "The Right Door",
+     "es": "La puerta correcta"
+    },
+    "summary": {
+     "en": "She found herself crying in the Vancouver Intergroup office, with no idea how she got there. It was the day that changed her life",
+     "es": "Se encontró llorando en la oficina de Vancouver Intergrupo, sin idea de cómo llegó allí. Fue el día que cambió su vida"
+    },
+    "section": {
+     "en": "Our Personal Stories",
+     "es": "Nuestras historias personales"
+    },
+    "topic": {
+     "en": "Loneliness",
+     "es": "Soledad"
+    },
+    "issue_theme": {
+     "en": "Loneliness",
+     "es": "Soledad"
+    },
+    "issue_label": {
+     "en": "October 2026",
+     "es": "Octubre 2026"
+    }
+   },
+   "machine": [
+    "es"
+   ],
+   "is_new": true
+  },
+  {
+   "id": "gv:2026-10:reward-living-good-sober-life",
+   "source": "grapevine",
+   "kind": "article",
+   "url": "https://www.aagrapevine.org/magazine/2026/oct/reward-living-good-sober-life",
+   "title": "The Reward for Living A Good Sober Life",
+   "summary": "A retired teacher in Australia shares about the peace and contentment many years of AA has given him",
+   "lang": "en",
+   "date": "2026-09-23",
+   "first_seen": "2026-09-23T16:34:47Z",
+   "image": "https://www.aagrapevine.org/sites/default/files/styles/card_image/public/2026-09/GettyImages-1497694342.jpg?itok=xE_FId_a",
+   "tags": [],
+   "category": "gv",
+   "status": "ok",
+   "extra": {
+    "publication": "gv",
+    "issue_label": "October 2026",
+    "issue_key": "2026-10",
+    "issue_date": "2026-10-01",
+    "issue_theme": "Loneliness",
+    "issue_url": "https://www.aagrapevine.org/magazine-issue/october-2026",
+    "topic": "Loneliness",
+    "section": "Gratitude",
+    "author": "Jim in Tasmania",
+    "author_location": "Devonport",
+    "subtitle": "A retired teacher in Australia shares about the peace and contentment many years of AA has given him",
+    "teaser": "When I moved here to the north coast of Tasmania from Japan 22 years ago, I doubted I would live long in retirement, and I had real doubts about how well I would adjust to life here, even…",
+    "free": false,
+    "online_exclusive": false,
+    "department": false
+   },
+   "i18n": {
+    "title": {
+     "en": "The Reward for Living A Good Sober Life",
+     "es": "La recompensa por vivir una buena vida sobria"
+    },
+    "summary": {
+     "en": "A retired teacher in Australia shares about the peace and contentment many years of AA has given him",
+     "es": "Un profesor jubilado en Australia comparte la paz y el contenido de muchos años de AA le ha dado"
+    },
+    "section": {
+     "en": "Gratitude",
+     "es": "Gratitud"
+    },
+    "topic": {
+     "en": "Loneliness",
+     "es": "Soledad"
+    },
+    "issue_theme": {
+     "en": "Loneliness",
+     "es": "Soledad"
+    },
+    "issue_label": {
+     "en": "October 2026",
+     "es": "Octubre 2026"
+    }
+   },
+   "machine": [
+    "es"
+   ],
+   "is_new": true
+  },
+  {
+   "id": "gv:2026-10:purrrfect-solution",
+   "source": "grapevine",
+   "kind": "article",
+   "url": "https://www.aagrapevine.org/magazine/2026/oct/purrrfect-solution",
+   "title": "Purrrfect Solution",
+   "summary": "A newcomer, lonely for her old bar friends, finds a furry little friend to help her",
+   "lang": "en",
+   "date": "2026-09-23",
+   "first_seen": "2026-09-23T16:34:47Z",
+   "image": "https://www.aagrapevine.org/sites/default/files/styles/card_image/public/2026-09/GettyImages-1320150841.jpg?itok=033CqIgh",
+   "tags": [],
+   "category": "gv",
+   "status": "ok",
+   "extra": {
+    "publication": "gv",
+    "issue_label": "October 2026",
+    "issue_key": "2026-10",
+    "issue_date": "2026-10-01",
+    "issue_theme": "Loneliness",
+    "issue_url": "https://www.aagrapevine.org/magazine-issue/october-2026",
+    "topic": "Loneliness",
+    "section": "Featured Section",
+    "author": "Carol S.",
+    "author_location": "New York, New York",
+    "subtitle": "A newcomer, lonely for her old bar friends, finds a furry little friend to help her",
+    "teaser": "Many years ago, in a meeting far, far away, a newcomer was complaining about how lonely she was because she couldn’t see her friends at the bar anymore and how she hated going home to an…",
+    "free": false,
+    "online_exclusive": false,
+    "department": false
+   },
+   "i18n": {
+    "title": {
+     "en": "Purrrfect Solution",
+     "es": "Solución de purrfect"
+    },
+    "summary": {
+     "en": "A newcomer, lonely for her old bar friends, finds a furry little friend to help her",
+     "es": "Un recién llegado, solitario para sus viejos amigos del bar, encuentra una pequeña amiga peluda para ayudarla"
+    },
+    "section": {
+     "en": "Featured Section",
+     "es": "Sección destacada"
+    },
+    "topic": {
+     "en": "Loneliness",
+     "es": "Soledad"
+    },
+    "issue_theme": {
+     "en": "Loneliness",
+     "es": "Soledad"
+    },
+    "issue_label": {
+     "en": "October 2026",
+     "es": "Octubre 2026"
+    }
+   },
+   "machine": [
+    "es"
+   ],
+   "is_new": true
+  },
+  {
+   "id": "gv:2026-10:phone-full-numbers",
+   "source": "grapevine",
+   "kind": "article",
+   "url": "https://www.aagrapevine.org/magazine/2026/oct/phone-full-numbers",
+   "title": "Phone Full of Numbers",
+   "summary": "It took a while for this single mom to open up and share. But now she stays connected and is less lonely than ever",
+   "lang": "en",
+   "date": "2026-09-23",
+   "first_seen": "2026-09-23T16:34:47Z",
+   "image": "https://www.aagrapevine.org/sites/default/files/styles/card_image/public/2026-09/GettyImages-1252197781%20copy.jpg?itok=nOiyeOkn",
+   "tags": [],
+   "category": "gv",
+   "status": "ok",
+   "extra": {
+    "publication": "gv",
+    "issue_label": "October 2026",
+    "issue_key": "2026-10",
+    "issue_date": "2026-10-01",
+    "issue_theme": "Loneliness",
+    "issue_url": "https://www.aagrapevine.org/magazine-issue/october-2026",
+    "topic": "Loneliness",
+    "section": "Featured Section",
+    "author": "Lexie W.",
+    "author_location": "Maine",
+    "subtitle": "It took a while for this single mom to open up and share. But now she stays connected and is less lonely than ever",
+    "teaser": "I never knew how lonely I was until I got sober. Raised in an alcoholic home, I grew used to taking care of myself.",
+    "free": false,
+    "online_exclusive": false,
+    "department": false
+   },
+   "i18n": {
+    "title": {
+     "en": "Phone Full of Numbers",
+     "es": "Teléfono lleno de números"
+    },
+    "summary": {
+     "en": "It took a while for this single mom to open up and share. But now she stays connected and is less lonely than ever",
+     "es": "Tardó un tiempo para que esta madre soltera se abra y comparta. Pero ahora ella se mantiene conectada y es menos solitaria que nunca"
+    },
+    "section": {
+     "en": "Featured Section",
+     "es": "Sección destacada"
+    },
+    "topic": {
+     "en": "Loneliness",
+     "es": "Soledad"
+    },
+    "issue_theme": {
+     "en": "Loneliness",
+     "es": "Soledad"
+    },
+    "issue_label": {
+     "en": "October 2026",
+     "es": "Octubre 2026"
+    }
+   },
+   "machine": [
+    "es"
+   ],
+   "is_new": true
+  },
+  {
+   "id": "gv:2026-10:no-greater-thrill",
+   "source": "grapevine",
+   "kind": "article",
+   "url": "https://www.aagrapevine.org/magazine/2026/oct/no-greater-thrill",
+   "title": "No Greater Thrill",
+   "summary": "There’s nothing like playing music on stage and watching our sober friends get their groove on",
+   "lang": "en",
+   "date": "2026-09-23",
+   "first_seen": "2026-09-23T16:34:47Z",
+   "image": "https://www.aagrapevine.org/sites/default/files/styles/card_image/public/2026-09/GettyImages-1464613358.jpg?itok=PxZjKLl2",
+   "tags": [],
+   "category": "gv",
+   "status": "ok",
+   "extra": {
+    "publication": "gv",
+    "issue_label": "October 2026",
+    "issue_key": "2026-10",
+    "issue_date": "2026-10-01",
+    "issue_theme": "Loneliness",
+    "issue_url": "https://www.aagrapevine.org/magazine-issue/october-2026",
+    "topic": "Loneliness",
+    "section": "Fun in Sobriety",
+    "author": "Paul F.",
+    "author_location": "Wexford, Pennsylvania",
+    "subtitle": "There’s nothing like playing music on stage and watching our sober friends get their groove on",
+    "teaser": "Here’s how this alcoholic learned that you can spend time in places where people are drinking if you have a legitimate reason to be there.",
+    "free": false,
+    "online_exclusive": false,
+    "department": false
+   },
+   "i18n": {
+    "title": {
+     "en": "No Greater Thrill",
+     "es": "No hay mayor emoción"
+    },
+    "summary": {
+     "en": "There’s nothing like playing music on stage and watching our sober friends get their groove on",
+     "es": "No hay nada como tocar música en el escenario y ver a nuestros amigos sobrios conseguir su ranura en"
+    },
+    "section": {
+     "en": "Fun in Sobriety",
+     "es": "Diversión en sobriedad"
+    },
+    "topic": {
+     "en": "Loneliness",
+     "es": "Soledad"
+    },
+    "issue_theme": {
+     "en": "Loneliness",
+     "es": "Soledad"
+    },
+    "issue_label": {
+     "en": "October 2026",
+     "es": "Octubre 2026"
+    }
+   },
+   "machine": [
+    "es"
+   ],
+   "is_new": true
+  },
+  {
+   "id": "gv:2026-10:new-town",
+   "source": "grapevine",
+   "kind": "article",
+   "url": "https://www.aagrapevine.org/magazine/2026/oct/new-town",
+   "title": "New In Town",
+   "summary": "A longtimer shares about the loneliness of finding his place in AA after a move across the country",
+   "lang": "en",
+   "date": "2026-09-23",
+   "first_seen": "2026-09-23T16:34:47Z",
+   "image": "https://www.aagrapevine.org/sites/default/files/styles/card_image/public/2026-09/bahia_illustration_of_a_man_from_the_back_sitting_in_an_AA_me_ef6b6535-a0ed-4791-9563-3f724dfe63c5_3.jpg?itok=SaGQVGVx",
+   "tags": [],
+   "category": "gv",
+   "status": "ok",
+   "extra": {
+    "publication": "gv",
+    "issue_label": "October 2026",
+    "issue_key": "2026-10",
+    "issue_date": "2026-10-01",
+    "issue_theme": "Loneliness",
+    "issue_url": "https://www.aagrapevine.org/magazine-issue/october-2026",
+    "topic": "Loneliness",
+    "section": "Featured Section",
+    "author": "Michael M.",
+    "author_location": "Palm Springs, California",
+    "subtitle": "A longtimer shares about the loneliness of finding his place in AA after a move across the country",
+    "teaser": "On Saturday nights I attend a meeting called “Alone No More.” A greeter at the door welcomes one and all. Coffee brews in the back of the room; treats, often homemade, go fast.",
+    "free": false,
+    "online_exclusive": false,
+    "department": false
+   },
+   "i18n": {
+    "title": {
+     "en": "New In Town",
+     "es": "Nuevo en la ciudad"
+    },
+    "summary": {
+     "en": "A longtimer shares about the loneliness of finding his place in AA after a move across the country",
+     "es": "Un longtimer comparte la soledad de encontrar su lugar en AA después de un movimiento a través del país"
+    },
+    "section": {
+     "en": "Featured Section",
+     "es": "Sección destacada"
+    },
+    "topic": {
+     "en": "Loneliness",
+     "es": "Soledad"
+    },
+    "issue_theme": {
+     "en": "Loneliness",
+     "es": "Soledad"
+    },
+    "issue_label": {
+     "en": "October 2026",
+     "es": "Octubre 2026"
+    }
+   },
+   "machine": [
+    "es"
+   ],
+   "is_new": true
+  },
+  {
+   "id": "gv:2026-10:meetings-yukon-yellowstone",
+   "source": "grapevine",
+   "kind": "article",
+   "url": "https://www.aagrapevine.org/magazine/2026/oct/meetings-yukon-yellowstone",
+   "title": "Meetings from Yukon to Yellowstone",
+   "summary": "A meeting lover shares about his sober adventures across North America with his wife and grandson",
+   "lang": "en",
+   "date": "2026-09-23",
+   "first_seen": "2026-09-23T16:34:47Z",
+   "image": "https://www.aagrapevine.org/sites/default/files/styles/card_image/public/2026-09/GettyImages-2221648544.jpg?itok=vdkFdYBG",
+   "tags": [],
+   "category": "gv",
+   "status": "ok",
+   "extra": {
+    "publication": "gv",
+    "issue_label": "October 2026",
+    "issue_key": "2026-10",
+    "issue_date": "2026-10-01",
+    "issue_theme": "Loneliness",
+    "issue_url": "https://www.aagrapevine.org/magazine-issue/october-2026",
+    "topic": "Loneliness",
+    "section": "Our Personal Stories",
+    "author": "Chuck H.",
+    "author_location": "Laguna Woods, California",
+    "subtitle": "A meeting lover shares about his sober adventures across North America with his wife and grandson",
+    "teaser": "You’ve all heard the phrase, “Taking a trip, not taking a trip.” Well, I was taking a trip. The difference is that I was doing the trip in my 16th year of sobriety.",
+    "free": false,
+    "online_exclusive": false,
+    "department": false
+   },
+   "i18n": {
+    "title": {
+     "en": "Meetings from Yukon to Yellowstone",
+     "es": "Reuniones de Yukón a Yellowstone"
+    },
+    "summary": {
+     "en": "A meeting lover shares about his sober adventures across North America with his wife and grandson",
+     "es": "Un amante de la reunión comparte sus aventuras sobrias a través de América del Norte con su esposa y nieto"
+    },
+    "section": {
+     "en": "Our Personal Stories",
+     "es": "Nuestras historias personales"
+    },
+    "topic": {
+     "en": "Loneliness",
+     "es": "Soledad"
+    },
+    "issue_theme": {
+     "en": "Loneliness",
+     "es": "Soledad"
+    },
+    "issue_label": {
+     "en": "October 2026",
+     "es": "Octubre 2026"
+    }
+   },
+   "machine": [
+    "es"
+   ],
+   "is_new": true
+  },
+  {
+   "id": "gv:2026-10:love-coffee-hot-donuts",
+   "source": "grapevine",
+   "kind": "article",
+   "url": "https://www.aagrapevine.org/magazine/2026/oct/love-coffee-hot-donuts",
+   "title": "Love, Coffee & Hot Donuts",
+   "summary": "Becoming his wife’s caretaker left this longtimer alone and without meetings. Good thing his sponsor had a plan",
+   "lang": "en",
+   "date": "2026-09-23",
+   "first_seen": "2026-09-23T16:34:47Z",
+   "image": "https://www.aagrapevine.org/sites/default/files/styles/card_image/public/2026-09/bahia_photo_of_the_outside_of_a_donut_shop_in_the_daytime_you_e0b43a3b-0788-431a-b0ca-5e2474f48d7e_2.jpg?itok=ZTJL1Lmx",
+   "tags": [],
+   "category": "gv",
+   "status": "ok",
+   "extra": {
+    "publication": "gv",
+    "issue_label": "October 2026",
+    "issue_key": "2026-10",
+    "issue_date": "2026-10-01",
+    "issue_theme": "Loneliness",
+    "issue_url": "https://www.aagrapevine.org/magazine-issue/october-2026",
+    "topic": "Loneliness",
+    "section": "Featured Section",
+    "author": "Tom L.",
+    "author_location": "Albany, Georgia",
+    "subtitle": "Becoming his wife’s caretaker left this longtimer alone and without meetings. Good thing his sponsor had a plan",
+    "teaser": "Four years ago, I came home one evening from my usual AA meeting to find my wife in an irrational rage.",
+    "free": false,
+    "online_exclusive": false,
+    "department": false
+   },
+   "i18n": {
+    "title": {
+     "en": "Love, Coffee & Hot Donuts",
+     "es": "Amor, café y donuts calientes"
+    },
+    "summary": {
+     "en": "Becoming his wife’s caretaker left this longtimer alone and without meetings. Good thing his sponsor had a plan",
+     "es": "Convertirse en el cuidador de su esposa dejó este longtimer solo y sin reuniones. Menos mal que su padrino tenía un plan"
+    },
+    "section": {
+     "en": "Featured Section",
+     "es": "Sección destacada"
+    },
+    "topic": {
+     "en": "Loneliness",
+     "es": "Soledad"
+    },
+    "issue_theme": {
+     "en": "Loneliness",
+     "es": "Soledad"
+    },
+    "issue_label": {
+     "en": "October 2026",
+     "es": "Octubre 2026"
+    }
+   },
+   "machine": [
+    "es"
+   ],
+   "is_new": true
+  },
+  {
+   "id": "gv:2026-10:letter-editor-october-2026",
+   "source": "grapevine",
+   "kind": "article",
+   "url": "https://www.aagrapevine.org/magazine/2026/oct/letter-editor-october-2026",
+   "title": "Letter from the Editor",
+   "summary": "Loneliness is a topic that is rarely talked about in our AA meetings. The L in our well-known H.A.L.T. slogan stands for lonely. And yet, it’s difficult to admit it.",
+   "lang": "en",
+   "date": "2026-09-23",
+   "first_seen": "2026-09-23T16:34:47Z",
+   "image": "/assets/cache/articles/4af15bfa155b69a0.webp",
+   "tags": [],
+   "category": "gv",
+   "status": "ok",
+   "extra": {
+    "publication": "gv",
+    "issue_label": "October 2026",
+    "issue_key": "2026-10",
+    "issue_date": "2026-10-01",
+    "issue_theme": "Loneliness",
+    "issue_url": "https://www.aagrapevine.org/magazine-issue/october-2026",
+    "topic": "Loneliness",
+    "section": "In Every Issue",
+    "author": null,
+    "author_location": null,
+    "subtitle": null,
+    "teaser": "Loneliness is a topic that is rarely talked about in our AA meetings. The L in our well-known H.A.L.T. slogan stands for lonely. And yet, it’s difficult to admit it.",
+    "free": false,
+    "online_exclusive": false,
+    "department": true
+   },
+   "i18n": {
+    "title": {
+     "en": "Letter from the Editor",
+     "es": "Carta del editor"
+    },
+    "summary": {
+     "en": "Loneliness is a topic that is rarely talked about in our AA meetings. The L in our well-known H.A.L.T. slogan stands for lonely. And yet, it’s difficult to admit it.",
+     "es": "La soledad es un tema que rara vez se habla en nuestras reuniones AA. El L en nuestro conocido H.A.L.T. lema significa solitario. Y sin embargo, es difícil admitirlo."
+    },
+    "section": {
+     "en": "In Every Issue",
+     "es": "En cada edición"
+    },
+    "topic": {
+     "en": "Loneliness",
+     "es": "Soledad"
+    },
+    "issue_theme": {
+     "en": "Loneliness",
+     "es": "Soledad"
+    },
+    "issue_label": {
+     "en": "October 2026",
+     "es": "Octubre 2026"
+    }
+   },
+   "machine": [
+    "es"
+   ],
+   "is_new": true
+  },
+  {
+   "id": "gv:2026-10:laughing-our-way-jail",
+   "source": "grapevine",
+   "kind": "article",
+   "url": "https://www.aagrapevine.org/magazine/2026/oct/laughing-our-way-jail",
+   "title": "Laughing Our way to Jail",
+   "summary": "For about five years, I helped take AA meetings into the jails of Menominee, Michigan. There were always two of us who brought the meeting in every Monday evening.",
+   "lang": "en",
+   "date": "2026-09-23",
+   "first_seen": "2026-09-23T16:34:47Z",
+   "image": "https://www.aagrapevine.org/sites/default/files/styles/card_image/public/2026-09/GettyImages-1291419752.jpg?itok=h-LuRDNY",
+   "tags": [],
+   "category": "gv",
+   "status": "ok",
+   "extra": {
+    "publication": "gv",
+    "issue_label": "October 2026",
+    "issue_key": "2026-10",
+    "issue_date": "2026-10-01",
+    "issue_theme": "Loneliness",
+    "issue_url": "https://www.aagrapevine.org/magazine-issue/october-2026",
+    "topic": "Loneliness",
+    "section": "Into Action",
+    "author": "Mary B.",
+    "author_location": "Green Bay, Wisconsin",
+    "subtitle": null,
+    "teaser": "For about five years, I helped take AA meetings into the jails of Menominee, Michigan. There were always two of us who brought the meeting in every Monday evening.",
+    "free": false,
+    "online_exclusive": false,
+    "department": false
+   },
+   "i18n": {
+    "title": {
+     "en": "Laughing Our way to Jail",
+     "es": "Riéndonos camino a la cárcel"
+    },
+    "summary": {
+     "en": "For about five years, I helped take AA meetings into the jails of Menominee, Michigan. There were always two of us who brought the meeting in every Monday evening.",
+     "es": "Durante unos cinco años, ayudé a llevar reuniones AA a las cárceles de Menominee, Michigan. Siempre había dos de nosotros que trajimos la reunión todos los lunes por la noche."
+    },
+    "section": {
+     "en": "Into Action",
+     "es": "En acción"
+    },
+    "topic": {
+     "en": "Loneliness",
+     "es": "Soledad"
+    },
+    "issue_theme": {
+     "en": "Loneliness",
+     "es": "Soledad"
+    },
+    "issue_label": {
+     "en": "October 2026",
+     "es": "Octubre 2026"
+    }
+   },
+   "machine": [
+    "es"
+   ],
+   "is_new": true
+  },
+  {
+   "id": "gv:2026-10:it-takes-village",
+   "source": "grapevine",
+   "kind": "article",
+   "url": "https://www.aagrapevine.org/magazine/2026/oct/it-takes-village",
+   "title": "It Takes a Village",
+   "summary": "Many of my friends know that my wife is a beekeeper.",
+   "lang": "en",
+   "date": "2026-09-23",
+   "first_seen": "2026-09-23T16:34:47Z",
+   "image": "https://www.aagrapevine.org/sites/default/files/styles/card_image/public/2026-09/GettyImages-164949843.jpg?itok=SVxrkrU0",
+   "tags": [],
+   "category": "gv",
+   "status": "ok",
+   "extra": {
+    "publication": "gv",
+    "issue_label": "October 2026",
+    "issue_key": "2026-10",
+    "issue_date": "2026-10-01",
+    "issue_theme": "Loneliness",
+    "issue_url": "https://www.aagrapevine.org/magazine-issue/october-2026",
+    "topic": "Loneliness",
+    "section": "Our Personal Stories",
+    "author": "Anonymous",
+    "author_location": null,
+    "subtitle": null,
+    "teaser": "Many of my friends know that my wife is a beekeeper.",
+    "free": false,
+    "online_exclusive": false,
+    "department": false
+   },
+   "i18n": {
+    "title": {
+     "en": "It Takes a Village",
+     "es": "Se necesita un pueblo"
+    },
+    "summary": {
+     "en": "Many of my friends know that my wife is a beekeeper.",
+     "es": "Muchos de mis amigos saben que mi esposa es apicultora."
+    },
+    "section": {
+     "en": "Our Personal Stories",
+     "es": "Nuestras historias personales"
+    },
+    "topic": {
+     "en": "Loneliness",
+     "es": "Soledad"
+    },
+    "issue_theme": {
+     "en": "Loneliness",
+     "es": "Soledad"
+    },
+    "issue_label": {
+     "en": "October 2026",
+     "es": "Octubre 2026"
+    }
+   },
+   "machine": [
+    "es"
+   ],
+   "is_new": true
+  },
+  {
+   "id": "gv:2026-10:how-it-works",
+   "source": "grapevine",
+   "kind": "article",
+   "url": "https://www.aagrapevine.org/magazine/2026/oct/how-it-works",
+   "title": "This is How It Works",
+   "summary": "Today, our friend Don is celebrating 50 years of continuous sobriety. I got up early to attend his home group and arrived with a gift and card in hand.",
+   "lang": "en",
+   "date": "2026-09-23",
+   "first_seen": "2026-09-23T16:34:47Z",
+   "image": "https://www.aagrapevine.org/sites/default/files/styles/card_image/public/2026-09/Anonymous3.jpg?itok=bOHu-9Dx",
+   "tags": [],
+   "category": "gv",
+   "status": "ok",
+   "extra": {
+    "publication": "gv",
+    "issue_label": "October 2026",
+    "issue_key": "2026-10",
+    "issue_date": "2026-10-01",
+    "issue_theme": "Loneliness",
+    "issue_url": "https://www.aagrapevine.org/magazine-issue/october-2026",
+    "topic": "Loneliness",
+    "section": "Oldtimers",
+    "author": "S.T.",
+    "author_location": "Wilmington, Delaware",
+    "subtitle": null,
+    "teaser": "Today, our friend Don is celebrating 50 years of continuous sobriety. I got up early to attend his home group and arrived with a gift and card in hand.",
+    "free": false,
+    "online_exclusive": false,
+    "department": false
+   },
+   "i18n": {
+    "title": {
+     "en": "This is How It Works",
+     "es": "Así es como funciona"
+    },
+    "summary": {
+     "en": "Today, our friend Don is celebrating 50 years of continuous sobriety. I got up early to attend his home group and arrived with a gift and card in hand.",
+     "es": "Hoy, nuestro amigo Don celebra 50 años de sobriedad. Me levanté temprano para asistir a su grupo base y llegué con un regalo y una tarjeta en la mano."
+    },
+    "section": {
+     "en": "Oldtimers",
+     "es": "Veteranos"
+    },
+    "topic": {
+     "en": "Loneliness",
+     "es": "Soledad"
+    },
+    "issue_theme": {
+     "en": "Loneliness",
+     "es": "Soledad"
+    },
+    "issue_label": {
+     "en": "October 2026",
+     "es": "Octubre 2026"
+    }
+   },
+   "machine": [
+    "es"
+   ],
+   "is_new": true
+  },
+  {
+   "id": "gv:2026-10:halloween-remember",
+   "source": "grapevine",
+   "kind": "article",
+   "url": "https://www.aagrapevine.org/magazine/2026/oct/halloween-remember",
+   "title": "A Halloween to Remember",
+   "summary": "A sober granddad survives a boozy holiday block party and gets to give the performance of a lifetime",
+   "lang": "en",
+   "date": "2026-09-23",
+   "first_seen": "2026-09-23T16:34:47Z",
+   "image": "https://www.aagrapevine.org/sites/default/files/styles/card_image/public/2026-09/GettyImages-2147678404.jpg?itok=fbwIBYPv",
+   "tags": [],
+   "category": "gv",
+   "status": "ok",
+   "extra": {
+    "publication": "gv",
+    "issue_label": "October 2026",
+    "issue_key": "2026-10",
+    "issue_date": "2026-10-01",
+    "issue_theme": "Loneliness",
+    "issue_url": "https://www.aagrapevine.org/magazine-issue/october-2026",
+    "topic": "Loneliness",
+    "section": "Our Personal Stories",
+    "author": "Aaron M.",
+    "author_location": "Round Rock, Texas",
+    "subtitle": "A sober granddad survives a boozy holiday block party and gets to give the performance of a lifetime",
+    "teaser": "My favorite memory of sobriety to date—and one of my most challenging “just say no” moments—occurred one Halloween night.",
+    "free": false,
+    "online_exclusive": false,
+    "department": false
+   },
+   "i18n": {
+    "title": {
+     "en": "A Halloween to Remember",
+     "es": "Un Halloween para recordar"
+    },
+    "summary": {
+     "en": "A sober granddad survives a boozy holiday block party and gets to give the performance of a lifetime",
+     "es": "Un abuelo sobrio sobrevive a una fiesta de bloques de fiestas boozy y llega a dar el rendimiento de una vida"
+    },
+    "section": {
+     "en": "Our Personal Stories",
+     "es": "Nuestras historias personales"
+    },
+    "topic": {
+     "en": "Loneliness",
+     "es": "Soledad"
+    },
+    "issue_theme": {
+     "en": "Loneliness",
+     "es": "Soledad"
+    },
+    "issue_label": {
+     "en": "October 2026",
+     "es": "Octubre 2026"
+    }
+   },
+   "machine": [
+    "es"
+   ],
+   "is_new": true
+  },
+  {
+   "id": "gv:2026-10:funny-thing-happened-way-vancouver",
+   "source": "grapevine",
+   "kind": "article",
+   "url": "https://www.aagrapevine.org/magazine/2026/oct/funny-thing-happened-way-vancouver",
+   "title": "A Funny Thing Happened on the Way to Vancouver",
+   "summary": "Thanks to the miracle of AA, having a sponsor, a home group and the privilege of sponsoring men, I have not had a drink since April 6, 2015.",
+   "lang": "en",
+   "date": "2026-09-23",
+   "first_seen": "2026-09-23T16:34:47Z",
+   "image": "https://www.aagrapevine.org/sites/default/files/styles/card_image/public/2026-09/GettyImages-2252066554.jpg?itok=Nli2x0fe",
+   "tags": [],
+   "category": "gv",
+   "status": "ok",
+   "extra": {
+    "publication": "gv",
+    "issue_label": "October 2026",
+    "issue_key": "2026-10",
+    "issue_date": "2026-10-01",
+    "issue_theme": "Loneliness",
+    "issue_url": "https://www.aagrapevine.org/magazine-issue/october-2026",
+    "topic": "Loneliness",
+    "section": "Our Personal Stories",
+    "author": "Alan S.",
+    "author_location": "Maple Grove, Minnesota",
+    "subtitle": null,
+    "teaser": "Thanks to the miracle of AA, having a sponsor, a home group and the privilege of sponsoring men, I have not had a drink since April 6, 2015.",
+    "free": false,
+    "online_exclusive": false,
+    "department": false
+   },
+   "i18n": {
+    "title": {
+     "en": "A Funny Thing Happened on the Way to Vancouver",
+     "es": "Una cosa divertida ocurrió en el camino a Vancouver"
+    },
+    "summary": {
+     "en": "Thanks to the miracle of AA, having a sponsor, a home group and the privilege of sponsoring men, I have not had a drink since April 6, 2015.",
+     "es": "Gracias al milagro de AA, teniendo un padrino, un grupo base y el privilegio de patrocinar a los hombres, no he bebido desde 6 de abril de 2015."
+    },
+    "section": {
+     "en": "Our Personal Stories",
+     "es": "Nuestras historias personales"
+    },
+    "topic": {
+     "en": "Loneliness",
+     "es": "Soledad"
+    },
+    "issue_theme": {
+     "en": "Loneliness",
+     "es": "Soledad"
+    },
+    "issue_label": {
+     "en": "October 2026",
+     "es": "Octubre 2026"
+    }
+   },
+   "machine": [
+    "es"
+   ],
+   "is_new": true
+  },
+  {
+   "id": "gv:2026-10:feeling-lonely",
+   "source": "grapevine",
+   "kind": "article",
+   "url": "https://www.aagrapevine.org/magazine/2026/oct/feeling-lonely",
+   "title": "Feeling Lonely?",
+   "summary": "I was sitting in an AA meeting surrounded by laughter and hugs. People were shaking hands, pouring coffee and chatting about their week.",
+   "lang": "en",
+   "date": "2026-09-23",
+   "first_seen": "2026-09-23T16:34:47Z",
+   "image": "https://www.aagrapevine.org/sites/default/files/styles/card_image/public/2026-09/GettyImages-1362757481%20copy.jpg?itok=q5wtsEys",
+   "tags": [],
+   "category": "gv",
+   "status": "ok",
+   "extra": {
+    "publication": "gv",
+    "issue_label": "October 2026",
+    "issue_key": "2026-10",
+    "issue_date": "2026-10-01",
+    "issue_theme": "Loneliness",
+    "issue_url": "https://www.aagrapevine.org/magazine-issue/october-2026",
+    "topic": "Loneliness",
+    "section": "Featured Section",
+    "author": "Nikki O.",
+    "author_location": "Maine",
+    "subtitle": null,
+    "teaser": "I was sitting in an AA meeting surrounded by laughter and hugs. People were shaking hands, pouring coffee and chatting about their week.",
+    "free": false,
+    "online_exclusive": false,
+    "department": false
+   },
+   "i18n": {
+    "title": {
+     "en": "Feeling Lonely?",
+     "es": "¿Te sientes solo?"
+    },
+    "summary": {
+     "en": "I was sitting in an AA meeting surrounded by laughter and hugs. People were shaking hands, pouring coffee and chatting about their week.",
+     "es": "Estaba sentado en una reunión AA rodeada de risas y abrazos. La gente temblaba las manos, derramaba café y charlaba sobre su semana."
+    },
+    "section": {
+     "en": "Featured Section",
+     "es": "Sección destacada"
+    },
+    "topic": {
+     "en": "Loneliness",
+     "es": "Soledad"
+    },
+    "issue_theme": {
+     "en": "Loneliness",
+     "es": "Soledad"
+    },
+    "issue_label": {
+     "en": "October 2026",
+     "es": "Octubre 2026"
+    }
+   },
+   "machine": [
+    "es"
+   ],
+   "is_new": true
+  },
+  {
+   "id": "gv:2026-10:fast-complicated-rewarding",
+   "source": "grapevine",
+   "kind": "article",
+   "url": "https://www.aagrapevine.org/magazine/2026/oct/fast-complicated-rewarding",
+   "title": "Fast, Complicated & Rewarding",
+   "summary": "A Spanish-speaking member in Colorado shares the joy he gets from interpreting for his area’s AA events",
+   "lang": "en",
+   "date": "2026-09-23",
+   "first_seen": "2026-09-23T16:34:47Z",
+   "image": "https://www.aagrapevine.org/sites/default/files/styles/card_image/public/2026-09/GettyImages-1491854373%20%5BConverted%5D.jpg?itok=b39Zjt3j",
+   "tags": [],
+   "category": "gv",
+   "status": "ok",
+   "extra": {
+    "publication": "gv",
+    "issue_label": "October 2026",
+    "issue_key": "2026-10",
+    "issue_date": "2026-10-01",
+    "issue_theme": "Loneliness",
+    "issue_url": "https://www.aagrapevine.org/magazine-issue/october-2026",
+    "topic": "Loneliness",
+    "section": "Into Action",
+    "author": "Jason B.",
+    "author_location": "Denver, Colorado",
+    "subtitle": "A Spanish-speaking member in Colorado shares the joy he gets from interpreting for his area’s AA events",
+    "teaser": "My introduction to the world of AA service was in the translation committee in my area.",
+    "free": false,
+    "online_exclusive": false,
+    "department": false
+   },
+   "i18n": {
+    "title": {
+     "en": "Fast, Complicated & Rewarding",
+     "es": "Rápido, complicado y gratificante"
+    },
+    "summary": {
+     "en": "A Spanish-speaking member in Colorado shares the joy he gets from interpreting for his area’s AA events",
+     "es": "Un miembro de habla hispana en Colorado comparte la alegría que obtiene de interpretar para los eventos AA de su área"
+    },
+    "section": {
+     "en": "Into Action",
+     "es": "En acción"
+    },
+    "topic": {
+     "en": "Loneliness",
+     "es": "Soledad"
+    },
+    "issue_theme": {
+     "en": "Loneliness",
+     "es": "Soledad"
+    },
+    "issue_label": {
+     "en": "October 2026",
+     "es": "Octubre 2026"
+    }
+   },
+   "machine": [
+    "es"
+   ],
+   "is_new": true
+  },
+  {
+   "id": "gv:2026-10:discussion-topic",
+   "source": "grapevine",
+   "kind": "article",
+   "url": "https://www.aagrapevine.org/magazine/2026/oct/discussion-topic",
+   "title": "Discussion Topic",
+   "summary": "When loneliness comes",
+   "lang": "en",
+   "date": "2026-09-23",
+   "first_seen": "2026-09-23T16:34:47Z",
+   "image": "/assets/cache/articles/2a302730467a6b65.webp",
+   "tags": [],
+   "category": "gv",
+   "status": "ok",
+   "extra": {
+    "publication": "gv",
+    "issue_label": "October 2026",
+    "issue_key": "2026-10",
+    "issue_date": "2026-10-01",
+    "issue_theme": "Loneliness",
+    "issue_url": "https://www.aagrapevine.org/magazine-issue/october-2026",
+    "topic": "Loneliness",
+    "section": "In Every Issue",
+    "author": null,
+    "author_location": null,
+    "subtitle": "When loneliness comes",
+    "teaser": "The writer of “Searching & Trusting” shares his journey with loneliness in sobriety and how he has, over time and with lots of searching, found a helpful way to address it when it comes.",
+    "free": false,
+    "online_exclusive": false,
+    "department": true
+   },
+   "i18n": {
+    "title": {
+     "en": "Discussion Topic",
+     "es": "Tema de debate"
+    },
+    "summary": {
+     "en": "When loneliness comes",
+     "es": "Cuando viene la soledad"
+    },
+    "section": {
+     "en": "In Every Issue",
+     "es": "En cada edición"
+    },
+    "topic": {
+     "en": "Loneliness",
+     "es": "Soledad"
+    },
+    "issue_theme": {
+     "en": "Loneliness",
+     "es": "Soledad"
+    },
+    "issue_label": {
+     "en": "October 2026",
+     "es": "Octubre 2026"
+    }
+   },
+   "machine": [
+    "es"
+   ],
+   "is_new": true
+  },
+  {
+   "id": "gv:2026-10:dear-grapevine-october-2026",
+   "source": "grapevine",
+   "kind": "article",
+   "url": "https://www.aagrapevine.org/magazine/2026/oct/dear-grapevine-october-2026",
+   "title": "Dear Grapevine",
+   "summary": "Oops! Wrong word",
+   "lang": "en",
+   "date": "2026-09-23",
+   "first_seen": "2026-09-23T16:34:47Z",
+   "image": "/assets/cache/articles/285cf92a423f2374.webp",
+   "tags": [],
+   "category": "gv",
+   "status": "ok",
+   "extra": {
+    "publication": "gv",
+    "issue_label": "October 2026",
+    "issue_key": "2026-10",
+    "issue_date": "2026-10-01",
+    "issue_theme": "Loneliness",
+    "issue_url": "https://www.aagrapevine.org/magazine-issue/october-2026",
+    "topic": "Loneliness",
+    "section": "In Every Issue",
+    "author": null,
+    "author_location": null,
+    "subtitle": null,
+    "teaser": "Oops! Wrong word",
+    "free": false,
+    "online_exclusive": false,
+    "department": true
+   },
+   "i18n": {
+    "title": {
+     "en": "Dear Grapevine",
+     "es": "Dear Grapevine"
+    },
+    "summary": {
+     "en": "Oops! Wrong word",
+     "es": "¡Oops! Palabra equivocada"
+    },
+    "section": {
+     "en": "In Every Issue",
+     "es": "En cada edición"
+    },
+    "topic": {
+     "en": "Loneliness",
+     "es": "Soledad"
+    },
+    "issue_theme": {
+     "en": "Loneliness",
+     "es": "Soledad"
+    },
+    "issue_label": {
+     "en": "October 2026",
+     "es": "Octubre 2026"
+    }
+   },
+   "machine": [
+    "es"
+   ],
+   "is_new": true
+  },
+  {
+   "id": "gv:2026-10:day-our-friendship-began",
+   "source": "grapevine",
+   "kind": "article",
+   "url": "https://www.aagrapevine.org/magazine/2026/oct/day-our-friendship-began",
+   "title": "The Day Our Friendship Began",
+   "summary": "A gay longtimer looks back at his life, his sobriety and the tough relationship he had with his dad",
+   "lang": "en",
+   "date": "2026-09-23",
+   "first_seen": "2026-09-23T16:34:47Z",
+   "image": "https://www.aagrapevine.org/sites/default/files/styles/card_image/public/2026-09/bahia_illustration_of_a_father_in_his_60s_talking_with_his_so_fcb46789-da53-4cfb-934b-4d28c260e89b_2.jpg?itok=c-hpS0cm",
+   "tags": [],
+   "category": "gv",
+   "status": "ok",
+   "extra": {
+    "publication": "gv",
+    "issue_label": "October 2026",
+    "issue_key": "2026-10",
+    "issue_date": "2026-10-01",
+    "issue_theme": "Loneliness",
+    "issue_url": "https://www.aagrapevine.org/magazine-issue/october-2026",
+    "topic": "Loneliness",
+    "section": "Oldtimers",
+    "author": "David T.",
+    "author_location": "Wilton Manors, Florida",
+    "subtitle": "A gay longtimer looks back at his life, his sobriety and the tough relationship he had with his dad",
+    "teaser": "“You talk like a girl!” he would say. It wasn’t so much the rage in his voice or how he’d squeeze my mouth to force me to sound different. It was the disgust in his expression.",
+    "free": false,
+    "online_exclusive": false,
+    "department": false
+   },
+   "i18n": {
+    "title": {
+     "en": "The Day Our Friendship Began",
+     "es": "El día en que nuestra amistad comenzó"
+    },
+    "summary": {
+     "en": "A gay longtimer looks back at his life, his sobriety and the tough relationship he had with his dad",
+     "es": "Un gay longtimer mira su vida, su sobriedad y la relación dura que tenía con su padre"
+    },
+    "section": {
+     "en": "Oldtimers",
+     "es": "Veteranos"
+    },
+    "topic": {
+     "en": "Loneliness",
+     "es": "Soledad"
+    },
+    "issue_theme": {
+     "en": "Loneliness",
+     "es": "Soledad"
+    },
+    "issue_label": {
+     "en": "October 2026",
+     "es": "Octubre 2026"
+    }
+   },
+   "machine": [
+    "es"
+   ],
+   "is_new": true
+  },
+  {
+   "id": "gv:2026-10:aa-news-october-2026",
+   "source": "grapevine",
+   "kind": "article",
+   "url": "https://www.aagrapevine.org/magazine/2026/oct/aa-news-october-2026",
+   "title": "AA News",
+   "summary": "The 76th General Service Conference “Humility in Action”",
+   "lang": "en",
+   "date": "2026-09-23",
+   "first_seen": "2026-09-23T16:34:47Z",
+   "image": "/assets/cache/articles/2742fdbbb77f9127.webp",
+   "tags": [],
+   "category": "gv",
+   "status": "ok",
+   "extra": {
+    "publication": "gv",
+    "issue_label": "October 2026",
+    "issue_key": "2026-10",
+    "issue_date": "2026-10-01",
+    "issue_theme": "Loneliness",
+    "issue_url": "https://www.aagrapevine.org/magazine-issue/october-2026",
+    "topic": "Loneliness",
+    "section": "In Every Issue",
+    "author": null,
+    "author_location": null,
+    "subtitle": "The 76th General Service Conference “Humility in Action”",
+    "teaser": "The 76th General Service Conference was held April 26–May 2, 2026, at the New York Hilton Midtown hotel.",
+    "free": false,
+    "online_exclusive": false,
+    "department": true
+   },
+   "i18n": {
+    "title": {
+     "en": "AA News",
+     "es": "Noticias AA"
+    },
+    "summary": {
+     "en": "The 76th General Service Conference “Humility in Action”",
+     "es": "76.ª Conferencia de Servicios Generales “humildad en acción”"
+    },
+    "section": {
+     "en": "In Every Issue",
+     "es": "En cada edición"
+    },
+    "topic": {
+     "en": "Loneliness",
+     "es": "Soledad"
+    },
+    "issue_theme": {
+     "en": "Loneliness",
+     "es": "Soledad"
+    },
+    "issue_label": {
+     "en": "October 2026",
+     "es": "Octubre 2026"
+    }
+   },
+   "machine": [
+    "es"
+   ],
+   "is_new": true
+  },
+  {
+   "id": "lv:2026-09:una-comunidad-unica",
+   "source": "lavina",
+   "kind": "article",
+   "url": "https://www.aalavina.org/revista/septiembre-octubre-2026/una-comunidad-unica",
+   "title": "Una Comunidad única",
+   "summary": "“Encontrarás amigos para toda la vida. Te unirán a ellos nuevos y excelentes lazos, porque habrán escapado juntos del desastre”. Libro Grande, pág. 140",
+   "lang": "es",
+   "date": "2026-09-01",
+   "first_seen": "2026-09-23T16:34:47Z",
+   "image": "https://www.aalavina.org/sites/default/files/styles/card_image/public/2026-08/p32-2255593559.jpg?itok=Nz-Xkqxy",
+   "tags": [],
+   "category": "lv",
+   "status": "ok",
+   "extra": {
+    "publication": "lv",
+    "issue_label": "Septiembre / Octubre 2026",
+    "issue_key": "2026-09",
+    "issue_date": "2026-09-01",
+    "issue_theme": "Servicio en AA",
+    "issue_url": "https://www.aalavina.org/edicion-de-revista/septiembre-octubre-2026",
+    "topic": "Servicio en AA",
+    "section": "Experiencia, Fortaleza y Esperanza",
+    "author": "Anónimo",
+    "author_location": "Phoenix, Arizona",
+    "subtitle": "“Encontrarás amigos para toda la vida. Te unirán a ellos nuevos y excelentes lazos, porque habrán escapado juntos del desastre”. Libro Grande, pág. 140",
+    "teaser": "Ver llegar al nuevo despierta una esperanza y mucha alegría, y también es un recordatorio de mis inicios en el programa.",
+    "free": false,
+    "online_exclusive": false,
+    "department": false
+   },
+   "i18n": {
+    "title": {
+     "en": "A Unique Fellowship",
+     "es": "Una Comunidad única"
+    },
+    "summary": {
+     "en": "“You will find friends for life. They will join them new and excellent ties, because they will have escaped together from the disaster.” Big Book, p. 140",
+     "es": "“Encontrarás amigos para toda la vida. Te unirán a ellos nuevos y excelentes lazos, porque habrán escapado juntos del desastre”. Libro Grande, pág. 140"
+    },
+    "section": {
+     "en": "Experience, Strength and Hope",
+     "es": "Experiencia, Fortaleza y Esperanza"
+    },
+    "topic": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_theme": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_label": {
+     "en": "September / October 2026",
+     "es": "Septiembre / Octubre 2026"
+    }
+   },
+   "machine": [
+    "en"
+   ],
+   "is_new": false
+  },
+  {
+   "id": "lv:2026-09:un-dia-la-vez",
+   "source": "lavina",
+   "kind": "article",
+   "url": "https://www.aalavina.org/revista/septiembre-octubre-2026/un-dia-la-vez",
+   "title": "Un día a la vez",
+   "summary": "La recuperación le enseña a dejar de preocuparse por el mañana y a vivir plenamente el presente",
+   "lang": "es",
+   "date": "2026-09-01",
+   "first_seen": "2026-09-23T16:34:47Z",
+   "image": "https://www.aalavina.org/sites/default/files/styles/card_image/public/2026-08/P42_Calendario%20AA.jpg?itok=Gcffwc19",
+   "tags": [],
+   "category": "lv",
+   "status": "ok",
+   "extra": {
+    "publication": "lv",
+    "issue_label": "Septiembre / Octubre 2026",
+    "issue_key": "2026-09",
+    "issue_date": "2026-09-01",
+    "issue_theme": "Servicio en AA",
+    "issue_url": "https://www.aalavina.org/edicion-de-revista/septiembre-octubre-2026",
+    "topic": "Servicio en AA",
+    "section": "Gratitud",
+    "author": "Mauricio T.",
+    "author_location": "Anaheim, California",
+    "subtitle": "La recuperación le enseña a dejar de preocuparse por el mañana y a vivir plenamente el presente",
+    "teaser": "Nuevamente le doy gracias a Dios por un nuevo día dentro de AA. Han pasado muchas 24 horas desde que llegué y, en ese tiempo, he encontrado una nueva manera de vivir.",
+    "free": false,
+    "online_exclusive": false,
+    "department": false
+   },
+   "i18n": {
+    "title": {
+     "en": "One Day at a Time",
+     "es": "Un día a la vez"
+    },
+    "summary": {
+     "en": "Recovery teaches you to stop worrying about the morning and live fully the present",
+     "es": "La recuperación le enseña a dejar de preocuparse por el mañana y a vivir plenamente el presente"
+    },
+    "section": {
+     "en": "Gratitude",
+     "es": "Gratitud"
+    },
+    "topic": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_theme": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_label": {
+     "en": "September / October 2026",
+     "es": "Septiembre / Octubre 2026"
+    }
+   },
+   "machine": [
+    "en"
+   ],
+   "is_new": false
+  },
+  {
+   "id": "lv:2026-09:tema-de-discusion-para-reuniones",
+   "source": "lavina",
+   "kind": "article",
+   "url": "https://www.aalavina.org/revista/septiembre-octubre-2026/tema-de-discusion-para-reuniones",
+   "title": "Tema de discusión",
+   "summary": "El Décimo Paso, sugiere continuar con nuestro inventario personal y seguir enmendando todas las nuevas faltas que cometamos.",
+   "lang": "es",
+   "date": "2026-09-01",
+   "first_seen": "2026-09-23T16:34:47Z",
+   "image": "/assets/cache/articles/a49b6a159c173db3.webp",
+   "tags": [],
+   "category": "lv",
+   "status": "ok",
+   "extra": {
+    "publication": "lv",
+    "issue_label": "Septiembre / Octubre 2026",
+    "issue_key": "2026-09",
+    "issue_date": "2026-09-01",
+    "issue_theme": "Servicio en AA",
+    "issue_url": "https://www.aalavina.org/edicion-de-revista/septiembre-octubre-2026",
+    "topic": "Servicio en AA",
+    "section": "En cada edición",
+    "author": null,
+    "author_location": null,
+    "subtitle": null,
+    "teaser": "El Décimo Paso, sugiere continuar con nuestro inventario personal y seguir enmendando todas las nuevas faltas que cometamos.",
+    "free": false,
+    "online_exclusive": false,
+    "department": true
+   },
+   "i18n": {
+    "title": {
+     "en": "Subject of Discussion",
+     "es": "Tema de discusión"
+    },
+    "summary": {
+     "en": "The Tenth Step, suggests continuing our personal inventory and further amending all new faults we commit.",
+     "es": "El Décimo Paso, sugiere continuar con nuestro inventario personal y seguir enmendando todas las nuevas faltas que cometamos."
+    },
+    "section": {
+     "en": "In Each Edition",
+     "es": "En cada edición"
+    },
+    "topic": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_theme": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_label": {
+     "en": "September / October 2026",
+     "es": "Septiembre / Octubre 2026"
+    }
+   },
+   "machine": [
+    "en"
+   ],
+   "is_new": false
+  },
+  {
+   "id": "lv:2026-09:somos-responsables",
+   "source": "lavina",
+   "kind": "article",
+   "url": "https://www.aalavina.org/revista/septiembre-octubre-2026/somos-responsables",
+   "title": "¡Somos responsables!",
+   "summary": "La unidad con los RSG y comités de distrito fortalecen su experiencia en el servicio",
+   "lang": "es",
+   "date": "2026-09-01",
+   "first_seen": "2026-09-23T16:34:47Z",
+   "image": "https://www.aalavina.org/sites/default/files/styles/card_image/public/2026-08/P30-170443324.jpg?itok=6E6-xJlL",
+   "tags": [],
+   "category": "lv",
+   "status": "ok",
+   "extra": {
+    "publication": "lv",
+    "issue_label": "Septiembre / Octubre 2026",
+    "issue_key": "2026-09",
+    "issue_date": "2026-09-01",
+    "issue_theme": "Servicio en AA",
+    "issue_url": "https://www.aalavina.org/edicion-de-revista/septiembre-octubre-2026",
+    "topic": "Servicio en AA",
+    "section": "Experiencia, Fortaleza y Esperanza",
+    "author": "Anónimo",
+    "author_location": "Las Vegas, Nevada",
+    "subtitle": "La unidad con los RSG y comités de distrito fortalecen su experiencia en el servicio",
+    "teaser": "“Así como el objetivo de cada miembro de AA es la sobriedad personal, el objetivo de nuestros servicios es poner la sobriedad al alcance de todos los que la quieren.",
+    "free": false,
+    "online_exclusive": false,
+    "department": false
+   },
+   "i18n": {
+    "title": {
+     "en": "We're Responsible!",
+     "es": "¡Somos responsables!"
+    },
+    "summary": {
+     "en": "Unity with the GSR and district committees strengthen their experience in the service",
+     "es": "La unidad con los RSG y comités de distrito fortalecen su experiencia en el servicio"
+    },
+    "section": {
+     "en": "Experience, Strength and Hope",
+     "es": "Experiencia, Fortaleza y Esperanza"
+    },
+    "topic": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_theme": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_label": {
+     "en": "September / October 2026",
+     "es": "Septiembre / Octubre 2026"
+    }
+   },
+   "machine": [
+    "en"
+   ],
+   "is_new": false
+  },
+  {
+   "id": "lv:2026-09:saliendo-de-la-oscuridad",
+   "source": "lavina",
+   "kind": "article",
+   "url": "https://www.aalavina.org/revista/septiembre-octubre-2026/saliendo-de-la-oscuridad",
+   "title": "Saliendo de la oscuridad",
+   "summary": "Mi nombre es Ramón L. y soy alcohólico. Yo vivía en la calle, sin rumbo, no tenía a dónde ir. Eran noches enteras que me la pasaba caminando en la calle a oscuras. No encontraba una salida.",
+   "lang": "es",
+   "date": "2026-09-01",
+   "first_seen": "2026-09-23T16:34:47Z",
+   "image": "https://www.aalavina.org/sites/default/files/styles/card_image/public/2026-08/p35-161838559.jpg?itok=5ua5XTBK",
+   "tags": [],
+   "category": "lv",
+   "status": "ok",
+   "extra": {
+    "publication": "lv",
+    "issue_label": "Septiembre / Octubre 2026",
+    "issue_key": "2026-09",
+    "issue_date": "2026-09-01",
+    "issue_theme": "Servicio en AA",
+    "issue_url": "https://www.aalavina.org/edicion-de-revista/septiembre-octubre-2026",
+    "topic": "Servicio en AA",
+    "section": "Experiencia, Fortaleza y Esperanza",
+    "author": "Ramón L.",
+    "author_location": "San José, California",
+    "subtitle": null,
+    "teaser": "Mi nombre es Ramón L. y soy alcohólico. Yo vivía en la calle, sin rumbo, no tenía a dónde ir. Eran noches enteras que me la pasaba caminando en la calle a oscuras. No encontraba una salida.",
+    "free": false,
+    "online_exclusive": false,
+    "department": false
+   },
+   "i18n": {
+    "title": {
+     "en": "Coming Out of the Darkness",
+     "es": "Saliendo de la oscuridad"
+    },
+    "summary": {
+     "en": "My name is Ramón L. and I'm an alcoholic. I lived on the street, no course, I had nowhere to go. It was whole nights that I was walking on the street in the dark. I couldn't find a way out.",
+     "es": "Mi nombre es Ramón L. y soy alcohólico. Yo vivía en la calle, sin rumbo, no tenía a dónde ir. Eran noches enteras que me la pasaba caminando en la calle a oscuras. No encontraba una salida."
+    },
+    "section": {
+     "en": "Experience, Strength and Hope",
+     "es": "Experiencia, Fortaleza y Esperanza"
+    },
+    "topic": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_theme": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_label": {
+     "en": "September / October 2026",
+     "es": "Septiembre / Octubre 2026"
+    }
+   },
+   "machine": [
+    "en"
+   ],
+   "is_new": false
+  },
+  {
+   "id": "lv:2026-09:reunion-virtual",
+   "source": "lavina",
+   "kind": "article",
+   "url": "https://www.aalavina.org/revista/septiembre-octubre-2026/reunion-virtual",
+   "title": "Reunión virtual",
+   "summary": "Bill W. reconocía que AA debe seguir adaptando sus formas de comunicación y servicio para llegar al alcohólico que aún sufre",
+   "lang": "es",
+   "date": "2026-09-01",
+   "first_seen": "2026-09-23T16:34:47Z",
+   "image": "https://www.aalavina.org/sites/default/files/styles/card_image/public/2026-08/p16-2172946036%20copy.jpg?itok=eEKEyTqg",
+   "tags": [],
+   "category": "lv",
+   "status": "ok",
+   "extra": {
+    "publication": "lv",
+    "issue_label": "Septiembre / Octubre 2026",
+    "issue_key": "2026-09",
+    "issue_date": "2026-09-01",
+    "issue_theme": "Servicio en AA",
+    "issue_url": "https://www.aalavina.org/edicion-de-revista/septiembre-octubre-2026",
+    "topic": "Servicio en AA",
+    "section": "Sección Especial",
+    "author": "Miguel C.",
+    "author_location": "Phoenix, Arizona",
+    "subtitle": "Bill W. reconocía que AA debe seguir adaptando sus formas de comunicación y servicio para llegar al alcohólico que aún sufre",
+    "teaser": "Hoy estoy participando en este taller de redacción de La Viña, en el distrito 16 hispano del área 03, en la región del Pacífico, donde cada año se lleva a cabo un evento para…",
+    "free": false,
+    "online_exclusive": false,
+    "department": false
+   },
+   "i18n": {
+    "title": {
+     "en": "Virtual Meeting",
+     "es": "Reunión virtual"
+    },
+    "summary": {
+     "en": "Bill W. recognized that AA should continue to adapt its forms of communication and service to reach the alcoholic that still suffers",
+     "es": "Bill W. reconocía que AA debe seguir adaptando sus formas de comunicación y servicio para llegar al alcohólico que aún sufre"
+    },
+    "section": {
+     "en": "Special Section",
+     "es": "Sección Especial"
+    },
+    "topic": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_theme": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_label": {
+     "en": "September / October 2026",
+     "es": "Septiembre / Octubre 2026"
+    }
+   },
+   "machine": [
+    "en"
+   ],
+   "is_new": false
+  },
+  {
+   "id": "lv:2026-09:resacas-emocionales",
+   "source": "lavina",
+   "kind": "article",
+   "url": "https://www.aalavina.org/revista/septiembre-octubre-2026/resacas-emocionales",
+   "title": "Resacas emocionales",
+   "summary": "¿Podemos mantenernos sobrios y emocionalmente equilibrados sean cuales sean las circunstancias?",
+   "lang": "es",
+   "date": "2026-09-01",
+   "first_seen": "2026-09-23T16:34:47Z",
+   "image": "https://www.aalavina.org/sites/default/files/styles/card_image/public/2026-08/p27-2225449636.jpg?itok=I1sgIpf4",
+   "tags": [],
+   "category": "lv",
+   "status": "ok",
+   "extra": {
+    "publication": "lv",
+    "issue_label": "Septiembre / Octubre 2026",
+    "issue_key": "2026-09",
+    "issue_date": "2026-09-01",
+    "issue_theme": "Servicio en AA",
+    "issue_url": "https://www.aalavina.org/edicion-de-revista/septiembre-octubre-2026",
+    "topic": "Servicio en AA",
+    "section": "Paso Diez",
+    "author": "Guillermo A.",
+    "author_location": "San Juan",
+    "subtitle": "¿Podemos mantenernos sobrios y emocionalmente equilibrados sean cuales sean las circunstancias?",
+    "teaser": "Una de las buenas sugerencias de Bill en el Décimo Paso fue el retirarnos del mundanal ruido.",
+    "free": false,
+    "online_exclusive": false,
+    "department": false
+   },
+   "i18n": {
+    "title": {
+     "en": "Emotional Hangovers",
+     "es": "Resacas emocionales"
+    },
+    "summary": {
+     "en": "Can we stay sober and emotionally balanced regardless of circumstances?",
+     "es": "¿Podemos mantenernos sobrios y emocionalmente equilibrados sean cuales sean las circunstancias?"
+    },
+    "section": {
+     "en": "Step Ten",
+     "es": "Paso Diez"
+    },
+    "topic": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_theme": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_label": {
+     "en": "September / October 2026",
+     "es": "Septiembre / Octubre 2026"
+    }
+   },
+   "machine": [
+    "en"
+   ],
+   "is_new": false
+  },
+  {
+   "id": "lv:2026-09:reparando-relaciones",
+   "source": "lavina",
+   "kind": "article",
+   "url": "https://www.aalavina.org/revista/septiembre-octubre-2026/reparando-relaciones",
+   "title": "Reparando relaciones",
+   "summary": "El Noveno Paso le regala la oportunidad de reconciliarse con su padre",
+   "lang": "es",
+   "date": "2026-09-01",
+   "first_seen": "2026-09-23T16:34:47Z",
+   "image": "https://www.aalavina.org/sites/default/files/styles/card_image/public/2026-08/p36-2178194447%20copy.jpg?itok=d_8O_RIb",
+   "tags": [],
+   "category": "lv",
+   "status": "ok",
+   "extra": {
+    "publication": "lv",
+    "issue_label": "Septiembre / Octubre 2026",
+    "issue_key": "2026-09",
+    "issue_date": "2026-09-01",
+    "issue_theme": "Servicio en AA",
+    "issue_url": "https://www.aalavina.org/edicion-de-revista/septiembre-octubre-2026",
+    "topic": "Servicio en AA",
+    "section": "Experiencia, Fortaleza y Esperanza",
+    "author": "Alfonso C.",
+    "author_location": "Simi Valley, California",
+    "subtitle": "El Noveno Paso le regala la oportunidad de reconciliarse con su padre",
+    "teaser": "Hola, en esta ocasión estoy en un taller de La Viña. Soy alcohólico, no me cabe la menor duda.",
+    "free": false,
+    "online_exclusive": false,
+    "department": false
+   },
+   "i18n": {
+    "title": {
+     "en": "Repairing Relationships",
+     "es": "Reparando relaciones"
+    },
+    "summary": {
+     "en": "The Ninth Step gives you the opportunity to reconcile with your father",
+     "es": "El Noveno Paso le regala la oportunidad de reconciliarse con su padre"
+    },
+    "section": {
+     "en": "Experience, Strength and Hope",
+     "es": "Experiencia, Fortaleza y Esperanza"
+    },
+    "topic": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_theme": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_label": {
+     "en": "September / October 2026",
+     "es": "Septiembre / Octubre 2026"
+    }
+   },
+   "machine": [
+    "en"
+   ],
+   "is_new": false
+  },
+  {
+   "id": "lv:2026-09:noticias",
+   "source": "lavina",
+   "kind": "article",
+   "url": "https://www.aalavina.org/revista/septiembre-octubre-2026/noticias",
+   "title": "Noticias de AA",
+   "summary": "El poder del amor en el servicio",
+   "lang": "es",
+   "date": "2026-09-01",
+   "first_seen": "2026-09-23T16:34:47Z",
+   "image": "/assets/cache/articles/204f477d59cd851e.webp",
+   "tags": [],
+   "category": "lv",
+   "status": "ok",
+   "extra": {
+    "publication": "lv",
+    "issue_label": "Septiembre / Octubre 2026",
+    "issue_key": "2026-09",
+    "issue_date": "2026-09-01",
+    "issue_theme": "Servicio en AA",
+    "issue_url": "https://www.aalavina.org/edicion-de-revista/septiembre-octubre-2026",
+    "topic": "Servicio en AA",
+    "section": "Sección Especial",
+    "author": null,
+    "author_location": null,
+    "subtitle": "El poder del amor en el servicio",
+    "teaser": "En esta edición conversamos con Verónica R. miembro de AA y Custodia Clase A de la Junta de Servicios Generales.",
+    "free": false,
+    "online_exclusive": false,
+    "department": true
+   },
+   "i18n": {
+    "title": {
+     "en": "AA News",
+     "es": "Noticias de AA"
+    },
+    "summary": {
+     "en": "The Power of Love in Service",
+     "es": "El poder del amor en el servicio"
+    },
+    "section": {
+     "en": "Special Section",
+     "es": "Sección Especial"
+    },
+    "topic": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_theme": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_label": {
+     "en": "September / October 2026",
+     "es": "Septiembre / Octubre 2026"
+    }
+   },
+   "machine": [
+    "en"
+   ],
+   "is_new": false
+  },
+  {
+   "id": "lv:2026-09:llamada-de-esperanza",
+   "source": "lavina",
+   "kind": "article",
+   "url": "https://www.aalavina.org/revista/septiembre-octubre-2026/llamada-de-esperanza",
+   "title": "Llamada de esperanza",
+   "summary": "Todo servicio en AA es voluntario, sencillo y profundamente transformador",
+   "lang": "es",
+   "date": "2026-09-01",
+   "first_seen": "2026-09-23T16:34:47Z",
+   "image": "https://www.aalavina.org/sites/default/files/styles/card_image/public/2026-08/p13-1369517376.jpg?itok=77AqbQDw",
+   "tags": [],
+   "category": "lv",
+   "status": "ok",
+   "extra": {
+    "publication": "lv",
+    "issue_label": "Septiembre / Octubre 2026",
+    "issue_key": "2026-09",
+    "issue_date": "2026-09-01",
+    "issue_theme": "Servicio en AA",
+    "issue_url": "https://www.aalavina.org/edicion-de-revista/septiembre-octubre-2026",
+    "topic": "Servicio en AA",
+    "section": "Sección Especial",
+    "author": "Jesús A.",
+    "author_location": "Barcelona",
+    "subtitle": "Todo servicio en AA es voluntario, sencillo y profundamente transformador",
+    "teaser": "¿Amor? El doctor Bob añadiría... y servicio. ¿Cuánto tardamos en despejar las malas hierbas de nuestro jardín?",
+    "free": false,
+    "online_exclusive": false,
+    "department": false
+   },
+   "i18n": {
+    "title": {
+     "en": "A Call of Hope",
+     "es": "Llamada de esperanza"
+    },
+    "summary": {
+     "en": "All service in AA is voluntary, simple and profoundly transformative",
+     "es": "Todo servicio en AA es voluntario, sencillo y profundamente transformador"
+    },
+    "section": {
+     "en": "Special Section",
+     "es": "Sección Especial"
+    },
+    "topic": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_theme": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_label": {
+     "en": "September / October 2026",
+     "es": "Septiembre / Octubre 2026"
+    }
+   },
+   "machine": [
+    "en"
+   ],
+   "is_new": false
+  },
+  {
+   "id": "lv:2026-09:las-sombras-de-mi-infancia",
+   "source": "lavina",
+   "kind": "article",
+   "url": "https://www.aalavina.org/revista/septiembre-octubre-2026/las-sombras-de-mi-infancia",
+   "title": "Las sombras de mi infancia",
+   "summary": "Desde pequeño observó el impacto del alcoholismo en su hogar y aprendió que nadie puede recuperarse por otro",
+   "lang": "es",
+   "date": "2026-09-01",
+   "first_seen": "2026-09-23T16:34:47Z",
+   "image": "https://www.aalavina.org/sites/default/files/styles/card_image/public/2026-08/p61-545797024.jpg?itok=3ntF5md6",
+   "tags": [],
+   "category": "lv",
+   "status": "ok",
+   "extra": {
+    "publication": "lv",
+    "issue_label": "Septiembre / Octubre 2026",
+    "issue_key": "2026-09",
+    "issue_date": "2026-09-01",
+    "issue_theme": "Servicio en AA",
+    "issue_url": "https://www.aalavina.org/edicion-de-revista/septiembre-octubre-2026",
+    "topic": "Servicio en AA",
+    "section": "AA en la cárcel",
+    "author": "Juan Ricardo L.",
+    "author_location": "Tehachapi, California",
+    "subtitle": "Desde pequeño observó el impacto del alcoholismo en su hogar y aprendió que nadie puede recuperarse por otro",
+    "teaser": "Mi nombre es Juan Ricardo L., y soy alcohólico. Gracias a Dios y al maravilloso programa de Alcohólicos Anónimos, no he bebido.",
+    "free": false,
+    "online_exclusive": false,
+    "department": false
+   },
+   "i18n": {
+    "title": {
+     "en": "The Shadows of My Childhood",
+     "es": "Las sombras de mi infancia"
+    },
+    "summary": {
+     "en": "From a small time he observed the impact of alcoholism on his home and learned that no one can recover for another",
+     "es": "Desde pequeño observó el impacto del alcoholismo en su hogar y aprendió que nadie puede recuperarse por otro"
+    },
+    "section": {
+     "en": "AA in Prison",
+     "es": "AA en la cárcel"
+    },
+    "topic": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_theme": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_label": {
+     "en": "September / October 2026",
+     "es": "Septiembre / Octubre 2026"
+    }
+   },
+   "machine": [
+    "en"
+   ],
+   "is_new": false
+  },
+  {
+   "id": "lv:2026-09:la-humildad-en-aa",
+   "source": "lavina",
+   "kind": "article",
+   "url": "https://www.aalavina.org/revista/septiembre-octubre-2026/la-humildad-en-aa",
+   "title": "La humildad en AA",
+   "summary": "El orgullo y la soberbia agrandan su propia imagen, impidiéndole ver más allá de sí mismo",
+   "lang": "es",
+   "date": "2026-09-01",
+   "first_seen": "2026-09-23T16:34:47Z",
+   "image": "https://www.aalavina.org/sites/default/files/styles/card_image/public/2026-08/p38-862655132%20copy.jpg?itok=5LnXMvxa",
+   "tags": [],
+   "category": "lv",
+   "status": "ok",
+   "extra": {
+    "publication": "lv",
+    "issue_label": "Septiembre / Octubre 2026",
+    "issue_key": "2026-09",
+    "issue_date": "2026-09-01",
+    "issue_theme": "Servicio en AA",
+    "issue_url": "https://www.aalavina.org/edicion-de-revista/septiembre-octubre-2026",
+    "topic": "Servicio en AA",
+    "section": "Aceptación",
+    "author": "Douglas B.",
+    "author_location": "Tegucigalpa",
+    "subtitle": "El orgullo y la soberbia agrandan su propia imagen, impidiéndole ver más allá de sí mismo",
+    "teaser": "El primer escalón hacia la humildad es el conocimiento de uno mismo. Esta idea viene desde la antigua Grecia con el aforismo “Conócete a ti mismo”.",
+    "free": false,
+    "online_exclusive": false,
+    "department": false
+   },
+   "i18n": {
+    "title": {
+     "en": "Humility in AA",
+     "es": "La humildad en AA"
+    },
+    "summary": {
+     "en": "Pride and pride enlarge their own image, preventing them from seeing beyond themselves",
+     "es": "El orgullo y la soberbia agrandan su propia imagen, impidiéndole ver más allá de sí mismo"
+    },
+    "section": {
+     "en": "Acceptance",
+     "es": "Aceptación"
+    },
+    "topic": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_theme": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_label": {
+     "en": "September / October 2026",
+     "es": "Septiembre / Octubre 2026"
+    }
+   },
+   "machine": [
+    "en"
+   ],
+   "is_new": false
+  },
+  {
+   "id": "lv:2026-09:la-fuerza-de-la-mujer-hispana",
+   "source": "lavina",
+   "kind": "article",
+   "url": "https://www.aalavina.org/revista/septiembre-octubre-2026/la-fuerza-de-la-mujer-hispana",
+   "title": "La fuerza de la mujer hispana",
+   "summary": "Convencida del valor del servicio, se dedica a motivar y fortalecer la participación de otras alcohólicas",
+   "lang": "es",
+   "date": "2026-09-01",
+   "first_seen": "2026-09-23T16:34:47Z",
+   "image": "https://www.aalavina.org/sites/default/files/styles/card_image/public/2026-08/p44-2267670838.jpg?itok=ZYH8qTNW",
+   "tags": [],
+   "category": "lv",
+   "status": "ok",
+   "extra": {
+    "publication": "lv",
+    "issue_label": "Septiembre / Octubre 2026",
+    "issue_key": "2026-09",
+    "issue_date": "2026-09-01",
+    "issue_theme": "Servicio en AA",
+    "issue_url": "https://www.aalavina.org/edicion-de-revista/septiembre-octubre-2026",
+    "topic": "Servicio en AA",
+    "section": "Mujeres en AA",
+    "author": "Brisa L.",
+    "author_location": "Mesa, Arizona",
+    "subtitle": "Convencida del valor del servicio, se dedica a motivar y fortalecer la participación de otras alcohólicas",
+    "teaser": "Mi nombre es Brisa y soy alcohólica. Llegué en abril de 2018 y he tenido el privilegio de estar en servicios generales gracias a mis compañeras que me motivaron.",
+    "free": false,
+    "online_exclusive": false,
+    "department": false
+   },
+   "i18n": {
+    "title": {
+     "en": "The Strength of the Hispanic Woman",
+     "es": "La fuerza de la mujer hispana"
+    },
+    "summary": {
+     "en": "Convinced of the value of the service, it is dedicated to motivating and strengthening the participation of other alcoholics",
+     "es": "Convencida del valor del servicio, se dedica a motivar y fortalecer la participación de otras alcohólicas"
+    },
+    "section": {
+     "en": "Women in AA",
+     "es": "Mujeres en AA"
+    },
+    "topic": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_theme": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_label": {
+     "en": "September / October 2026",
+     "es": "Septiembre / Octubre 2026"
+    }
+   },
+   "machine": [
+    "en"
+   ],
+   "is_new": false
+  },
+  {
+   "id": "lv:2026-09:humor",
+   "source": "lavina",
+   "kind": "article",
+   "url": "https://www.aalavina.org/revista/septiembre-octubre-2026/humor",
+   "title": "Humor",
+   "summary": "",
+   "lang": "es",
+   "date": "2026-09-01",
+   "first_seen": "2026-09-23T16:34:47Z",
+   "image": "/assets/cache/articles/cbf02367f10d1dcd.webp",
+   "tags": [],
+   "category": "lv",
+   "status": "ok",
+   "extra": {
+    "publication": "lv",
+    "issue_label": "Septiembre / Octubre 2026",
+    "issue_key": "2026-09",
+    "issue_date": "2026-09-01",
+    "issue_theme": "Servicio en AA",
+    "issue_url": "https://www.aalavina.org/edicion-de-revista/septiembre-octubre-2026",
+    "topic": "Servicio en AA",
+    "section": "En cada edición",
+    "author": null,
+    "author_location": null,
+    "subtitle": null,
+    "teaser": null,
+    "free": false,
+    "online_exclusive": false,
+    "department": true
+   },
+   "i18n": {
+    "title": {
+     "en": "Humor",
+     "es": "Humor"
+    },
+    "summary": {
+     "en": "",
+     "es": ""
+    },
+    "section": {
+     "en": "In Each Edition",
+     "es": "En cada edición"
+    },
+    "topic": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_theme": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_label": {
+     "en": "September / October 2026",
+     "es": "Septiembre / Octubre 2026"
+    }
+   },
+   "machine": [
+    "en"
+   ],
+   "is_new": false
+  },
+  {
+   "id": "lv:2026-09:grandes-bendiciones",
+   "source": "lavina",
+   "kind": "article",
+   "url": "https://www.aalavina.org/revista/septiembre-octubre-2026/grandes-bendiciones",
+   "title": "Grandes bendiciones",
+   "summary": "El servicio le dio herramientas para crecer como alcohólico en recuperación y como padre de familia",
+   "lang": "es",
+   "date": "2026-09-01",
+   "first_seen": "2026-09-23T16:34:47Z",
+   "image": "https://www.aalavina.org/sites/default/files/styles/card_image/public/2026-08/p59-2189890523.jpg?itok=NocLcZF1",
+   "tags": [],
+   "category": "lv",
+   "status": "ok",
+   "extra": {
+    "publication": "lv",
+    "issue_label": "Septiembre / Octubre 2026",
+    "issue_key": "2026-09",
+    "issue_date": "2026-09-01",
+    "issue_theme": "Servicio en AA",
+    "issue_url": "https://www.aalavina.org/edicion-de-revista/septiembre-octubre-2026",
+    "topic": "Servicio en AA",
+    "section": "Veteranos",
+    "author": "Andrés H.",
+    "author_location": "Veracruz",
+    "subtitle": "El servicio le dio herramientas para crecer como alcohólico en recuperación y como padre de familia",
+    "teaser": "Les escribo a todos los compañeros de la fraternidad: recién llegados, veteranos y no tan veteranos.",
+    "free": false,
+    "online_exclusive": false,
+    "department": false
+   },
+   "i18n": {
+    "title": {
+     "en": "Great Blessings",
+     "es": "Grandes bendiciones"
+    },
+    "summary": {
+     "en": "The service gave him tools to grow as an alcoholic in recovery and as a family father",
+     "es": "El servicio le dio herramientas para crecer como alcohólico en recuperación y como padre de familia"
+    },
+    "section": {
+     "en": "Veterans",
+     "es": "Veteranos"
+    },
+    "topic": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_theme": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_label": {
+     "en": "September / October 2026",
+     "es": "Septiembre / Octubre 2026"
+    }
+   },
+   "machine": [
+    "en"
+   ],
+   "is_new": false
+  },
+  {
+   "id": "lv:2026-09:esta-equilibrado-mi-triangulo",
+   "source": "lavina",
+   "kind": "article",
+   "url": "https://www.aalavina.org/revista/septiembre-octubre-2026/esta-equilibrado-mi-triangulo",
+   "title": "¿Está equilibrado mi triángulo?",
+   "summary": "La participación en eventos de AA le despierta el deseo de participar y conocer más sobre la estructura de servicio",
+   "lang": "es",
+   "date": "2026-09-01",
+   "first_seen": "2026-09-23T16:34:47Z",
+   "image": "https://www.aalavina.org/sites/default/files/styles/card_image/public/2026-08/P21%20triangle.jpg?itok=iqCOuSKg",
+   "tags": [],
+   "category": "lv",
+   "status": "ok",
+   "extra": {
+    "publication": "lv",
+    "issue_label": "Septiembre / Octubre 2026",
+    "issue_key": "2026-09",
+    "issue_date": "2026-09-01",
+    "issue_theme": "Servicio en AA",
+    "issue_url": "https://www.aalavina.org/edicion-de-revista/septiembre-octubre-2026",
+    "topic": "Servicio en AA",
+    "section": "Sección Especial",
+    "author": "J. D. O.",
+    "author_location": "Santa Cruz, California",
+    "subtitle": "La participación en eventos de AA le despierta el deseo de participar y conocer más sobre la estructura de servicio",
+    "teaser": "Buenos días, mi nombre es Juan y soy alcohólico. Mi fecha de sobriedad es el once de septiembre de 2023.",
+    "free": false,
+    "online_exclusive": false,
+    "department": false
+   },
+   "i18n": {
+    "title": {
+     "en": "Is My Triangle Balanced?",
+     "es": "¿Está equilibrado mi triángulo?"
+    },
+    "summary": {
+     "en": "Participation in AA events awakens you the desire to participate and learn more about the service structure",
+     "es": "La participación en eventos de AA le despierta el deseo de participar y conocer más sobre la estructura de servicio"
+    },
+    "section": {
+     "en": "Special Section",
+     "es": "Sección Especial"
+    },
+    "topic": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_theme": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_label": {
+     "en": "September / October 2026",
+     "es": "Septiembre / Octubre 2026"
+    }
+   },
+   "machine": [
+    "en"
+   ],
+   "is_new": false
+  },
+  {
+   "id": "lv:2026-09:el-vacio-detras-de-la-fiesta",
+   "source": "lavina",
+   "kind": "article",
+   "url": "https://www.aalavina.org/revista/septiembre-octubre-2026/el-vacio-detras-de-la-fiesta",
+   "title": "El vacío detrás de la fiesta",
+   "summary": "Jamás me imaginé llegar a una sala de AA. Para mí, Alcohólicos Anónimos era el lugar donde llegaban quienes no tenían nada, era para las personas que estaban viviendo en la calle.",
+   "lang": "es",
+   "date": "2026-09-01",
+   "first_seen": "2026-09-23T16:34:47Z",
+   "image": "https://www.aalavina.org/sites/default/files/styles/card_image/public/2026-08/p28-621375384.jpg?itok=rtqo_ylF",
+   "tags": [],
+   "category": "lv",
+   "status": "ok",
+   "extra": {
+    "publication": "lv",
+    "issue_label": "Septiembre / Octubre 2026",
+    "issue_key": "2026-09",
+    "issue_date": "2026-09-01",
+    "issue_theme": "Servicio en AA",
+    "issue_url": "https://www.aalavina.org/edicion-de-revista/septiembre-octubre-2026",
+    "topic": "Servicio en AA",
+    "section": "Paso Diez",
+    "author": "Jasmin O.",
+    "author_location": "Nueva Jersey",
+    "subtitle": null,
+    "teaser": "Jamás me imaginé llegar a una sala de AA. Para mí, Alcohólicos Anónimos era el lugar donde llegaban quienes no tenían nada, era para las personas que estaban viviendo en la calle.",
+    "free": false,
+    "online_exclusive": false,
+    "department": false
+   },
+   "i18n": {
+    "title": {
+     "en": "The Emptiness Behind the Party",
+     "es": "El vacío detrás de la fiesta"
+    },
+    "summary": {
+     "en": "I never imagined getting to an AA room. For me, Alcoholics Anonymous was the place where those who had nothing arrived, it was for the people who were living on the street.",
+     "es": "Jamás me imaginé llegar a una sala de AA. Para mí, Alcohólicos Anónimos era el lugar donde llegaban quienes no tenían nada, era para las personas que estaban viviendo en la calle."
+    },
+    "section": {
+     "en": "Step Ten",
+     "es": "Paso Diez"
+    },
+    "topic": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_theme": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_label": {
+     "en": "September / October 2026",
+     "es": "Septiembre / Octubre 2026"
+    }
+   },
+   "machine": [
+    "en"
+   ],
+   "is_new": false
+  },
+  {
+   "id": "lv:2026-09:el-precio-de-mi-alcoholismo",
+   "source": "lavina",
+   "kind": "article",
+   "url": "https://www.aalavina.org/revista/septiembre-octubre-2026/el-precio-de-mi-alcoholismo",
+   "title": "El precio de mi alcoholismo",
+   "summary": "La recuperación le exigió mirar de frente las heridas que dejó en su hijo y asumir su responsabilidad",
+   "lang": "es",
+   "date": "2026-09-01",
+   "first_seen": "2026-09-23T16:34:47Z",
+   "image": "https://www.aalavina.org/sites/default/files/styles/card_image/public/2026-08/p52-1495000402.jpg?itok=PTIw2_ez",
+   "tags": [],
+   "category": "lv",
+   "status": "ok",
+   "extra": {
+    "publication": "lv",
+    "issue_label": "Septiembre / Octubre 2026",
+    "issue_key": "2026-09",
+    "issue_date": "2026-09-01",
+    "issue_theme": "Servicio en AA",
+    "issue_url": "https://www.aalavina.org/edicion-de-revista/septiembre-octubre-2026",
+    "topic": "Servicio en AA",
+    "section": "Familia",
+    "author": "María S.",
+    "author_location": "Glendale, Arizona",
+    "subtitle": "La recuperación le exigió mirar de frente las heridas que dejó en su hijo y asumir su responsabilidad",
+    "teaser": "Llegué en febrero de 1998; la fecha exacta no la recuerdo, pero fue a mediados de ese mes.",
+    "free": false,
+    "online_exclusive": false,
+    "department": false
+   },
+   "i18n": {
+    "title": {
+     "en": "The Price of My Alcoholism",
+     "es": "El precio de mi alcoholismo"
+    },
+    "summary": {
+     "en": "The recovery required him to face the wounds he left in his son and assume his responsibility",
+     "es": "La recuperación le exigió mirar de frente las heridas que dejó en su hijo y asumir su responsabilidad"
+    },
+    "section": {
+     "en": "Family",
+     "es": "Familia"
+    },
+    "topic": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_theme": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_label": {
+     "en": "September / October 2026",
+     "es": "Septiembre / Octubre 2026"
+    }
+   },
+   "machine": [
+    "en"
+   ],
+   "is_new": false
+  },
+  {
+   "id": "lv:2026-09:el-despertar-del-espiritu",
+   "source": "lavina",
+   "kind": "article",
+   "url": "https://www.aalavina.org/revista/septiembre-octubre-2026/el-despertar-del-espiritu",
+   "title": "El despertar del espíritu",
+   "summary": "Servir no es una obligación, sino el privilegio de compartir con otros",
+   "lang": "es",
+   "date": "2026-09-01",
+   "first_seen": "2026-09-23T16:34:47Z",
+   "image": "https://www.aalavina.org/sites/default/files/styles/card_image/public/2026-08/Cover%20silo-2155438392%20copy.jpg?itok=-gQdeq0L",
+   "tags": [],
+   "category": "lv",
+   "status": "ok",
+   "extra": {
+    "publication": "lv",
+    "issue_label": "Septiembre / Octubre 2026",
+    "issue_key": "2026-09",
+    "issue_date": "2026-09-01",
+    "issue_theme": "Servicio en AA",
+    "issue_url": "https://www.aalavina.org/edicion-de-revista/septiembre-octubre-2026",
+    "topic": "Servicio en AA",
+    "section": "Sección Especial",
+    "author": "Victor R.",
+    "author_location": "Grand Prairie, Texas",
+    "subtitle": "Servir no es una obligación, sino el privilegio de compartir con otros",
+    "teaser": "En Alcohólicos Anónimos aprendemos que “el amor y la tolerancia son nuestro código”.",
+    "free": false,
+    "online_exclusive": false,
+    "department": false
+   },
+   "i18n": {
+    "title": {
+     "en": "The Awakening of the Spirit",
+     "es": "El despertar del espíritu"
+    },
+    "summary": {
+     "en": "Serving is not an obligation, but the privilege of sharing with others",
+     "es": "Servir no es una obligación, sino el privilegio de compartir con otros"
+    },
+    "section": {
+     "en": "Special Section",
+     "es": "Sección Especial"
+    },
+    "topic": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_theme": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_label": {
+     "en": "September / October 2026",
+     "es": "Septiembre / Octubre 2026"
+    }
+   },
+   "machine": [
+    "en"
+   ],
+   "is_new": false
+  },
+  {
+   "id": "lv:2026-09:el-corazon-de-aa",
+   "source": "lavina",
+   "kind": "article",
+   "url": "https://www.aalavina.org/revista/septiembre-octubre-2026/el-corazon-de-aa",
+   "title": "El corazón de AA",
+   "summary": "El bienestar común siempre debe tener la preferencia",
+   "lang": "es",
+   "date": "2026-09-01",
+   "first_seen": "2026-09-23T16:34:47Z",
+   "image": "https://www.aalavina.org/sites/default/files/styles/card_image/public/2026-08/p18-483835393.jpg?itok=rZrSMnAN",
+   "tags": [],
+   "category": "lv",
+   "status": "ok",
+   "extra": {
+    "publication": "lv",
+    "issue_label": "Septiembre / Octubre 2026",
+    "issue_key": "2026-09",
+    "issue_date": "2026-09-01",
+    "issue_theme": "Servicio en AA",
+    "issue_url": "https://www.aalavina.org/edicion-de-revista/septiembre-octubre-2026",
+    "topic": "Servicio en AA",
+    "section": "Sección Especial",
+    "author": "Héctor H.",
+    "author_location": "Madera, California",
+    "subtitle": "El bienestar común siempre debe tener la preferencia",
+    "teaser": "Mi nombre es Héctor, y soy miembro de Alcohólicos Anónimos.",
+    "free": false,
+    "online_exclusive": false,
+    "department": false
+   },
+   "i18n": {
+    "title": {
+     "en": "The Heart of AA",
+     "es": "El corazón de AA"
+    },
+    "summary": {
+     "en": "Common well-being must always have a preference",
+     "es": "El bienestar común siempre debe tener la preferencia"
+    },
+    "section": {
+     "en": "Special Section",
+     "es": "Sección Especial"
+    },
+    "topic": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_theme": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_label": {
+     "en": "September / October 2026",
+     "es": "Septiembre / Octubre 2026"
+    }
+   },
+   "machine": [
+    "en"
+   ],
+   "is_new": false
+  },
+  {
+   "id": "lv:2026-09:detenido",
+   "source": "lavina",
+   "kind": "article",
+   "url": "https://www.aalavina.org/revista/septiembre-octubre-2026/detenido",
+   "title": "Detenido",
+   "summary": "Caer en la cárcel se convirtió en una oportunidad para reflexionar sobre su vida y el rumbo que había tomado",
+   "lang": "es",
+   "date": "2026-09-01",
+   "first_seen": "2026-09-23T16:34:47Z",
+   "image": "https://www.aalavina.org/sites/default/files/styles/card_image/public/2026-08/p24-160321702.jpg?itok=nX3_ZTbH",
+   "tags": [],
+   "category": "lv",
+   "status": "ok",
+   "extra": {
+    "publication": "lv",
+    "issue_label": "Septiembre / Octubre 2026",
+    "issue_key": "2026-09",
+    "issue_date": "2026-09-01",
+    "issue_theme": "Servicio en AA",
+    "issue_url": "https://www.aalavina.org/edicion-de-revista/septiembre-octubre-2026",
+    "topic": "Servicio en AA",
+    "section": "Sección Especial",
+    "author": "Gustavo S.",
+    "author_location": "San Antonio, Texas",
+    "subtitle": "Caer en la cárcel se convirtió en una oportunidad para reflexionar sobre su vida y el rumbo que había tomado",
+    "teaser": "Hace algunos años, cuando llegué a mi grupo base, un seis de abril de 2009, comencé la tarea de empezar una nueva vida sin alcohol y sus derivados. Duré cinco meses.",
+    "free": false,
+    "online_exclusive": false,
+    "department": false
+   },
+   "i18n": {
+    "title": {
+     "en": "Detained",
+     "es": "Detenido"
+    },
+    "summary": {
+     "en": "Falling into jail became an opportunity to reflect on his life and the course he had taken",
+     "es": "Caer en la cárcel se convirtió en una oportunidad para reflexionar sobre su vida y el rumbo que había tomado"
+    },
+    "section": {
+     "en": "Special Section",
+     "es": "Sección Especial"
+    },
+    "topic": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_theme": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_label": {
+     "en": "September / October 2026",
+     "es": "Septiembre / Octubre 2026"
+    }
+   },
+   "machine": [
+    "en"
+   ],
+   "is_new": false
+  },
+  {
+   "id": "lv:2026-09:decisiones",
+   "source": "lavina",
+   "kind": "article",
+   "url": "https://www.aalavina.org/revista/septiembre-octubre-2026/decisiones",
+   "title": "Decisiones",
+   "summary": "Halló en las juntas de AA un lugar al que, por fin, pudo llamar hogar",
+   "lang": "es",
+   "date": "2026-09-01",
+   "first_seen": "2026-09-23T16:34:47Z",
+   "image": "https://www.aalavina.org/sites/default/files/styles/card_image/public/2026-08/p46-1672416596.jpg?itok=zUcRqRZ6",
+   "tags": [],
+   "category": "lv",
+   "status": "ok",
+   "extra": {
+    "publication": "lv",
+    "issue_label": "Septiembre / Octubre 2026",
+    "issue_key": "2026-09",
+    "issue_date": "2026-09-01",
+    "issue_theme": "Servicio en AA",
+    "issue_url": "https://www.aalavina.org/edicion-de-revista/septiembre-octubre-2026",
+    "topic": "Servicio en AA",
+    "section": "Mujeres en AA",
+    "author": "Eliana M.",
+    "author_location": "San Antonio, Texas",
+    "subtitle": "Halló en las juntas de AA un lugar al que, por fin, pudo llamar hogar",
+    "teaser": "Cuando acepté que tenía un problema con la manera de beber, estaba pidiendo mi salida de un centro de rehabilitación. El empleado que me entregó los papeles me dijo: “Por favor, no te vayas.",
+    "free": false,
+    "online_exclusive": false,
+    "department": false
+   },
+   "i18n": {
+    "title": {
+     "en": "Decisions",
+     "es": "Decisiones"
+    },
+    "summary": {
+     "en": "He found on the AA boards a place he could finally call home",
+     "es": "Halló en las juntas de AA un lugar al que, por fin, pudo llamar hogar"
+    },
+    "section": {
+     "en": "Women in AA",
+     "es": "Mujeres en AA"
+    },
+    "topic": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_theme": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_label": {
+     "en": "September / October 2026",
+     "es": "Septiembre / Octubre 2026"
+    }
+   },
+   "machine": [
+    "en"
+   ],
+   "is_new": false
+  },
+  {
+   "id": "lv:2026-09:de-condado-en-condado",
+   "source": "lavina",
+   "kind": "article",
+   "url": "https://www.aalavina.org/revista/septiembre-octubre-2026/de-condado-en-condado",
+   "title": "De condado en condado",
+   "summary": "La sobriedad también puede devolver la dignidad y la esperanza",
+   "lang": "es",
+   "date": "2026-09-01",
+   "first_seen": "2026-09-23T16:34:47Z",
+   "image": "https://www.aalavina.org/sites/default/files/styles/card_image/public/2026-08/p54-173680128.jpg?itok=YSxr_HDx",
+   "tags": [],
+   "category": "lv",
+   "status": "ok",
+   "extra": {
+    "publication": "lv",
+    "issue_label": "Septiembre / Octubre 2026",
+    "issue_key": "2026-09",
+    "issue_date": "2026-09-01",
+    "issue_theme": "Servicio en AA",
+    "issue_url": "https://www.aalavina.org/edicion-de-revista/septiembre-octubre-2026",
+    "topic": "Servicio en AA",
+    "section": "Recaídas",
+    "author": "Jair G.",
+    "author_location": "San José, California",
+    "subtitle": "La sobriedad también puede devolver la dignidad y la esperanza",
+    "teaser": "Mi nombre es Jair y soy un enfermo alcohólico. Mi contacto con el alcohol comenzó cuando tenía apenas nueve o diez años. Recuerdo que mi padre me daba sorbos de su cerveza.",
+    "free": false,
+    "online_exclusive": false,
+    "department": false
+   },
+   "i18n": {
+    "title": {
+     "en": "From County to County",
+     "es": "De condado en condado"
+    },
+    "summary": {
+     "en": "Sobriety can also return dignity and hope",
+     "es": "La sobriedad también puede devolver la dignidad y la esperanza"
+    },
+    "section": {
+     "en": "Relapses",
+     "es": "Recaídas"
+    },
+    "topic": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_theme": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_label": {
+     "en": "September / October 2026",
+     "es": "Septiembre / Octubre 2026"
+    }
+   },
+   "machine": [
+    "en"
+   ],
+   "is_new": false
+  },
+  {
+   "id": "lv:2026-09:casados-sobrios-y-felices",
+   "source": "lavina",
+   "kind": "article",
+   "url": "https://www.aalavina.org/revista/septiembre-octubre-2026/casados-sobrios-y-felices",
+   "title": "Casados, sobrios y felices",
+   "summary": "La experiencia de sus padrinos les ayuda a fortalecer su recuperación y su relación de pareja",
+   "lang": "es",
+   "date": "2026-09-01",
+   "first_seen": "2026-09-23T16:34:47Z",
+   "image": "https://www.aalavina.org/sites/default/files/styles/card_image/public/2026-08/p48-1447055616%20copy.jpg?itok=kqiOnr3O",
+   "tags": [],
+   "category": "lv",
+   "status": "ok",
+   "extra": {
+    "publication": "lv",
+    "issue_label": "Septiembre / Octubre 2026",
+    "issue_key": "2026-09",
+    "issue_date": "2026-09-01",
+    "issue_theme": "Servicio en AA",
+    "issue_url": "https://www.aalavina.org/edicion-de-revista/septiembre-octubre-2026",
+    "topic": "Servicio en AA",
+    "section": "Familia",
+    "author": "I. D.",
+    "author_location": "North Hollywood, California",
+    "subtitle": "La experiencia de sus padrinos les ayuda a fortalecer su recuperación y su relación de pareja",
+    "teaser": "Llegué al grupo a los veintisiete años de edad, soltera y sin haber tenido hijos. Mi grupo es un grupo de terapia directa y algo escandaloso.",
+    "free": false,
+    "online_exclusive": false,
+    "department": false
+   },
+   "i18n": {
+    "title": {
+     "en": "Married, Sober and Happy",
+     "es": "Casados, sobrios y felices"
+    },
+    "summary": {
+     "en": "The experience of your sponsors helps you strengthen your recovery and your partner relationship",
+     "es": "La experiencia de sus padrinos les ayuda a fortalecer su recuperación y su relación de pareja"
+    },
+    "section": {
+     "en": "Family",
+     "es": "Familia"
+    },
+    "topic": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_theme": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_label": {
+     "en": "September / October 2026",
+     "es": "Septiembre / Octubre 2026"
+    }
+   },
+   "machine": [
+    "en"
+   ],
+   "is_new": false
+  },
+  {
+   "id": "lv:2026-09:cartas-del-lector",
+   "source": "lavina",
+   "kind": "article",
+   "url": "https://www.aalavina.org/revista/septiembre-octubre-2026/cartas-del-lector",
+   "title": "Cartas del lector",
+   "summary": "Enfermedad espiritual Fort Worth, Texas",
+   "lang": "es",
+   "date": "2026-09-01",
+   "first_seen": "2026-09-23T16:34:47Z",
+   "image": "https://www.aalavina.org/sites/default/files/styles/card_image/public/2026-08/P5-1398962864.jpg?itok=iIG4MU82",
+   "tags": [],
+   "category": "lv",
+   "status": "ok",
+   "extra": {
+    "publication": "lv",
+    "issue_label": "Septiembre / Octubre 2026",
+    "issue_key": "2026-09",
+    "issue_date": "2026-09-01",
+    "issue_theme": "Servicio en AA",
+    "issue_url": "https://www.aalavina.org/edicion-de-revista/septiembre-octubre-2026",
+    "topic": "Servicio en AA",
+    "section": "En cada edición",
+    "author": null,
+    "author_location": null,
+    "subtitle": null,
+    "teaser": "Enfermedad espiritual Fort Worth, Texas",
+    "free": false,
+    "online_exclusive": false,
+    "department": false
+   },
+   "i18n": {
+    "title": {
+     "en": "Letters From the Reader",
+     "es": "Cartas del lector"
+    },
+    "summary": {
+     "en": "Spiritual Disease Fort Worth, Texas",
+     "es": "Enfermedad espiritual Fort Worth, Texas"
+    },
+    "section": {
+     "en": "In Each Edition",
+     "es": "En cada edición"
+    },
+    "topic": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_theme": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_label": {
+     "en": "September / October 2026",
+     "es": "Septiembre / Octubre 2026"
+    }
+   },
+   "machine": [
+    "en"
+   ],
+   "is_new": false
+  },
+  {
+   "id": "lv:2026-09:carta-de-bienvenida",
+   "source": "lavina",
+   "kind": "article",
+   "url": "https://www.aalavina.org/revista/septiembre-octubre-2026/carta-de-bienvenida",
+   "title": "Bienvenida",
+   "summary": "La recuperación nos regala mucho más que la sobriedad.",
+   "lang": "es",
+   "date": "2026-09-01",
+   "first_seen": "2026-09-23T16:34:47Z",
+   "image": "/assets/cache/articles/5f6983cc446a5d6a.webp",
+   "tags": [],
+   "category": "lv",
+   "status": "ok",
+   "extra": {
+    "publication": "lv",
+    "issue_label": "Septiembre / Octubre 2026",
+    "issue_key": "2026-09",
+    "issue_date": "2026-09-01",
+    "issue_theme": "Servicio en AA",
+    "issue_url": "https://www.aalavina.org/edicion-de-revista/septiembre-octubre-2026",
+    "topic": "Servicio en AA",
+    "section": "En cada edición",
+    "author": null,
+    "author_location": null,
+    "subtitle": null,
+    "teaser": "La recuperación nos regala mucho más que la sobriedad.",
+    "free": false,
+    "online_exclusive": false,
+    "department": true
+   },
+   "i18n": {
+    "title": {
+     "en": "Welcome",
+     "es": "Bienvenida"
+    },
+    "summary": {
+     "en": "The recovery gives us much more than the sobriety.",
+     "es": "La recuperación nos regala mucho más que la sobriedad."
+    },
+    "section": {
+     "en": "In Each Edition",
+     "es": "En cada edición"
+    },
+    "topic": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_theme": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_label": {
+     "en": "September / October 2026",
+     "es": "Septiembre / Octubre 2026"
+    }
+   },
+   "machine": [
+    "en"
+   ],
+   "is_new": false
+  },
+  {
+   "id": "lv:2026-09:atados-por-la-misma-enfermedad",
+   "source": "lavina",
+   "kind": "article",
+   "url": "https://www.aalavina.org/revista/septiembre-octubre-2026/atados-por-la-misma-enfermedad",
+   "title": "Atados por la misma enfermedad",
+   "summary": "Durante años, el alcoholismo ocupó el lugar que correspondía a la familia y a los sueños",
+   "lang": "es",
+   "date": "2026-09-01",
+   "first_seen": "2026-09-23T16:34:47Z",
+   "image": "https://www.aalavina.org/sites/default/files/styles/card_image/public/2026-08/p50-2198845859.jpg?itok=LmxqwJH5",
+   "tags": [],
+   "category": "lv",
+   "status": "ok",
+   "extra": {
+    "publication": "lv",
+    "issue_label": "Septiembre / Octubre 2026",
+    "issue_key": "2026-09",
+    "issue_date": "2026-09-01",
+    "issue_theme": "Servicio en AA",
+    "issue_url": "https://www.aalavina.org/edicion-de-revista/septiembre-octubre-2026",
+    "topic": "Servicio en AA",
+    "section": "Familia",
+    "author": "Noemi",
+    "author_location": "Santa Ana, California",
+    "subtitle": "Durante años, el alcoholismo ocupó el lugar que correspondía a la familia y a los sueños",
+    "teaser": "Soy Noemí, una alcohólica derrotada. Llegué a un grupo de AA pidiendo ayuda, después de haber fracasado en los intentos de dejar de beber por mis propios medios.",
+    "free": false,
+    "online_exclusive": false,
+    "department": false
+   },
+   "i18n": {
+    "title": {
+     "en": "Bound by the Same Illness",
+     "es": "Atados por la misma enfermedad"
+    },
+    "summary": {
+     "en": "For years, alcoholism occupied the place of family and dreams",
+     "es": "Durante años, el alcoholismo ocupó el lugar que correspondía a la familia y a los sueños"
+    },
+    "section": {
+     "en": "Family",
+     "es": "Familia"
+    },
+    "topic": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_theme": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_label": {
+     "en": "September / October 2026",
+     "es": "Septiembre / Octubre 2026"
+    }
+   },
+   "machine": [
+    "en"
+   ],
+   "is_new": false
+  },
+  {
+   "id": "lv:2026-09:alcohol-y-violencia",
+   "source": "lavina",
+   "kind": "article",
+   "url": "https://www.aalavina.org/revista/septiembre-octubre-2026/alcohol-y-violencia",
+   "title": "Alcohol y violencia",
+   "summary": "Cuando bebía, perdía completamente el control y llegué a maltratar a mi pareja físicamente bajo los efectos del alcohol.",
+   "lang": "es",
+   "date": "2026-09-01",
+   "first_seen": "2026-09-23T16:34:47Z",
+   "image": "https://www.aalavina.org/sites/default/files/styles/card_image/public/2026-08/p56-2248344956.jpg?itok=6la9FHDy",
+   "tags": [],
+   "category": "lv",
+   "status": "ok",
+   "extra": {
+    "publication": "lv",
+    "issue_label": "Septiembre / Octubre 2026",
+    "issue_key": "2026-09",
+    "issue_date": "2026-09-01",
+    "issue_theme": "Servicio en AA",
+    "issue_url": "https://www.aalavina.org/edicion-de-revista/septiembre-octubre-2026",
+    "topic": "Servicio en AA",
+    "section": "Recaídas",
+    "author": "Eddie C.",
+    "author_location": "San José, California",
+    "subtitle": null,
+    "teaser": "Cuando bebía, perdía completamente el control y llegué a maltratar a mi pareja físicamente bajo los efectos del alcohol.",
+    "free": false,
+    "online_exclusive": false,
+    "department": false
+   },
+   "i18n": {
+    "title": {
+     "en": "Alcohol and Violence",
+     "es": "Alcohol y violencia"
+    },
+    "summary": {
+     "en": "When I drank, I completely lost control and I got to physically mistreat my partner under the effects of alcohol.",
+     "es": "Cuando bebía, perdía completamente el control y llegué a maltratar a mi pareja físicamente bajo los efectos del alcohol."
+    },
+    "section": {
+     "en": "Relapses",
+     "es": "Recaídas"
+    },
+    "topic": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_theme": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_label": {
+     "en": "September / October 2026",
+     "es": "Septiembre / Octubre 2026"
+    }
+   },
+   "machine": [
+    "en"
+   ],
+   "is_new": false
+  },
+  {
+   "id": "lv:2026-09:acerca-del-alcoholismo",
+   "source": "lavina",
+   "kind": "article",
+   "url": "https://www.aalavina.org/revista/septiembre-octubre-2026/acerca-del-alcoholismo",
+   "title": "Acerca del alcoholismo",
+   "summary": "El alcohol y la salud: riesgos, beneficios y controversias",
+   "lang": "es",
+   "date": "2026-09-01",
+   "first_seen": "2026-09-23T16:34:47Z",
+   "image": "/assets/cache/articles/6c7853fac70f89ca.webp",
+   "tags": [],
+   "category": "lv",
+   "status": "ok",
+   "extra": {
+    "publication": "lv",
+    "issue_label": "Septiembre / Octubre 2026",
+    "issue_key": "2026-09",
+    "issue_date": "2026-09-01",
+    "issue_theme": "Servicio en AA",
+    "issue_url": "https://www.aalavina.org/edicion-de-revista/septiembre-octubre-2026",
+    "topic": "Servicio en AA",
+    "section": "En cada edición",
+    "author": null,
+    "author_location": null,
+    "subtitle": "El alcohol y la salud: riesgos, beneficios y controversias",
+    "teaser": "Brindar por la salud es una tradición común. Pero también puede ser contraproducente: el alcohol que se consume en muchos brindis puede, de hecho, perjudicarla.",
+    "free": false,
+    "online_exclusive": false,
+    "department": true
+   },
+   "i18n": {
+    "title": {
+     "en": "About Alcoholism",
+     "es": "Acerca del alcoholismo"
+    },
+    "summary": {
+     "en": "Alcohol and health: risks, benefits and disputes",
+     "es": "El alcohol y la salud: riesgos, beneficios y controversias"
+    },
+    "section": {
+     "en": "In Each Edition",
+     "es": "En cada edición"
+    },
+    "topic": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_theme": {
+     "en": "Service in AA",
+     "es": "Servicio en AA"
+    },
+    "issue_label": {
+     "en": "September / October 2026",
+     "es": "Septiembre / Octubre 2026"
+    }
+   },
+   "machine": [
+    "en"
+   ],
+   "is_new": false
+  }
+ ]
+}

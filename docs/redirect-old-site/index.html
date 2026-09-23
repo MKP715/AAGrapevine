@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<script>
+  /* ================================================================
+     THE NEW SITE'S ADDRESS — change it here if the new site moves
+     (for example to a custom domain). Keep the slash at the end.
+     ================================================================ */
+  var NEW_SITE = "https://mkp715.github.io/AAGrapevine/";
+
+  /* ----------------------------------------------------------------
+     REDIRECT PAGE for the OLD site (https://neta65.github.io/Grapevine/)
+     How to use (details: README.md → "Replacing the old site"):
+       1. In the OLD repository (neta65/Grapevine), delete the old files
+          and upload THIS file as index.html — and a second copy named
+          404.html (so old deep links redirect too).
+       2. If the new site lives somewhere else, change NEW_SITE above AND
+          the same address in the 3 places further down marked
+          "NO-JAVASCRIPT FALLBACK" (Find & Replace in any editor does all).
+     What it does: old links like …/Grapevine/#events open the matching
+     page of the new site (…/events/), in Spanish if the visitor had chosen
+     Spanish on the old site. Anything else lands on the new home page,
+     keeping the #part of the link.
+     ---------------------------------------------------------------- */
+  (function () {
+    var base = NEW_SITE.replace(/\/?$/, "/");
+    // The old one-page site used #home, #events, … → the new site's pages.
+    var MAP = {
+      home: "", about: "about/", meeting: "meeting/", events: "events/",
+      media: "whats-new/", resources: "library/", documents: "documents/",
+      photos: "photos/", gvr: "gvr/", contribute: "contribute/", subscribe: "subscribe/"
+    };
+    var hash = (location.hash || "").replace(/^#/, "");
+    var key = hash.toLowerCase().replace(/^pg-/, "");
+
+    // Language: ?lang=es, an old /es/ path, or the choice saved by the old site.
+    var lang = null;
+    try { lang = window.localStorage.getItem("gv_lang"); } catch (e) { /* storage blocked */ }
+    var q = /[?&]lang=(es|en)\b/i.exec(location.search);
+    if (q) lang = q[1].toLowerCase();
+    if (/\/es(\/|$)/i.test(location.pathname)) lang = "es";
+    var prefix = lang === "es" ? "es/" : "";
+
+    var target = Object.prototype.hasOwnProperty.call(MAP, key)
+      ? base + prefix + MAP[key]
+      : base + prefix + (hash ? "#" + hash : "");
+    window.__redirectTarget = target;   // (read by the button below)
+    window.location.replace(target);
+  })();
+</script>
+<!-- NO-JAVASCRIPT FALLBACK (1 of 3): go to the new home page right away. -->
+<noscript><meta http-equiv="refresh" content="0; url=https://mkp715.github.io/AAGrapevine/"></noscript>
+<!-- NO-JAVASCRIPT FALLBACK (2 of 3): tell search engines where the site lives now. -->
+<link rel="canonical" href="https://mkp715.github.io/AAGrapevine/">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grapevine / La Viña — we've moved · nos mudamos</title>
+<style>
+  :root { color-scheme: light dark;
+          --paper: #fbf8f2; --ink: #1d1a26; --muted: #57526a; --heading: #07457c;
+          --btn: #0a5fa8; --btn-ink: #ffffff; --line: #e6dfd2; --focus: #b8430b; }
+  @media (prefers-color-scheme: dark) {
+    :root { --paper: #121019; --ink: #eeeaf6; --muted: #b3adc4; --heading: #9ccbf5;
+            --btn: #6cb0ef; --btn-ink: #121019; --line: #312c40; --focus: #f0a070; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; min-height: 100vh; display: grid; grid-template-columns: minmax(0, 1fr);
+         place-items: center; padding: 16px;
+         font: 17px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+         background: var(--paper); color: var(--ink); }
+  main { width: 100%; max-width: 34rem; text-align: center; overflow-wrap: anywhere; }
+  h1 { font-family: Georgia, "Times New Roman", serif; font-size: 1.9rem; margin: 0 0 .25rem; color: var(--heading); }
+  p { margin: .5rem 0; color: var(--muted); }
+  a.btn { display: inline-block; margin-top: 1rem; padding: .75rem 1.25rem; border-radius: .6rem;
+          background: var(--btn); color: var(--btn-ink); text-decoration: none; font-weight: 600; }
+  a.btn:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+  hr { border: 0; border-top: 1px dashed var(--line); margin: 1.25rem 0; }
+</style>
+</head>
+<body>
+<main>
+  <h1>We've moved!</h1>
+  <p>The NETA 65 Grapevine / La Viña Committee has a new website that updates itself every day, in English and Spanish.</p>
+  <hr>
+  <h1 lang="es">¡Nos mudamos!</h1>
+  <p lang="es">El Comité de Grapevine / La Viña de NETA 65 tiene un nuevo sitio web que se actualiza solo cada día, en inglés y español.</p>
+  <!-- NO-JAVASCRIPT FALLBACK (3 of 3): the button's address. -->
+  <a class="btn" id="go" href="https://mkp715.github.io/AAGrapevine/">Go to the new site · Ir al nuevo sitio →</a>
+</main>
+<script>
+  // If the browser blocked the automatic jump, the button goes to the same matching page.
+  (function () { var a = document.getElementById("go"); if (a && window.__redirectTarget) a.href = window.__redirectTarget; })();
+</script>
+</body>
+</html>

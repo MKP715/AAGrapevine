@@ -427,3 +427,15 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# ---- NETA65 Grapevine site ----
+node_modules/
+_site/
+.tmp/
+.venv/
+.cache/
+*.pyc
+.DS_Store
+
+# Backups the sync writes when a data file is unreadable (inspect locally, never commit)
+data/raw/*.corrupt-*

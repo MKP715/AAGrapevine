@@ -1,0 +1,44 @@
+# Dependabot keeps the automation's building blocks up to date by opening
+# at most one grouped pull request per month for each kind of update.
+#
+# What to do with these pull requests (see README → "Housekeeping"):
+#   The "Pull request check" workflow (.github/workflows/check.yml) builds
+#   the website with the update and runs the tests. Merge only when the
+#   pull request shows a green ✓; a red ✗ means leave it (the live site is
+#   not affected).
+#   * "github-actions" updates keep the daily workflow running when GitHub
+#     retires old versions.
+#   * "npm" updates are the site-building tools. After merging, glance at
+#     the next "Update & Deploy" run; if it fails, revert the merge (one click).
+#
+# Python packages are NOT listed here on purpose: requirements.txt uses
+# ">=" so every daily run already installs the newest versions (important
+# for yt-dlp, which must keep up with YouTube changes).
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      github-actions:
+        patterns: ["*"]
+    commit-message:
+      prefix: "chore(actions)"
+    open-pull-requests-limit: 2
+
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      site-tools:
+        patterns: ["*"]
+        update-types: [minor, patch]
+    # Major versions can change how the site is built — upgrade those by hand.
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+    commit-message:
+      prefix: "chore(deps)"
+    open-pull-requests-limit: 2

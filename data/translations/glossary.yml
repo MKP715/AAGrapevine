@@ -1,0 +1,291 @@
+# =====================================================================
+#  TRANSLATION GLOSSARY  (English ⇄ Spanish)
+#
+#  The site translates every title, summary and announcement
+#  automatically with an open-source translation model. The model does
+#  not know AA vocabulary, so this file tells it:
+#
+#   1. KEEP  – names that must never be translated
+#              ("Grapevine" must not become "abuelo"!).
+#   2. TERMS – words and phrases that always get the same translation
+#              ("home group" is "grupo base", not "grupo de casa").
+#
+#  HOW TO EDIT (right on github.com → pencil icon → "Commit changes"):
+#   * Matching ignores capital letters and accents ("la vina" matches
+#     "La Viña") and only matches whole words.
+#   * A name written in ALL CAPITALS (AA, GVR, DCM …) only matches when
+#     it is written in capitals in the text too.
+#   * Longer phrases win over shorter ones, so a specific phrase such as
+#     "Twelve Traditions Checklist" beats "Twelve Traditions".
+#   * Add `exact: true` to a term to require the same capital letters
+#     (useful for a name that is also an everyday phrase).
+#   * Add `only: es` to use a term only when translating INTO Spanish,
+#     or `only: en` to use it only when translating INTO English.
+#   * Tip: add the plural as its own line when it matters
+#     ("sponsor" and "sponsors").
+#   * Changing this file re-translates only the texts that contain the
+#     changed words (on the next daily run).
+#   * To fix ONE specific title, use overrides.yml instead.
+# =====================================================================
+
+# ---------------------------------------------------------------------
+#  1) KEEP — written exactly the same in English and Spanish
+# ---------------------------------------------------------------------
+keep:
+  # Magazines and their sections
+  - AA Grapevine
+  - A.A. Grapevine
+  - Grapevine
+  - La Viña
+  - Dear Grapevine        # letters section of the magazine
+  - Grapevine Weekly Open AA Meeting   # name of the meeting + podcast
+  - Grapevine Open AA Meeting
+  - Grapevine Weekly Open
+  - Weekly Open
+  - AA Grapevine's Podcast
+  - AA Grapevine Podcast
+  - Ask-It-Basket         # podcast segments
+  - Stump the Thumpers
+  - Stump the Thumper
+  - Blast From the Past
+  - At Wit's End          # humor section of the magazine
+  - Wit's End
+  - Classic Grapevine     # magazine section (reprinted classic stories)
+  - Sound Off
+  # AA and our Area
+  - AA
+  - A.A.
+  - NETA 65
+  - NETA65
+  - NETA
+  # Short names used by the committee
+  - GV
+  - LV
+  - GV/LV
+  - AAGV
+  - AALV
+  - GVR
+  - GVRs
+  - RLV
+  - RLVs
+  - ASL
+  # Co-founders (anonymity: first name + initial only)
+  - Bill W.
+  - Dr. Bob
+  # Apps and platforms
+  - Zoom
+  - Instagram
+  - YouTube
+  - Spotify
+  - Apple Podcasts
+  - Amazon Music
+  - Google Drive
+  - WhatsApp
+  - Facebook
+
+# ---------------------------------------------------------------------
+#  2) TERMS — fixed translations (used in both directions unless `only`)
+# ---------------------------------------------------------------------
+terms:
+  # --- Fellowship basics ---------------------------------------------
+  - { en: "Alcoholics Anonymous", es: "Alcohólicos Anónimos" }
+  - { en: "Twelve Steps", es: "Doce Pasos" }
+  - { en: "Twelve Traditions", es: "Doce Tradiciones" }
+  - { en: "Twelve Concepts", es: "Doce Conceptos" }
+  - { en: "Twelve Traditions Checklist", es: "lista de verificación de las Doce Tradiciones" }
+  - { en: "Traditions Checklist", es: "lista de verificación de las Tradiciones" }
+  - { en: "Big Book", es: "Libro Grande" }
+  - { en: "Higher Power", es: "Poder Superior" }
+  - { en: "Serenity Prayer", es: "Oración de la Serenidad" }
+  - { en: "Emotional Sobriety", es: "Sobriedad emocional" }
+  - { en: "sobriety", es: "sobriedad" }            # the model leaves "sobriety" untranslated
+  - { en: "blackout drinker", es: "bebedor con lagunas mentales", only: es }
+  - { en: "blackouts", es: "lagunas mentales" }
+  - { en: "blackout", es: "laguna mental", only: es }
+  - { en: "home group", es: "grupo base" }
+  - { en: "home groups", es: "grupos base" }
+  - { en: "sponsor", es: "padrino" }
+  - { en: "sponsors", es: "padrinos" }
+  - { en: "sponsor", es: "madrina", only: en }
+  - { en: "sponsors", es: "madrinas", only: en }
+  - { en: "sponsorship", es: "padrinazgo" }          # the word La Viña uses
+  - { en: "sponsorship", es: "apadrinamiento", only: en }
+  - { en: "sponsee", es: "ahijado" }
+  - { en: "sponsee", es: "ahijada", only: en }
+  - { en: "newcomer", es: "recién llegado" }
+  - { en: "newcomers", es: "recién llegados" }
+  - { en: "self-support", es: "automantenimiento" }
+  - { en: "Seventh Tradition", es: "Séptima Tradición" }
+  # ("Tradition Ten" / "Tenth Tradition" → "Décima Tradición" is done by a built-in rule)
+  - { en: "One Day at a Time", es: "Un día a la vez" }
+  - { en: "Spiritual Awakenings", es: "despertares espirituales" }
+  - { en: "spiritual awakening", es: "despertar espiritual" }
+  - { en: "making amends", es: "hacer enmiendas" }
+  - { en: "make amends", es: "hacer enmiendas", only: es }
+  - { en: "go to any length", es: "llegar hasta donde sea necesario", only: es }
+  - { en: "We're not a glum lot", es: "No somos un grupo sombrío", only: es }   # Big Book, p. 132
+  - { en: "We are not a glum lot", es: "No somos un grupo sombrío", only: es }
+  - { en: "the Slogans", es: "los lemas", only: es }
+  - { en: "slogans", es: "lemas", only: es }
+  - { en: "slogan", es: "lema", only: es }
+  # Spanish → English only
+  - { en: "hit bottom", es: "tocar fondo", only: en }
+  - { en: "until hitting bottom", es: "hasta tocar fondo", only: en }
+  - { en: "after hitting bottom", es: "después de tocar fondo", only: en }
+  - { en: "upon hitting bottom", es: "al tocar fondo", only: en }
+  - { en: "by reaching out", es: "al tender la mano", only: en }   # never "laying hands"
+  - { en: "reach out", es: "tender la mano", only: en }
+  - { en: "reaching out", es: "tendiendo la mano", only: en }
+  - { en: "reached out", es: "tendió la mano", only: en }
+  - { en: "reached out", es: "extendió la mano", only: en }
+  - { en: "reached out", es: "extendió su mano", only: en }
+  - { en: "unique Fellowship", es: "Comunidad única", only: en }  # not "single"
+  - { en: "the emptiness", es: "el vacío", only: en }              # not "the vacuum"
+  - { en: "choose one", es: "elige uno", only: en }                 # not "chooses one"
+  - { en: "choose one", es: "elige una", only: en }
+  - { en: "holidays", es: "tiempos de fiesta", only: en }
+  - { en: "repairing", es: "reparando", only: en }                  # the model invented "reparating"
+  - { en: "Face to Face", es: "Frente a Frente", only: en }
+  # "Fellowship" (the AA community) — the model says "Beca" (a scholarship!)
+  - { en: "AA Fellowship", es: "Comunidad de AA" }
+  - { en: "the Fellowship", es: "la Comunidad", only: es, exact: true }
+  - { en: "fellowship", es: "compañerismo", only: es }
+  # The Steps, as La Viña writes them ("Paso Diez" is a magazine section)
+  - { en: "Step One", es: "Paso Uno" }
+  - { en: "Step Two", es: "Paso Dos" }
+  - { en: "Step Three", es: "Paso Tres" }
+  - { en: "Step Four", es: "Paso Cuatro" }
+  - { en: "Step Five", es: "Paso Cinco" }
+  - { en: "Step Six", es: "Paso Seis" }
+  - { en: "Step Seven", es: "Paso Siete" }
+  - { en: "Step Eight", es: "Paso Ocho" }
+  - { en: "Step Nine", es: "Paso Nueve" }
+  - { en: "Step Ten", es: "Paso Diez" }
+  - { en: "Step Eleven", es: "Paso Once" }
+  - { en: "Step Twelve", es: "Paso Doce" }
+  - { en: "First Step", es: "Primer Paso" }
+  - { en: "Second Step", es: "Segundo Paso" }
+  - { en: "Third Step", es: "Tercer Paso" }
+  - { en: "Fourth Step", es: "Cuarto Paso" }
+  - { en: "Fifth Step", es: "Quinto Paso" }
+  - { en: "Sixth Step", es: "Sexto Paso" }
+  - { en: "Seventh Step", es: "Séptimo Paso" }
+  - { en: "Eighth Step", es: "Octavo Paso" }
+  - { en: "Ninth Step", es: "Noveno Paso" }
+  - { en: "Tenth Step", es: "Décimo Paso" }
+  - { en: "Eleventh Step", es: "Undécimo Paso" }
+  - { en: "Twelfth Step", es: "Duodécimo Paso" }
+
+  # --- Service structure -----------------------------------------------
+  - { en: "General Service Representative", es: "Representante de Servicios Generales" }
+  - { en: "GSR", es: "RSG" }
+  - { en: "GSRs", es: "RSGs" }
+  - { en: "District Committee Member", es: "Miembro del Comité de Distrito" }
+  - { en: "DCM", es: "MCD" }
+  - { en: "DCMs", es: "MCDs" }
+  - { en: "General Service Conference", es: "Conferencia de Servicios Generales" }
+  - { en: "General Service Office", es: "Oficina de Servicios Generales" }
+  - { en: "GSO", es: "OSG" }
+  - { en: "Area Committee Meeting", es: "Reunión del Comité de Área" }
+  - { en: "Area Assembly", es: "Asamblea de Área" }
+  - { en: "Northeast Texas Area 65", es: "Área 65 del Noreste de Texas" }
+  - { en: "Area 65", es: "Área 65" }
+  - { en: "Intergroup", es: "Intergrupo" }
+  - { en: "Central Office", es: "Oficina Central" }
+  - { en: "General Service Board", es: "Junta de Servicios Generales" }
+  - { en: "Nonalcoholic Trustee", es: "custodio no alcohólico" }
+  - { en: "Class A Trustee", es: "custodio de Clase A" }
+  - { en: "trustee", es: "custodio" }
+  - { en: "trustees", es: "custodios" }
+  - { en: "Regional Trustee", es: "custodio regional" }
+  - { en: "Trustee-at-Large", es: "custodio general" }
+  - { en: "General Service Board Trustee", es: "custodio de la Junta de Servicios Generales" }
+  - { en: "General Service Board Trustee-at-Large", es: "custodio general de la Junta de Servicios Generales" }
+  - { en: "Trustees' Literature Committee", es: "Comité de Literatura de los custodios" }
+  - { en: "Trustees Literature Committee", es: "Comité de Literatura de los custodios" }
+  - { en: "GSO staff member", es: "miembro del personal de la OSG" }
+  - { en: "trusted servants", es: "servidores de confianza" }
+  - { en: "trusted servant", es: "servidor de confianza" }
+  - { en: "Alternate Delegate", es: "Delegado Suplente" }
+  - { en: "CPC", es: "CCP" }               # Cooperation with the Professional Community
+  - { en: "Cooperation with the Professional Community", es: "Cooperación con la Comunidad Profesional" }
+  - { en: "Editorial Advisory Board", es: "Junta Asesora Editorial" }
+
+  # --- Grapevine / La Viña service ---------------------------------------
+  - { en: "Grapevine Representative", es: "Representante de Grapevine" }
+  - { en: "La Viña Representative", es: "Representante de La Viña" }
+  - { en: "Grapevine / La Viña Committee", es: "Comité de Grapevine / La Viña" }
+  - { en: "Grapevine & La Viña Committee", es: "Comité de Grapevine y La Viña" }
+  - { en: "GV/LV Committee", es: "Comité de GV/LV" }
+  - { en: "Carry the Message Project", es: "Proyecto Lleva el Mensaje" }
+  - { en: "Carry the Message Project", es: "Proyecto Lleve el Mensaje", only: en }
+  - { en: "Carry the Message Project", es: "Proyecto \"Lleva el Mensaje\"", only: en }
+  - { en: "Carry the Message Project", es: "Proyecto “Lleva el Mensaje”", only: en }
+  - { en: "Carry the Message", es: "Lleva el Mensaje", exact: true }
+  - { en: "Writing Workshop", es: "Taller de Escritura" }
+  - { en: "Writing Workshop Guidelines", es: "Pautas para el Taller de Escritura" }
+  - { en: "Recording Workshop", es: "Taller de Grabación" }
+  - { en: "booth", es: "mesa informativa", only: es }   # assembly display table (not "botón")
+  - { en: "Share your story", es: "Comparte tu historia" }
+  - { en: "Our Personal Stories", es: "Nuestras historias personales" }
+  - { en: "Letter from the Editor", es: "Carta del editor" }
+  - { en: "Online Exclusive", es: "Exclusiva en línea" }
+  - { en: "Daily Quote", es: "Cita diaria" }
+  - { en: "back issues", es: "ediciones anteriores" }
+  - { en: "Give a gift subscription", es: "Regala una suscripción", only: en }   # model: "Give it a subscription"
+  - { en: "Single-Copy Order Form", es: "Formulario de Pedido por Ejemplar", only: en }
+  - { en: "Listener Feedback", es: "Comentarios de los oyentes" }
+  - { en: "Ask the Oldtimer", es: "Pregúntale al veterano", only: es }   # podcast segment
+  - { en: "Oldtimers", es: "veteranos", only: es }         # not "ancianos"
+  - { en: "Oldtimer", es: "veterano", only: es }
+  - { en: "old-timers", es: "veteranos", only: es }
+  - { en: "old-timer", es: "veterano", only: es }
+  - { en: "Into Action", es: "En acción", only: es, exact: true }   # Big Book chapter / magazine section
+  - { en: "Featuring", es: "con", only: es }               # "Who Are We? Featuring Michael M."
+  # "issue" of a magazine is "número" (the model says "problema")
+  - { en: "new issue", es: "nuevo número", only: es }
+  - { en: "this issue", es: "este número", only: es }
+  - { en: "latest issue", es: "último número", only: es }
+  - { en: "current issue", es: "número actual", only: es }
+  - { en: "Language of the Heart", es: "El lenguaje del corazón" }
+  - { en: "Language of the Heart", es: "Lenguaje del Corazón", only: en }
+  # "Publisher" is the head of Grapevine, Inc. — never "fabricante" (manufacturer)
+  - { en: "Grapevine Publisher", es: "editor de Grapevine", only: es }
+  - { en: "Publisher", es: "editor", only: es }
+  - { en: "Publishers", es: "editores", only: es }
+  - { en: "Annual Prison Issue", es: "edición anual sobre las prisiones", only: es }
+  - { en: "GV Plays", es: "Obras de GV", only: es }                 # series of short plays
+  - { en: "Record Your Story Guidelines", es: "pautas para grabar tu historia", only: es }
+  - { en: "Record Your Story", es: "graba tu historia", only: es }
+  - { en: "App Poster", es: "póster de la app", only: es }
+  - { en: "poster", es: "póster", only: es }
+  - { en: "posters", es: "pósteres", only: es }
+  - { en: "Spirituality and God-Talk", es: "La espiritualidad y el hablar de Dios" }   # Grapevine book
+  - { en: "God-Talk", es: "el hablar de Dios", only: es }
+  - { en: "God Cookies", es: "galletas de Dios", only: es }          # podcast episode
+  - { en: "Don't Should on Yourself", es: "No te exijas tanto", only: es }
+  - { en: "American Sign Language (ASL)", es: "Lengua de señas americana (ASL)" }
+  - { en: "American Sign Language", es: "Lengua de señas americana (ASL)", only: es }
+  - { en: "American Sign Language", es: "Lengua de señas americana", only: en }
+  # "the holidays" = Thanksgiving to New Year ("fiestas", not "vacaciones" — a built-in rule
+  # also fixes "vacaciones" whenever the English said "holidays")
+  - { en: "Sober Holidays", es: "fiestas sobrias", only: es }
+  - { en: "holiday season", es: "temporada de fiestas", only: es }
+  # AA Regional Forums (official names)
+  - { en: "Regional Forum", es: "Foro Regional", only: es }
+  - { en: "Regional Forums", es: "Foros Regionales", only: es }
+  - { en: "East Central Regional Forum", es: "Foro Regional del Centro Este", only: es }
+  - { en: "Northeast Regional Forum", es: "Foro Regional del Noreste", only: es }
+  - { en: "Pacific Regional Forum", es: "Foro Regional del Pacífico", only: es }
+  - { en: "Southeast Regional Forum", es: "Foro Regional del Sudeste", only: es }
+  - { en: "Southwest Regional Forum", es: "Foro Regional del Suroeste", only: es }
+  - { en: "West Central Regional Forum", es: "Foro Regional del Centro Oeste", only: es }
+
+  # --- Meetings, podcasts, social media ------------------------------------
+  - { en: "Season", es: "Temporada", exact: true }
+  - { en: "Episode", es: "Episodio", exact: true }
+  - { en: "at Noon Eastern", es: "al mediodía (hora del Este)", only: es }   # not "en mediodía"
+  - { en: "Noon Eastern", es: "mediodía (hora del Este)", only: es }
+  - { en: "Meeting ID", es: "ID de reunión" }
+  - { en: "passcode", es: "código de acceso" }
+  - { en: "link in bio", es: "enlace en la biografía" }

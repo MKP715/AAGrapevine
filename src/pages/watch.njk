@@ -1,0 +1,294 @@
+---
+pagination: { data: languages, size: 1, alias: lang }
+permalink: "{{ '/' if lang == 'en' else '/es/' }}watch/index.html"
+layout: layouts/base.njk
+pageKey: watch
+titleKey: nav.watch
+descKey: media.watch_meta
+pageScripts: ["/assets/vendor/lite-yt-embed.js", "/assets/js/media.js"]
+pageStyles: ["/assets/vendor/lite-yt-embed.css"]
+---
+{#- WATCH — YouTube videos from the AA Grapevine & La Viña channel (db.videos).
+    Featured newest video (lite-youtube, privacy-enhanced, nothing loads until
+    play) + filterable grid. The server renders the newest 24 cards; media.js
+    loads the rest from /videos-index.json. Cards are real YouTube links (no-JS,
+    middle-click) that open an accessible <dialog> player instead. -#}
+{% import "macros/ui.njk" as ui with context %}
+{% mediaSprite %}
+{%- set ch = (site.sources.youtube.channels[0] if (site.sources.youtube and site.sources.youtube.channels and site.sources.youtube.channels.length) else {}) -%}
+{%- set channelUrl = site.links.youtube_channel or ("https://www.youtube.com/channel/" + ch.id) -%}
+{%- set subscribeUrl = ("https://www.youtube.com/channel/" + ch.id + "?sub_confirmation=1") if ch.id else channelUrl -%}
+{%- set vids = db.videos | mediaItems("videos") -%}
+{%- set featured = vids | mediaFeaturedVideo -%}
+{%- set kinds = vids | mediaCount("videoKind") -%}
+{%- set vlangs = vids | mediaCount("videoLang") -%}
+{#- channel playlists (videos.json `playlists`, titles in the page language; Spanish ones = La Viña) -#}
+{%- set pls = db.videos | mediaPlaylists(vids, lang) -%}
+{%- set plChips = pls | mediaPlaylistChips(lang, 4) -%}
+{%- set plGroups = pls | mediaPlaylistGroups(lang) -%}
+{%- set plTotal = (pls | where("kind", false)).length -%}
+{%- set ssr = vids | limit(24) -%}
+{%- set wo = db.weekly_open.items[0] if (db.weekly_open and db.weekly_open.items and db.weekly_open.items.length) else null -%}
+{%- set woWhen = (wo | tx("when", lang)) if wo else "" -%}
+
+{#- One video card. srv=true: static (first 24) bound to vidAt(i); srv=false: x-for `v`. -#}
+{% macro vCard(item, lang, i, srv) %}
+{%- if srv -%}
+  {%- set vid = item.extra.video_id or (item.id | replace("yt:", "")) -%}
+  {%- set kind = item | mediaVideoKind -%}
+  {%- set title = item | mediaTitle(lang) -%}
+  {%- set se = item | mediaSE(lang) -%}
+  {%- set href = item.url | mediaSafeUrl("https://www.youtube.com/watch?v=" + vid) -%}
+  {%- set thumb = (item.image | mediaSafeUrl("")) or (vid | ytThumb) -%}
+  {%- set vl = item | mediaVideoLang -%}
+  {%- set cp = item | mediaCardPlaylist(pls) -%}
+{%- endif %}
+<article class="card group relative flex flex-col overflow-hidden transition duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-lift)] focus-within:shadow-[var(--shadow-lift)]"
+         {% if srv %}x-data="{ v: vidAt({{ i }}) }"{% endif %}>
+  <div class="vid-thumb card-media">
+    {#- broken thumbnail (deleted/private video) → just the tinted box + play icon -#}
+    {% if srv %}<img src="{{ thumb }}" alt="" width="480" height="270" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">
+    {% else %}<img :src="thumb(v)" alt="" width="480" height="270" loading="lazy" decoding="async" referrerpolicy="no-referrer" @error="$el.style.visibility = 'hidden'">{% endif %}
+    <span class="absolute inset-0 grid place-items-center" aria-hidden="true"><span class="vid-play">{% micon "play", "size-5 translate-x-px" %}</span></span>
+    {% if srv %}
+      {% if item.extra.duration_sec %}<span class="vid-dur">{{ item.extra.duration_sec | duration }}</span>{% endif %}
+      {% if kind == "short" %}<span class="badge absolute top-2 left-2 bg-black/70 text-white">{% micon "smartphone", "size-3" %} {{ "media.kind_short_badge" | t(lang) }}</span>{% endif %}
+    {% else %}
+      <span class="vid-dur" x-show="v.du" x-text="dur(v)"></span>
+      <span class="badge absolute top-2 left-2 bg-black/70 text-white" x-show="v.k === 'short'">{% micon "smartphone", "size-3" %} {{ "media.kind_short_badge" | t(lang) }}</span>
+    {% endif %}
+  </div>
+  <div class="flex flex-1 flex-col gap-2 p-4">
+    <div class="flex flex-wrap items-center gap-1.5">
+      {% if srv %}
+        {% if vl == "lv" %}<span class="badge-lv">{% micon "grapes", "size-3" %} La Viña</span>{% else %}<span class="badge-gv">{% micon "grapes", "size-3" %} Grapevine</span>{% endif %}
+        {% if kind == "weekly" %}<span class="badge-grape">{% micon "users", "size-3" %} {{ "media.show_short_weekly" | t(lang) }}</span>
+        {% elif kind == "podcast" %}<span class="badge-grape">{% micon "headphones", "size-3" %} {{ "media.kind_podcast_badge" | t(lang) }}</span>{% endif %}
+        {% if item.is_new %}<span class="badge-new">{{ "common.new" | t(lang) }}</span>{% endif %}
+        {{ ui.langPill(item, lang) }}
+      {% else %}
+        <span class="badge-lv" x-show="v.c === 'lv'">{% micon "grapes", "size-3" %} La Viña</span>
+        <span class="badge-gv" x-show="v.c !== 'lv'">{% micon "grapes", "size-3" %} Grapevine</span>
+        <span class="badge-grape" x-show="v.k === 'weekly'">{% micon "users", "size-3" %} {{ "media.show_short_weekly" | t(lang) }}</span>
+        <span class="badge-grape" x-show="v.k === 'podcast'">{% micon "headphones", "size-3" %} {{ "media.kind_podcast_badge" | t(lang) }}</span>
+        <span class="badge-new" x-show="v.n">{{ "common.new" | t(lang) }}</span>
+        <span class="badge-muted uppercase" x-show="v.l && v.l !== LANG && v.l !== 'und'" x-text="v.l"></span>
+      {% endif %}
+    </div>
+    <h3 class="font-display text-base leading-snug font-semibold text-ink sm:text-[1.05rem]">
+      {% if srv %}
+      <a href="{{ href }}" class="line-clamp-3 no-underline after:absolute after:inset-0 hover:text-gv" target="_blank" rel="noopener" @click="open(v, $event)">{{ title }}</a>
+      {% else %}
+      <a :href="ytUrl(v)" class="line-clamp-3 no-underline after:absolute after:inset-0 hover:text-gv" target="_blank" rel="noopener" @click="open(v, $event)" x-text="v.t"></a>
+      {% endif %}
+    </h3>
+    <div class="mt-auto flex flex-wrap items-center justify-between gap-2 pt-1 text-xs text-faint">
+      {% if srv %}
+        <span class="min-w-0 truncate">{% if se %}<span class="font-semibold text-gv">{{ se }}</span> · {% endif %}{% if item.date %}<time datetime="{{ item.date | isoDate }}">{{ item | mediaVideoDate(lang, "short") }}</time>{% endif %}{% if cp %} · {{ cp.title }}{% endif %}</span>
+        {{ ui.autoNote(item, lang) }}
+      {% else %}
+        <span class="min-w-0 truncate"><span class="font-semibold text-gv" x-show="seLabel(v)" x-text="seLabel(v) + ' · '"></span><time :datetime="v.d" x-text="date(v.d, v.a)"></time><span x-show="plName(v)" x-text="' · ' + plName(v)"></span></span>
+        <span class="auto-note" x-show="v.m" title="{{ 'common.auto_translated_help' | t(lang) }}">{% micon "languages", "size-3" %} {{ "common.auto_translated" | t(lang) }}</span>
+      {% endif %}
+    </div>
+  </div>
+</article>
+{% endmacro %}
+
+{#- ------------------------------------------------------------------ hero -#}
+{% call ui.pageHero(lang, "media.watch_title" | t(lang), "media.watch_sub" | t(lang), "circle-play", "media.watch_eyebrow" | t(lang)) %}
+  <div class="flex flex-wrap gap-2">
+    <a class="btn-light" href="{{ subscribeUrl }}" target="_blank" rel="noopener">{% icon "youtube", "size-5 text-[#e62117]" %} {{ "media.subscribe_yt" | t(lang) }}</a>
+    {% if vids.length %}<a class="btn-on-dark" href="#videos">{% icon "layout-grid", "size-4" %} {{ "media.browse_videos" | t(lang) }}</a>{% endif %}
+  </div>
+  {% if vids.length %}
+  <dl class="mt-8 flex flex-wrap gap-x-8 gap-y-4 text-white">
+    <div><dt class="sr-only">{{ "media.stat_videos" | t(lang) }}</dt><dd><span class="block font-display text-3xl font-semibold leading-none">{{ vids.length | mediaNumber(lang) }}</span><span class="text-sm text-white/70">{{ "media.stat_videos" | t(lang) }}</span></dd></div>
+    {% if kinds.weekly %}<div><dt class="sr-only">{{ "media.stat_weekly_open" | t(lang) }}</dt><dd><span class="block font-display text-3xl font-semibold leading-none">{{ kinds.weekly }}</span><span class="text-sm text-white/70">{{ "media.stat_weekly_open" | t(lang) }}</span></dd></div>{% endif %}
+    {% if plTotal > 1 %}<div><dt class="sr-only">{{ "media.stat_playlists" | t(lang) }}</dt><dd><span class="block font-display text-3xl font-semibold leading-none">{{ plTotal }}</span><span class="text-sm text-white/70">{{ "media.stat_playlists" | t(lang) }}</span></dd></div>{% endif %}
+    <div class="flex items-end"><dt class="sr-only">{{ "media.filter_lang" | t(lang) }}</dt><dd class="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-sm ring-1 ring-white/15">{% icon "languages", "size-4" %}{{ "media.stat_bilingual" | t(lang) }}</dd></div>
+  </dl>
+  {% endif %}
+{% endcall %}
+
+{% if vids.length %}
+<script type="application/json" id="media-initial">{{ ssr | mediaInitialJson("videos", lang, pls) | safe }}</script>
+<script type="application/json" id="media-i18n">{{ ["media.showing", "media.se_short", "media.ep_short"] | mediaI18n(lang) | safe }}</script>
+
+<div x-data="videoPage" data-index="{{ '/videos-index.json' | lurl(lang) }}" data-total="{{ vids.length }}">
+
+  {#- ------------------------------------------------------------ featured -#}
+  {%- set f = featured -%}
+  {%- set fid = f.extra.video_id or (f.id | replace("yt:", "")) -%}
+  {%- set fTitle = f | mediaTitle(lang) -%}
+  {%- set fSE = f | mediaSE(lang) -%}
+  {%- set fKind = f | mediaVideoKind -%}
+  {%- set fSum = f | tx("summary", lang) -%}
+  {%- set fUrl = f.url | mediaSafeUrl("https://www.youtube.com/watch?v=" + fid) -%}
+  {%- set fPl = f | mediaCardPlaylist(pls) -%}
+  <section class="container-page relative z-10 -mt-6 sm:-mt-10" aria-labelledby="featured-video-title">
+    <div class="card overflow-hidden">
+      <div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1.65fr)_minmax(0,1fr)]">
+        <div class="flex items-center bg-black">
+          <lite-youtube videoid="{{ fid }}" class="media-lyt" params="rel=0&amp;enablejsapi=1&amp;hl={{ lang }}"
+                        style="background-image: url('{{ fid | ytThumb('hqdefault') }}');" playlabel="{{ 'media.play' | t(lang) }}: {{ fTitle }}">
+            <a href="{{ fUrl }}" class="lyt-playbtn" title="{{ 'media.play' | t(lang) }}: {{ fTitle }}" target="_blank" rel="noopener">
+              <span class="lyt-visually-hidden">{{ "media.play" | t(lang) }}: {{ fTitle }}</span>
+            </a>
+          </lite-youtube>
+        </div>
+        <div class="flex min-w-0 flex-col gap-3 p-5 sm:p-7">
+          <p class="flex flex-wrap items-center gap-2">
+            <span class="eyebrow text-gv">{{ "media.latest_video" | t(lang) }}</span>
+            {% if f.is_new %}<span class="badge-new">{{ "common.new" | t(lang) }}</span>{% endif %}
+            {% if fKind == "weekly" %}<span class="badge-grape">{{ "media.kind_weekly" | t(lang) }}</span>{% elif fKind == "podcast" %}<span class="badge-grape">{{ "media.kind_podcast_badge" | t(lang) }}</span>{% endif %}
+            {% if fSE %}<span class="badge-gv">{{ fSE }}</span>{% endif %}
+            {{ ui.langPill(f, lang) }}
+          </p>
+          <h2 id="featured-video-title" class="font-display text-2xl leading-tight font-semibold text-balance sm:text-[1.7rem]">{{ fTitle }}</h2>
+          <p class="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted">
+            {% if f.date %}<time datetime="{{ f.date | isoDate }}">{{ f | mediaVideoDate(lang, "medium") }}</time>{% endif %}
+            {% if f.extra.duration_sec %}<span class="inline-flex items-center gap-1">{% icon "clock-3", "size-3.5" %}{{ f.extra.duration_sec | duration }}</span>{% endif %}
+            {% if fPl %}<span class="inline-flex items-center gap-1">{% icon "list-video", "size-3.5" %}{{ fPl.title }}</span>{% endif %}
+          </p>
+          {% if fSum %}<p class="line-clamp-4 text-sm leading-relaxed text-muted lg:line-clamp-5">{{ fSum | excerpt(320) | mediaLinkify | safe }}</p>{% endif %}
+          {{ ui.autoNote(f, lang) }}
+          <div class="mt-auto flex flex-wrap gap-2 pt-2">
+            <a class="btn-primary btn-sm" href="{{ fUrl }}" target="_blank" rel="noopener">{% icon "youtube", "size-4" %} {{ "media.watch_on_yt" | t(lang) }}</a>
+            <button type="button" class="btn-secondary btn-sm" data-share="{{ fUrl }}" data-share-title="{{ fTitle }}">{% icon "share-2", "size-4" %} {{ "common.share" | t(lang) }}</button>
+          </div>
+          <p class="flex items-start gap-1.5 text-xs text-faint">{% icon "shield-check", "mt-px size-3.5 shrink-0" %}{{ "media.privacy_yt" | t(lang) }}</p>
+        </div>
+      </div>
+    </div>
+
+    {#- Two helpful paths: the live Weekly Open meeting and the podcast -#}
+    <div class="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
+      <a class="card group flex items-center gap-4 p-4 no-underline transition hover:-translate-y-0.5 hover:shadow-[var(--shadow-lift)] sm:p-5" href="{{ '/meeting/#weekly-open' | lurl(lang) }}">
+        <span class="grid size-12 shrink-0 place-items-center rounded-2xl bg-grape-soft text-grape">{% icon "users", "size-6" %}</span>
+        <span class="min-w-0 flex-1"><span class="block font-display text-lg font-semibold text-ink">{{ "media.weekly_title" | t(lang) }}</span><span class="block text-sm text-muted">{{ "media.weekly_text" | t(lang) }}</span>{% if woWhen %}<span class="mt-1 block text-xs font-semibold text-grape">{{ "media.wo_live" | t(lang, { when: woWhen }) }}</span>{% endif %}</span>
+        <span class="hidden shrink-0 items-center gap-1 text-sm font-semibold text-gv sm:inline-flex">{{ "media.wo_join" | t(lang) }} {% icon "arrow-right", "size-4" %}</span>
+      </a>
+      <a class="card group flex items-center gap-4 p-4 no-underline transition hover:-translate-y-0.5 hover:shadow-[var(--shadow-lift)] sm:p-5" href="{{ '/listen/' | lurl(lang) }}">
+        <span class="grid size-12 shrink-0 place-items-center rounded-2xl bg-lv-soft text-lv">{% icon "headphones", "size-6" %}</span>
+        <span class="min-w-0 flex-1"><span class="block font-display text-lg font-semibold text-ink">{{ "media.podcast_title" | t(lang) }}</span><span class="block text-sm text-muted">{{ "media.podcast_text" | t(lang) }}</span></span>
+        <span class="hidden shrink-0 items-center gap-1 text-sm font-semibold text-gv sm:inline-flex">{{ "media.podcast_cta" | t(lang) }} {% icon "arrow-right", "size-4" %}</span>
+      </a>
+    </div>
+  </section>
+
+  {#- ------------------------------------------------------------ grid -#}
+  <section id="videos" class="section container-page scroll-mt-20" aria-labelledby="videos-title">
+    {{ ui.sectionHead("media.all_videos" | t(lang), "media.all_videos_sub" | t(lang), "", "", "layout-grid") }}
+
+    <div class="card mb-4 flex flex-col gap-3 p-3 sm:p-4">
+      <div class="flex flex-col gap-3 md:flex-row md:items-center">
+        <label class="relative block flex-1">
+          <span class="sr-only">{{ "media.search_videos" | t(lang) }}</span>
+          <span class="pointer-events-none absolute top-1/2 left-3.5 -translate-y-1/2 text-faint">{% icon "search", "size-5" %}</span>
+          <input type="search" class="input pl-11" x-model.debounce.200ms="q" placeholder="{{ 'media.search_videos_ph' | t(lang) }}" autocomplete="off" enterkeyhint="search">
+        </label>
+        {% if vlangs.gv and vlangs.lv %}
+        <div class="flex shrink-0 gap-1 rounded-full border border-line bg-surface-2 p-1" role="group" aria-label="{{ 'media.filter_lang' | t(lang) }}">
+          <button type="button" class="chip border-transparent bg-transparent" :aria-pressed="(vlang === '').toString()" aria-pressed="true" @click="vlang = ''">{{ "media.all_langs" | t(lang) }}</button>
+          <button type="button" class="chip border-transparent bg-transparent" :aria-pressed="(vlang === 'gv').toString()" aria-pressed="false" @click="vlang = vlang === 'gv' ? '' : 'gv'" lang="en">{{ "media.lang_en" | t(lang) }} <span class="media-chip-n">{{ vlangs.gv }}</span></button>
+          <button type="button" class="chip border-transparent bg-transparent" :aria-pressed="(vlang === 'lv').toString()" aria-pressed="false" @click="vlang = vlang === 'lv' ? '' : 'lv'" lang="es">{{ "media.lang_es" | t(lang) }} <span class="media-chip-n">{{ vlangs.lv }}</span></button>
+        </div>
+        {% endif %}
+      </div>
+      {% if kinds.weekly or kinds.podcast or kinds.short or plChips.length %}
+      <div class="flex min-w-0 items-center gap-2" role="group" aria-label="{{ 'media.filter_collection' | t(lang) }}">
+        <span class="hidden w-16 shrink-0 text-xs font-semibold tracking-wider text-faint uppercase md:inline">{{ "media.filter_collection" | t(lang) }}</span>
+        <div class="media-chips no-scrollbar">
+          <button type="button" class="chip" :aria-pressed="(coll === '').toString()" aria-pressed="true" @click="coll = ''">{{ "media.all_collections" | t(lang) }}</button>
+          {% if kinds.weekly %}<button type="button" class="chip" :aria-pressed="(coll === 'weekly').toString()" aria-pressed="false" @click="setColl('weekly')">{% icon "users", "size-4" %}{{ "media.kind_weekly" | t(lang) }} <span class="media-chip-n">{{ kinds.weekly }}</span></button>{% endif %}
+          {% if kinds.podcast %}<button type="button" class="chip" :aria-pressed="(coll === 'podcast').toString()" aria-pressed="false" @click="setColl('podcast')">{% icon "headphones", "size-4" %}{{ "media.kind_podcast" | t(lang) }} <span class="media-chip-n">{{ kinds.podcast }}</span></button>{% endif %}
+          {% if kinds.short %}<button type="button" class="chip" :aria-pressed="(coll === 'short').toString()" aria-pressed="false" @click="setColl('short')">{% icon "smartphone", "size-4" %}{{ "media.kind_short" | t(lang) }} <span class="media-chip-n">{{ kinds.short }}</span></button>{% endif %}
+          {% for p in plChips %}
+          <button type="button" class="chip" :aria-pressed="(coll === 'pl:{{ p.i }}').toString()" aria-pressed="false" @click="setColl('pl:{{ p.i }}')"{% if p.lang != lang %} title="{{ ('media.pl_group_' + p.lang) | t(lang) }}"{% endif %}>{% icon "list-video", "size-4" %}{{ p.title }} <span class="media-chip-n">{{ p.count }}</span></button>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+      {% if plGroups.length %}
+      <label class="flex min-w-0 items-center gap-2">
+        <span class="hidden w-16 shrink-0 text-xs font-semibold tracking-wider text-faint uppercase md:inline">{{ "media.filter_playlist" | t(lang) }}</span>
+        <span class="sr-only md:hidden">{{ "media.filter_playlist" | t(lang) }}</span>
+        <span class="relative block w-full md:max-w-md">
+          <span class="pointer-events-none absolute top-1/2 left-3.5 -translate-y-1/2 text-faint">{% icon "list-video", "size-5" %}</span>
+          <select class="input media-select pl-11" :value="coll.indexOf('pl:') === 0 ? coll : ''" @change="coll = $event.target.value" :class="coll.indexOf('pl:') === 0 && 'is-set'">
+            <option value="">{{ "media.all_playlists" | t(lang) }} ({{ plTotal }})</option>
+            {% for g in plGroups %}
+            <optgroup label="{{ ('media.pl_group_' + g.lang) | t(lang) }}">
+              {% for p in g.items %}<option value="pl:{{ p.i }}">{{ p.title }} ({{ p.count }})</option>{% endfor %}
+            </optgroup>
+            {% endfor %}
+          </select>
+        </span>
+      </label>
+      {% endif %}
+    </div>
+
+    <div class="mb-3 flex min-h-6 flex-wrap items-center justify-between gap-2 text-sm text-muted">
+      <p aria-live="polite" aria-atomic="true"><span x-text="statusText">{{ "media.showing" | t(lang, { n: ssr.length, total: vids.length }) }}</span><span x-show="loading" x-cloak> · {{ "common.loading" | t(lang) }}</span></p>
+      <button type="button" class="inline-flex min-h-8 items-center gap-1 font-semibold text-gv hover:underline" x-show="filtering" x-cloak @click="clear()">{% icon "x", "size-4" %}{{ "media.clear_filters" | t(lang) }}</button>
+    </div>
+    <p class="mb-3 rounded-xl bg-lv-soft px-4 py-2 text-sm text-lv-strong" x-show="failed" x-cloak role="status">{{ "media.index_error" | t(lang) }} <button type="button" class="font-semibold underline" @click="retryIndex()">{{ "media.retry" | t(lang) }}</button></p>
+
+    <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4" x-show="!client">
+      {% for v in ssr %}{{ vCard(v, lang, loop.index0, true) }}{% endfor %}
+    </div>
+    <template x-if="client">
+      <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4" x-show="visible.length">
+        <template x-for="v in visible" :key="v.id">{{ vCard(null, lang, 0, false) }}</template>
+      </div>
+    </template>
+    <div x-show="client && !filtered.length" x-cloak>
+      {{ ui.emptyState("search-x", "media.no_match_videos" | t(lang), "media.no_match_help" | t(lang)) }}
+      <p class="mt-3 text-center"><button type="button" class="btn-secondary btn-sm" @click="clear()">{{ "media.clear_filters" | t(lang) }}</button></p>
+    </div>
+
+    <div class="mt-8 flex flex-col items-center gap-3" x-ref="more">
+      {% if vids.length > ssr.length %}
+      <button type="button" class="btn-secondary" x-show="hasMore" @click="more()" :aria-busy="loading.toString()">
+        <span x-show="loading" x-cloak>{% icon "loader-circle", "size-4 animate-spin" %}</span>
+        <span x-show="!loading">{% icon "arrow-down", "size-4" %}</span>
+        {{ "media.load_more" | t(lang) }}
+      </button>
+      {% endif %}
+      <a class="link text-sm" href="{{ channelUrl }}" target="_blank" rel="noopener">{{ "media.watch_on_yt" | t(lang) }} · {{ ch.handle or "@AAGrapevine" }}</a>
+    </div>
+  </section>
+
+  {#- ------------------------------------------------------------ player dialog -#}
+  <dialog x-ref="dlg" class="media-dialog" aria-labelledby="video-dialog-title" @close="onClose()" @click="if ($event.target === $el) close()">
+    <div class="overflow-hidden rounded-2xl bg-surface shadow-2xl">
+      <div class="media-dialog-frame" x-ref="frame" :class="cur && cur.k === 'short' && 'is-short'" :style="cur ? 'background-image:url(' + thumb(cur) + ')' : ''"></div>
+      <div class="flex items-start gap-3 p-4 sm:p-5">
+        <div class="min-w-0 flex-1">
+          <h2 id="video-dialog-title" class="font-display text-lg leading-snug font-semibold sm:text-xl" x-text="cur ? cur.t : ''">{{ "media.video_dialog" | t(lang) }}</h2>
+          <p class="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted">
+            <time x-show="cur && cur.d" :datetime="cur && cur.d" x-text="cur ? date(cur.d) : ''"></time>
+            <a class="link inline-flex items-center gap-1" :href="ytUrl(cur)" target="_blank" rel="noopener">{% icon "youtube", "size-4" %} {{ "media.watch_on_yt" | t(lang) }}</a>
+          </p>
+        </div>
+        <button type="button" x-ref="closeBtn" class="grid size-11 shrink-0 place-items-center rounded-full border border-line text-ink hover:border-gv hover:text-gv" @click="close()" aria-label="{{ 'media.close_video' | t(lang) }}">{% icon "x", "size-5" %}</button>
+      </div>
+    </div>
+  </dialog>
+</div>
+{% else %}
+<section class="section container-page">
+  {{ ui.emptyState("circle-play", "media.empty_videos_title" | t(lang), "media.empty_videos_text" | t(lang), channelUrl, "media.watch_on_yt" | t(lang)) }}
+  <div class="mt-8 grid gap-4 md:grid-cols-2">
+    <a class="card flex items-center gap-4 p-5 no-underline hover:shadow-[var(--shadow-lift)]" href="{{ '/meeting/#weekly-open' | lurl(lang) }}">
+      <span class="grid size-12 shrink-0 place-items-center rounded-2xl bg-grape-soft text-grape">{% icon "users", "size-6" %}</span>
+      <span><span class="block font-display text-lg font-semibold text-ink">{{ "media.weekly_title" | t(lang) }}</span><span class="block text-sm text-muted">{{ "media.weekly_text" | t(lang) }}</span></span>
+    </a>
+    <a class="card flex items-center gap-4 p-5 no-underline hover:shadow-[var(--shadow-lift)]" href="{{ '/listen/' | lurl(lang) }}">
+      <span class="grid size-12 shrink-0 place-items-center rounded-2xl bg-lv-soft text-lv">{% icon "headphones", "size-6" %}</span>
+      <span><span class="block font-display text-lg font-semibold text-ink">{{ "media.podcast_title" | t(lang) }}</span><span class="block text-sm text-muted">{{ "media.podcast_text" | t(lang) }}</span></span>
+    </a>
+  </div>
+</section>
+{% endif %}

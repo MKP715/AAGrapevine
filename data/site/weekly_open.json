@@ -1,0 +1,70 @@
+{
+ "updated": "2026-09-23T21:49:15Z",
+ "fixture": false,
+ "items": [
+  {
+   "id": "weekly_open",
+   "source": "grapevine",
+   "kind": "meeting",
+   "url": "https://www.aagrapevine.org/grapevine-weekly-open",
+   "title": "Grapevine Weekly Open AA Meeting",
+   "summary": "Each week AA Grapevine holds an open virtual AA meeting with a host and two speakers. We record the meeting to create this podcast.",
+   "lang": "en",
+   "date": null,
+   "first_seen": "2026-09-23T16:30:28Z",
+   "image": null,
+   "tags": [],
+   "category": null,
+   "status": "ok",
+   "extra": {
+    "zoom_id": "871 2036 8287",
+    "passcode": "238047",
+    "day": "Wednesdays",
+    "time": "Noon Eastern",
+    "url": "https://www.aagrapevine.org/grapevine-weekly-open",
+    "weekday": "wednesday",
+    "zoom_url": "https://zoom.us/j/87120368287",
+    "player_url": "https://player.captivate.fm/show/ba06341c-a708-43df-a334-1cc9f7266f63",
+    "sentence": "To join the meeting live on Wednesdays at Noon Eastern, use Zoom code 871 2036 8287 with password 238047",
+    "start_local": "12:00",
+    "timezone": "America/New_York",
+    "time_central": "11 AM Central",
+    "next_start": "2026-09-30T16:00:00Z"
+   },
+   "i18n": {
+    "title": {
+     "en": "Grapevine Weekly Open AA Meeting",
+     "es": "Grapevine Weekly Open AA Meeting"
+    },
+    "summary": {
+     "en": "Each week AA Grapevine holds an open virtual AA meeting with a host and two speakers. We record the meeting to create this podcast.",
+     "es": "Cada semana AA Grapevine celebra una reunión virtual de AA abierta con un anfitrión y dos oradores. Grabamos la reunión para crear este podcast."
+    },
+    "day": {
+     "en": "Wednesdays",
+     "es": "Miércoles"
+    },
+    "time": {
+     "en": "Noon Eastern",
+     "es": "mediodía (hora del Este)"
+    },
+    "time_central": {
+     "en": "11:00 AM Central",
+     "es": "11:00 a. m. (hora del Centro)"
+    },
+    "when": {
+     "en": "Wednesdays at 11:00 AM Central",
+     "es": "Miércoles a las 11:00 a. m. (hora del Centro)"
+    },
+    "sentence": {
+     "en": "Join live on Wednesdays at 11:00 AM Central (Noon Eastern) on Zoom — meeting ID 871 2036 8287, passcode 238047.",
+     "es": "Únete en vivo los miércoles a las 11:00 a. m., hora del Centro (mediodía, hora del Este), por Zoom: ID de reunión 871 2036 8287, código de acceso 238047."
+    }
+   },
+   "machine": [
+    "es"
+   ],
+   "is_new": false
+  }
+ ]
+}

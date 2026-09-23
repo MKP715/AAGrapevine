@@ -1,0 +1,273 @@
+---
+pagination: { data: languages, size: 1, alias: lang }
+permalink: "{{ '/' if lang == 'en' else '/es/' }}meeting/index.html"
+layout: layouts/base.njk
+pageKey: meeting
+titleKey: nav.meeting
+descKey: committee.meeting.meta_desc
+pageScripts: ["/assets/js/committee.js"]
+---
+{#- Monthly committee meeting: live countdown, Zoom details, calendar, next dates,
+    who can attend, what happens, chair contact, and the Grapevine Weekly Open. -#}
+{% import "macros/ui.njk" as ui with context %}
+{%- set m = site.meeting -%}
+{%- set next = site | cmNextMeeting(lang) -%}
+{%- set rule = m | cmRule(lang) -%}
+{%- set timeRange = m | cmTimeRange(lang) -%}
+{%- set wo = (db.weekly_open.items | cmData)[0] -%}
+{%- set wk = wo | cmWeekly(lang) if wo else null -%}
+{%- set pageAbs = page.url | siteUrl(site) -%}
+{%- set cfg = {
+  rule: m | cmRuleObj,
+  start: next.startIso if next else "",
+  end: next.endIso if next else "",
+  title: next.title if next else "",
+  description: next.calDescription if next else "",
+  location: next.calLocation if next else "",
+  url: pageAbs,
+  i18n: {
+    join: "committee.meeting.join" | t(lang),
+    soon: "committee.meeting.join_soon" | t(lang),
+    live: "committee.meeting.join_live" | t(lang),
+    yourTime: "committee.meeting.your_time" | t(lang)
+  }
+} -%}
+
+{% call ui.pageHero(lang, "nav.meeting" | t(lang), "committee.meeting.hero_sub" | t(lang, { rule: rule, time: timeRange }), "video", "committee.meeting.eyebrow" | t(lang)) %}
+  {% if next %}
+  <div x-data="cmMeeting({{ cfg | json }})" class="cm-glass max-w-4xl rounded-3xl p-5 sm:p-7">
+    <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+      <div class="min-w-0">
+        <p class="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-white/75">
+          <span class="cm-live-dot" x-show="phase !== 'upcoming'" x-cloak></span>
+          <span x-show="phase === 'upcoming'">{{ "committee.meeting.next" | t(lang) }}</span>
+          <span x-show="phase === 'soon'" x-cloak>{{ "committee.meeting.starting_soon" | t(lang) }}</span>
+          <span x-show="phase === 'live'" x-cloak>{{ "committee.meeting.live_now" | t(lang) }}</span>
+        </p>
+        <p class="mt-2 font-display text-2xl font-semibold leading-tight sm:text-3xl" x-text="dateLabel">{{ next.dateLabel }}</p>
+        <p class="mt-1 text-white/80">
+          <span x-text="timeLabel">{{ next.timeLabel }}</span>
+          <span class="block text-sm text-white/65" x-show="localLabel" x-text="localLabel" x-cloak></span>
+        </p>
+      </div>
+      <div role="timer" aria-live="off" class="flex gap-2 sm:gap-3" x-cloak x-show="phase !== 'live'">
+        {% for u in [["d", "common.days"], ["h", "common.hours"], ["m", "common.min"], ["s", "common.sec"]] %}
+        <div class="cm-tile">
+          <span class="cm-tile-num" x-text="{{ 'd' if u[0] == 'd' else 'pad(' + u[0] + ')' }}">–</span>
+          <span class="cm-tile-label">{{ u[1] | t(lang) }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="mt-6 flex flex-wrap items-center gap-2.5">
+      <a href="{{ m.zoom_url }}" target="_blank" rel="noopener" class="btn-light" :class="phase !== 'upcoming' && 'cm-join-live'">
+        <span class="cm-live-dot" x-show="phase !== 'upcoming'" x-cloak></span>
+        {% icon "video", "size-4" %}
+        <span x-text="joinText">{{ "committee.meeting.join" | t(lang) }}</span>
+      </a>
+      <details class="cm-menu cm-menu-up">
+        <summary class="btn-on-dark">{% icon "calendar-plus", "size-4" %} {{ "common.add_to_calendar" | t(lang) }} {% icon "chevron-down", "size-4 opacity-70" %}</summary>
+        <div class="cm-menu-panel">
+          <a :href="gcal" href="{{ next.gcal }}" target="_blank" rel="noopener">{% icon "calendar", "size-4" %} Google Calendar</a>
+          <a :href="outlook" href="{{ next.outlook }}" target="_blank" rel="noopener">{% icon "calendar", "size-4" %} Outlook.com</a>
+          <button type="button" @click="downloadIcs()" data-cm-js>{% icon "download", "size-4" %} {{ "committee.cal.ics_file" | t(lang) }}</button>
+        </div>
+      </details>
+      <button type="button" class="btn-on-dark" data-share="{{ pageAbs }}" data-share-title="{{ 'nav.meeting' | t(lang) }} — NETA 65" data-share-text="{{ rule }} · {{ timeRange }}">{% icon "share-2", "size-4" %} {{ "common.share" | t(lang) }}</button>
+    </div>
+    <p class="mt-3 text-sm text-white/65" x-show="phase === 'upcoming'">{{ "committee.meeting.join_hint" | t(lang) }}</p>
+  </div>
+  {% else %}
+  <div class="cm-glass max-w-2xl rounded-3xl p-6 text-white/85">{{ "committee.meeting.no_next" | t(lang) }}</div>
+  {% endif %}
+{% endcall %}
+
+{% committeeNav lang, "meeting", db %}
+
+{#- ============ Join details + next dates ============ -#}
+<section class="section container-page">
+  {#- lg:items-start: each card is as tall as its own content (the dates list is longer). -#}
+  <div class="grid gap-6 lg:grid-cols-12 lg:items-start">
+    <div class="card card-pad lg:col-span-7">
+      <h2 class="h-section flex items-center gap-2.5"><span class="text-gv">{% icon "video", "size-6" %}</span>{{ "committee.meeting.how_to_join" | t(lang) }}</h2>
+      <p class="mt-2 text-muted">{{ "committee.meeting.how_to_join_text" | t(lang) }}</p>
+
+      <dl class="mt-6 grid gap-3 sm:grid-cols-2">
+        {% if m.meeting_id %}
+        <div class="cm-field">
+          <dt class="eyebrow">{{ "committee.meeting.id" | t(lang) }}</dt>
+          <dd class="mt-1.5 flex items-center justify-between gap-3">
+            <span class="font-mono text-xl font-semibold tracking-wide text-ink sm:text-2xl">{{ m.meeting_id }}</span>
+            <button type="button" class="btn-secondary btn-sm" data-copy="{{ m.meeting_id | cmDigits }}" aria-label="{{ 'committee.meeting.copy_id' | t(lang) }}">{% icon "copy", "size-4" %} {{ "common.copy" | t(lang) }}</button>
+          </dd>
+        </div>
+        {% endif %}
+        {% if m.passcode %}
+        <div class="cm-field">
+          <dt class="eyebrow">{{ "committee.meeting.passcode" | t(lang) }}</dt>
+          <dd class="mt-1.5 flex items-center justify-between gap-3">
+            <span class="font-mono text-xl font-semibold tracking-wide text-ink sm:text-2xl">{{ m.passcode }}</span>
+            <button type="button" class="btn-secondary btn-sm" data-copy="{{ m.passcode }}" aria-label="{{ 'committee.meeting.copy_passcode' | t(lang) }}">{% icon "copy", "size-4" %} {{ "common.copy" | t(lang) }}</button>
+          </dd>
+        </div>
+        {% endif %}
+      </dl>
+
+      <div class="mt-5 flex flex-wrap gap-2.5">
+        <a href="{{ m.zoom_url }}" target="_blank" rel="noopener" class="btn-primary">{% icon "video", "size-4" %} {{ "committee.meeting.join" | t(lang) }}</a>
+        <button type="button" class="btn-secondary" data-copy="{{ m.zoom_url }}">{% icon "link", "size-4" %} {{ "committee.meeting.copy_link" | t(lang) }}</button>
+      </div>
+
+      <ul class="mt-7 grid gap-3 border-t border-line pt-6 text-sm text-muted sm:grid-cols-3">
+        <li class="flex gap-2.5"><span class="mt-0.5 text-gv">{% icon "clock-3", "size-4" %}</span><span>{{ "committee.meeting.tip_early" | t(lang) }}</span></li>
+        <li class="flex gap-2.5"><span class="mt-0.5 text-gv">{% icon "smartphone", "size-4" %}</span><span>{{ "committee.meeting.tip_phone" | t(lang) }}</span></li>
+        <li class="flex gap-2.5"><span class="mt-0.5 text-gv">{% icon "languages", "size-4" %}</span><span>{{ "committee.meeting.tip_lang" | t(lang) }}</span></li>
+      </ul>
+    </div>
+
+    <div class="card card-pad lg:col-span-5">
+      <h2 class="h-card flex items-center gap-2 text-xl"><span class="text-gv">{% icon "calendar-days", "size-5" %}</span>{{ "committee.meeting.next_dates" | t(lang) }}</h2>
+      <p class="mt-1 text-sm text-muted">{{ rule }} · {{ timeRange }}</p>
+      {% set dates = meeting.upcoming | limit(7) %}
+      {% if dates | length %}
+      <ol class="cm-dates mt-5 space-y-2" data-cm-max="6">
+        {% for d in dates %}
+        <li class="cm-date-row{{ ' is-next' if loop.first }}{{ ' hidden' if loop.index > 6 }}" data-cm-expire="{{ d.end }}">
+          <span class="cm-mini-tile" aria-hidden="true">
+            <span>{{ d.start | fmtDate(lang, "monthShort") | replace(".", "") }}</span>
+            <strong>{{ d.start | fmtDate(lang, "day") }}</strong>
+          </span>
+          <span class="min-w-0 flex-1">
+            <span class="block font-semibold text-ink">{{ d.start | fmtDate(lang, "long") }}</span>
+            <span class="block text-sm text-muted">{{ d.start | fmtDate(lang, "time") }}</span>
+          </span>
+          <span class="cm-next-badge badge-vine">{{ "committee.meeting.next_badge" | t(lang) }}</span>
+        </li>
+        {% endfor %}
+      </ol>
+      {% else %}
+      <p class="mt-5 text-sm text-muted">{{ "committee.meeting.no_next" | t(lang) }}</p>
+      {% endif %}
+      <a href="#subscribe" class="mt-5 inline-flex min-h-10 items-center gap-1.5 text-sm font-semibold text-gv hover:underline">{% icon "calendar-sync", "size-4" %} {{ "committee.meeting.subscribe_all" | t(lang) }}</a>
+    </div>
+  </div>
+</section>
+
+{#- ============ Who can attend + chair ============ -#}
+<section class="container-page">
+  <div class="grid gap-6 md:grid-cols-2">
+    <div class="card card-pad relative overflow-hidden">
+      <span class="cm-deco-icon text-vine">{% icon "hand-heart", "size-28" %}</span>
+      <p class="eyebrow">{{ "committee.meeting.who_eyebrow" | t(lang) }}</p>
+      <h2 class="h-section mt-2">{{ "committee.meeting.who_title" | t(lang) }}</h2>
+      <p class="mt-3 leading-relaxed text-muted">{{ "committee.meeting.who_text" | t(lang) }}</p>
+      <ul class="mt-4 flex flex-wrap gap-2">
+        {% for k in ["gvr", "rlv", "dcm", "members"] %}<li class="badge-muted text-xs">{{ ("committee.meeting.who_" + k) | t(lang) }}</li>{% endfor %}
+      </ul>
+    </div>
+    <div class="card card-pad relative overflow-hidden">
+      <span class="cm-deco-icon text-gv">{% icon "mail", "size-28" %}</span>
+      <p class="eyebrow">{{ "committee.meeting.contact_eyebrow" | t(lang) }}</p>
+      <h2 class="h-section mt-2">{{ m | pick(lang, "chair_title") }}</h2>
+      <p class="mt-3 leading-relaxed text-muted">{{ "committee.meeting.contact_text" | t(lang) }}</p>
+      <div class="mt-5 flex flex-wrap gap-2.5">
+        <a class="btn-primary" href="{{ (m.chair_email or site.contact_email) | mailto('committee.meeting.mail_subject' | t(lang)) }}">{% icon "mail", "size-4" %} {{ "committee.meeting.write_chair" | t(lang) }}</a>
+        <button type="button" class="btn-secondary" data-copy="{{ m.chair_email or site.contact_email }}">{% icon "copy", "size-4" %} {{ m.chair_email or site.contact_email }}</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+{#- ============ What happens at the meeting ============ -#}
+<section class="section container-page">
+  {{ ui.sectionHead("committee.meeting.agenda_title" | t(lang), "committee.meeting.agenda_sub" | t(lang), "", "", "list-ordered") }}
+  <ol class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    {% for s in [["welcome", "coffee"], ["reports", "users"], ["news", "book-open-text"], ["plan", "calendar-check"], ["questions", "message-circle-question"], ["close", "heart-handshake"]] %}
+    <li class="card card-pad cm-step">
+      <span class="cm-step-num" aria-hidden="true">{{ loop.index }}</span>
+      <span class="grid size-11 place-items-center rounded-xl bg-gv-soft text-gv">{% icon s[1], "size-5" %}</span>
+      <h3 class="h-card mt-4">{{ ("committee.meeting.step_" + s[0]) | t(lang) }}</h3>
+      <p class="mt-1.5 text-sm leading-relaxed text-muted">{{ ("committee.meeting.step_" + s[0] + "_text") | t(lang) }}</p>
+    </li>
+    {% endfor %}
+  </ol>
+</section>
+
+{#- ============ Subscribe to the whole calendar ============ -#}
+<section id="subscribe" class="container-page scroll-mt-24">
+  {% cmSubscribe lang, site, true %}
+</section>
+
+{#- ============ Grapevine Weekly Open AA Meeting ============
+    #weekly-open (the card) is linked from /listen/ ("How to join"), /watch/, the home page
+    and the site search. html's scroll-padding-top keeps it clear of the fixed header;
+    scroll-mt-6 adds a little air (instead of landing on the section's top padding). -#}
+<section class="section container-page" aria-labelledby="weekly-title">
+  {% if wo %}
+  <div id="weekly-open" class="card cm-weekly scroll-mt-6 overflow-hidden">
+    <div class="grid md:grid-cols-[1.15fr_1fr]">
+      <div class="cm-weekly-art p-6 sm:p-8">
+        <p class="eyebrow flex items-center gap-2 text-grape">{% icon "grapes", "size-4" %} {{ "committee.weekly.eyebrow" | t(lang) }}</p>
+        <h2 id="weekly-title" class="h-section mt-2">{{ "committee.weekly.title" | t(lang) }}</h2>
+        <p class="mt-3 leading-relaxed text-muted">{{ "committee.weekly.text" | t(lang) }}</p>
+        {% if wk.when %}
+        <div class="mt-5 flex flex-col items-start gap-2">
+          <p class="inline-flex flex-wrap items-center gap-2 rounded-full bg-surface px-4 py-2 text-sm font-semibold text-ink shadow-sm ring-1 ring-line">
+            {% icon "calendar-clock", "size-4 text-grape" %}
+            <span>{{ wk.when }}</span>
+          </p>
+          {% if wk.hostTime %}<p class="px-1 text-xs text-muted">{{ "committee.weekly.host_time" | t(lang, { time: wk.hostTime }) }}</p>{% endif %}
+        </div>
+        {% endif %}
+        {% if wk.next %}
+        <p class="mt-4 flex items-start gap-2.5 text-sm text-muted" data-cm-weekly="{{ wk.next.iso }}">
+          <span class="mt-0.5 text-grape">{% icon "arrow-right", "size-4" %}</span>
+          <span>
+            <span class="font-semibold text-ink" data-cm-weekly-label data-live="{{ 'committee.meeting.live_now' | t(lang) }}">{{ "committee.weekly.next" | t(lang) }}</span>
+            <span data-cm-weekly-date>{{ wk.next.date }} · {{ wk.next.time }}</span>
+            <span class="block text-xs" data-cm-weekly-local data-tpl="{{ 'committee.meeting.your_time' | t(lang) }}" hidden></span>
+          </span>
+        </p>
+        {% endif %}
+      </div>
+      <div class="p-6 sm:p-8">
+        <dl class="grid gap-3">
+          {% if wk.zoomId %}
+          <div class="cm-field">
+            <dt class="eyebrow">{{ "committee.meeting.id" | t(lang) }}</dt>
+            <dd class="mt-1.5 flex items-center justify-between gap-3">
+              <span class="font-mono text-lg font-semibold tracking-wide text-ink">{{ wk.zoomId }}</span>
+              <button type="button" class="btn-secondary btn-sm" data-copy="{{ wk.zoomDigits }}" aria-label="{{ 'committee.weekly.copy_id' | t(lang) }}">{% icon "copy", "size-4" %} {{ "common.copy" | t(lang) }}</button>
+            </dd>
+          </div>
+          {% endif %}
+          {% if wk.passcode %}
+          <div class="cm-field">
+            <dt class="eyebrow">{{ "committee.meeting.passcode" | t(lang) }}</dt>
+            <dd class="mt-1.5 flex items-center justify-between gap-3">
+              <span class="font-mono text-lg font-semibold tracking-wide text-ink">{{ wk.passcode }}</span>
+              <button type="button" class="btn-secondary btn-sm" data-copy="{{ wk.passcode }}" aria-label="{{ 'committee.weekly.copy_passcode' | t(lang) }}">{% icon "copy", "size-4" %} {{ "common.copy" | t(lang) }}</button>
+            </dd>
+          </div>
+          {% endif %}
+        </dl>
+        <div class="mt-5 flex flex-wrap gap-2.5">
+          {% if wk.zoomUrl %}<a class="btn-primary" href="{{ wk.zoomUrl }}" target="_blank" rel="noopener">{% icon "video", "size-4" %} {{ "committee.meeting.join" | t(lang) }}</a>{% endif %}
+          <a class="btn-secondary" href="{{ '/listen/?show=wo#episodes' | lurl(lang) }}">{% icon "headphones", "size-4" %} {{ "committee.weekly.listen" | t(lang) }}</a>
+          <a class="btn-ghost" href="{{ wk.detailsUrl or site.links.weekly_open }}" target="_blank" rel="noopener">{% icon "external-link", "size-4" %} {{ "committee.weekly.details" | t(lang) }}</a>
+        </div>
+        <p class="mt-4 text-xs text-faint">{{ "committee.weekly.source_note" | t(lang) }}</p>
+      </div>
+    </div>
+  </div>
+  {% else %}
+  <div id="weekly-open" class="card card-pad scroll-mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+      <h2 id="weekly-title" class="h-card text-xl">{{ "committee.weekly.title" | t(lang) }}</h2>
+      <p class="mt-1 text-sm text-muted">{{ "committee.weekly.text" | t(lang) }}</p>
+    </div>
+    <a class="btn-secondary shrink-0" href="{{ site.links.weekly_open }}" target="_blank" rel="noopener">{% icon "external-link", "size-4" %} {{ "committee.weekly.details" | t(lang) }}</a>
+  </div>
+  {% endif %}
+</section>

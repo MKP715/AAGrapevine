@@ -1,0 +1,203 @@
+---
+pagination: { data: languages, size: 1, alias: lang }
+permalink: "{{ '/' if lang == 'en' else '/es/' }}share/index.html"
+layout: layouts/base.njk
+pageKey: share
+titleKey: nav.share
+descKey: community.share.meta_desc
+bodyClass: "cm-page-share cm-print-light"
+pageScripts: ["/assets/js/community.js"]
+---
+{% import "macros/ui.njk" as ui with context %}
+{#- Share kit: QR codes (generated at build from site.url — they update
+    themselves if the site ever moves), a letter-size poster and a table tent
+    (screen previews double as the print layout), and ready-made messages. -#}
+{%- set other = lang | otherLang -%}
+{%- set urls = { en: '/' | siteUrl(site), es: '/es/' | siteUrl(site), bi: '/' | siteUrl(site) } -%}
+{%- set pageUrl = '/' | lurl(lang) | siteUrl(site) -%}
+
+{#- Poster / tent copy for one variant: "en", "es" or "bi" (both). -#}
+{% macro pv(key, v) -%}
+{%- if v == "bi" -%}{{ key | t("en") }}{%- else -%}{{ key | t(v) }}{%- endif -%}
+{%- endmacro %}
+{% macro posterBody(v, urls) %}
+{%- set u = urls[v] -%}
+<div class="cm-p-band">
+  <span class="cm-p-logo"><img src="/assets/img/logo-wide.png" alt="NETA 65" width="128" height="63"></span>
+  <span class="cm-p-kicker">{{ pv("community.share.p_kicker", v) }}{% if v == "bi" %}<br><span lang="es">{{ "community.share.p_kicker" | t("es") }}</span>{% endif %}</span>
+  <span class="cm-p-title">Grapevine <em>&amp;</em> La Viña</span>
+</div>
+<div class="cm-p-main">
+  <p class="cm-p-head"{% if v != "bi" %} lang="{{ v }}"{% endif %}>{{ pv("community.share.p_head", v) }}</p>
+  {% if v == "bi" %}<p class="cm-p-head cm-p-alt" lang="es">{{ "community.share.p_head" | t("es") }}</p>
+  {% else %}<p class="cm-p-sub" lang="{{ v }}">{{ "community.share.p_sub" | t(v) }}</p>{% endif %}
+  <div class="cm-p-qrwrap">
+    <svg class="cm-p-qr" role="img" aria-label="{{ 'community.share.qr_alt' | t(lang, { url: u }) }}"><use href="#qr-sym-{{ 'es' if v == 'es' else 'en' }}"></use></svg>
+    <p class="cm-p-scan">{{ pv("community.share.p_scan", v) }}{% if v == "bi" %} · <span lang="es">{{ "community.share.p_scan" | t("es") }}</span>{% endif %}</p>
+    <p class="cm-p-url">{{ u | cmShortUrl }}</p>
+  </div>
+</div>
+<div class="cm-p-foot">
+  <span class="cm-p-daily">{% icon "grapes", "cm-p-ico" %} {{ pv("community.share.p_daily", v) }}{% if v == "bi" %}<br><span lang="es">{{ "community.share.p_daily" | t("es") }}</span>{% endif %}</span>
+  <span>{{ pv("community.share.p_footer", v) }} · {{ site.contact_email }}</span>
+</div>
+{% endmacro %}
+{% macro tentHalf(v, urls) %}
+{%- set u = urls[v] -%}
+<div class="cm-t-qr"><svg role="img" aria-label="{{ 'community.share.qr_alt' | t(lang, { url: u }) }}"><use href="#qr-sym-{{ 'es' if v == 'es' else 'en' }}"></use></svg></div>
+<div class="cm-t-text">
+  <span class="cm-t-top"><img src="/assets/img/logo-wide.png" alt="" width="128" height="63"> {{ pv("community.share.p_kicker", v) }}</span>
+  <span class="cm-t-title">Grapevine <em>&amp;</em> La Viña</span>
+  <span class="cm-t-head">{{ pv("community.share.p_head", v) }}</span>
+  {% if v == "bi" %}<span class="cm-t-head cm-p-alt" lang="es">{{ "community.share.p_head" | t("es") }}</span>{% endif %}
+  <span class="cm-t-scan">{{ pv("community.share.p_scan", v) }}{% if v == "bi" %} · <span lang="es">{{ "community.share.p_scan" | t("es") }}</span>{% endif %} → <strong>{{ u | cmShortUrl }}</strong></span>
+  <span class="cm-t-daily">{{ pv("community.share.p_daily", v) }}</span>
+</div>
+{% endmacro %}
+
+{% call ui.pageHero(lang, "nav.share" | t(lang), "community.share.hero_sub" | t(lang), "qr-code", "community.share.eyebrow" | t(lang)) %}
+<div class="flex flex-wrap gap-3">
+  <a class="btn-light" href="#posters">{% icon "printer", "size-4" %} {{ "community.share.btn_poster" | t(lang) }}</a>
+  <button type="button" class="btn-on-dark" data-share="{{ pageUrl }}" data-share-title="{{ site | pick(lang, 'title') }} — NETA 65" data-share-text="{{ 'community.share.msg_short_text' | t(lang, { url: '' }) | trim }}">{% icon "share-2", "size-4" %} {{ "common.share" | t(lang) }}</button>
+</div>
+{% endcall %}
+
+{#- Reusable QR symbols for the poster / tent previews -#}
+<svg width="0" height="0" class="absolute" aria-hidden="true" focusable="false"><defs>{{ urls.en | cmQrSymbol("qr-sym-en") | safe }}{{ urls.es | cmQrSymbol("qr-sym-es") | safe }}</defs></svg>
+
+<div x-data="sharePage('{{ lang }}')">
+{#- ============ QR code ============ -#}
+<section class="section container-page cm-no-print pt-6 sm:pt-8" aria-labelledby="qr-title">
+  <div class="card overflow-hidden">
+    <div class="grid grid-cols-1 md:grid-cols-[minmax(0,20rem)_minmax(0,1fr)]">
+      <div class="flex flex-col items-center justify-center gap-4 bg-surface-2 p-6 sm:p-8">
+        <div class="grid grid-cols-2 gap-1 rounded-full border border-line bg-surface p-1" role="radiogroup" aria-label="{{ 'community.share.qr_for' | t(lang) }}">
+          {% for l in ["en", "es"] %}
+          <label class="cm-seg"><input type="radio" name="qr-lang" class="sr-only" :checked="qrLang === '{{ l }}'" @change="qrLang = '{{ l }}'" {% if l == lang %}checked{% endif %}><span>{{ ("community.share.qr_" + l) | t(lang) }}</span></label>
+          {% endfor %}
+        </div>
+        {% for l in ["en", "es"] %}
+        <div id="qr-{{ l }}" class="w-full max-w-[15rem] rounded-2xl bg-white p-3 shadow-[var(--shadow-lift)] ring-1 ring-line" x-show="qrLang === '{{ l }}'"{% if l != lang %} x-cloak{% endif %}>
+          {{ urls[l] | qrSvg("community.share.qr_alt" | t(lang, { url: urls[l] }), "block h-auto w-full") | safe }}
+        </div>
+        {% endfor %}
+      </div>
+      <div class="flex flex-col p-6 sm:p-8">
+        <h2 id="qr-title" class="h-section">{{ "community.share.qr_title" | t(lang) }}</h2>
+        <p class="mt-2 max-w-xl text-muted">{{ "community.share.qr_sub" | t(lang) }}</p>
+        {% for l in ["en", "es"] %}
+        {%- set svg = urls[l] | qrSvg("", "") -%}
+        <div x-show="qrLang === '{{ l }}'"{% if l != lang %} x-cloak{% endif %}>
+          <div class="mt-5 flex items-center gap-2 rounded-xl border border-line bg-paper p-1.5 pl-4">
+            {% icon "link", "size-4 shrink-0 text-faint" %}
+            <a href="{{ urls[l] }}" class="min-w-0 flex-1 truncate font-semibold text-gv no-underline hover:underline" hreflang="{{ l }}">{{ urls[l] | cmShortUrl }}</a>
+            <button type="button" class="btn-secondary btn-sm shrink-0" data-copy="{{ urls[l] }}" aria-label="{{ 'community.copy_link' | t(lang) }}">{% icon "copy", "size-4" %}<span class="hidden sm:inline">{{ "community.copy_link" | t(lang) }}</span></button>
+          </div>
+          <div class="mt-4 flex flex-wrap gap-2">
+            <a class="btn-primary btn-sm" href="{{ svg | cmSvgDataUri }}" download="neta65-grapevine-lavina-qr-{{ l }}.svg">{% icon "download", "size-4" %} {{ "community.share.dl_svg" | t(lang) }}</a>
+            <button type="button" class="btn-secondary btn-sm" data-qr-png="#qr-{{ l }}" data-filename="neta65-grapevine-lavina-qr-{{ l }}.png">{% icon "image-down", "size-4" %} {{ "community.share.dl_png" | t(lang) }}</button>
+          </div>
+        </div>
+        {% endfor %}
+        <p class="mt-3 flex gap-2 text-xs leading-relaxed text-muted">{% icon "info", "size-4 shrink-0" %} {{ "community.share.dl_hint" | t(lang) }}</p>
+        {%- set shareText = "community.share.msg_short_text" | t(lang, { url: pageUrl }) -%}
+        <div class="mt-auto border-t border-line pt-5">
+          <p class="text-sm font-semibold text-ink">{{ "community.share.share_on" | t(lang) }}</p>
+          <div class="mt-2 flex flex-wrap gap-2">
+            <a class="btn-secondary btn-sm" href="https://wa.me/?text={{ shareText | urlencode }}" target="_blank" rel="noopener">{% icon "message-circle", "size-4" %} WhatsApp</a>
+            <a class="btn-secondary btn-sm" href="https://www.facebook.com/sharer/sharer.php?u={{ pageUrl | urlencode }}" target="_blank" rel="noopener">{% icon "thumbs-up", "size-4" %} Facebook</a>
+            <a class="btn-secondary btn-sm" href="{{ '' | cmMailto('community.share.email_subject' | t(lang), shareText) }}">{% icon "mail", "size-4" %} {{ "community.share.email" | t(lang) }}</a>
+            <button type="button" class="btn-secondary btn-sm" data-share="{{ pageUrl }}" data-share-title="{{ site | pick(lang, 'title') }} — NETA 65" data-share-text="{{ 'community.share.msg_short_text' | t(lang, { url: '' }) | trim }}">{% icon "share-2", "size-4" %} {{ "community.share.more" | t(lang) }}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{#- ============ Poster + table tent (the previews ARE the print layout) ============ -#}
+<section id="posters" class="cm-print-root scroll-mt-20 bg-surface-2/60 py-12 sm:py-16" aria-labelledby="posters-title">
+  <div class="container-page cm-print-flat">
+    <div class="cm-no-print mb-8 flex flex-wrap items-end justify-between gap-5">
+      <div>
+        <h2 id="posters-title" class="h-section flex items-center gap-2.5"><span class="text-gv">{% icon "printer", "size-6" %}</span>{{ "community.share.print_title" | t(lang) }}</h2>
+        <p class="mt-1.5 max-w-2xl text-muted">{{ "community.share.print_sub" | t(lang) }}</p>
+      </div>
+      <fieldset>
+        <legend class="mb-1.5 text-sm font-semibold text-ink">{{ "community.share.variant_label" | t(lang) }}</legend>
+        <div class="grid grid-cols-3 gap-1 rounded-full border border-line bg-surface p-1">
+          {% for v in ["en", "es", "bi"] %}
+          <label class="cm-seg"><input type="radio" name="poster-lang" class="sr-only" :checked="posterLang === '{{ v }}'" @change="posterLang = '{{ v }}'" {% if v == lang %}checked{% endif %}><span>{{ ("community.lang_name_" + v) | t(lang) if v != "bi" else "community.share.v_bi" | t(lang) }}</span></label>
+          {% endfor %}
+        </div>
+      </fieldset>
+    </div>
+
+    <div class="cm-print-flat grid gap-8 lg:grid-cols-2 lg:gap-10">
+      <figure class="cm-print-flat m-0">
+        <div class="cm-frame cm-frame-poster" role="img" aria-label="{{ 'community.share.preview_aria' | t(lang) }} — {{ 'community.share.poster_title' | t(lang) }}">
+          {% for v in ["en", "es", "bi"] %}
+          <div class="cm-sheet cm-poster" x-show="posterLang === '{{ v }}'"{% if v != lang %} x-cloak{% endif %}>{{ posterBody(v, urls) }}</div>
+          {% endfor %}
+        </div>
+        <figcaption class="cm-no-print mt-4 flex flex-wrap items-center justify-between gap-3">
+          <span class="max-w-sm text-sm text-muted"><strong class="text-ink">{{ "community.share.poster_title" | t(lang) }}.</strong> {{ "community.share.poster_sub" | t(lang) }}</span>
+          <button type="button" class="btn-primary" @click="printVariant('poster')" onclick="if(!window.Alpine)window.print()">{% icon "printer", "size-4" %} {{ "community.share.print_poster" | t(lang) }}</button>
+        </figcaption>
+      </figure>
+      <figure class="cm-print-flat m-0">
+        <div class="cm-frame cm-frame-tent" role="img" aria-label="{{ 'community.share.preview_aria' | t(lang) }} — {{ 'community.share.tent_title' | t(lang) }}">
+          {% for v in ["en", "es", "bi"] %}
+          <div class="cm-sheet cm-tent" x-show="posterLang === '{{ v }}'"{% if v != lang %} x-cloak{% endif %}>
+            <div class="cm-t-half cm-t-flip{{ ' cm-t-bi' if v == 'bi' }}">{{ tentHalf(v, urls) }}</div>
+            <div class="cm-t-fold"><span>✂ · {{ pv("community.share.fold", v) }}{% if v == "bi" %} · {{ "community.share.fold" | t("es") }}{% endif %}</span></div>
+            <div class="cm-t-half{{ ' cm-t-bi' if v == 'bi' }}">{{ tentHalf(v, urls) }}</div>
+          </div>
+          {% endfor %}
+        </div>
+        <figcaption class="cm-no-print mt-4 flex flex-wrap items-center justify-between gap-3">
+          <span class="max-w-sm text-sm text-muted"><strong class="text-ink">{{ "community.share.tent_title" | t(lang) }}.</strong> {{ "community.share.tent_sub" | t(lang) }}</span>
+          <button type="button" class="btn-secondary" @click="printVariant('tent')">{% icon "printer", "size-4" %} {{ "community.share.print_tent" | t(lang) }}</button>
+        </figcaption>
+      </figure>
+    </div>
+    <p class="cm-no-print mt-6 flex gap-2 text-xs text-muted">{% icon "info", "size-4 shrink-0" %} {{ "community.share.print_tip" | t(lang) }}</p>
+  </div>
+</section>
+
+{#- ============ Ready-made messages ============ -#}
+<section class="section container-page cm-no-print" aria-labelledby="msg-title">
+  {{ ui.sectionHead("community.share.messages_title" | t(lang), "community.share.messages_sub" | t(lang), "", "", "message-square-text") }}
+  <div class="grid gap-5 md:grid-cols-2">
+    {% for l in [lang, other] %}
+    {%- set u = urls[l] -%}
+    <div class="min-w-0 space-y-4" lang="{{ l }}">
+      <p class="eyebrow">{{ ("community.lang_name_" + l) | t(lang) }}</p>
+      {% for m in ["short", "long"] %}
+      <article class="card card-pad">
+        <div class="flex items-center justify-between gap-3">
+          <h3 class="text-sm font-semibold text-ink">{{ ("community.share.msg_" + m) | t(l) }}</h3>
+          <button type="button" class="btn-secondary btn-sm" data-copy-from="#msg-{{ m }}-{{ l }}">{% icon "copy", "size-4" %} {{ "common.copy" | t(lang) }}</button>
+        </div>
+        <p id="msg-{{ m }}-{{ l }}" class="mt-3 rounded-xl bg-surface-2 p-4 text-sm leading-relaxed text-ink">{{ ("community.share.msg_" + m + "_text") | t(l, { url: u }) }}</p>
+      </article>
+      {% endfor %}
+    </div>
+    {% endfor %}
+  </div>
+
+  <h2 class="h-card mt-12">{{ "community.share.links_title" | t(lang) }}</h2>
+  <ul class="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3" role="list">
+    {% for k in [{ label: "community.share.link_home", path: "/" }, { label: "community.share.link_new", path: "/whats-new/" }, { label: "community.share.link_meeting", path: "/meeting/" }, { label: "community.share.link_gvr", path: "/gvr/" }, { label: "nav.digest", path: "/digest/" }, { label: "nav.districts", path: "/districts/" }] %}
+    {%- set abs = k.path | lurl(lang) | siteUrl(site) -%}
+    <li class="flex items-center gap-2 rounded-xl border border-line bg-surface p-1.5 pl-4">
+      <span class="min-w-0 flex-1">
+        <a class="block truncate text-sm font-semibold text-ink no-underline hover:text-gv" href="{{ k.path | lurl(lang) }}">{{ k.label | t(lang) }}</a>
+        <span class="block truncate text-xs text-muted">{{ abs | cmShortUrl }}</span>
+      </span>
+      <button type="button" class="grid size-10 shrink-0 place-items-center rounded-full text-muted hover:bg-surface-2 hover:text-gv" data-copy="{{ abs }}" aria-label="{{ 'community.copy_link' | t(lang) }} — {{ k.label | t(lang) }}">{% icon "copy", "size-4" %}</button>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+</div>

@@ -1,0 +1,120 @@
+{#- Shared UI macros. Import with:
+      {% import "macros/ui.njk" as ui with context %}
+    then e.g. {{ ui.pageHero(lang, "Title", "Subtitle", "book-open") }} -#}
+
+{#- Inner-page hero band (dark, with faint vine art). caller() adds extra content (buttons, stats). -#}
+{% macro pageHero(lang, title, subtitle="", icon="", eyebrow="") %}
+<section class="page-hero pt-28 pb-14 sm:pt-32 sm:pb-20">
+  <svg class="page-hero-vine" viewBox="0 0 400 260" fill="none" aria-hidden="true">
+    <path d="M-10 60 C 80 20, 150 110, 240 70 S 380 40, 420 90" stroke="#c9a57a" stroke-width="5" stroke-linecap="round"/>
+    <path d="M120 58 c 6 30 -8 52 -4 80" stroke="#9cc57a" stroke-width="2.5" stroke-linecap="round"/>
+    <g fill="#8e6cc9"><circle cx="114" cy="150" r="9"/><circle cx="131" cy="150" r="9"/><circle cx="122" cy="165" r="9"/><circle cx="105" cy="165" r="9"/><circle cx="139" cy="165" r="9"/><circle cx="113" cy="180" r="9"/><circle cx="130" cy="180" r="9"/><circle cx="122" cy="195" r="9"/></g>
+    <path d="M250 70 c 20 -40 60 -30 70 -10 -30 0 -40 20 -70 10z" fill="#5fae5a"/>
+    <path d="M300 60 c 4 22 30 30 40 20" stroke="#9cc57a" stroke-width="2" stroke-linecap="round"/>
+  </svg>
+  <div class="container-page relative z-10">
+    {% if eyebrow %}<p class="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-white/70">{{ eyebrow }}</p>{% endif %}
+    <h1 class="flex items-center gap-3 font-display text-4xl font-semibold leading-tight sm:text-5xl">
+      {% if icon %}<span class="grid size-12 shrink-0 place-items-center rounded-2xl bg-white/10 ring-1 ring-white/20">{% icon icon, "size-6" %}</span>{% endif %}
+      <span>{{ title }}</span>
+    </h1>
+    {% if subtitle %}<p class="mt-4 max-w-2xl text-lg leading-relaxed text-white/80">{{ subtitle | safe }}</p>{% endif %}
+    {% if caller %}<div class="mt-7">{{ caller() }}</div>{% endif %}
+  </div>
+</section>
+{% endmacro %}
+
+{#- Stat row for inside pageHero's caller(): big serif number over a short label — the one
+    hero-stat design for every inner page. stats = [{ value: 56, label: "stories" }, …]
+    (or [[56, "stories"], …]); entries without a value are skipped.
+    Page rhythm after the hero (main.css): the first block either overlaps the hero
+    (class "page-overlap": a search card or sub-nav) or is a section with "page-start"
+    instead of "section" — nothing else, so every page starts at the same distance. -#}
+{% macro heroStats(stats) %}
+<dl class="hero-stats">
+  {%- for s in stats %}
+  {%- set v = s.value if (s.value is defined) else s[0] -%}
+  {%- set l = s.label if (s.label is defined) else s[1] -%}
+  {%- if v is defined and v !== null and v !== "" %}
+  <div class="hero-stat"><dt>{{ l }}</dt><dd>{{ v }}</dd></div>
+  {%- endif %}
+  {%- endfor %}
+</dl>
+{% endmacro %}
+
+{#- Section heading with optional "view all" link -#}
+{% macro sectionHead(title, subtitle="", href="", linkLabel="", icon="") %}
+<div class="mb-6 flex flex-wrap items-end justify-between gap-3">
+  <div>
+    <h2 class="h-section flex items-center gap-2.5">{% if icon %}<span class="text-gv">{% icon icon, "size-6" %}</span>{% endif %}{{ title }}</h2>
+    {% if subtitle %}<p class="mt-1.5 max-w-2xl text-muted">{{ subtitle | safe }}</p>{% endif %}
+  </div>
+  {% if href %}<a href="{{ href }}" class="inline-flex min-h-10 items-center gap-1.5 text-sm font-semibold text-gv hover:underline">{{ linkLabel }} {% icon "arrow-right", "size-4" %}</a>{% endif %}
+</div>
+{% endmacro %}
+
+{#- Empty state box -#}
+{% macro emptyState(icon, title, text="", ctaHref="", ctaLabel="") %}
+<div class="empty-state">
+  <span class="mx-auto mb-3 grid size-12 place-items-center rounded-full bg-surface-2 text-faint">{% icon icon, "size-6" %}</span>
+  <p class="font-semibold text-ink">{{ title }}</p>
+  {% if text %}<p class="mx-auto mt-1 max-w-md text-sm">{{ text | safe }}</p>{% endif %}
+  {% if ctaHref %}<a class="btn-secondary btn-sm mt-4" href="{{ ctaHref }}"{% if ctaHref.startsWith('http') %} target="_blank" rel="noopener"{% endif %}>{{ ctaLabel }}</a>{% endif %}
+</div>
+{% endmacro %}
+
+{#- Source label + color for any item -#}
+{% macro sourceBadge(item, lang) %}
+{%- set src = item.source -%}
+{%- set refHost = (item.extra.referrers[0].url | hostname) if (item.extra and item.extra.external and item.extra.referrers and item.extra.referrers.length) else "" -%}
+{%- set isLv = ('lavina' in refHost) if refHost else (item.extra and item.extra.host and 'lavina' in item.extra.host) -%}
+{%- if src == "podcast" %}<span class="badge-grape">{% icon "headphones", "size-3" %} {{ "kind.episode" | t(lang) }}</span>
+{%- elif src == "youtube" %}<span class="badge-grape">{% icon "youtube", "size-3" %} YouTube</span>
+{%- elif src == "instagram" %}<span class="badge-grape">{% icon "instagram", "size-3" %} Instagram</span>
+{%- elif src == "drive" or src == "committee" %}<span class="badge-vine">{% icon "users", "size-3" %} NETA 65</span>
+{%- elif src == "crawl" %}<span class="{{ 'badge-lv' if isLv else 'badge-gv' }}">{% icon "file-text", "size-3" %} {{ "La Viña" if isLv else "Grapevine" }}</span>
+{%- elif src == "lavina" or item.category == "lv" or item.category == "lv-calendar" %}<span class="badge-lv">{% icon "grapes", "size-3" %} La Viña</span>
+{%- elif src == "grapevine" or item.category == "gv" or item.category == "gv-calendar" %}<span class="badge-gv">{% icon "grapes", "size-3" %} Grapevine</span>
+{%- else %}<span class="badge-muted">{{ src }}</span>{%- endif %}
+{% endmacro %}
+
+{#- Small "auto-translated" note when this language version is machine translated -#}
+{% macro autoNote(item, lang) %}
+{%- if item | machineFor(lang) %}<span class="auto-note" title="{{ 'common.auto_translated_help' | t(lang) }}">{% icon "languages", "size-3" %} {{ "common.auto_translated" | t(lang) }}</span>{% endif -%}
+{% endmacro %}
+
+{#- Language pill (shows the ORIGINAL language of content when it differs from the page) -#}
+{% macro langPill(item, lang) %}
+{%- if item.lang and item.lang != lang and item.lang != "und" %}<span class="badge-muted uppercase" title="{{ ('lang.' + item.lang) | t(lang) }}">{{ item.lang }}</span>{% endif -%}
+{% endmacro %}
+
+{#- Generic content card for any Item (article, pdf, video, episode, post, drive doc, announcement). -#}
+{% macro itemCard(item, lang, showImage=true) %}
+{%- set title = item | tx("title", lang) -%}
+{%- set summary = item | tx("summary", lang) -%}
+{%- set href = item.url | lurl(lang) -%}
+{%- set external = href and (href.startsWith("http")) -%}
+<article class="card card-link group relative flex flex-col overflow-hidden">
+  {% if showImage and item.image %}
+  <div class="card-media {{ 'aspect-square' if item.kind == 'post' else '' }}">
+    <img src="{{ item.image }}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer">
+    {% if item.kind == "video" or item.kind == "episode" %}<span class="absolute inset-0 grid place-items-center"><span class="grid size-12 place-items-center rounded-full bg-black/55 text-white backdrop-blur transition group-hover:scale-110">{% icon "play", "size-5 translate-x-px" %}</span></span>{% endif %}
+  </div>
+  {% endif %}
+  <div class="flex flex-1 flex-col gap-2 p-5">
+    <div class="flex flex-wrap items-center gap-1.5">
+      {{ sourceBadge(item, lang) }}
+      {% if item.is_new %}<span class="badge-new">{{ "common.new" | t(lang) }}</span>{% endif %}
+      {{ langPill(item, lang) }}
+    </div>
+    <h3 class="h-card">
+      <a href="{{ href }}" class="no-underline after:absolute after:inset-0 hover:text-gv"{% if external %} target="_blank" rel="noopener"{% endif %}>{{ title }}</a>
+    </h3>
+    {% if summary %}<p class="line-clamp-3 text-sm leading-relaxed text-muted">{{ summary | excerpt(200) }}</p>{% endif %}
+    <div class="mt-auto flex flex-wrap items-center justify-between gap-2 pt-2 text-xs text-faint">
+      {% if item.date %}<time datetime="{{ item.date | isoDate }}">{{ item.date | fmtDate(lang, "medium") }}</time>{% else %}<span></span>{% endif %}
+      {{ autoNote(item, lang) }}
+    </div>
+  </div>
+</article>
+{% endmacro %}

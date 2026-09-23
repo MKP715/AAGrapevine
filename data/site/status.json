@@ -1,0 +1,398 @@
+{
+ "generated": "2026-09-23T21:49:22Z",
+ "updated": "2026-09-23T21:49:22Z",
+ "fixture": false,
+ "sources": [
+  {
+   "source": "drive",
+   "label": "Google Drive (committee uploads)",
+   "label_es": "Google Drive (archivos del comité)",
+   "ok": true,
+   "updated": "2026-09-23T21:47:52Z",
+   "attempted": "2026-09-23T21:47:52Z",
+   "count": 0,
+   "new_7d": 0,
+   "error": null,
+   "stats": {
+    "mode": "html",
+    "root": "A65_GV",
+    "panels": [
+     "Panel 77 (2027–2028)"
+    ],
+    "panel_folders": [
+     {
+      "panel": 77,
+      "label": "Panel 77 (2027–2028)",
+      "name": "2027-2028_Panel77_GVLV",
+      "id": "1bebd9TAz1L3LHhbeKUSlcENndtqas5O0"
+     }
+    ],
+    "include_loose": false,
+    "loose_skipped": [
+     "flyers",
+     "notes",
+     "photos",
+     "reports",
+     "slides",
+     "workshops",
+     "40th Annual Gathering of Eagles - Grapevine Table Signup"
+    ],
+    "skipped_panels": [],
+    "folders": 8,
+    "files": 0,
+    "fetched": 0,
+    "new": 0,
+    "removed": 0,
+    "kept_unverified": 0,
+    "by_category": {},
+    "by_kind": {},
+    "albums": {},
+    "events_from_flyers": 0,
+    "excluded": 1,
+    "excluded_by_reason": {
+     "type application/vnd.google-apps.spreadsheet": 1
+    },
+    "unreadable_folders": [],
+    "depth_limited": [],
+    "shortcuts_resolved": 0,
+    "announcements": {},
+    "forms": {},
+    "requests": 8,
+    "truncated": false,
+    "warnings": []
+   }
+  },
+  {
+   "source": "announcements",
+   "label": "Announcements (content/announcements)",
+   "label_es": "Anuncios (content/announcements)",
+   "ok": true,
+   "updated": "2026-09-23T21:47:52Z",
+   "attempted": "2026-09-23T21:47:52Z",
+   "count": 0,
+   "new_7d": 0,
+   "error": null,
+   "stats": {
+    "files": 0,
+    "new": 0,
+    "problems": 0,
+    "errors": [],
+    "active": 0
+   }
+  },
+  {
+   "source": "manual_events",
+   "label": "Events (content/events)",
+   "label_es": "Eventos (content/events)",
+   "ok": true,
+   "updated": "2026-09-23T21:47:52Z",
+   "attempted": "2026-09-23T21:47:52Z",
+   "count": 0,
+   "new_7d": 0,
+   "error": null,
+   "stats": {
+    "files": 0,
+    "new": 0,
+    "problems": 0,
+    "errors": []
+   }
+  },
+  {
+   "source": "articles",
+   "label": "Grapevine & La Viña articles",
+   "label_es": "Artículos de Grapevine y La Viña",
+   "ok": true,
+   "updated": "2026-09-23T21:49:00Z",
+   "attempted": "2026-09-23T21:49:00Z",
+   "count": 56,
+   "new_7d": 56,
+   "error": null,
+   "stats": {
+    "hub_articles": 56,
+    "details_fetched": 0,
+    "details_failed": 0,
+    "thumbs": 0,
+    "details_pending": 0,
+    "details_left": 0,
+    "new": 0,
+    "total": 56,
+    "requests": 2
+   }
+  },
+  {
+   "source": "editorial",
+   "label": "Editorial themes (upcoming issues)",
+   "label_es": "Temas editoriales (próximos números)",
+   "ok": true,
+   "updated": "2026-09-23T21:49:10Z",
+   "attempted": "2026-09-23T21:49:10Z",
+   "count": 37,
+   "new_7d": 37,
+   "error": null,
+   "stats": {
+    "gv": {
+     "parsed": 26,
+     "kept": 18,
+     "with_deadline": 16,
+     "open": 8
+    },
+    "lv": {
+     "parsed": 19,
+     "kept": 19,
+     "with_deadline": 0,
+     "open": 0
+    },
+    "new": 0
+   }
+  },
+  {
+   "source": "pdfs",
+   "label": "PDF library (crawl of both sites)",
+   "label_es": "Biblioteca de PDF (rastreo de ambos sitios)",
+   "ok": true,
+   "updated": "2026-09-23T21:47:29Z",
+   "attempted": "2026-09-23T21:47:29Z",
+   "count": 130,
+   "new_7d": 130,
+   "error": null,
+   "stats": {
+    "known_pages": 3445,
+    "crawled_pages": 2927,
+    "never_crawled": 518,
+    "never_crawled_events": 518,
+    "pdfs": 130,
+    "pdfs_gone": 11,
+    "pdfs_with_details": 129,
+    "pdfs_with_thumbs": 129,
+    "last_run_pages": 2879,
+    "fetched": 2879,
+    "new": 35,
+    "not_modified": 0,
+    "page_errors": 4,
+    "discovered": 283,
+    "details": 127,
+    "heads": 0,
+    "requests": 3009,
+    "queue_remaining": 514,
+    "est_days_to_full": 0.2
+   }
+  },
+  {
+   "source": "youtube",
+   "label": "YouTube videos",
+   "label_es": "Videos de YouTube",
+   "ok": true,
+   "updated": "2026-09-23T21:48:37Z",
+   "attempted": "2026-09-23T21:48:37Z",
+   "count": 528,
+   "new_7d": 528,
+   "error": null,
+   "stats": {
+    "channels": 1,
+    "rss_feeds": 35,
+    "rss_failed": 0,
+    "backfill": "not due (last 2026-09-23T16:25:05Z)",
+    "playlist_feeds": 31,
+    "shorts_probes": 0,
+    "details_pending": 0,
+    "details_fetched": 0,
+    "details_failed": 0,
+    "gone_checks": 0,
+    "gone_marked": 0,
+    "fetched": 248,
+    "new": 0,
+    "total": 528,
+    "active": 528,
+    "gone": 0,
+    "spanish": 95,
+    "shorts": 18,
+    "approx_dates": 1,
+    "playlists": 31,
+    "seconds": 41.8
+   }
+  },
+  {
+   "source": "podcasts",
+   "label": "Podcasts",
+   "label_es": "Pódcasts",
+   "ok": true,
+   "updated": "2026-09-23T21:47:56Z",
+   "attempted": "2026-09-23T21:47:56Z",
+   "count": 295,
+   "new_7d": 295,
+   "error": null,
+   "stats": {
+    "fetched": 295,
+    "new": 0,
+    "total": 295,
+    "active": 295,
+    "gone": 0,
+    "spanish": 0,
+    "shows": {
+     "gv": {
+      "ok": true,
+      "episodes": 262,
+      "latest": "2026-09-21T04:15:00Z"
+     },
+     "wo": {
+      "ok": true,
+      "episodes": 33,
+      "latest": "2026-09-18T04:15:00Z"
+     }
+    },
+    "missing_from_feed": 0,
+    "gone_checks": 0,
+    "discovery_checked": "2026-09-23T16:27:25Z",
+    "discovered_feeds": [
+     {
+      "feed": "https://feeds.captivate.fm/grapevine-weekly-open/",
+      "title": "Grapevine Weekly Open AA Meeting",
+      "language": "en",
+      "episodes": 33,
+      "latest": "2026-09-18T04:15:00Z",
+      "spanish": false,
+      "apple": "https://podcasts.apple.com/us/podcast/grapevine-weekly-open-aa-meeting/id1874809908",
+      "spotify": "https://open.spotify.com/show/2jk469TmDC31spPqf8L0SF"
+     }
+    ],
+    "seconds": 3.1,
+    "artwork": 3,
+    "artwork_missing": 0,
+    "artwork_removed": 0
+   }
+  },
+  {
+   "source": "instagram",
+   "label": "Instagram posts",
+   "label_es": "Publicaciones de Instagram",
+   "ok": true,
+   "updated": "2026-09-23T21:48:44Z",
+   "attempted": "2026-09-23T21:48:44Z",
+   "count": 24,
+   "new_7d": 24,
+   "error": null,
+   "stats": {
+    "strategy": {
+     "gv": "profile_embed",
+     "lv": "profile_embed"
+    },
+    "attempts": {
+     "gv": [
+      "graph_api: skipped — not configured (optional GitHub secrets IG_ACCESS_TOKEN + IG_BUSINESS_ID)",
+      "profile_embed: 6 posts"
+     ],
+     "lv": [
+      "graph_api: skipped — not configured (optional GitHub secrets IG_ACCESS_TOKEN + IG_BUSINESS_ID)",
+      "profile_embed: 6 posts"
+     ]
+    },
+    "fetched": 12,
+    "manual": 0,
+    "pruned": 0,
+    "thumbs_deleted": 0,
+    "new": 0,
+    "total": 24,
+    "per_account": {
+     "gv": 12,
+     "lv": 12
+    },
+    "requests": 2,
+    "anonymous": true,
+    "graph_api": false
+   }
+  },
+  {
+   "source": "weekly_open",
+   "label": "Grapevine Weekly Open meeting",
+   "label_es": "Reunión Grapevine Weekly Open",
+   "ok": true,
+   "updated": "2026-09-23T21:49:15Z",
+   "attempted": "2026-09-23T21:49:15Z",
+   "count": 1,
+   "new_7d": 1,
+   "error": null,
+   "stats": {
+    "found": [
+     "zoom_id",
+     "passcode",
+     "day",
+     "time"
+    ],
+    "missing": []
+   }
+  },
+  {
+   "source": "events_external",
+   "label": "GV/LV event calendars",
+   "label_es": "Calendarios de eventos de GV/LV",
+   "ok": true,
+   "updated": "2026-09-23T21:49:20Z",
+   "attempted": "2026-09-23T21:49:20Z",
+   "count": 1,
+   "new_7d": 1,
+   "error": null,
+   "stats": {
+    "discovery": "sitemap",
+    "discovery_complete": true,
+    "upcoming_urls": 15,
+    "kept_from_cache": 0,
+    "fetched": 0,
+    "refreshed": 0,
+    "failed": 0,
+    "pending": 0,
+    "cached": 15,
+    "texas": 0,
+    "online_es": 1,
+    "items": 1,
+    "new": 0,
+    "requests": 6
+   }
+  }
+ ],
+ "crawl": {
+  "attempted": "2026-09-23T21:47:29Z",
+  "crawled_pages": 2927,
+  "est_days_to_full": 0.2,
+  "known_pages": 3445,
+  "last_run_pages": 2879,
+  "never_crawled": 518,
+  "never_crawled_events": 518,
+  "new": 35,
+  "page_errors": 4,
+  "pdfs": 130,
+  "pdfs_gone": 11,
+  "pdfs_with_details": 129,
+  "pdfs_with_thumbs": 129,
+  "queue_remaining": 514,
+  "updated": "2026-09-23T21:47:29Z"
+ },
+ "translations": {
+  "cached": 1640,
+  "engine": "argos1.0-ct2/v5",
+  "model_enabled": true,
+  "translated_this_run": 32,
+  "from_cache": 1600,
+  "pending": 0,
+  "rejected_by_guard": 0,
+  "seconds": 1.4,
+  "model_seconds": 0.7,
+  "texts_per_second": 23.4,
+  "glossary_entries": 231
+ },
+ "counts": {
+  "videos": 528,
+  "episodes": 295,
+  "instagram": 24,
+  "articles": 56,
+  "pdfs": 130,
+  "drive": 0,
+  "editorial": 37,
+  "weekly_open": 1,
+  "announcements": 0,
+  "events": 13,
+  "whatsnew": 150,
+  "districts": 2
+ },
+ "problems": {},
+ "items": []
+}

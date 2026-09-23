@@ -1,0 +1,399 @@
+{
+ "source": "events_external",
+ "updated": "2026-09-23T21:49:20Z",
+ "attempted": "2026-09-23T21:49:20Z",
+ "ok": true,
+ "error": null,
+ "stats": {
+  "discovery": "sitemap",
+  "discovery_complete": true,
+  "upcoming_urls": 15,
+  "kept_from_cache": 0,
+  "fetched": 0,
+  "refreshed": 0,
+  "failed": 0,
+  "pending": 0,
+  "cached": 15,
+  "texas": 0,
+  "online_es": 1,
+  "items": 1,
+  "new": 0,
+  "requests": 6
+ },
+ "items": [
+  {
+   "id": "ev:lvcal:82a64d52e47d",
+   "source": "calendar",
+   "kind": "event",
+   "url": "https://www.aalavina.org/get-involved/events/2026-09-24/taller-mensual",
+   "title": "Taller Mensual",
+   "summary": "",
+   "lang": "es",
+   "date": "2026-09-24",
+   "first_seen": "2026-09-23T16:43:55Z",
+   "last_seen": "2026-09-23T16:48:18Z",
+   "image": null,
+   "tags": [
+    "online"
+   ],
+   "category": "lv-calendar",
+   "status": "ok",
+   "extra": {
+    "start": "2026-09-24",
+    "end": null,
+    "all_day": true,
+    "location": "Zoom",
+    "city": null,
+    "state": null,
+    "country": null,
+    "region": null,
+    "online_url": "https://us06web.zoom.us/j/81595931777",
+    "platform": "Zoom",
+    "website": null,
+    "organizer": null,
+    "flyer_url": null,
+    "flyer_thumb": null,
+    "scope": "online",
+    "online": true,
+    "site": "lavina",
+    "date_text": "Septiembre 24, 2026"
+   }
+  }
+ ],
+ "cache": {
+  "https://www.aalavina.org/get-involved/events/2026-09-24/taller-mensual": {
+   "at": "2026-09-23T16:42:55Z",
+   "ev": {
+    "title": "Taller Mensual",
+    "date_text": "Septiembre 24, 2026",
+    "start": "2026-09-24",
+    "all_day": true,
+    "location_raw": "https://us06web.zoom.us/j/81595931777",
+    "location": "Zoom",
+    "online_url": "https://us06web.zoom.us/j/81595931777",
+    "platform": "Zoom",
+    "online": true,
+    "texas": false,
+    "lang": "es"
+   },
+   "http": 200,
+   "fails": 0
+  },
+  "https://www.aagrapevine.org/get-involved/events/2026-10-02/79th-powell-river-rally-2026": {
+   "at": "2026-09-23T16:42:55Z",
+   "ev": {
+    "title": "79th Powell River Rally 2026",
+    "date_text": "October 2, 2026 - October 4, 2026",
+    "start": "2026-10-02",
+    "end": "2026-10-04",
+    "all_day": true,
+    "location_raw": "Powell River, British Columbia, Canada",
+    "location": "Powell River, British Columbia, Canada",
+    "city": "British Columbia",
+    "country": "Canada",
+    "online": false,
+    "texas": false,
+    "lang": "en"
+   },
+   "http": 200,
+   "fails": 0
+  },
+  "https://www.aagrapevine.org/get-involved/events/2026-10-23/38th-northeast-woman-woman-conference": {
+   "at": "2026-09-23T16:43:00Z",
+   "ev": {
+    "title": "38th Northeast Woman to Woman Conference",
+    "date_text": "October 23, 2026 - October 25, 2026",
+    "start": "2026-10-23",
+    "end": "2026-10-25",
+    "all_day": true,
+    "location_raw": "Wilmington, Delaware",
+    "website": "https://newoman2womandeleware.regfox.com/38-th-annual-northeast-woman-to-woman-conference-2026",
+    "location": "Wilmington, Delaware",
+    "city": "Wilmington",
+    "state": "DE",
+    "country": "USA",
+    "online": false,
+    "texas": false,
+    "lang": "en"
+   },
+   "http": 200,
+   "fails": 0
+  },
+  "https://www.aalavina.org/get-involved/events/2026-10-23/24-convencion-hispana-del-estado-de-wisconsin": {
+   "at": "2026-09-23T16:43:01Z",
+   "ev": {
+    "title": "24 Convencion Hispana del Estado de Wisconsin",
+    "date_text": "Octubre 23, 2026 - Octubre 25, 2026",
+    "start": "2026-10-23",
+    "end": "2026-10-25",
+    "all_day": true,
+    "location_raw": "6362 South 13th Street, Oak Creek, WI 53154",
+    "location": "6362 South 13th Street, Oak Creek, WI 53154",
+    "city": "Oak Creek",
+    "state": "WI",
+    "country": "USA",
+    "online": false,
+    "texas": false,
+    "lang": "es"
+   },
+   "http": 200,
+   "fails": 0
+  },
+  "https://www.aalavina.org/get-involved/events/2026-10-30/iii-convencion-hispana-de-aa-del-estado-de-alabama": {
+   "at": "2026-09-23T16:43:07Z",
+   "ev": {
+    "title": "III Convención Hispana de AA del Estado de Alabama",
+    "date_text": "Octubre 30, 2026 - Noviembre 1, 2026",
+    "start": "2026-10-30",
+    "end": "2026-11-01",
+    "all_day": true,
+    "location_raw": "Embassy Suites by Hilton Huntsville 800 Monroe St SW, Huntsville, AL 35801",
+    "location": "Embassy Suites by Hilton Huntsville 800 Monroe St SW, Huntsville, AL 35801",
+    "city": "Huntsville",
+    "state": "AL",
+    "country": "USA",
+    "online": false,
+    "texas": false,
+    "lang": "es"
+   },
+   "http": 200,
+   "fails": 0
+  },
+  "https://www.aalavina.org/get-involved/events/2026-10-30/iii-convencion-hispana-del-estado-de-alabama": {
+   "at": "2026-09-23T16:43:13Z",
+   "ev": {
+    "title": "III Convención Hispana del estado de Alabama",
+    "date_text": "Octubre 30, 2026 - Noviembre 1, 2026",
+    "start": "2026-10-30",
+    "end": "2026-11-01",
+    "all_day": true,
+    "location_raw": "Huntsville",
+    "location": "Huntsville",
+    "city": "Huntsville",
+    "online": false,
+    "texas": false,
+    "lang": "es"
+   },
+   "http": 200,
+   "fails": 0
+  },
+  "https://www.aagrapevine.org/get-involved/events/2026-11-06/79th-tri-state-convention-0": {
+   "at": "2026-09-23T16:43:14Z",
+   "ev": {
+    "title": "79th Tri-State Convention",
+    "date_text": "November 6, 2026 - November 8, 2026",
+    "start": "2026-11-06",
+    "end": "2026-11-08",
+    "all_day": true,
+    "location_raw": "Bossier City, Louisiana",
+    "website": "https://www.tristateconvention.org",
+    "location": "Bossier City, Louisiana",
+    "city": "Bossier City",
+    "state": "LA",
+    "country": "USA",
+    "online": false,
+    "texas": false,
+    "lang": "en"
+   },
+   "http": 200,
+   "fails": 0
+  },
+  "https://www.aagrapevine.org/get-involved/events/2026-11-06/85th-laurel-highlands-conference": {
+   "at": "2026-09-23T16:43:21Z",
+   "ev": {
+    "title": "85th Laurel Highlands Conference",
+    "date_text": "November 6, 2026 - November 8, 2026",
+    "start": "2026-11-06",
+    "end": "2026-11-08",
+    "all_day": true,
+    "location_raw": "Bolivar, Pennsylvania",
+    "website": "https://www.laurelhighlandsconference.com",
+    "location": "Bolivar, Pennsylvania",
+    "city": "Bolivar",
+    "state": "PA",
+    "country": "USA",
+    "online": false,
+    "texas": false,
+    "lang": "en"
+   },
+   "http": 200,
+   "fails": 0
+  },
+  "https://www.aagrapevine.org/get-involved/events/2026-11-13/36th-vancouver-roundup": {
+   "at": "2026-09-23T16:43:27Z",
+   "ev": {
+    "title": "36th Vancouver RoundUp",
+    "date_text": "November 13, 2026 - November 15, 2026",
+    "start": "2026-11-13",
+    "end": "2026-11-15",
+    "all_day": true,
+    "location_raw": "Vancouver, British Columbia",
+    "website": "https://www.vanroundup.com/",
+    "location": "Vancouver, British Columbia",
+    "city": "Vancouver",
+    "country": "Canada",
+    "online": false,
+    "texas": false,
+    "lang": "en"
+   },
+   "http": 200,
+   "fails": 0
+  },
+  "https://www.aagrapevine.org/get-involved/events/2026-11-13/international-secular-conference-phoenix-2026": {
+   "at": "2026-09-23T16:43:32Z",
+   "ev": {
+    "title": "International Secular Conference Phoenix 2026",
+    "date_text": "November 13, 2026 - November 15, 2026",
+    "start": "2026-11-13",
+    "end": "2026-11-15",
+    "all_day": true,
+    "location_raw": "Phoenix, Arizona",
+    "website": "https://www.aasecular.org/icsaa-2026",
+    "location": "Phoenix, Arizona",
+    "city": "Phoenix",
+    "state": "AZ",
+    "country": "USA",
+    "online": false,
+    "texas": false,
+    "lang": "en"
+   },
+   "http": 200,
+   "fails": 0
+  },
+  "https://www.aagrapevine.org/get-involved/events/2026-11-20/37th-mchenrys-soberfest": {
+   "at": "2026-09-23T16:43:37Z",
+   "ev": {
+    "title": "37th McHenry's Soberfest",
+    "date_text": "November 20, 2026 - November 22, 2026",
+    "start": "2026-11-20",
+    "end": "2026-11-22",
+    "all_day": true,
+    "location_raw": "Lake Geneva, Wisconsin",
+    "website": "https://soberfest.org",
+    "location": "Lake Geneva, Wisconsin",
+    "city": "Lake Geneva",
+    "state": "WI",
+    "country": "USA",
+    "online": false,
+    "texas": false,
+    "lang": "en"
+   },
+   "http": 200,
+   "fails": 0
+  },
+  "https://www.aagrapevine.org/get-involved/events/2026-11-27/36th-gratitude-roundup": {
+   "at": "2026-09-23T16:43:43Z",
+   "ev": {
+    "title": "36th Gratitude Roundup",
+    "date_text": "November 27, 2026 - November 29, 2026",
+    "start": "2026-11-27",
+    "end": "2026-11-29",
+    "all_day": true,
+    "location_raw": "Pascagoula, Mississippi",
+    "location": "Pascagoula, Mississippi",
+    "city": "Pascagoula",
+    "state": "MS",
+    "country": "USA",
+    "online": false,
+    "texas": false,
+    "lang": "en"
+   },
+   "http": 200,
+   "fails": 0
+  },
+  "https://www.aagrapevine.org/get-involved/events/2026-12-04/14th-chiang-mai-roundup-2026": {
+   "at": "2026-09-23T16:43:48Z",
+   "ev": {
+    "title": "14th Chiang Mai Roundup 2026",
+    "date_text": "December 4, 2026 - December 6, 2026",
+    "start": "2026-12-04",
+    "end": "2026-12-06",
+    "all_day": true,
+    "location_raw": "Chiang Mai, Thailand",
+    "website": "https://www.aathailand.org",
+    "location": "Chiang Mai, Thailand",
+    "city": "Chiang Mai",
+    "country": "Thailand",
+    "online": false,
+    "texas": false,
+    "lang": "en"
+   },
+   "http": 200,
+   "fails": 0
+  },
+  "https://www.aagrapevine.org/get-involved/events/2027-03-19/southern-maryland-roundup": {
+   "at": "2026-09-23T16:43:55Z",
+   "ev": {
+    "title": "Southern Maryland Roundup",
+    "date_text": "March 19, 2027 - March 21, 2027",
+    "start": "2027-03-19",
+    "end": "2027-03-21",
+    "all_day": true,
+    "location_raw": "Annapolis, Maryland",
+    "website": "https://www.southernmarylandroundup.org/",
+    "location": "Annapolis, Maryland",
+    "city": "Annapolis",
+    "state": "MD",
+    "country": "USA",
+    "online": false,
+    "texas": false,
+    "lang": "en"
+   },
+   "http": 200,
+   "fails": 0
+  },
+  "https://www.aalavina.org/get-involved/events/2027-06-11/14a-convencion-nacional-11-12-y-13-de-junio-de-2027-ciudad-de-mexico": {
+   "at": "2026-09-23T16:43:55Z",
+   "ev": {
+    "title": "14.a Convención Nacional 11, 12 y 13 de junio de 2027 Ciudad de México «AA una luz de esperanza»",
+    "date_text": "Junio 11, 2027 - Junio 13, 2027",
+    "start": "2027-06-11",
+    "end": "2027-06-13",
+    "all_day": true,
+    "location_raw": "Estadio Ciudad de México",
+    "website": "https://convencion.aamexico.mx/",
+    "summary": "Teléfonos , , Lada sin costo: Ext. 128",
+    "location": "Estadio Ciudad de México",
+    "city": "Estadio Ciudad de México",
+    "online": false,
+    "texas": false,
+    "lang": "es"
+   },
+   "http": 200,
+   "fails": 0
+  }
+ },
+ "sitemap": {
+  "pages": {
+   "https://www.aagrapevine.org/sitemap.xml?page=1": {
+    "lastmod": "2026-09-22T18:36:26-05:00",
+    "events": [],
+    "fetched": "2026-09-23T16:42:43Z",
+    "urls_total": 2000
+   },
+   "https://www.aagrapevine.org/sitemap.xml?page=2": {
+    "lastmod": "2026-09-22T18:36:26-05:00",
+    "events": [
+     "https://www.aagrapevine.org/get-involved/events/2026-09-18/9th-keys-serenity-roundup",
+     "https://www.aagrapevine.org/get-involved/events/2026-10-02/79th-powell-river-rally-2026",
+     "https://www.aagrapevine.org/get-involved/events/2026-10-23/38th-northeast-woman-woman-conference",
+     "https://www.aagrapevine.org/get-involved/events/2026-11-06/79th-tri-state-convention-0",
+     "https://www.aagrapevine.org/get-involved/events/2026-11-06/85th-laurel-highlands-conference",
+     "https://www.aagrapevine.org/get-involved/events/2026-11-13/36th-vancouver-roundup",
+     "https://www.aagrapevine.org/get-involved/events/2026-11-13/international-secular-conference-phoenix-2026",
+     "https://www.aagrapevine.org/get-involved/events/2026-11-20/37th-mchenrys-soberfest",
+     "https://www.aagrapevine.org/get-involved/events/2026-11-27/36th-gratitude-roundup",
+     "https://www.aagrapevine.org/get-involved/events/2026-12-04/14th-chiang-mai-roundup-2026",
+     "https://www.aagrapevine.org/get-involved/events/2027-03-19/southern-maryland-roundup",
+     "https://www.aalavina.org/get-involved/events/2026-09-24/taller-mensual",
+     "https://www.aalavina.org/get-involved/events/2026-10-23/24-convencion-hispana-del-estado-de-wisconsin",
+     "https://www.aalavina.org/get-involved/events/2026-10-30/iii-convencion-hispana-de-aa-del-estado-de-alabama",
+     "https://www.aalavina.org/get-involved/events/2026-10-30/iii-convencion-hispana-del-estado-de-alabama",
+     "https://www.aalavina.org/get-involved/events/2027-06-11/14a-convencion-nacional-11-12-y-13-de-junio-de-2027-ciudad-de-mexico"
+    ],
+    "fetched": "2026-09-23T16:42:48Z",
+    "urls_total": 1089
+   }
+  }
+ }
+}

@@ -1,0 +1,52 @@
+{#- Language suggestion (included by base.njk on every page).
+    English page + Spanish-first browser → "¿Prefieres español? Ver en español",
+    Spanish page + English-first browser → "Prefer English? View in English".
+    Rendered hidden (x-cloak) and only revealed by JS, so no-JS visitors and
+    crawlers never see it. Dismissing it — or switching language any other
+    way — is remembered in localStorage ("gv-lang-banner"). The copy is in the
+    SUGGESTED language, so it reads naturally to the person it is meant for.
+    Sits ABOVE the podcast mini-player: media.js sets --player-h (px) on <html>
+    while the player is visible (see .cm-lang-banner in areas/community.css). -#}
+{%- set L = lang or "en" -%}
+{%- set O = L | otherLang -%}
+<div x-data="langBanner('{{ L }}')" x-show="show" x-cloak
+     x-transition:enter="transition duration-300 ease-out" x-transition:enter-start="translate-y-4 opacity-0"
+     x-transition:leave="transition duration-200 ease-in" x-transition:leave-end="translate-y-4 opacity-0"
+     class="cm-lang-banner pointer-events-none fixed inset-x-0 z-40 px-3 sm:px-4"
+     role="region" aria-label="{{ 'community.banner.region' | t(O) }}" lang="{{ O }}">
+  <div class="pointer-events-auto mx-auto flex max-w-lg items-center gap-3 rounded-2xl border border-line bg-surface/95 py-2 pl-4 pr-2 text-ink shadow-[var(--shadow-lift)] backdrop-blur-md">
+    <span class="grid size-9 shrink-0 place-items-center rounded-full bg-gv-soft text-gv">{% icon "languages", "size-5" %}</span>
+    <p class="min-w-0 flex-1 text-sm font-semibold leading-snug">{{ "community.banner.q" | t(O) }}</p>
+    <a href="{{ page.url | altLangUrl(L) }}" hreflang="{{ O }}" class="btn-primary btn-sm shrink-0" data-lang-switch @click="remember('switched')">{{ "community.banner.cta" | t(O) }}</a>
+    <button type="button" class="grid size-10 shrink-0 place-items-center rounded-full text-muted hover:bg-surface-2 hover:text-ink" @click="dismiss()" aria-label="{{ 'community.banner.dismiss' | t(O) }}" title="{{ 'community.banner.dismiss' | t(O) }}">{% icon "x", "size-5" %}</button>
+  </div>
+</div>
+<script>
+  // Registered inline (this partial is on every page; community.js is not).
+  document.addEventListener("alpine:init", function () {
+    window.Alpine.data("langBanner", function (pageLang) {
+      var KEY = "gv-lang-banner";
+      function store(v) { try { localStorage.setItem(KEY, v); } catch (e) { /* storage blocked */ } }
+      return {
+        show: false,
+        remember: store,
+        init: function () {
+          var self = this;
+          try {
+            if (localStorage.getItem(KEY)) return;          // dismissed or switched before
+          } catch (e) { return; }                          // can't remember a dismissal → don't nag
+          if (navigator.webdriver || /bot|crawl|spider|slurp|headless|lighthouse|preview|facebookexternalhit/i.test(navigator.userAgent || "")) return;
+          var prefs = (navigator.languages && navigator.languages.length) ? navigator.languages : [navigator.language || ""];
+          var first = String(prefs[0] || "").toLowerCase().slice(0, 2);
+          var suggest = pageLang === "en" ? first === "es" : first === "en";
+          // Anyone who uses the header language switch has made their choice.
+          document.addEventListener("click", function (e) {
+            if (e.target.closest && e.target.closest("[data-lang-switch]")) store("switched");
+          });
+          if (suggest) setTimeout(function () { self.show = true; }, 1200);
+        },
+        dismiss: function () { this.show = false; store("dismissed"); },
+      };
+    });
+  });
+</script>

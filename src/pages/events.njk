@@ -1,0 +1,271 @@
+---
+pagination: { data: languages, size: 1, alias: lang }
+permalink: "{{ '/' if lang == 'en' else '/es/' }}events/index.html"
+layout: layouts/base.njk
+pageKey: events
+titleKey: nav.events
+descKey: committee.events.meta_desc
+pageScripts: ["/assets/js/committee.js"]
+---
+{#- Events: committee meetings (computed), Drive flyers with dated names,
+    manual events, Texas GV/LV calendar events. Grouped by month, filterable,
+    with per-event calendar buttons and the .ics subscription card. -#}
+{% import "macros/ui.njk" as ui with context %}
+{%- set all = db.events.items | cmEvents(site, lang) -%}
+{%- set upcoming = all | where("past", false) -%}
+{%- set past = all | where("past", true) | whereNot("committee", true) | reverse -%}
+{%- set meetings = upcoming | where("committee", true) -%}
+{%- set next = meetings[0] -%}
+{%- set nNeta = upcoming | where("group", "neta") | length -%}
+{%- set nCal = upcoming | where("group", "calendar") | length -%}
+{%- set nOther = nNeta + nCal -%}
+{%- set pageAbs = page.url | siteUrl(site) -%}
+{%- set m = site.meeting -%}
+{%- set di = db.status | cmDriveInfo(site) -%}
+
+{#- Badge per event group -#}
+{% macro groupBadge(ev) %}
+{%- if ev.committee %}<span class="badge-gv">{% icon "users", "size-3" %} {{ "committee.events.badge_committee" | t(lang) }}</span>
+{%- elif ev.category == "lv-calendar" %}<span class="badge-lv">{% icon "grapes", "size-3" %} {{ "committee.events.badge_lv" | t(lang) }}</span>
+{%- elif ev.category == "gv-calendar" or ev.group == "calendar" %}<span class="badge-gv">{% icon "grapes", "size-3" %} {{ "committee.events.badge_gv" | t(lang) }}</span>
+{%- else %}<span class="badge-vine">{% icon "map-pin", "size-3" %} NETA 65</span>{% endif -%}
+{% endmacro %}
+
+{#- "Add to calendar" dropdown (Google / Outlook links work without JS; .ics download needs JS) -#}
+{% macro calMenu(ev, dark=false) %}
+<details class="cm-menu">
+  <summary class="{{ 'btn-on-dark' if dark else 'btn-secondary' }} btn-sm">{% icon "calendar-plus", "size-4" %} {{ "common.add_to_calendar" | t(lang) }}</summary>
+  <div class="cm-menu-panel">
+    <a href="{{ ev.gcal }}" target="_blank" rel="noopener">{% icon "calendar", "size-4" %} Google Calendar</a>
+    <a href="{{ ev.outlook }}" target="_blank" rel="noopener">{% icon "calendar", "size-4" %} Outlook.com</a>
+    <button type="button" data-cm-ics="{{ ev.icsData | json }}" data-cm-js>{% icon "download", "size-4" %} {{ "committee.cal.ics_file" | t(lang) }}</button>
+  </div>
+</details>
+{% endmacro %}
+
+{% call ui.pageHero(lang, "nav.events" | t(lang), "committee.events.hero_sub" | t(lang), "calendar-days", "committee.events.eyebrow" | t(lang)) %}
+  <div class="flex flex-wrap items-center gap-3">
+    <a class="btn-light" href="#subscribe">{% icon "calendar-sync", "size-4" %} {{ "committee.events.subscribe_btn" | t(lang) }}</a>
+    <a class="btn-on-dark" href="{{ '/meeting/' | lurl(lang) }}">{% icon "video", "size-4" %} {{ "nav.meeting" | t(lang) }}</a>
+  </div>
+  <dl class="mt-8 flex flex-wrap gap-x-8 gap-y-3 text-white/85">
+    {% if nOther %}<div><dt class="text-xs uppercase tracking-[0.14em] text-white/60">{{ "committee.events.stat_upcoming" | t(lang) }}</dt><dd class="font-display text-3xl font-semibold text-white">{{ nOther }}</dd></div>{% endif %}
+    {% if next %}<div><dt class="text-xs uppercase tracking-[0.14em] text-white/60">{{ "committee.events.stat_next_meeting" | t(lang) }}</dt><dd class="font-display text-3xl font-semibold text-white">{{ next.shortLabel }}</dd></div>{% endif %}
+  </dl>
+{% endcall %}
+
+{% committeeNav lang, "events", db %}
+
+<section class="section container-page" x-data="cmEvents()" data-count-label="{{ 'committee.events.showing' | t(lang) }}" data-count-label-one="{{ 'committee.events.showing_one' | t(lang) }}" aria-labelledby="ev-upcoming-title">
+  <h2 id="ev-upcoming-title" class="sr-only">{{ "committee.events.upcoming" | t(lang) }}</h2>
+
+  {#- ---------- Filter bar ---------- -#}
+  <div class="mb-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+    <div class="flex flex-wrap gap-2" role="group" aria-label="{{ 'committee.events.filter_aria' | t(lang) }}">
+      {% for f in [["all", "common.all", "", "layout-grid"], ["committee", "committee.events.f_committee", meetings.length, "users"], ["neta", "committee.events.f_neta", nNeta, "map-pin"], ["calendar", "committee.events.f_calendar", nCal, "grapes"]] %}
+      <button type="button" class="chip" data-cm-filter="{{ f[0] }}" @click="set('{{ f[0] }}')" :aria-pressed="(filter === '{{ f[0] }}').toString()" aria-pressed="{{ 'true' if f[0] == 'all' else 'false' }}">
+        {% icon f[3], "size-4" %} {{ f[1] | t(lang) }}{% if f[2] !== "" %} <span class="cm-chip-count">{{ f[2] }}</span>{% endif %}
+      </button>
+      {% endfor %}
+    </div>
+    <label class="inline-flex min-h-11 cursor-pointer items-center gap-3 text-sm font-medium text-muted" x-show="filter === 'all'" x-cloak>
+      <input type="checkbox" class="cm-switch" x-model="showAll">
+      {{ "committee.events.show_all_meetings" | t(lang) }}
+    </label>
+  </div>
+  <p class="sr-only" aria-live="polite" x-text="countText()"></p>
+
+  {#- ---------- Pinned: next committee meeting ---------- -#}
+  {% if next %}
+  {%- set cfg = { rule: m | cmRuleObj, start: next.startIso, end: next.endIso, title: next.title, description: next.calDescription, location: next.calLocation, url: ('/meeting/' | lurl(lang) | siteUrl(site)), i18n: { join: "committee.meeting.join" | t(lang), soon: "committee.meeting.join_soon" | t(lang), live: "committee.meeting.join_live" | t(lang), yourTime: "committee.meeting.your_time" | t(lang) } } -%}
+  <article class="cm-pinned mb-10" x-show="filter === 'all' && !showAll" x-data="cmMeeting({{ cfg | json }})" aria-labelledby="ev-next-title">
+    <div class="flex flex-col gap-5 sm:flex-row sm:items-center">
+      <div class="cm-date-tile cm-tone-light" aria-hidden="true">
+        <span class="cm-tile-mon" x-text="tile.mon">{{ next.tile.mon }}</span>
+        <span class="cm-tile-day" x-text="tile.day">{{ next.tile.day }}</span>
+        <span class="cm-tile-wd" x-text="tile.wd">{{ next.tile.wd }}</span>
+      </div>
+      <div class="min-w-0 flex-1">
+        <p class="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-white/75">
+          {% icon "pin", "size-3.5" %}
+          <span x-show="phase === 'upcoming'">{{ "committee.events.pinned_next" | t(lang) }}</span>
+          <span x-show="phase !== 'upcoming'" x-cloak class="inline-flex items-center gap-2"><span class="cm-live-dot"></span>{{ "committee.meeting.live_now" | t(lang) }}</span>
+        </p>
+        <h3 id="ev-next-title" class="mt-1.5 font-display text-2xl font-semibold leading-tight text-white">{{ next.title }}</h3>
+        <p class="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-white/80">
+          <span class="inline-flex items-center gap-1.5">{% icon "calendar", "size-4" %} <span x-text="dateLabel">{{ next.dateLabel }}</span></span>
+          <span class="inline-flex items-center gap-1.5">{% icon "clock-3", "size-4" %} <span x-text="timeLabel">{{ next.timeLabel }}</span></span>
+          <span class="inline-flex items-center gap-1.5">{% icon "video", "size-4" %} Zoom</span>
+        </p>
+        <p class="mt-1 text-xs text-white/65" x-show="localLabel" x-text="localLabel" x-cloak></p>
+      </div>
+      <div class="flex flex-wrap gap-2 sm:flex-col sm:items-stretch lg:flex-row lg:items-center">
+        <a href="{{ m.zoom_url }}" target="_blank" rel="noopener" class="btn-light btn-sm" :class="phase !== 'upcoming' && 'cm-join-live'">{% icon "video", "size-4" %} <span x-text="joinText">{{ "committee.meeting.join" | t(lang) }}</span></a>
+        <details class="cm-menu">
+          <summary class="btn-on-dark btn-sm">{% icon "calendar-plus", "size-4" %} {{ "common.add_to_calendar" | t(lang) }}</summary>
+          <div class="cm-menu-panel cm-menu-right">
+            <a :href="gcal" href="{{ next.gcal }}" target="_blank" rel="noopener">{% icon "calendar", "size-4" %} Google Calendar</a>
+            <a :href="outlook" href="{{ next.outlook }}" target="_blank" rel="noopener">{% icon "calendar", "size-4" %} Outlook.com</a>
+            <button type="button" @click="downloadIcs()" data-cm-js>{% icon "download", "size-4" %} {{ "committee.cal.ics_file" | t(lang) }}</button>
+          </div>
+        </details>
+        <a href="{{ '/meeting/' | lurl(lang) }}" class="btn-on-dark btn-sm">{% icon "info", "size-4" %} {{ "committee.events.meeting_details" | t(lang) }}</a>
+      </div>
+    </div>
+  </article>
+  {% endif %}
+
+  {#- ---------- Upcoming, grouped by month ---------- -#}
+  {% for grp in upcoming | groupBy("monthKey") %}
+  <section class="cm-month" data-cm-month x-show="monthVisible($el)" aria-labelledby="month-{{ grp.key }}">
+    <h2 id="month-{{ grp.key }}" class="cm-month-title">{{ grp.items[0].monthLabel }}</h2>
+    <ol class="grid gap-4">
+      {% for ev in grp.items %}
+      <li id="{{ ev.anchor }}" class="scroll-mt-28" data-group="{{ ev.group }}" data-committee="{{ '1' if ev.committee else '0' }}" data-cm-expire="{{ ev.expireIso }}" x-show="show($el)">
+        <article class="card cm-event">
+          <div class="cm-date-tile cm-tone-{{ 'gv' if ev.committee or ev.category == 'gv-calendar' else ('lv' if ev.category == 'lv-calendar' else 'vine') }}" aria-hidden="true">
+            <span class="cm-tile-mon">{{ ev.tile.mon }}</span>
+            <span class="cm-tile-day">{{ ev.tile.day }}</span>
+            <span class="cm-tile-wd">{{ ev.tile.wd }}</span>
+          </div>
+          <div class="min-w-0 flex-1">
+            <div class="flex flex-wrap items-center gap-1.5">
+              {{ groupBadge(ev) }}
+              {% if ev.isNew %}<span class="badge-new">{{ "common.new" | t(lang) }}</span>{% endif %}
+              {% if not ev.committee %}{{ ui.langPill(ev.item, lang) }}{% endif %}
+            </div>
+            <h3 class="h-card mt-2 text-lg sm:text-xl">
+              {%- if ev.link and ev.link != (ev.flyer.view if ev.flyer else "") -%}
+              <a href="{{ ev.link }}" class="hover:text-gv"{% if ev.linkExternal %} target="_blank" rel="noopener"{% endif %}>{{ ev.title }}</a>
+              {%- else -%}{{ ev.title }}{%- endif -%}
+            </h3>
+            <p class="sr-only">{{ ev.dateLabel }}</p>
+            <ul class="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted">
+              <li class="inline-flex items-center gap-1.5">{% icon "clock-3", "size-4 text-faint" %} {{ ev.timeLabel }}</li>
+              {% if ev.location %}<li class="inline-flex items-center gap-1.5">{% set locIcon = "video" if ev.committee else "map-pin" %}{% icon locIcon, "size-4 text-faint" %} {{ ev.location }}</li>{% endif %}
+              {% if ev.isOnline %}<li class="inline-flex items-center gap-1.5">{% icon "video", "size-4 text-faint" %} {{ ("committee.events.online_on" | t(lang, { platform: ev.platform })) if ev.platform else ("committee.events.online" | t(lang)) }}</li>{% endif %}
+            </ul>
+            {% if not ev.committee %}
+            {%- set foreign = ev.item.lang and ev.item.lang != lang and ev.item.lang != "und" and not (ev.item | machineFor(lang)) -%}
+            {% if ev.body %}
+            <div class="prose-site mt-3 max-w-none text-[0.95rem]"{% if foreign %} lang="{{ ev.item.lang }}"{% endif %}>{{ ev.body | md | safe }}</div>
+            {% elif ev.summary %}
+            <p class="mt-2.5 line-clamp-3 text-sm leading-relaxed text-muted"{% if foreign %} lang="{{ ev.item.lang }}"{% endif %}>{{ ev.summary | excerpt(280) }}</p>
+            {% endif %}
+            {% if ev.item | machineFor(lang) %}<p class="mt-1.5">{{ ui.autoNote(ev.item, lang) }}</p>{% endif %}
+            {% endif %}
+            <div class="mt-4 flex flex-wrap items-center gap-2">
+              {% if ev.committee %}
+              <a class="btn-primary btn-sm" href="{{ ev.online }}" target="_blank" rel="noopener">{% icon "video", "size-4" %} {{ "committee.meeting.join" | t(lang) }}</a>
+              {% elif ev.online %}
+              <a class="btn-primary btn-sm" href="{{ ev.online }}" target="_blank" rel="noopener">{% icon "globe", "size-4" %} {{ "committee.events.join_online" | t(lang) }}</a>
+              {% endif %}
+              {{ calMenu(ev) }}
+              {% if ev.flyer %}
+              <a class="btn-secondary btn-sm" href="{{ ev.flyer.view }}" target="_blank" rel="noopener" data-cm-preview="{{ ev.flyer.preview }}" data-cm-title="{{ ev.title }}" data-cm-open="{{ ev.flyer.view }}">{% icon "eye", "size-4" %} {{ "committee.events.view_flyer" | t(lang) }}</a>
+              {% endif %}
+              {% if ev.link and ev.linkExternal and ev.link != (ev.flyer.view if ev.flyer else "") %}
+              <a class="btn-ghost btn-sm" href="{{ ev.link }}" target="_blank" rel="noopener">{% icon "external-link", "size-4" %} {{ "committee.events.details" | t(lang) }}</a>
+              {% endif %}
+              <button type="button" class="btn-ghost btn-sm" data-share="{{ pageAbs }}#{{ ev.anchor }}" data-share-title="{{ ev.title }}" data-share-text="{{ ev.dateLabel }} · {{ ev.timeLabel }}">{% icon "share-2", "size-4" %} <span class="sr-only sm:not-sr-only">{{ "common.share" | t(lang) }}</span></button>
+            </div>
+          </div>
+          {% if ev.flyer and ev.flyer.thumb %}
+          <a class="cm-flyer-thumb" href="{{ ev.flyer.view }}" target="_blank" rel="noopener" data-cm-preview="{{ ev.flyer.preview }}" data-cm-title="{{ ev.title }}" data-cm-open="{{ ev.flyer.view }}" aria-label="{{ 'committee.events.view_flyer_of' | t(lang, { title: ev.title }) }}">
+            <img src="{{ ev.flyer.thumb }}" alt="" width="240" height="320" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.parentNode.classList.add('is-broken')">
+            <span class="cm-flyer-fallback">{% icon "file-image", "size-7" %}</span>
+          </a>
+          {% endif %}
+        </article>
+      </li>
+      {% endfor %}
+    </ol>
+  </section>
+  {% endfor %}
+
+  {#- ---------- Empty states ---------- -#}
+  {% if nNeta == 0 %}
+  {#- No flyers / manual events yet: explain the flyer → event naming rule, with real examples -#}
+  {%- set exDate = "2027-03-14" | fmtDate(lang, "medium") -%}
+  <div class="cm-empty-flyer mt-2" x-show="filter === 'all' || filter === 'neta'" aria-labelledby="ev-empty-neta">
+    <div class="grid gap-6 md:grid-cols-[auto_1fr] md:gap-8">
+      <div class="cm-flyer-illo" aria-hidden="true">
+        <span class="cm-illo-sheet">{% icon "calendar-days", "size-7" %}<span>2027-03-14</span></span>
+        <span class="cm-illo-sheet cm-illo-back"></span>
+      </div>
+      <div class="min-w-0">
+        <h3 id="ev-empty-neta" class="h-card text-xl">{{ "committee.events.empty_neta_title" | t(lang) }}</h3>
+        <p class="mt-2 max-w-2xl text-sm leading-relaxed text-muted">{{ "committee.events.empty_neta_text" | t(lang) }}</p>
+        {% cmDrivePath lang, di, "flyers" %}
+        <div class="cm-naming mt-4" role="table" aria-label="{{ 'committee.events.naming_aria' | t(lang) }}">
+          <div class="cm-naming-head" role="row">
+            <span role="columnheader">{{ "committee.events.naming_name" | t(lang) }}</span>
+            <span role="columnheader">{{ "committee.events.naming_result" | t(lang) }}</span>
+          </div>
+          <div class="cm-naming-row" role="row">
+            <span role="cell" class="cm-naming-file">{% icon "file-text", "size-4 shrink-0 text-lv" %}<code>{{ "committee.events.naming_ex1" | t(lang) }}</code></span>
+            <span role="cell" class="cm-naming-out">{% icon "calendar-check", "size-4 shrink-0 text-vine" %}<span>{{ "committee.events.naming_ex1_out" | t(lang, { date: exDate }) }}</span></span>
+          </div>
+          <div class="cm-naming-row" role="row">
+            <span role="cell" class="cm-naming-file">{% icon "file-text", "size-4 shrink-0 text-lv" %}<code>{{ "committee.events.naming_ex2" | t(lang) }}</code></span>
+            <span role="cell" class="cm-naming-out">{% icon "calendar-check", "size-4 shrink-0 text-vine" %}<span>{{ "committee.events.naming_ex2_out" | t(lang, { date: exDate }) }}</span></span>
+          </div>
+        </div>
+        <p class="mt-3 text-xs leading-relaxed text-muted">{{ "committee.events.naming_tip" | t(lang) }}</p>
+        {% cmDriveChecked lang, di %}
+        <div class="mt-4 flex flex-wrap gap-2">
+          {% if di.url %}<a class="btn-secondary btn-sm" href="{{ di.url }}" target="_blank" rel="noopener">{% icon "folder-up", "size-4" %} {{ "committee.drive.open_folder" | t(lang) }}</a>{% endif %}
+          <a class="btn-ghost btn-sm" href="mailto:{{ site.contact_email }}?subject={{ 'committee.events.mail_subject' | t(lang) | urlencode }}">{% icon "mail", "size-4" %} {{ "committee.events.send_flyer" | t(lang) }}</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+  {% if nCal == 0 %}
+  <div class="mt-2" x-show="filter === 'calendar'" x-cloak>
+    {{ ui.emptyState("grapes", "committee.events.empty_cal_title" | t(lang), "committee.events.empty_cal_text" | t(lang), "https://www.aagrapevine.org/get-involved/calendar", "committee.events.empty_cal_cta" | t(lang)) }}
+  </div>
+  {% endif %}
+
+  {#- ---------- Past events ---------- -#}
+  {% if past | length %}
+  <details class="card mt-12 group/past" data-cm-past>
+    <summary class="flex min-h-14 cursor-pointer list-none items-center gap-3 px-5 py-4 sm:px-6">
+      <span class="grid size-10 place-items-center rounded-xl bg-surface-2 text-muted">{% icon "history", "size-5" %}</span>
+      <h2 class="h-card flex-1 text-lg">{{ "committee.events.past" | t(lang) }} <span class="font-sans text-sm font-normal text-muted">({{ past | length }})</span></h2>
+      {% icon "chevron-down", "size-5 text-muted transition group-open/past:rotate-180" %}
+    </summary>
+    <ol class="divide-y divide-line border-t border-line">
+      {% for ev in past | limit(40) %}
+      <li id="{{ ev.anchor }}" class="flex scroll-mt-28 flex-wrap items-center gap-x-4 gap-y-1 px-5 py-3.5 sm:px-6">
+        <time class="w-32 shrink-0 text-sm font-semibold text-muted" datetime="{{ ev.startIso }}">{{ ev.startIso | fmtDate(lang, "short") }}</time>
+        <span class="min-w-[11rem] flex-1 break-words font-medium text-ink">{{ ev.title }}{% if ev.location %} <span class="text-sm font-normal text-muted">· {{ ev.location }}</span>{% endif %}</span>
+        {% if ev.flyer %}<a class="btn-ghost btn-sm" href="{{ ev.flyer.view }}" target="_blank" rel="noopener" data-cm-preview="{{ ev.flyer.preview }}" data-cm-title="{{ ev.title }}" data-cm-open="{{ ev.flyer.view }}">{% icon "eye", "size-4" %} {{ "committee.events.view_flyer" | t(lang) }}</a>
+        {% elif ev.link and ev.linkExternal %}<a class="btn-ghost btn-sm" href="{{ ev.link }}" target="_blank" rel="noopener">{% icon "external-link", "size-4" %} {{ "committee.events.details" | t(lang) }}</a>{% endif %}
+      </li>
+      {% endfor %}
+    </ol>
+  </details>
+  {% endif %}
+</section>
+
+{#- ---------- Subscribe (.ics) ---------- -#}
+<section id="subscribe" class="container-page scroll-mt-24">
+  {% cmSubscribe lang, site, false %}
+</section>
+
+{#- ---------- How events get here ---------- -#}
+<section class="section container-page">
+  {{ ui.sectionHead("committee.events.sources_title" | t(lang), "committee.events.sources_sub" | t(lang), "", "", "sparkles") }}
+  <div class="grid gap-4 md:grid-cols-3">
+    {% for s in [["meetings", "users", "bg-gv-soft text-gv"], ["flyers", "folder-up", "bg-vine-soft text-vine"], ["calendars", "grapes", "bg-lv-soft text-lv"]] %}
+    <div class="card card-pad">
+      <span class="grid size-11 place-items-center rounded-xl {{ s[2] }}">{% icon s[1], "size-5" %}</span>
+      <h3 class="h-card mt-4">{{ ("committee.events.src_" + s[0]) | t(lang) }}</h3>
+      <p class="mt-1.5 text-sm leading-relaxed text-muted">{{ ("committee.events.src_" + s[0] + "_text") | t(lang) }}</p>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+{% cmPreviewDialog lang %}

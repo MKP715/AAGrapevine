@@ -1,0 +1,162 @@
+---
+pagination: { data: languages, size: 1, alias: lang }
+permalink: "{{ '/' if lang == 'en' else '/es/' }}photos/index.html"
+layout: layouts/base.njk
+pageKey: photos
+titleKey: nav.photos
+descKey: committee.photos.meta_desc
+pageScripts: ["/assets/vendor/glightbox.min.js", "/assets/js/committee.js"]
+pageStyles: ["/assets/vendor/glightbox.min.css"]
+---
+{#- Photo albums from the committee's Google Drive "photos" folder.
+    Every sub-folder becomes an album. Lightbox: GLightbox (MIT, self-hosted). -#}
+{% import "macros/ui.njk" as ui with context %}
+{%- set albums = db.drive.items | cmAlbums(lang) -%}
+{%- set nPhotos = albums | pluck("photos") | sum -%}
+{%- set nVideos = albums | pluck("videos") | sum -%}
+{%- set PER = 12 -%}
+{%- set di = db.status | cmDriveInfo(site) -%}
+
+{% call ui.pageHero(lang, "nav.photos" | t(lang), "committee.photos.hero_sub" | t(lang), "images", "committee.photos.eyebrow" | t(lang)) %}
+  <div class="flex flex-wrap items-center gap-3">
+    {% if albums | length %}<a class="btn-light" href="#albums">{% icon "layout-grid", "size-4" %} {{ "committee.photos.browse" | t(lang) }}</a>{% endif %}
+    <a class="btn-on-dark" href="#share-photos">{% icon "image-plus", "size-4" %} {{ "committee.photos.add_btn" | t(lang) }}</a>
+  </div>
+  {% if albums | length %}
+  <dl class="mt-8 flex flex-wrap gap-x-8 gap-y-3">
+    <div><dt class="text-xs uppercase tracking-[0.14em] text-white/60">{{ "committee.photos.stat_albums" | t(lang) }}</dt><dd class="font-display text-3xl font-semibold text-white">{{ albums | length }}</dd></div>
+    <div><dt class="text-xs uppercase tracking-[0.14em] text-white/60">{{ "committee.photos.stat_photos" | t(lang) }}</dt><dd class="font-display text-3xl font-semibold text-white">{{ nPhotos }}</dd></div>
+    {% if nVideos %}<div><dt class="text-xs uppercase tracking-[0.14em] text-white/60">{{ "committee.photos.stat_videos" | t(lang) }}</dt><dd class="font-display text-3xl font-semibold text-white">{{ nVideos }}</dd></div>{% endif %}
+  </dl>
+  {% endif %}
+{% endcall %}
+
+{% committeeNav lang, "photos", db %}
+<div hidden id="cm-lb-i18n" data-label="{{ 'nav.photos' | t(lang) }}" data-close="{{ 'common.close' | t(lang) }}" data-prev="{{ 'committee.photos.prev' | t(lang) }}" data-next="{{ 'committee.photos.next' | t(lang) }}"></div>
+
+{% if albums | length %}
+{#- ---------- Album index ---------- -#}
+<section id="albums" class="section container-page scroll-mt-24">
+  {{ ui.sectionHead("committee.photos.albums" | t(lang), "committee.photos.albums_sub" | t(lang), "", "", "layout-grid") }}
+  <ul class="grid-cards">
+    {% for a in albums %}
+    <li>
+      <a href="#{{ a.slug }}" class="card card-link group block overflow-hidden no-underline">
+        <div class="cm-mosaic cm-mosaic-{{ a.cover | length }}" aria-hidden="true">
+          {% for c in a.cover %}<span>{% icon "image", "size-7 cm-mosaic-ph" %}<img src="{{ c.thumb }}" alt="" loading="lazy" decoding="async" width="600" height="600" referrerpolicy="no-referrer" onerror="this.remove()"></span>{% else %}<span class="grid place-items-center text-faint">{% icon "images", "size-10" %}</span>{% endfor %}
+        </div>
+        <div class="flex items-start justify-between gap-3 p-5">
+          <div class="min-w-0">
+            <h3 class="h-card truncate group-hover:text-gv">{{ a.title }}</h3>
+            <p class="mt-1 text-sm text-muted">
+              {{ ("committee.photos.count_one" if a.photos == 1 else "committee.photos.count") | t(lang, { n: a.photos }) }}{% if a.videos %} · {{ ("committee.photos.count_videos_one" if a.videos == 1 else "committee.photos.count_videos") | t(lang, { n: a.videos }) }}{% endif %}
+              {% if a.newest %} · <time datetime="{{ a.newest }}">{{ a.newest | fmtDate(lang, "month") }}</time>{% endif %}
+            </p>
+          </div>
+          {% if a.hasNew %}<span class="badge-new shrink-0">{{ "common.new" | t(lang) }}</span>{% endif %}
+        </div>
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+
+{#- ---------- Albums ---------- -#}
+{% for a in albums %}
+{% if a.alias and a.alias != a.slug %}<span id="{{ a.alias }}" class="block scroll-mt-24" aria-hidden="true"></span>{% endif %}
+<section id="{{ a.slug }}" class="container-page cm-album scroll-mt-24" x-data="{ all: false }" aria-labelledby="{{ a.slug }}-h">
+  <div class="mb-5 flex flex-wrap items-end justify-between gap-3 border-t border-line pt-8">
+    <div class="min-w-0">
+      <p class="eyebrow">{{ a.panelLabel }}{% if a.newest %} · <time datetime="{{ a.newest }}">{{ a.newest | fmtDate(lang, "month") }}</time>{% endif %}</p>
+      <h2 id="{{ a.slug }}-h" class="h-section mt-1">{{ a.title }}</h2>
+      <p class="mt-1 text-sm text-muted">{{ ("committee.photos.count_one" if a.photos == 1 else "committee.photos.count") | t(lang, { n: a.photos }) }}{% if a.videos %} · {{ ("committee.photos.count_videos_one" if a.videos == 1 else "committee.photos.count_videos") | t(lang, { n: a.videos }) }}{% endif %}</p>
+    </div>
+    <div class="flex flex-wrap gap-2">
+      <button type="button" class="btn-secondary btn-sm" data-cm-open-gallery="{{ a.slug }}">{% icon "maximize", "size-4" %} {{ "committee.photos.slideshow" | t(lang) }}</button>
+      <button type="button" class="btn-ghost btn-sm" data-share="{{ page.url | siteUrl(site) }}#{{ a.slug }}" data-share-title="{{ a.title }} — {{ 'nav.photos' | t(lang) }} NETA 65">{% icon "share-2", "size-4" %} {{ "common.share" | t(lang) }}</button>
+      <a class="btn-ghost btn-sm" href="#albums">{% icon "arrow-up", "size-4" %}<span class="sr-only">{{ "committee.photos.back_to_albums" | t(lang) }}</span></a>
+    </div>
+  </div>
+  <ul class="cm-photo-grid">
+    {#- data-title / data-description go through cmLbText: GLightbox inserts them with
+        innerHTML, so a Drive file or folder name must be escaped twice (XSS). -#}
+    {% for p in a.items %}
+    <li class="{{ 'cm-photo-feature' if loop.first and a.count >= 5 }}"{% if loop.index0 >= PER %} x-show="all"{% endif %}>
+      <a href="{{ p.full }}" class="cm-photo glightbox-cm" data-gallery="{{ a.slug }}" data-type="{{ 'external' if p.isVideo else 'image' }}"{% if p.isVideo %} data-width="960px" data-height="540px"{% endif %}
+         data-title="{{ p.title | cmLbText }}" data-description="{{ (a.title + ((' · ' + (p.date | fmtDate(lang, 'medium'))) if p.date else '')) | cmLbText }}"
+         aria-label="{{ ('committee.photos.open_video' if p.isVideo else 'committee.photos.open_photo') | t(lang, { title: p.title }) }}">
+        {% if p.thumb %}<img src="{{ p.thumb }}" alt="{{ p.title }}" loading="lazy" decoding="async" width="600" height="600" referrerpolicy="no-referrer" onerror="this.closest('.cm-photo').classList.add('is-broken')">{% endif %}
+        <span class="cm-photo-fallback" aria-hidden="true">{% icon "image", "size-8" %}</span>
+        {% if p.isVideo %}<span class="cm-play" aria-hidden="true">{% icon "play", "size-6 translate-x-px" %}</span>{% endif %}
+        <span class="cm-photo-cap" aria-hidden="true">{{ p.title }}</span>
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+  {% if a.count > PER %}
+  <div class="mt-5 text-center">
+    <button type="button" class="btn-secondary" x-show="!all" @click="all = true">{% icon "images", "size-4" %} {{ "committee.photos.show_all" | t(lang, { n: a.count }) }}</button>
+  </div>
+  {% endif %}
+</section>
+{% endfor %}
+
+{% else %}
+{#- ---------- Launch state: no photos yet ---------- -#}
+<section class="container-page pt-12 pb-6 sm:pt-16">
+  <div class="cm-empty-hero cm-empty-photos">
+    <div class="cm-polaroids" aria-hidden="true">
+      <span class="cm-polaroid -rotate-6">{% icon "grapes", "size-10" %}</span>
+      <span class="cm-polaroid rotate-3">{% icon "book-open-text", "size-10" %}</span>
+      <span class="cm-polaroid -rotate-2">{% icon "users", "size-10" %}</span>
+    </div>
+    <h2 class="h-section mt-8 text-center">{{ "committee.photos.empty_title" | t(lang) }}</h2>
+    <p class="mx-auto mt-3 max-w-xl text-center leading-relaxed text-muted">{{ "committee.photos.empty_text" | t(lang) }}</p>
+    <div class="mx-auto mt-6 flex max-w-2xl flex-col items-center gap-2">
+      <p class="eyebrow">{{ "committee.photos.empty_where" | t(lang) }}</p>
+      {% cmDrivePath lang, di, "photos/" + ("committee.photos.example_album" | t(lang)), "IMG_0142.jpg" %}
+    </div>
+    <div class="mt-6 flex flex-wrap justify-center gap-2.5">
+      {% if di.url %}<a class="btn-primary" href="{{ di.url }}" target="_blank" rel="noopener">{% icon "image-plus", "size-4" %} {{ "committee.photos.upload" | t(lang) }}</a>{% endif %}
+      <a class="btn-secondary" href="{{ '/instagram/' | lurl(lang) }}">{% icon "instagram", "size-4" %} {{ "committee.photos.see_instagram" | t(lang) }}</a>
+    </div>
+    <div class="mt-5 flex justify-center">{% cmDriveChecked lang, di %}</div>
+  </div>
+</section>
+{% endif %}
+
+{#- ---------- Anonymity + how to add photos ---------- -#}
+<section id="share-photos" class="container-page scroll-mt-24 pb-12 pt-6 sm:pb-16">
+  <div class="grid gap-6 lg:grid-cols-2">
+    <div class="card card-pad cm-anon relative overflow-hidden">
+      <span class="grid size-12 place-items-center rounded-2xl bg-vine-soft text-vine">{% icon "shield-check", "size-6" %}</span>
+      <h2 class="h-section mt-4">{{ "committee.photos.anon_title" | t(lang) }}</h2>
+      <p class="mt-2 leading-relaxed text-muted">{{ "committee.photos.anon_text" | t(lang) }}</p>
+      <ul class="mt-5 grid gap-2.5 sm:grid-cols-2">
+        {% for k in ["ok_booths", "ok_literature", "ok_venue", "no_faces"] %}
+        <li class="flex items-start gap-2.5 text-sm">
+          {%- set ic = "scan-face" if k == "no_faces" else "circle-check" %}
+          <span class="mt-0.5 {{ 'text-danger' if k == 'no_faces' else 'text-vine' }}">{% icon ic, "size-4" %}</span>
+          <span class="text-ink">{{ ("committee.photos." + k) | t(lang) }}</span>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="card card-pad relative overflow-hidden">
+      <span class="grid size-12 place-items-center rounded-2xl bg-grape-soft text-grape">{% icon "image-plus", "size-6" %}</span>
+      <h2 class="h-section mt-4">{{ "committee.photos.how_title" | t(lang) }}</h2>
+      <ol class="mt-4 space-y-3">
+        {% for k in ["1", "2", "3"] %}
+        <li class="flex gap-3">
+          <span class="grid size-7 shrink-0 place-items-center rounded-full bg-grape text-xs font-bold text-white dark:text-paper">{{ k }}</span>
+          <p class="pt-0.5 text-sm leading-relaxed text-muted">{{ ("committee.photos.how_" + k) | t(lang, { panel: (di.panel.label if di.panel else "Panel") }) }}</p>
+        </li>
+        {% endfor %}
+      </ol>
+      <div class="mt-5 flex flex-wrap gap-2.5">
+        {% if di.url %}<a class="btn-secondary" href="{{ di.url }}" target="_blank" rel="noopener">{% icon "folder-open", "size-4" %} {{ "committee.drive.open_folder" | t(lang) }}</a>{% endif %}
+        <a class="btn-ghost" href="mailto:{{ site.contact_email }}?subject={{ 'committee.photos.mail_subject' | t(lang) | urlencode }}">{% icon "mail", "size-4" %} {{ "committee.photos.send_photos" | t(lang) }}</a>
+      </div>
+    </div>
+  </div>
+</section>

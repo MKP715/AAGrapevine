@@ -1,0 +1,12 @@
+# Keep LF line endings in the repo and working tree so edits made on Windows and
+# the daily Linux (GitHub Actions) data commits produce clean, small diffs.
+* text=auto eol=lf
+
+# Binary assets
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.ico binary
+*.woff2 binary
+*.pdf binary

@@ -1,0 +1,56 @@
+{
+ "source": "drive",
+ "updated": "2026-09-23T21:47:52Z",
+ "attempted": "2026-09-23T21:47:52Z",
+ "ok": true,
+ "error": null,
+ "stats": {
+  "mode": "html",
+  "root": "A65_GV",
+  "panels": [
+   "Panel 77 (2027–2028)"
+  ],
+  "panel_folders": [
+   {
+    "panel": 77,
+    "label": "Panel 77 (2027–2028)",
+    "name": "2027-2028_Panel77_GVLV",
+    "id": "1bebd9TAz1L3LHhbeKUSlcENndtqas5O0"
+   }
+  ],
+  "include_loose": false,
+  "loose_skipped": [
+   "flyers",
+   "notes",
+   "photos",
+   "reports",
+   "slides",
+   "workshops",
+   "40th Annual Gathering of Eagles - Grapevine Table Signup"
+  ],
+  "skipped_panels": [],
+  "folders": 8,
+  "files": 0,
+  "fetched": 0,
+  "new": 0,
+  "removed": 0,
+  "kept_unverified": 0,
+  "by_category": {},
+  "by_kind": {},
+  "albums": {},
+  "events_from_flyers": 0,
+  "excluded": 1,
+  "excluded_by_reason": {
+   "type application/vnd.google-apps.spreadsheet": 1
+  },
+  "unreadable_folders": [],
+  "depth_limited": [],
+  "shortcuts_resolved": 0,
+  "announcements": {},
+  "forms": {},
+  "requests": 8,
+  "truncated": false,
+  "warnings": []
+ },
+ "items": []
+}
