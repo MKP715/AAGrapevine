@@ -1,0 +1,236 @@
+{#- =========================================================================
+    Monthly posters (/monthly/ and /monthly/YYYY-MM/) — import with:
+      {% import "macros/monthly.njk" as mp with context %}
+      {{ mp.poster(m, lang, site, "feat") }}
+
+    m is one month model from the mpMonths / mpMonth filters (eleventy/filters/monthly.js).
+    The poster is a fixed 1080 × 1350 canvas (4:5) made of real HTML text; the page scales it to
+    fit (src/assets/css/areas/monthly.css) and monthly.js turns the unscaled node into a PNG.
+    Every month has its own design (m.design, keyed by calendar month) built on one of six
+    layouts (m.layout): editorial · ticket · split · cork · cover · notebook. Poster colors are
+    fixed (never dark-mode inverted). The Spanish poster leads with La Viña.
+    ========================================================================= -#}
+
+{% macro head(m, lang, tid) %}
+<header class="mp-head">
+  <p class="mp-kicker">{{ "monthly.kicker" | t(lang) }}</p>
+  <h2 class="mp-month" id="{{ tid }}"><span class="mp-mname">{{ m.name }}</span> <span class="mp-year">{{ m.year }}</span></h2>
+  <p class="mp-tag">{{ "monthly.tagline" | t(lang) }}</p>
+</header>
+{% endmacro %}
+
+{% macro story(m, lang, site) %}
+{%- set L = site.links -%}
+{%- if lang == "es" %}
+<section class="mp-b mp-story">
+  <h3 class="mp-h">{% icon "pen-line", "mp-i" %}<span>{{ "monthly.share_story_lv" | t(lang) }}</span></h3>
+  {% if m.lvTopics.length %}
+  <p class="mp-sub">{{ "monthly.lv_topics" | t(lang) }}</p>
+  <ul class="mp-topics">
+    {% for tp in m.lvTopics %}<li>{{ tp.es }}</li>{% endfor %}
+  </ul>
+  {% endif %}
+  <p class="mp-send">{{ "monthly.lv_send" | t(lang, { email: L.lv_email_editorial }) }}</p>
+  {% if m.deadlines.length %}
+  <div class="mp-gvdl">
+    <p class="mp-sub">{{ "monthly.gv_english" | t(lang) }}</p>
+    <ul class="mp-dl mp-dl--compact">
+      {% for d in m.deadlines %}
+      <li><strong class="mp-dl-theme">{{ d.theme }}</strong> <span class="mp-dl-due">{{ "monthly.for_issue" | t(lang, { issue: d.issueLabel }) }} · {{ "monthly.due" | t(lang, { date: d.dueLabel }) }}</span></li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+</section>
+{%- else %}
+<section class="mp-b mp-story">
+  <h3 class="mp-h">{% icon "pen-line", "mp-i" %}<span>{{ "monthly.share_story" | t(lang) }}</span></h3>
+  {% if m.deadlines.length %}
+  <ul class="mp-dl">
+    {% for d in m.deadlines %}
+    <li>
+      <p class="mp-dl-theme">{{ d.theme }}</p>
+      {% if d.hook %}<p class="mp-dl-hook">{{ d.hook }}</p>{% endif %}
+      <p class="mp-dl-due">{{ "monthly.for_issue" | t(lang, { issue: d.issueLabel }) }} — <strong>{{ "monthly.due" | t(lang, { date: d.dueLabel }) }}</strong></p>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="mp-note">{{ "monthly.no_deadlines" | t(lang) }}</p>
+  {% endif %}
+  <p class="mp-send">{{ "monthly.submit_line" | t(lang, { email: L.gv_email_editorial }) }}</p>
+  {% if m.density == "roomy" %}<p class="mp-send mp-send--lv">{{ "monthly.lv_nudge" | t(lang, { email: L.lv_email_editorial }) }}</p>{% endif %}
+</section>
+{%- endif %}
+{% endmacro %}
+
+{% macro issue(m, lang, max=3) %}
+{%- set n = max if m.density == "roomy" else (2 if max > 2 else max) -%}
+<section class="mp-b mp-issue">
+  {% if lang == "es" and m.lv %}
+  <p class="mp-lvline"><span class="mp-sub">{{ "monthly.in_lv" | t(lang) }} · {{ m.lv.label }}</span> <strong>{{ m.lv.theme }}</strong></p>
+  {% endif %}
+  <h3 class="mp-h">{% icon "book-open-text", "mp-i" %}<span>{{ "monthly.in_gv" | t(lang) }}</span></h3>
+  <p class="mp-theme">{{ m.gv.theme if m.gv else ("monthly.no_issue" | t(lang)) }}</p>
+  {% if m.tips.length %}
+  <p class="mp-sub">{{ "monthly.put_to_work" | t(lang) }}</p>
+  <ul class="mp-tips">
+    {% for tp in m.tips | limit(n) %}
+    <li>{% icon tp.icon, "mp-i mp-tip-i" %}<span><strong>{{ tp.title }}</strong><span class="mp-tip-t">{{ tp.text }}</span></span></li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+</section>
+{% endmacro %}
+
+{% macro botm(m, lang) %}
+{% if m.botm.length %}
+<section class="mp-b mp-botm">
+  <h3 class="mp-h">{% icon "book-heart", "mp-i" %}<span>{{ "monthly.botm" | t(lang) }}</span></h3>
+  <ul class="mp-books">
+    {% for b in m.botm %}
+    <li><strong lang="{{ b.lang }}">{{ b.title }}</strong> <span class="mp-off">{{ ("monthly.botm_off" | t(lang, { pct: b.discount, date: b.endsLabel })) if b.discount else ("monthly.botm_until" | t(lang, { date: b.endsLabel })) }}</span></li>
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}
+{% endmacro %}
+
+{% macro dates(m, lang, max=5) %}
+{%- set shown = m.dates | limit(max) -%}
+<section class="mp-b mp-dates">
+  <h3 class="mp-h">{% icon "calendar-days", "mp-i" %}<span>{{ "monthly.dates" | t(lang) }}</span></h3>
+  {% if shown.length %}
+  <ul class="mp-dlist">
+    {% for d in shown %}
+    <li class="mp-date mp-date--{{ d.kind }}">
+      <span class="mp-chip" aria-hidden="true"><span class="mp-chip-m">{{ d.chip.mon }}</span><span class="mp-chip-d">{{ d.chip.day }}</span><span class="mp-chip-w">{{ d.chip.wd }}</span></span>
+      <span class="mp-date-b">
+        <span class="mp-sr">{{ d.day }}: </span>
+        <strong class="mp-date-t">{{ ("monthly.committee" | t(lang)) if d.kind == "committee" else d.title }}</strong>
+        <span class="mp-date-m">
+          {%- if d.range %}{{ d.range }}{% if d.time %} · {% endif %}{% endif -%}
+          {%- if d.time %}{{ d.time }} {{ d.zone }}{% endif -%}
+          {%- if d.kind == "committee" %} · {{ d.platform }} · {{ "monthly.all_welcome" | t(lang) }}{% elif d.city %} · {{ d.city }}{% elif d.online %} · {{ "monthly.online" | t(lang) }}{% endif -%}
+          {%- if d.tentative %} · {{ "committee.events.tentative" | t(lang) }}{% endif -%}
+        </span>
+      </span>
+    </li>
+    {% endfor %}
+  </ul>
+  {% if m.dates.length > max %}<p class="mp-more">{{ "monthly.more_dates" | t(lang, { n: m.dates.length - max }) }}</p>{% endif %}
+  {% else %}
+  <p class="mp-note">{{ "monthly.no_dates" | t(lang) }}</p>
+  {% endif %}
+</section>
+{% endmacro %}
+
+{% macro weekly(m, lang) %}
+{% if m.weekly.length %}
+<section class="mp-b mp-weekly">
+  <h3 class="mp-h">{% icon "video", "mp-i" %}<span>{{ "monthly.weekly" | t(lang) }}</span></h3>
+  <ul class="mp-wk">
+    {% for w in m.weekly %}
+    <li><strong>{{ w.title }}</strong>{% if w.new %} <span class="mp-new">{{ "monthly.new" | t(lang) }}</span>{% endif %} <span class="mp-wk-when">{{ w.when }}{% if w.startsLabel %} · {{ "monthly.weekly_from" | t(lang, { date: w.startsLabel }) }}{% endif %}</span></li>
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}
+{% endmacro %}
+
+{% macro foot(m, lang, site) %}
+{%- set shortUrl = (site.url | replace("https://", "") | replace("http://", "")) + ("/es" if lang == "es" else "") -%}
+{%- set cut = shortUrl.indexOf("/") -%}
+<footer class="mp-foot">
+  <span class="mp-logo"><img src="/assets/img/logo-wide.png" alt="NETA 65" width="128" height="63"></span>
+  <span class="mp-foot-t">
+    <span class="mp-committee">{{ site | pick(lang, "committee") }}</span>
+    <span class="mp-url">{% if cut > 0 %}<span>{{ shortUrl.slice(0, cut + 1) }}</span><wbr><span>{{ shortUrl.slice(cut + 1) }}</span>{% else %}{{ shortUrl }}{% endif %}</span>
+    <span class="mp-scan">{{ "monthly.scan" | t(lang) }}</span>
+  </span>
+  <span class="mp-qr">{{ m.absUrl | mpQr("monthly.qr_alt" | t(lang, { url: m.absUrl })) | safe }}</span>
+</footer>
+{% endmacro %}
+
+{% macro calendar(m) %}
+<div class="mp-cal" aria-hidden="true">
+  {% for w in m.calendar.weekdays %}<span class="mp-cal-wd">{{ w }}</span>{% endfor %}
+  {% for i in range(0, m.calendar.offset) %}<span></span>{% endfor %}
+  {% for d in range(1, m.calendar.days + 1) %}{% set mk = m.calendar.marks[d] %}<span class="mp-cal-d{% for k in mk %} mp-k-{{ k }}{% endfor %}">{{ d }}</span>{% endfor %}
+</div>
+{% endmacro %}
+
+{#- Decorative motif per design (inline SVG + Lucide shapes; aria-hidden) -#}
+{% macro deco(design) %}
+<div class="mp-deco" aria-hidden="true">
+{%- if design == "frost" or design == "holiday" %}
+  {% for i in range(1, 8) %}{% icon "snowflake", "mp-m mp-m" + i %}{% endfor %}
+  {% if design == "holiday" %}{% icon "tree-pine", "mp-m mp-tree" %}{% icon "star", "mp-m mp-star1" %}{% icon "star", "mp-m mp-star2" %}{% endif %}
+{%- elif design == "sun" %}
+  <svg class="mp-sunburst" viewBox="0 0 400 400"><g fill="currentColor">{% for a in range(0, 360, 15) %}<path d="M200 200 L{{ 200 + 190 }} {{ 196 }} L{{ 200 + 190 }} {{ 204 }} Z" transform="rotate({{ a }} 200 200)"/>{% endfor %}</g><circle cx="200" cy="200" r="92" fill="currentColor"/></svg>
+{%- elif design == "shore" %}
+  <svg class="mp-waves" viewBox="0 0 1080 220" preserveAspectRatio="none"><path d="M0 60 Q 135 0 270 60 T 540 60 T 810 60 T 1080 60 V220 H0Z" fill="currentColor" opacity=".35"/><path d="M0 110 Q 135 50 270 110 T 540 110 T 810 110 T 1080 110 V220 H0Z" fill="currentColor" opacity=".6"/><path d="M0 160 Q 135 100 270 160 T 540 160 T 810 160 T 1080 160 V220 H0Z" fill="currentColor"/></svg>
+{%- elif design == "rose" %}
+  {% icon "ticket", "mp-m mp-m1" %}{% icon "star", "mp-m mp-m2" %}
+{%- elif design == "sprout" or design == "harvest" %}
+  {% for i in range(1, 7) %}{% set ic = "sprout" if (design == "sprout" and i % 2) else "leaf" %}{% icon ic, "mp-m mp-m" + i %}{% endfor %}
+{%- elif design == "rain" %}
+  <svg class="mp-rain" viewBox="0 0 200 200" preserveAspectRatio="none"><g stroke="currentColor" stroke-width="1.4" stroke-linecap="round">{% for i in range(0, 24) %}<line x1="{{ (i * 37) % 200 }}" y1="{{ (i * 53) % 190 }}" x2="{{ (i * 37) % 200 - 4 }}" y2="{{ (i * 53) % 190 + 12 }}"/>{% endfor %}</g></svg>
+  {% icon "umbrella", "mp-m mp-umbrella" %}
+{%- elif design == "autumn" %}
+  {% for i in range(1, 9) %}{% icon "leaf", "mp-m mp-m" + i %}{% endfor %}
+{%- elif design == "bloom" %}
+  {% for i in range(1, 8) %}{% icon "flower", "mp-m mp-m" + i %}{% endfor %}
+{%- elif design == "notebook" %}
+  <span class="mp-holes">{% for i in range(0, 9) %}<span></span>{% endfor %}</span>
+  {% icon "star", "mp-m mp-m1" %}{% icon "sparkles", "mp-m mp-m2" %}
+{%- elif design == "chalk" %}
+  {% icon "apple", "mp-m mp-m1" %}{% icon "star", "mp-m mp-m3" %}
+{%- endif %}
+</div>
+{% endmacro %}
+
+{#- The poster. idp = a prefix that keeps ids unique when a page shows several posters. -#}
+{% macro poster(m, lang, site, idp="p") %}
+{%- set tid = "mp-" + idp + "-" + m.key + "-" + lang -%}
+<article class="mp-poster mp-l-{{ m.layout }} mp-d-{{ m.design }} mp-{{ m.density }}" style="--mp-nlen: {{ m.name.length }}" lang="{{ lang }}" aria-labelledby="{{ tid }}" data-mp-poster>
+  {{ deco(m.design) }}
+  {% if m.layout == "editorial" %}
+    {{ head(m, lang, tid) }}
+    <div class="mp-body">
+      <div class="mp-col">{{ story(m, lang, site) }}{{ dates(m, lang, 4) }}</div>
+      <div class="mp-col mp-col-b">{{ issue(m, lang) }}{{ botm(m, lang) }}{{ weekly(m, lang) }}</div>
+    </div>
+    {{ foot(m, lang, site) }}
+  {% elif m.layout == "ticket" %}
+    <div class="mp-ticket">
+      <div class="mp-main">{{ head(m, lang, tid) }}{{ story(m, lang, site) }}{{ issue(m, lang, 2) }}{{ botm(m, lang) }}</div>
+      <div class="mp-stub">{{ dates(m, lang, 4) }}{{ weekly(m, lang) }}{{ foot(m, lang, site) }}</div>
+    </div>
+  {% elif m.layout == "split" %}
+    <div class="mp-side">{{ head(m, lang, tid) }}{{ calendar(m) }}{{ dates(m, lang, 4) }}{{ foot(m, lang, site) }}</div>
+    <div class="mp-content">{{ story(m, lang, site) }}{{ issue(m, lang, 3) }}{{ botm(m, lang) }}{{ weekly(m, lang) }}</div>
+  {% elif m.layout == "cork" %}
+    <div class="mp-top">{{ head(m, lang, tid) }}{{ foot(m, lang, site) }}</div>
+    <div class="mp-board">
+      <div class="mp-col">{{ story(m, lang, site) }}{{ issue(m, lang, 3) }}</div>
+      <div class="mp-col">{{ dates(m, lang, 5) }}{{ botm(m, lang) }}{{ weekly(m, lang) }}</div>
+    </div>
+  {% elif m.layout == "cover" %}
+    {{ head(m, lang, tid) }}
+    <div class="mp-cover">
+      <div class="mp-feature">{{ issue(m, lang, 3) }}</div>
+      <div class="mp-rail">{{ story(m, lang, site) }}{{ botm(m, lang) }}</div>
+    </div>
+    <div class="mp-strip">{{ dates(m, lang, 4) }}{{ weekly(m, lang) }}</div>
+    {{ foot(m, lang, site) }}
+  {% else %}
+    {{ head(m, lang, tid) }}
+    <div class="mp-page">
+      <div class="mp-row"><div class="mp-col">{{ story(m, lang, site) }}{{ weekly(m, lang) }}</div>{{ issue(m, lang, 2) }}</div>
+      <div class="mp-row">{{ dates(m, lang, 4) }}{{ botm(m, lang) }}</div>
+    </div>
+    {{ foot(m, lang, site) }}
+  {% endif %}
+</article>
+{% endmacro %}

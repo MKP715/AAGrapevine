@@ -5,8 +5,10 @@ layout: layouts/base.njk
 pageKey: shop
 titleKey: read.subs.title
 descKey: read.subs.meta_desc
+pageScripts: ["/assets/js/shop.js"]
 ---
-{#- SHOP — the ONE page for buying and subscribing: ways to get Grapevine & La Viña,
+{#- SHOP — the ONE page for buying and subscribing: Book of the Month + bulk-book discounts and the
+    subscription price table (both from db.shop — eleventy/filters/shop.js), the two magazines,
     Carry the Message, home-group subscriptions and order forms, free resources,
     catalogs pulled automatically from db.pdfs, and customer service. Every purchase
     links to the official stores (aagrapevine.org / aalavina.org); prices and dates only
@@ -20,6 +22,12 @@ descKey: read.subs.meta_desc
 {%- set forms = db.pdfs | readForms -%}
 {%- set weekly = (db.weekly_open.items | readItems)[0] -%}
 {%- set pubOrder = ["lv", "gv"] if lang == "es" else ["gv", "lv"] -%}
+{%- set shop = db.shop or {} -%}
+{%- set botm = shop | shopBotm(lang) -%}
+{%- set subs = shop | shopSubs(lang) -%}
+{%- set bulk = shop | shopBulk(lang) -%}
+{#- one percent in the heading when every book has the same discount -#}
+{%- set pctAll = botm[0].pct if (botm.length and (botm.length == 1 or botm[0].pct == botm[1].pct)) else 0 -%}
 {%- set gvIssues = db.articles | readIssues("gv") -%}
 {%- set lvIssues = db.articles | readIssues("lv") -%}
 {%- set curIssue = {
@@ -91,27 +99,272 @@ descKey: read.subs.meta_desc
 </li>
 {% endmacro %}
 
+{#- ---------- Book of the Month card (one per publication) ----------
+    The book is sold under its own title (lang = the book's language); on the other language's page the
+    translated title is a subtitle. Price, percent and dates only come from db.shop. data-shop-offer /
+    data-ends drive the live "N days left" and the "offer ended" state (assets/js/shop.js); the text
+    rendered here is right for the build day. -#}
+{% macro daysText(b, lang) -%}
+{%- if b.days === 0 %}{{ "shop.last_day" | t(lang) }}{% elif b.days === 1 %}{{ "shop.ends_tomorrow" | t(lang) }}{% else %}{{ "shop.days_left" | t(lang, { n: b.days }) }}{% endif -%}
+{%- endmacro %}
+{% macro daysSpan(b, lang, cls="") -%}
+<span data-shop-days class="{{ cls }}{{ ' is-urgent' if b.days <= 3 }}" data-t-many="{{ 'shop.days_left' | t(lang) }}" data-t-tomorrow="{{ 'shop.ends_tomorrow' | t(lang) }}" data-t-last="{{ 'shop.last_day' | t(lang) }}">{{ daysText(b, lang) }}</span>
+{%- endmacro %}
+{% macro botmCard(b, lang) %}
+<article class="shop-book @container card overflow-hidden" data-shop-offer{% if b.ends %} data-ends="{{ b.ends }}"{% endif %} aria-labelledby="botm-{{ b.pub }}-title">
+  <div class="shop-book-grid">
+    <div class="shop-book-art read-cover {{ 'read-cover--lv' if b.isLv else 'read-cover--gv' }}">
+      <svg class="read-cover-art" viewBox="0 0 200 240" fill="none" aria-hidden="true"><g fill="currentColor"><circle cx="82" cy="96" r="17"/><circle cx="116" cy="96" r="17"/><circle cx="150" cy="100" r="15"/><circle cx="66" cy="126" r="17"/><circle cx="100" cy="126" r="17"/><circle cx="134" cy="128" r="17"/><circle cx="82" cy="156" r="17"/><circle cx="116" cy="156" r="17"/><circle cx="100" cy="186" r="17"/></g></svg>
+      {% if b.image %}
+      <img class="shop-book-cover read-cover-frame" src="{{ b.image }}" alt="" width="389" height="600" loading="lazy" decoding="async">
+      {% else %}
+      <span class="shop-book-cover shop-book-ph read-cover-frame" aria-hidden="true">{% icon "book-open", "size-10" %}<span>{{ b.mag }}</span></span>
+      {% endif %}
+      {% if b.pct %}<p class="shop-sticker" data-shop-live><span class="shop-sticker-n">{{ b.pct }}%</span> <span class="shop-sticker-w">{{ "shop.sticker_word" | t(lang) }}</span></p>{% endif %}
+    </div>
+    <div class="flex min-w-0 flex-col p-5 sm:p-6">
+      <p class="flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
+        <span class="{{ 'badge-lv' if b.isLv else 'badge-gv' }}"{% if b.isLv and lang != 'es' %} lang="es"{% endif %}>{% icon "grapes", "size-3" %} {{ b.mag }}</span>
+        {% if b.monthLabel %}<span class="text-xs font-semibold uppercase tracking-[0.12em] text-muted">{{ "shop.botm_kicker" | t(lang, { month: (b.monthLabel | lower) if lang == "es" else b.monthLabel }) }}</span>{% endif %}
+      </p>
+      <h3 id="botm-{{ b.pub }}-title" class="mt-2.5 font-display text-2xl font-semibold leading-tight text-balance text-ink sm:text-[1.7rem]" lang="{{ b.itemLang }}">{{ b.title }}</h3>
+      {% if b.subtitle %}<p class="mt-1 flex items-start gap-1.5 text-sm text-muted" title="{{ ('common.auto_translated' if b.subtitleMachine else 'shop.title_tr') | t(lang) }}">{% if b.subtitleMachine %}{% icon "languages", "size-3.5 mt-0.5 shrink-0" %}{% endif %}<span class="sr-only">{{ ('common.auto_translated' if b.subtitleMachine else 'shop.title_tr') | t(lang) }}: </span><span class="italic" lang="{{ lang }}">{{ b.subtitle }}</span></p>{% endif %}
+      {% if b.blurb %}
+      <p class="mt-3 text-[0.95rem] leading-relaxed text-muted"{% if b.blurbLang != lang %} lang="{{ b.blurbLang }}"{% endif %}>{{ b.blurb }}</p>
+      {% if b.blurbMachine %}<p class="mt-1.5"><span class="auto-note" title="{{ 'common.auto_translated_help' | t(lang) }}">{% icon "languages", "size-3" %} {{ "common.auto_translated" | t(lang) }}</span></p>{% endif %}
+      {% endif %}
+      <div class="mt-auto pt-5" data-shop-live>
+        {% if b.hasPrices %}
+        <p class="flex flex-wrap items-baseline gap-x-3 gap-y-1.5">
+          <span class="font-display text-4xl font-semibold leading-none tabular-nums {{ 'text-lv' if b.isLv else 'text-gv' }}"><span class="sr-only">{{ "shop.sale_price" | t(lang) }}: </span>{{ b.sale }}</span>
+          <s class="text-lg text-faint tabular-nums"><span class="sr-only">{{ "shop.regular_price" | t(lang) }}: </span>{{ b.price }}</s>
+          <span class="badge-vine">{% icon "tag", "size-3" %} {{ "shop.you_save" | t(lang, { amount: b.save }) }}</span>
+        </p>
+        {% endif %}
+        {% if b.ends %}
+        <p class="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm font-medium text-ink">
+          {% icon "calendar-clock", "size-4 shrink-0 text-muted" %}
+          <span>{{ "shop.through" | t(lang, { date: b.endsLabel }) }}</span>
+          {% if b.days !== null %}<span aria-hidden="true" class="text-faint">·</span> {{ daysSpan(b, lang, "shop-days") }}{% endif %}
+        </p>
+        {% endif %}
+        <div class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2.5">
+          <a class="{{ 'btn-lv' if b.isLv else 'btn-primary' }} shop-buy" href="{{ b.url }}" target="_blank" rel="noopener">{{ ("shop.buy_pct" | t(lang, { pct: b.pct })) if b.pct else ("shop.buy" | t(lang)) }} {% icon "external-link", "size-4" %}<span class="sr-only"> {{ "shop.at_store" | t(lang, { mag: b.mag }) }} ({{ "common.external" | t(lang) }})</span></a>
+          {% if b.pageUrl and b.pageUrl != b.url %}<a class="link inline-flex min-h-11 items-center gap-1 text-sm" href="{{ b.pageUrl }}" target="_blank" rel="noopener">{{ "shop.botm_page" | t(lang) }}<span class="sr-only">: {{ "shop.botm_page_sr" | t(lang, { mag: b.mag }) }} ({{ "common.external" | t(lang) }})</span> {% icon "arrow-up-right", "size-3.5" %}</a>{% endif %}
+        </div>
+      </div>
+      <p class="mt-auto pt-5" data-shop-ended hidden><a class="btn-secondary" href="{{ b.pageUrl or b.url }}" target="_blank" rel="noopener">{% icon "book-open", "size-4" %} {{ "shop.ended" | t(lang) }}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a></p>
+    </div>
+  </div>
+</article>
+{% endmacro %}
+
+{#- One subscription plan type (Print / Digital / Complete) for one publication × region -#}
+{% macro planCard(pub, region, tp, lang, isLv, mag) %}
+{%- set icons = { print: "printer", digital: "monitor", complete: "layers", other: "newspaper" } -%}
+{%- set pid = "plan-" ~ pub ~ "-" ~ region ~ "-" ~ tp.type -%}
+<article class="shop-plan card flex flex-col" aria-labelledby="{{ pid }}">
+  <header class="px-5 pt-5 pb-4 sm:px-6">
+    <div class="flex items-center gap-3">
+      <span class="grid size-11 shrink-0 place-items-center rounded-xl {{ 'bg-lv-soft text-lv' if isLv else 'bg-gv-soft text-gv' }}">{% icon icons[tp.type] or "newspaper", "size-5" %}</span>
+      <div class="min-w-0">
+        <h4 id="{{ pid }}" class="font-display text-xl font-semibold leading-tight text-ink">{{ tp.name }}</h4>
+        {% if tp.type == "complete" %}<p class="text-xs font-semibold uppercase tracking-[0.1em] text-muted">{{ "shop.complete_tag" | t(lang) }}</p>{% endif %}
+      </div>
+    </div>
+    {% if tp.desc %}<p class="mt-3 text-sm leading-relaxed text-muted"{% if tp.descLang and tp.descLang != lang %} lang="{{ tp.descLang }}"{% endif %}>{{ tp.desc }}</p>{% endif %}
+  </header>
+  <ul class="flex-1 border-t border-line" role="list" aria-label="{{ 'shop.plans_label' | t(lang, { type: tp.name }) }}">
+    {% for tm in tp.terms %}
+    <li class="shop-term{{ ' is-best' if tm.best }}">
+      <div class="min-w-0 flex-1">
+        <p class="flex flex-wrap items-center gap-x-2 gap-y-1">
+          <span class="font-semibold text-ink">{{ tm.label }}</span>
+          {% if tm.best %}<span class="badge-vine">{% icon "star", "size-3" %} {{ "shop.best_value" | t(lang) }}</span>{% endif %}
+        </p>
+        {% if tm.perMonth or tm.save %}
+        <p class="mt-0.5 flex flex-wrap gap-x-2.5 text-xs leading-snug text-muted">
+          {%- if tm.perMonth %}<span class="whitespace-nowrap">{{ "shop.per_month_eq" | t(lang, { amount: tm.perMonth }) }}</span>{% endif -%}
+          {%- if tm.save %} <span class="font-medium text-vine">{{ tm.save }}</span>{% endif -%}
+        </p>
+        {% endif %}
+      </div>
+      <p class="shrink-0 font-display text-xl font-semibold tabular-nums text-ink">{{ tm.price }}</p>
+      <a class="{{ (('btn-lv' if isLv else 'btn-primary') if tm.best else 'btn-secondary') }} btn-sm shrink-0 max-sm:min-h-11" href="{{ tm.url }}" target="_blank" rel="noopener">{{ "shop.buy_term" | t(lang) }}<span class="sr-only">: {{ "shop.buy_term_sr" | t(lang, { mag: mag, type: tp.name, term: tm.label, price: tm.price }) }} ({{ "common.external" | t(lang) }})</span></a>
+    </li>
+    {% endfor %}
+  </ul>
+  {% if tp.volume %}
+  <details class="shop-vol group/vol border-t border-line">
+    <summary class="flex min-h-12 cursor-pointer list-none items-center gap-2 px-5 py-3 text-sm font-semibold text-ink sm:px-6">
+      {% icon "users", "size-4 shrink-0 text-muted" %} <span class="flex-1">{{ "shop.volume_title" | t(lang) }}</span> {% icon "chevron-down", "size-4 shrink-0 text-muted transition group-open/vol:rotate-180" %}
+    </summary>
+    <div class="px-5 pb-5 sm:px-6">
+      <p class="text-sm leading-relaxed text-muted">{{ "shop.volume_sub" | t(lang) }}</p>
+      <div class="mt-3 overflow-x-auto">
+        <table class="shop-table w-full text-sm">
+          <caption class="sr-only">{{ "shop.volume_caption" | t(lang) }} — {{ mag }}, {{ tp.name }}</caption>
+          <thead><tr><th scope="col">{{ "shop.volume_qty" | t(lang) }}</th>{% for c in tp.volume.cols %}<th scope="col" class="text-right">{{ c }}</th>{% endfor %}</tr></thead>
+          <tbody>
+            {% for r in tp.volume.rows %}<tr><th scope="row">{{ r.label }}</th>{% for pr in r.prices %}<td class="text-right tabular-nums">{{ pr or "—" }}</td>{% endfor %}</tr>{% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </details>
+  {% endif %}
+</article>
+{% endmacro %}
+
 {#- The shared hero (same height on every page). Its buttons are the standard 44px / 14px size
     at every width, like every other page; "read-hero" (read.css) keeps phone heroes within
-    24–28rem (below ~414px the two buttons stack, so the subtitle is kept to three phone lines).
-    The in-page "Gift a subscription" jump shows from 768px, so the row does not wrap on small
-    tablets. -#}
+    24–28rem. The buttons jump to this page's own Book of the Month and price table (the store
+    links live there, once); without price data they fall back to the two official subscribe
+    pages. The in-page "Gift a subscription" jump shows from 768px, so the row does not wrap on
+    small tablets. -#}
 {% call ui.pageHero(lang, "read.subs.title" | t(lang), "read.subs.subtitle" | t(lang), "shopping-bag", "read.subs.eyebrow" | t(lang), { class: "read-hero" }) %}
   <div class="hero-actions">
+    {% if botm.length %}<a class="btn-light" href="#botm">{% icon "badge-percent", "size-4" %} {{ "shop.hero_botm" | t(lang) }}</a>{% endif %}
+    {% if subs.pubs.length %}
+    <a class="{{ 'btn-on-dark' if botm.length else 'btn-light' }}" href="#subscriptions">{% icon "newspaper", "size-4" %} {{ "shop.hero_subs" | t(lang) }}</a>
+    {% else %}
     {% for p in pubOrder %}
-    <a class="{{ 'btn-light' if loop.first else 'btn-on-dark' }}" href="{{ L.lv_subscribe if p == 'lv' else L.gv_subscribe }}" target="_blank" rel="noopener">{% icon "grapes", "size-4" %} {{ ("read.subs.sub_lv" if p == "lv" else "read.subs.sub_gv") | t(lang) }}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a>
+    <a class="{{ 'btn-light' if (loop.first and not botm.length) else 'btn-on-dark' }}" href="{{ L.lv_subscribe if p == 'lv' else L.gv_subscribe }}" target="_blank" rel="noopener">{% icon "grapes", "size-4" %} {{ ("read.subs.sub_lv" if p == "lv" else "read.subs.sub_gv") | t(lang) }}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a>
     {% endfor %}
+    {% endif %}
     <a class="btn-on-dark max-md:hidden" href="#carry">{% icon "gift", "size-4" %} {{ "read.subs.ctm_short" | t(lang) }}</a>
   </div>
 {% endcall %}
 
-{#- ---------- Top of the page (right after the hero) ----------
-    Reserved for Book of the Month and the subscription prices (synced data). A section
-    added here takes the "page-start" spacing class from the magazines section below
-    (which then becomes a plain "section container-page pt-0"). -#}
+{#- ---------- In-page navigation (the page is long): one chip per section, tucked into the hero's fade.
+    Phones: one row that scrolls sideways; from 640px the chips wrap. -#}
+<nav class="container-page page-overlap" aria-label="{{ 'shop.nav_label' | t(lang) }}">
+  <div class="card shop-jump">
+    <p class="shop-jump-label" aria-hidden="true">{% icon "list", "size-4 shrink-0" %} {{ "shop.nav_label" | t(lang) }}</p>
+    <ul class="shop-jump-list no-scrollbar" role="list">
+      {% if botm.length %}<li><a class="chip no-underline" href="#botm">{% icon "badge-percent", "size-4 shrink-0" %} {{ "shop.nav_botm" | t(lang) }}</a></li>{% endif %}
+      <li><a class="chip no-underline" href="#subscriptions">{% icon "newspaper", "size-4 shrink-0" %} {{ "shop.nav_subs" | t(lang) }}</a></li>
+      {% if bulk.rows.length %}<li><a class="chip no-underline" href="#bulk">{% icon "package", "size-4 shrink-0" %} {{ "shop.nav_bulk" | t(lang) }}</a></li>{% endif %}
+      <li><a class="chip no-underline" href="#magazines">{% icon "grapes", "size-4 shrink-0" %} {{ "shop.nav_mags" | t(lang) }}</a></li>
+      <li><a class="chip no-underline" href="#carry">{% icon "gift", "size-4 shrink-0" %} {{ "shop.nav_gift" | t(lang) }}</a></li>
+      <li><a class="chip no-underline" href="#group">{% icon "house", "size-4 shrink-0" %} {{ "shop.nav_group" | t(lang) }}</a></li>
+      <li><a class="chip no-underline" href="#free">{% icon "heart", "size-4 shrink-0" %} {{ "shop.nav_free" | t(lang) }}</a></li>
+      <li><a class="chip no-underline" href="#catalogs">{% icon "book-open", "size-4 shrink-0" %} {{ "shop.nav_catalogs" | t(lang) }}</a></li>
+      <li><a class="chip no-underline" href="#help">{% icon "phone", "size-4 shrink-0" %} {{ "shop.nav_help" | t(lang) }}</a></li>
+    </ul>
+  </div>
+</nav>
+
+{#- ---------- 1. BOOK OF THE MONTH (db.shop.botm) + gift ideas + bulk-book discounts ----------
+    Both books (page-language magazine first), each with its own price, dates and store link. The two
+    discounts are shown side by side only — the page never says they combine. -#}
+{% if botm.length or bulk.rows.length %}
+<section id="botm" class="container-page page-start" aria-labelledby="botm-title">
+  <div class="shop-botm">
+    <div class="max-w-3xl">
+      <p class="eyebrow flex items-center gap-2 text-lv">{% icon "badge-percent", "size-4" %} {{ ("shop.botm_eyebrow" if botm.length else "shop.nav_bulk") | t(lang) }}</p>
+      <h2 id="botm-title" class="h-display mt-2 text-3xl text-balance sm:text-4xl">{% if not botm.length %}{{ "shop.bulk_title" | t(lang) }}{% elif pctAll %}{{ "shop.botm_title_pct" | t(lang, { pct: pctAll }) }}{% else %}{{ "shop.botm_title" | t(lang) }}{% endif %}</h2>
+      {% if botm.length %}<p class="lead mt-3">{{ "shop.botm_sub" | t(lang) }}</p>{% endif %}
+    </div>
+    {% if botm.length %}
+    <div class="mt-7 grid grid-cols-1 gap-5 {{ 'xl:grid-cols-2' if botm.length > 1 }}">
+      {% for b in botm %}{{ botmCard(b, lang) }}{% endfor %}
+    </div>
+    {% endif %}
+    <div class="mt-5 grid grid-cols-1 gap-5 {{ 'lg:grid-cols-2' if (botm.length and bulk.rows.length) }}">
+      {% if botm.length %}
+      <div class="card card-pad">
+        <p class="flex items-center gap-2.5 font-display text-xl font-semibold text-ink"><span class="grid size-10 shrink-0 place-items-center rounded-xl bg-grape-soft text-grape">{% icon "library-big", "size-5" %}</span> {{ "shop.collect_title" | t(lang) }}</p>
+        <p class="mt-2 text-sm leading-relaxed text-muted">{{ "shop.collect_text" | t(lang) }}</p>
+        <p class="eyebrow mt-5 flex items-center gap-2 text-lv">{% icon "gift", "size-4" %} {{ "shop.gift_title" | t(lang) }}</p>
+        <ul class="mt-2.5 space-y-2.5" role="list">
+          {% for g in [["hand-heart", "gift_sponsee"], ["sprout", "gift_newcomer"], ["users", "gift_table"]] %}
+          <li class="flex items-start gap-3 text-sm leading-relaxed text-ink"><span class="mt-0.5 grid size-7 shrink-0 place-items-center rounded-lg bg-lv-soft text-lv">{% icon g[0], "size-4" %}</span><span>{{ ("shop." + g[1]) | t(lang) }}</span></li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+      {% if bulk.rows.length %}
+      <div id="bulk" class="card card-pad">
+        {% if botm.length %}<h3 class="flex items-center gap-2.5 font-display text-xl font-semibold text-ink"><span class="grid size-10 shrink-0 place-items-center rounded-xl bg-vine-soft text-vine">{% icon "package", "size-5" %}</span> {{ "shop.bulk_title" | t(lang) }}</h3>{% endif %}
+        <p class="{{ 'mt-2' if botm.length }} text-sm leading-relaxed text-muted">{{ "shop.bulk_sub" | t(lang) }}</p>
+        <table class="shop-table mt-4 w-full text-sm">
+          <caption class="sr-only">{{ "shop.bulk_title" | t(lang) }}</caption>
+          <thead><tr><th scope="col">{{ "shop.bulk_qty" | t(lang) }}</th><th scope="col" class="text-right">{{ "shop.bulk_off" | t(lang) }}</th></tr></thead>
+          <tbody>{% for r in bulk.rows %}<tr><th scope="row">{{ r.label }}</th><td class="text-right font-semibold text-vine tabular-nums">{{ "shop.off_each" | t(lang, { amount: r.off }) }}</td></tr>{% endfor %}</tbody>
+        </table>
+        <p class="mt-3 text-xs leading-relaxed text-muted">{% if bulk.note %}{{ bulk.note }} {% endif %}{{ "shop.final_price" | t(lang) }}</p>
+        {% if bulk.source %}<p class="mt-2 text-xs"><a class="link inline-flex min-h-6 items-center gap-1" href="{{ bulk.source }}" target="_blank" rel="noopener">{{ "shop.bulk_source" | t(lang) }}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span> {% icon "arrow-up-right", "size-3.5" %}</a></p>{% endif %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{#- ---------- 2. SUBSCRIPTIONS & PRICES (db.shop.subscriptions) ----------
+    Publication × region switch (native radio groups driven by Alpine: arrow keys move between the
+    options, as with any radio group). Without JavaScript the switch stays hidden (x-cloak) and every
+    publication's U.S. prices show, each under its own heading. One card per plan type; each term with
+    its price, the monthly equivalent, the saving against the shortest term, "Best value" on the lowest
+    monthly equivalent, and a Buy link to the official product page. -#}
+<section id="subscriptions" class="section container-page{{ ' page-start' if not (botm.length or bulk.rows.length) }}" aria-labelledby="subs-title"{% if subs.pubs.length %} x-data="shopSubs({{ { first: subs.first, avail: subs.avail } | dump }})"{% endif %}>
+  <div class="mb-6 max-w-3xl">
+    <p class="eyebrow text-gv">{{ "shop.subs_eyebrow" | t(lang) }}</p>
+    <h2 id="subs-title" class="h-section mt-1.5">{{ "shop.subs_title" | t(lang) }}</h2>
+    <p class="mt-1.5 text-muted">{{ "shop.subs_sub" | t(lang) }}</p>
+  </div>
+  {% if subs.pubs.length %}
+  {%- set showPub = subs.pubs.length > 1 -%}
+  {%- set showRegion = subs.regions.length > 1 -%}
+  {% if showPub or showRegion %}
+  <div class="shop-controls" x-cloak>
+    {% if showPub %}
+    <fieldset class="shop-seg-field">
+      <legend class="shop-seg-legend">{{ "shop.pick_pub" | t(lang) }}</legend>
+      <div class="shop-seg">
+        {% for p in subs.pubs %}
+        <label class="shop-seg-opt shop-seg-{{ p.pub }}"><input type="radio" name="shop-pub" value="{{ p.pub }}" x-model="pub"{% if loop.first %} checked{% endif %}><span{% if p.isLv and lang != 'es' %} lang="es"{% endif %}>{% icon "grapes", "size-4 shrink-0" %} {{ p.mag }}</span></label>
+        {% endfor %}
+      </div>
+    </fieldset>
+    {% endif %}
+    {% if showRegion %}
+    <fieldset class="shop-seg-field">
+      <legend class="shop-seg-legend">{{ "shop.pick_region" | t(lang) }}</legend>
+      <div class="shop-seg">
+        {% for r in subs.regions %}
+        <label class="shop-seg-opt" x-show="has('{{ r }}')"><input type="radio" name="shop-region" value="{{ r }}" x-model="region"{% if r == "us" %} checked{% endif %}><span>{{ ("shop.region_" + r) | t(lang) }}</span></label>
+        {% endfor %}
+      </div>
+    </fieldset>
+    {% endif %}
+  </div>
+  {% endif %}
+  {% for p in subs.pubs %}{% for r in p.regions %}
+  {%- set isDefault = r.region == p.defaultRegion -%}
+  {%- set cols = r.types.length -%}
+  <div class="shop-panel" data-pub="{{ p.pub }}" data-region="{{ r.region }}"{% if not isDefault %} x-cloak{% endif %} x-show="show('{{ p.pub }}', '{{ r.region }}')">
+    <h3 class="shop-panel-title"><span class="{{ 'text-lv' if p.isLv else 'text-gv' }}">{% icon "grapes", "size-5" %}</span> <span{% if p.isLv and lang != 'es' %} lang="es"{% endif %}>{{ p.mag }}</span> <span class="text-faint" aria-hidden="true">·</span> <span class="text-muted">{{ ("shop.region_" + r.region) | t(lang) }}</span></h3>
+    <div class="grid grid-cols-1 gap-5 {{ 'md:grid-cols-2 xl:grid-cols-3 shop-plans-3' if cols >= 3 else ('md:grid-cols-2' if cols == 2 else 'md:max-w-xl') }}">
+      {% for tp in r.types %}{{ planCard(p.pub, r.region, tp, lang, p.isLv, p.mag) }}{% endfor %}
+    </div>
+    <p class="mt-4 flex flex-wrap items-center gap-x-5 gap-y-1 text-sm">
+      {% if r.url %}<a class="link inline-flex min-h-10 items-center gap-1" href="{{ r.url }}" target="_blank" rel="noopener">{{ "shop.all_plans" | t(lang, { mag: p.mag, region: ("shop.region_" + r.region) | t(lang) }) }}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span> {% icon "arrow-up-right", "size-3.5" %}</a>{% endif %}
+      {% if r.region != "us" %}<span class="text-muted">{{ "shop.conversion_note" | t(lang) }}</span>{% endif %}
+    </p>
+  </div>
+  {% endfor %}{% endfor %}
+  {% if shop.updated %}<p class="mt-6 flex items-start gap-2 text-xs leading-relaxed text-muted">{% icon "info", "size-4 shrink-0" %}<span>{{ "shop.prices_note" | t(lang, { stores: "aagrapevine.org / aalavina.org", date: shop.updated | fmtDate(lang, "medium") }) }}</span></p>{% endif %}
+  {% else %}
+  {{ ui.emptyState("store", "shop.empty_title" | t(lang), "shop.empty_text" | t(lang), L.lv_subscribe if lang == "es" else L.gv_subscribe, ("read.subs.sub_lv" if lang == "es" else "read.subs.sub_gv") | t(lang)) }}
+  <p class="mt-3 text-center text-sm"><a class="link" href="{{ L.gv_subscribe if lang == 'es' else L.lv_subscribe }}" target="_blank" rel="noopener">{{ ("read.subs.sub_gv" if lang == "es" else "read.subs.sub_lv") | t(lang) }}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a></p>
+  {% endif %}
+</section>
 
 {#- ---------- The two magazines ---------- -#}
-<section class="container-page page-start" aria-label="{{ 'read.subs.mags_title' | t(lang) }}">
+<section id="magazines" class="section border-t border-line" aria-label="{{ 'read.subs.mags_title' | t(lang) }}">
+  <div class="container-page">
   {{ ui.sectionHead("read.subs.mags_title" | t(lang), "read.subs.mags_sub" | t(lang), "", "", "grapes") }}
   <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
     {% for p in pubOrder %}
@@ -140,31 +393,16 @@ descKey: read.subs.meta_desc
           {% endfor %}
         </ul>
       </header>
-      {#- The formats (print, online, app, audio) are described once, in the section below. -#}
+      {#- Prices and the Buy links are in the price table above (once); here only the store and the apps. -#}
       <div class="flex flex-1 flex-col gap-5 p-6 sm:p-7">
         <div class="mt-auto flex flex-wrap gap-2">
-          <a class="{{ 'btn-lv' if isLv else 'btn-primary' }}" href="{{ L.lv_subscribe if isLv else L.gv_subscribe }}" target="_blank" rel="noopener">{{ "read.subs.subscribe_btn" | t(lang) }} {% icon "arrow-up-right", "size-4" %}</a>
-          <a class="btn-secondary" href="{{ L.lv_store if isLv else L.gv_store }}" target="_blank" rel="noopener">{% icon "store", "size-4" %} {{ "read.subs.store_btn" | t(lang) }}</a>
+          <a class="{{ 'btn-lv' if isLv else 'btn-primary' }}" href="{{ L.lv_store if isLv else L.gv_store }}" target="_blank" rel="noopener">{% icon "store", "size-4" %} {{ "read.subs.store_btn" | t(lang) }}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a>
           <a class="btn-secondary" href="{{ L.lv_apps if isLv else L.gv_apps }}" target="_blank" rel="noopener">{% icon "smartphone", "size-4" %} {{ "read.subs.apps_btn" | t(lang) }}</a>
         </div>
       </div>
     </article>
     {% endfor %}
   </div>
-</section>
-
-{#- ---------- Formats ---------- -#}
-<section class="section container-page pt-0" aria-labelledby="fmt-title">
-  <h2 id="fmt-title" class="h-section">{{ "read.subs.fmt_title" | t(lang) }}</h2>
-  <p class="mt-1.5 mb-6 max-w-2xl text-muted">{{ "read.subs.fmt_sub" | t(lang) }}</p>
-  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
-    {% for f in [["printer", "print", "bg-gv-soft text-gv"], ["monitor", "online", "bg-grape-soft text-grape"], ["layers", "bundle", "bg-vine-soft text-vine"], ["smartphone", "app", "bg-lv-soft text-lv"], ["headphones", "audio", "bg-gv-soft text-gv"]] %}
-    <div class="card card-pad flex flex-col">
-      <span class="grid size-11 place-items-center rounded-xl {{ f[2] }}">{% icon f[0], "size-5" %}</span>
-      <h3 class="h-card mt-3">{{ ("read.subs.fmt_" + f[1] + "_t") | t(lang) }}</h3>
-      <p class="mt-1.5 text-sm leading-relaxed text-muted">{{ ("read.subs.fmt_" + f[1]) | t(lang) }}</p>
-    </div>
-    {% endfor %}
   </div>
 </section>
 
@@ -201,7 +439,7 @@ descKey: read.subs.meta_desc
 </section>
 
 {#- ---------- Home group subscriptions ---------- -#}
-<section class="section container-page" aria-label="{{ 'read.subs.group_title' | t(lang) }}">
+<section id="group" class="section container-page" aria-label="{{ 'read.subs.group_title' | t(lang) }}">
   <div class="grid grid-cols-1 gap-10 lg:grid-cols-[1.25fr_1fr] 2xl:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] 2xl:gap-12">
     <div>
       {{ ui.sectionHead("read.subs.group_title" | t(lang), "read.subs.group_sub" | t(lang), "", "", "house") }}
@@ -238,7 +476,7 @@ descKey: read.subs.meta_desc
 
 {#- ---------- Free resources ----------
     Short pointers only: the Weekly Open Meeting's Zoom details live on /meeting/#weekly-open. -#}
-<section class="section container-page pt-0" aria-label="{{ 'read.subs.free_title' | t(lang) }}">
+<section id="free" class="section container-page pt-0" aria-label="{{ 'read.subs.free_title' | t(lang) }}">
   {{ ui.sectionHead("read.subs.free_title" | t(lang), "read.subs.free_sub" | t(lang), "", "", "heart") }}
   {#- six cards → at most three per row: two even rows on wide screens, no lone card -#}
   <div class="grid-cards-fit [--cards-max:3]">
@@ -273,7 +511,7 @@ descKey: read.subs.meta_desc
   "lg:grid-cols-[repeat(2,minmax(0,15rem))] 2xl:grid-cols-[repeat(2,minmax(0,17rem))]",
   "sm:grid-cols-3 lg:grid-cols-[repeat(3,minmax(0,15rem))] 2xl:grid-cols-[repeat(3,minmax(0,17rem))]"
 ] -%}{#- index = number of catalogs (1–3); literal class names so Tailwind finds them -#}
-<section class="section border-t border-line bg-surface-2/60" aria-labelledby="cat-title">
+<section id="catalogs" class="section border-t border-line bg-surface-2/60" aria-labelledby="cat-title">
   <div class="container-page">
     {% if fewCats %}
     <div class="grid grid-cols-1 items-center gap-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-12 2xl:gap-20">
@@ -316,7 +554,7 @@ descKey: read.subs.meta_desc
 </section>
 
 {#- ---------- Customer service ---------- -#}
-<section class="section container-page" aria-labelledby="help-title">
+<section id="help" class="section container-page" aria-labelledby="help-title">
   <div class="card overflow-hidden">
     <div class="grid grid-cols-1 lg:grid-cols-[1fr_1.4fr]">
       <div class="p-6 sm:p-8">

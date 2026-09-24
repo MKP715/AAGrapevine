@@ -21,6 +21,7 @@
     "@tailwindcss/cli": "^4.3.3",
     "alpinejs": "^3.17.4",
     "glightbox": "^3.3.1",
+    "html-to-image": "^1.11.13",
     "js-yaml": "^5.4.2",
     "lite-youtube-embed": "^0.3.4",
     "lucide-static": "^1.47.0",

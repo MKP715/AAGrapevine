@@ -26,8 +26,9 @@ pageScripts: ["/assets/js/media.js"]
 {%- set mixedLangs = (langs | keys).length > 1 -%}
 {%- set hours = ((eps | mediaSumDuration) / 3600) | round(0, "floor") -%}
 {%- set ssr = eps | limit(24) -%}
-{%- set wo = db.weekly_open.items[0] if (db.weekly_open and db.weekly_open.items and db.weekly_open.items.length) else null -%}
-{%- set woWhen = (wo | tx("when", lang)) if wo else "" -%}
+{#- The weekly open meetings in one short line ("Wednesdays (English) and Thursdays (Spanish)"), linking
+    to their one home, /meeting/#weekly-open, where the times and Zoom details are -#}
+{%- set woWhen = (db.weekly_open.items | mediaWeeklyDays(lang)) if db.weekly_open else "" -%}
 
 {#- ------------------------------------------------------------------ macros -#}
 

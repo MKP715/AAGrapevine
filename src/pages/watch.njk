@@ -28,8 +28,9 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
 {%- set plGroups = pls | mediaPlaylistGroups(lang) -%}
 {%- set plTotal = (pls | where("kind", false)).length -%}
 {%- set ssr = vids | limit(24) -%}
-{%- set wo = db.weekly_open.items[0] if (db.weekly_open and db.weekly_open.items and db.weekly_open.items.length) else null -%}
-{%- set woWhen = (wo | tx("when", lang)) if wo else "" -%}
+{#- The weekly open meetings in one short line ("Wednesdays (English) and Thursdays (Spanish)"), linking
+    to their one home, /meeting/#weekly-open, where the times and Zoom details are -#}
+{%- set woWhen = (db.weekly_open.items | mediaWeeklyDays(lang)) if db.weekly_open else "" -%}
 
 {#- One video card. srv=true: static (first 24) bound to vidAt(i); srv=false: x-for `v`. -#}
 {% macro vCard(item, lang, i, srv) %}

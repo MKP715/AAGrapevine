@@ -770,5 +770,33 @@
   "home.mag_mt_from_es": {
     "en": "Titles auto-translated from Spanish — the stories are in Spanish",
     "es": "Historias en español"
+  },
+  "home.botm_title": {
+    "en": "{pct}% off this month's books",
+    "es": "{pct}% de descuento en los libros del mes"
+  },
+  "home.botm_title_plain": {
+    "en": "This month's books are on sale",
+    "es": "Los libros del mes están en oferta"
+  },
+  "home.botm_cta": {
+    "en": "See the offer",
+    "es": "Ver la oferta"
+  },
+  "home.subs_desc": {
+    "en": "Print, digital or both — compare the plans.",
+    "es": "Impresa, digital o ambas: compara los planes."
+  },
+  "home.monthly_title": {
+    "en": "This month's poster & toolkit",
+    "es": "Cartel y kit del mes"
+  },
+  "home.monthly_desc": {
+    "en": "Print it for your group or share it online.",
+    "es": "Imprímelo para tu grupo o compártelo en línea."
+  },
+  "home.shop_label": {
+    "en": "Shop & subscribe",
+    "es": "Tienda y suscripciones"
   }
 }
