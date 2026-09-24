@@ -1,6 +1,6 @@
 {
- "generated": "2026-09-24T11:31:14Z",
- "updated": "2026-09-24T11:31:14Z",
+ "generated": "2026-09-24T12:59:26Z",
+ "updated": "2026-09-24T12:59:26Z",
  "fixture": false,
  "sources": [
   {
@@ -67,8 +67,8 @@
    "label": "Announcements (content/announcements)",
    "label_es": "Anuncios (content/announcements)",
    "ok": true,
-   "updated": "2026-09-24T11:31:14Z",
-   "attempted": "2026-09-24T11:31:14Z",
+   "updated": "2026-09-24T12:59:25Z",
+   "attempted": "2026-09-24T12:59:25Z",
    "count": 0,
    "new_7d": 0,
    "error": null,
@@ -85,8 +85,8 @@
    "label": "Events (content/events)",
    "label_es": "Eventos (content/events)",
    "ok": true,
-   "updated": "2026-09-24T11:31:14Z",
-   "attempted": "2026-09-24T11:31:14Z",
+   "updated": "2026-09-24T12:59:25Z",
+   "attempted": "2026-09-24T12:59:25Z",
    "count": 9,
    "new_7d": 9,
    "error": null,
@@ -365,7 +365,7 @@
   "updated": "2026-09-24T06:35:22Z"
  },
  "translations": {
-  "cached": 1859,
+  "cached": 1841,
   "engine": "argos1.0-ct2/v5",
   "model_enabled": true,
   "translated_this_run": 0,
@@ -392,6 +392,26 @@
   "districts": 2
  },
  "problems": {},
+ "feeds": [
+  {
+   "key": "neta-65-workshops",
+   "url": "https://neta65.org/events/category/workshop/list/?ical=1",
+   "label": "NETA 65 workshops",
+   "label_es": "Talleres de NETA 65",
+   "category": "neta65",
+   "group": "neta",
+   "state": "blocked",
+   "http_status": 403,
+   "error": "HTTP 403: the site's bot protection (Cloudflare “Just a moment…” check) turned the robot away",
+   "last_success": null,
+   "last_attempt": "2026-09-24T11:56:10Z",
+   "checked_this_run": false,
+   "from_copy": false,
+   "events_count": 0,
+   "duplicates": 0,
+   "notes": []
+  }
+ ],
  "items": [],
  "spotlight": {
   "today": "2026-09-24",

@@ -17,6 +17,10 @@ Events use `title, start, end, location, url` (+ optional `online_url`, `flyer`,
 Both may add the other language by hand — `title_es` / `summary_es` for a file written in English
 (`title_en` / `summary_en` for one written in Spanish): build_data shows those words instead of a
 machine translation (`extra.own_i18n`; the summary also stands in for the text below the header).
+An event's place in the other language is `location_es` (`location_en`) — `own_i18n.location`; a
+place is never machine-translated. `tentative: true` (also yes / sí) marks an event whose details
+are not final yet (`extra.tentative`: a "Details to be confirmed" badge, STATUS:TENTATIVE in the
+calendar feeds).
 Files whose name starts with "_" or "README" are ignored; other files that do not end in .md
 (any capitalization) are skipped and listed on /status/. The folder is the source of truth:
 deleting a file removes the item, and deleting a header line removes that value. A file with a
@@ -290,7 +294,13 @@ def parse_event(path: Path, tz: ZoneInfo) -> dict:
     extra = {"start": start, "end": end, "all_day": all_day, "location": location or None, "online_url": online,
              "flyer_url": flyer, "flyer_thumb": image, "city": city, "state": state, "body_md": body,
              "slug": slug, "file": f"content/events/{path.name}"}
+    if as_bool(meta.get("tentative")):
+        extra["tentative"] = True        # details not final yet: "Details to be confirmed", STATUS:TENTATIVE
     own = own_translations(meta)
+    for lang in ("en", "es"):            # the place in the other language (never machine-translated)
+        loc = clean_text(meta.get(f"location_{lang}"))
+        if loc:
+            own.setdefault("location", {})[lang] = loc
     if own:
         extra["own_i18n"] = own
     return make_item(

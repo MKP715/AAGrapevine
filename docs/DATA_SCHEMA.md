@@ -72,7 +72,7 @@ Source file names: `drive.json`, `youtube.json`, `podcasts.json`, `instagram.jso
 | grapevine / lavina | article | publication `gv` / `lv` | `publication`, `issue_label` ("October 2026" / "Septiembre / Octubre 2026"), `issue_key` ("2026-10" / "2026-09"), `topic`, `section`, `author`, `free` (bool\|null) |
 | crawl | pdf | `gvr` `rlv` `catalog` `flyer` `postcard` `news` `guidelines` `order-form` `workbook` `service` `literature` `other` | `host`, `file_url`, `size_bytes`, `pages`, `thumb` (site-relative path or null), `referrers` [{`url`,`title`}], `upload_month` ("2026-02"), `link_texts` [..] |
 | drive | document / slides / photo / video_file / form | `reports` `notes` `slides` `flyers` `photos` `workshops` `announcements` `forms` `other` | `file_id`, `mime`, `panel` (77), `panel_label`, `path` ["photos","WhatsApp"], `album` (sub-folder name or null), `view_url`, `preview_url`, `download_url`, `thumb_url`, `image_url`, `is_image`, `is_video`, `is_pdf` |
-| committee / drive / calendar | event | `committee` `recurring` `flyer` `gv-calendar` `lv-calendar` `manual` `ics` | `start` (ISO datetime or date), `end`, `all_day`, `location`, `online_url`, `flyer_url`, `flyer_thumb`, `city`, `state` (+ `recurring`, `series`, `rule`, `recurrence_label` — see §5; manual: `own_i18n`) |
+| committee / drive / calendar | event | `committee` `recurring` `flyer` `gv-calendar` `lv-calendar` `manual` `ics` `neta65` | `start` (ISO datetime or date), `end` (for an all-day event: the LAST day, inclusive), `all_day`, `location`, `online_url`, `flyer_url`, `flyer_thumb`, `city`, `state`, `tentative` (present, `true`, only on an event whose details are not final) (+ `recurring`, `series`, `rule`, `recurrence_label` — see §5; manual: `own_i18n`; .ics feeds: `feed`, `uid`) |
 | committee / drive | announcement | `manual` / `drive` | `body_md` (original-language Markdown), `expires` (date|null), `pinned` (bool); content/announcements: `own_i18n` (below) |
 
 `editorial.json` items (kind `topic`): `extra` = `publication`, `issue_label`, `deadline` (date\|null), `theme`.
@@ -81,7 +81,11 @@ the author's own words in the other language — `title_es` / `summary_es` (or `
 for a file written in Spanish) → `{"title": {"es": …}, "summary": {"es": …}, "body_md": {"es": …}}`
 (the summary is also that language's `body_md`, the text the pages show). build_data puts them in
 `i18n` instead of a machine translation; only a language or field left out is machine-translated
-(→ `machine`).
+(→ `machine`). Events may also have `{"location": {"es": …}}` from `location_es` (`location_en` in a
+Spanish file): the place in the other language — a place is never machine-translated.
+`extra.tentative` (content/events `tentative: true` / `yes` / `sí`; an .ics feed's `STATUS:TENTATIVE`):
+the details are not final — the pages show "Details to be confirmed" / "Detalles por confirmar" and the
+calendar feeds write `STATUS:TENTATIVE` (every other event `STATUS:CONFIRMED`). Absent otherwise.
 `weekly_open.json`: single item (kind `meeting`) with `extra` = `zoom_id`, `passcode`, `day`, `time`, `url`
 (+ structured `weekday`, `start_local`, `timezone`, `next_start` — see §5).
 Every module adds more `extra` fields than listed here; §5 lists all of them as built.
@@ -95,7 +99,10 @@ items with `status: "gone"` are left out) **plus**:
 "i18n": {
   "title":   { "en": "…", "es": "…" },
   "summary": { "en": "…", "es": "…" },
-  "body_md": { "en": "…", "es": "…" }          // announcements + manual events (render with | md)
+  "body_md": { "en": "…", "es": "…" },         // announcements + manual events (render with | md)
+  "location": { "en": "…", "es": "…" }         // events only, and only when the place differs by language:
+                                               // content/events location_es / location_en, or a place not known
+                                               // yet ("Venue to be announced" → "Lugar por anunciarse")
   // more per kind — see §5 (section, topic, issue_label, album, day, time, when …)
 },
 "machine": ["es"],     // which languages were machine-translated (show a small "auto-translated" note)
@@ -122,7 +129,8 @@ events never appear in What's New (they come round every month; `SCHEDULED_EVENT
 
 Files: `episodes.json`, `videos.json`, `instagram.json`, `articles.json`, `pdfs.json`,
 `drive.json`, `events.json` (committee meetings auto-generated for 12 months + recurring events from
-`recurring_events:` in the config + Drive flyers + TX calendar events + manual), `announcements.json`, `editorial.json`, `weekly_open.json`,
+`recurring_events:` in the config + Drive flyers + TX calendar events + manual + the optional
+`sources.ics_feeds` calendars — each real event ONCE, see *Events from several places* in §5), `announcements.json`, `editorial.json`, `weekly_open.json`,
 `whatsnew.json` (newest 150 across all sources, sorted by date desc),
 `spotlight.json` (published-writers spotlight, below), `status.json` (below),
 `districts.json` (from `content/districts.yml`).
@@ -182,10 +190,34 @@ Settings: `config/site.yml` → `spotlight:` (`home_days`, `list_days`, `default
   "counts": { "videos": 528, "episodes": 295, "…": 0, "whatsnew": 150, "districts": 2 },
   "spotlight": { "today": "2026-09-23", "home_days": 60, "list_days": [60, 90],
                  "counts": { "60": { "neta65": 2, "texas": 8, "all": 100 }, "90": { … } }, "items": 156 },
-  "problems": { }          // raw files that were missing/unreadable ("missing" = module never ran), and settings
-                           // build_data could not use: "meeting", "recurring_events", "districts" (text says what)
+  "problems": { },         // raw files that were missing/unreadable ("missing" = module never ran), and settings
+                           // build_data could not use: "meeting" (also a skip_dates value that is not a meeting
+                           // day), "recurring_events", "ics_feeds", "districts" (text says what); and
+                           // "content_events": slips in content/events files that were worked around (a
+                           // `location_es` still saying "Lugar por anunciarse" next to a real `location` …)
+  "feeds": [               // the optional outside calendars (config sources.ics_feeds) — NOT content sources:
+    { "key": "neta-65-workshops", "url": "https://neta65.org/events/category/workshop/list/?ical=1",
+      "label": "NETA 65 workshops", "label_es": "Talleres de NETA 65",
+      "category": "neta65", "group": "neta",       // where its events show on /events/ (neta | calendar)
+      "state": "blocked",      // ok · blocked (the site's bot protection: HTTP 401/403/429, Cloudflare check) ·
+                               // error (no answer, 404/500, not a calendar file) · never (not asked yet)
+      "http_status": 403, "error": "HTTP 403: the site's bot protection (Cloudflare …) turned the robot away",
+      "last_success": null,    // when a calendar file was last read (its copy is used while the feed fails)
+      "last_attempt": "…",     // the last request (at most once a day, whether it worked or not)
+      "checked_this_run": true, "from_copy": false,
+      "events_count": 0,       // events the feed gave this run (from the copy when it failed)
+      "duplicates": 0,         // of those, already on the calendar (content/events, a flyer, the committee
+                               // meeting, a recurring_events date) — shown once
+      "notes": [] }            // for the chair: what the feed says that a content/events file does not
+                               // (its event page on another date, another start time, a venue the file
+                               // still calls "to be announced") — listed in the Actions run summary
+  ]
 }
 ```
+`feeds` is kept apart from `sources` on purpose: the /status/ page explains each feed in plain words
+("Other calendars we read"), and the Actions run summary lists them as information only, so a feed that
+a site's bot protection blocks never counts as failed and never opens the "A content source has stopped
+updating" issue.
 `pending` > 0 means the translation time budget ran out; the rest is translated on the next run.
 `rejected_by_guard` counts sentences whose machine translation was refused (repeated words,
 > 2.5× longer, changed numbers, HTML entities) — those keep their original text.
@@ -261,7 +293,7 @@ it is read once.
 | pdf (`pdfs`) | `host`, `file_url`, `filename`, `size_bytes`, `pages`, `thumb`, `referrers` [{url, title}], `upload_month`, `link_texts`, `event_date`, `doc_lang`, `multilingual` (`true` when one file holds several languages — two or more page languages, language-only links for 2+ languages, or a heading such as "Catalog • Catálogo • Catalogue"; otherwise `null`: such a file takes the host site's language and gets no "(Spanish)" title suffix), `section` (heading on the referring page), `external`, `orphan` | — |
 | topic (`editorial`) | `publication`, `theme`, `evergreen`, and for dated GV themes `issue_key`, `issue_label`, `deadline`, `due_text`, `pdf_url`, `submit_url`, `guidelines_url` | `issue_label` (rules); `theme` when it differs from the title |
 | meeting (`weekly_open`) | `zoom_id`, `zoom_url`, `passcode`, `day`, `time`, `time_central`, `sentence`, `weekday`, `start_local`, `timezone`, `next_start`, `url`, `player_url` | written by rules from weekday/start_local/timezone: `day` ("Wednesdays"/"Miércoles"), `time` ("Noon Eastern"/"mediodía (hora del Este)"), `time_central` ("11:00 AM Central"/"11:00 a. m. (hora del Centro)"), `when` ("Wednesdays at 11:00 AM Central"/"Miércoles a las 11:00 a. m. (hora del Centro)"), `sentence` (join line with Zoom ID + passcode). Machine-translated only if those fields are missing |
-| event (`events`) | common: `start`, `end`, `all_day`, `location`, `online_url`, `flyer_url`, `flyer_thumb`, `city`, `state`, `past`. Committee: `meeting_id`, `passcode`, `recurring`. Recurring (category `recurring`, below): `recurring` (`true`), `series`, `rule`, `recurrence_label`. External calendar: `platform`, `online`, `scope`, `site`, `country`, `website`, `organizer`, `date_text`. Drive flyer: `drive_id`, `is_pdf`, `is_image`. Manual: `body_md`, `slug`, `file`, `own_i18n` | committee meetings and recurring events: fixed human `title`/`summary` in both languages; recurring: `recurrence_label` (rules); manual: `body_md` (+ the file's own `title_es` / `summary_es`, never machine-translated) |
+| event (`events`) | common: `start`, `end`, `all_day`, `location`, `online_url`, `flyer_url`, `flyer_thumb`, `city`, `state`, `past`; `tentative` (`true` only: details to be confirmed), `location_tba` (`true` only: the place is not known yet — "Venue to be announced"; decided by the item's own `location`, by `location_es` / `location_en` only when there is no `location`). Committee: `meeting_id`, `passcode`, `recurring`. Recurring (category `recurring`, below): `recurring` (`true`), `series`, `rule`, `recurrence_label`. External calendar: `platform`, `online`, `scope`, `site`, `country`, `website`, `organizer`, `date_text`. Drive flyer: `drive_id`, `is_pdf`, `is_image`. Manual: `body_md`, `slug`, `file`, `own_i18n`; `also_in_feed` (the key of an .ics feed that lists the same event — also on a flyer, committee or recurring event) + `feed_match` (`url` / `title`). .ics feed (category `neta65` / `ics` / `gv-calendar` / `lv-calendar`, source `calendar`): `feed` (the feed's key), `uid` | committee meetings and recurring events: fixed human `title`/`summary` in both languages; recurring: `recurrence_label` (rules); manual: `body_md` (+ the file's own `title_es` / `summary_es`, never machine-translated); `location` (the file's `location_es` / `location_en`, or the site's own words for a place not known yet — never machine-translated) |
 | document / slides / photo / video_file / form (`drive`) | `file_id`, `mime`, `name`, `panel`, `panel_label`, `path`, `album`, `view_url`, `preview_url`, `download_url`, `thumb_url`, `image_url`, `is_image`, `is_video`, `is_pdf`, `file_type`, `folder_id`, `folder_url`, `folder_chain`, `modified_text`, `size_bytes`, `duration_sec`, `shortcut_id`, `generic_name`, flyers: `event_date`, `event_title`, `event_time`, `event_end_time`, `event_location` / `event_month`, forms: `form_closed`, `form_signin_required` | `album` (photos in a sub-folder) |
 | announcement (`announcements`) | `body_md`, `expires`, `pinned`, `slug`, `file`, `link`, `own_i18n` | `body_md` (+ the file's own `title_es` / `summary_es`) |
 | district (`districts`) | top-level `number`, `name`, `language`, `website`, `gvr_contact`, `meets` (+ any extra YAML keys) | `name`, `meets` |
@@ -299,6 +331,42 @@ calendar feed keeps them for subscribers):
 * Never `is_new`, never in `whatsnew.json`, never in the /events/ "Past events" list. Home, search, the
   digest pages and the e-mail show only the next date of each `series`.
 * Entries with a mistake are skipped; `status.json` → `problems.recurring_events` says which and why.
+
+#### Events from several places; several days (`events.json`)
+* **Several days.** An all-day event's `extra.start` / `extra.end` are dates and `end` is the LAST day
+  (content/events `start: 2027-03-19`, `end: 2027-03-21`; an .ics feed's exclusive `DTEND;VALUE=DATE:20270322`
+  is turned into `2027-03-21`). Its end counts from 23:59 Central on its last day (`event_end_ts`), and like
+  every event it keeps `past: false` for one more day after that (`build_events` cutoff = now − 24 h: an
+  assembly ending Sunday Mar 21 is `past: true` from 23:59 on Monday Mar 22). The pages do not wait for
+  that: they hide it at midnight after its last day (`chicagoDayEndMs`). The pages show a date range; the
+  calendar feeds write `DTSTART;VALUE=DATE:20270319` + `DTEND;VALUE=DATE:20270322`.
+* **Outside calendars** (`sources.ics_feeds`): one item per VEVENT (RRULE expanded; CANCELLED left out), id
+  `ev:ics:<hash of UID + start>`, `source: "calendar"`, `category` = the feed's `category:` (`neta65` or `ics`
+  → shown with the NETA 65 events; `gv-calendar` / `lv-calendar` → with the GV/LV calendars), `url` = the
+  VEVENT's `URL`, `extra.flyer_url` / `flyer_thumb` = its `ATTACH` (an image), `tags` = its `CATEGORIES`,
+  `extra.tentative` = `STATUS:TENTATIVE`, `extra.location` without ", United States". The last good copy of
+  each feed and its last answer are in `data/state/ics_feeds.json`
+  (`{url: {"fetched": last success, "ics": text, "attempted", "state", "http_status", "error"}}`).
+* **One real event, one item.** A feed event that is the same event as one already on the calendar — a
+  content/events file, a dated Drive flyer, the committee meeting or a `recurring_events:` date — is left
+  out. Both must **start the same local day**, and then either link the same event page (URL compared
+  without scheme, `www.`, trailing slash, `?query`, `#fragment` — `neta65.org/event/<slug>`), or have the
+  same shape (both all-day, or both timed and starting at most 2 hours apart; never one over several days
+  against one on a single day — a file without `end` may take the feed's), not two different cities, and
+  titles that name the same event (`similar_titles`: the words that tell events apart — the kind of event
+  included, "workshop", "booth", "assembly" — shared at least 75 %, the shared city and the year ignored;
+  word for word when a city is not known). So a workshop or a booth *at* an assembly, on its first day, is
+  a separate event. The same event page on another date is another date (a series, a page used again,
+  or a date that changed): the feed event is kept. The hand-written item wins and keeps its `own_i18n`;
+  the feed only fills what it leaves out — `flyer_url`, `flyer_thumb`, `online_url` and the event-page
+  `url` (when the file has none) only on a sure match (the same page, or the same start); a missing
+  `location`; a `location` that is "to be announced" (on a sure match: the feed's venue replaces it and
+  a TBA `location_es` is dropped); a missing `end` of the same kind — and the item is named in
+  `extra.also_in_feed` / `extra.feed_match` (`url` / `title`). Nothing is copied onto the committee meeting
+  or a recurring date. Where the feed says something the file does not — its event page on another date
+  (for an upcoming file), another start time, a venue the file still calls "to be announced" —
+  `status.json` `feeds[].notes` says so, for the chair to update the file. The same event in two feeds is
+  kept once.
 
 #### Articles: `extra.geo` and `extra.pub_date` (site files only; build_data.py)
 `extra.geo` = where the writer is from, read from `extra.author_location` by `scripts/sync/geo.py`:

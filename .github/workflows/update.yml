@@ -404,11 +404,47 @@ jobs:
                   notes += [f"- {label}: " + str(w).replace("\n", " ")[:200] for w in warns[:2]]
           if notes:
               lines += ["", "**Notes** (these sources still updated; only look into a note that repeats for a week):", *notes]
-          # Settings build_data could not use (config/site.yml `meeting:` / `recurring_events:`,
-          # content/districts.yml): that part was skipped or corrected, the rest of the site still updated.
+          # Optional outside calendars (config/site.yml sources.ics_feeds) — INFORMATIONAL only: they are
+          # kept apart from the content sources above, so a feed that a site's bot protection blocks
+          # (neta65.org's Cloudflare check) is a notice here, never a warning, and never opens the
+          # "A content source has stopped updating" issue. Its `notes` (the feed gives another date or
+          # time, or a venue a content/events file still calls "to be announced") are notices too.
+          feeds = [f for f in (s.get("feeds") or []) if isinstance(f, dict)]
+          if feeds:
+              words = {"ok": "working", "blocked": "blocked by the site's bot protection",
+                       "error": "not answering", "never": "not checked yet"}
+              lines += ["", "**Other calendars (optional, informational):**"]
+              for f in feeds:
+                  state = str(f.get("state") or "never")
+                  bits = [words.get(state, state)]
+                  if f.get("http_status"):
+                      bits.append(f"HTTP {f['http_status']}")
+                  bits.append(f"{f.get('events_count') or 0} event(s)"
+                              + (f", {f['duplicates']} already on the Events page (shown once)" if f.get("duplicates") else ""))
+                  if state != "ok" and f.get("last_success"):
+                      bits.append(f"last read {str(f['last_success'])[:10]} (that copy is still used)")
+                  if not f.get("checked_this_run"):
+                      bits.append("not asked this run (at most once a day)")
+                  lines.append(f"- {f.get('label') or f.get('url')}: " + " · ".join(bits))
+                  fnotes = [" ".join(str(n).split()) for n in (f.get("notes") or [])][:10]
+                  lines += [f"  - Check: {n.replace('|', '/')}" for n in fnotes]
+                  for n in fnotes:
+                      print(f"::notice title=Check a content/events file ({f.get('label') or f.get('url')})::{n.replace('%', '%25')}")
+                  if state == "blocked" and f.get("checked_this_run"):
+                      print(f"::notice title=Calendar feed blocked ({f.get('label') or f.get('url')})::"
+                            "The site's bot protection turned the robot away, so this calendar can't be read. Until "
+                            "it can, a workshop or assembly shows on the Events page only after someone on the "
+                            "committee adds it by hand to content/events (see content/events/README.md). To fix it, "
+                            "the site's webmaster can let calendar requests through (see the comment above "
+                            "ics_feeds in config/site.yml).")
+          # Settings build_data could not use (config/site.yml `meeting:` / `recurring_events:` /
+          # `sources.ics_feeds:`, content/districts.yml, a slip in a content/events file such as a
+          # location_es left saying "Lugar por anunciarse"): that part was skipped or corrected, the
+          # rest of the site still updated.
           probs = s.get("problems") if isinstance(s.get("problems"), dict) else {}
           settings = [(k, " ".join(str(v).split()).replace("|", "/")[:1000])
-                      for k, v in probs.items() if k in ("meeting", "recurring_events", "districts")]
+                      for k, v in probs.items()
+                      if k in ("meeting", "recurring_events", "ics_feeds", "content_events", "districts")]
           if settings:
               lines += ["", "**Settings problems** (the rest of the site still updated — fix the file and save it again):",
                         *[f"- {msg}" for _k, msg in settings]]

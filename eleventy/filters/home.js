@@ -14,8 +14,9 @@ import path from "node:path";
 // The Library's own rules (which documents, which kit / type, which collections),
 // so the home page's quick links show the same numbers as /library/.
 import { libraryDocs, libraryCollections, docKitType, CATEGORIES, COLLECTIONS } from "./library.js";
-// The id of an event's card on /events/ (a monthly recurring event links there).
-import { eventAnchor } from "./committee.js";
+// The id of an event's card on /events/ (a monthly recurring event links there) and the end of a
+// Central-time day (an all-day event is upcoming through its last day).
+import { eventAnchor, chicagoDayEndMs } from "./committee.js";
 
 const TZ = "America/Chicago";
 const LOCALES = { en: "en-US", es: "es-US" };
@@ -397,26 +398,31 @@ export default function (eleventyConfig, helpers) {
     return lang === "es" ? `${months.toLowerCase()} de ${year}` : `${months} ${year}`;
   });
 
-  /* Upcoming events for the home page (soonest first). The very next committee meeting
-     is already in the hero, so it is skipped; other events come first and at most ONE
-     more committee meeting is added (a row of identical monthly meetings says little).
-     A monthly recurring event (config/site.yml `recurring_events:`, e.g. the booth at
-     CityWide Dallas) shows only its NEXT date, so one series never fills several places. */
+  /* Upcoming events for the home page, shown by date. The very next committee meeting is already
+     in the hero, so it is skipped. The NEXT date of every monthly recurring event (config/site.yml
+     `recurring_events:`, e.g. the booth at CityWide Dallas) always keeps a place — even when several
+     one-off events come sooner — and only its next date (one series never fills several places).
+     The other places go to the soonest one-off events (workshops, assemblies …); a place still free
+     takes at most ONE more committee meeting (a row of identical monthly meetings says little). */
+  const isYmd = (v) => /^\d{4}-\d{2}-\d{2}$/.test(String(v || ""));
+  const evStart = (e) => time((e.extra && e.extra.start) || e.date);
+  // When an event is over: an all-day event at midnight Central after its LAST day (an assembly
+  // Fri–Sun stays upcoming all Sunday); a timed one at its end (no end: 2 hours after the start).
+  const evEnd = (e) => {
+    const x = e.extra || {};
+    const s = x.start || e.date;
+    const last = x.end || (isYmd(s) || x.all_day ? String(s).slice(0, 10) : "");
+    if (isYmd(last)) return chicagoDayEndMs(last);
+    if (x.end) return time(x.end);
+    return evStart(e) + 2 * 3600e3;
+  };
   eleventyConfig.addFilter("homeEvents", (events, next, n = 4) => {
     const now = Date.now();
     const nextT = next && next.start ? time(next.start) : 0;
-    const start = (e) => time((e.extra && e.extra.start) || e.date);
-    const end = (e) => {
-      const x = e.extra || {};
-      if (x.end) return time(x.end);
-      const s = start(e);
-      const dateOnly = x.all_day || /^\d{4}-\d{2}-\d{2}$/.test(String(x.start || e.date || ""));
-      return s + (dateOnly ? 30 : 2) * 3600e3;
-    };
     const series = new Set();
-    const up = arr(events).filter((e) => alive(e) && start(e) && end(e) >= now)
-      .filter((e) => !(e.category === "committee" && nextT && Math.abs(start(e) - nextT) < 36 * 3600e3))
-      .sort((a, b) => start(a) - start(b))
+    const up = arr(events).filter((e) => alive(e) && evStart(e) && evEnd(e) >= now)
+      .filter((e) => !(e.category === "committee" && nextT && Math.abs(evStart(e) - nextT) < 36 * 3600e3))
+      .sort((a, b) => evStart(a) - evStart(b))
       .filter((e) => {
         if (e.category !== "recurring") return true;
         const k = String((e.extra && e.extra.series) || e.id);
@@ -424,10 +430,78 @@ export default function (eleventyConfig, helpers) {
         series.add(k);
         return true;
       });
-    const pick = up.filter((e) => e.category !== "committee").slice(0, n);
+    const monthly = up.filter((e) => e.category === "recurring");                        // next date of each series
+    const oneOff = up.filter((e) => e.category !== "recurring" && e.category !== "committee");
+    // Every series keeps a place, but one place always stays for the soonest one-off event.
+    const reserved = monthly.slice(0, Math.max(0, n - (oneOff.length ? 1 : 0)));
+    const pick = [...reserved, ...oneOff.slice(0, n - reserved.length)];
     const committee = up.find((e) => e.category === "committee");
     if (pick.length < n && committee) pick.push(committee);
-    return pick.sort((a, b) => start(a) - start(b));
+    return pick.sort((a, b) => evStart(a) - evStart(b));
+  });
+
+  /* How a home-page event card shows its date, time and place (the same rules as /events/):
+     { tile: {mon, day, wd, range}, srDate, when, location, tba, tentative, multiDay }.
+     An event over several days (an Area assembly Fri–Sun) gets a date RANGE — on the tile
+     ("MAR · 19–21 · Fri–Sun") and as its "when" line ("Fri, Mar 19 – Sun, Mar 21, 2027");
+     the place is in the page language (content/events `location_es` → i18n.location). */
+  eleventyConfig.addFilter("homeEventInfo", (e, lang = "en") => {
+    const x = (e && e.extra) || {};
+    const loc = LOCALES[lang] || "en-US";
+    const s = x.start || (e && e.date) || "";
+    const dateOnly = !!x.all_day || isYmd(s);
+    const ymdOf = (v) => (isYmd(v) ? String(v) : v ? ymdCentral(time(v)) : "");
+    const startYmd = ymdOf(s);
+    let endYmd = x.end ? (isYmd(x.end) ? String(x.end) : ymdCentral(time(x.end) - 1)) : startYmd;
+    if (!endYmd || endYmd < startYmd) endYmd = startYmd;
+    const multiDay = !!startYmd && endYmd !== startYmd && (dateOnly || time(x.end) - time(s) > 18 * 3600e3);
+    // date-only values are read at noon UTC: the same calendar day in Central time
+    const at = (ymdOrIso) => (isYmd(ymdOrIso) ? new Date(ymdOrIso + "T12:00:00Z") : new Date(time(ymdOrIso)));
+    const f = (d, o) => {
+      try {
+        const out = new Intl.DateTimeFormat(loc, { timeZone: TZ, ...o }).format(d);
+        return lang === "es" && helpers.esMeridiem ? helpers.esMeridiem(out) : out;
+      } catch { return ""; }
+    };
+    const fr = (a, b, o) => {
+      try {
+        const out = new Intl.DateTimeFormat(loc, { timeZone: TZ, ...o }).formatRange(a, b);
+        return lang === "es" && helpers.esMeridiem ? helpers.esMeridiem(out) : out;
+      } catch { return ""; }
+    };
+    const capital = (v) => (v ? v.charAt(0).toUpperCase() + v.slice(1) : v);
+    const a = at(dateOnly ? startYmd : s);
+    const b = multiDay ? (dateOnly ? at(endYmd) : new Date(time(x.end) - 1)) : a;
+    const part = (d, o) => f(d, o).replace(/\./g, "");
+    const tile = { mon: part(a, { month: "short" }), day: part(a, { day: "numeric" }), wd: part(a, { weekday: "short" }), range: multiDay };
+    if (multiDay) {
+      const mon2 = part(b, { month: "short" });
+      if (mon2 !== tile.mon) tile.mon += "–" + mon2;
+      tile.day += "–" + part(b, { day: "numeric" });
+      tile.wd += "–" + part(b, { weekday: "short" });
+    }
+    let when;
+    if (multiDay) {
+      when = dateOnly
+        ? capital(fr(a, b, { weekday: "short", month: "short", day: "numeric", year: "numeric" }))
+        : capital(fr(time(s), time(x.end), { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit", timeZoneName: "short" }));
+    } else if (dateOnly) {
+      // An outside calendar that only gives a date: the time isn't listed (as on /events/), not "all day".
+      when = translateKey(e && e.source === "calendar" ? "home.time_not_listed" : "home.all_day", lang);
+    } else {
+      const st = time(s), en = time(x.end);
+      when = en > st ? fr(st, en, { hour: "numeric", minute: "2-digit", timeZoneName: "short" }) : f(st, { hour: "numeric", minute: "2-digit", timeZoneName: "short" });
+    }
+    const srDate = multiDay
+      ? capital(fr(a, b, { weekday: "long", month: "long", day: "numeric", year: "numeric" }))
+      : capital(f(a, { weekday: "long", month: "long", day: "numeric", year: "numeric" }));
+    const place = String(pickLang(e, "location", lang) || x.location || x.city || "").trim();
+    return {
+      tile, when, srDate, multiDay,
+      location: place,
+      tba: !!place && x.location_tba === true,
+      tentative: x.tentative === true,
+    };
   });
 
   /* The id of an event's card on /events/ ("/events/#" + this): a monthly recurring event's card

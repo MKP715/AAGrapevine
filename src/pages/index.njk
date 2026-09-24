@@ -706,32 +706,35 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
     <ul class="grid grid-cols-1 gap-4 sm:grid-cols-2 {{ 'lg:grid-cols-4' if cols >= 4 else ('lg:grid-cols-3' if cols == 3 else '') }}" role="list">
       {% for e in evs %}
       {%- set x = e.extra or {} -%}
-      {%- set st = x.start or e.date -%}
-      {%- set dateOnly = x.all_day or (st | length) == 10 -%}
-      {%- if e.category == "committee" or e.category == "gv-calendar" %}{% set tone = "gv" %}{% elif e.category == "lv-calendar" %}{% set tone = "lv" %}{% elif e.category == "flyer" or e.category == "recurring" %}{% set tone = "vine" %}{% else %}{% set tone = "grape" %}{% endif -%}
+      {#- date tile, "when" line and place — the same rules as /events/ (a date RANGE for an event over
+          several days, the place in the page language, "Venue to be announced" without a map pin) -#}
+      {%- set info = e | homeEventInfo(L) -%}
+      {%- if e.category == "committee" or e.category == "gv-calendar" %}{% set tone = "gv" %}{% elif e.category == "lv-calendar" %}{% set tone = "lv" %}{% elif e.category == "flyer" or e.category == "recurring" or e.category == "neta65" %}{% set tone = "vine" %}{% else %}{% set tone = "grape" %}{% endif -%}
       {#- A monthly recurring event (e.g. the CityWide Dallas booth) opens its card on /events/ -#}
       {%- set href = (("/events/#" ~ (e | homeEventAnchor)) if e.category == "recurring" else (e.url or x.flyer_url or x.online_url or "/events/")) | lurl(L) -%}
       {%- set et = e | tx("title", L) -%}
       <li>
         <article class="card card-link group relative flex h-full gap-4 p-4 sm:flex-col sm:p-5">
-          <div class="home-datetile home-tone-{{ tone }}" aria-hidden="true">
-            <span class="home-datetile-month">{{ st | fmtDate(L, "monthShort") | replace(".", "") }}</span>
-            <span class="home-datetile-day">{{ st | fmtDate(L, "day") }}</span>
-            <span class="home-datetile-wd">{{ st | fmtDate(L, "weekday") | replace(".", "") }}</span>
+          <div class="home-datetile home-tone-{{ tone }}{{ ' is-range' if info.tile.range }}" aria-hidden="true">
+            <span class="home-datetile-month">{{ info.tile.mon }}</span>
+            <span class="home-datetile-day">{{ info.tile.day }}</span>
+            <span class="home-datetile-wd">{{ info.tile.wd }}</span>
           </div>
           <div class="min-w-0 flex-1">
             <p class="flex flex-wrap items-center gap-1.5">
               <span class="{{ 'badge-' ~ tone }}">{{ ("home.evcat." ~ (e.category or "manual")) | t(L) }}</span>
+              {% if info.tentative %}{{ ui.tentativeBadge(L) }}{% endif %}
               {% if e.lang and e.lang != L and e.lang != "und" and ((e | machineFor(L)) or et == e.title) %}<span class="badge-muted uppercase" title="{{ ('lang.' ~ e.lang) | t(L) }}">{{ e.lang }}</span>{% endif %}
             </p>
             <h3 class="mt-2 font-display text-lg font-semibold leading-snug text-ink"{% if e.lang and e.lang != L and e.lang != "und" and et == e.title %} lang="{{ e.lang }}"{% endif %}>
               <a href="{{ href }}" class="no-underline after:absolute after:inset-0 group-hover:text-gv"{% if href.startsWith('http') %} target="_blank" rel="noopener"{% endif %}>{{ et }}</a>
             </h3>
-            <p class="sr-only">{{ st | fmtDate(L, "long") }}</p>
+            <p class="sr-only">{{ info.srDate }}</p>
             <ul class="mt-2 space-y-1 text-sm text-muted">
               {#- An outside calendar that only gives a date: the time isn't listed (same wording as /events/), not "all day". -#}
-              <li class="flex items-start gap-1.5">{% icon "clock", "mt-0.5 size-4 shrink-0 text-faint" %}{{ (("home.time_not_listed" if e.source == "calendar" else "home.all_day") | t(L)) if dateOnly else (st | homeTimeRange(x.end, L)) }}</li>
-              {% if x.location or x.city %}{% set locIcon = "video" if (x.online_url and not x.city) else "map-pin" %}<li class="flex items-center gap-1.5">{% icon locIcon, "size-4 shrink-0 text-faint" %}<span class="truncate">{{ x.location or x.city }}</span></li>{% endif %}
+              <li class="flex items-start gap-1.5">{% set whenIcon = "calendar-range" if info.multiDay else "clock" %}{% icon whenIcon, "mt-0.5 size-4 shrink-0 text-faint" %}{{ info.when }}</li>
+              {% if info.location and info.tba %}<li class="flex items-center gap-1.5 italic">{% icon "hourglass", "size-4 shrink-0 text-faint" %}<span class="truncate">{{ info.location }}</span></li>
+              {% elif info.location %}{% set locIcon = "video" if (x.online_url and not x.city) else "map-pin" %}<li class="flex items-center gap-1.5">{% icon locIcon, "size-4 shrink-0 text-faint" %}<span class="truncate">{{ info.location }}</span></li>{% endif %}
             </ul>
           </div>
         </article>

@@ -105,11 +105,12 @@ pageScripts: ["/assets/js/committee.js"]
         {% endif %}
         {% if ne %}
         <a href="{{ '/events/' | lurl(lang) }}#{{ ne.anchor }}" class="card card-link cm-mini-card group">
-          <span class="cm-date-tile cm-tone-{{ 'lv' if ne.category == 'lv-calendar' else ('gv' if ne.category == 'gv-calendar' else 'vine') }}" aria-hidden="true"><span class="cm-tile-mon">{{ ne.tile.mon }}</span><span class="cm-tile-day">{{ ne.tile.day }}</span><span class="cm-tile-wd">{{ ne.tile.wd }}</span></span>
+          <span class="cm-date-tile cm-tone-{{ 'lv' if ne.category == 'lv-calendar' else ('gv' if ne.category == 'gv-calendar' else 'vine') }}{{ ' cm-tile-range' if ne.tile.range }}" aria-hidden="true"><span class="cm-tile-mon">{{ ne.tile.mon }}</span><span class="cm-tile-day">{{ ne.tile.day }}</span><span class="cm-tile-wd">{{ ne.tile.wd }}</span></span>
           <span class="min-w-0">
             <span class="eyebrow block">{{ "committee.ann.next_event" | t(lang) }}</span>
             <span class="mt-1 block font-display text-lg font-semibold leading-snug text-ink group-hover:text-gv">{{ ne.title }}</span>
-            <span class="mt-1 block text-sm text-muted">{{ ne.dateLabel }} · {{ ne.timeLabel }}</span>
+            <span class="mt-1 block text-sm text-muted">{{ ne.shareWhen }}</span>
+            {% if ne.tentative %}<span class="mt-1.5 block">{{ ui.tentativeBadge(lang) }}</span>{% endif %}
           </span>
         </a>
         {% else %}

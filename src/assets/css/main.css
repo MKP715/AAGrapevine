@@ -167,6 +167,9 @@
 @utility badge-vine { @apply badge bg-vine-soft text-vine; }
 @utility badge-muted { @apply badge bg-surface-2 text-muted; }
 @utility badge-new { @apply badge bg-vine text-white dark:text-paper; }
+/* "Details to be confirmed" (an event whose date, place or times are not final): a dashed outline, so it
+   never reads as a category badge. lv-strong on lv-soft keeps the small text above 4.5:1 in both themes. */
+@utility badge-tbc { @apply badge border border-dashed border-lv bg-lv-soft text-lv-strong; }
 
 @utility chip { @apply inline-flex min-h-9 cursor-pointer items-center gap-1.5 rounded-full border border-line bg-surface px-3.5 text-sm font-medium text-muted transition hover:border-gv hover:text-ink;
   &[aria-pressed="true"], &.is-active { @apply border-gv bg-gv text-white dark:text-paper; } }

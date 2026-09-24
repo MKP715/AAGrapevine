@@ -148,7 +148,7 @@ pageScripts: ["/assets/vendor/minisearch.js", "/assets/js/search.js"]
 
 {#- icons + strings for search.js -#}
 <template id="ss-icons">
-  {%- for name in ["file-text", "book-open", "pen-line", "presentation", "file-pen-line", "headphones", "circle-play", "instagram", "images", "megaphone", "calendar-days", "video", "languages", "arrow-up-right", "house", "sparkles", "library", "users", "folder-open", "badge-check", "map", "mail-open", "info", "mail", "qr-code", "search", "activity", "hand-heart", "award"] %}
+  {%- for name in ["file-text", "book-open", "pen-line", "presentation", "file-pen-line", "headphones", "circle-play", "instagram", "images", "megaphone", "calendar-days", "video", "languages", "arrow-up-right", "house", "sparkles", "library", "users", "folder-open", "badge-check", "map", "mail-open", "info", "mail", "qr-code", "search", "activity", "hand-heart", "award", "calendar-clock"] %}
   <i data-icon="{{ name }}">{% icon name, "size-4" %}</i>
   {%- endfor %}
 </template>
@@ -178,6 +178,7 @@ pageScripts: ["/assets/vendor/minisearch.js", "/assets/js/search.js"]
     count: "search.count" | t(lang), countOne: "search.count_one" | t(lang), countIn: "search.count_in" | t(lang),
     noneTitle: "search.none_title" | t(lang), noneKind: "search.none_kind" | t(lang), isNew: "common.new" | t(lang),
     auto: "common.auto_translated" | t(lang), autoHelp: "common.auto_translated_help" | t(lang), external: "search.external" | t(lang),
-    subscriber: "search.subscriber" | t(lang), subscriberTitle: "search.subscriber_title" | t(lang), byline: "search.byline" | t(lang)
+    subscriber: "search.subscriber" | t(lang), subscriberTitle: "search.subscriber_title" | t(lang), byline: "search.byline" | t(lang),
+    tbc: "committee.events.tentative" | t(lang), tbcHelp: "committee.events.tentative_help" | t(lang)
   }
 } | jsonScript | safe }}</script>

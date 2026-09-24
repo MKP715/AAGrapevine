@@ -126,6 +126,33 @@ def nth_weekday(y: int, m: int, weekday: int, n: int) -> date | None:
     return d if d.month == m else None
 
 
+ORD_SHORT = {1: "1st", 2: "2nd", 3: "3rd", 4: "4th", 5: "5th", -1: "last"}        # (settings messages)
+DAY_NAMES_EN = ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+
+
+def check_skip_dates(values: Any, weekday: int, week_of_month: int) -> tuple[set[str], list[str]]:
+    """`skip_dates` from the settings (the committee meeting's or a recurring event's) → (the dates that
+    really are one of the rule's days, notes for the chair). A value that is not a date, or not the rule's
+    day of its month (the Sunday, the 1st Saturday, the wrong month …), would skip nothing: it is ignored
+    and a note says which date to use instead."""
+    ok: set[str] = set()
+    notes: list[str] = []
+    for s in values if isinstance(values, (list, tuple)) else [] if values in (None, "") else [values]:
+        ymd = ymd_text(s)
+        if not ymd:
+            notes.append(f"skip date “{s}” is not a date like \"2027-01-09\" — ignored")
+            continue
+        d = date.fromisoformat(ymd)
+        day = nth_weekday(d.year, d.month, weekday, week_of_month)
+        if day != d:
+            nth = f"{ORD_SHORT[week_of_month]} {DAY_NAMES_EN[weekday]}"
+            notes.append(f"skip date “{ymd}” is not the {nth} of its month — ignored ("
+                         + (f"that month's is {day.isoformat()})" if day else f"that month has no {nth})"))
+            continue
+        ok.add(ymd)
+    return ok, notes
+
+
 def upcoming_rule_dates(rule: MonthlyRule, count: int, tz: ZoneInfo, now: datetime | None = None,
                         include_recent_days: int = 0, horizon_months: int | None = None) -> list[dict]:
     """The next `count` dates of a monthly rule that are not over yet (end ≥ now − include_recent_days),
@@ -174,8 +201,16 @@ def meeting_rule(cfg: dict | None) -> MonthlyRule:
         n = 3
     sh, sm = parse_hhmm(cfg.get("start"), (19, 0))
     eh, em = parse_hhmm(cfg.get("end"), ((sh + 1) % 24, sm))
-    return MonthlyRule(week_of_month=n, weekday=wd, start=(sh, sm), end=(eh, em),
-                       skip=frozenset(str(s) for s in (cfg.get("skip_dates") or [])))
+    # Only real meeting days are skipped; anything else is ignored (meeting_skip_notes() tells the chair).
+    skip, _notes = check_skip_dates(cfg.get("skip_dates"), wd, n)
+    return MonthlyRule(week_of_month=n, weekday=wd, start=(sh, sm), end=(eh, em), skip=frozenset(skip))
+
+
+def meeting_skip_notes(cfg: dict | None) -> list[str]:
+    """Notes about config/site.yml `meeting: skip_dates` — the same check as a recurring event's skip dates
+    (build_data puts them in status.json problems.meeting → the Actions run summary)."""
+    rule = meeting_rule(cfg)
+    return check_skip_dates((cfg or {}).get("skip_dates"), rule.weekday, rule.week_of_month)[1]
 
 
 def upcoming_meetings(count: int = 12, include_recent_days: int = 0) -> list[dict]:

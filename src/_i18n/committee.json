@@ -523,6 +523,18 @@
     "en": "Every month",
     "es": "Cada mes"
   },
+  "committee.events.tentative": {
+    "en": "Details to be confirmed",
+    "es": "Detalles por confirmar"
+  },
+  "committee.events.tentative_help": {
+    "en": "The date, place or times may still change. Check again closer to the day.",
+    "es": "La fecha, el lugar o el horario todavía pueden cambiar. Vuelve a revisar unos días antes."
+  },
+  "committee.events.n_days": {
+    "en": "{n} days",
+    "es": "{n} días"
+  },
   "committee.events.group.committee": {
     "en": "Committee meeting",
     "es": "Reunión del comité"

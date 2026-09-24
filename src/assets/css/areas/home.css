@@ -497,10 +497,14 @@ lite-youtube.home-yt > .lyt-playbtn:focus-visible { outline: 3px solid #fff; out
 .home-datetile-day { margin-top: 0.2rem; font-family: var(--font-display); font-size: 1.9rem; font-weight: 600; }
 /* No opacity here: blending the tone into the soft tile drops the small text below 4.5:1. */
 .home-datetile-wd { margin-top: 0.25rem; font-size: 0.68rem; font-weight: 500; text-transform: capitalize; }
+/* A date RANGE (an event over several days: "MAR · 19–21 · Fri–Sun"): smaller figures so it fits. */
+.home-datetile.is-range .home-datetile-day { font-size: 1.25rem; white-space: nowrap; letter-spacing: -0.01em; }
+.home-datetile.is-range .home-datetile-month, .home-datetile.is-range .home-datetile-wd { white-space: nowrap; letter-spacing: 0.04em; }
 @media (width >= 40rem) {
   .home-datetile { flex-direction: row; align-items: baseline; justify-content: flex-start; gap: 0.5rem; width: auto; align-self: flex-start; padding: 0.5rem 0.8rem; }
   .home-datetile-day { margin-top: 0; font-size: 1.6rem; }
   .home-datetile-wd { margin-top: 0; }
+  .home-datetile.is-range .home-datetile-day { font-size: 1.4rem; }
 }
 
 /* ---------- 8. Library band ---------- */

@@ -1,7 +1,7 @@
 {
  "source": "manual_events",
- "updated": "2026-09-24T11:31:14Z",
- "attempted": "2026-09-24T11:31:14Z",
+ "updated": "2026-09-24T12:59:25Z",
+ "attempted": "2026-09-24T12:59:25Z",
  "ok": true,
  "error": null,
  "stats": {
@@ -43,6 +43,7 @@
     "body_md": "Area 65 assembly (Panel 77). Host districts, venue and format are still to be confirmed.",
     "slug": "2027-09-17-neta65-fall-assembly",
     "file": "content/events/2027-09-17-neta65-fall-assembly.md",
+    "tentative": true,
     "own_i18n": {
      "title": {
       "es": "Asamblea de Otoño 2027 de NETA 65"
@@ -52,6 +53,9 @@
      },
      "body_md": {
       "es": "Asamblea del Área 65 (Panel 77). Los distritos anfitriones, el lugar y el formato se confirmarán más adelante."
+     },
+     "location": {
+      "es": "Lugar por anunciarse"
      }
     }
    }
@@ -88,6 +92,7 @@
     "body_md": "Area 65 assembly (Panel 77), hosted by District 91. The venue will be announced soon.",
     "slug": "2027-06-25-neta65-summer-assembly",
     "file": "content/events/2027-06-25-neta65-summer-assembly.md",
+    "tentative": true,
     "own_i18n": {
      "title": {
       "es": "Asamblea de Verano 2027 de NETA 65"
@@ -97,6 +102,9 @@
      },
      "body_md": {
       "es": "Asamblea del Área 65 (Panel 77), organizada por el Distrito 91. El lugar se anunciará pronto."
+     },
+     "location": {
+      "es": "Lugar por anunciarse"
      }
     }
    }

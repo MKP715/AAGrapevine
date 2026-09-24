@@ -133,7 +133,7 @@ pageScripts: ["/assets/js/committee.js"]
       {% for ev in grp.items %}
       <li id="{{ ev.anchor }}" class="scroll-mt-28" data-group="{{ ev.group }}" data-committee="{{ '1' if ev.committee else '0' }}" data-cm-expire="{{ ev.expireIso }}" x-show="show($el)">
         <article class="card cm-event">
-          <div class="cm-date-tile cm-tone-{{ 'gv' if ev.committee or ev.category == 'gv-calendar' else ('lv' if ev.category == 'lv-calendar' else 'vine') }}" aria-hidden="true">
+          <div class="cm-date-tile cm-tone-{{ 'gv' if ev.committee or ev.category == 'gv-calendar' else ('lv' if ev.category == 'lv-calendar' else 'vine') }}{{ ' cm-tile-range' if ev.tile.range }}" aria-hidden="true">
             <span class="cm-tile-mon">{{ ev.tile.mon }}</span>
             <span class="cm-tile-day">{{ ev.tile.day }}</span>
             <span class="cm-tile-wd">{{ ev.tile.wd }}</span>
@@ -141,6 +141,7 @@ pageScripts: ["/assets/js/committee.js"]
           <div class="min-w-0 flex-1">
             <div class="flex flex-wrap items-center gap-1.5">
               {{ groupBadge(ev) }}
+              {% if ev.tentative %}{{ ui.tentativeBadge(lang) }}{% endif %}
               {% if ev.recurring %}<span class="badge-muted">{% icon "repeat", "size-3" %} {{ "committee.events.badge_recurring" | t(lang) }}</span>{% endif %}
               {% if ev.isNew %}<span class="badge-new">{{ "common.new" | t(lang) }}</span>{% endif %}
               {% if not ev.committee and not ev.ownWords %}{{ ui.langPill(ev.item, lang) }}{% endif %}
@@ -150,10 +151,15 @@ pageScripts: ["/assets/js/committee.js"]
               <a href="{{ ev.link }}" class="hover:text-gv"{% if ev.linkExternal %} target="_blank" rel="noopener"{% endif %}>{{ ev.title }}</a>
               {%- else -%}{{ ev.title }}{%- endif -%}
             </h3>
-            <p class="sr-only">{{ ev.dateLabel }}</p>
+            {#- the tile is hidden from screen readers: the date is read here (a range is in the list below) -#}
+            {% if not ev.multiDay %}<p class="sr-only">{{ ev.dateLabel }}</p>{% endif %}
             <ul class="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted">
-              <li class="inline-flex items-center gap-1.5">{% icon "clock-3", "size-4 text-faint" %} {{ ev.timeLabel }}</li>
-              {% if ev.location %}<li class="inline-flex items-center gap-1.5">{% set locIcon = "video" if ev.committee else "map-pin" %}{% icon locIcon, "size-4 text-faint" %} {{ ev.location }}</li>{% endif %}
+              {#- Several days (an Area assembly): the date range; the tile shows it too -#}
+              {% if ev.multiDay %}<li class="inline-flex items-center gap-1.5 font-medium text-ink">{% icon "calendar-range", "size-4 text-faint" %} {{ ev.rangeLabel }}</li>{% endif %}
+              {% if ev.timeLabel %}<li class="inline-flex items-center gap-1.5">{% icon "clock-3", "size-4 text-faint" %} {{ ev.timeLabel }}</li>{% endif %}
+              {#- A place not known yet ("Venue to be announced"): plain italic text, no map pin -#}
+              {% if ev.location and ev.locationTba %}<li class="inline-flex items-center gap-1.5 italic">{% icon "hourglass", "size-4 text-faint" %} {{ ev.location }}</li>
+              {% elif ev.location %}<li class="inline-flex items-center gap-1.5">{% set locIcon = "video" if ev.committee else "map-pin" %}{% icon locIcon, "size-4 text-faint" %} {{ ev.location }}</li>{% endif %}
               {% if ev.isOnline %}<li class="inline-flex items-center gap-1.5">{% icon "video", "size-4 text-faint" %} {{ ("committee.events.online_on" | t(lang, { platform: ev.platform })) if ev.platform else ("committee.events.online" | t(lang)) }}</li>{% endif %}
               {% if ev.recurrenceDay %}<li class="inline-flex items-center gap-1.5">{% icon "repeat", "size-4 text-faint" %} {{ ev.recurrenceDay }}</li>{% endif %}
             </ul>
@@ -179,7 +185,7 @@ pageScripts: ["/assets/js/committee.js"]
               {% if ev.link and ev.linkExternal and ev.link != (ev.flyer.view if ev.flyer else "") %}
               <a class="btn-ghost btn-sm" href="{{ ev.link }}" target="_blank" rel="noopener">{% icon "external-link", "size-4" %} {{ "committee.events.details" | t(lang) }}</a>
               {% endif %}
-              <button type="button" class="btn-ghost btn-sm" data-share="{{ pageAbs }}#{{ ev.anchor }}" data-share-title="{{ ev.title }}" data-share-text="{{ ev.dateLabel }} · {{ ev.timeLabel }}">{% icon "share-2", "size-4" %} <span class="sr-only sm:not-sr-only">{{ "common.share" | t(lang) }}</span></button>
+              <button type="button" class="btn-ghost btn-sm" data-share="{{ pageAbs }}#{{ ev.anchor }}" data-share-title="{{ ev.title }}" data-share-text="{{ ev.shareWhen }}">{% icon "share-2", "size-4" %} <span class="sr-only sm:not-sr-only">{{ "common.share" | t(lang) }}</span></button>
             </div>
           </div>
           {% if ev.flyer and ev.flyer.thumb %}
@@ -251,7 +257,7 @@ pageScripts: ["/assets/js/committee.js"]
       {% for ev in past | limit(40) %}
       <li id="{{ ev.anchor }}" class="flex scroll-mt-28 flex-wrap items-center gap-x-4 gap-y-1 px-5 py-3.5 sm:px-6">
         <time class="w-32 shrink-0 text-sm font-semibold text-muted" datetime="{{ ev.startIso }}">{{ ev.startIso | fmtDate(lang, "short") }}</time>
-        <span class="min-w-[11rem] flex-1 break-words font-medium text-ink">{{ ev.title }}{% if ev.location %} <span class="text-sm font-normal text-muted">· {{ ev.location }}</span>{% endif %}</span>
+        <span class="min-w-[11rem] flex-1 break-words font-medium text-ink">{{ ev.title }}{% if ev.location and not ev.locationTba %} <span class="text-sm font-normal text-muted">· {{ ev.location }}</span>{% endif %}</span>
         {% if ev.flyer %}<a class="btn-ghost btn-sm" href="{{ ev.flyer.view }}" target="_blank" rel="noopener" data-cm-preview="{{ ev.flyer.preview }}" data-cm-title="{{ ev.title }}" data-cm-open="{{ ev.flyer.view }}">{% icon "eye", "size-4" %} {{ "committee.events.view_flyer" | t(lang) }}</a>
         {% elif ev.link and ev.linkExternal %}<a class="btn-ghost btn-sm" href="{{ ev.link }}" target="_blank" rel="noopener">{% icon "external-link", "size-4" %} {{ "committee.events.details" | t(lang) }}</a>{% endif %}
       </li>

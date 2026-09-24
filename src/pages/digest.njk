@@ -242,13 +242,19 @@ pageScripts: ["/assets/js/community.js"]
             {%- set otherTitle = ev | tx("title", other) -%}
             <li class="cm-avoid-break flex items-start gap-4 py-3">
               <span class="cm-datebox grid w-12 shrink-0 place-items-center rounded-lg bg-surface-2 py-1.5 text-center">
-                <span class="text-[0.62rem] font-bold uppercase tracking-wider text-vine">{{ (ev.extra.start or ev.date) | fmtDate(lang, "monthShort") }}</span>
-                <span class="font-display text-lg font-semibold leading-none text-ink">{{ (ev.extra.start or ev.date) | fmtDate(lang, "day") }}</span>
+                {#- "APR–MAY" / "30–2" for an event over several days that ends in another month -#}
+                {%- set monthBox = ev | cmEventMonthBox(lang) -%}
+                <span class="whitespace-nowrap {{ 'text-[0.55rem] tracking-normal' if '–' in monthBox else 'text-[0.62rem] tracking-wider' }} font-bold uppercase text-vine">{{ monthBox }}</span>
+                {#- "19–21" for an event over several days (an Area assembly) -#}
+                {%- set dayBox = ev | cmEventDayBox(lang) -%}
+                <span class="font-display {{ 'text-sm' if '–' in dayBox else 'text-lg' }} whitespace-nowrap font-semibold leading-none text-ink">{{ dayBox }}</span>
               </span>
               <div class="min-w-0 flex-1">
                 {% if ev.url %}<a class="font-semibold leading-snug text-ink no-underline hover:text-gv" href="{{ ev | cmHref(lang) }}"{% if ev._ext %} target="_blank" rel="noopener"{% endif %}>{{ title }}</a>{% else %}<span class="font-semibold text-ink">{{ title }}</span>{% endif %}
                 {% if otherTitle and otherTitle != title %}<p class="text-sm italic text-muted" x-show="bi" x-cloak lang="{{ other }}">{{ otherTitle }}</p>{% endif %}
-                <p class="mt-0.5 text-xs text-muted">{{ ev | cmEventWhen(lang) }}{% if ev._recurring %} ·&nbsp;<span class="whitespace-nowrap">{% icon "repeat", "inline size-3 align-[-0.1em]" %} {{ "community.digest.every_month" | t(lang) }}</span>{% endif %}{% if ev.extra.location %} ·&nbsp;{{ ev.extra.location }}{% endif %} {{ ui.autoNote(ev, lang) }}</p>
+                {%- set where = ev | cmEventWhere(lang) -%}
+                <p class="mt-0.5 text-xs text-muted">{{ ev | cmEventWhen(lang) }}{% if ev._recurring %} ·&nbsp;<span class="whitespace-nowrap">{% icon "repeat", "inline size-3 align-[-0.1em]" %} {{ "community.digest.every_month" | t(lang) }}</span>{% endif %}{% if where %} ·&nbsp;<span{% if ev.extra.location_tba %} class="italic"{% endif %}>{{ where }}</span>{% endif %} {{ ui.autoNote(ev, lang) }}</p>
+                {% if ev._tentative %}<p class="mt-1">{{ ui.tentativeBadge(lang) }}</p>{% endif %}
               </div>
             </li>
             {% endfor %}

@@ -167,6 +167,12 @@
   .cm-tile-mon { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; }
   .cm-tile-day { font-family: var(--font-display); font-size: 2rem; font-weight: 600; line-height: 1; color: var(--c-ink); }
   .cm-tile-wd { margin-top: 0.2rem; font-size: 0.7rem; font-weight: 500; color: var(--c-muted); }
+  /* A date RANGE (an event over several days: "MAR · 19–21 · Fri–Sun") — smaller figures so "19–21" fits. */
+  .cm-tile-range .cm-tile-day { font-size: 1.3rem; letter-spacing: -0.01em; white-space: nowrap; }
+  .cm-tile-range .cm-tile-mon, .cm-tile-range .cm-tile-wd { white-space: nowrap; font-size: 0.62rem; }
+  .cm-tile-range .cm-tile-mon { letter-spacing: 0.08em; }
+  @media (width >= 40rem) { .cm-tile-range .cm-tile-day { font-size: 1.5rem; } }
+  .cm-mini-card .cm-tile-range .cm-tile-day { font-size: 1.15rem; }
   .cm-tone-light { --tone: #fff; --tone-soft: rgb(255 255 255 / 0.12); border-color: rgb(255 255 255 / 0.2); }
   .cm-tone-light .cm-tile-day { color: #fff; }
   .cm-tone-light .cm-tile-wd { color: rgb(255 255 255 / 0.7); }

@@ -611,6 +611,7 @@ export function searchIndex(db, nav, lang, helpers, site) {
     if (e.n) o.n = 1;
     if (e.pw) o.pw = 1;
     if (e.z) o.z = 1;
+    if (e.tb) o.tb = 1;
     if (e.ic) o.ic = e.ic;
     if (e.a && squish(e.a)) o.a = squish(e.a);
     out.push(o);
@@ -888,12 +889,20 @@ export function searchIndex(db, nav, lang, helpers, site) {
       const own = typeof committee.ownLangs === "function"
         ? committee.ownLangs(it).includes(lang)
         : (recurring || it.category === "manual") && !(it.machine || []).includes(lang) && fold(P(it, "title")) !== fold(it.title);
+      // The card's own date line: a RANGE for an event over several days ("Fri, Mar 19 – Sun, Mar 21, 2027"),
+      // and the place in the page language (content/events `location_es` → i18n.location).
+      const when = ev.multiDay && ev.rangeLabel ? ev.rangeLabel : helpers.fmtDate(start, lang, "medium");
+      const where = ev.location || P(it, "location") || ex.location || [ex.city, ex.state].filter(Boolean).join(", ");
+      const tentative = ev.tentative === true || ex.tentative === true;
       push({
         id: it.id, k: "event", t: P(it, "title") || ev.title, o: it.title, ol: it.lang,
-        s: [helpers.fmtDate(start, lang, "medium"), recurring ? (ev.recurrence || P(it, "recurrence_label")) : "", ex.location || [ex.city, ex.state].filter(Boolean).join(", ")].filter(Boolean).join(" · "),
-        x: [snippet(P(it, "summary"), 120), recurring ? both("search.kw.recurring") : ""].filter(Boolean).join(" "),
+        s: [when, recurring ? (ev.recurrence || P(it, "recurrence_label")) : "", where].filter(Boolean).join(" · "),
+        x: [snippet(P(it, "summary"), 120), recurring ? both("search.kw.recurring") : "", tentative ? both("committee.events.tentative") : ""].filter(Boolean).join(" "),
         u, d: ymd(helpers, start), l: own ? lang : it.lang,
-        src: it.source === "calendar" ? (it.category === "lv-calendar" ? "lv" : "gv") : "neta", m: mach(it), z: ev.past,
+        // outside calendars: the GV / LV calendars are theirs; a NETA 65 feed (neta65.org) is ours
+        src: it.category === "lv-calendar" ? "lv" : it.category === "gv-calendar" ? "gv" : "neta", m: mach(it), z: ev.past,
+        // tb = "Details to be confirmed" (content/events `tentative: true`): search.js shows the badge
+        ...(tentative && !ev.past ? { tb: 1 } : {}),
       });
     }
   });

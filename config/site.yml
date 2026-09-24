@@ -186,8 +186,41 @@ sources:
     graph_version: "v21.0"
     # Optional public RSSHub mirrors to try (leave empty to skip).
     rsshub_instances: []
-  # Optional: public Google Calendar / .ics feeds to merge into Events.
-  ics_feeds: []
+  # -------------------------------------------------------------------
+  #  Other calendars (optional) — public calendar files (.ics, "iCal")
+  #  whose events also show on the Events page. Each one needs:
+  #    url:       the calendar file's address (https:// or webcal://)
+  #    label:     its name on the Status page (label_es: in Spanish)
+  #    category:  where its events show on the Events page:
+  #               "neta65" = with the NETA 65 events (workshops,
+  #               assemblies …); "gv-calendar" / "lv-calendar" = with
+  #               the Grapevine / La Viña calendars.
+  #  The same event in a calendar AND on our Events page already
+  #  (content/events, a flyer, the booth or the meeting above) shows
+  #  ONCE (your content/events file wins, with your own Spanish).
+  #  These are extras: if one can't be read, the site keeps its last
+  #  good copy (or simply shows the events from content/events), the
+  #  Status page says why, and no "stopped updating" issue is opened.
+  #  The robot asks each calendar at most once a day.
+  # -------------------------------------------------------------------
+  ics_feeds:
+    # The NETA 65 workshop calendar (neta65.org/events/category/workshop/).
+    # NOTE: neta65.org is behind Cloudflare's "Just a moment…" bot check,
+    # which turns away every robot — ours too (the Status page shows
+    # "Blocked by the site's bot protection"). Nothing breaks, but until
+    # it is unblocked a workshop or assembly shows on the Events page
+    # only after someone adds it by hand to content/events.
+    # To get it working, ask the Area webmaster to let calendar requests
+    # through Cloudflare, for example with a WAF custom rule
+    # (Security → WAF → Custom rules → action "Skip") for requests whose
+    # query string contains "ical=1", or for the User-Agent in
+    # `crawler: user_agent` above. ("Allow verified bots" alone is not
+    # enough: our small robot is not on Cloudflare's verified list.)
+    # The robot then reads it again by itself — nothing to change here.
+    - url: "https://neta65.org/events/category/workshop/list/?ical=1"
+      label: "NETA 65 workshops"
+      label_es: "Talleres de NETA 65"
+      category: "neta65"
 
 # ---------------------------------------------------------------------
 #  Published-writers spotlight (home page + /published/ page)

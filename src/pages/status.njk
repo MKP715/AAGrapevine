@@ -15,6 +15,8 @@ pageScripts: ["/assets/js/community.js"]
 {%- set total = sv.sources | length -%}
 {%- set crawler = site.sources.crawler or {} -%}
 {%- set actionsUrl = "https://github.com/MKP715/AAGrapevine/actions" -%}
+{#- how the committee adds an event by hand (content/events/README.md) — linked from a blocked calendar feed -#}
+{%- set eventsHowtoUrl = "https://github.com/MKP715/AAGrapevine/blob/main/content/events/README.md" -%}
 {%- set srcIcons = { drive: "folder-open", articles: "newspaper", pdfs: "file-text", youtube: "youtube", podcasts: "headphones", instagram: "instagram", editorial: "pen-line", events_external: "calendar-days", announcements: "megaphone", manual_events: "calendar-plus", weekly_open: "video", translations: "languages" } -%}
 
 {% call ui.pageHero(lang, "nav.status" | t(lang), "community.status.hero_sub" | t(lang), "activity", "community.status.eyebrow" | t(lang)) %}
@@ -136,6 +138,53 @@ pageScripts: ["/assets/js/community.js"]
   {{ ui.emptyState("circle-dashed", "community.status.no_sources_title" | t(lang), "community.status.no_sources_text" | t(lang), actionsUrl, "community.status.actions_btn" | t(lang)) }}
   {% endif %}
   <p class="mt-3 text-xs text-muted">{{ "community.status.local_time" | t(lang) }}{% if sv.generated %} · {{ "community.status.data_generated" | t(lang) }}: <time datetime="{{ sv.generated | isoDate }}" data-local-time>{{ sv.generated | fmtDate(lang, "datetime") }}</time>{% endif %}</p>
+
+  {#- ============ Optional outside calendars (config/site.yml sources.ics_feeds) ============
+      Not content sources: a feed that a site's bot protection blocks is explained in plain words,
+      never counted as "failed" (and never opens the weekly "stopped updating" issue). -#}
+  {% if sv.feeds | length %}
+  <section class="mt-10" aria-labelledby="feeds-title">
+    <h3 id="feeds-title" class="h-card flex items-center gap-2 text-xl">{% icon "calendar-sync", "size-5 text-gv" %} {{ "community.status.feeds_title" | t(lang) }}</h3>
+    <p class="mt-1.5 max-w-2xl text-sm leading-relaxed text-muted">{{ "community.status.feeds_sub" | t(lang) }}</p>
+    <ul class="mt-4 grid gap-4" role="list">
+      {% for f in sv.feeds %}
+      {%- set flabel = (f.label_es if lang == "es" and f.label_es else f.label) or f.host -%}
+      <li class="card card-pad">
+        <div class="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
+          <div class="min-w-0">
+            <h4 class="font-semibold text-ink">{{ flabel }}</h4>
+            <p class="mt-0.5 break-all font-mono text-xs text-muted">{{ f.url | cmShortUrl }}</p>
+          </div>
+          {% if f.state == "ok" %}<span class="badge-vine">{% icon "circle-check", "size-3.5" %} {{ "community.status.feed_state.ok" | t(lang) }}</span>
+          {% elif f.state == "blocked" %}<span class="badge-lv">{% icon "shield-alert", "size-3.5" %} {{ "community.status.feed_state.blocked" | t(lang) }}</span>
+          {% elif f.state == "error" %}<span class="badge-muted">{% icon "circle-x", "size-3.5" %} {{ "community.status.feed_state.error" | t(lang) }}</span>
+          {% else %}<span class="badge-muted">{% icon "circle-dashed", "size-3.5" %} {{ "community.status.feed_state.never" | t(lang) }}</span>{% endif %}
+        </div>
+        <p class="mt-3 flex max-w-3xl gap-2 text-sm leading-relaxed text-ink">{% icon "info", "size-4 mt-0.5 shrink-0 text-muted" %}<span>
+          {%- if f.state == "ok" %}{{ ("community.status.feed_ok_one" if f.events == 1 else "community.status.feed_ok") | t(lang, { n: f.events | cmNum(lang) }) }}{% if f.dups %} {{ "community.status.feed_dups" | t(lang, { n: f.dups | cmNum(lang) }) }}{% endif %}
+          {%- elif f.state == "blocked" %}{{ "community.status.feed_blocked" | t(lang, { host: f.host }) }} <a class="link" href="{{ eventsHowtoUrl }}" target="_blank" rel="noopener">{{ "community.status.feed_howto" | t(lang) }}</a>
+          {%- elif f.state == "error" %}{{ "community.status.feed_error" | t(lang) }}
+          {%- else %}{{ "community.status.feed_never" | t(lang) }}{% endif -%}
+          {%- if f.state != "ok" and f.last_success %} {{ "community.status.feed_copy" | t(lang, { date: f.last_success | fmtDate(lang, "medium"), n: f.events | cmNum(lang) }) }}{% endif -%}
+        </span></p>
+        {% if f.state == "blocked" %}<p class="mt-2 max-w-3xl pl-6 text-sm leading-relaxed text-muted">{{ "community.status.feed_fix" | t(lang) }}</p>{% endif %}
+        <dl class="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 border-t border-line pt-4 text-xs sm:grid-cols-4">
+          <div><dt class="text-muted">{{ "community.status.feed_checked" | t(lang) }}</dt><dd class="mt-0.5 font-medium text-ink">{% if f.last_attempt %}<time datetime="{{ f.last_attempt | isoDate }}" data-local-time>{{ f.last_attempt | fmtDate(lang, "datetime") }}</time>{% else %}—{% endif %}</dd></div>
+          <div><dt class="text-muted">{{ "community.status.feed_worked" | t(lang) }}</dt><dd class="mt-0.5 font-medium text-ink">{% if f.last_success %}<time datetime="{{ f.last_success | isoDate }}" data-local-time>{{ f.last_success | fmtDate(lang, "datetime") }}</time>{% else %}{{ "community.status.feed_worked_never" | t(lang) }}{% endif %}</dd></div>
+          <div><dt class="text-muted">{{ "community.status.feed_events" | t(lang) }}</dt><dd class="mt-0.5 font-medium tabular-nums text-ink">{{ f.events | cmNum(lang) }}</dd></div>
+          <div><dt class="text-muted">{{ "community.status.feed_http" | t(lang) }}</dt><dd class="mt-0.5 font-medium tabular-nums text-ink">{{ f.http or "—" }}</dd></div>
+        </dl>
+        {% if f.error %}
+        <details class="cm-preview mt-3 rounded-lg border border-line bg-surface">
+          <summary class="flex min-h-10 cursor-pointer items-center gap-2 px-3 text-xs font-semibold text-muted">{{ "community.status.tech_details" | t(lang) }}</summary>
+          <pre class="overflow-x-auto whitespace-pre-wrap border-t border-line p-3 font-mono text-xs text-ink">{{ f.error }}</pre>
+        </details>
+        {% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endif %}
   </div>
 
   {#- ============ Crawl coverage + translations ============ -#}

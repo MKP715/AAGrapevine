@@ -62,6 +62,7 @@ WEEKDAYS = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", 
 # Copies of three rules in scripts/sync/ (kept here so this script runs with the standard library
 # alone, without importing the sync pipeline) — keep them equal:
 NEW_DAYS = 14                                        # build_data.NEW_DAYS: the site's "New" badge
+MULTI_DAY_MIN_HOURS = 18                             # build_data.MULTI_DAY_MIN_H: a timed event over several days
 SCOPE_ORDER = ("neta65", "texas", "other", "unknown")  # geo.SCOPES: Area 65 writers first, then Texas
 EVERY_ISSUE = re.compile(r"(?i)in every issue|en cada (?:edici[oó]n|n[uú]mero)")  # build_data._EVERY_ISSUE
 
@@ -111,6 +112,7 @@ T = {
         "online": "Online",
         "all_day": "All day",
         "monthly": "every month",
+        "tentative": "details to be confirmed",
         "footer_why": "You are receiving this weekly summary from the {committee}.",
         "footer_unsub": "To stop receiving it, reply with \"unsubscribe\".",
         "footer_anon": "Feel free to forward it to your group or district — and please protect everyone's anonymity.",
@@ -153,6 +155,7 @@ T = {
         "online": "En línea",
         "all_day": "Todo el día",
         "monthly": "cada mes",
+        "tentative": "detalles por confirmar",
         "footer_why": "Recibe este resumen semanal del {committee}.",
         "footer_unsub": "Para dejar de recibirlo, responda con \"cancelar\".",
         "footer_anon": "Puede reenviarlo a su grupo o distrito — y por favor proteja el anonimato de todos.",
@@ -711,14 +714,27 @@ def build_rows(group: str, items: list[dict], lang: str, links: Links, page: str
 def event_row(it: dict, lang: str, links: Links) -> dict:
     t = T[lang]
     ex = it.get("extra") or {}
-    raw_start = ex.get("start") or it.get("date")
+    raw_start, raw_end = ex.get("start") or it.get("date"), ex.get("end")
     st = parse_dt(raw_start)
+    en = parse_dt(raw_end) if raw_end else None
+    timed = bool(st) and not is_date_only(raw_start) and not ex.get("all_day")
     when = fmt_day(st, lang) if st else ""
-    if st and not is_date_only(raw_start) and not ex.get("all_day"):
+    if timed:
         when += " · " + fmt_time(st, lang)
+    # An event of several days (an Area assembly, Fri–Sun): "Fri, Mar 19 – Sun, Mar 21", like the website —
+    # the same rule as the pages (committee.js multiDay, community.js isMultiDay): all-day over several
+    # dates, or a timed event longer than 18 hours; a timed one that only runs past midnight is one day.
+    if st and en:
+        last = en if is_date_only(raw_end) else en - timedelta(microseconds=1)    # an end at 00:00 is the day before
+        if to_central(last).date() > to_central(st).date() and (
+                not timed or (en - st).total_seconds() > MULTI_DAY_MIN_HOURS * 3600):
+            when += " – " + fmt_day(last, lang)
     if is_recurring(it):
         when += " · " + t["monthly"]
-    where = ex.get("location") or (t["online"] if ex.get("online_url") else "")
+    if ex.get("tentative"):          # content/events `tentative: true`: not final yet
+        when += " · " + t["tentative"]
+    # The place in this language (content/events `location_es` → i18n.location), as written otherwise.
+    where = tx_extra(it, "location", lang) or (t["online"] if ex.get("online_url") else "")
     url = it.get("url") or ex.get("flyer_url") or ex.get("online_url") or ""
     url = links.item({**it, "url": url}, lang, "/events/")
     return {"title": tx(it, "title", lang), "when": when, "where": where, "url": url}

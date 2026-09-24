@@ -15,13 +15,19 @@
   document.documentElement.classList.add("cm-js");
 
   /* ---------------- formatting helpers ---------------- */
+  // Spanish "7:00 p.m." → "7:00 p. m." (no-break spaces), the site's one spelling — the same as the
+  // build's text, so a label redrawn here (the meeting's time line on /es/meeting/, the Weekly Open
+  // date, "Your time: …") never changes style. GV.esMeridiem (app.js) is a no-op on English pages.
+  var meridiem = typeof GV.esMeridiem === "function" ? GV.esMeridiem : function (s) {
+    return LANG === "es" ? String(s).replace(/\b([ap])\.\s?m\./g, "$1.\u00a0m.").replace(/(\d) (?=[ap]\.\u00a0m\.)/g, "$1\u00a0") : s;
+  };
   function fmt(d, opts, tz) {
-    try { return new Intl.DateTimeFormat(LOCALE, Object.assign({ timeZone: tz || TZ }, opts)).format(d); } catch (e) { return ""; }
+    try { return meridiem(new Intl.DateTimeFormat(LOCALE, Object.assign({ timeZone: tz || TZ }, opts)).format(d)); } catch (e) { return ""; }
   }
   function range(a, b, opts, tz) {
     try {
       var f = new Intl.DateTimeFormat(LOCALE, Object.assign({ timeZone: tz || TZ }, opts));
-      return f.formatRange ? f.formatRange(a, b) : f.format(a) + " – " + f.format(b);
+      return meridiem(f.formatRange ? f.formatRange(a, b) : f.format(a) + " – " + f.format(b));
     } catch (e) { return ""; }
   }
   function cap(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
@@ -75,6 +81,8 @@
     return out.join("\r\n ");
   }
 
+  // ev.allDay: start / end are "YYYY-MM-DD" and end is the LAST day; the file gets DATE values with the
+  // exclusive DTEND (the day after), like /events.ics. ev.tentative → STATUS:TENTATIVE.
   CM.downloadIcs = function (ev) {
     var L = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//NETA 65 Grapevine La Vina Committee//Event//EN", "CALSCALE:GREGORIAN", "METHOD:PUBLISH", "BEGIN:VEVENT",
       "UID:" + (ev.uid || utcStamp(ev.start) + "@neta65-gvlv"), "DTSTAMP:" + utcStamp(new Date())];
@@ -87,6 +95,7 @@
     if (ev.description) L.push("DESCRIPTION:" + icsEsc(ev.description));
     if (ev.location) L.push("LOCATION:" + icsEsc(ev.location));
     if (ev.url) L.push("URL:" + ev.url);
+    L.push("STATUS:" + (ev.tentative ? "TENTATIVE" : "CONFIRMED"));
     L.push("END:VEVENT", "END:VCALENDAR");
     var text = L.map(icsFold).join("\r\n") + "\r\n";
     var blob = new Blob([text], { type: "text/calendar;charset=utf-8" });

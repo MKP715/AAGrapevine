@@ -10,7 +10,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
 import { safeUrl } from "../../eleventy.config.js";
-import { ownLangs } from "./committee.js";
+import { ownLangs, chicagoDayEndMs } from "./committee.js";
 
 const TZ = "America/Chicago";
 const LOCALES = { en: "en-US", es: "es-US" };
@@ -71,6 +71,7 @@ function fmt(v, lang, opts) {
  *  (build_data's Weekly Open time, committee.js). */
 export const esMeridiem = (s) => String(s).replace(/\b([ap])\.\s?m\./g, "$1. m.").replace(/(\d) (?=[ap]\. m\.)/g, "$1 ");
 const fmtShortDay = (v, lang) => fmt(v, lang, { weekday: "short", month: "short", day: "numeric" });
+const fmtShortDayYear = (v, lang) => fmt(v, lang, { weekday: "short", month: "short", day: "numeric", year: "numeric" });
 // Inside a sentence ("fecha límite: jue, 1 de oct"): Spanish keeps the weekday lower-case.
 const fmtShortDayMid = (v, lang) => { const s = fmtShortDay(v, lang); return lang === "es" ? s.charAt(0).toLowerCase() + s.slice(1) : s; };
 const fmtDay = (v, lang) => fmt(v, lang, { month: "short", day: "numeric", year: "numeric" });
@@ -276,12 +277,84 @@ function nextOfEachSeries(events) {
   });
 }
 
-/** "Sat, Oct 17" or "Wed, Oct 21 · 7:00 PM CDT" for an event. */
-export function eventWhen(ev, lang) {
+/** The calendar day an event ends on (Central time): its `end` day, else its start day. */
+function eventLastDay(ev) {
+  const x = ev?.extra || {};
+  const s = eventStart(ev);
+  const last = x.end ? ymdChicago(isDateOnly(x.end) ? x.end : new Date(ms(x.end) - 1)) : ymdChicago(s);
+  const first = ymdChicago(s);
+  return last && last > first ? last : first;
+}
+
+/** An event over several days (an Area assembly, Fri–Sun) — not a timed one that only runs past midnight. */
+function isMultiDay(ev) {
+  const x = ev?.extra || {};
+  const s = eventStart(ev);
+  if (!s || eventLastDay(ev) === ymdChicago(s)) return false;
+  return !!(x.all_day || isDateOnly(s)) || ms(x.end) - ms(s) > 18 * 3600e3;
+}
+
+/** When an event is over: midnight Central after its last day for an all-day event (it stays
+ *  "coming up" all of that day); a timed event at its end (no end: 6 hours after it starts). */
+function eventEndMs(ev) {
+  const x = ev?.extra || {};
+  const s = eventStart(ev);
+  if (x.end && !isDateOnly(x.end)) return ms(x.end);
+  if (x.end || x.all_day || isDateOnly(s)) return chicagoDayEndMs(eventLastDay(ev));
+  return ms(s) + 6 * 3600e3;
+}
+
+/** Does an event's date need its year? When it ends in another year than `now`, or more than about
+ *  six months ahead ("Fri, Sep 17 – Sun, Sep 19, 2027" next to this September's dates on What's New). */
+const YEAR_AFTER_DAYS = 183;
+function needsYear(lastYmd, now) {
+  if (!lastYmd) return false;
+  return lastYmd.slice(0, 4) !== ymdChicago(new Date(now)).slice(0, 4) || ms(lastYmd) - now > YEAR_AFTER_DAYS * DAY;
+}
+
+/** "Sat, Oct 17", "Wed, Oct 21 · 7:00 PM CDT" — or, over several days, "Fri, Mar 19 – Sun, Mar 21".
+ *  With the year when it is another year or far ahead: "Fri, Sep 17 – Sun, Sep 19, 2027" /
+ *  "Vie, 17 de sept – dom, 19 de sept de 2027". */
+export function eventWhen(ev, lang, now = Date.now()) {
   const s = eventStart(ev);
   if (!s) return "";
   const allDay = ev?.extra?.all_day || isDateOnly(s);
-  return allDay ? fmtShortDay(s, lang) : `${fmtShortDay(s, lang)} · ${fmtTime(s, lang)}`;
+  const multi = isMultiDay(ev);
+  const firstYmd = ymdChicago(s);
+  const lastYmd = multi ? eventLastDay(ev) : firstYmd;
+  const withYear = needsYear(lastYmd, now);
+  // the first day carries the year only when the range crosses into another year (Dec 31 – Jan 2)
+  const day1 = withYear && (!multi || firstYmd.slice(0, 4) !== lastYmd.slice(0, 4)) ? fmtShortDayYear(s, lang) : fmtShortDay(s, lang);
+  const first = allDay ? day1 : `${day1} · ${fmtTime(s, lang)}`;
+  if (!multi) return first;
+  const last = withYear ? fmtShortDayYear(lastYmd, lang) : fmtShortDay(lastYmd, lang);
+  return `${first} – ${lang === "es" ? last.charAt(0).toLowerCase() + last.slice(1) : last}`;
+}
+
+/** The event's place in the page language (content/events `location_es` → i18n.location), else as written. */
+export function eventWhere(ev, lang) {
+  const x = ev?.extra || {};
+  return clean((ev?.i18n?.location && ev.i18n.location[lang]) || x.location || x.city || "");
+}
+
+/** The day(s) on an event's small date box: "17", or "19–21" over several days. */
+function eventDayBox(ev, lang) {
+  const s = eventStart(ev);
+  if (!s) return "";
+  const day = fmt(isDateOnly(s) ? s : ymdChicago(s), lang, { day: "numeric" });
+  return isMultiDay(ev) ? `${day}–${fmt(eventLastDay(ev), lang, { day: "numeric" })}` : day;
+}
+
+/** The month line of that date box: "Sep", or "Apr–May" when the event ends in another month
+ *  (the tiles on /events/, home and announcements do the same — homeEventInfo). */
+function eventMonthBox(ev, lang) {
+  const s = eventStart(ev);
+  if (!s) return "";
+  const mon = (v) => new Intl.DateTimeFormat(LOCALES[lang] || "en-US", { timeZone: TZ, month: "short" }).format(toDate(v)).replace(/\./g, "");
+  const first = mon(ymdChicago(s));
+  if (!isMultiDay(ev)) return first;
+  const last = mon(eventLastDay(ev));
+  return last !== first ? `${first}–${last}` : first;
 }
 
 /* ------------------------------------------------------------------ */
@@ -537,11 +610,13 @@ export function buildDigest(db, meeting, { days = 7, eventDays = 30, deadlineDay
   const recent = recentNews(db, days, now);
   const groups = DIGEST_ORDER.map((key) => ({ key, ...GROUPS[key], items: recent.filter((i) => i._group === key) })).filter((g) => g.items.length);
 
+  // Coming up: events that start within `eventDays` days and are not over yet — an event over several
+  // days (an Area assembly) stays listed through its last day.
   const events = nextOfEachSeries((db?.events?.items || [])
     .filter((e) => e && e.status !== "gone" && e.category !== "committee")
-    .filter((e) => { const t = ms(eventStart(e)); return t && t >= now - 6 * 3600e3 && t <= now + eventDays * DAY; })
+    .filter((e) => { const t = ms(eventStart(e)); return t && eventEndMs(e) >= now && t <= now + eventDays * DAY; })
     .sort((a, b) => ms(eventStart(a)) - ms(eventStart(b))))
-    .map((e) => ({ ...prep(e, now), _recurring: isRecurring(e) }));
+    .map((e) => ({ ...prep(e, now), _recurring: isRecurring(e), _tentative: e.extra?.tentative === true }));
 
   const todayYmd = ymdChicago(new Date(now));
   const deadlines = (db?.editorial?.items || [])
@@ -675,9 +750,11 @@ export function digestText(dg, langs, style, site, t, media = {}) {
     out.push(wa ? `📅 ${head(label)}` : head(label));
     for (const ev of dg.events.slice(0, 8)) {
       const [first, ...rest] = titleLines(ev);
-      const where = ev.extra?.location || ev.extra?.city || "";
+      const where = eventWhere(ev, main);
       const monthly = ev._recurring ? ` · ${both("community.digest.every_month")}` : "";
-      out.push(`${bullet} ${eventWhen(ev, main)}${monthly} — ${first}${where ? ` (${where})` : ""}`);
+      // content/events `tentative: true`: "Details to be confirmed" right after the date
+      const tbc = ev._tentative ? ` · ${both("committee.events.tentative")}` : "";
+      out.push(`${bullet} ${eventWhen(ev, main, Date.parse(dg.until) || Date.now())}${monthly}${tbc} — ${first}${where ? ` (${where})` : ""}`);
       for (const r of rest) out.push(`  ${r}`);
       if (ev.url) out.push(`  ${absUrl(hrefOf(ev, main), site)}`);
     }
@@ -762,6 +839,7 @@ export function reportData(db, meeting, now = Date.now()) {
     deadlines: dg.deadlines.slice(0, 4),
     lvThemes: dg.lvThemes || [],
     next: meeting?.next || null,
+    until: dg.until,
     // "Published writers from our Area": the home page's window (60 days), Area 65 first
     writers: (() => { const spot = spotlightOf(db); return writersPick(spot, spotlightHomeDays(spot), now); })(),
   };
@@ -836,9 +914,10 @@ export function reportText(rd, lang, site, t) {
   out.push(`${num()} ${T("t_events")}`);
   if (rd.events.length) {
     for (const ev of rd.events) {
-      const where = ev.extra?.location || ev.extra?.city || "";
+      const where = eventWhere(ev, lang);
       const monthly = ev._recurring ? ` · ${t("community.digest.every_month", lang)}` : "";
-      out.push(`   • ${eventWhen(ev, lang)}${monthly} — ${clean(pickLang(ev, "title", lang))}${where ? ` (${where})` : ""}`);
+      const tbc = ev._tentative ? ` · ${t("committee.events.tentative", lang)}` : "";
+      out.push(`   • ${eventWhen(ev, lang, Date.parse(rd.until) || Date.now())}${monthly}${tbc} — ${clean(pickLang(ev, "title", lang))}${where ? ` (${where})` : ""}`);
     }
   } else out.push(`   • ${T("t_no_events")}`);
   out.push(`   ${url("/events/")}`);
@@ -902,11 +981,29 @@ export function statusView(status, now = Date.now()) {
   else if (est !== null && est > 0) daysLeft = Math.max(1, Math.ceil(est));
   else if (perRun > 0) daysLeft = Math.ceil(remaining / perRun);
   const tr = status?.translations || {};
+  // Optional outside calendars (config/site.yml sources.ics_feeds) — build_data's status.json `feeds`.
+  // Kept apart from the content sources: a feed blocked by a site's bot protection is an extra that
+  // does not work, not a source that "failed" (it is not in the counts above).
+  const FEED_STATES = new Set(["ok", "blocked", "error", "never"]);
+  const feeds = (Array.isArray(status?.feeds) ? status.feeds : []).filter((f) => f && f.url).map((f) => {
+    let host = "";
+    try { host = new URL(f.url).hostname.replace(/^www\./, ""); } catch { /* not a URL */ }
+    const state = FEED_STATES.has(f.state) ? f.state : "never";
+    return {
+      ...f,
+      state,
+      host,
+      events: Math.max(0, Number(f.events_count) || 0),
+      dups: Math.max(0, Number(f.duplicates) || 0),
+      http: f.http_status ? String(f.http_status) : "",
+    };
+  });
   const totalItems = sources.reduce((a, s) => a + s.count, 0);
   const found7d = sources.reduce((a, s) => a + (Number(s.new_7d) || 0), 0);
   return {
     generated: status?.generated || null,
     sources,
+    feeds,
     okCount: sources.filter((s) => s.state === "ok").length,
     failedCount: sources.filter((s) => s.state === "failed").length,
     totalItems,
@@ -1024,6 +1121,9 @@ export default function (eleventyConfig, helpers) {
   eleventyConfig.addFilter("cmTeaser", (summary, title) => teaser(summary, title));
   eleventyConfig.addFilter("cmListThumb", (src) => listThumb(src));
   eleventyConfig.addFilter("cmEventWhen", (ev, lang) => eventWhen(ev, lang));
+  eleventyConfig.addFilter("cmEventWhere", (ev, lang) => eventWhere(ev, lang));
+  eleventyConfig.addFilter("cmEventDayBox", (ev, lang) => eventDayBox(ev, lang));
+  eleventyConfig.addFilter("cmEventMonthBox", (ev, lang) => eventMonthBox(ev, lang));
   eleventyConfig.addFilter("cmDateRange", (a, b, lang) => fmtRange(a, b, lang));
   eleventyConfig.addFilter("cmIssueLabel", (label, lang) => issueLabel(label, lang));
 

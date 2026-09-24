@@ -1,0 +1,249 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//NETA65 - ECPv6.15.1//NONSGML v1.0//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:NETA65
+X-ORIGINAL-URL:https://neta65.org
+X-WR-CALDESC:Events for NETA65
+REFRESH-INTERVAL;VALUE=DURATION:PT1H
+X-Robots-Tag:noindex
+X-PUBLISHED-TTL:PT1H
+BEGIN:VTIMEZONE
+TZID:America/Chicago
+BEGIN:DAYLIGHT
+TZOFFSETFROM:-0600
+TZOFFSETTO:-0500
+TZNAME:CDT
+DTSTART:20260308T080000
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:-0500
+TZOFFSETTO:-0600
+TZNAME:CST
+DTSTART:20261101T070000
+END:STANDARD
+BEGIN:DAYLIGHT
+TZOFFSETFROM:-0600
+TZOFFSETTO:-0500
+TZNAME:CDT
+DTSTART:20270314T080000
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:-0500
+TZOFFSETTO:-0600
+TZNAME:CST
+DTSTART:20271107T070000
+END:STANDARD
+END:VTIMEZONE
+BEGIN:VEVENT
+DTSTART;TZID=America/Chicago:20260926T190000
+DTEND;TZID=America/Chicago:20260926T210000
+DTSTAMP:20260924T063900
+CREATED:20260910T161522Z
+LAST-MODIFIED:20260915T183011Z
+UID:10871-1790467200-1790474400@neta65.org
+SUMMARY:LV Writing Workshop
+DESCRIPTION:Come learn how to write or record your story for Grapevine and 
+ La Viña. Bring a pen\, a notebook and your experience\, strength and hope
+ .\nAll AA members are welcome.
+URL:https://neta65.org/event/lv-writing-workshop/
+LOCATION:Grupo Nueva Esperanza\, 3401 E Belknap\, Fort Worth\, TX\, 76111\,
+  United States
+CATEGORIES:Grapevine-LaViña,Workshop
+ATTACH;FMTTYPE=image/jpeg:https://neta65.org/wp-content/uploads/2026/09/New
+ -Writing-Workshop-La-Nueva-Esperanza.jpg
+ORGANIZER;CN="Grapevine/La Viña Committee":MAILTO:grapevine@neta65.org
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=America/Chicago:20261003T140000
+DTEND;TZID=America/Chicago:20261003T170000
+DTSTAMP:20260924T063900
+CREATED:20260910T161522Z
+LAST-MODIFIED:20260915T183011Z
+UID:10620-1791054000-1791064800@neta65.org
+SUMMARY:Grapevine Writing Workshop
+DESCRIPTION:Come learn how to write or record your story for Grapevine and 
+ La Viña. Bring a pen\, a notebook and your experience\, strength and hope
+ .\nAll AA members are welcome.
+URL:https://neta65.org/event/grapevine-writing-workshop-6/
+LOCATION:Primary Purpose Group – Arlington\, 1802 West Division Street\, 
+ Arlington\, TX\, 76012\, United States
+CATEGORIES:Grapevine-LaViña,Workshop
+ATTACH;FMTTYPE=image/png:https://neta65.org/wp-content/uploads/2026/06/GV-L
+ V-writing-workshop-10-3.png
+ORGANIZER;CN="Grapevine/La Viña Committee":MAILTO:grapevine@neta65.org
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=America/Chicago:20261007T200000
+DTEND;TZID=America/Chicago:20261007T220000
+DTSTAMP:20260924T063900
+CREATED:20260910T161522Z
+LAST-MODIFIED:20260915T183011Z
+UID:10874-1791421200-1791428400@neta65.org
+SUMMARY:La Viña Writing Workshop
+DESCRIPTION:Come learn how to write or record your story for Grapevine and 
+ La Viña. Bring a pen\, a notebook and your experience\, strength and hope
+ .\nAll AA members are welcome.
+URL:http://www.neta65.org/event/la-vina-writing-workshop-3
+LOCATION:Grupo 7 Defectos y 7 Virtudes\, 287 Frontage Road\, Mansfield\, TX
+ \, 76063\, United States
+CATEGORIES:Grapevine-LaViña,Workshop
+ATTACH;FMTTYPE=image/jpeg:https://neta65.org/wp-content/uploads/2026/09/New
+ -Taller-7-Defectos-.jpg
+ORGANIZER;CN="Grapevine/La Viña Committee":MAILTO:grapevine@neta65.org
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=America/Chicago:20261017T190000
+DTEND;TZID=America/Chicago:20261017T210000
+DTSTAMP:20260924T063900
+CREATED:20260910T161522Z
+LAST-MODIFIED:20260915T183011Z
+UID:10880-1792281600-1792288800@neta65.org
+SUMMARY:LV Recording Workshop
+DESCRIPTION:Come learn how to write or record your story for Grapevine and 
+ La Viña. Bring a pen\, a notebook and your experience\, strength and hope
+ .\nAll AA members are welcome.
+URL:https://neta65.org/event/lv-recording-workshop/?instance=1#details
+LOCATION:Grupo Progresso Latino\, 101 East Camp Wisdom Rd.\, Duncanville\, 
+ TX\, 75116\, United States
+CATEGORIES:Grapevine-LaViña,Workshop
+ATTACH;FMTTYPE=image/png:https://neta65.org/wp-content/uploads/2026/09/Flye
+ r-Progresso-Latino-2026.png
+ORGANIZER;CN="Grapevine/La Viña Committee":MAILTO:grapevine@neta65.org
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=America/Chicago:20261026T190000
+DTEND;TZID=America/Chicago:20261026T210000
+DTSTAMP:20260924T063900
+CREATED:20260910T161522Z
+LAST-MODIFIED:20260915T183011Z
+UID:10883-1793059200-1793066400@neta65.org
+SUMMARY:La Viña Writing Workshop
+DESCRIPTION:Come learn how to write or record your story for Grapevine and 
+ La Viña. Bring a pen\, a notebook and your experience\, strength and hope
+ .\nAll AA members are welcome.
+URL:https://neta65.org/event/la-vina-writing-workshop-4/
+LOCATION:Grupo Libro Grande\, 623 West Bow\, Tyler\, TX\, 75702\, United St
+ ates
+CATEGORIES:Grapevine-LaViña,Workshop
+ATTACH;FMTTYPE=image/jpeg:https://neta65.org/wp-content/uploads/2026/09/TAL
+ LER-DE-ESCRITURA-LIBRO-GRANDE.jpeg
+ORGANIZER;CN="Grapevine/La Viña Committee":MAILTO:grapevine@neta65.org
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=America/Chicago:20261107T190000
+DTEND;TZID=America/Chicago:20261107T210000
+DTSTAMP:20260924T063900
+CREATED:20260910T161522Z
+LAST-MODIFIED:20260915T183011Z
+UID:10886-1794099600-1794106800@neta65.org
+SUMMARY:La Viña Information Workshop
+DESCRIPTION:Come learn how to write or record your story for Grapevine and 
+ La Viña. Bring a pen\, a notebook and your experience\, strength and hope
+ .\nAll AA members are welcome.
+URL:https://neta65.org/event/la-vina-information-workshop/
+LOCATION:Grupo Solo por Hoy\, 2035 South High\, Longview\, TX\, 75602\, Uni
+ ted States
+CATEGORIES:Grapevine-LaViña,Workshop
+ATTACH;FMTTYPE=image/jpeg:https://neta65.org/wp-content/uploads/2026/09/TAL
+ LER-DE-INFORMACION-SOLO-POR-HOY.jpg
+ORGANIZER;CN="Grapevine/La Viña Committee":MAILTO:grapevine@neta65.org
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=America/Chicago:20261114T100000
+DTEND;TZID=America/Chicago:20261114T120000
+DTSTAMP:20260924T063900
+CREATED:20260910T161522Z
+LAST-MODIFIED:20260915T183011Z
+UID:10901-1794672000-1794679200@neta65.org
+SUMMARY:Grapevine Writing Workshop &#8211\; Denton
+DESCRIPTION:Come learn how to write or record your story for Grapevine and 
+ La Viña. Bring a pen\, a notebook and your experience\, strength and hope
+ .\nAll AA members are welcome.
+URL:https://neta65.org/event/grapevine-writing-workshop-7/
+LOCATION:Denton Fellowship\, 1107 N Locust St\, Denton\, TX\, 76201\, Unite
+ d States
+CATEGORIES:Grapevine-LaViña,Workshop
+ORGANIZER;CN="Grapevine/La Viña Committee":MAILTO:grapevine@neta65.org
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=America/Chicago:20261026T183000
+DTEND;TZID=America/Chicago:20261026T203000
+DTSTAMP:20260924T063900
+CREATED:20260910T161522Z
+LAST-MODIFIED:20260915T183011Z
+UID:10905-1793057400-1793064600@neta65.org
+SUMMARY:LV Writing Workshop
+DESCRIPTION:Come learn how to write or record your story for Grapevine and 
+ La Viña. Bring a pen\, a notebook and your experience\, strength and hope
+ .\nAll AA members are welcome.
+URL:https://neta65.org/event/la-vina-writing-workshop-dallas/
+LOCATION:Grupo Hispano\, 4800 Ross Ave\, Dallas\, TX\, 75204\, United State
+ s
+CATEGORIES:Grapevine-LaViña,Workshop
+ORGANIZER;CN="Grapevine/La Viña Committee":MAILTO:grapevine@neta65.org
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=America/Chicago:20270918T090000
+DTEND;TZID=America/Chicago:20270918T160000
+DTSTAMP:20260924T063900
+CREATED:20260910T161522Z
+LAST-MODIFIED:20260915T183011Z
+UID:10910-1821276000-1821301200@neta65.org
+SUMMARY:Grapevine / La Viña Booth at the Fall Assembly
+DESCRIPTION:Come learn how to write or record your story for Grapevine and 
+ La Viña. Bring a pen\, a notebook and your experience\, strength and hope
+ .\nAll AA members are welcome.
+URL:https://neta65.org/event/gvlv-booth-fall-assembly/
+LOCATION:Tyler Convention Center\, Tyler\, TX\, United States
+CATEGORIES:Grapevine-LaViña,Workshop
+ORGANIZER;CN="Grapevine/La Viña Committee":MAILTO:grapevine@neta65.org
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=America/Chicago:20261205T100000
+DTEND;TZID=America/Chicago:20261205T120000
+DTSTAMP:20260924T063900
+CREATED:20260910T161522Z
+LAST-MODIFIED:20260915T183011Z
+UID:10915-1796486400-1796493600@neta65.org
+SUMMARY:Taller de Grabación de La Viña
+DESCRIPTION:Come learn how to write or record your story for Grapevine and 
+ La Viña. Bring a pen\, a notebook and your experience\, strength and hope
+ .\nAll AA members are welcome.
+URL:https://neta65.org/event/taller-grabacion-garland/
+LOCATION:Garland\, TX\, United States
+CATEGORIES:Grapevine-LaViña,Workshop
+STATUS:TENTATIVE
+ORGANIZER;CN="Grapevine/La Viña Committee":MAILTO:grapevine@neta65.org
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=America/Chicago:20261212T100000
+DTEND;TZID=America/Chicago:20261212T120000
+DTSTAMP:20260924T063900
+CREATED:20260910T161522Z
+LAST-MODIFIED:20260915T183011Z
+UID:10920-1797091200-1797098400@neta65.org
+SUMMARY:Cancelled Workshop
+DESCRIPTION:Come learn how to write or record your story for Grapevine and 
+ La Viña. Bring a pen\, a notebook and your experience\, strength and hope
+ .\nAll AA members are welcome.
+URL:https://neta65.org/event/cancelled-workshop/
+LOCATION:Plano\, TX\, United States
+CATEGORIES:Grapevine-LaViña,Workshop
+STATUS:CANCELLED
+ORGANIZER;CN="Grapevine/La Viña Committee":MAILTO:grapevine@neta65.org
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20270319
+DTEND;VALUE=DATE:20270322
+DTSTAMP:20260924T063900
+UID:10930-1805439600-1805698799@neta65.org
+SUMMARY:NETA 65 Spring Assembly 2027
+DESCRIPTION:Area 65 assembly\, Panel 77.
+URL:https://neta65.org/event/spring-assembly-2027/
+LOCATION:DoubleTree by Hilton Hotel Dallas Near the Galleria\, 4099 Valley 
+ View Ln\, Dallas\, TX\, 75244\, United States
+CATEGORIES:Assembly
+END:VEVENT
+END:VCALENDAR

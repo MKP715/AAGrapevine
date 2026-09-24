@@ -143,6 +143,13 @@
 {%- if item | machineFor(lang) %}<span class="auto-note" title="{{ 'common.auto_translated_help' | t(lang) }}">{% icon "languages", "size-3" %} {{ "common.auto_translated" | t(lang) }}</span>{% endif -%}
 {% endmacro %}
 
+{#- "Details to be confirmed": an event whose date, place or times are not final yet (content/events
+    `tentative: true`, or STATUS:TENTATIVE in an outside calendar). The explanation is the tooltip and,
+    for screen readers, part of the badge itself (a tooltip alone never reaches touch or keyboard users). -#}
+{% macro tentativeBadge(lang) %}
+<span class="badge-tbc" title="{{ 'committee.events.tentative_help' | t(lang) }}">{% icon "calendar-clock", "size-3" %} {{ "committee.events.tentative" | t(lang) }}<span class="sr-only">: {{ "committee.events.tentative_help" | t(lang) }}</span></span>
+{%- endmacro %}
+
 {#- Language pill (shows the ORIGINAL language of content when it differs from the page) -#}
 {% macro langPill(item, lang) %}
 {%- if item.lang and item.lang != lang and item.lang != "und" %}<span class="badge-muted uppercase" title="{{ ('lang.' + item.lang) | t(lang) }}">{{ item.lang }}</span>{% endif -%}

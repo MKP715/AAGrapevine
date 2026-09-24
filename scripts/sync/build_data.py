@@ -24,7 +24,7 @@ import unicodedata
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Callable, Iterable
-from urllib.parse import unquote
+from urllib.parse import unquote, urlsplit
 from zoneinfo import ZoneInfo
 
 import yaml
@@ -33,8 +33,8 @@ from . import translate as T
 from .common import (CONTENT_DIR, RAW_DIR, SITE_DIR, STATE_DIR, clean_text, get_logger, load_config, now_iso,
                      parse_iso, read_json, short_hash, slugify, strip_html, to_iso, truncate, write_json)
 from .geo import SCOPES, classify_location, fold
-from .meeting import (MonthlyRule, nth_weekday, parse_hhmm, upcoming_meetings, upcoming_rule_dates,
-                      week_of_month_value, weekday_index, ymd_text)
+from .meeting import (MonthlyRule, check_skip_dates, meeting_skip_notes, parse_hhmm, upcoming_meetings,
+                      upcoming_rule_dates, week_of_month_value, weekday_index)
 
 log = get_logger("build_data")
 
@@ -214,6 +214,8 @@ class Ctx:
         self.raw_problems: dict[str, str] = {}
         self.births: dict[str, float] = {}
         self.hub_issues: set[str] = set()      # "gv:2026-10" — magazine issues seen on a hub (current issues)
+        self.feeds: list[dict] = []            # health of each sources.ics_feeds entry (→ status.json `feeds`)
+        self.feed_requests = 0                 # requests made to .ics feeds this run (one per feed at most)
 
     # ---------------------------------------------------------------- raw loading
     def load_raw(self) -> None:
@@ -387,7 +389,6 @@ def committee_meetings(ctx: Ctx, count: int = 12) -> list[dict]:
 _RULE = {"en": "Every {ord} {weekday} of the month", "es": "Cada {ord} {weekday} del mes"}
 _ORD_WORDS = {"en": {1: "first", 2: "second", 3: "third", 4: "fourth", 5: "fifth", -1: "last"},
               "es": {1: "primer", 2: "segundo", 3: "tercer", 4: "cuarto", 5: "quinto", -1: "último"}}
-_ORD_SHORT = {1: "1st", 2: "2nd", 3: "3rd", 4: "4th", 5: "5th", -1: "last"}      # (settings messages)
 _DAY_NAMES = {"en": ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"),
               "es": ("lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo")}
 _NB = "\u00a0"      # Spanish "8:00 p. m.": no-break spaces (esMeridiem in eleventy.config.js)
@@ -511,22 +512,10 @@ def recurring_specs(ctx: Ctx) -> tuple[list[dict], list[str]]:
             problems.append(f"{name}: " + "; ".join(errors) + " — skipped")
             continue
         seen.add(key)
-        skip: set[str] = set()
-        raw_skip = e.get("skip_dates") or []
-        for s in raw_skip if isinstance(raw_skip, list) else [raw_skip]:
-            ymd = ymd_text(s)
-            if not ymd:
-                notes.append(f"skip date “{s}” is not a date like \"2027-01-09\" — ignored")
-                continue
-            # A slip like the Sunday, the 1st Saturday or the wrong month would skip nothing: say so.
-            d = date.fromisoformat(ymd)
-            day = nth_weekday(d.year, d.month, wd, wom)
-            if day != d:
-                nth = f"{_ORD_SHORT[wom]} {_DAY_NAMES['en'][wd]}"
-                notes.append(f"skip date “{ymd}” is not the {nth} of its month — ignored ("
-                             + (f"that month's is {day.isoformat()})" if day else f"that month has no {nth})"))
-                continue
-            skip.add(ymd)
+        # A slip like the Sunday, the 1st Saturday or the wrong month would skip nothing: say so
+        # (the same check as the committee meeting's own skip_dates — meeting.check_skip_dates).
+        skip, skip_notes = check_skip_dates(e.get("skip_dates"), wd, wom)
+        notes += skip_notes
         ahead = RECURRING_AHEAD
         if e.get("months_ahead") not in (None, ""):
             try:
@@ -629,40 +618,188 @@ def flyer_events(ctx: Ctx) -> list[dict]:
     return out
 
 
-def ics_events(ctx: Ctx) -> list[dict]:
-    """Optional public .ics feeds from config sources.ics_feeds (last good copy kept in data/state)."""
-    feeds = (ctx.cfg.get("sources", {}) or {}).get("ics_feeds") or []
-    if not feeds:
+# --------------------------------------------------------------------------- outside calendars (.ics)
+# config/site.yml `sources.ics_feeds:` — public calendar files (.ics) whose events are merged into Events.
+# They are EXTRAS: a feed that cannot be read never stops the update and never counts as a content source
+# that "stopped updating" (status.json keeps their health apart, under `feeds`). Politeness: ONE plain
+# request per feed per run with the committee robot's own User-Agent (sources.crawler.user_agent), no
+# retries, and a feed is asked again only ICS_RETRY_HOURS_* later — about once a day whether it worked
+# or not (so reruns and the quick runs after a push never pile up requests; the /status/ page and the
+# README promise the Area webmaster "at most once a day").
+# The last good copy of each feed is kept in data/state/ics_feeds.json and used until a new one arrives.
+ICS_STATE_FILE = "ics_feeds.json"
+ICS_TIMEOUT = 25                        # seconds for the one request
+ICS_RETRY_HOURS_AFTER_FAILURE = 20      # blocked / failing feed: at most one request a day
+ICS_RETRY_HOURS_AFTER_SUCCESS = 20      # working feed: likewise (the saved copy is used in between)
+ICS_MAX_BYTES = 3_000_000
+# Feed categories the site knows (config `category:`) → the group each one is shown with on /events/.
+ICS_CATEGORIES = {"neta65": "neta", "ics": "neta", "gv-calendar": "calendar", "lv-calendar": "calendar"}
+# A place that is not known yet: never shown as an address (no map pin, no LOCATION in the calendar file).
+_LOCATION_TBA = re.compile(
+    r"(?i)^\s*(?:(?:venue|location|place|site|lugar|sede|sitio|local)\b\s*(?:(?:is|will\s+be|ser[áa])\s+)?[:\-–—]?\s*)?"
+    r"(?:to\s+be\s+(?:announced|determined|confirmed)|tba|tbd|tbc|por\s+(?:anunciar(?:se)?|confirmar|definir|"
+    r"determinar)|a\s+confirmar|pendiente|(?:se\s+)?anunciar[áa]\s+(?:pronto|m[áa]s\s+adelante))\s*[.!]?\s*$")
+TBA_LOCATION = {"en": "Venue to be announced", "es": "Lugar por anunciarse"}
+
+
+def location_is_tba(v: Any) -> bool:
+    """'Venue to be announced' / 'Lugar por anunciarse' / 'TBA' …: a place that is not known yet."""
+    return bool(clean_text(v)) and bool(_LOCATION_TBA.match(clean_text(v)))
+
+
+def feed_specs(ctx: Ctx) -> list[dict]:
+    """config/site.yml `sources.ics_feeds:` → [{key, url, label, label_es, category, group, host}]. A plain
+    address (`- "https://…"`) works too; webcal:// is read as https://. An entry that cannot be used is
+    skipped and named in status.json problems.ics_feeds (→ the Actions run summary)."""
+    sources = ctx.cfg.get("sources") if isinstance(ctx.cfg.get("sources"), dict) else {}
+    raw = sources.get("ics_feeds")
+    if raw in (None, "", []):
         return []
-    state_path = STATE_DIR / "ics_feeds.json"
-    state = read_json(state_path, {}) or {}
+    if isinstance(raw, (str, dict)):
+        raw = [raw]
+    if not isinstance(raw, list):
+        ctx.raw_problems["ics_feeds"] = "config/site.yml sources.ics_feeds: not understood — it must be a list"
+        return []
     out: list[dict] = []
-    for feed in feeds:
-        spec = feed if isinstance(feed, dict) else {"url": str(feed)}
-        url = spec.get("url")
-        if not url:
+    notes: list[str] = []
+    keys: set[str] = set()
+    for n, f in enumerate(raw, 1):
+        spec = f if isinstance(f, dict) else {"url": f}
+        url = re.sub(r"(?i)^webcal://", "https://", clean_text(spec.get("url")))
+        if not re.match(r"(?i)^https?://[^\s/]+\.[^\s]+$", url):
+            notes.append(f"ics_feeds entry {n}: “{spec.get('url')}” is not a calendar address (https://…) — skipped")
             continue
-        text = None
-        if not ctx.offline:
-            try:
-                import requests
-                r = requests.get(url, timeout=25, headers={"User-Agent": "NETA65-GrapevineCommitteeBot/2.0"})
-                if r.status_code == 200 and "BEGIN:VCALENDAR" in r.text[:2000]:
-                    text = r.text
-                else:
-                    log.warning("ics feed %s → HTTP %s", url, r.status_code)
-            except Exception as e:
-                log.warning("ics feed %s failed: %s", url, e)
-        if text:
-            state[url] = {"fetched": now_iso(), "ics": text}
+        host = (urlsplit(url).hostname or "").lower().removeprefix("www.")
+        label = clean_text(spec.get("label") or spec.get("name")) or host
+        key = slugify(clean_text(spec.get("key")) or label, 40).strip("-") or short_hash(url, 8)
+        while key in keys:
+            key += "-2"
+        keys.add(key)
+        category = clean_text(spec.get("category")).lower() or "ics"
+        if category not in ICS_CATEGORIES:
+            notes.append(f"ics_feeds entry {n} ({label}): category “{spec.get('category')}” is not one of "
+                         f"{', '.join(sorted(ICS_CATEGORIES))} — “ics” used")
+            category = "ics"
+        out.append({"key": key, "url": url, "label": label, "label_es": clean_text(spec.get("label_es")) or label,
+                    "category": category, "group": ICS_CATEGORIES[category], "host": host})
+    if notes:
+        for m in notes:
+            log.warning("config/site.yml %s", m)
+        ctx.raw_problems["ics_feeds"] = ("config/site.yml sources." + " / ".join(notes))[:2000]
+    return out
+
+
+def _challenge_page(resp: Any, head: str) -> bool:
+    """Cloudflare's 'Just a moment…' check (or a similar bot wall) instead of the file."""
+    h = {str(k).lower(): str(v).lower() for k, v in (getattr(resp, "headers", None) or {}).items()}
+    return (h.get("cf-mitigated") == "challenge" or "just a moment" in head.lower()
+            or "challenges.cloudflare.com" in head or "cf-chl" in head or "_cf_chl" in head)
+
+
+def _response_text(resp: Any) -> str:
+    """The answer as text. A calendar file is UTF-8 unless the server names another charset (RFC 5545);
+    `requests` would read a "text/…" answer without a charset as ISO-8859-1 ("La ViÃ±a")."""
+    headers = {str(k).lower(): str(v) for k, v in (getattr(resp, "headers", None) or {}).items()}
+    if "charset=" in headers.get("content-type", "").lower():
+        return resp.text
+    return (resp.content or b"").decode("utf-8-sig", "replace")
+
+
+def fetch_feed(url: str, user_agent: str) -> dict:
+    """ONE plain request (no retries) → {"state": "ok" | "blocked" | "error", "http_status", "error", "text"}.
+    "blocked" = the site's bot protection turned the robot away (Cloudflare's "Just a moment…" check, or
+    HTTP 401 / 403 / 429); "error" = anything else (no answer, 404, 500, not a calendar file)."""
+    import requests
+    try:
+        r = requests.get(url, timeout=ICS_TIMEOUT, allow_redirects=True, headers={
+            "User-Agent": user_agent, "Accept": "text/calendar, text/plain;q=0.8, */*;q=0.1"})
+    except Exception as e:      # no answer (timeout, DNS, TLS …) — never fatal, never retried this run
+        return {"state": "error", "http_status": None, "error": f"no answer ({type(e).__name__})", "text": None}
+    text = _response_text(r) if len(r.content or b"") <= ICS_MAX_BYTES else ""
+    head = text[:4000]
+    if r.status_code == 200 and "BEGIN:VCALENDAR" in head[:2000]:
+        return {"state": "ok", "http_status": 200, "error": None, "text": text}
+    if _challenge_page(r, head):
+        return {"state": "blocked", "http_status": r.status_code, "text": None,
+                "error": f"HTTP {r.status_code}: the site's bot protection (Cloudflare “Just a moment…” check) "
+                         "turned the robot away"}
+    if r.status_code in (401, 403, 429):
+        return {"state": "blocked", "http_status": r.status_code, "text": None,
+                "error": f"HTTP {r.status_code}: the site refused the robot"}
+    if r.status_code != 200:
+        return {"state": "error", "http_status": r.status_code, "text": None, "error": f"HTTP {r.status_code}"}
+    return {"state": "error", "http_status": 200, "text": None,
+            "error": "the answer is not a calendar file (.ics)" if text else "the calendar file is too large"}
+
+
+def _feed_due(st: dict, now: datetime) -> bool:
+    """May the feed be asked again? About once a day (ICS_RETRY_HOURS_*), whether it worked or not."""
+    last = parse_iso(st.get("attempted")) if st.get("attempted") else None
+    if last is None:
+        return True
+    if last.tzinfo is None:
+        last = last.replace(tzinfo=timezone.utc)
+    wait = ICS_RETRY_HOURS_AFTER_SUCCESS if st.get("state") == "ok" else ICS_RETRY_HOURS_AFTER_FAILURE
+    return (now - last).total_seconds() >= wait * 3600 - 300      # (5 min slack: the daily run drifts)
+
+
+def ics_events(ctx: Ctx) -> list[dict]:
+    """Events of the optional .ics feeds (config sources.ics_feeds) + each feed's health in ctx.feeds
+    (→ status.json `feeds`, the /status/ page and the Actions run summary)."""
+    specs = feed_specs(ctx)
+    ctx.feeds = []
+    if not specs:
+        return []
+    state_path = STATE_DIR / ICS_STATE_FILE
+    state = read_json(state_path, {}) or {}
+    if not isinstance(state, dict):
+        state = {}
+    ua = str(((ctx.cfg.get("sources") or {}).get("crawler") or {}).get("user_agent")
+             or "NETA65-GrapevineCommitteeBot/2.0")
+    out: list[dict] = []
+    changed = False
+    for spec in specs:
+        url = spec["url"]
+        st = dict(state.get(url)) if isinstance(state.get(url), dict) else {}
+        health = {"key": spec["key"], "url": url, "label": spec["label"], "label_es": spec["label_es"],
+                  "category": spec["category"], "group": spec["group"],
+                  "state": st.get("state") or ("ok" if st.get("ics") else "never"),
+                  "http_status": st.get("http_status"), "error": st.get("error"),
+                  "last_success": st.get("fetched"), "last_attempt": st.get("attempted"),
+                  "checked_this_run": False, "from_copy": False, "events_count": 0, "duplicates": 0, "notes": []}
+        fresh = None
+        if ctx.offline:
+            log.info("ics feed %s: offline run — not asked (last copy used)", spec["key"])
+        elif not _feed_due(st, ctx.now):
+            log.info("ics feed %s: asked at %s (%s) — not again yet", spec["key"], st.get("attempted"), st.get("state"))
         else:
-            text = (state.get(url) or {}).get("ics")
-        if text:
+            res = fetch_feed(url, ua)
+            ctx.feed_requests += 1
+            st.update({"attempted": to_iso(ctx.now), "state": res["state"], "http_status": res["http_status"],
+                       "error": res["error"]})
+            if res["state"] == "ok":
+                try:          # a copy is only kept when it can be read
+                    fresh = _parse_ics(ctx, {"_ics": res["text"], "_spec": spec})
+                    st.update({"fetched": st["attempted"], "ics": res["text"]})
+                except Exception as e:
+                    st.update({"state": "error", "error": f"the calendar file could not be read ({type(e).__name__})"})
+            level = log.info if st["state"] == "ok" else log.warning
+            level("ics feed %s → %s%s", spec["key"], st["state"], f" ({st['error']})" if st.get("error") else "")
+            state[url] = st
+            changed = True
+            health.update({"state": st["state"], "http_status": st["http_status"], "error": st["error"],
+                           "last_success": st.get("fetched"), "last_attempt": st["attempted"], "checked_this_run": True})
+        evs = fresh
+        if evs is None and st.get("ics"):
             try:
-                out += _parse_ics(ctx, {"_ics": text, "_spec": spec})
-            except Exception as e:  # a broken feed never blocks the build
-                log.warning("ics feed %s could not be parsed: %s", url, e)
-    if not ctx.offline:
+                evs = _parse_ics(ctx, {"_ics": st["ics"], "_spec": spec})
+                health["from_copy"] = True
+            except Exception as e:  # a broken copy never blocks the build
+                log.warning("ics feed %s: the saved copy could not be read: %s", spec["key"], e)
+        health["events_count"] = len(evs or [])
+        out += evs or []
+        ctx.feeds.append(health)
+    if changed and not ctx.offline:
         try:
             write_json(state_path, state)
         except Exception as e:
@@ -670,7 +807,28 @@ def ics_events(ctx: Ctx) -> list[dict]:
     return out
 
 
+def _ics_text(v: Any) -> str:
+    """An iCalendar value (vText, a list of them, CATEGORIES, bytes …) → plain text."""
+    if v is None:
+        return ""
+    if isinstance(v, (list, tuple)):
+        return ", ".join(t for t in (_ics_text(x) for x in v) if t)
+    cats = getattr(v, "cats", None)                  # CATEGORIES
+    if cats is not None:
+        return ", ".join(str(c) for c in cats)
+    if isinstance(v, bytes):
+        v = v.decode("utf-8", "replace")
+    return clean_text(str(v))
+
+
+def _ics_list(v: Any) -> list:
+    return list(v) if isinstance(v, (list, tuple)) else [] if v is None else [v]
+
+
 def _parse_ics(ctx: Ctx, x: dict) -> list[dict]:
+    """The events of one .ics text (The Events Calendar's export on neta65.org, Google Calendar …) in the
+    site's event shape. Recurring events (RRULE) are expanded; CANCELLED events are left out; STATUS:
+    TENTATIVE → extra.tentative; URL → the event's page; ATTACH → its flyer; CATEGORIES → tags."""
     from icalendar import Calendar
     from dateutil.rrule import rrulestr
 
@@ -681,17 +839,30 @@ def _parse_ics(ctx: Ctx, x: dict) -> list[dict]:
     out = []
     for comp in cal.walk("VEVENT"):
         try:
-            title = clean_text(str(comp.get("SUMMARY") or ""))
-            if not title or str(comp.get("STATUS") or "").upper() == "CANCELLED":
+            title = _ics_text(comp.get("SUMMARY"))
+            status = _ics_text(comp.get("STATUS")).upper()
+            if not title or status == "CANCELLED":
                 continue
             start = comp.decoded("DTSTART")
             end = comp.decoded("DTEND") if comp.get("DTEND") else None
             all_day = not isinstance(start, datetime)
-            desc = strip_html(str(comp.get("DESCRIPTION") or ""))
-            loc = clean_text(str(comp.get("LOCATION") or ""))
-            link = clean_text(str(comp.get("URL") or "")) or spec.get("link") or "/events/"
+            desc = strip_html(_ics_text(comp.get("DESCRIPTION")))
+            loc = re.sub(r"(?i),?\s*(?:united states(?: of america)?|usa|u\.s\.a?\.?|estados unidos)\s*$", "",
+                         _ics_text(comp.get("LOCATION"))).strip(" ,")
+            link = _ics_text(comp.get("URL"))
+            link = link if re.match(r"(?i)^https?://", link) else (spec.get("link") or "/events/")
             online = next(iter(re.findall(r"https?://[^\s<>\"]*(?:zoom\.us|meet\.google|teams\.microsoft)[^\s<>\"]*",
                                           f"{loc} {desc}")), None)
+            flyer = thumb = None
+            for a in _ics_list(comp.get("ATTACH")):
+                href = clean_text(str(a))
+                if not re.match(r"(?i)^https?://", href):
+                    continue
+                kind = str(getattr(a, "params", {}).get("FMTTYPE") or "").lower()
+                flyer = flyer or href
+                if not thumb and (kind.startswith("image/") or re.search(r"(?i)\.(?:jpe?g|png|webp|gif)(?:\?|$)", href)):
+                    thumb = href
+            cats = [c for c in re.split(r"\s*,\s*", _ics_text(comp.get("CATEGORIES"))) if c]
             starts = [start]
             if comp.get("RRULE"):
                 rule = comp.get("RRULE").to_ical().decode()
@@ -713,22 +884,324 @@ def _parse_ics(ctx: Ctx, x: dict) -> list[dict]:
                 s_iso = s.isoformat() if all_day else to_iso(s if s.tzinfo else s.replace(tzinfo=ctx.tz))
                 e = (s + dur) if dur is not None else None
                 if e is not None and all_day:
-                    e = e - timedelta(days=1)        # DTEND of all-day events is exclusive
+                    e = max(e - timedelta(days=1), s)        # DTEND of all-day events is exclusive
                 e_iso = (e.isoformat() if all_day else to_iso(e if e.tzinfo else e.replace(tzinfo=ctx.tz))) if e else None
                 city, state = city_state(loc)
+                ex = {"start": s_iso, "end": e_iso, "all_day": all_day, "location": loc or None,
+                      "online_url": online, "flyer_url": flyer, "flyer_thumb": thumb,
+                      "city": city, "state": state, "feed": spec.get("key") or spec.get("url"), "uid": uid}
+                if status == "TENTATIVE":
+                    ex["tentative"] = True
                 out.append({
                     "id": f"ev:ics:{short_hash(uid + '|' + s_iso)}", "source": "calendar", "kind": "event",
                     "url": link, "title": title, "summary": truncate(desc, 400),
                     "lang": T.detect_language(f"{title}. {desc}", "en"), "date": s_iso,
-                    "first_seen": None, "image": None, "tags": [],
-                    "category": spec.get("category") or "ics", "status": "ok",
-                    "extra": {"start": s_iso, "end": e_iso, "all_day": all_day, "location": loc or None,
-                              "online_url": online, "flyer_url": None, "flyer_thumb": None,
-                              "city": city, "state": state, "feed": spec.get("name") or spec.get("url")},
+                    "first_seen": None, "image": thumb, "tags": [slugify(c, 40) for c in cats][:6],
+                    "category": spec.get("category") or "ics", "status": "ok", "extra": ex,
                 })
         except Exception as e:
             log.warning("ics event skipped: %s", e)
     return out
+
+
+# --------------------------------------------------------------------------- one event, several sources
+# The same real event can come from a feed AND from content/events, a dated Drive flyer or the committee's
+# own events (the monthly meeting, config `recurring_events:` such as the CityWide Dallas booth): the
+# neta65.org workshop feed lists the very workshops the chair wrote in content/events. It is shown ONCE.
+# Two events are the same only when they START THE SAME LOCAL DAY and either
+#   * link the same event page (normalized URL: scheme, "www.", trailing slash, ?query and #fragment
+#     ignored — neta65.org/event/<slug>), or
+#   * have the same shape (both all-day, or both at a time of day starting at most TITLE_MATCH_MAX_GAP_H
+#     hours apart; never one over several days against one on a single day), are not in two different
+#     cities, and have titles that name the same event (similar_titles — word for word when a city is not
+#     known). So a workshop or a booth AT an assembly, on its first day, is never merged into the assembly.
+# The hand-written event wins (it keeps its own Spanish); the feed only fills what it leaves out. Where
+# the feed knows something the file does not say — the same event page on another date, another start
+# time, the venue of an event whose file still says "Venue to be announced" — the chair gets a note
+# (status.json feeds[].notes → the Actions run summary) to update the file.
+_TITLE_STOP = {"the", "a", "an", "of", "and", "in", "at", "for", "on", "to", "with", "de", "la", "el", "los", "las",
+               "del", "en", "y", "con", "para", "por", "un", "una", "al", "spanish", "espanol", "english", "ingles"}
+_TITLE_ABBR = {"lv": ("la", "vina"), "gv": ("grapevine",), "gvlv": ("grapevine", "la", "vina"),
+               "neta65": ("neta", "65")}
+TITLE_MATCH_MAX_GAP_H = 2          # title route: two timed events start at most 2 hours apart
+MULTI_DAY_MIN_H = 18               # a timed event is "over several days" only past 18 hours (as on the pages)
+GENERATED_EVENTS = ("committee", "recurring")    # built from config/site.yml: a feed never changes them
+
+
+def event_url_key(url: Any) -> str | None:
+    """'https://www.neta65.org/event/lv-writing-workshop/?ical=1#x' → 'neta65.org/event/lv-writing-workshop'.
+    None for an address that is not an event's own page (no path: a site's home page)."""
+    s = clean_text(url)
+    if not re.match(r"(?i)^(?:https?|webcal)://", s):
+        return None
+    p = urlsplit(s)
+    host = (p.hostname or "").lower().removeprefix("www.")
+    path = re.sub(r"/{2,}", "/", unquote(p.path or "")).rstrip("/").lower()
+    if not host or not path.strip("/"):
+        return None
+    return host + path
+
+
+def title_tokens(s: Any) -> set[str]:
+    """'LV Writing Workshop' → {'vina', 'writing', 'workshop'} (accents, case, little words ignored)."""
+    words = re.findall(r"[a-z0-9]+", fold(clean_text(s)).replace("&", " and "))
+    out: list[str] = []
+    for w in words:
+        out += _TITLE_ABBR.get(w, (w,))
+    return {w for w in out if w not in _TITLE_STOP}
+
+
+# Words every GV/LV event title shares — they say nothing about WHICH event it is. The KIND of event
+# ("workshop", "booth", "assembly", "meeting") is NOT one of them: "GV/LV Booth at the Fall Assembly" is
+# not the Fall Assembly.
+_TITLE_GENERIC = {"grapevine", "vina", "neta", "65", "aa", "event", "evento", "area", "committee", "comite"}
+
+
+def similar_titles(a: Any, b: Any, ignore: set[str] | frozenset[str] = frozenset(), exact: bool = False) -> bool:
+    """Two titles of the same event, in any wording: the words that tell events apart ("writing workshop",
+    "fall assembly", "taller de escritura") are the same, or nearly all shared (shared / all ≥ 0.75).
+    `ignore`: words that say nothing here (the city both events are in, the year); `exact`: the telling
+    words must be the same (used when a city is not known). 'LV Writing Workshop' ~ 'La Viña Writing
+    Workshop (in Spanish) — Fort Worth' (city ignored); not ~ 'LV Recording Workshop'; 'Grapevine Workshop
+    at the Spring Assembly' is not ~ 'NETA 65 Spring Assembly 2027'. Titles made only of common words
+    must match word for word."""
+    ta, tb = title_tokens(a) - set(ignore), title_tokens(b) - set(ignore)
+    if not ta or not tb:
+        return False
+    da, db = ta - _TITLE_GENERIC, tb - _TITLE_GENERIC
+    if not da or not db:
+        return ta == tb
+    if exact:
+        return da == db
+    return len(da & db) / len(da | db) >= 0.75
+
+
+def _event_titles(ev: dict) -> list[str]:
+    own = ((ev.get("extra") or {}).get("own_i18n") or {}).get("title") or {}
+    return [t for t in [ev.get("title"), *own.values()] if clean_text(t)]
+
+
+def _event_day(ctx: Ctx, ev: dict) -> str | None:
+    return local_day(ctx, (ev.get("extra") or {}).get("start") or ev.get("date"))
+
+
+def _event_city(ev: dict) -> str:
+    ex = ev.get("extra") or {}
+    if location_is_tba(ex.get("location")):
+        return ""
+    return fold(clean_text(ex.get("city") or city_state(ex.get("location"))[0] or ""))
+
+
+def _is_all_day(ev: dict) -> bool:
+    ex = ev.get("extra") or {}
+    s = str(ex.get("start") or ev.get("date") or "").strip()
+    return bool(ex.get("all_day")) or bool(re.fullmatch(r"\d{4}-\d{2}-\d{2}", s))
+
+
+def _event_last_day(ctx: Ctx, ev: dict) -> str | None:
+    """The local day an event ends on (an end at midnight belongs to the day before); None without an end."""
+    end = str((ev.get("extra") or {}).get("end") or "").strip()
+    if not end:
+        return None
+    if re.fullmatch(r"\d{4}-\d{2}-\d{2}", end):
+        last = end
+    else:
+        t = ts(end)
+        if t is None:
+            return None
+        last = datetime.fromtimestamp(t - 1, ctx.tz).date().isoformat()
+    first = _event_day(ctx, ev)
+    return max(last, first) if first else last
+
+
+def _multi_day(ctx: Ctx, ev: dict) -> bool | None:
+    """Over several days (an Area assembly)? None when the event gives no end."""
+    first, last = _event_day(ctx, ev), _event_last_day(ctx, ev)
+    if not first or not last:
+        return None
+    if last <= first:
+        return False
+    if _is_all_day(ev):
+        return True
+    ex = ev.get("extra") or {}
+    s, e = ts(ex.get("start") or ev.get("date")), ts(ex.get("end"))
+    return s is not None and e is not None and e - s > MULTI_DAY_MIN_H * 3600
+
+
+def _same_shape(ctx: Ctx, keep: dict, other: dict) -> bool:
+    """Both all-day or both timed (starting at most TITLE_MATCH_MAX_GAP_H apart); not one over several days
+    and the other on one day (a file without an end may take the feed's end)."""
+    if _is_all_day(keep) != _is_all_day(other):
+        return False
+    km, om = _multi_day(ctx, keep), _multi_day(ctx, other)
+    if km and om is None:
+        return False
+    if km is not None and om is not None:
+        if km != om or (km and _event_last_day(ctx, keep) != _event_last_day(ctx, other)):
+            return False
+    if not _is_all_day(keep):
+        a = ts((keep.get("extra") or {}).get("start") or keep.get("date"))
+        b = ts((other.get("extra") or {}).get("start") or other.get("date"))
+        if a is None or b is None or abs(a - b) > TITLE_MATCH_MAX_GAP_H * 3600:
+            return False
+    return True
+
+
+def same_event(ctx: Ctx, keep: dict, other: dict) -> str | None:
+    """How `other` (a feed event) is the same real event as `keep`: "url", "title" or None. Both must start
+    the same local day: an event page shared by two different dates is two dates (a series listed under
+    one page, a page used again for a new workshop, or a date that changed — merge_feed_duplicates tells
+    the chair about the last)."""
+    kd, od = _event_day(ctx, keep), _event_day(ctx, other)
+    if not kd or kd != od:
+        return None
+    ku, ou = event_url_key(keep.get("url")), event_url_key(other.get("url"))
+    if ku and ku == ou:
+        return "url"
+    if not _same_shape(ctx, keep, other):
+        return None
+    kc, oc = _event_city(keep), _event_city(other)
+    if kc and oc and kc != oc:
+        return None
+    ignore = {kd[:4]} | title_tokens(kc) | title_tokens(oc)
+    exact = not (kc and oc)
+    if any(similar_titles(a, b, ignore, exact) for a in _event_titles(keep) for b in _event_titles(other)):
+        return "title"
+    return None
+
+
+def _written_in(ev: dict) -> str:
+    """Where the chair wrote an event: 'content/events/<file>.md', or the Drive flyer's name."""
+    ex = ev.get("extra") or {}
+    if ex.get("file"):
+        return str(ex["file"])
+    if ev.get("category") == "flyer":
+        return f"Drive flyer “{clean_text(ev.get('title'))}”"
+    return f"“{clean_text(ev.get('title'))}”"
+
+
+def _feed_name(ctx: Ctx, key: Any) -> str:
+    label = next((h.get("label") for h in ctx.feeds if h.get("key") == key and h.get("label")), None)
+    return f"the “{label}” calendar" if label else "the calendar"
+
+
+def _local_clock(ctx: Ctx, v: Any) -> str:
+    t = ts(v)
+    if t is None:
+        return str(v)
+    d = datetime.fromtimestamp(t, ctx.tz)
+    return f"{(d.hour % 12) or 12}:{d.minute:02d} {'AM' if d.hour < 12 else 'PM'}"
+
+
+def merge_feed_duplicates(ctx: Ctx, primary: list[dict], feed: list[dict]) -> list[dict]:
+    """→ the feed events that are NOT on the calendar yet. A feed event that is the same real event as one
+    already there (content/events, a dated Drive flyer, the committee meeting, a `recurring_events:` date)
+    is dropped and only fills what a hand-written event leaves out; the same event in a second feed is
+    dropped too. ctx.feeds gets the duplicates and the notes for the chair (`notes`: what the feed says
+    that the file does not — see fill_from_feed — and an event page listed on another date)."""
+    kept: list[dict] = []
+    dups: dict[str, int] = {}
+    notes: dict[str, list[str]] = {}
+
+    def note(ev: dict, msg: str) -> None:
+        key = (ev.get("extra") or {}).get("feed") or ""
+        if msg not in notes.setdefault(key, []):
+            notes[key].append(msg)
+
+    for ev in feed:
+        match = next(((p, how) for p in primary if (how := same_event(ctx, p, ev))), None)
+        if match:
+            for msg in fill_from_feed(ctx, match[0], match[1], ev):
+                note(ev, msg)
+            feed_key = ev["extra"].get("feed") or ""
+            dups[feed_key] = dups.get(feed_key, 0) + 1
+            continue
+        if any(same_event(ctx, k, ev) == "url"
+               or (k["extra"].get("uid") == ev["extra"].get("uid") and k["extra"].get("start") == ev["extra"].get("start"))
+               for k in kept):
+            continue                     # the same event in two feeds
+        kept.append(ev)
+    # The event page of an upcoming hand-written event, listed in a feed on OTHER dates only: a date that
+    # changed on neta65.org (or a page used again for another workshop). Nothing is merged; the chair checks.
+    for p in primary:
+        key = event_url_key(p.get("url"))
+        if not key or p.get("category") in GENERATED_EVENTS or event_end_ts(ctx, p) < ctx.now_ts:
+            continue
+        day = _event_day(ctx, p)
+        on_page = [ev for ev in feed if event_url_key(ev.get("url")) == key]
+        if not on_page or any(_event_day(ctx, ev) == day for ev in on_page):
+            continue
+        later = [ev for ev in on_page if event_end_ts(ctx, ev) >= ctx.now_ts]
+        if later:
+            days = ", ".join(sorted({d for d in (_event_day(ctx, ev) for ev in later) if d})[:3])
+            shown = any(ev is k for ev in later for k in kept)
+            note(later[0], f"{_written_in(p)}: {_feed_name(ctx, later[0]['extra'].get('feed'))} lists its event page "
+                           f"({p.get('url')}) on {days}, but the file says {day}"
+                           + (" (the calendar's date is on the Events page too)" if shown else "")
+                           + ". If the date changed, correct start: and end: in the file; if it is another "
+                             "event, give the file its own url:.")
+    for h in ctx.feeds:
+        h["duplicates"] = dups.get(h.get("key"), 0)
+        h["notes"] = notes.get(h.get("key"), [])
+    if dups:
+        log.info("ics feeds: %d event(s) already on the calendar (content/events, a flyer, the committee's own "
+                 "events) — shown once", sum(dups.values()))
+    for msg in (m for ms in notes.values() for m in ms):
+        log.warning("ics feeds: check %s", msg)
+    return kept
+
+
+def fill_from_feed(ctx: Ctx, keep: dict, how: str, dup: dict) -> list[str]:
+    """The hand-written event wins; the feed only fills what it leaves out → notes for the chair where the
+    feed says something the file does not. The event-page link, the flyer and the online link are copied
+    only on a sure match (the same event page, or the same start); a place the file gives as "Venue to be
+    announced" is replaced by the feed's real venue on a sure match too (the chair is told to update the
+    file). Nothing is copied onto the committee's own events (the meeting, `recurring_events:`)."""
+    kx, dx = keep.setdefault("extra", {}), dup.get("extra") or {}
+    kx["also_in_feed"] = dx.get("feed")
+    kx["feed_match"] = how
+    if keep.get("category") in GENERATED_EVENTS:
+        return []
+    notes: list[str] = []
+    cal = _feed_name(ctx, dx.get("feed"))
+    same_start = _same_start(kx.get("start"), dx.get("start"))
+    sure = how == "url" or same_start
+    if sure:
+        for k in ("flyer_url", "flyer_thumb", "online_url"):
+            if not kx.get(k) and dx.get(k):
+                kx[k] = dx[k]
+        if not re.match(r"(?i)^https?://", str(keep.get("url") or "")) and re.match(r"(?i)^https?://", str(dup.get("url") or "")):
+            keep["url"] = dup["url"]
+    feed_loc = clean_text(dx.get("location"))
+    mine = clean_text(kx.get("location"))
+    if feed_loc and not location_is_tba(feed_loc):
+        if not mine:
+            kx["location"] = feed_loc
+            kx["city"], kx["state"] = kx.get("city") or dx.get("city"), kx.get("state") or dx.get("state")
+        elif location_is_tba(mine) and sure:
+            kx["location"], kx["city"], kx["state"] = feed_loc, dx.get("city"), dx.get("state")
+            own = kx.get("own_i18n") if isinstance(kx.get("own_i18n"), dict) else {}
+            own_loc = {lang: v for lang, v in (own.get("location") or {}).items() if not location_is_tba(v)}
+            if own_loc:
+                own["location"] = own_loc
+            else:
+                own.pop("location", None)
+            notes.append(f"{_written_in(keep)}: the file says the venue is not known yet; {cal} gives “{feed_loc}”, "
+                         "which the site shows now. Put it in location: (and delete location_es:).")
+        elif location_is_tba(mine):
+            notes.append(f"{_written_in(keep)}: the file says the venue is not known yet; {cal} gives “{feed_loc}”. "
+                         "If that is the venue, put it in location: (and delete location_es:).")
+    if not kx.get("end") and dx.get("end") and bool(kx.get("all_day")) == bool(dx.get("all_day")) and same_start:
+        kx["end"] = dx["end"]
+    if not same_start and not _is_all_day(keep) and not _is_all_day(dup):
+        notes.append(f"{_written_in(keep)}: {cal} says it starts at {_local_clock(ctx, dx.get('start'))}, "
+                     f"the file says {_local_clock(ctx, kx.get('start'))} (Central time). If the time changed, "
+                     "correct start: and end: in the file.")
+    return notes
+
+
+def _same_start(a: Any, b: Any) -> bool:
+    return bool(a) and (a == b or (ts(a) is not None and ts(a) == ts(b)))
 
 
 def event_end_ts(ctx: Ctx, ev: dict) -> float:
@@ -747,6 +1220,13 @@ def event_start_ts(ev: dict) -> float:
 
 def build_events(ctx: Ctx) -> list[dict]:
     evs: dict[str, dict] = {}
+    try:        # `meeting: skip_dates` that are not a meeting day: ignored, and the chair is told
+        notes = meeting_skip_notes(ctx.cfg.get("meeting") if isinstance(ctx.cfg.get("meeting"), dict) else {})
+    except Exception as e:
+        notes = [f"skip_dates could not be read ({type(e).__name__})"]
+    if notes:
+        log.warning("config/site.yml meeting: %s", "; ".join(notes))
+        ctx.raw_problems["meeting"] = ("config/site.yml meeting: " + "; ".join(notes))[:2000]
     try:
         committee = committee_meetings(ctx)
     except Exception as e:  # a bad `meeting:` edit in config/site.yml must not stop the daily update
@@ -759,18 +1239,60 @@ def build_events(ctx: Ctx) -> list[dict]:
         log.error("recurring events skipped — config/site.yml `recurring_events:` problem: %s: %s", type(e).__name__, e)
         ctx.raw_problems["recurring_events"] = f"config/site.yml recurring_events: {type(e).__name__}: {e}"[:200]
         recurring = []
-    groups = [("committee", committee), ("recurring", recurring), ("flyer", flyer_events(ctx)),
+    flyers = flyer_events(ctx)
+    manual = safe_each([i for i in ctx.items("manual_events") if i.get("kind") == "event"], prep, "event")
+    try:        # optional outside calendars: never allowed to stop the update
+        feed = ics_events(ctx)
+        # The same real event in a feed and on the calendar already (content/events, a dated flyer, the
+        # committee meeting, a recurring_events date) is shown once: the hand-written one wins, the feed
+        # only fills what it leaves out (never on the committee's own events).
+        feed = merge_feed_duplicates(ctx, manual + flyers + recurring + committee, feed)
+    except Exception as e:
+        log.error("ics feeds skipped: %s: %s", type(e).__name__, e)
+        feed = []
+    groups = [("committee", committee), ("recurring", recurring), ("flyer", flyers),
               ("external", safe_each([i for i in ctx.items("events_external") if i.get("kind") == "event"], prep, "event")),
-              ("manual", safe_each([i for i in ctx.items("manual_events") if i.get("kind") == "event"], prep, "event")),
-              ("ics", ics_events(ctx))]
+              ("manual", manual), ("ics", feed)]
+    file_notes: list[str] = []          # slips in content/events files (→ status.json problems.content_events)
     for _label, items in groups:
         for ev in items:
             ev.setdefault("extra", {})
-            if not ev["extra"].get("start"):
-                ev["extra"]["start"] = ev.get("date")
-            if not ev["extra"].get("start"):
+            ex = ev["extra"]
+            if not ex.get("start"):
+                ex["start"] = ev.get("date")
+            if not ex.get("start"):
                 continue
+            # extra.tentative: present (true) only on an event whose details are not final yet
+            if ex.get("tentative") is True or (ex.get("tentative") and str(ex["tentative"]).strip().lower()
+                                               in ("1", "true", "yes", "y", "si", "sí", "on")):
+                ex["tentative"] = True
+            else:
+                ex.pop("tentative", None)
+            # a place that is not known yet ("Venue to be announced"): never shown as an address. The
+            # file's own `location` decides; `location_es` / `location_en` only when there is no location.
+            base_loc = clean_text(ex.get("location"))
+            own_loc = {lang: clean_text(v) for lang, v in ((ex.get("own_i18n") or {}).get("location") or {}).items()
+                       if clean_text(v)}
+            if location_is_tba(base_loc) or (not base_loc and own_loc
+                                             and all(location_is_tba(v) for v in own_loc.values())):
+                ex["location_tba"] = True
+            else:
+                ex.pop("location_tba", None)
+            if _label == "manual" and base_loc:
+                stale = [f"location_{lang}" for lang, v in own_loc.items() if location_is_tba(v)]
+                if stale and not location_is_tba(base_loc):
+                    file_notes.append(f"{_written_in(ev)}: {' / '.join(stale)} says the venue is not known yet, but "
+                                      f"location: gives “{base_loc}” — that place is shown in both languages. "
+                                      f"Delete the {' / '.join(stale)} line.")
+                real = [f"location_{lang}" for lang, v in own_loc.items() if not location_is_tba(v)]
+                if real and location_is_tba(base_loc):
+                    file_notes.append(f"{_written_in(ev)}: location: says the venue is not known yet, but "
+                                      f"{' / '.join(real)} gives a place — put the place in location: too.")
             evs.setdefault(ev["id"], ev)
+    if file_notes:
+        for m in file_notes:
+            log.warning("content/events: %s", m)
+        ctx.raw_problems["content_events"] = " / ".join(file_notes)[:2000]
     cutoff = ctx.now_ts - 86400
     upcoming = [e for e in evs.values() if event_end_ts(ctx, e) >= cutoff]
     over = [e for e in evs.values() if event_end_ts(ctx, e) < cutoff and e.get("category") != "committee"]
@@ -847,6 +1369,38 @@ def own_words(it: dict) -> dict[str, dict[str, str]]:
             if kept:
                 out[str(field)] = kept
     return out
+
+
+def location_pair(it: dict, own: dict[str, dict[str, str]], src: str | None) -> dict[str, str] | None:
+    """An event's place in both languages (`i18n.location`) — never machine-translated (addresses and
+    group names stay as written). The file's own `location` is its language's text; `location_es`
+    (`location_en` in a Spanish file) the other one (`extra.own_i18n.location`). A place that is not known
+    yet ("Venue to be announced", "TBA") without the other language written gets the site's own words
+    ("Lugar por anunciarse"). None when there is nothing language-specific: the pages then show
+    `extra.location` as it is. The file's `location` decides whether the place is known: a
+    `location_es: "Lugar por anunciarse"` left behind after the venue was confirmed never hides it
+    (build_events notes the slip in problems.content_events)."""
+    if it.get("kind") != "event":
+        return None
+    base = clean_text((it.get("extra") or {}).get("location"))
+    mine = dict(own.get("location") or {})
+    if base and not location_is_tba(base):
+        mine = {lang: v for lang, v in mine.items() if not location_is_tba(v)}
+    tba = location_is_tba(base) or (not base and bool(mine) and all(location_is_tba(v) for v in mine.values()))
+    if not mine and not tba:
+        return None
+    lang0 = src if src in LANGS else "en"
+    pair: dict[str, str] = {}
+    for lang in LANGS:
+        if lang == lang0 and base:
+            pair[lang] = base
+        elif mine.get(lang):
+            pair[lang] = mine[lang]
+        elif tba:
+            pair[lang] = TBA_LOCATION[lang]
+        else:
+            pair[lang] = base or next(iter(mine.values()), "")
+    return pair
 
 
 def local_fields(it: dict) -> dict[str, dict]:
@@ -1022,6 +1576,9 @@ class I18n:
             if field in own and field not in i18n:
                 base = str((it.get("extra") or {}).get(field) or "")
                 i18n[field] = {lang: own[field].get(lang) or base for lang in LANGS}
+        loc = location_pair(it, own, src)
+        if loc:
+            i18n["location"] = loc
         i18n.update(local_fields(it))
         it["i18n"] = i18n
         it["machine"] = sorted(machine)
@@ -1504,8 +2061,25 @@ def build_status(ctx: Ctx, translator: T.Translator | None, i18n: I18n, counts: 
                          if translator else 0},
         "counts": counts,
         "problems": dict(sorted(ctx.raw_problems.items())),
+        # Optional outside calendars (config sources.ics_feeds): kept apart from `sources` on purpose —
+        # a feed that a site's bot protection blocks is an extra that did not work, not a content source
+        # that "stopped updating" (no weekly GitHub issue about it). Shown on /status/ in plain words.
+        "feeds": [feed_status(h) for h in ctx.feeds],
         "items": [],
     }
+
+
+def feed_status(h: dict) -> dict:
+    """One feed's health for status.json: state ok | blocked | error | never, the HTTP status of the last
+    request, when it last worked, how many events it gave (and how many of them were already on the
+    calendar — content/events, a flyer, the committee's own events — shown once), and `notes`: what the
+    feed says that a content/events file does not (another date or time, a venue now known), for the
+    chair to check (merge_feed_duplicates → the Actions run summary)."""
+    keys = ("key", "url", "label", "label_es", "category", "group", "state", "http_status", "error", "last_success",
+            "last_attempt", "checked_this_run", "from_copy", "events_count", "duplicates")
+    out = {k: h.get(k) for k in keys}
+    out["notes"] = [str(n) for n in (h.get("notes") or [])]
+    return out
 
 
 # =========================================================================== main

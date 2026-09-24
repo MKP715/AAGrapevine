@@ -31,6 +31,8 @@ Sitio web del **Comité de Grapevine y La Viña del Área 65 del Noreste de Texa
 - **Ajustes** (reunión del comité, Zoom, correo, eventos de cada mes como la mesa en CityWide Dallas):
   archivo `config/site.yml`.
   **Corregir una traducción:** `data/translations/overrides.yml`.
+- **Eventos sin volante** (talleres, asambleas): un archivo en `content/events`. Si todavía faltan
+  detalles, `tentative: true` muestra "Detalles por confirmar"; el lugar en español va en `location_es`.
 - **¿Funciona todo?** Página **/es/status/** del sitio, o la pestaña **Actions** en GitHub.
   **Actualizar ya:** GitHub → **Actions** → **Update & Deploy** → **Run workflow**.
 
@@ -95,6 +97,7 @@ It also runs within a few minutes whenever someone saves a change to the setting
 | **Grapevine Weekly Open meeting** (web page) | Current day, time and Zoom details | **Meeting** |
 | **Committee meeting** (from the settings) | Next dates, countdown, "add to calendar" | **Meeting · Events** |
 | **Monthly events** (from the settings, e.g. our booth at CityWide Dallas) | The next dates, "add to calendar" | **Events · Home · Meeting · calendar feed · weekly e-mail** |
+| **Other calendars** (optional, e.g. the NETA 65 workshop calendar on neta65.org) | Their events, each shown **once** even when it is also in `content/events` (yours wins). *neta65.org currently blocks robots — see [the NETA 65 workshop calendar](#the-neta-65-workshop-calendar)* | **Events** |
 | **Translation** | Every title, teaser and announcement in both languages | Everywhere |
 
 The site also offers, automatically: a **What's New** page (the newest items from every source),
@@ -185,7 +188,7 @@ Common changes:
 | To change… | Edit… |
 |---|---|
 | Committee meeting day/time | `meeting:` → `week_of_month`, `weekday`, `start`, `end` (24-hour, Central time) |
-| Skip a meeting (holiday) | `meeting:` → `skip_dates: ["2027-12-15"]` |
+| Skip a meeting (holiday) | `meeting:` → `skip_dates: ["2027-12-15"]` (must be a meeting day — that month's 3rd Wednesday; any other date is ignored and the run summary says which date to use) |
 | Something we do every month (a booth, a workshop) | `recurring_events:` — see [below](#add-a-recurring-event) |
 | Skip one month of it | `recurring_events:` → that event's `skip_dates: ["2026-12-12"]` |
 | Zoom link, meeting ID, passcode | `meeting:` → `zoom_url`, `meeting_id`, `passcode` |
@@ -193,6 +196,7 @@ Common changes:
 | Which Drive panels are shown | `drive:` → `min_panel` |
 | How long the daily PDF search runs | `sources:` → `crawler:` → `minutes_per_run` (default 40; **`0` pauses the PDF search** — everything else keeps updating) |
 | Instagram: official method only | `sources:` → `instagram:` → `anonymous: false` (see [section 9](#9-instagram-how-the-site-reads-it-please-read)) |
+| Another website's calendar on the Events page | `sources:` → `ics_feeds:` (instructions in the comments there) |
 | Weekly e-mail day / length | `digest:` → `weekday`, `days` |
 | The site's public address | `site:` → `url` (see [custom domain](#12-using-your-own-address-custom-domain)) |
 
@@ -224,9 +228,11 @@ recurring_events:
 ```
 
 To add another one, copy the whole block (from `- key:` down), paste it under the last one and
-change the values. Every date then shows on the **Events** page (with an "Every month" badge), the
-next one on the **home page**, the **Meeting** page and in the **weekly e-mail**, and all of them in
-the **calendar feed** — in both languages, with daylight-saving time handled. Write the Spanish
+change the values. Every date then shows on the **Events** page (with an "Every month" badge); the
+next one always keeps a place in the home page's **Upcoming events** row (the other places go to the
+soonest workshops and other events, so a busy month never pushes the booth off the home page), and it
+is on the **Meeting** page and in the **weekly e-mail**; all of them are in the **calendar feed** — in
+both languages, with daylight-saving time handled. Write the Spanish
 yourself (`title_es`, `summary_es`); if you leave it out, the site translates the English
 automatically and marks it "auto-translated". A monthly event never shows as "New" and does not,
 on its own, make the weekly e-mail go out. If a block has a mistake (for example
@@ -292,6 +298,61 @@ written, not an automatic translation.
 Committee meetings are **not** added by hand; they come from the settings — and so do events that
 happen every month ([`recurring_events:`](#add-a-recurring-event)).
 
+**Events over several days** (the Area assemblies): write only dates, `start: 2027-03-19` and
+`end: 2027-03-21` (the last day). The site shows the range ("Fri, Mar 19 – Sun, Mar 21, 2027") and
+keeps the event listed until its last day is over.
+
+**Details not final yet** (a date is set, the venue is not): add `tentative: true` (or `yes` / `sí`)
+and, for the place, `location: "Venue to be announced"` with `location_es: "Lugar por anunciarse"`.
+The event shows a **"Details to be confirmed"** badge everywhere and calendar apps mark it tentative.
+
+### When an assembly's details are final
+
+1. Open its file in [`content/events/`](content/events/) (for example
+   `2027-06-25-neta65-summer-assembly.md`) and click the **pencil icon**.
+2. Put the real venue and address in `location:` and **delete the `location_es:` line** (an address
+   needs no translation).
+3. Correct `start:` / `end:` if the dates changed, and update the description and `summary_es:`
+   (the host districts, the format …). Add `url:` with the event's page on neta65.org if there is one.
+4. **Delete the `tentative: true` line.**
+5. **Commit changes.** About 10–20 minutes later the Events page, the home page, the digest and
+   everyone's subscribed calendar show it as confirmed, with the new place.
+
+(A date change only needs the file renamed if you want the name to match; the site reads the date
+from `start:`.)
+
+### The NETA 65 workshop calendar
+
+`config/site.yml` → `sources:` → `ics_feeds:` lists the NETA 65 workshop calendar
+(`https://neta65.org/events/category/workshop/list/?ical=1`). When the site can read it, its workshops
+appear on the Events page by themselves, with the NETA 65 events. A workshop that is also in
+`content/events` is shown **once**: your file wins (with your own Spanish) and the calendar only fills
+in what the file leaves out, such as the flyer. The two are matched when they start the same day and
+link the same neta65.org event page (`url:`), or have a similar title at about the same time — so a
+workshop or a booth *at* an assembly stays its own event. When the calendar says something your file
+does not (another date or time for the same event page, or the venue of an event your file still calls
+"Venue to be announced"), the run summary on the **Actions** tab shows a **Check:** line naming the
+file, so you can update it.
+
+**Right now neta65.org blocks it.** The Area website is behind Cloudflare's "Just a moment…" bot
+check, which turns away every robot, including ours (the site does not try to get around it). The
+**Status** page says so under *Other calendars we read*. Until it is unblocked, a workshop or an
+assembly shows on the Events page **only after someone on the committee adds it to `content/events`**
+by hand — check <https://neta65.org/events/category/workshop/> now and then. The robot asks at most
+once a day, and a blocked calendar never opens the *"A content source has stopped updating"* issue.
+
+**To get it unblocked,** send this to the Area webmaster:
+
+> Our committee website reads the public workshop calendar
+> `https://neta65.org/events/category/workshop/list/?ical=1` once a day, but Cloudflare's bot check
+> answers "403 Just a moment…". Could you add a Cloudflare WAF custom rule (Security → WAF →
+> Custom rules) with the action **Skip** for requests whose URI query string contains `ical=1`, or
+> whose User-Agent starts with `NETA65-GrapevineCommitteeBot`? ("Allow verified bots" alone is not
+> enough: our small robot is not on Cloudflare's list.)
+
+After that, nothing needs changing here: the next daily update reads it, and the Status page shows
+*Working*.
+
 ---
 
 ## 7. Running the update right now
@@ -341,7 +402,9 @@ saved (nothing has to be fetched again), but the website is only republished by 
   updated for **7 days**, the site opens one issue titled **"A content source has stopped
   updating"** in this repository's **Issues** tab, explaining what to check. GitHub e-mails it to
   everyone who *watches* the repository (**Watch** button at the top → **All Activity**, or
-  **Custom → Issues**). The issue closes by itself once the source works again.
+  **Custom → Issues**). The issue closes by itself once the source works again. The optional
+  **other calendars** (`ics_feeds:`) never open this issue: the Status page explains them under
+  *Other calendars we read*, and the run summary lists them as information only.
 
 It is normal for **one** source to fail now and then (Instagram in particular sometimes refuses
 robots). Nothing is lost: the previous items stay on the site and the next run tries again.
@@ -572,6 +635,7 @@ the new **Events** page, in Spanish if they had chosen Spanish on the old site.
 | Site shows "404 — There isn't a GitHub Pages site here" | Pages not switched to GitHub Actions | **Settings → Pages → Source: GitHub Actions**, then run **Update & Deploy**. |
 | Run fails at "Read GitHub Pages settings" | Same as above | Same as above. |
 | Run fails at "Commit refreshed data" with *permission denied* / *403* / *protected branch* | A rule on `main` stops the bot from saving its data | If `main` has branch protection or a ruleset, add **GitHub Actions** to its bypass list (**Settings → Rules** or **Settings → Branches**). The workflow already asks for write access itself; *Workflow permissions* does not need changing. |
+| Status page: a calendar under *Other calendars we read* says "Blocked by the site's bot protection" | That website (neta65.org) turns robots away with Cloudflare | Until it is fixed, a workshop or assembly shows on the Events page only after someone adds it to `content/events` by hand ([how](#6-announcements-and-events-without-drive-optional)). To fix it, ask the site's webmaster to let calendar requests through ([what to send](#the-neta-65-workshop-calendar)). |
 | An issue "A content source has stopped updating" appeared | One source has not updated for 7 days (the site keeps its older items) | Open the issue: it names the source, the error and what to check (for Google Drive: is the folder still shared "Anyone with the link"?). It closes itself when the source works again. |
 | Yellow ⚠ "Translation models missing" or "Translation is not working" | The free translation models could not be downloaded (their website was down or moved) | New titles stay in their original language; nothing else is affected. If it lasts more than a few days, send the run's log to whoever helps with the website. |
 | Run fails at "Publish to GitHub Pages" with *environment protection* | The `github-pages` environment only allows certain branches | **Settings → Environments → github-pages** → allow the `main` branch. |

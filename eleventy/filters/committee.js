@@ -84,6 +84,12 @@ function chicagoMidnight(ymd) {
   return atChicago(y, m - 1, d, "00:00");
 }
 
+// The moment a day ends in Chicago (midnight after it), as ms: an all-day event whose last day is
+// `ymd` is over then — not at noon UTC (7 AM Central), which is what a bare "YYYY-MM-DD" parses to.
+export function chicagoDayEndMs(ymd) {
+  return isYmd(ymd) ? chicagoMidnight(ymdAddDays(ymd, 1)).getTime() : NaN;
+}
+
 // Any IANA time zone (the Grapevine Weekly Open is hosted in Eastern time).
 const zoneFmts = new Map();
 function zoneFmt(tz) {
@@ -332,8 +338,10 @@ function meetingDescription(site, lang, pageUrl) {
 /*  Events                                                             */
 /* ------------------------------------------------------------------ */
 // Filter-chip groups on /events/ ("recurring" = a monthly event from config/site.yml
-// `recurring_events:`, e.g. the booth at CityWide Dallas — a NETA 65 event, not a committee meeting)
-const GROUP_OF = { committee: "committee", recurring: "neta", flyer: "neta", manual: "neta", ics: "neta", "gv-calendar": "calendar", "lv-calendar": "calendar" };
+// `recurring_events:`, e.g. the booth at CityWide Dallas — a NETA 65 event, not a committee meeting;
+// "neta65" / "ics" = an outside calendar feed from config/site.yml `sources.ics_feeds:` that lists NETA 65
+// events, e.g. the neta65.org workshop calendar — shown with the NETA 65 events, not the GV/LV calendars)
+const GROUP_OF = { committee: "committee", recurring: "neta", flyer: "neta", manual: "neta", ics: "neta", neta65: "neta", "gv-calendar": "calendar", "lv-calendar": "calendar" };
 function eventGroup(it) {
   if (GROUP_OF[it.category]) return GROUP_OF[it.category];
   if (it.source === "calendar") return "calendar";
@@ -472,6 +480,12 @@ function shapeEvent(it, site, lang, now, descOverride) {
   }
   const start = new Date(startMs), end = new Date(endMs);
   const startNoon = new Date(startYmd + "T12:00:00Z");
+  // An event over several days (an Area assembly, Fri–Sun): a date RANGE on the card, its tile and in the
+  // calendars. A timed event that only runs past midnight (7 PM – 1 AM) is not one.
+  const multiDay = startYmd !== endYmd && (allDay || endMs - startMs > 18 * 3600e3);
+  const nDays = Math.round((Date.parse(endYmd + "T12:00:00Z") - Date.parse(startYmd + "T12:00:00Z")) / 864e5) + 1;
+  // content/events `tentative: true` (or STATUS:TENTATIVE in an outside calendar): details not final yet.
+  const tentative = x.tentative === true;
   const group = eventGroup(it);
   const committee = it.category === "committee";
   // A date of a monthly event from config/site.yml `recurring_events:` (build_data.recurring_events):
@@ -496,21 +510,34 @@ function shapeEvent(it, site, lang, now, descOverride) {
   // Labels (all in Central time — the Area's time zone)
   const tileSrc = allDay ? startNoon : start;
   const tileOpts = allDay ? { timeZone: "UTC" } : {};
-  const tile = {
-    mon: fmt(tileSrc, lang, { month: "short", ...tileOpts }).replace(/\.$/, ""),
-    day: fmt(tileSrc, lang, { day: "numeric", ...tileOpts }),
-    wd: fmt(tileSrc, lang, { weekday: "short", ...tileOpts }).replace(/\.$/, ""),
-  };
-  let dateLabel, timeLabel = "";
+  const part = (d, o) => fmt(d, lang, { ...o, ...tileOpts }).replace(/\.$/, "");
+  const tile = { mon: part(tileSrc, { month: "short" }), day: part(tileSrc, { day: "numeric" }), wd: part(tileSrc, { weekday: "short" }), range: false };
+  if (multiDay) {
+    // "MAR · 19–21 · Fri–Sun" (a range across two months: "MAR–APR · 30–2 · Tue–Fri")
+    const endSrc = allDay ? new Date(endYmd + "T12:00:00Z") : new Date(endMs - 1);
+    const mon2 = part(endSrc, { month: "short" });
+    tile.mon = mon2 === tile.mon ? tile.mon : `${tile.mon}–${mon2}`;
+    tile.day = `${tile.day}–${part(endSrc, { day: "numeric" })}`;
+    tile.wd = `${tile.wd}–${part(endSrc, { weekday: "short" })}`;
+    tile.range = true;
+  }
+  let dateLabel, timeLabel = "", rangeLabel = "";
   if (allDay) {
     const a = new Date(startYmd + "T12:00:00Z"), b = new Date(endYmd + "T12:00:00Z");
     dateLabel = startYmd === endYmd
       ? cap(fmt(a, lang, { weekday: "long", month: "long", day: "numeric", year: "numeric", timeZone: "UTC" }))
-      : cap(fmtRange(a, b, lang, { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" }));
-    timeLabel = t(timeNotListed ? "committee.events.time_not_listed" : "committee.events.all_day", lang);
+      : cap(fmtRange(a, b, lang, { weekday: "long", month: "long", day: "numeric", year: "numeric", timeZone: "UTC" }));
+    // "Fri, Mar 19 – Sun, Mar 21, 2027" / "Vie, 19 de mar – dom, 21 de mar de 2027"
+    if (multiDay) rangeLabel = cap(fmtRange(a, b, lang, { weekday: "short", month: "short", day: "numeric", year: "numeric", timeZone: "UTC" }));
+    timeLabel = timeNotListed ? t("committee.events.time_not_listed", lang)
+      : multiDay ? t("committee.events.n_days", lang, { n: nDays }) : t("committee.events.all_day", lang);
   } else {
     dateLabel = cap(fmt(start, lang, { weekday: "long", month: "long", day: "numeric", year: "numeric" }));
-    timeLabel = fmtRange(start, end, lang, { hour: "numeric", minute: "2-digit", timeZoneName: "short" });
+    if (multiDay) {
+      // "Fri, Mar 19, 6:00 PM CDT – Sun, Mar 21, 12:00 PM CDT": the times are in the range itself
+      rangeLabel = cap(fmtRange(start, end, lang, { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit", timeZoneName: "short" }));
+      dateLabel = cap(fmtRange(start, end, lang, { weekday: "long", month: "long", day: "numeric", year: "numeric" }));
+    } else timeLabel = fmtRange(start, end, lang, { hour: "numeric", minute: "2-digit", timeZoneName: "short" });
   }
   const monthKey = startYmd.slice(0, 7);
   const monthLabel = cap(fmt(new Date(monthKey + "-15T12:00:00Z"), lang, { month: "long", year: "numeric", timeZone: "UTC" }));
@@ -519,7 +546,12 @@ function shapeEvent(it, site, lang, now, descOverride) {
   const flyerView = x.flyer_url || (it.source === "drive" && /drive\.google\.com/.test(it.url || "") ? it.url : null);
   const flyerId = driveFileId(flyerView);
   const flyerThumb = x.flyer_thumb || (flyerId ? `https://lh3.googleusercontent.com/d/${flyerId}=w600` : null);
-  let location = [x.location, !x.location && x.city ? [x.city, x.state].filter(Boolean).join(", ") : ""].filter(Boolean).join("");
+  // The place in this language: content/events `location_es` / `location_en` → i18n.location (build_data
+  // also writes "Lugar por anunciarse" for an English "Venue to be announced"); else as written.
+  const locText = String(H.pickLang(it, "location", lang) || x.location || "").trim();
+  let location = [locText, !locText && x.city ? [x.city, x.state].filter(Boolean).join(", ") : ""].filter(Boolean).join("");
+  // A place that is not known yet: plain text on the card — no map pin, no address in the calendars.
+  const locationTba = !!location && x.location_tba === true;
   const online = x.online_url || null;
   // "Zoom" as the location of an online event is the platform, not a place.
   let platform = committee ? "" : String(x.platform || "").trim();
@@ -542,15 +574,19 @@ function shapeEvent(it, site, lang, now, descOverride) {
   const descLines = [];
   if (descOverride) descLines.push(descOverride);
   else {
+    // Google / Outlook links cannot say "tentative" — the first line of the description does.
+    if (tentative) descLines.push(`${t("committee.events.tentative", lang)}. ${t("committee.events.tentative_help", lang)}`, "");
     if (summary) descLines.push(summary);
     if (recurrence) descLines.push(recurrence);
+    if (locationTba) descLines.push(location);
     if (online) descLines.push("", `${platform ? t("committee.events.online_on", lang, { platform }) : t("committee.events.online", lang)}: ${online}`);
     if (flyerView) descLines.push(`${t("committee.events.flyer", lang)}: ${flyerView}`);
     // Date-only outside event: the calendar shows it as all-day, so the note says the time was not listed.
     if (detailsUrl !== flyerView) descLines.push("", `${t(timeNotListed ? "committee.events.time_not_listed" : "committee.cal.details", lang)}: ${detailsUrl}`);
   }
   const calDescription = descLines.join("\n").trim();
-  const calLocation = committee ? (online || location) : [location, !location && online ? online : ""].filter(Boolean).join("");
+  const place = locationTba ? "" : location;
+  const calLocation = committee ? (online || location) : [place, !place && online ? online : ""].filter(Boolean).join("");
 
   const ev = {
     id: it.id,
@@ -562,11 +598,14 @@ function shapeEvent(it, site, lang, now, descOverride) {
     recurring, series: recurring ? String(x.series || "") : "", recurrence, recurrenceDay: recurrence.split(" · ")[0], ownWords,
     title, summary, body, item: it,
     platform, isOnline,
-    allDay, startMs, endMs, startYmd, endYmd,
+    allDay, startMs, endMs, startYmd, endYmd, multiDay, nDays,
     startIso: allDay ? startYmd : start.toISOString(),
     endIso: allDay ? endYmd : end.toISOString(),
+    // stays listed through its last day (an all-day event until midnight Central after its last day)
     expireIso: end.toISOString(),
-    tile, dateLabel, timeLabel, monthKey, monthLabel,
+    tile, dateLabel, timeLabel, rangeLabel, monthKey, monthLabel,
+    shareWhen: [dateLabel, timeLabel].filter(Boolean).join(" · "),
+    tentative, locationTba,
     shortLabel: cap(fmt(tileSrc, lang, { month: "short", day: "numeric", ...tileOpts })).replace(/\.(?=\s|$)/, ""),
     // One line for the /meeting/ hero: "Wednesday, October 21 · 7:00 PM CDT" (committee.js keeps it current)
     whenLabel: allDay ? dateLabel : cap(fmt(start, lang, { weekday: "long", month: "long", day: "numeric" })) + " · " + fmt(start, lang, { hour: "numeric", minute: "2-digit", timeZoneName: "short" }),
@@ -579,7 +618,9 @@ function shapeEvent(it, site, lang, now, descOverride) {
     dtstampSrc: it.first_seen || null,
   };
   Object.assign(ev, calendarLinks(ev));
-  ev.icsData = { uid: ev.uid + (lang !== "en" ? "-" + lang : "") + "@neta65-gvlv", title: ev.title, start: ev.startIso, end: ev.endIso, allDay, description: calDescription, location: calLocation, url: ev.detailsUrl, filename: slugify(ev.title, 40) };
+  // The "Add to calendar → .ics file" download (src/assets/js/committee.js CM.downloadIcs): all-day events
+  // as DATE values, end = the last day (the file gets the exclusive DTEND, the day after).
+  ev.icsData = { uid: ev.uid + (lang !== "en" ? "-" + lang : "") + "@neta65-gvlv", title: ev.title, start: ev.startIso, end: ev.endIso, allDay, tentative, description: calDescription, location: calLocation, url: ev.detailsUrl, filename: slugify(ev.title, 40) };
   return ev;
 }
 
@@ -662,7 +703,8 @@ export function buildIcs(events, o = {}) {
     if (ev.detailsUrl) push("URL:" + ev.detailsUrl);
     if (ev.flyer && ev.flyer.view) push("ATTACH:" + ev.flyer.view);
     push("CATEGORIES:" + icsEscape(o.categoryLabel ? o.categoryLabel(ev) : ev.group));
-    push("STATUS:CONFIRMED");
+    // TENTATIVE: details not final yet (content/events `tentative: true`); every other event is CONFIRMED.
+    push("STATUS:" + (ev.tentative ? "TENTATIVE" : "CONFIRMED"));
     push("SEQUENCE:0");
     push("END:VEVENT");
   }

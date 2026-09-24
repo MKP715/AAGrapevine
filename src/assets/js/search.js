@@ -273,6 +273,8 @@
       if (e.l && e.l !== CFG.lang && e.l !== "und") meta += '<span class="badge-muted uppercase" title="' + esc(CFG.langTitle[e.l] || "") + '">' + esc(e.l) + "</span>";
       if (e.n) meta += '<span class="badge-new">' + esc(S.isNew) + "</span>";
       if (e.pw) meta += '<span class="badge-muted" title="' + esc(S.subscriberTitle) + '">' + esc(S.subscriber) + "</span>";
+      // e.tb: an event whose details are not final yet (content/events `tentative: true`)
+      if (e.tb) meta += '<span class="badge-tbc" title="' + esc(S.tbcHelp) + '">' + icon("calendar-clock", "size-3") + esc(S.tbc) + '<span class="sr-only">: ' + esc(S.tbcHelp) + "</span></span>";
       var host = "";
       if (ext) { try { host = new URL(e.u).hostname.replace(/^www\./, ""); } catch (x) {} }
       return '<li class="ss-result"><a data-nav href="' + esc(kit.href(e.u)) + '"' + (ext ? ' target="_blank" rel="noopener"' : "") + ">" +
