@@ -1,35 +1,95 @@
-{#- Shared UI macros. Import with:
+{#- =========================================================================
+    Shared UI macros. Import with:
       {% import "macros/ui.njk" as ui with context %}
-    then e.g. {{ ui.pageHero(lang, "Title", "Subtitle", "book-open") }} -#}
 
-{#- Inner-page hero band (dark, with faint vine art). caller() adds extra content (buttons, stats). -#}
-{% macro pageHero(lang, title, subtitle="", icon="", eyebrow="") %}
-<section class="page-hero pt-28 pb-14 sm:pt-32 sm:pb-20">
-  <svg class="page-hero-vine" viewBox="0 0 400 260" fill="none" aria-hidden="true">
-    <path d="M-10 60 C 80 20, 150 110, 240 70 S 380 40, 420 90" stroke="#c9a57a" stroke-width="5" stroke-linecap="round"/>
-    <path d="M120 58 c 6 30 -8 52 -4 80" stroke="#9cc57a" stroke-width="2.5" stroke-linecap="round"/>
-    <g fill="#8e6cc9"><circle cx="114" cy="150" r="9"/><circle cx="131" cy="150" r="9"/><circle cx="122" cy="165" r="9"/><circle cx="105" cy="165" r="9"/><circle cx="139" cy="165" r="9"/><circle cx="113" cy="180" r="9"/><circle cx="130" cy="180" r="9"/><circle cx="122" cy="195" r="9"/></g>
-    <path d="M250 70 c 20 -40 60 -30 70 -10 -30 0 -40 20 -70 10z" fill="#5fae5a"/>
-    <path d="M300 60 c 4 22 30 30 40 20" stroke="#9cc57a" stroke-width="2" stroke-linecap="round"/>
-  </svg>
-  <div class="container-page relative z-10">
-    {% if eyebrow %}<p class="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-white/70">{{ eyebrow }}</p>{% endif %}
-    <h1 class="flex items-center gap-3 font-display text-4xl font-semibold leading-tight sm:text-5xl">
-      {% if icon %}<span class="grid size-12 shrink-0 place-items-center rounded-2xl bg-white/10 ring-1 ring-white/20">{% icon icon, "size-6" %}</span>{% endif %}
-      <span>{{ title }}</span>
-    </h1>
-    {% if subtitle %}<p class="mt-4 max-w-2xl text-lg leading-relaxed text-white/80">{{ subtitle | safe }}</p>{% endif %}
-    {% if caller %}<div class="mt-7">{{ caller() }}</div>{% endif %}
+    ── THE PAGE HERO — one component for EVERY page, the home page included ──
+    ui.pageHero(lang, title, subtitle="", icon="", eyebrow="", opts=null)
+      Renders <section class="gv-hero page-hero" data-gv-hero>: the committee's animated
+      grapevine art (hero-canvas.js — base.njk loads it on every page, no pageScripts entry
+      needed) over the navy → NETA-blue gradient, fading into the page at the bottom.
+      SAME HEIGHT on every page, counting the fixed 64px header that sits on top of it:
+        ≥1024px: 30rem (480px) · 768–1023px: 28rem (448px) · phones: 24rem (384px) minimum.
+      The content starts at the same height on every page (pinned under the header, not
+      centered), so the title never jumps between pages; a shorter hero shows more art below
+      its text. The hero only grows when its content does not fit (desktop: 312px of room),
+      so keep it short: eyebrow (a few words) · title · subtitle (1–2 lines on desktop) ·
+      ONE actions row · optional compact stats (up to 4 short numbers).
+      An empty call body or aside slot renders nothing (no empty div, no empty right column).
+      Anything bigger — search boxes, filters, long stat rows, countdown cards — goes in the
+      first block BELOW the hero (see "Page start").
+
+      Plain:
+        {{ ui.pageHero(lang, "nav.events" | t(lang), "committee.events.hero_sub" | t(lang), "calendar-days", "committee.events.eyebrow" | t(lang)) }}
+      With one actions row and compact stats (children of the body are spaced 1.25rem apart):
+        {% call ui.pageHero(lang, title, subtitle, "library", eyebrow) %}
+          <div class="hero-actions">
+            <a class="btn-light" href="…">…</a>
+            <a class="btn-on-dark" href="…">…</a>
+          </div>
+          {{ ui.heroStats([{ value: 56, label: "stories" }, { value: 12, label: "episodes" }]) }}
+        {% endcall %}
+      opts (all optional), e.g. { id: "homeHero", titleId: "home-title", aside: true }:
+        id           id of the <section>
+        titleId      id of the <h1>; the section is then labelled by it (a named region)
+        eyebrowIcon  icon name shown in the eyebrow pill (e.g. "grapes")
+        class        extra classes for the <section>
+        aside        true → two columns from 1024px: the call body's "aside" slot goes on the
+                     right (the home page's meeting card). Use a call block with a slot argument:
+          {% call(slot) ui.pageHero(L, title, lead, "", eyebrow, { id: "homeHero", titleId: "home-title", aside: true }) %}
+            {%- if slot == "aside" %}<aside class="…">…</aside>
+            {%- else %}<div class="hero-actions">…</div>{% endif %}
+          {% endcall %}
+                     Below 1024px the aside stacks under the copy and makes the hero taller —
+                     hide or shorten it there (e.g. class="max-lg:hidden").
+      title may be trusted HTML marked | safe ("home.hero_title" | t(L) | mdInline | safe);
+      *emphasis* in it shows in warm gold italics. subtitle is printed with | safe, so pass
+      i18n strings only — never synced third-party text.
+
+    ── Page start — the first block after the hero, use exactly ONE of: ──
+      page-overlap  a card, search box or sub-nav that tucks into the hero's faded bottom edge:
+                      <section class="container-page page-overlap"><div class="card card-pad">…
+                    (it overlaps the fade by 1.5rem on phones / 2.5rem from 640px — never the text)
+      page-start    a normal section, used INSTEAD of "section" (it keeps the bottom padding):
+                      <section class="container-page page-start">…
+    ── Width (main.css) ──
+      container-page  full width up to 1920px; side padding var(--gutter) (16px → 72px).
+      grid-cards / grid-cards-fit   card grids: 1 → 2 → 3 (1024px) → 4 (1536px) → 5 (1800px) columns.
+      grid-cards-4   short lists of link cards: 2 → 3 → 4 (1280px) → 5 (1800px), stretched to fill.
+                     All grids drop columns rather than squeeze cards (next to a sidebar, say);
+                     override per grid with [--cards-max:N] / [--cards-min:15rem].
+      rail + rail-item   scroll-snap rows showing more items per view on wide screens ([--rail-n:N]).
+      measure (72ch) · layout-aside (main + right sidebar) · layout-sidebar (left filters + results).
+    ========================================================================= -#}
+
+{% macro pageHero(lang, title, subtitle="", icon="", eyebrow="", opts=null) %}
+{%- set o = opts or {} -%}
+{#- caller() returns a SafeString object, which is truthy even when it is empty, so the
+    checks below test | length (0 for an empty body / aside) instead of truthiness. -#}
+{%- set heroBody = (caller() | trim) if caller else "" -%}
+{%- set heroAside = (caller("aside") | trim) if (caller and o.aside) else "" -%}
+{%- set hasBody = (heroBody | length) > 0 -%}
+{%- set hasAside = (heroAside | length) > 0 -%}
+<section class="gv-hero page-hero{{ ' gv-hero--split' if hasAside }}{{ (' ' ~ o.class) if o.class }}" data-gv-hero{% if o.id %} id="{{ o.id }}"{% endif %}{% if o.titleId %} aria-labelledby="{{ o.titleId }}"{% endif %}>
+  <canvas class="gv-hero-canvas" aria-hidden="true"></canvas>
+  <div class="gv-hero-inner container-page">
+    <div class="gv-hero-copy">
+      {% if eyebrow %}<p class="gv-hero-eyebrow">{% if o.eyebrowIcon %}{% icon o.eyebrowIcon, "size-4 shrink-0" %}{% endif %}<span>{{ eyebrow }}</span></p>{% endif %}
+      <h1 class="gv-hero-title"{% if o.titleId %} id="{{ o.titleId }}"{% endif %}>
+        {%- if icon %}<span class="gv-hero-icon">{% icon icon, "size-6" %}</span>{% endif -%}
+        <span>{{ title }}</span>
+      </h1>
+      {% if subtitle %}<p class="gv-hero-sub">{{ subtitle | safe }}</p>{% endif %}
+      {% if hasBody %}<div class="gv-hero-body">{{ heroBody }}</div>{% endif %}
+    </div>
+    {% if hasAside %}<div class="gv-hero-aside">{{ heroAside }}</div>{% endif %}
   </div>
 </section>
 {% endmacro %}
 
-{#- Stat row for inside pageHero's caller(): big serif number over a short label — the one
-    hero-stat design for every inner page. stats = [{ value: 56, label: "stories" }, …]
-    (or [[56, "stories"], …]); entries without a value are skipped.
-    Page rhythm after the hero (main.css): the first block either overlaps the hero
-    (class "page-overlap": a search card or sub-nav) or is a section with "page-start"
-    instead of "section" — nothing else, so every page starts at the same distance. -#}
+{#- Compact stat row for inside pageHero's call body: display-serif number over a short label —
+    the one hero-stat design for every page. stats = [{ value: 56, label: "stories" }, …]
+    (or [[56, "stories"], …]); entries without a value are skipped. Keep it to ≤ 4 short items
+    so the hero keeps its height; longer stat rows belong below the hero. -#}
 {% macro heroStats(stats) %}
 <dl class="hero-stats">
   {%- for s in stats %}

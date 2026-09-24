@@ -6,7 +6,9 @@
      - English + Spanish stop words ignored (so "libro de trabajo" works)
      - prefix + light fuzzy matching; AND first, falls back to OR ("partial")
      - highlight(text, terms) → safe HTML with <mark> around matches
-   The /search/ page part only runs when #site-search exists.
+   The /search/ page part only runs when #site-search exists. Its search box sits in the
+   block below the hero; #ss-layout (type filters + results) shows only while there is a
+   query, #ss-start (tips + browse) only while there is none.
    No build step, no dependencies besides MiniSearch. */
 (function () {
   "use strict";
@@ -174,7 +176,7 @@
     var statusEl = $("ss-status"), list = $("ss-results"), moreBtn = $("ss-more");
     var jumpWrap = $("ss-jump-wrap"), jumpEl = $("ss-jump"), kindsWrap = $("ss-kinds-wrap");
     var startEl = $("ss-start"), noneEl = $("ss-none"), partialEl = $("ss-partial"), errorEl = $("ss-error"), loadingEl = $("ss-loading");
-    var didEl = $("ss-did"), noneKindEl = $("ss-none-kind");
+    var didEl = $("ss-did"), noneKindEl = $("ss-none-kind"), layoutEl = $("ss-layout");
     var chips = [].slice.call(root.querySelectorAll("[data-kind]"));
     var icon = kit.icons("ss-icons");
     var numFmt = null;
@@ -224,10 +226,11 @@
         .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
         .then(function (json) {
           items = (json.items || []).map(function (e, i) { e._i = i; return e; });
-          ms = kit.create(["t", "o", "x", "s"], { t: 3, o: 2, x: 1.3, s: 0.8 }, {
+          // a = a story's byline (writer · hometown): searching a writer or a city finds their stories.
+          ms = kit.create(["t", "o", "x", "s", "a"], { t: 3, o: 2, x: 1.3, s: 0.8, a: 1.3 }, {
             storeFields: ["k", "d", "z"],
             searchOptions: {
-              boost: { t: 3, o: 2, x: 1.3, s: 0.8 },
+              boost: { t: 3, o: 2, x: 1.3, s: 0.8, a: 1.3 },
               combineWith: "AND",
               prefix: function (term) { return term.length > 1; },
               fuzzy: function (term) { return term.length > 4 ? 0.2 : false; },
@@ -243,7 +246,7 @@
               },
             },
           });
-          ms.addAll(items.map(function (e) { return { id: e._i, t: e.t, o: e.o || "", x: e.x || "", s: e.s || "", k: e.k, d: e.d || "", z: e.z ? 1 : 0 }; }));
+          ms.addAll(items.map(function (e) { return { id: e._i, t: e.t, o: e.o || "", x: e.x || "", s: e.s || "", a: e.a || "", k: e.k, d: e.d || "", z: e.z ? 1 : 0 }; }));
           loading = false;
           loadingEl.hidden = true;
           run();
@@ -281,7 +284,8 @@
         '<span class="ss-title"' + (e.tl ? ' lang="' + esc(e.tl) + '"' : "") + ">" + kit.highlight(e.t, terms) + "</span>" +
         (e.o ? '<span class="ss-orig"' + (e.ol || e.l ? ' lang="' + esc(e.ol || e.l) + '"' : "") + ">" + kit.highlight(e.o, terms) + "</span>" : "") +
         (e.s ? '<span class="ss-snippet">' + kit.highlight(e.s, terms) + "</span>" : "") +
-        (e.m || host ? '<span class="ss-foot">' +
+        (e.m || host || e.a ? '<span class="ss-foot">' +
+          (e.a ? '<span class="ss-by">' + icon("pen-line", "size-3") + '<span class="sr-only">' + esc(S.byline) + " </span><span>" + kit.highlight(e.a, terms) + "</span></span>" : "") +
           (host ? '<span class="ss-host">' + esc(host) + " " + icon("arrow-up-right", "size-3") + '<span class="sr-only"> (' + esc(S.external) + ")</span></span>" : "") +
           (e.m ? '<span class="auto-note" title="' + esc(S.autoHelp) + '">' + icon("languages", "size-3") + " " + esc(S.auto) + "</span>" : "") +
           "</span>" : "") +
@@ -303,13 +307,15 @@
       chips.forEach(function (c) { c.setAttribute("aria-pressed", String(c.getAttribute("data-kind") === state.kind)); });
       if (!q) {
         startEl.hidden = false;
-        [kindsWrap, jumpWrap, noneEl, partialEl, moreBtn].forEach(function (el) { el.hidden = true; });
+        if (layoutEl) layoutEl.hidden = true;
+        [kindsWrap, jumpWrap, noneEl, noneKindEl, partialEl, moreBtn].forEach(function (el) { el.hidden = true; });
         list.innerHTML = "";
         setStatus("");
         document.title = CFG.title;
         return;
       }
       startEl.hidden = true;
+      if (layoutEl) layoutEl.hidden = false;
       document.title = "“" + q + "” · " + CFG.title;
       if (!ms) { load(); loadingEl.hidden = !loading; return; } // index still downloading
       if (!keepShown) state.shown = PAGE;

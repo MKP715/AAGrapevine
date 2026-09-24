@@ -56,7 +56,7 @@ pageScripts: ["/assets/js/community.js"]
 {% endmacro %}
 
 {% call ui.pageHero(lang, "nav.share" | t(lang), "community.share.hero_sub" | t(lang), "qr-code", "community.share.eyebrow" | t(lang)) %}
-<div class="flex flex-wrap gap-3">
+<div class="hero-actions cm-hero-tight">
   <a class="btn-light" href="#posters">{% icon "printer", "size-4" %} {{ "community.share.btn_poster" | t(lang) }}</a>
   <button type="button" class="btn-on-dark" data-share="{{ pageUrl }}" data-share-title="{{ site | pick(lang, 'title') }} — NETA 65" data-share-text="{{ 'community.share.msg_short_text' | t(lang, { url: '' }) | trim }}">{% icon "share-2", "size-4" %} {{ "common.share" | t(lang) }}</button>
 </div>
@@ -66,51 +66,69 @@ pageScripts: ["/assets/js/community.js"]
 <svg width="0" height="0" class="absolute" aria-hidden="true" focusable="false"><defs>{{ urls.en | cmQrSymbol("qr-sym-en") | safe }}{{ urls.es | cmQrSymbol("qr-sym-es") | safe }}</defs></svg>
 
 <div x-data="sharePage('{{ lang }}')">
-{#- ============ QR code ============ -#}
-<section class="section container-page cm-no-print pt-6 sm:pt-8" aria-labelledby="qr-title">
-  <div class="card overflow-hidden">
-    <div class="grid grid-cols-1 md:grid-cols-[minmax(0,20rem)_minmax(0,1fr)]">
-      <div class="flex flex-col items-center justify-center gap-4 bg-surface-2 p-6 sm:p-8">
-        <div class="grid grid-cols-2 gap-1 rounded-full border border-line bg-surface p-1" role="radiogroup" aria-label="{{ 'community.share.qr_for' | t(lang) }}">
+{#- ============ QR code + direct links (tucks into the hero's faded edge) ============
+    ≥1280px the direct links sit in a column next to the QR card. -#}
+<section class="container-page page-overlap cm-no-print pb-12 sm:pb-16" aria-labelledby="qr-title">
+  <div class="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1fr)_24rem] 2xl:grid-cols-[minmax(0,1fr)_28rem]">
+    <div class="card overflow-hidden">
+      <div class="grid h-full grid-cols-1 md:grid-cols-[minmax(0,20rem)_minmax(0,1fr)]">
+        <div class="flex flex-col items-center justify-center gap-4 bg-surface-2 p-6 sm:p-8">
+          <div class="grid grid-cols-2 gap-1 rounded-full border border-line bg-surface p-1" role="radiogroup" aria-label="{{ 'community.share.qr_for' | t(lang) }}">
+            {% for l in ["en", "es"] %}
+            <label class="cm-seg"><input type="radio" name="qr-lang" class="sr-only" :checked="qrLang === '{{ l }}'" @change="qrLang = '{{ l }}'" {% if l == lang %}checked{% endif %}><span>{{ ("community.share.qr_" + l) | t(lang) }}</span></label>
+            {% endfor %}
+          </div>
           {% for l in ["en", "es"] %}
-          <label class="cm-seg"><input type="radio" name="qr-lang" class="sr-only" :checked="qrLang === '{{ l }}'" @change="qrLang = '{{ l }}'" {% if l == lang %}checked{% endif %}><span>{{ ("community.share.qr_" + l) | t(lang) }}</span></label>
+          <div id="qr-{{ l }}" class="w-full max-w-[15rem] rounded-2xl bg-white p-3 shadow-[var(--shadow-lift)] ring-1 ring-line" x-show="qrLang === '{{ l }}'"{% if l != lang %} x-cloak{% endif %}>
+            {{ urls[l] | qrSvg("community.share.qr_alt" | t(lang, { url: urls[l] }), "block h-auto w-full") | safe }}
+          </div>
           {% endfor %}
         </div>
-        {% for l in ["en", "es"] %}
-        <div id="qr-{{ l }}" class="w-full max-w-[15rem] rounded-2xl bg-white p-3 shadow-[var(--shadow-lift)] ring-1 ring-line" x-show="qrLang === '{{ l }}'"{% if l != lang %} x-cloak{% endif %}>
-          {{ urls[l] | qrSvg("community.share.qr_alt" | t(lang, { url: urls[l] }), "block h-auto w-full") | safe }}
-        </div>
-        {% endfor %}
-      </div>
-      <div class="flex flex-col p-6 sm:p-8">
-        <h2 id="qr-title" class="h-section">{{ "community.share.qr_title" | t(lang) }}</h2>
-        <p class="mt-2 max-w-xl text-muted">{{ "community.share.qr_sub" | t(lang) }}</p>
-        {% for l in ["en", "es"] %}
-        {%- set svg = urls[l] | qrSvg("", "") -%}
-        <div x-show="qrLang === '{{ l }}'"{% if l != lang %} x-cloak{% endif %}>
-          <div class="mt-5 flex items-center gap-2 rounded-xl border border-line bg-paper p-1.5 pl-4">
-            {% icon "link", "size-4 shrink-0 text-faint" %}
-            <a href="{{ urls[l] }}" class="min-w-0 flex-1 truncate font-semibold text-gv no-underline hover:underline" hreflang="{{ l }}">{{ urls[l] | cmShortUrl }}</a>
-            <button type="button" class="btn-secondary btn-sm shrink-0" data-copy="{{ urls[l] }}" aria-label="{{ 'community.copy_link' | t(lang) }}">{% icon "copy", "size-4" %}<span class="hidden sm:inline">{{ "community.copy_link" | t(lang) }}</span></button>
+        <div class="flex flex-col p-6 sm:p-8">
+          <h2 id="qr-title" class="h-section">{{ "community.share.qr_title" | t(lang) }}</h2>
+          <p class="mt-2 max-w-xl text-muted">{{ "community.share.qr_sub" | t(lang) }}</p>
+          {% for l in ["en", "es"] %}
+          {%- set svg = urls[l] | qrSvg("", "") -%}
+          <div x-show="qrLang === '{{ l }}'"{% if l != lang %} x-cloak{% endif %}>
+            <div class="mt-5 flex items-center gap-2 rounded-xl border border-line bg-paper p-1.5 pl-4">
+              {% icon "link", "size-4 shrink-0 text-faint" %}
+              <a href="{{ urls[l] }}" class="min-w-0 flex-1 truncate font-semibold text-gv no-underline hover:underline" hreflang="{{ l }}">{{ urls[l] | cmShortUrl }}</a>
+              <button type="button" class="btn-secondary btn-sm shrink-0" data-copy="{{ urls[l] }}" aria-label="{{ 'community.copy_link' | t(lang) }}">{% icon "copy", "size-4" %}<span class="hidden sm:inline">{{ "community.copy_link" | t(lang) }}</span></button>
+            </div>
+            <div class="mt-4 flex flex-wrap gap-2">
+              <a class="btn-primary btn-sm" href="{{ svg | cmSvgDataUri }}" download="neta65-grapevine-lavina-qr-{{ l }}.svg">{% icon "download", "size-4" %} {{ "community.share.dl_svg" | t(lang) }}</a>
+              <button type="button" class="btn-secondary btn-sm" data-qr-png="#qr-{{ l }}" data-filename="neta65-grapevine-lavina-qr-{{ l }}.png">{% icon "image-down", "size-4" %} {{ "community.share.dl_png" | t(lang) }}</button>
+            </div>
           </div>
-          <div class="mt-4 flex flex-wrap gap-2">
-            <a class="btn-primary btn-sm" href="{{ svg | cmSvgDataUri }}" download="neta65-grapevine-lavina-qr-{{ l }}.svg">{% icon "download", "size-4" %} {{ "community.share.dl_svg" | t(lang) }}</a>
-            <button type="button" class="btn-secondary btn-sm" data-qr-png="#qr-{{ l }}" data-filename="neta65-grapevine-lavina-qr-{{ l }}.png">{% icon "image-down", "size-4" %} {{ "community.share.dl_png" | t(lang) }}</button>
-          </div>
-        </div>
-        {% endfor %}
-        <p class="mt-3 flex gap-2 text-xs leading-relaxed text-muted">{% icon "info", "size-4 shrink-0" %} {{ "community.share.dl_hint" | t(lang) }}</p>
-        {%- set shareText = "community.share.msg_short_text" | t(lang, { url: pageUrl }) -%}
-        <div class="mt-auto border-t border-line pt-5">
-          <p class="text-sm font-semibold text-ink">{{ "community.share.share_on" | t(lang) }}</p>
-          <div class="mt-2 flex flex-wrap gap-2">
-            <a class="btn-secondary btn-sm" href="https://wa.me/?text={{ shareText | urlencode }}" target="_blank" rel="noopener">{% icon "message-circle", "size-4" %} WhatsApp</a>
-            <a class="btn-secondary btn-sm" href="https://www.facebook.com/sharer/sharer.php?u={{ pageUrl | urlencode }}" target="_blank" rel="noopener">{% icon "thumbs-up", "size-4" %} Facebook</a>
-            <a class="btn-secondary btn-sm" href="{{ '' | cmMailto('community.share.email_subject' | t(lang), shareText) }}">{% icon "mail", "size-4" %} {{ "community.share.email" | t(lang) }}</a>
-            <button type="button" class="btn-secondary btn-sm" data-share="{{ pageUrl }}" data-share-title="{{ site | pick(lang, 'title') }} — NETA 65" data-share-text="{{ 'community.share.msg_short_text' | t(lang, { url: '' }) | trim }}">{% icon "share-2", "size-4" %} {{ "community.share.more" | t(lang) }}</button>
+          {% endfor %}
+          <p class="mt-3 flex gap-2 text-xs leading-relaxed text-muted">{% icon "info", "size-4 shrink-0" %} {{ "community.share.dl_hint" | t(lang) }}</p>
+          {%- set shareText = "community.share.msg_short_text" | t(lang, { url: pageUrl }) -%}
+          <div class="mt-auto border-t border-line pt-5">
+            <p class="text-sm font-semibold text-ink">{{ "community.share.share_on" | t(lang) }}</p>
+            <div class="mt-2 flex flex-wrap gap-2">
+              <a class="btn-secondary btn-sm" href="https://wa.me/?text={{ shareText | urlencode }}" target="_blank" rel="noopener">{% icon "message-circle", "size-4" %} WhatsApp</a>
+              <a class="btn-secondary btn-sm" href="https://www.facebook.com/sharer/sharer.php?u={{ pageUrl | urlencode }}" target="_blank" rel="noopener">{% icon "thumbs-up", "size-4" %} Facebook</a>
+              <a class="btn-secondary btn-sm" href="{{ '' | cmMailto('community.share.email_subject' | t(lang), shareText) }}">{% icon "mail", "size-4" %} {{ "community.share.email" | t(lang) }}</a>
+              <button type="button" class="btn-secondary btn-sm" data-share="{{ pageUrl }}" data-share-title="{{ site | pick(lang, 'title') }} — NETA 65" data-share-text="{{ 'community.share.msg_short_text' | t(lang, { url: '' }) | trim }}">{% icon "share-2", "size-4" %} {{ "community.share.more" | t(lang) }}</button>
+            </div>
           </div>
         </div>
       </div>
+    </div>
+    <div class="card card-pad">
+      <h2 class="h-card flex items-center gap-2">{% icon "link", "size-5 text-gv" %} {{ "community.share.links_title" | t(lang) }}</h2>
+      <ul class="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-1" role="list">
+      {% for k in [{ label: "community.share.link_home", path: "/" }, { label: "community.share.link_new", path: "/whats-new/" }, { label: "community.share.link_meeting", path: "/meeting/" }, { label: "community.share.link_gvr", path: "/gvr/" }, { label: "nav.published", path: "/published/" }, { label: "nav.digest", path: "/digest/" }, { label: "nav.districts", path: "/districts/" }] %}
+      {%- set abs = k.path | lurl(lang) | siteUrl(site) -%}
+      <li class="flex items-center gap-2 rounded-xl border border-line bg-surface p-1.5 pl-4">
+        <span class="min-w-0 flex-1">
+          <a class="block truncate text-sm font-semibold text-ink no-underline hover:text-gv" href="{{ k.path | lurl(lang) }}">{{ k.label | t(lang) }}</a>
+          <span class="block truncate text-xs text-muted">{{ abs | cmShortUrl }}</span>
+        </span>
+        <button type="button" class="grid size-10 shrink-0 place-items-center rounded-full text-muted hover:bg-surface-2 hover:text-gv" data-copy="{{ abs }}" aria-label="{{ 'community.copy_link' | t(lang) }} — {{ k.label | t(lang) }}">{% icon "copy", "size-4" %}</button>
+      </li>
+      {% endfor %}
+      </ul>
     </div>
   </div>
 </section>
@@ -166,13 +184,19 @@ pageScripts: ["/assets/js/community.js"]
 </section>
 
 {#- ============ Ready-made messages ============ -#}
+{#- The heading is written out (same markup as ui.sectionHead) because that macro has no id
+    parameter, and the section is labelled by this heading's id. -#}
 <section class="section container-page cm-no-print" aria-labelledby="msg-title">
-  {{ ui.sectionHead("community.share.messages_title" | t(lang), "community.share.messages_sub" | t(lang), "", "", "message-square-text") }}
+  <div class="mb-6">
+    <h2 id="msg-title" class="h-section flex items-center gap-2.5"><span class="text-gv">{% icon "message-square-text", "size-6" %}</span>{{ "community.share.messages_title" | t(lang) }}</h2>
+    <p class="mt-1.5 max-w-2xl text-muted">{{ "community.share.messages_sub" | t(lang) }}</p>
+  </div>
   <div class="grid gap-5 md:grid-cols-2">
     {% for l in [lang, other] %}
     {%- set u = urls[l] -%}
-    <div class="min-w-0 space-y-4" lang="{{ l }}">
-      <p class="eyebrow">{{ ("community.lang_name_" + l) | t(lang) }}</p>
+    {#- one column per language; from 1536px each language's two messages side by side -#}
+    <div class="min-w-0 space-y-4 2xl:grid 2xl:grid-cols-2 2xl:items-start 2xl:gap-4 2xl:space-y-0" lang="{{ l }}">
+      <p class="eyebrow 2xl:col-span-2">{{ ("community.lang_name_" + l) | t(lang) }}</p>
       {% for m in ["short", "long"] %}
       <article class="card card-pad">
         <div class="flex items-center justify-between gap-3">
@@ -186,18 +210,5 @@ pageScripts: ["/assets/js/community.js"]
     {% endfor %}
   </div>
 
-  <h2 class="h-card mt-12">{{ "community.share.links_title" | t(lang) }}</h2>
-  <ul class="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3" role="list">
-    {% for k in [{ label: "community.share.link_home", path: "/" }, { label: "community.share.link_new", path: "/whats-new/" }, { label: "community.share.link_meeting", path: "/meeting/" }, { label: "community.share.link_gvr", path: "/gvr/" }, { label: "nav.digest", path: "/digest/" }, { label: "nav.districts", path: "/districts/" }] %}
-    {%- set abs = k.path | lurl(lang) | siteUrl(site) -%}
-    <li class="flex items-center gap-2 rounded-xl border border-line bg-surface p-1.5 pl-4">
-      <span class="min-w-0 flex-1">
-        <a class="block truncate text-sm font-semibold text-ink no-underline hover:text-gv" href="{{ k.path | lurl(lang) }}">{{ k.label | t(lang) }}</a>
-        <span class="block truncate text-xs text-muted">{{ abs | cmShortUrl }}</span>
-      </span>
-      <button type="button" class="grid size-10 shrink-0 place-items-center rounded-full text-muted hover:bg-surface-2 hover:text-gv" data-copy="{{ abs }}" aria-label="{{ 'community.copy_link' | t(lang) }} — {{ k.label | t(lang) }}">{% icon "copy", "size-4" %}</button>
-    </li>
-    {% endfor %}
-  </ul>
 </section>
 </div>

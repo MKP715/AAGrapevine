@@ -9,6 +9,7 @@ import QRCode from "qrcode";
 import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
+import { safeUrl } from "../../eleventy.config.js";
 
 const TZ = "America/Chicago";
 const LOCALES = { en: "en-US", es: "es-US" };
@@ -372,6 +373,104 @@ function countRecent(prepared, days, now = Date.now()) {
 }
 
 /* ------------------------------------------------------------------ */
+/*  Published writers (spotlight) — Area 65 first, then the rest of Texas */
+/* ------------------------------------------------------------------ */
+// data/site/spotlight.json (docs/DATA_SCHEMA.md → "spotlight.json"): Grapevine / La Viña
+// stories with a byline, each with extra.geo.scope (neta65 | texas | other | unknown) and
+// extra.pub_date (the day the story counts as published). Templates get it as db.spotlight;
+// while src/_data/db.js does not list "spotlight" yet, it is read here with the same link
+// cleaning as db.js (safeUrl on every link).
+const YMD = /^\d{4}-\d{2}-\d{2}$/;
+const ANONYMOUS = /^\s*(anonymous|an[oó]nim[oa]|anon\.?)\s*$/i;
+let spotlightFile; // undefined = not read yet in this build (reset on "eleventy.before")
+
+function readSpotlightFile() {
+  try {
+    const data = JSON.parse(fs.readFileSync(path.join("data", "site", "spotlight.json"), "utf8"));
+    if (!data || !Array.isArray(data.items)) return null;
+    for (const it of data.items) {
+      if (!it || typeof it !== "object") continue;
+      it.url = safeUrl(it.url);
+      if (typeof it.image === "string") it.image = safeUrl(it.image);
+      if (it.extra && typeof it.extra.issue_url === "string") it.extra.issue_url = safeUrl(it.extra.issue_url);
+    }
+    return data;
+  } catch {
+    return null;
+  }
+}
+
+export function spotlightOf(db) {
+  const s = db?.spotlight;
+  if (s && Array.isArray(s.items)) return s;
+  if (spotlightFile === undefined) spotlightFile = readSpotlightFile();
+  return spotlightFile || { items: [] };
+}
+
+/** "2026-09-23" minus 60 days → "2026-07-25" (calendar days, no time-zone drift). */
+function minusDays(ymd, n) {
+  const d = new Date(ymd + "T12:00:00Z");
+  d.setUTCDate(d.getUTCDate() - n);
+  return d.toISOString().slice(0, 10);
+}
+
+/** The home page's window (spotlight.home_days, 60 by default) — /published/ opens with it. */
+export function spotlightHomeDays(spot) {
+  const n = Number(spot?.home_days);
+  return Number.isInteger(n) && n > 0 ? n : 60;
+}
+
+/**
+ * Stories by writers from Area 65 (`neta65`) and from the rest of Texas (`texas`) published
+ * in the last `days` days: extra.pub_date ≥ today (Central time) − days, the same rule as the
+ * home page and /published/. Each list newest first (then by title).
+ * opts.exclusiveStart: leave out the day `days` days back, so the window is exactly `days`
+ * calendar days (today and the days − 1 before it). The weekly digest uses it, so two digests
+ * shared a week apart never list the same day's stories twice. `since` is the first day included.
+ */
+export function writersPick(spot, days, now = Date.now(), opts = {}) {
+  const today = ymdChicago(new Date(now));
+  const since = minusDays(today, opts.exclusiveStart ? days - 1 : days);
+  const out = { days, since, today, allDays: spotlightHomeDays(spot), neta65: [], texas: [], total: 0 };
+  const seen = new Set();
+  for (const it of spot?.items || []) {
+    if (!it || typeof it !== "object" || it.status === "gone" || it.kind !== "article" || !it.url) continue;
+    const scope = it.extra?.geo?.scope;
+    if (scope !== "neta65" && scope !== "texas") continue;
+    const pd = it.extra?.pub_date;
+    if (!YMD.test(pd || "") || pd < since) continue;
+    const key = it.id || it.url;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out[scope].push(it);
+  }
+  const order = (a, b) => (a.extra.pub_date < b.extra.pub_date ? 1 : a.extra.pub_date > b.extra.pub_date ? -1 : 0) || clean(a.title).localeCompare(clean(b.title));
+  out.neta65.sort(order);
+  out.texas.sort(order);
+  out.total = out.neta65.length + out.texas.length;
+  return out;
+}
+
+/** "Victor R." — or "Anonymous" / "Anónimo" when the magazine printed no name. */
+export function writerName(item, lang, t) {
+  const a = clean(item?.extra?.author);
+  return !a || ANONYMOUS.test(a) ? t("community.writers.anonymous", lang) : a;
+}
+
+/** "Grand Prairie, Texas" in the page language (written by rules in build_data, never machine-translated). */
+export function writerPlace(item, lang) {
+  const g = item?.extra?.geo || {};
+  return clean(lang === "es" ? g.label_es : g.label_en) || clean(g.label_en) || clean(pickLang(item, "author_location", lang)) || clean(item?.extra?.author_location);
+}
+
+/** Short place for one-line lists: the city as the writer gave it ("Round Rock"), else the full label. */
+function writerCity(item, lang) {
+  return clean(item?.extra?.geo?.city) || writerPlace(item, lang);
+}
+
+const pubName = (item) => (item?.extra?.publication === "lv" || item?.source === "lavina" || item?.category === "lv" ? "La Viña" : "Grapevine");
+
+/* ------------------------------------------------------------------ */
 /*  Weekly digest                                                      */
 /* ------------------------------------------------------------------ */
 /**
@@ -427,6 +526,10 @@ export function buildDigest(db, meeting, { days = 7, eventDays = 30, deadlineDay
     deadlines,
     lvThemes,
     next: meeting?.next || null,
+    // Stories by writers from Area 65, then the rest of Texas, published in the last `days`
+    // calendar days (today and the 6 before for the weekly digest — no day shared with the
+    // digest of a week earlier or later).
+    writers: writersPick(spotlightOf(db), days, now, { exclusiveStart: true }),
   };
 }
 
@@ -465,7 +568,30 @@ export function digestText(dg, langs, style, site, t, media = {}) {
   out.push(wa ? `_${L.map((l) => fmtRange(dg.since, dg.until, l)).filter((v, i, a) => a.indexOf(v) === i).join(" / ")}_` : L.map((l) => fmtRange(dg.since, dg.until, l)).filter((v, i, a) => a.indexOf(v) === i).join(" / "));
   out.push("");
 
-  if (!dg.groups.length) {
+  // Published writers from Area 65 (first) and the rest of Texas — the spotlight comes first.
+  const W = dg.writers;
+  if (W && W.total) {
+    const label = both("community.writers.digest_title");
+    out.push(wa ? `⭐ ${head(label)} (${W.total})` : head(`${label} (${W.total})`));
+    const pubUrl = absUrl(langPath("/published/", main), site);
+    for (const key of ["neta65", "texas"]) {
+      const list = W[key] || [];
+      if (!list.length) continue;
+      out.push(`${both(`community.writers.group_${key}`)}:`);
+      for (const item of list.slice(0, perGroup)) {
+        const [first, ...others] = titleLines(item);
+        const place = writerPlace(item, main);
+        out.push(`${bullet} "${first}" — ${writerName(item, main, t)}${place ? `, ${place}` : ""} (${pubName(item)}, ${issueLabelOf(item, main)})`);
+        for (const r of others) out.push(`  "${r}"`);
+        out.push(`  ${absUrl(item.url, site)}`);
+      }
+      if (list.length > perGroup) out.push(`${wa ? "➕" : "+"} ${both("community.digest.text_more", { n: list.length - perGroup })} ${pubUrl}`);
+    }
+    out.push(`${both("community.writers.see_all", { n: W.allDays })}: ${pubUrl}`);
+    out.push("");
+  }
+
+  if (!dg.groups.length && !(W && W.total)) {
     out.push(both("community.digest.text_quiet"));
     out.push("");
   }
@@ -594,6 +720,8 @@ export function reportData(db, meeting, now = Date.now()) {
     deadlines: dg.deadlines.slice(0, 4),
     lvThemes: dg.lvThemes || [],
     next: meeting?.next || null,
+    // "Published writers from our Area": the home page's window (60 days), Area 65 first
+    writers: (() => { const spot = spotlightOf(db); return writersPick(spot, spotlightHomeDays(spot), now); })(),
   };
 }
 
@@ -627,6 +755,28 @@ export function reportText(rd, lang, site, t) {
     }
     out.push(`${num()} ${T("t_issues")} ${parts.join("; ")}.`);
     out.push(`   ${url("/read/")}`);
+  }
+
+  // Published writers from our Area (Area 65) first — every one of them, up to 6 — then a
+  // one-line mention of the rest of Texas, so the report stays a two-minute read.
+  const W = rd.writers;
+  if (W) {
+    out.push(`${num()} ${T("t_writers", { n: W.days })}`);
+    if (W.neta65.length) {
+      for (const it of W.neta65.slice(0, 6)) {
+        const place = writerPlace(it, lang);
+        out.push(`   • ${writerName(it, lang, t)}${place ? `, ${place}` : ""} — "${clean(pickLang(it, "title", lang)) || clean(it.title)}" (${pubName(it)}, ${issueLabelOf(it, lang)})`);
+      }
+      if (W.neta65.length > 6) out.push(`   • ${T("t_writers_more", { n: W.neta65.length - 6 })}`);
+    } else {
+      out.push(`   • ${T(W.texas.length ? "t_writers_none" : "t_writers_empty")}`);
+    }
+    if (W.texas.length) {
+      const names = W.texas.slice(0, 4).map((it) => { const c = writerCity(it, lang); return `${writerName(it, lang, t)}${c ? ` (${c})` : ""}`; });
+      const rest = W.texas.length - names.length;
+      out.push(`   ${T("t_writers_texas")} ${names.join(", ")}${rest > 0 ? ` ${T("t_writers_rest", { n: rest })}` : ""}.`);
+    }
+    if (W.total) out.push(`   ${url("/published/")}`);
   }
 
   out.push(`${num()} ${T("t_write")}`);
@@ -784,6 +934,8 @@ export const WN_ICONS = [
 /* ------------------------------------------------------------------ */
 export default function (eleventyConfig, helpers) {
   const t = (key, lang, vars) => helpers.translateKey(key, lang, vars);
+  // spotlight.json is read at most once per build (only while db.js does not provide it)
+  eleventyConfig.on("eleventy.before", () => { spotlightFile = undefined; });
 
   // Filters are prefixed "cm" (community) so they can never clash with another
   // area's filters; qrSvg keeps its plain name. QR code as inline SVG:
@@ -812,6 +964,11 @@ export default function (eleventyConfig, helpers) {
     videoKind: eleventyConfig.getFilter("mediaVideoKind"),
   });
   eleventyConfig.addFilter("cmDigestText", (dg, langs, style, site) => digestText(dg, langs, style, site, t, mediaHelpers()));
+
+  // Published writers (Area 65 first, then the rest of Texas): the digest's list is dg.writers;
+  // these print one writer's byline the same way everywhere.
+  eleventyConfig.addFilter("cmWriterName", (item, lang) => writerName(item, lang, t));
+  eleventyConfig.addFilter("cmWriterPlace", (item, lang) => writerPlace(item, lang));
 
   eleventyConfig.addFilter("cmReport", (db, meeting) => reportData(db, meeting));
   eleventyConfig.addFilter("cmReportText", (rd, lang, site) => reportText(rd, lang, site, t));

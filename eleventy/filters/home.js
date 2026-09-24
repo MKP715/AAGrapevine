@@ -9,6 +9,8 @@
 // Podcast / video titles on the home page use the shared `mediaTitle` filter
 // (eleventy/filters/media.js), so they read exactly like /listen/ and /watch/.
 
+import fs from "node:fs";
+import path from "node:path";
 // The Library's own rules (which documents, which kit / type, which collections),
 // so the home page's quick links show the same numbers as /library/.
 import { libraryDocs, libraryCollections, docKitType, CATEGORIES, COLLECTIONS } from "./library.js";
@@ -34,6 +36,87 @@ const FRESH_SKIP = new Set(["event", "topic", "meeting", "announcement"]);
 
 // Magazine sections that carry the issue's theme ("Featured Section", "Sección Especial" …).
 const FEATURED_SECTION = /featured|special|especial|destacad/i;
+
+// "2026-09-23" for a moment in time, as a calendar day in Central time (the site's time zone).
+function ymdCentral(ms) {
+  try {
+    const s = new Intl.DateTimeFormat("en-CA", { timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(ms));
+    if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+  } catch { /* fall through */ }
+  return new Date(ms).toISOString().slice(0, 10);
+}
+// The day a spotlight story counts as published: extra.pub_date (build_data.py), else its date.
+function spotPubDate(i) {
+  const p = String((i && i.extra && i.extra.pub_date) || "").slice(0, 10);
+  return /^\d{4}-\d{2}-\d{2}$/.test(p) ? p : String((i && i.date) || "").slice(0, 10);
+}
+// "2026-09-23" minus 60 days → "2026-07-25"
+function ymdMinus(ymd, days) {
+  const [y, m, d] = String(ymd).split("-").map(Number);
+  return new Date(Date.UTC(y, m - 1, d - days)).toISOString().slice(0, 10);
+}
+
+/* Published-writers grid: how to close its last row at `cols` columns (home.css: 2 from 640px,
+   3 from 1024px, 4 from 1360px, 5 from 1800px). Replays the grid's `row dense` auto-placement:
+   `a` Area 65 cards two columns wide (or, when a = 0 and t > 0, the two-column "no Area 65
+   story" note), then `t` Texas cards one column wide.
+   → { span, full }: `span` = empty columns at the end of the last row, which the "see the full
+   list" tile fills (0 = the rows are full: no tile); `full` = true when Area 65 cards would
+   leave gaps higher up (too few Texas cards to sit beside them) — then every Area 65 card
+   takes a whole row at that width, which leaves no gap except at the end of the last row.
+   The SAME function is in src/assets/js/home.js (spotFill): keep the two in step. */
+function spotFill(a, t, cols) {
+  const run = (featSpan) => {
+    const rows = [];
+    const put = (span) => {
+      for (let r = 0; ; r++) {
+        if (!rows[r]) rows[r] = new Array(cols).fill(false);
+        for (let c = 0; c + span <= cols; c++) {
+          let ok = true;
+          for (let k = c; k < c + span; k++) if (rows[r][k]) { ok = false; break; }
+          if (ok) { for (let k = c; k < c + span; k++) rows[r][k] = true; return; }
+        }
+      }
+    };
+    if (a > 0) for (let i = 0; i < a; i++) put(featSpan);
+    else if (t > 0) put(Math.min(2, cols));
+    for (let i = 0; i < t; i++) put(1);
+    let free = 0, trailing = 0;
+    for (const row of rows) for (const used of row) if (!used) free++;
+    const last = rows[rows.length - 1] || [];
+    for (let k = last.length - 1; k >= 0 && !last[k]; k--) trailing++;
+    return { free, trailing };
+  };
+  a = Math.max(0, Math.floor(Number(a) || 0));
+  t = Math.max(0, Math.floor(Number(t) || 0));
+  cols = Math.max(1, Math.floor(Number(cols) || 1));
+  if (!a && !t) return { span: 0, full: false };
+  let r = run(Math.min(2, cols));
+  let full = false;
+  if (r.free !== r.trailing) { full = true; r = run(cols); }
+  return { span: r.trailing, full };
+}
+
+/* data/site/spotlight.json read straight from disk — only used while src/_data/db.js does not
+   load it yet (db.spotlight undefined). Links get the same treatment db.js gives every data
+   file: a story link must be http(s) and a picture http(s) or a site path, else it is dropped. */
+function readSpotlightFile() {
+  const p = path.join("data", "site", "spotlight.json");
+  let data = null;
+  try {
+    if (fs.existsSync(p)) data = JSON.parse(fs.readFileSync(p, "utf8"));
+  } catch (e) {
+    console.warn(`[home] could not read ${p}: ${e.message}`);
+  }
+  if (!data || typeof data !== "object" || Array.isArray(data)) return { items: [] };
+  const web = (v) => (typeof v === "string" && /^https?:\/\/[^\s/\\?#]/i.test(v.trim()) ? v.trim() : "");
+  const pic = (v) => (typeof v === "string" && /^\/(?![/\\])/.test(v.trim()) ? v.trim() : web(v));
+  data.items = (Array.isArray(data.items) ? data.items : [])
+    .filter((i) => i && typeof i === "object")
+    .map((i) => ({ ...i, url: web(i.url), image: pic(i.image) }))
+    .filter((i) => i.url);
+  return data;
+}
 
 const MONTHS = {
   // lower-case month names (en + es) → 0-based month index
@@ -93,7 +176,88 @@ export default function (eleventyConfig, helpers) {
     const out = {};
     for (const k of Object.keys(db || {})) out[k] = { updated: null, items: [] };
     out.status = { generated: null, sources: [], items: [] };
+    out.spotlight = { updated: null, items: [] }; // (also when db.js does not load it yet)
     return out;
+  });
+
+  /* PUBLISHED WRITERS spotlight: every Grapevine / La Viña story published in the last
+     `home_days` days (spotlight.json, default 60) whose writer is from Texas —
+     { days, listDays, maxDays, today, cutoff, a65: [Area 65 writers], tx: [rest of Texas], total }.
+     Area 65 (geo.scope "neta65") and the rest of Texas ("texas") are separate lists, each
+     newest first (extra.pub_date), then by title. The window is counted from TODAY in Central
+     time (pub_date >= today − days, inclusive), so a rebuild is always current; home.js
+     recounts it in the visitor's browser with the same rule, so the page stays right between
+     daily builds (stories drop out of the window as days pass — none can come in).
+     Reads db.spotlight; while src/_data/db.js does not load that file, reads it from disk. */
+  eleventyConfig.addFilter("homeSpotlight", (db, fallbackDays = 60, fallbackListDays = null) => {
+    const raw = db && db.spotlight !== undefined ? db.spotlight : readSpotlightFile();
+    const sp = raw && typeof raw === "object" && !Array.isArray(raw) ? raw : {};
+    const days = Math.max(1, Math.round(Number(sp.home_days) || Number(fallbackDays) || 60));
+    let listDays = (Array.isArray(sp.list_days) ? sp.list_days : Array.isArray(fallbackListDays) ? fallbackListDays : [])
+      .map(Number).filter((d) => d > 0);
+    if (!listDays.length) listDays = [60, 90];
+    const today = ymdCentral(Date.now());
+    const cutoff = ymdMinus(today, days);
+    const pubOfItem = spotPubDate;
+    const scopeOf = (i) => String((i.extra && i.extra.geo && i.extra.geo.scope) || "");
+    const seen = new Set();
+    const list = arr(sp.items).filter((i) => {
+      if (!alive(i) || !i.extra || !i.url || i.kind === "topic") return false;
+      const p = pubOfItem(i);
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(p) || p < cutoff) return false;
+      const key = i.id || i.url;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+    const order = (a, b) => pubOfItem(b).localeCompare(pubOfItem(a)) || String(a.title || "").localeCompare(String(b.title || ""));
+    const a65 = list.filter((i) => scopeOf(i) === "neta65").sort(order);
+    const tx = list.filter((i) => scopeOf(i) === "texas").sort(order);
+    // maxDays: the longest window on /published/ (named by the "see the full list" tile)
+    return { days, listDays, maxDays: Math.max(...listDays), today, cutoff, a65, tx, total: a65.length + tx.length };
+  });
+
+  /* The day a spotlight story counts as published (YYYY-MM-DD): extra.pub_date, else its
+     date — the same rule as the /published/ page (eleventy/filters/published.js). */
+  eleventyConfig.addFilter("homePubDate", spotPubDate);
+
+  /* How the Published-writers grid closes its last row at each column count (see spotFill):
+     spot (homeSpotlight) → { f2, f3, f4, f5: tile span at 2 / 3 / 4 / 5 columns (0 = no tile),
+     full: "3 5" — the column counts at which Area 65 cards take a whole row ("" = none) }.
+     index.njk writes these as data-f2…data-f5 / data-full; home.css reads them;
+     home.js recomputes them when stories leave the window in the visitor's browser. */
+  eleventyConfig.addFilter("homeSpotFill", (spot) => {
+    const a = spot && Array.isArray(spot.a65) ? spot.a65.length : 0;
+    const t = spot && Array.isArray(spot.tx) ? spot.tx.length : 0;
+    const out = { full: "" };
+    const full = [];
+    for (const cols of [2, 3, 4, 5]) {
+      const r = spotFill(a, t, cols);
+      out["f" + cols] = r.span;
+      if (r.full) full.push(cols);
+    }
+    out.full = full.join(" ");
+    return out;
+  });
+
+  /* Initials for a writer's monogram, from the name as printed:
+     "Victor R." → "VR", "J.G." → "JG", "R. O." → "RO", "Mary Ann K." → "MK"; "" when none. */
+  eleventyConfig.addFilter("homeInitials", (name) => {
+    const parts = String(name || "").normalize("NFC").split(/[\s.·,-]+/).filter((p) => /\p{L}/u.test(p));
+    if (!parts.length) return "";
+    const first = (p) => p.match(/\p{L}/u)[0];
+    return (first(parts[0]) + (parts.length > 1 ? first(parts[parts.length - 1]) : "")).toLocaleUpperCase();
+  });
+
+  /* Next-meeting date for the compact meeting card, without the year (the next meeting is
+     at most a few weeks away): "Wednesday, October 21" / "Miércoles, 21 de octubre".
+     home.js writes the same format when it moves on to the following meeting. */
+  eleventyConfig.addFilter("homeMeetingDate", (v, lang = "en") => {
+    const d = toDate(v);
+    if (!d) return "";
+    let s = new Intl.DateTimeFormat(LOCALES[lang] || "en-US", { weekday: "long", month: "long", day: "numeric", timeZone: TZ }).format(d);
+    if (lang === "es") s = s.charAt(0).toUpperCase() + s.slice(1);
+    return s;
   });
 
   /* "Fresh" strip: the newest items across all sources, mixed round-robin by source

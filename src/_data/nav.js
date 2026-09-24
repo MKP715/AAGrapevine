@@ -18,6 +18,7 @@ export default {
     },
     {
       key: "nav.service", icon: "hand-heart", children: [
+        { key: "nav.published", url: "/published/", icon: "award", page: "published", descKey: "nav.published_desc" },
         { key: "nav.gvr", url: "/gvr/", icon: "badge-check", page: "gvr", descKey: "nav.gvr_desc" },
         { key: "nav.districts", url: "/districts/", icon: "map", page: "districts", descKey: "nav.districts_desc" },
         { key: "nav.contribute", url: "/contribute/", icon: "pen-line", page: "contribute", descKey: "nav.contribute_desc" },

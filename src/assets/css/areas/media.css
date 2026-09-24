@@ -22,6 +22,47 @@
     .media-chips { flex-wrap: wrap; overflow: visible; -webkit-mask-image: none; mask-image: none; padding-right: 0; }
   }
 
+  /* ------------------------------------------------ LISTEN: page layout
+     One container below the hero, three blocks (DOM order = reading order):
+     .listen-feature (latest-episode player, page-overlap), .listen-shows, .listen-episodes.
+     < 1440px: stacked, full width.
+     ≥ 1440px: shows + episodes in the growing left column; the player in a fixed-width
+     right column, sticky under the header while the episode list scrolls by (it is
+     ~32rem tall, so it always fits the window). */
+  .listen-layout { display: grid; grid-template-columns: minmax(0, 1fr); padding-bottom: 3rem; }
+  .listen-shows { padding-top: 2.5rem; }
+  .listen-episodes { padding-top: 2.5rem; }
+  @media (width >= 40rem) {
+    .listen-layout { padding-bottom: 4rem; }
+    .listen-shows { padding-top: 3.5rem; }
+  }
+  @media (width >= 90rem) {
+    .listen-layout {
+      grid-template-columns: minmax(0, 1fr) 27rem;
+      grid-template-areas: "shows feature" "episodes feature";
+      column-gap: 3rem;
+    }
+    .listen-feature { grid-area: feature; align-self: start; }
+    .listen-shows { grid-area: shows; padding-top: 3rem; }
+    .listen-episodes { grid-area: episodes; padding-top: 3rem; }
+  }
+  @media (width >= 112.5rem) {
+    .listen-layout { grid-template-columns: minmax(0, 1fr) 31rem; column-gap: 4rem; }
+  }
+
+  /* "Tell your group" card (listen + instagram): icon · text, the announcement under the
+     text; from 1280px three columns (icon · text · announcement) so the quote never runs
+     across the whole screen. */
+  .media-share { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.5rem; }
+  @media (width >= 48rem) {
+    .media-share { grid-template-columns: auto minmax(0, 1fr); align-items: center; row-gap: 1.25rem; }
+    .media-share-quote { grid-column: 2; }
+  }
+  @media (width >= 80rem) {
+    .media-share { grid-template-columns: auto minmax(0, 1fr) minmax(0, 1.1fr); column-gap: 2.5rem; }
+    .media-share-quote { grid-column: 3; grid-row: 1; }
+  }
+
   /* ------------------------------------------------ LISTEN: featured card */
   .media-feature-art {
     @apply relative flex items-center justify-center p-6 md:p-7;
@@ -163,6 +204,19 @@
   /* ------------------------------------------------ WATCH */
   /* (the featured <lite-youtube> player is styled OUTSIDE this layer — see the
      bottom of the file) */
+
+  /* First block below the hero: the latest video + two "helpful path" cards.
+     < 1440px: video card, then the two cards (side by side from 768px).
+     ≥ 1440px: video card on the left, the two cards stacked in a fixed-width column on
+     the right, stretched to the video card's height (half each). */
+  .watch-top { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.25rem; }
+  .watch-paths { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem; }
+  @media (width >= 48rem) { .watch-paths { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (width >= 90rem) {
+    .watch-top { grid-template-columns: minmax(0, 1fr) 24rem; }
+    .watch-paths { grid-template-columns: minmax(0, 1fr); grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 1.25rem; }
+  }
+  @media (width >= 112.5rem) { .watch-top { grid-template-columns: minmax(0, 1fr) 28rem; gap: 1.5rem; } }
 
   /* filter-chip counts: smaller + bolder than the label, same color as the chip
      text (inherited), so they meet WCAG AA in every chip state and theme —

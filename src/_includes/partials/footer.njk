@@ -3,8 +3,9 @@
 <footer class="mt-16 border-t border-line bg-surface text-sm text-muted" style="padding-bottom: env(safe-area-inset-bottom)">
   {#- Phones: the three link groups stack, each list in two columns; small tablets: three
       columns side by side; md+: four columns with the about blurb (the wrapper becomes
-      display:contents so the groups are items of the outer grid). -#}
-  <div class="container-page grid gap-8 py-10 md:grid-cols-[1.4fr_1fr_1fr_1fr] md:gap-10 md:py-12">
+      display:contents so the groups are items of the outer grid); xl+ (full-width desktop):
+      the long "Committee & service" list splits into two columns so the footer stays short. -#}
+  <div class="container-page grid gap-8 py-10 md:grid-cols-[1.4fr_1fr_1fr_1fr] md:gap-10 md:py-12 xl:grid-cols-[minmax(0,1.3fr)_minmax(0,0.75fr)_minmax(0,1.5fr)_minmax(0,1fr)] xl:gap-12">
     <div>
       <a href="{{ '/' | lurl(L) }}" class="inline-flex items-center gap-3 no-underline">
         <span class="grid h-11 place-items-center rounded-lg bg-white px-1.5 ring-1 ring-black/5"><img src="/assets/img/logo-wide.png" alt="NETA 65" width="128" height="63" class="h-9 w-auto" loading="lazy"></span>
@@ -27,7 +28,7 @@
       </div>
       <div>
         <h2 class="eyebrow mb-3 font-sans">{{ "footer.committee" | t(L) }}</h2>
-        <ul class="grid grid-cols-2 gap-x-6 gap-y-2 sm:grid-cols-1">
+        <ul class="grid grid-cols-2 gap-x-6 gap-y-2 sm:grid-cols-1 xl:grid-cols-2">
           {%- for item in nav.primary %}{% if item.children %}{% for c in item.children %}
           <li><a class="hover:text-gv" href="{{ c.url | lurl(L) }}">{{ c.key | t(L) }}</a></li>
           {%- endfor %}{% endif %}{% endfor %}

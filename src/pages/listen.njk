@@ -85,7 +85,7 @@ pageScripts: ["/assets/js/media.js"]
       <span class="inline-flex items-center gap-1 font-semibold text-vine" x-show="isDone(ep)" x-cloak>{% micon "check", "size-3.5" %}{{ "media.played" | t(lang) }}</span>
     </p>
     <h3 class="mt-1 font-display text-[1.05rem] font-semibold leading-snug text-ink sm:text-lg"{% if not srv %} x-text="ep.t"{% endif %}>{% if srv %}{{ title }}{% endif %}</h3>
-    <p class="mt-1 text-sm leading-relaxed text-muted" :class="!open && 'line-clamp-2'"{% if not srv %} x-text="ep.s"{% endif %}>{% if srv %}{{ summary }}{% endif %}</p>
+    <p class="measure mt-1 text-sm leading-relaxed text-muted" :class="!open && 'line-clamp-2'"{% if not srv %} x-text="ep.s"{% endif %}>{% if srv %}{{ summary }}{% endif %}</p>
     <div class="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1">
       <button type="button" class="inline-flex min-h-8 items-center gap-1 text-xs font-semibold text-gv hover:underline" x-show="long(ep)" x-cloak @click="open = !open" :aria-expanded="open"><span x-text="open ? T.show_less : T.show_more"></span>{% micon "chevron-down", "size-3.5" %}</button>
       {%- if srv %}{% if e | machineFor(lang) %}<span class="auto-note" title="{{ 'common.auto_translated_help' | t(lang) }}">{% micon "languages", "size-3" %} {{ "common.auto_translated" | t(lang) }}</span>{% endif %}
@@ -101,20 +101,25 @@ pageScripts: ["/assets/js/media.js"]
 </li>
 {% endmacro %}
 
-{#- ------------------------------------------------------------------ hero -#}
+{#- ------------------------------------------------------------------ hero
+    The shared hero (same height as every page): short lead, ONE actions row and,
+    from 768px, three compact stats (hidden on phones so the hero stays 24–28rem).
+    The "Latest episode" player is the first block below it (page-overlap). -#}
+{#- ui.heroStats skips entries whose value is "" -#}
+{%- set heroNums = [
+  { value: eps.length | mediaNumber(lang), label: "media.stat_episodes" | t(lang) },
+  { value: shows.length if multi else (allSeasons.length if allSeasons.length > 1 else ""), label: ("media.stat_shows" if multi else "media.stat_seasons") | t(lang) },
+  { value: (hours + "+") if hours >= 2 else "", label: "media.stat_hours" | t(lang) }
+] -%}
 {% call ui.pageHero(lang, "media.listen_title" | t(lang), "media.listen_sub" | t(lang), "headphones", "media.listen_eyebrow" | t(lang)) %}
-  <div class="flex flex-wrap gap-2">
-    {% if eps.length %}<a class="btn-light" href="#episodes">{% icon "list-music", "size-4" %} {{ "media.browse_episodes" | t(lang) }}</a>{% endif %}
-    {% if shows.length %}<a class="btn-on-dark" href="#shows">{% icon "podcast", "size-4" %} {{ "media.meet_shows" | t(lang) }}</a>{% endif %}
-  </div>
+  {#- #episodes / #shows only exist when episodes are synced (else: the empty state) -#}
   {% if eps.length %}
-  <dl class="mt-8 flex flex-wrap gap-x-8 gap-y-4 text-white">
-    <div><dt class="sr-only">{{ "media.stat_episodes" | t(lang) }}</dt><dd><span class="block font-display text-3xl font-semibold leading-none">{{ eps.length | mediaNumber(lang) }}</span><span class="text-sm text-white/70">{{ "media.stat_episodes" | t(lang) }}</span></dd></div>
-    {% if multi %}<div><dt class="sr-only">{{ "media.stat_shows" | t(lang) }}</dt><dd><span class="block font-display text-3xl font-semibold leading-none">{{ shows.length }}</span><span class="text-sm text-white/70">{{ "media.stat_shows" | t(lang) }}</span></dd></div>
-    {% elif allSeasons.length > 1 %}<div><dt class="sr-only">{{ "media.stat_seasons" | t(lang) }}</dt><dd><span class="block font-display text-3xl font-semibold leading-none">{{ allSeasons.length }}</span><span class="text-sm text-white/70">{{ "media.stat_seasons" | t(lang) }}</span></dd></div>{% endif %}
-    {% if hours >= 2 %}<div><dt class="sr-only">{{ "media.stat_hours" | t(lang) }}</dt><dd><span class="block font-display text-3xl font-semibold leading-none">{{ hours }}+</span><span class="text-sm text-white/70">{{ "media.stat_hours" | t(lang) }}</span></dd></div>{% endif %}
-    <div class="flex items-end"><dt class="sr-only">{{ "common.updated" | t(lang) }}</dt><dd class="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-sm ring-1 ring-white/15"><span class="relative flex size-2"><span class="absolute inline-flex size-full animate-ping rounded-full bg-[#8fd08a] opacity-60"></span><span class="relative inline-flex size-2 rounded-full bg-[#8fd08a]"></span></span>{{ "media.stat_weekly" | t(lang) }}</dd></div>
-  </dl>
+  <div class="hero-actions">
+    <a class="btn-light" href="#episodes">{% icon "list-music", "size-4" %} {{ "media.browse_episodes" | t(lang) }}</a>
+    {#- phones: one button row (the shows are the next block after the player anyway) -#}
+    {% if shows.length %}<a class="btn-on-dark max-sm:hidden" href="#shows">{% icon "podcast", "size-4" %} {{ "media.meet_shows" | t(lang) }}</a>{% endif %}
+  </div>
+  <div class="max-md:hidden">{{ ui.heroStats(heroNums) }}</div>
   {% endif %}
 {% endcall %}
 
@@ -124,21 +129,27 @@ pageScripts: ["/assets/js/media.js"]
 
 <div x-data="podcastPage" data-index="{{ '/episodes-index.json' | lurl(lang) }}" data-total="{{ eps.length }}" data-mixed="{{ 'true' if mixedLangs else 'false' }}">
 
+  {#- Layout (areas/media.css .listen-layout): below 1440px the three blocks stack —
+      latest-episode player (tucked into the hero's fade), the shows, all episodes.
+      From 1440px: shows + episodes on the left, the player in a fixed-width column on
+      the right that stays in view (sticky) while you browse the list. -#}
+  <div class="container-page listen-layout">
+
   {#- ------------------------------------------------------------ featured player -#}
   {%- set f = featured -%}
   {%- set fTitle = f | mediaTitle(lang) -%}
   {%- set fSE = f | mediaSE(lang) -%}
   {%- set fArt = (f.extra.thumb or f.image) | mediaSafeUrl("") -%}
   {%- set fShow = f | mediaShowOf(shows) -%}
-  <section class="container-page relative z-10 -mt-6 sm:-mt-10" aria-labelledby="featured-ep-title">
+  <section class="listen-feature page-overlap min-[90rem]:sticky min-[90rem]:top-[calc(var(--header-h)+1.25rem)]" aria-labelledby="featured-ep-title">
     <div class="card media-feature overflow-hidden" x-data="{ ep: epAt(0) }">
-      <div class="grid grid-cols-1 md:grid-cols-[minmax(0,19rem)_minmax(0,1fr)]">
-        <div class="media-feature-art hidden md:flex">
+      <div class="grid grid-cols-1 md:grid-cols-[minmax(0,15rem)_minmax(0,1fr)] lg:grid-cols-[minmax(0,19rem)_minmax(0,1fr)] min-[90rem]:grid-cols-1">
+        <div class="media-feature-art hidden md:flex min-[90rem]:hidden">
           {% if fArt %}<img src="{{ fArt }}" alt="" width="304" height="304" decoding="async" referrerpolicy="no-referrer">{% else %}<span class="ep-art-ph size-full">{% icon "headphones", "size-16" %}</span>{% endif %}
         </div>
-        <div class="flex min-w-0 flex-col gap-3 p-5 sm:p-7">
+        <div class="flex min-w-0 flex-col gap-3 p-4 min-[400px]:p-5 sm:p-7 min-[90rem]:p-6">
           <div class="flex items-start gap-4">
-            {% if fArt %}<img src="{{ fArt }}" alt="" width="88" height="88" class="size-[5.5rem] shrink-0 rounded-xl object-cover shadow-md ring-1 ring-black/5 md:hidden" decoding="async" referrerpolicy="no-referrer">{% endif %}
+            {% if fArt %}<img src="{{ fArt }}" alt="" width="88" height="88" class="size-[5.5rem] shrink-0 rounded-xl object-cover shadow-md ring-1 ring-black/5 md:hidden min-[90rem]:block" decoding="async" referrerpolicy="no-referrer">{% endif %}
             <div class="min-w-0">
               <p class="flex flex-wrap items-center gap-2">
                 <span class="eyebrow text-gv">{{ "media.latest_episode" | t(lang) }}</span>
@@ -146,7 +157,7 @@ pageScripts: ["/assets/js/media.js"]
                 {% if fSE %}<span class="badge-gv">{{ fSE }}</span>{% endif %}
                 {{ ui.langPill(f, lang) }}
               </p>
-              <h2 id="featured-ep-title" class="mt-2 font-display text-2xl font-semibold leading-tight text-balance sm:text-3xl">{{ fTitle }}</h2>
+              <h2 id="featured-ep-title" class="mt-2 font-display text-2xl font-semibold leading-tight text-balance sm:text-3xl min-[90rem]:text-2xl">{{ fTitle }}</h2>
             </div>
           </div>
           <p class="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted">
@@ -166,7 +177,7 @@ pageScripts: ["/assets/js/media.js"]
           {% endif %}
 
           {#- The player (shares the page-wide audio element with the mini-player) -#}
-          <div class="media-player mt-1" role="group" aria-label="{{ 'media.player_label' | t(lang) }}: {{ fTitle }}"
+          <div class="media-player mt-1 max-sm:p-3 min-[90rem]:p-4" role="group" aria-label="{{ 'media.player_label' | t(lang) }}: {{ fTitle }}"
                x-init="$store.audio.watchFeatured($el, ep)" @keydown="$store.audio.onKey($event, ep)">
             <div class="flex items-center gap-3 text-xs font-medium tabular-nums text-muted">
               <span class="w-12 text-right" x-text="clock($store.audio.timeFor(ep))">0:00</span>
@@ -178,16 +189,16 @@ pageScripts: ["/assets/js/media.js"]
               <span class="w-12" x-text="clock($store.audio.durFor(ep))">{{ f.extra.duration_sec | duration }}</span>
             </div>
             <div class="mt-3 flex items-center justify-between gap-2">
-              <button type="button" class="media-rate" @click="$store.audio.cycleRate()" aria-label="{{ 'media.speed' | t(lang) }}" :aria-label="T.speed + ': ' + $store.audio.rate + '×'" title="{{ 'media.speed' | t(lang) }}"><span x-text="$store.audio.rate + '×'">1×</span></button>
+              <button type="button" class="media-rate max-sm:min-w-12 max-sm:px-2 max-[359px]:hidden" @click="$store.audio.cycleRate()" aria-label="{{ 'media.speed' | t(lang) }}" :aria-label="T.speed + ': ' + $store.audio.rate + '×'" title="{{ 'media.speed' | t(lang) }}"><span x-text="$store.audio.rate + '×'">1×</span></button>
               <div class="flex items-center gap-1 sm:gap-3">
-                <button type="button" class="media-pbtn media-skip" @click="$store.audio.skipFor(ep, -15)" aria-label="{{ 'media.back_15' | t(lang) }}" title="{{ 'media.back_15' | t(lang) }}">{% icon "rotate-ccw", "size-6" %}<span>15</span></button>
-                <button type="button" class="media-play" @click="$store.audio.toggleEp(ep)"
+                <button type="button" class="media-pbtn media-skip max-sm:size-10" @click="$store.audio.skipFor(ep, -15)" aria-label="{{ 'media.back_15' | t(lang) }}" title="{{ 'media.back_15' | t(lang) }}">{% icon "rotate-ccw", "size-6" %}<span>15</span></button>
+                <button type="button" class="media-play max-sm:size-14" @click="$store.audio.toggleEp(ep)"
                         aria-label="{{ 'media.play' | t(lang) }}: {{ fTitle }}" :aria-label="playLabel(ep)">
                   {{ ppIcons("$store.audio.isPlaying(ep.id)", "$store.audio.isCurrent(ep.id) && $store.audio.loading", "size-7") }}
                 </button>
-                <button type="button" class="media-pbtn media-skip" @click="$store.audio.skipFor(ep, 30)" aria-label="{{ 'media.fwd_30' | t(lang) }}" title="{{ 'media.fwd_30' | t(lang) }}">{% icon "rotate-cw", "size-6" %}<span>30</span></button>
+                <button type="button" class="media-pbtn media-skip max-sm:size-10" @click="$store.audio.skipFor(ep, 30)" aria-label="{{ 'media.fwd_30' | t(lang) }}" title="{{ 'media.fwd_30' | t(lang) }}">{% icon "rotate-cw", "size-6" %}<span>30</span></button>
               </div>
-              <div class="flex min-w-14 items-center justify-end">
+              <div class="flex min-w-12 items-center justify-end sm:min-w-14 max-[359px]:min-w-0">
                 <button type="button" class="media-pbtn" data-share="{{ page.url | siteUrl(site) }}#episodes" data-share-title="{{ fTitle }}" aria-label="{{ 'common.share' | t(lang) }}" title="{{ 'common.share' | t(lang) }}">{% icon "share-2", "size-5" %}</button>
                 {%- set fLink = f | mediaEpisodePage -%}
                 {% if fLink %}<a class="media-pbtn hidden sm:grid" href="{{ fLink }}" target="_blank" rel="noopener" aria-label="{{ 'media.episode_page' | t(lang) }} ({{ 'common.external' | t(lang) }})" title="{{ 'media.episode_page' | t(lang) }}">{% icon "external-link", "size-5" %}</a>{% endif %}
@@ -206,7 +217,7 @@ pageScripts: ["/assets/js/media.js"]
   </section>
 
   {#- ------------------------------------------------------------ the shows -#}
-  <section id="shows" class="section-tight container-page scroll-mt-20 pt-10 sm:pt-14" aria-labelledby="shows-title">
+  <section id="shows" class="listen-shows scroll-mt-20" aria-labelledby="shows-title">
     <div class="mb-6">
       <h2 id="shows-title" class="h-section flex items-center gap-2.5"><span class="text-gv">{% icon "podcast", "size-6" %}</span>{{ "media.shows_title" | t(lang) }}</h2>
       <p class="mt-1.5 max-w-3xl text-muted">{{ "media.shows_sub" | t(lang) }}</p>
@@ -267,7 +278,7 @@ pageScripts: ["/assets/js/media.js"]
   </section>
 
   {#- ------------------------------------------------------------ episode list -#}
-  <section id="episodes" class="section container-page scroll-mt-20 pt-8 sm:pt-10" aria-labelledby="episodes-title">
+  <section id="episodes" class="listen-episodes scroll-mt-20" aria-labelledby="episodes-title">
     <div class="mb-6 flex flex-wrap items-end justify-between gap-3">
       <div>
         <h2 id="episodes-title" class="h-section flex items-center gap-2.5"><span class="text-gv">{% icon "list-music", "size-6" %}</span>{{ "media.all_episodes" | t(lang) }}</h2>
@@ -375,6 +386,8 @@ pageScripts: ["/assets/js/media.js"]
     </div>
   </section>
 
+  </div>{#- /.listen-layout -#}
+
   {#- ------------------------------------------------------------ sticky mini-player
       media.js measures .media-mini-card and sets html.has-player + --player-h
       (the language banner and the page padding use them). -#}
@@ -412,12 +425,14 @@ pageScripts: ["/assets/js/media.js"]
 {#- ------------------------------------------------------------ tell your group -#}
 {%- set announcement = "media.listen_announcement" | t(lang, { shows: shows | mediaListNames(lang), url: page.url | siteUrl(site) }) -%}
 <section class="section-tight container-page" aria-labelledby="listen-share-title">
-  <div class="card media-anywhere grid grid-cols-[minmax(0,1fr)] gap-6 p-6 sm:p-8 md:grid-cols-[auto_minmax(0,1fr)] md:items-center">
+  <div class="card media-anywhere media-share p-6 sm:p-8">
     <span class="grid size-14 place-items-center rounded-2xl bg-lv-soft text-lv">{% icon "megaphone", "size-7" %}</span>
     <div>
       <h2 id="listen-share-title" class="h-section">{{ "media.share_title" | t(lang) }}</h2>
-      <p class="mt-1 text-muted">{{ "media.share_listen_text" | t(lang) }}</p>
-      <blockquote class="mt-4 rounded-2xl border border-line bg-surface p-4 font-display text-lg leading-snug text-ink [overflow-wrap:anywhere]">{{ announcement }}</blockquote>
+      <p class="measure mt-1 text-muted">{{ "media.share_listen_text" | t(lang) }}</p>
+    </div>
+    <div class="media-share-quote">
+      <blockquote class="rounded-2xl border border-line bg-surface p-4 font-display text-lg leading-snug text-ink [overflow-wrap:anywhere]">{{ announcement }}</blockquote>
       <div class="mt-4 flex flex-wrap gap-2">
         <button type="button" class="btn-primary btn-sm" data-copy="{{ announcement }}">{% icon "copy", "size-4" %} {{ "media.copy_announcement" | t(lang) }}</button>
         <button type="button" class="btn-secondary btn-sm" data-share="{{ page.url | siteUrl(site) }}" data-share-title="{{ 'media.listen_eyebrow' | t(lang) }}" data-share-text="{{ 'media.listen_sub' | t(lang) }}">{% icon "share-2", "size-4" %} {{ "media.share_page" | t(lang) }}</button>
@@ -428,7 +443,7 @@ pageScripts: ["/assets/js/media.js"]
 
 {% else %}
 {#- Nothing synced yet (first run / feed outage): still useful — the shows' own links. -#}
-<section class="section container-page">
+<section class="container-page page-start">
   {{ ui.emptyState("headphones", "media.empty_eps_title" | t(lang), "media.empty_eps_text" | t(lang), site.links.podcasts_page, "media.web" | t(lang)) }}
   {% if cfgShows.length %}
   <ul class="mx-auto mt-8 grid max-w-4xl grid-cols-1 gap-4 {{ 'md:grid-cols-2' if cfgShows.length > 1 }}">

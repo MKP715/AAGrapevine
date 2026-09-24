@@ -1,0 +1,209 @@
+/* =====================================================================
+   Area styles: PUBLISHED WRITERS — the /published/ page and the home-page
+   spotlight of Grapevine / La Viña stories by writers from Area 65 (NETA)
+   and the rest of Texas (owned by the published-writers page).
+   Only what Tailwind utilities can't express lives here. Use the theme
+   tokens (var(--c-*)) so dark mode works. Every class starts with "pw-".
+   Markup: src/pages/published.njk · behaviour: src/assets/js/published.js
+   ===================================================================== */
+
+/* ---------- filter card (page-overlap, right under the hero) ---------- */
+.pw-group-fs { margin: 0; padding: 0; border: 0; min-width: 0; }
+.pw-filter-row { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 1.25rem 2rem; }
+.pw-legend {
+  display: block; margin-bottom: 0.5rem; padding: 0;
+  font-size: 0.72rem; font-weight: 600; line-height: 1.3; letter-spacing: 0.12em; text-transform: uppercase; color: var(--c-muted);
+}
+.pw-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.pw-chip {
+  display: inline-flex; align-items: center; gap: 0.5rem; min-height: 2.5rem; padding: 0 0.5rem 0 0.9rem;
+  border: 1px solid var(--c-line); border-radius: 9999px; background: var(--c-surface);
+  font-size: 0.875rem; font-weight: 500; line-height: 1.2; color: var(--c-ink);
+  cursor: pointer; user-select: none; transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+.pw-chip:hover { border-color: var(--c-gv); }
+.pw-chip:has(> input:checked) { border-color: var(--c-gv); background: var(--c-gv); color: #fff; }
+[data-theme="dark"] .pw-chip:has(> input:checked) { color: var(--c-paper); }
+.pw-chip:has(> input:focus-visible) { outline: 3px solid var(--c-gv); outline-offset: 2px; }
+.pw-chip.is-zero:not(:has(> input:checked)) { border-style: dashed; background: transparent; color: var(--c-muted); }
+/* before published.js switches the controls on (and without JavaScript) */
+.pw-chip:has(> input:disabled) { cursor: default; }
+.pw-chip:has(> input:disabled):hover { border-color: var(--c-line); }
+/* count bubble — solid colours for AA contrast in every chip state and theme */
+.pw-n {
+  display: inline-grid; place-items: center; min-width: 1.5rem; height: 1.5rem; padding: 0 0.4rem; border-radius: 9999px;
+  font-size: 0.72rem; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1;
+  background: var(--c-surface-2); color: var(--c-ink);
+}
+.pw-chip:has(> input:checked) .pw-n { background: var(--c-surface); color: var(--c-gv-strong); }
+[data-theme="dark"] .pw-chip:has(> input:checked) .pw-n { color: var(--c-ink); }
+.pw-dot { width: 0.55rem; height: 0.55rem; border-radius: 9999px; background: var(--c-gv); flex-shrink: 0; }
+.pw-dot[data-pub="lv"] { background: var(--c-lv); }
+.pw-chip:has(> input:checked) .pw-dot { box-shadow: 0 0 0 2px var(--c-surface); }
+/* second row: search box + the live result line beside it (stacked on phones) */
+.pw-find-row {
+  display: flex; flex-wrap: wrap; align-items: flex-end; gap: 0.75rem 2rem;
+  margin-top: 1.25rem; padding-top: 1.25rem; border-top: 1px solid var(--c-line);
+}
+.pw-search { flex: 0 1 32rem; min-width: min(100%, 16rem); }
+.pw-q::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; }
+.pw-status-row { flex: 1 1 18rem; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.25rem 1rem; min-height: 2.75rem; }
+.pw-status { font-size: 0.9rem; font-weight: 600; line-height: 1.45; color: var(--c-ink); }
+.pw-reset {
+  display: inline-flex; align-items: center; gap: 0.375rem; min-height: 2.25rem; padding: 0 0.5rem; border-radius: 0.5rem;
+  font-size: 0.875rem; font-weight: 600; color: var(--c-gv); cursor: pointer;
+}
+.pw-reset:hover { text-decoration: underline; text-underline-offset: 2px; }
+.pw-noscript { display: flex; gap: 0.5rem; margin-top: 0.75rem; font-size: 0.875rem; color: var(--c-muted); }
+
+/* ---------- result groups ---------- */
+/* the card icons' <symbol> sprite (pwSprite) — takes no space */
+.pw-sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+/* groups, empty state, nudge and banner: a flex column, so hidden blocks leave no gap */
+.pw-results { display: flex; flex-direction: column; gap: 2.5rem; min-width: 0; }
+@media (width >= 40rem) { .pw-results { gap: 3rem; } }
+.pw-results > [hidden] { display: none; }
+.pw-group-head { display: flex; align-items: flex-start; gap: 0.875rem; margin-bottom: 1.25rem; }
+.pw-group-icon { display: grid; place-items: center; flex-shrink: 0; width: 2.75rem; height: 2.75rem; border-radius: 0.9rem; background: var(--c-surface-2); color: var(--c-muted); }
+.pw-group-icon[data-scope="neta65"], .pw-avatar[data-scope="neta65"] { background: var(--c-vine-soft); color: var(--c-vine); }
+.pw-group-icon[data-scope="texas"], .pw-avatar[data-scope="texas"] { background: var(--c-gv-soft); color: var(--c-gv); }
+.pw-group-icon[data-scope="other"], .pw-avatar[data-scope="other"] { background: var(--c-grape-soft); color: var(--c-grape); }
+.pw-group-title {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem 0.75rem;
+  font-family: var(--font-display); font-size: 1.5rem; font-weight: 600; line-height: 1.2; color: var(--c-ink);
+}
+.pw-group-n {
+  display: inline-flex; align-items: center; padding: 0.15rem 0.65rem; border-radius: 9999px;
+  font-family: var(--font-sans); font-size: 0.8rem; font-weight: 600; letter-spacing: 0; color: var(--c-muted); background: var(--c-surface-2);
+}
+.pw-group-desc { margin-top: 0.25rem; font-size: 0.9rem; line-height: 1.5; color: var(--c-muted); }
+@media (width >= 40rem) { .pw-group-title { font-size: 1.75rem; } }
+
+/* ---------- story card ---------- */
+.pw-card {
+  position: relative; display: flex; flex-direction: column; min-width: 0; overflow: hidden;
+  border: 1px solid var(--c-line); border-radius: var(--radius-card); background: var(--c-surface); box-shadow: var(--shadow-card);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.pw-card[hidden] { display: none; }
+/* The card is a size container: a card wider than 28rem (Area 65's featured cards, or any
+   card in a single-column list on a small tablet) puts the picture beside the text. */
+.pw-card { container: pwcard / inline-size; }
+.pw-card-in { display: flex; flex: 1; flex-direction: column; min-width: 0; }
+@container pwcard (width >= 28rem) {
+  .pw-card-in { flex-direction: row; }
+  .pw-card-in > .pw-media { flex: 0 0 40%; aspect-ratio: auto; min-height: 13rem; }
+}
+/* Area 65 writers come first and get the featured (wide) cards: 2 per row on wide screens */
+.pw-group[data-group="neta65"] .pw-grid { --cards-min: 28rem; }
+.pw-card:hover, .pw-card:focus-within { transform: translateY(-2px); box-shadow: var(--shadow-lift); }
+/* Area 65 writers: a vine-green top edge — they come first and stand out */
+.pw-card[data-scope="neta65"] { border-color: color-mix(in srgb, var(--c-vine) 40%, var(--c-line)); }
+.pw-card[data-scope="neta65"]::before { content: ""; position: absolute; inset: 0 0 auto 0; z-index: 2; height: 4px; background: var(--c-vine); }
+.pw-media { position: relative; aspect-ratio: 16 / 9; overflow: hidden; background: var(--c-surface-2); }
+.pw-media > img { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; object-fit: cover; }
+/* stand-in when the story has no picture (or it fails to load): the magazine + issue */
+.pw-tile {
+  position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-end; gap: 0.1rem; padding: 1rem 1.15rem;
+  color: var(--c-gv-strong); background: linear-gradient(135deg, var(--c-gv-soft) 0%, color-mix(in srgb, var(--c-gv) 20%, var(--c-gv-soft)) 100%);
+}
+.pw-media[data-pub="lv"] .pw-tile { color: var(--c-lv-strong); background: linear-gradient(135deg, var(--c-lv-soft) 0%, color-mix(in srgb, var(--c-lv) 20%, var(--c-lv-soft)) 100%); }
+.pw-tile-mark { position: absolute; top: 0.9rem; right: 1rem; opacity: 0.55; }
+.pw-tile-pub { font-family: var(--font-display); font-size: 1.35rem; font-weight: 600; line-height: 1.15; }
+.pw-tile-issue { font-size: 0.85rem; font-weight: 600; }
+.pw-scope {
+  position: absolute; top: 0.75rem; left: 0.75rem; z-index: 2;
+  display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.25rem 0.65rem; border-radius: 9999px;
+  font-size: 0.72rem; font-weight: 700; line-height: 1.3;
+  color: var(--c-ink); background: var(--c-surface); box-shadow: 0 1px 3px rgb(0 0 0 / 0.25);
+}
+.pw-scope[data-scope="neta65"] { background: var(--c-vine); color: #fff; }
+.pw-scope[data-scope="texas"] { background: var(--c-gv); color: #fff; }
+[data-theme="dark"] .pw-scope[data-scope="neta65"], [data-theme="dark"] .pw-scope[data-scope="texas"] { color: var(--c-paper); }
+.pw-body { display: flex; flex: 1; flex-direction: column; gap: 0.6rem; padding: 1.1rem 1.25rem 1.15rem; }
+.pw-byline { display: flex; align-items: center; gap: 0.75rem; }
+.pw-avatar {
+  display: grid; place-items: center; flex-shrink: 0; width: 2.5rem; height: 2.5rem; border-radius: 9999px;
+  font-size: 0.85rem; font-weight: 700; letter-spacing: 0.02em; background: var(--c-surface-2); color: var(--c-muted);
+}
+.pw-writer { font-weight: 650; line-height: 1.25; color: var(--c-ink); overflow-wrap: anywhere; }
+.pw-place { margin-top: 0.1rem; font-size: 0.85rem; line-height: 1.35; color: var(--c-muted); }
+.pw-title { font-family: var(--font-display); font-size: 1.15rem; font-weight: 600; line-height: 1.3; color: var(--c-ink); text-wrap: pretty; }
+.pw-link { text-decoration: none; }
+.pw-link:hover { color: var(--c-gv); }
+/* the whole card is the story link */
+.pw-link::after { content: ""; position: absolute; inset: 0; z-index: 3; border-radius: var(--radius-card); }
+/* keyboard focus: the ring goes on the card (the card's overflow: hidden would clip a ring on the link) */
+.pw-link:focus-visible { outline: none; }
+.pw-card:has(.pw-link:focus-visible) { outline: 3px solid var(--c-gv); outline-offset: 3px; }
+.pw-orig { margin-top: -0.35rem; font-size: 0.85rem; font-style: italic; line-height: 1.35; color: var(--c-muted); }
+.pw-issue { display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem 0.5rem; font-size: 0.85rem; font-weight: 600; color: var(--c-ink); }
+.pw-meta { font-size: 0.85rem; line-height: 1.4; color: var(--c-muted); }
+.pw-foot {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem 0.85rem; margin-top: auto; padding-top: 0.75rem;
+  border-top: 1px solid var(--c-line); font-size: 0.78rem; color: var(--c-muted);
+}
+.pw-flag { display: inline-flex; align-items: center; gap: 0.3rem; }
+
+/* "Show all N stories" under a long group */
+.pw-showall { margin-top: 1.5rem; text-align: center; }
+
+/* ---------- empty state + nudge ---------- */
+.pw-empty {
+  padding: 2.25rem 1.25rem; text-align: center; color: var(--c-muted);
+  border: 1px dashed var(--c-line); border-radius: var(--radius-card); background: color-mix(in srgb, var(--c-surface) 60%, transparent);
+}
+.pw-empty-icon { display: grid; place-items: center; width: 3rem; height: 3rem; margin: 0 auto 0.75rem; border-radius: 9999px; background: var(--c-vine-soft); color: var(--c-vine); }
+.pw-empty-title { font-family: var(--font-display); font-size: 1.35rem; font-weight: 600; line-height: 1.25; color: var(--c-ink); text-wrap: balance; }
+.pw-empty-text { max-width: 34rem; margin: 0.5rem auto 0; font-size: 0.9rem; line-height: 1.55; }
+.pw-empty-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; margin-top: 1.25rem; }
+.pw-empty-actions .pw-n { margin-right: -0.35rem; }
+.pw-nudge {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem 1rem; padding: 1rem 1.25rem;
+  border: 1px solid color-mix(in srgb, var(--c-gv) 25%, var(--c-line)); border-radius: var(--radius-card); background: var(--c-gv-soft);
+}
+.pw-nudge-icon { display: grid; place-items: center; flex-shrink: 0; width: 2.5rem; height: 2.5rem; border-radius: 9999px; background: var(--c-surface); color: var(--c-gv); }
+.pw-nudge-text { flex: 1 1 14rem; font-size: 0.925rem; font-weight: 500; line-height: 1.5; color: var(--c-ink); }
+
+/* ---------- "Were you published? Let us know" banner (after the results) ---------- */
+.pw-tell {
+  display: grid; gap: 1rem; padding: 1.35rem 1.25rem;
+  border: 1px solid color-mix(in srgb, var(--c-lv) 30%, var(--c-line)); border-radius: var(--radius-card);
+  background: linear-gradient(120deg, var(--c-lv-soft), var(--c-surface) 70%); box-shadow: var(--shadow-card);
+}
+.pw-tell-icon { display: grid; place-items: center; width: 3rem; height: 3rem; border-radius: 9999px; background: var(--c-surface); color: var(--c-lv); box-shadow: inset 0 0 0 1px var(--c-line); }
+.pw-tell-title { font-family: var(--font-display); font-size: 1.35rem; font-weight: 600; line-height: 1.25; color: var(--c-ink); }
+.pw-tell-text { margin-top: 0.35rem; max-width: 60ch; font-size: 0.9rem; line-height: 1.55; color: var(--c-muted); }
+.pw-tell-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.75rem; }
+.pw-tell-mail { flex-basis: 100%; font-size: 0.78rem; color: var(--c-muted); overflow-wrap: anywhere; }
+@media (width >= 40rem) {
+  .pw-tell { grid-template-columns: auto minmax(0, 1fr); column-gap: 1.25rem; padding: 1.5rem 1.75rem; }
+  .pw-tell-actions { grid-column: 2; }
+}
+@media (width >= 64rem) {
+  .pw-tell { grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; }
+  .pw-tell-actions { grid-column: 3; flex-direction: column; align-items: stretch; }
+  .pw-tell-mail { text-align: center; }
+}
+
+/* ---------- explainer (right column from 1280px, full width under the results below) ---------- */
+.pw-aside { min-width: 0; }
+/* full width (below 1280px): the points in two columns from 768px */
+@media (48rem <= width < 80rem) { .pw-how { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 2.5rem; } }
+.pw-aside-title { display: flex; align-items: center; gap: 0.6rem; font-family: var(--font-display); font-size: 1.25rem; font-weight: 600; line-height: 1.25; color: var(--c-ink); }
+.pw-how { margin-top: 1rem; display: grid; gap: 0.9rem; font-size: 0.875rem; line-height: 1.55; color: var(--c-muted); }
+.pw-how > li { display: grid; grid-template-columns: 1rem minmax(0, 1fr); gap: 0.7rem; }
+.pw-how > li > .icon { margin-top: 0.2rem; color: var(--c-gv); }
+.pw-counties { margin-top: 0.5rem; }
+.pw-counties > summary {
+  display: inline-flex; align-items: center; min-height: 2.25rem; cursor: pointer;
+  font-weight: 600; color: var(--c-gv); text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--c-gv) 35%, transparent); text-underline-offset: 2px;
+}
+.pw-county-list { margin-top: 0.35rem; columns: 6.25rem 4; column-gap: 1rem; font-size: 0.8rem; line-height: 1.6; color: var(--c-ink); }
+.pw-county-list > li { break-inside: avoid; }
+.pw-updated { display: flex; align-items: center; gap: 0.4rem; margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--c-line); font-size: 0.78rem; color: var(--c-muted); }
+
+@media print {
+  .pw-filters, .pw-nudge, .pw-showall, .pw-empty-actions, .pw-tell-actions { display: none !important; }
+  .pw-card { break-inside: avoid; box-shadow: none; }
+}

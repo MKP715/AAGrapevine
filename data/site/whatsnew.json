@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-23T23:00:41Z",
+ "updated": "2026-09-24T03:05:17Z",
  "fixture": false,
  "items": [
   {
@@ -75,7 +75,18 @@
     "teaser": "The 76th General Service Conference was held April 26–May 2, 2026, at the New York Hilton Midtown hotel.",
     "free": false,
     "online_exclusive": false,
-    "department": true
+    "department": true,
+    "geo": {
+     "scope": "unknown",
+     "city": null,
+     "county": null,
+     "counties": [],
+     "state": null,
+     "country": null,
+     "label_en": null,
+     "label_es": null
+    },
+    "pub_date": "2026-09-23"
    },
    "i18n": {
     "title": {
@@ -138,7 +149,18 @@
     "teaser": "“You talk like a girl!” he would say. It wasn’t so much the rage in his voice or how he’d squeeze my mouth to force me to sound different. It was the disgust in his expression.",
     "free": false,
     "online_exclusive": false,
-    "department": false
+    "department": false,
+    "geo": {
+     "scope": "other",
+     "city": "Wilton Manors",
+     "county": null,
+     "counties": [],
+     "state": "FL",
+     "country": "US",
+     "label_en": "Wilton Manors, Florida",
+     "label_es": "Wilton Manors, Florida"
+    },
+    "pub_date": "2026-09-23"
    },
    "i18n": {
     "title": {
@@ -164,6 +186,10 @@
     "issue_label": {
      "en": "October 2026",
      "es": "Octubre 2026"
+    },
+    "author_location": {
+     "en": "Wilton Manors, Florida",
+     "es": "Wilton Manors, Florida"
     }
    },
    "machine": [
@@ -201,7 +227,18 @@
     "teaser": "Oops! Wrong word",
     "free": false,
     "online_exclusive": false,
-    "department": true
+    "department": true,
+    "geo": {
+     "scope": "unknown",
+     "city": null,
+     "county": null,
+     "counties": [],
+     "state": null,
+     "country": null,
+     "label_en": null,
+     "label_es": null
+    },
+    "pub_date": "2026-09-23"
    },
    "i18n": {
     "title": {
@@ -264,7 +301,18 @@
     "teaser": "The writer of “Searching & Trusting” shares his journey with loneliness in sobriety and how he has, over time and with lots of searching, found a helpful way to address it when it comes.",
     "free": false,
     "online_exclusive": false,
-    "department": true
+    "department": true,
+    "geo": {
+     "scope": "unknown",
+     "city": null,
+     "county": null,
+     "counties": [],
+     "state": null,
+     "country": null,
+     "label_en": null,
+     "label_es": null
+    },
+    "pub_date": "2026-09-23"
    },
    "i18n": {
     "title": {
@@ -327,7 +375,18 @@
     "teaser": "My introduction to the world of AA service was in the translation committee in my area.",
     "free": false,
     "online_exclusive": false,
-    "department": false
+    "department": false,
+    "geo": {
+     "scope": "other",
+     "city": "Denver",
+     "county": null,
+     "counties": [],
+     "state": "CO",
+     "country": "US",
+     "label_en": "Denver, Colorado",
+     "label_es": "Denver, Colorado"
+    },
+    "pub_date": "2026-09-23"
    },
    "i18n": {
     "title": {
@@ -353,6 +412,10 @@
     "issue_label": {
      "en": "October 2026",
      "es": "Octubre 2026"
+    },
+    "author_location": {
+     "en": "Denver, Colorado",
+     "es": "Denver, Colorado"
     }
    },
    "machine": [
@@ -390,7 +453,18 @@
     "teaser": "I was sitting in an AA meeting surrounded by laughter and hugs. People were shaking hands, pouring coffee and chatting about their week.",
     "free": false,
     "online_exclusive": false,
-    "department": false
+    "department": false,
+    "geo": {
+     "scope": "other",
+     "city": null,
+     "county": null,
+     "counties": [],
+     "state": "ME",
+     "country": "US",
+     "label_en": "Maine",
+     "label_es": "Maine"
+    },
+    "pub_date": "2026-09-23"
    },
    "i18n": {
     "title": {
@@ -416,6 +490,10 @@
     "issue_label": {
      "en": "October 2026",
      "es": "Octubre 2026"
+    },
+    "author_location": {
+     "en": "Maine",
+     "es": "Maine"
     }
    },
    "machine": [
@@ -453,7 +531,18 @@
     "teaser": "Thanks to the miracle of AA, having a sponsor, a home group and the privilege of sponsoring men, I have not had a drink since April 6, 2015.",
     "free": false,
     "online_exclusive": false,
-    "department": false
+    "department": false,
+    "geo": {
+     "scope": "other",
+     "city": "Maple Grove",
+     "county": null,
+     "counties": [],
+     "state": "MN",
+     "country": "US",
+     "label_en": "Maple Grove, Minnesota",
+     "label_es": "Maple Grove, Minnesota"
+    },
+    "pub_date": "2026-09-23"
    },
    "i18n": {
     "title": {
@@ -479,6 +568,10 @@
     "issue_label": {
      "en": "October 2026",
      "es": "Octubre 2026"
+    },
+    "author_location": {
+     "en": "Maple Grove, Minnesota",
+     "es": "Maple Grove, Minnesota"
     }
    },
    "machine": [
@@ -516,7 +609,21 @@
     "teaser": "My favorite memory of sobriety to date—and one of my most challenging “just say no” moments—occurred one Halloween night.",
     "free": false,
     "online_exclusive": false,
-    "department": false
+    "department": false,
+    "geo": {
+     "scope": "texas",
+     "city": "Round Rock",
+     "county": "Williamson",
+     "counties": [
+      "Travis",
+      "Williamson"
+     ],
+     "state": "TX",
+     "country": "US",
+     "label_en": "Round Rock, Texas",
+     "label_es": "Round Rock, Texas"
+    },
+    "pub_date": "2026-09-23"
    },
    "i18n": {
     "title": {
@@ -525,7 +632,7 @@
     },
     "summary": {
      "en": "A sober granddad survives a boozy holiday block party and gets to give the performance of a lifetime",
-     "es": "Un abuelo sobrio sobrevive a una fiesta de bloques de fiestas boozy y llega a dar el rendimiento de una vida"
+     "es": "Un abuelo sobrio sobrevive a una fiesta de barrio con mucho alcohol y logra dar la actuación de su vida"
     },
     "section": {
      "en": "Our Personal Stories",
@@ -542,6 +649,10 @@
     "issue_label": {
      "en": "October 2026",
      "es": "Octubre 2026"
+    },
+    "author_location": {
+     "en": "Round Rock, Texas",
+     "es": "Round Rock, Texas"
     }
    },
    "machine": [
@@ -579,7 +690,18 @@
     "teaser": "Today, our friend Don is celebrating 50 years of continuous sobriety. I got up early to attend his home group and arrived with a gift and card in hand.",
     "free": false,
     "online_exclusive": false,
-    "department": false
+    "department": false,
+    "geo": {
+     "scope": "other",
+     "city": "Wilmington",
+     "county": null,
+     "counties": [],
+     "state": "DE",
+     "country": "US",
+     "label_en": "Wilmington, Delaware",
+     "label_es": "Wilmington, Delaware"
+    },
+    "pub_date": "2026-09-23"
    },
    "i18n": {
     "title": {
@@ -605,6 +727,10 @@
     "issue_label": {
      "en": "October 2026",
      "es": "Octubre 2026"
+    },
+    "author_location": {
+     "en": "Wilmington, Delaware",
+     "es": "Wilmington, Delaware"
     }
    },
    "machine": [
@@ -642,7 +768,18 @@
     "teaser": "Many of my friends know that my wife is a beekeeper.",
     "free": false,
     "online_exclusive": false,
-    "department": false
+    "department": false,
+    "geo": {
+     "scope": "unknown",
+     "city": null,
+     "county": null,
+     "counties": [],
+     "state": null,
+     "country": null,
+     "label_en": null,
+     "label_es": null
+    },
+    "pub_date": "2026-09-23"
    },
    "i18n": {
     "title": {
@@ -705,7 +842,18 @@
     "teaser": "For about five years, I helped take AA meetings into the jails of Menominee, Michigan. There were always two of us who brought the meeting in every Monday evening.",
     "free": false,
     "online_exclusive": false,
-    "department": false
+    "department": false,
+    "geo": {
+     "scope": "other",
+     "city": "Green Bay",
+     "county": null,
+     "counties": [],
+     "state": "WI",
+     "country": "US",
+     "label_en": "Green Bay, Wisconsin",
+     "label_es": "Green Bay, Wisconsin"
+    },
+    "pub_date": "2026-09-23"
    },
    "i18n": {
     "title": {
@@ -731,6 +879,10 @@
     "issue_label": {
      "en": "October 2026",
      "es": "Octubre 2026"
+    },
+    "author_location": {
+     "en": "Green Bay, Wisconsin",
+     "es": "Green Bay, Wisconsin"
     }
    },
    "machine": [
@@ -768,7 +920,18 @@
     "teaser": "Loneliness is a topic that is rarely talked about in our AA meetings. The L in our well-known H.A.L.T. slogan stands for lonely. And yet, it’s difficult to admit it.",
     "free": false,
     "online_exclusive": false,
-    "department": true
+    "department": true,
+    "geo": {
+     "scope": "unknown",
+     "city": null,
+     "county": null,
+     "counties": [],
+     "state": null,
+     "country": null,
+     "label_en": null,
+     "label_es": null
+    },
+    "pub_date": "2026-09-23"
    },
    "i18n": {
     "title": {
@@ -831,7 +994,18 @@
     "teaser": "Four years ago, I came home one evening from my usual AA meeting to find my wife in an irrational rage.",
     "free": false,
     "online_exclusive": false,
-    "department": false
+    "department": false,
+    "geo": {
+     "scope": "other",
+     "city": "Albany",
+     "county": null,
+     "counties": [],
+     "state": "GA",
+     "country": "US",
+     "label_en": "Albany, Georgia",
+     "label_es": "Albany, Georgia"
+    },
+    "pub_date": "2026-09-23"
    },
    "i18n": {
     "title": {
@@ -857,6 +1031,10 @@
     "issue_label": {
      "en": "October 2026",
      "es": "Octubre 2026"
+    },
+    "author_location": {
+     "en": "Albany, Georgia",
+     "es": "Albany, Georgia"
     }
    },
    "machine": [
@@ -894,7 +1072,18 @@
     "teaser": "You’ve all heard the phrase, “Taking a trip, not taking a trip.” Well, I was taking a trip. The difference is that I was doing the trip in my 16th year of sobriety.",
     "free": false,
     "online_exclusive": false,
-    "department": false
+    "department": false,
+    "geo": {
+     "scope": "other",
+     "city": "Laguna Woods",
+     "county": null,
+     "counties": [],
+     "state": "CA",
+     "country": "US",
+     "label_en": "Laguna Woods, California",
+     "label_es": "Laguna Woods, California"
+    },
+    "pub_date": "2026-09-23"
    },
    "i18n": {
     "title": {
@@ -920,6 +1109,10 @@
     "issue_label": {
      "en": "October 2026",
      "es": "Octubre 2026"
+    },
+    "author_location": {
+     "en": "Laguna Woods, California",
+     "es": "Laguna Woods, California"
     }
    },
    "machine": [
@@ -957,7 +1150,18 @@
     "teaser": "On Saturday nights I attend a meeting called “Alone No More.” A greeter at the door welcomes one and all. Coffee brews in the back of the room; treats, often homemade, go fast.",
     "free": false,
     "online_exclusive": false,
-    "department": false
+    "department": false,
+    "geo": {
+     "scope": "other",
+     "city": "Palm Springs",
+     "county": null,
+     "counties": [],
+     "state": "CA",
+     "country": "US",
+     "label_en": "Palm Springs, California",
+     "label_es": "Palm Springs, California"
+    },
+    "pub_date": "2026-09-23"
    },
    "i18n": {
     "title": {
@@ -983,6 +1187,10 @@
     "issue_label": {
      "en": "October 2026",
      "es": "Octubre 2026"
+    },
+    "author_location": {
+     "en": "Palm Springs, California",
+     "es": "Palm Springs, California"
     }
    },
    "machine": [
@@ -1020,7 +1228,18 @@
     "teaser": "Here’s how this alcoholic learned that you can spend time in places where people are drinking if you have a legitimate reason to be there.",
     "free": false,
     "online_exclusive": false,
-    "department": false
+    "department": false,
+    "geo": {
+     "scope": "other",
+     "city": "Wexford",
+     "county": null,
+     "counties": [],
+     "state": "PA",
+     "country": "US",
+     "label_en": "Wexford, Pennsylvania",
+     "label_es": "Wexford, Pensilvania"
+    },
+    "pub_date": "2026-09-23"
    },
    "i18n": {
     "title": {
@@ -1046,6 +1265,10 @@
     "issue_label": {
      "en": "October 2026",
      "es": "Octubre 2026"
+    },
+    "author_location": {
+     "en": "Wexford, Pennsylvania",
+     "es": "Wexford, Pensilvania"
     }
    },
    "machine": [
@@ -1083,7 +1306,18 @@
     "teaser": "I never knew how lonely I was until I got sober. Raised in an alcoholic home, I grew used to taking care of myself.",
     "free": false,
     "online_exclusive": false,
-    "department": false
+    "department": false,
+    "geo": {
+     "scope": "other",
+     "city": null,
+     "county": null,
+     "counties": [],
+     "state": "ME",
+     "country": "US",
+     "label_en": "Maine",
+     "label_es": "Maine"
+    },
+    "pub_date": "2026-09-23"
    },
    "i18n": {
     "title": {
@@ -1109,6 +1343,10 @@
     "issue_label": {
      "en": "October 2026",
      "es": "Octubre 2026"
+    },
+    "author_location": {
+     "en": "Maine",
+     "es": "Maine"
     }
    },
    "machine": [
@@ -1146,7 +1384,18 @@
     "teaser": "Many years ago, in a meeting far, far away, a newcomer was complaining about how lonely she was because she couldn’t see her friends at the bar anymore and how she hated going home to an…",
     "free": false,
     "online_exclusive": false,
-    "department": false
+    "department": false,
+    "geo": {
+     "scope": "other",
+     "city": "New York",
+     "county": null,
+     "counties": [],
+     "state": "NY",
+     "country": "US",
+     "label_en": "New York, New York",
+     "label_es": "Nueva York, Nueva York"
+    },
+    "pub_date": "2026-09-23"
    },
    "i18n": {
     "title": {
@@ -1172,6 +1421,10 @@
     "issue_label": {
      "en": "October 2026",
      "es": "Octubre 2026"
+    },
+    "author_location": {
+     "en": "New York, New York",
+     "es": "Nueva York, Nueva York"
     }
    },
    "machine": [
@@ -1209,7 +1462,18 @@
     "teaser": "When I moved here to the north coast of Tasmania from Japan 22 years ago, I doubted I would live long in retirement, and I had real doubts about how well I would adjust to life here, even…",
     "free": false,
     "online_exclusive": false,
-    "department": false
+    "department": false,
+    "geo": {
+     "scope": "other",
+     "city": "Devonport",
+     "county": null,
+     "counties": [],
+     "state": null,
+     "country": null,
+     "label_en": "Devonport",
+     "label_es": "Devonport"
+    },
+    "pub_date": "2026-09-23"
    },
    "i18n": {
     "title": {
@@ -1235,6 +1499,10 @@
     "issue_label": {
      "en": "October 2026",
      "es": "Octubre 2026"
+    },
+    "author_location": {
+     "en": "Devonport",
+     "es": "Devonport"
     }
    },
    "machine": [
@@ -1272,7 +1540,18 @@
     "teaser": "I spent most of my life feeling like I was always on the outside looking in—face pressed to the glass, watching everyone else live life like it made sense.",
     "free": false,
     "online_exclusive": false,
-    "department": false
+    "department": false,
+    "geo": {
+     "scope": "other",
+     "city": "Lake County",
+     "county": null,
+     "counties": [],
+     "state": "BC",
+     "country": "CA",
+     "label_en": "Lake County, British Columbia",
+     "label_es": "Lake County, Columbia Británica"
+    },
+    "pub_date": "2026-09-23"
    },
    "i18n": {
     "title": {
@@ -1298,6 +1577,10 @@
     "issue_label": {
      "en": "October 2026",
      "es": "Octubre 2026"
+    },
+    "author_location": {
+     "en": "Lake County, British Columbia",
+     "es": "Lake County, Columbia Británica"
     }
    },
    "machine": [
@@ -1335,7 +1618,18 @@
     "teaser": "One of the things I always identify with in AA meetings is when people describe that alcoholic sense of “anxious apartness,” as it’s called in the Step Five chapter of our “Twelve and Twelve”",
     "free": false,
     "online_exclusive": false,
-    "department": false
+    "department": false,
+    "geo": {
+     "scope": "other",
+     "city": "New York",
+     "county": null,
+     "counties": [],
+     "state": "NY",
+     "country": "US",
+     "label_en": "New York, New York",
+     "label_es": "Nueva York, Nueva York"
+    },
+    "pub_date": "2026-09-23"
    },
    "i18n": {
     "title": {
@@ -1361,6 +1655,10 @@
     "issue_label": {
      "en": "October 2026",
      "es": "Octubre 2026"
+    },
+    "author_location": {
+     "en": "New York, New York",
+     "es": "Nueva York, Nueva York"
     }
    },
    "machine": [
@@ -1398,7 +1696,18 @@
     "teaser": "Loneliness is the “L” in the AA slogan H.A.L.T.—one of the four dangerous states that can lead to relapse. In my early days, I understood the other letters: Hungry, Angry and Tired.",
     "free": false,
     "online_exclusive": false,
-    "department": false
+    "department": false,
+    "geo": {
+     "scope": "other",
+     "city": "Cheyenne",
+     "county": null,
+     "counties": [],
+     "state": "WY",
+     "country": "US",
+     "label_en": "Cheyenne, Wyoming",
+     "label_es": "Cheyenne, Wyoming"
+    },
+    "pub_date": "2026-09-23"
    },
    "i18n": {
     "title": {
@@ -1424,6 +1733,10 @@
     "issue_label": {
      "en": "October 2026",
      "es": "Octubre 2026"
+    },
+    "author_location": {
+     "en": "Cheyenne, Wyoming",
+     "es": "Cheyenne, Wyoming"
     }
    },
    "machine": [
@@ -1461,7 +1774,18 @@
     "teaser": "I walked with trepidation into our second business meeting of the year at one of my home groups, a speaker/discussion topic meeting. I didn’t want to be there.",
     "free": false,
     "online_exclusive": false,
-    "department": false
+    "department": false,
+    "geo": {
+     "scope": "other",
+     "city": null,
+     "county": null,
+     "counties": [],
+     "state": "FL",
+     "country": "US",
+     "label_en": "Florida",
+     "label_es": "Florida"
+    },
+    "pub_date": "2026-09-23"
    },
    "i18n": {
     "title": {
@@ -1487,6 +1811,10 @@
     "issue_label": {
      "en": "October 2026",
      "es": "Octubre 2026"
+    },
+    "author_location": {
+     "en": "Florida",
+     "es": "Florida"
     }
    },
    "machine": [
@@ -1524,7 +1852,18 @@
     "teaser": "I got sober in a small AA meeting in the little town I grew up in. I thought everyone there had the same beliefs I had.",
     "free": false,
     "online_exclusive": false,
-    "department": false
+    "department": false,
+    "geo": {
+     "scope": "other",
+     "city": "Oslo",
+     "county": null,
+     "counties": [],
+     "state": null,
+     "country": null,
+     "label_en": "Oslo",
+     "label_es": "Oslo"
+    },
+    "pub_date": "2026-09-23"
    },
    "i18n": {
     "title": {
@@ -1550,6 +1889,10 @@
     "issue_label": {
      "en": "October 2026",
      "es": "Octubre 2026"
+    },
+    "author_location": {
+     "en": "Oslo",
+     "es": "Oslo"
     }
    },
    "machine": [
@@ -1587,7 +1930,18 @@
     "teaser": "My alcoholism ended up costing me everything. Because of my poor choices and skewed priorities, my 27-year marriage ended a couple of years ago, right before I found the rooms of AA.",
     "free": false,
     "online_exclusive": false,
-    "department": false
+    "department": false,
+    "geo": {
+     "scope": "other",
+     "city": "Scarborough",
+     "county": null,
+     "counties": [],
+     "state": "ON",
+     "country": "CA",
+     "label_en": "Scarborough, Ontario",
+     "label_es": "Scarborough, Ontario"
+    },
+    "pub_date": "2026-09-23"
    },
    "i18n": {
     "title": {
@@ -1613,6 +1967,10 @@
     "issue_label": {
      "en": "October 2026",
      "es": "Octubre 2026"
+    },
+    "author_location": {
+     "en": "Scarborough, Ontario",
+     "es": "Scarborough, Ontario"
     }
    },
    "machine": [
@@ -1650,7 +2008,18 @@
     "teaser": "A while back, I found a journal tucked in a bookcase.",
     "free": false,
     "online_exclusive": false,
-    "department": false
+    "department": false,
+    "geo": {
+     "scope": "other",
+     "city": "Bellingham",
+     "county": null,
+     "counties": [],
+     "state": "WA",
+     "country": "US",
+     "label_en": "Bellingham, Washington",
+     "label_es": "Bellingham, Washington"
+    },
+    "pub_date": "2026-09-23"
    },
    "i18n": {
     "title": {
@@ -1676,6 +2045,10 @@
     "issue_label": {
      "en": "October 2026",
      "es": "Octubre 2026"
+    },
+    "author_location": {
+     "en": "Bellingham, Washington",
+     "es": "Bellingham, Washington"
     }
    },
    "machine": [
@@ -1713,7 +2086,18 @@
     "teaser": "Group conscience",
     "free": false,
     "online_exclusive": false,
-    "department": true
+    "department": true,
+    "geo": {
+     "scope": "unknown",
+     "city": null,
+     "county": null,
+     "counties": [],
+     "state": null,
+     "country": null,
+     "label_en": null,
+     "label_es": null
+    },
+    "pub_date": "2026-09-23"
    },
    "i18n": {
     "title": {
@@ -3519,7 +3903,18 @@
     "teaser": "Brindar por la salud es una tradición común. Pero también puede ser contraproducente: el alcohol que se consume en muchos brindis puede, de hecho, perjudicarla.",
     "free": false,
     "online_exclusive": false,
-    "department": true
+    "department": true,
+    "geo": {
+     "scope": "unknown",
+     "city": null,
+     "county": null,
+     "counties": [],
+     "state": null,
+     "country": null,
+     "label_en": null,
+     "label_es": null
+    },
+    "pub_date": "2026-09-01"
    },
    "i18n": {
     "title": {
@@ -3582,7 +3977,18 @@
     "teaser": "Cuando bebía, perdía completamente el control y llegué a maltratar a mi pareja físicamente bajo los efectos del alcohol.",
     "free": false,
     "online_exclusive": false,
-    "department": false
+    "department": false,
+    "geo": {
+     "scope": "other",
+     "city": "San José",
+     "county": null,
+     "counties": [],
+     "state": "CA",
+     "country": "US",
+     "label_en": "San José, California",
+     "label_es": "San José, California"
+    },
+    "pub_date": "2026-09-01"
    },
    "i18n": {
     "title": {
@@ -3608,6 +4014,10 @@
     "issue_label": {
      "en": "September / October 2026",
      "es": "Septiembre / Octubre 2026"
+    },
+    "author_location": {
+     "en": "San José, California",
+     "es": "San José, California"
     }
    },
    "machine": [
@@ -3645,7 +4055,18 @@
     "teaser": "Soy Noemí, una alcohólica derrotada. Llegué a un grupo de AA pidiendo ayuda, después de haber fracasado en los intentos de dejar de beber por mis propios medios.",
     "free": false,
     "online_exclusive": false,
-    "department": false
+    "department": false,
+    "geo": {
+     "scope": "other",
+     "city": "Santa Ana",
+     "county": null,
+     "counties": [],
+     "state": "CA",
+     "country": "US",
+     "label_en": "Santa Ana, California",
+     "label_es": "Santa Ana, California"
+    },
+    "pub_date": "2026-09-01"
    },
    "i18n": {
     "title": {
@@ -3671,6 +4092,10 @@
     "issue_label": {
      "en": "September / October 2026",
      "es": "Septiembre / Octubre 2026"
+    },
+    "author_location": {
+     "en": "Santa Ana, California",
+     "es": "Santa Ana, California"
     }
    },
    "machine": [
@@ -3708,7 +4133,18 @@
     "teaser": "La recuperación nos regala mucho más que la sobriedad.",
     "free": false,
     "online_exclusive": false,
-    "department": true
+    "department": true,
+    "geo": {
+     "scope": "unknown",
+     "city": null,
+     "county": null,
+     "counties": [],
+     "state": null,
+     "country": null,
+     "label_en": null,
+     "label_es": null
+    },
+    "pub_date": "2026-09-01"
    },
    "i18n": {
     "title": {
@@ -3771,7 +4207,18 @@
     "teaser": "Enfermedad espiritual Fort Worth, Texas",
     "free": false,
     "online_exclusive": false,
-    "department": false
+    "department": false,
+    "geo": {
+     "scope": "unknown",
+     "city": null,
+     "county": null,
+     "counties": [],
+     "state": null,
+     "country": null,
+     "label_en": null,
+     "label_es": null
+    },
+    "pub_date": "2026-09-01"
    },
    "i18n": {
     "title": {
@@ -3834,7 +4281,18 @@
     "teaser": "Llegué al grupo a los veintisiete años de edad, soltera y sin haber tenido hijos. Mi grupo es un grupo de terapia directa y algo escandaloso.",
     "free": false,
     "online_exclusive": false,
-    "department": false
+    "department": false,
+    "geo": {
+     "scope": "other",
+     "city": "North Hollywood",
+     "county": null,
+     "counties": [],
+     "state": "CA",
+     "country": "US",
+     "label_en": "North Hollywood, California",
+     "label_es": "North Hollywood, California"
+    },
+    "pub_date": "2026-09-01"
    },
    "i18n": {
     "title": {
@@ -3860,6 +4318,10 @@
     "issue_label": {
      "en": "September / October 2026",
      "es": "Septiembre / Octubre 2026"
+    },
+    "author_location": {
+     "en": "North Hollywood, California",
+     "es": "North Hollywood, California"
     }
    },
    "machine": [
@@ -3897,7 +4359,18 @@
     "teaser": "Mi nombre es Jair y soy un enfermo alcohólico. Mi contacto con el alcohol comenzó cuando tenía apenas nueve o diez años. Recuerdo que mi padre me daba sorbos de su cerveza.",
     "free": false,
     "online_exclusive": false,
-    "department": false
+    "department": false,
+    "geo": {
+     "scope": "other",
+     "city": "San José",
+     "county": null,
+     "counties": [],
+     "state": "CA",
+     "country": "US",
+     "label_en": "San José, California",
+     "label_es": "San José, California"
+    },
+    "pub_date": "2026-09-01"
    },
    "i18n": {
     "title": {
@@ -3923,6 +4396,10 @@
     "issue_label": {
      "en": "September / October 2026",
      "es": "Septiembre / Octubre 2026"
+    },
+    "author_location": {
+     "en": "San José, California",
+     "es": "San José, California"
     }
    },
    "machine": [
@@ -3960,7 +4437,22 @@
     "teaser": "Cuando acepté que tenía un problema con la manera de beber, estaba pidiendo mi salida de un centro de rehabilitación. El empleado que me entregó los papeles me dijo: “Por favor, no te vayas.",
     "free": false,
     "online_exclusive": false,
-    "department": false
+    "department": false,
+    "geo": {
+     "scope": "texas",
+     "city": "San Antonio",
+     "county": "Bexar",
+     "counties": [
+      "Bexar",
+      "Comal",
+      "Medina"
+     ],
+     "state": "TX",
+     "country": "US",
+     "label_en": "San Antonio, Texas",
+     "label_es": "San Antonio, Texas"
+    },
+    "pub_date": "2026-09-01"
    },
    "i18n": {
     "title": {
@@ -3968,7 +4460,7 @@
      "es": "Decisiones"
     },
     "summary": {
-     "en": "He found on the AA boards a place he could finally call home",
+     "en": "In AA meetings she finally found a place she could call home",
      "es": "Halló en las juntas de AA un lugar al que, por fin, pudo llamar hogar"
     },
     "section": {
@@ -3986,6 +4478,10 @@
     "issue_label": {
      "en": "September / October 2026",
      "es": "Septiembre / Octubre 2026"
+    },
+    "author_location": {
+     "en": "San Antonio, Texas",
+     "es": "San Antonio, Texas"
     }
    },
    "machine": [
@@ -4023,7 +4519,22 @@
     "teaser": "Hace algunos años, cuando llegué a mi grupo base, un seis de abril de 2009, comencé la tarea de empezar una nueva vida sin alcohol y sus derivados. Duré cinco meses.",
     "free": false,
     "online_exclusive": false,
-    "department": false
+    "department": false,
+    "geo": {
+     "scope": "texas",
+     "city": "San Antonio",
+     "county": "Bexar",
+     "counties": [
+      "Bexar",
+      "Comal",
+      "Medina"
+     ],
+     "state": "TX",
+     "country": "US",
+     "label_en": "San Antonio, Texas",
+     "label_es": "San Antonio, Texas"
+    },
+    "pub_date": "2026-09-01"
    },
    "i18n": {
     "title": {
@@ -4031,7 +4542,7 @@
      "es": "Detenido"
     },
     "summary": {
-     "en": "Falling into jail became an opportunity to reflect on his life and the course he had taken",
+     "en": "Landing in jail became a chance to reflect on his life and the path he had taken",
      "es": "Caer en la cárcel se convirtió en una oportunidad para reflexionar sobre su vida y el rumbo que había tomado"
     },
     "section": {
@@ -4049,6 +4560,10 @@
     "issue_label": {
      "en": "September / October 2026",
      "es": "Septiembre / Octubre 2026"
+    },
+    "author_location": {
+     "en": "San Antonio, Texas",
+     "es": "San Antonio, Texas"
     }
    },
    "machine": [
@@ -4086,7 +4601,18 @@
     "teaser": "Mi nombre es Héctor, y soy miembro de Alcohólicos Anónimos.",
     "free": false,
     "online_exclusive": false,
-    "department": false
+    "department": false,
+    "geo": {
+     "scope": "other",
+     "city": "Madera",
+     "county": null,
+     "counties": [],
+     "state": "CA",
+     "country": "US",
+     "label_en": "Madera, California",
+     "label_es": "Madera, California"
+    },
+    "pub_date": "2026-09-01"
    },
    "i18n": {
     "title": {
@@ -4112,6 +4638,10 @@
     "issue_label": {
      "en": "September / October 2026",
      "es": "Septiembre / Octubre 2026"
+    },
+    "author_location": {
+     "en": "Madera, California",
+     "es": "Madera, California"
     }
    },
    "machine": [
@@ -4149,7 +4679,22 @@
     "teaser": "En Alcohólicos Anónimos aprendemos que “el amor y la tolerancia son nuestro código”.",
     "free": false,
     "online_exclusive": false,
-    "department": false
+    "department": false,
+    "geo": {
+     "scope": "neta65",
+     "city": "Grand Prairie",
+     "county": "Dallas",
+     "counties": [
+      "Dallas",
+      "Ellis",
+      "Tarrant"
+     ],
+     "state": "TX",
+     "country": "US",
+     "label_en": "Grand Prairie, Texas",
+     "label_es": "Grand Prairie, Texas"
+    },
+    "pub_date": "2026-09-01"
    },
    "i18n": {
     "title": {
@@ -4175,6 +4720,10 @@
     "issue_label": {
      "en": "September / October 2026",
      "es": "Septiembre / Octubre 2026"
+    },
+    "author_location": {
+     "en": "Grand Prairie, Texas",
+     "es": "Grand Prairie, Texas"
     }
    },
    "machine": [
@@ -4212,7 +4761,18 @@
     "teaser": "Llegué en febrero de 1998; la fecha exacta no la recuerdo, pero fue a mediados de ese mes.",
     "free": false,
     "online_exclusive": false,
-    "department": false
+    "department": false,
+    "geo": {
+     "scope": "other",
+     "city": "Glendale",
+     "county": null,
+     "counties": [],
+     "state": "AZ",
+     "country": "US",
+     "label_en": "Glendale, Arizona",
+     "label_es": "Glendale, Arizona"
+    },
+    "pub_date": "2026-09-01"
    },
    "i18n": {
     "title": {
@@ -4238,6 +4798,10 @@
     "issue_label": {
      "en": "September / October 2026",
      "es": "Septiembre / Octubre 2026"
+    },
+    "author_location": {
+     "en": "Glendale, Arizona",
+     "es": "Glendale, Arizona"
     }
    },
    "machine": [
@@ -4275,7 +4839,18 @@
     "teaser": "Jamás me imaginé llegar a una sala de AA. Para mí, Alcohólicos Anónimos era el lugar donde llegaban quienes no tenían nada, era para las personas que estaban viviendo en la calle.",
     "free": false,
     "online_exclusive": false,
-    "department": false
+    "department": false,
+    "geo": {
+     "scope": "other",
+     "city": null,
+     "county": null,
+     "counties": [],
+     "state": "NJ",
+     "country": "US",
+     "label_en": "New Jersey",
+     "label_es": "Nueva Jersey"
+    },
+    "pub_date": "2026-09-01"
    },
    "i18n": {
     "title": {
@@ -4301,6 +4876,10 @@
     "issue_label": {
      "en": "September / October 2026",
      "es": "Septiembre / Octubre 2026"
+    },
+    "author_location": {
+     "en": "New Jersey",
+     "es": "Nueva Jersey"
     }
    },
    "machine": [
@@ -4338,7 +4917,18 @@
     "teaser": "Buenos días, mi nombre es Juan y soy alcohólico. Mi fecha de sobriedad es el once de septiembre de 2023.",
     "free": false,
     "online_exclusive": false,
-    "department": false
+    "department": false,
+    "geo": {
+     "scope": "other",
+     "city": "Santa Cruz",
+     "county": null,
+     "counties": [],
+     "state": "CA",
+     "country": "US",
+     "label_en": "Santa Cruz, California",
+     "label_es": "Santa Cruz, California"
+    },
+    "pub_date": "2026-09-01"
    },
    "i18n": {
     "title": {
@@ -4364,6 +4954,10 @@
     "issue_label": {
      "en": "September / October 2026",
      "es": "Septiembre / Octubre 2026"
+    },
+    "author_location": {
+     "en": "Santa Cruz, California",
+     "es": "Santa Cruz, California"
     }
    },
    "machine": [
@@ -4401,7 +4995,18 @@
     "teaser": "Les escribo a todos los compañeros de la fraternidad: recién llegados, veteranos y no tan veteranos.",
     "free": false,
     "online_exclusive": false,
-    "department": false
+    "department": false,
+    "geo": {
+     "scope": "other",
+     "city": null,
+     "county": null,
+     "counties": [],
+     "state": "Veracruz",
+     "country": "MX",
+     "label_en": "Veracruz",
+     "label_es": "Veracruz"
+    },
+    "pub_date": "2026-09-01"
    },
    "i18n": {
     "title": {
@@ -4427,6 +5032,10 @@
     "issue_label": {
      "en": "September / October 2026",
      "es": "Septiembre / Octubre 2026"
+    },
+    "author_location": {
+     "en": "Veracruz",
+     "es": "Veracruz"
     }
    },
    "machine": [
@@ -4464,7 +5073,18 @@
     "teaser": null,
     "free": false,
     "online_exclusive": false,
-    "department": true
+    "department": true,
+    "geo": {
+     "scope": "unknown",
+     "city": null,
+     "county": null,
+     "counties": [],
+     "state": null,
+     "country": null,
+     "label_en": null,
+     "label_es": null
+    },
+    "pub_date": "2026-09-01"
    },
    "i18n": {
     "title": {
@@ -4527,7 +5147,18 @@
     "teaser": "Mi nombre es Brisa y soy alcohólica. Llegué en abril de 2018 y he tenido el privilegio de estar en servicios generales gracias a mis compañeras que me motivaron.",
     "free": false,
     "online_exclusive": false,
-    "department": false
+    "department": false,
+    "geo": {
+     "scope": "other",
+     "city": "Mesa",
+     "county": null,
+     "counties": [],
+     "state": "AZ",
+     "country": "US",
+     "label_en": "Mesa, Arizona",
+     "label_es": "Mesa, Arizona"
+    },
+    "pub_date": "2026-09-01"
    },
    "i18n": {
     "title": {
@@ -4553,6 +5184,10 @@
     "issue_label": {
      "en": "September / October 2026",
      "es": "Septiembre / Octubre 2026"
+    },
+    "author_location": {
+     "en": "Mesa, Arizona",
+     "es": "Mesa, Arizona"
     }
    },
    "machine": [
@@ -4590,7 +5225,18 @@
     "teaser": "El primer escalón hacia la humildad es el conocimiento de uno mismo. Esta idea viene desde la antigua Grecia con el aforismo “Conócete a ti mismo”.",
     "free": false,
     "online_exclusive": false,
-    "department": false
+    "department": false,
+    "geo": {
+     "scope": "other",
+     "city": "Tegucigalpa",
+     "county": null,
+     "counties": [],
+     "state": null,
+     "country": null,
+     "label_en": "Tegucigalpa",
+     "label_es": "Tegucigalpa"
+    },
+    "pub_date": "2026-09-01"
    },
    "i18n": {
     "title": {
@@ -4616,6 +5262,10 @@
     "issue_label": {
      "en": "September / October 2026",
      "es": "Septiembre / Octubre 2026"
+    },
+    "author_location": {
+     "en": "Tegucigalpa",
+     "es": "Tegucigalpa"
     }
    },
    "machine": [
@@ -4653,7 +5303,18 @@
     "teaser": "Mi nombre es Juan Ricardo L., y soy alcohólico. Gracias a Dios y al maravilloso programa de Alcohólicos Anónimos, no he bebido.",
     "free": false,
     "online_exclusive": false,
-    "department": false
+    "department": false,
+    "geo": {
+     "scope": "other",
+     "city": "Tehachapi",
+     "county": null,
+     "counties": [],
+     "state": "CA",
+     "country": "US",
+     "label_en": "Tehachapi, California",
+     "label_es": "Tehachapi, California"
+    },
+    "pub_date": "2026-09-01"
    },
    "i18n": {
     "title": {
@@ -4679,6 +5340,10 @@
     "issue_label": {
      "en": "September / October 2026",
      "es": "Septiembre / Octubre 2026"
+    },
+    "author_location": {
+     "en": "Tehachapi, California",
+     "es": "Tehachapi, California"
     }
    },
    "machine": [
@@ -4716,7 +5381,18 @@
     "teaser": "¿Amor? El doctor Bob añadiría... y servicio. ¿Cuánto tardamos en despejar las malas hierbas de nuestro jardín?",
     "free": false,
     "online_exclusive": false,
-    "department": false
+    "department": false,
+    "geo": {
+     "scope": "other",
+     "city": "Barcelona",
+     "county": null,
+     "counties": [],
+     "state": null,
+     "country": null,
+     "label_en": "Barcelona",
+     "label_es": "Barcelona"
+    },
+    "pub_date": "2026-09-01"
    },
    "i18n": {
     "title": {
@@ -4742,6 +5418,10 @@
     "issue_label": {
      "en": "September / October 2026",
      "es": "Septiembre / Octubre 2026"
+    },
+    "author_location": {
+     "en": "Barcelona",
+     "es": "Barcelona"
     }
    },
    "machine": [
@@ -4779,7 +5459,18 @@
     "teaser": "En esta edición conversamos con Verónica R. miembro de AA y Custodia Clase A de la Junta de Servicios Generales.",
     "free": false,
     "online_exclusive": false,
-    "department": true
+    "department": true,
+    "geo": {
+     "scope": "unknown",
+     "city": null,
+     "county": null,
+     "counties": [],
+     "state": null,
+     "country": null,
+     "label_en": null,
+     "label_es": null
+    },
+    "pub_date": "2026-09-01"
    },
    "i18n": {
     "title": {
@@ -4842,7 +5533,18 @@
     "teaser": "Hola, en esta ocasión estoy en un taller de La Viña. Soy alcohólico, no me cabe la menor duda.",
     "free": false,
     "online_exclusive": false,
-    "department": false
+    "department": false,
+    "geo": {
+     "scope": "other",
+     "city": "Simi Valley",
+     "county": null,
+     "counties": [],
+     "state": "CA",
+     "country": "US",
+     "label_en": "Simi Valley, California",
+     "label_es": "Simi Valley, California"
+    },
+    "pub_date": "2026-09-01"
    },
    "i18n": {
     "title": {
@@ -4868,6 +5570,10 @@
     "issue_label": {
      "en": "September / October 2026",
      "es": "Septiembre / Octubre 2026"
+    },
+    "author_location": {
+     "en": "Simi Valley, California",
+     "es": "Simi Valley, California"
     }
    },
    "machine": [
@@ -4905,7 +5611,18 @@
     "teaser": "Una de las buenas sugerencias de Bill en el Décimo Paso fue el retirarnos del mundanal ruido.",
     "free": false,
     "online_exclusive": false,
-    "department": false
+    "department": false,
+    "geo": {
+     "scope": "other",
+     "city": "San Juan",
+     "county": null,
+     "counties": [],
+     "state": null,
+     "country": null,
+     "label_en": "San Juan",
+     "label_es": "San Juan"
+    },
+    "pub_date": "2026-09-01"
    },
    "i18n": {
     "title": {
@@ -4931,6 +5648,10 @@
     "issue_label": {
      "en": "September / October 2026",
      "es": "Septiembre / Octubre 2026"
+    },
+    "author_location": {
+     "en": "San Juan",
+     "es": "San Juan"
     }
    },
    "machine": [
@@ -4968,7 +5689,18 @@
     "teaser": "Hoy estoy participando en este taller de redacción de La Viña, en el distrito 16 hispano del área 03, en la región del Pacífico, donde cada año se lleva a cabo un evento para…",
     "free": false,
     "online_exclusive": false,
-    "department": false
+    "department": false,
+    "geo": {
+     "scope": "other",
+     "city": "Phoenix",
+     "county": null,
+     "counties": [],
+     "state": "AZ",
+     "country": "US",
+     "label_en": "Phoenix, Arizona",
+     "label_es": "Phoenix, Arizona"
+    },
+    "pub_date": "2026-09-01"
    },
    "i18n": {
     "title": {
@@ -4994,6 +5726,10 @@
     "issue_label": {
      "en": "September / October 2026",
      "es": "Septiembre / Octubre 2026"
+    },
+    "author_location": {
+     "en": "Phoenix, Arizona",
+     "es": "Phoenix, Arizona"
     }
    },
    "machine": [
@@ -5031,7 +5767,18 @@
     "teaser": "Mi nombre es Ramón L. y soy alcohólico. Yo vivía en la calle, sin rumbo, no tenía a dónde ir. Eran noches enteras que me la pasaba caminando en la calle a oscuras. No encontraba una salida.",
     "free": false,
     "online_exclusive": false,
-    "department": false
+    "department": false,
+    "geo": {
+     "scope": "other",
+     "city": "San José",
+     "county": null,
+     "counties": [],
+     "state": "CA",
+     "country": "US",
+     "label_en": "San José, California",
+     "label_es": "San José, California"
+    },
+    "pub_date": "2026-09-01"
    },
    "i18n": {
     "title": {
@@ -5057,6 +5804,10 @@
     "issue_label": {
      "en": "September / October 2026",
      "es": "Septiembre / Octubre 2026"
+    },
+    "author_location": {
+     "en": "San José, California",
+     "es": "San José, California"
     }
    },
    "machine": [
@@ -5094,7 +5845,18 @@
     "teaser": "“Así como el objetivo de cada miembro de AA es la sobriedad personal, el objetivo de nuestros servicios es poner la sobriedad al alcance de todos los que la quieren.",
     "free": false,
     "online_exclusive": false,
-    "department": false
+    "department": false,
+    "geo": {
+     "scope": "other",
+     "city": "Las Vegas",
+     "county": null,
+     "counties": [],
+     "state": "NV",
+     "country": "US",
+     "label_en": "Las Vegas, Nevada",
+     "label_es": "Las Vegas, Nevada"
+    },
+    "pub_date": "2026-09-01"
    },
    "i18n": {
     "title": {
@@ -5120,6 +5882,10 @@
     "issue_label": {
      "en": "September / October 2026",
      "es": "Septiembre / Octubre 2026"
+    },
+    "author_location": {
+     "en": "Las Vegas, Nevada",
+     "es": "Las Vegas, Nevada"
     }
    },
    "machine": [
@@ -5157,7 +5923,18 @@
     "teaser": "El Décimo Paso, sugiere continuar con nuestro inventario personal y seguir enmendando todas las nuevas faltas que cometamos.",
     "free": false,
     "online_exclusive": false,
-    "department": true
+    "department": true,
+    "geo": {
+     "scope": "unknown",
+     "city": null,
+     "county": null,
+     "counties": [],
+     "state": null,
+     "country": null,
+     "label_en": null,
+     "label_es": null
+    },
+    "pub_date": "2026-09-01"
    },
    "i18n": {
     "title": {
@@ -5220,7 +5997,18 @@
     "teaser": "Nuevamente le doy gracias a Dios por un nuevo día dentro de AA. Han pasado muchas 24 horas desde que llegué y, en ese tiempo, he encontrado una nueva manera de vivir.",
     "free": false,
     "online_exclusive": false,
-    "department": false
+    "department": false,
+    "geo": {
+     "scope": "other",
+     "city": "Anaheim",
+     "county": null,
+     "counties": [],
+     "state": "CA",
+     "country": "US",
+     "label_en": "Anaheim, California",
+     "label_es": "Anaheim, California"
+    },
+    "pub_date": "2026-09-01"
    },
    "i18n": {
     "title": {
@@ -5246,6 +6034,10 @@
     "issue_label": {
      "en": "September / October 2026",
      "es": "Septiembre / Octubre 2026"
+    },
+    "author_location": {
+     "en": "Anaheim, California",
+     "es": "Anaheim, California"
     }
    },
    "machine": [
@@ -5283,7 +6075,18 @@
     "teaser": "Ver llegar al nuevo despierta una esperanza y mucha alegría, y también es un recordatorio de mis inicios en el programa.",
     "free": false,
     "online_exclusive": false,
-    "department": false
+    "department": false,
+    "geo": {
+     "scope": "other",
+     "city": "Phoenix",
+     "county": null,
+     "counties": [],
+     "state": "AZ",
+     "country": "US",
+     "label_en": "Phoenix, Arizona",
+     "label_es": "Phoenix, Arizona"
+    },
+    "pub_date": "2026-09-01"
    },
    "i18n": {
     "title": {
@@ -5309,6 +6112,10 @@
     "issue_label": {
      "en": "September / October 2026",
      "es": "Septiembre / Octubre 2026"
+    },
+    "author_location": {
+     "en": "Phoenix, Arizona",
+     "es": "Phoenix, Arizona"
     }
    },
    "machine": [

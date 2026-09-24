@@ -63,10 +63,16 @@
   --radius-card: 1rem;
   --shadow-card: 0 1px 2px rgb(20 16 40 / 0.05), 0 4px 16px -6px rgb(20 16 40 / 0.10);
   --shadow-lift: 0 2px 4px rgb(20 16 40 / 0.06), 0 16px 32px -12px rgb(20 16 40 / 0.22);
-  --container-page: 76rem;
+  /* Full-width desktop: the page container grows with the screen up to 1920px
+     (then it stays centered). Side padding is --gutter (below). */
+  --container-page: 120rem;
 }
 
 :root {
+  /* Layout (same in both themes) */
+  --gutter: clamp(1rem, 3.5vw, 4.5rem);  /* container-page side padding: 16px phone → 72px max */
+  --header-h: 4rem;                        /* the fixed site header (partials/header.njk, h-16) */
+
   --c-paper: #fbf8f2;
   --c-surface: #ffffff;
   --c-surface-2: #f4efe6;
@@ -111,7 +117,7 @@
 
 /* ---------- Base ---------- */
 @layer base {
-  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; scroll-padding-top: 5.5rem; }
+  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; scroll-padding-top: calc(var(--header-h) + 1.5rem); }
   body { @apply bg-paper text-ink font-sans antialiased; font-feature-settings: "cv11", "ss01"; }
   h1, h2, h3, .font-display { font-family: var(--font-display); font-optical-sizing: auto; letter-spacing: -0.01em; }
   a { color: inherit; }
@@ -126,8 +132,10 @@
 }
 
 /* ---------- Shared components (usable as classes AND with @apply) ---------- */
-@utility container-page { margin-inline: auto; width: 100%; max-width: var(--container-page); padding-inline: 1rem;
-  @media (width >= 40rem) { padding-inline: 1.5rem; } @media (width >= 64rem) { padding-inline: 2rem; } }
+/* Page container — header, footer and every page section use it, so all edges line up.
+   Full width up to 1920px (max-width 120rem), side padding var(--gutter) = clamp(1rem, 3.5vw, 4.5rem):
+   390px screen → 358px of content · 1440 → 1339 · 1920 → ≈1786 · 2560 → 1776, centered. */
+@utility container-page { margin-inline: auto; width: 100%; max-width: var(--container-page); padding-inline: var(--gutter); }
 @utility section { @apply py-12 sm:py-16; }
 @utility section-tight { @apply py-8 sm:py-10; }
 
@@ -168,14 +176,75 @@
 @utility link { @apply font-medium text-gv underline decoration-gv/30 underline-offset-2 hover:decoration-gv; }
 @utility icon { display: inline-block; flex-shrink: 0; }
 
-@utility grid-cards { @apply grid gap-5 sm:grid-cols-2 lg:grid-cols-3; }
-@utility grid-cards-4 { @apply grid gap-5 sm:grid-cols-2 lg:grid-cols-4; }
+/* ---------- Card grids: more columns on wider screens, cards never narrower than --cards-min ----------
+   Two limits decide the column count:
+   · the screen width caps it (the site-wide steps below), and
+   · the grid's OWN width does too: a column is never narrower than --cards-min, so a grid next to
+     a fixed sidebar simply gets fewer columns instead of squeezed cards.
+   Full-width grid (inside container-page):
+   grid-cards     collections (any number of cards, pictures), min 18.5rem ≈ 296px:
+                  1 column on phones · 2 from ≈660px · 3 from 1024px · 4 from 1536px · 5 from 1800px
+                  (cards ≈ 304px wide at 1024 · 383 at 1280 · 433 at 1440 · 341 at 1920).
+                  Cards keep that width when there are fewer cards than columns.
+   grid-cards-4   short, fixed lists of link cards (3–6 cards), min 17rem = 272px:
+                  2 from ≈610px · 3 from ≈920px · 4 from 1280px · 5 from 1800px, and a short list
+                  stretches to fill the row (4 cards on a wide screen = 4 wide cards, no gap at the end).
+   grid-cards-fit like grid-cards (same steps, 296px minimum) but stretching like grid-cards-4.
+   Tune per grid with arbitrary properties: class="grid-cards [--cards-min:15rem]"; --cards-max
+   replaces the screen steps (6 cards → [--cards-max:3] = two even rows; lg:[--cards-max:4] …). */
+@utility grid-cards { --_cards-max: 3; display: grid; gap: var(--cards-gap, 1.25rem);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, max(var(--cards-min, 18.5rem), (100% - (var(--cards-max, var(--_cards-max)) - 1) * var(--cards-gap, 1.25rem)) / var(--cards-max, var(--_cards-max)))), 1fr));
+  @media (width >= 96rem) { --_cards-max: 4; }
+  @media (width >= 112.5rem) { --_cards-max: 5; } }
+@utility grid-cards-4 { --_cards-max: 3; display: grid; gap: var(--cards-gap, 1.25rem);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, max(var(--cards-min, 17rem), (100% - (var(--cards-max, var(--_cards-max)) - 1) * var(--cards-gap, 1.25rem)) / var(--cards-max, var(--_cards-max)))), 1fr));
+  @media (width >= 80rem) { --_cards-max: 4; }
+  @media (width >= 112.5rem) { --_cards-max: 5; } }
+@utility grid-cards-fit { --_cards-max: 3; display: grid; gap: var(--cards-gap, 1.25rem);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, max(var(--cards-min, 18.5rem), (100% - (var(--cards-max, var(--_cards-max)) - 1) * var(--cards-gap, 1.25rem)) / var(--cards-max, var(--_cards-max)))), 1fr));
+  @media (width >= 96rem) { --_cards-max: 4; }
+  @media (width >= 112.5rem) { --_cards-max: 5; } }
+
+/* ---------- Horizontal rails (scroll-snap rows) ----------
+   <ul class="rail no-scrollbar"><li class="rail-item">…</li></ul>
+   Bleeds to the screen edge inside container-page; shows ~1.15 items on phones, 2.2 from 640px,
+   3.25 from 1024px, 4.25 from 1536px and 5.25 from 1800px (the peek says "swipe for more").
+   Set your own count with --rail-n, e.g. class="rail [--rail-n:1.5] lg:[--rail-n:4.2]".
+   Keyboard users scroll a rail by tabbing through the links/buttons inside it; a rail of plain
+   text cards needs tabindex="0" and an aria-label on the <ul> (WCAG "scrollable region focusable"). */
+@utility rail { --_rail-n: 1.15; --_rail-gap: 1rem;
+  display: grid; grid-auto-flow: column; gap: var(--_rail-gap);
+  grid-auto-columns: calc((100% - (var(--rail-n, var(--_rail-n)) - 1) * var(--_rail-gap)) / var(--rail-n, var(--_rail-n)));
+  overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--gutter); margin-inline: calc(-1 * var(--gutter)); padding: 0.25rem var(--gutter) 1rem;
+  @media (width >= 40rem) { --_rail-n: 2.2; --_rail-gap: 1.25rem; }
+  @media (width >= 64rem) { --_rail-n: 3.25; }
+  @media (width >= 96rem) { --_rail-n: 4.25; }
+  @media (width >= 112.5rem) { --_rail-n: 5.25; } }
+@utility rail-item { scroll-snap-align: start; min-width: 0; }
+
+/* ---------- Wide-screen layouts: use the width without stretching text ----------
+   measure        — readable line length for running text (max 72 characters).
+   layout-aside   — main column + fixed-width sidebar on the RIGHT (lg+): 20rem, 24rem from 1536px.
+   layout-sidebar — fixed-width sidebar on the LEFT (filters / facets) + growing results (lg+).
+   Put layout-* on the element inside container-page; the sidebar keeps its width while the
+   main column (and any grid-cards in it) grows with the screen. */
+@utility measure { max-width: 72ch; }
+@utility layout-aside { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2.5rem;
+  @media (width >= 64rem) { grid-template-columns: minmax(0, 1fr) 20rem; gap: 3rem; }
+  @media (width >= 96rem) { grid-template-columns: minmax(0, 1fr) 24rem; gap: 4rem; } }
+@utility layout-sidebar { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2rem;
+  @media (width >= 64rem) { grid-template-columns: 16.5rem minmax(0, 1fr); gap: 2.5rem; }
+  @media (width >= 96rem) { grid-template-columns: 18rem minmax(0, 1fr); gap: 3rem; } }
 
 @utility empty-state { @apply rounded-[var(--radius-card)] border border-dashed border-line bg-surface/60 p-8 text-center text-muted; }
 @utility auto-note { @apply inline-flex items-center gap-1 text-[0.7rem] text-faint; }
 
-/* Long-form text (announcements, about) */
+/* Long-form text (announcements, about). Paragraphs, lists and headings keep a readable
+   measure (72ch) however wide the box is — put wide text next to an aside (layout-aside)
+   or in columns rather than letting it run across the screen. */
 @utility prose-site { @apply text-[1.02rem] leading-relaxed text-ink;
+  & :is(p, ul, ol, h2, h3, blockquote) { max-width: 72ch; }
   & p { @apply my-3; }
   & a { @apply link; }
   & ul { @apply my-3 list-disc pl-6; }
@@ -184,23 +253,172 @@
   & h3 { @apply mt-6 mb-2 font-display text-xl font-semibold; }
   & strong { @apply font-semibold; } }
 
-/* Page hero (inner pages) */
-@utility page-hero { @apply relative overflow-hidden text-white; background: linear-gradient(135deg, #0f1730 0%, #0b3f73 55%, #0a5fa8 100%);
-  &::after { content: ""; position: absolute; inset: auto 0 0 0; height: 3.5rem; background: linear-gradient(to top, var(--c-paper), transparent); pointer-events: none; } }
+/* =====================================================================
+   PAGE HERO — ONE hero for every page (ui.pageHero in macros/ui.njk).
+   <section class="gv-hero page-hero" data-gv-hero>: the committee's animated grapevine
+   art (canvas, hero-canvas.js) over the original navy → NETA-blue gradient, a scrim that
+   keeps white text readable over the string lights, and a fade into the page at the bottom.
+   Height is the SAME on every page — including the fixed 64px header that overlays it:
+     phones (<768px): at least 24rem (384px), grows only if the content needs it
+     tablets (768–1023px): 28rem (448px)
+     desktop (≥1024px): 30rem (480px)
+   Content starts at the SAME place on every page (pinned to the top, not centered), so the
+   eyebrow and title never jump when you go from page to page: the eyebrow's top sits
+   --hero-pad-top below the header (phones 1.25rem → 84px from the top of the screen, tablets
+   1.375rem → 86px, desktop 2.25rem → 100px; the title ≈ 35px lower on phones, 40px on
+   desktop). A hero with less content simply shows more of the art between its text and the
+   bottom fade. Room for content (hero height − header − --hero-pad-top − fade): 244px on
+   phones (232px at 640–767px), 294px on tablets, 312px on desktop. If a page's hero content
+   is taller than that, the hero grows — so keep it short (title, one-line subtitle, one
+   actions row, optional compact stats) and move search boxes, long stat rows and big cards
+   to the first block BELOW the hero (page-overlap / page-start). Phones get a slightly
+   tighter rhythm, and phones narrower than 384px (360px Android, 375px iPhone SE/mini) a
+   slightly smaller title and subtitle, so heroes stay within 28rem there too.
+   The legacy .page-hero class (pages not migrated yet) gets the same look; hero-canvas.js
+   adds the art to it too.
+   ===================================================================== */
+@layer components {
+  .gv-hero, .page-hero {
+    --hero-min: 24rem;
+    --hero-top: calc(var(--header-h) + env(safe-area-inset-top, 0px));
+    --hero-pad-top: 1.25rem;  /* header → eyebrow/title: the same on every page */
+    --hero-fade: 3rem;
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    min-height: var(--hero-min);
+    padding-top: calc(var(--hero-top) + var(--hero-pad-top));
+    padding-bottom: calc(var(--hero-fade) + 0.5rem);
+    color: #fff;
+    background-color: #0b2f55;
+    /* The committee's original home-hero palette: deep navy → NETA blue */
+    background-image: linear-gradient(135deg, #0f172a 0%, #0b2f55 38%, #025a94 72%, #0170b9 100%);
+  }
+  @media (width >= 40rem) { .gv-hero, .page-hero { --hero-fade: 3.75rem; } }
+  @media (width >= 48rem) { .gv-hero, .page-hero { --hero-min: 28rem; --hero-pad-top: 1.375rem; } }
+  @media (width >= 64rem) { .gv-hero, .page-hero { --hero-min: 30rem; --hero-pad-top: 2.25rem; } }
 
+  /* Art layer (z 0) → scrim (z 1) → bottom fade (z 2) → content (z 3+) */
+  .gv-hero-canvas { position: absolute; inset: 0; z-index: 0; display: block; width: 100%; height: 100%; pointer-events: none; }
+  .gv-hero::before, .page-hero::before {
+    content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+    /* Stacked layout: text sits over the whole canvas → an even scrim */
+    background: linear-gradient(to bottom, rgb(8 16 36 / 0.5), rgb(8 16 36 / 0.36) 60%, rgb(8 16 36 / 0.22));
+  }
+  @media (width >= 64rem) {
+    /* Text on the left: darken behind it, let the vineyard glow on the right */
+    .gv-hero::before, .page-hero::before {
+      background:
+        radial-gradient(115% 95% at 0% 45%, rgb(8 16 36 / 0.62) 0%, rgb(8 16 36 / 0.34) 48%, transparent 78%),
+        linear-gradient(to bottom, rgb(8 16 36 / 0.4), transparent 32%);
+    }
+  }
+  .gv-hero::after, .page-hero::after {
+    content: ""; position: absolute; inset: auto 0 0 0; z-index: 2; height: var(--hero-fade); pointer-events: none;
+    background: linear-gradient(to top, var(--c-paper) 0%, color-mix(in srgb, var(--c-paper) 55%, transparent) 45%, transparent 100%);
+  }
+  /* Content above the art, scrim and fade (legacy .page-hero content included). A child that
+     positions itself with utilities (absolute, z-10 …) keeps them — utilities win over this layer. */
+  .gv-hero > :not(.gv-hero-canvas), .page-hero > :not(.gv-hero-canvas) { position: relative; z-index: 3; }
+
+  /* Split layout (opts.aside — the home page): copy on the left, a card on the right (lg+).
+     Both start at the top, so the home title lines up with every other page's title. */
+  .gv-hero--split .gv-hero-inner { display: grid; align-items: start; gap: 1.5rem; }
+  @media (width >= 64rem) { .gv-hero--split .gv-hero-inner { grid-template-columns: minmax(0, 1fr) 19rem; gap: 2rem; } }
+  @media (width >= 80rem) { .gv-hero--split .gv-hero-inner { grid-template-columns: minmax(0, 1fr) minmax(19rem, 25rem); gap: 3rem; } }
+  @media (width >= 96rem) { .gv-hero--split .gv-hero-inner { grid-template-columns: minmax(0, 1fr) minmax(24rem, 30rem); gap: 4rem; } }
+  .gv-hero-copy, .gv-hero-aside { min-width: 0; }
+
+  .gv-hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 0.5rem; max-width: 100%;
+    margin-bottom: 0.875rem; padding: 0.3rem 0.8rem; border-radius: 9999px;
+    font-size: 0.7rem; font-weight: 600; line-height: 1.35; letter-spacing: 0.14em; text-transform: uppercase;
+    color: rgb(255 255 255 / 0.92); background: rgb(255 255 255 / 0.1);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.2);
+    -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
+  }
+  .gv-hero-title {
+    display: flex; align-items: center; gap: 0.75rem;
+    font-family: var(--font-display); font-weight: 600; font-size: 2rem; line-height: 1.1;
+    letter-spacing: -0.02em; text-wrap: balance;
+  }
+  .gv-hero-title > span:last-child { min-width: 0; overflow-wrap: break-word; }
+  .gv-hero-title em { font-style: italic; font-weight: 500; color: #ffd79a; } /* warm "vine light" gold, 11:1 on the navy */
+  .gv-hero-icon {
+    display: grid; place-items: center; flex-shrink: 0; width: 2.75rem; height: 2.75rem; border-radius: 0.9rem;
+    background: rgb(255 255 255 / 0.1); box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.2);
+  }
+  .gv-hero-sub {
+    margin-top: 0.75rem; max-width: 46rem;
+    font-size: 1rem; line-height: 1.6; color: rgb(255 255 255 / 0.88); text-wrap: pretty;
+  }
+  .gv-hero-sub a { color: #fff; text-decoration: underline; text-underline-offset: 2px; }
+  .gv-hero-title, .gv-hero-sub, .gv-hero-eyebrow { text-shadow: 0 1px 2px rgb(0 0 0 / 0.28); }
+  .gv-hero-body { margin-top: 1.25rem; }
+  .gv-hero-body > * + * { margin-top: 1.25rem; }
+  /* Phones: two hero buttons rarely fit side by side, so they stack (2 × 44px). A slightly
+     tighter rhythm (≈12px less) keeps a two-line title + subtitle + two stacked buttons within
+     28rem (448px). Buttons keep their full 44px touch height. */
+  @media (width < 40rem) {
+    .gv-hero-eyebrow { margin-bottom: 0.625rem; }
+    .gv-hero-sub { margin-top: 0.625rem; }
+    .gv-hero-body, .gv-hero-body > * + * { margin-top: 1rem; }
+  }
+  /* Very narrow phones (360px Android, 375px iPhone SE/mini): a little smaller title and
+     subtitle, which wrap onto more lines there. */
+  @media (width < 24rem) {
+    .gv-hero-title { font-size: 1.75rem; }
+    .gv-hero-sub { font-size: 0.9375rem; line-height: 1.5; }
+  }
+  @media (width >= 40rem) {
+    .gv-hero-title { font-size: 2.5rem; }
+    .gv-hero-icon { width: 3rem; height: 3rem; border-radius: 1rem; }
+    .gv-hero-sub { font-size: 1.125rem; }
+  }
+  @media (width >= 64rem) {
+    .gv-hero-title { font-size: 3rem; }
+    .gv-hero-body { margin-top: 1.5rem; }
+  }
+  /* Same title size from 1024px up, so a hero that fits at 1024 also fits on wider screens */
+  @media (width >= 96rem) { .gv-hero-sub { max-width: 50rem; } }
+  /* White focus ring on the dark hero */
+  .gv-hero :focus-visible, .page-hero :focus-visible { outline-color: #fff; }
+
+  @media print {
+    .gv-hero-canvas { display: none !important; }
+    .gv-hero, .page-hero { min-height: 0; padding: 0 0 1rem; background: none; color: #000; }
+    .gv-hero::before, .gv-hero::after, .page-hero::before, .page-hero::after { display: none; }
+    .gv-hero *, .page-hero * { color: #000 !important; text-shadow: none !important; }
+  }
+}
+
+/* Legacy decorative vine drawing (still used inside a few page sections) */
 @utility page-hero-vine { position: absolute; right: -2rem; top: 3rem; width: min(30rem, 62vw); height: auto; opacity: 0.2; pointer-events: none; }
 
-/* Hero stats — ui.heroStats(): number (display serif) over label, same on every page */
-@utility hero-stats { @apply mt-8 flex flex-wrap gap-x-10 gap-y-4 text-white; }
+/* Hero actions row — for inside pageHero's caller(): <div class="hero-actions">buttons…</div> */
+@utility hero-actions { @apply flex flex-wrap items-center gap-2.5 sm:gap-3; }
+
+/* Hero stats — ui.heroStats(): compact number (display serif) over label, same on every page */
+@utility hero-stats { @apply flex flex-wrap gap-x-8 gap-y-3 text-white; }
 @utility hero-stat { @apply flex flex-col-reverse gap-1;
-  & > dt { @apply text-sm leading-snug text-white/70; }
-  & > dd { @apply font-display text-3xl leading-none font-semibold text-white; } }
+  & > dt { @apply text-xs leading-snug text-white/80 sm:text-sm; }
+  & > dd { @apply font-display text-2xl leading-none font-semibold text-white tabular-nums lg:text-[1.75rem]; } }
 
 /* Page start after the hero — use exactly one of these on the first block below ui.pageHero:
-   page-overlap: a card / sub-nav that tucks into the hero's faded bottom edge;
+   page-overlap: a card / search box / sub-nav that tucks into the hero's faded bottom edge
+                 (1.5rem on phones, 2.5rem from 640px — always inside the fade, never over text);
    page-start:   a normal section (use it INSTEAD of "section", it keeps the bottom padding). */
 @utility page-overlap { @apply relative z-10 -mt-6 sm:-mt-10; }
 @utility page-start { @apply pt-8 pb-12 sm:pt-10 sm:pb-16; }
+
+/* Print: the site header prints once at the top (logo + name), not fixed over the content */
+@media print {
+  .site-header { position: static !important; background: none !important; color: #000 !important; border: 0 !important; box-shadow: none !important; }
+  .site-header nav, .site-header button, .site-header [data-lang-switch], .site-header a[href*="search"] { display: none !important; }
+}
 
 /* Utility: hide scrollbar on horizontal scrollers */
 @utility no-scrollbar { scrollbar-width: none; &::-webkit-scrollbar { display: none; } }
@@ -212,3 +430,4 @@
 @import "./areas/committee.css";
 @import "./areas/read.css";
 @import "./areas/community.css";
+@import "./areas/published.css";

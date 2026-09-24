@@ -26,37 +26,40 @@ pageScripts: ["/assets/js/community.js"]
   { key: "nav.districts", url: "/districts/", icon: "map" }
 ] -%}
 
-<section class="page-hero pt-28 pb-16 sm:pt-32 sm:pb-20" data-nf>
-  <div class="container-page relative z-10">
-    <p class="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-white/70">{{ "community.nf.code" | t(lang) }}</p>
-    <div class="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:items-end">
-      <div>
-        <h1 class="font-display text-4xl font-semibold leading-tight sm:text-5xl">{{ "community.nf.title" | t(lang) }}</h1>
-        <p class="mt-2 font-display text-2xl italic text-white/70 sm:text-3xl" lang="{{ other }}">{{ "community.nf.title" | t(other) }}</p>
-        <p class="mt-5 max-w-xl text-lg leading-relaxed text-white/85">{{ "community.nf.text" | t(lang) }}</p>
-        <p class="mt-2 max-w-xl leading-relaxed text-white/65" lang="{{ other }}">{{ "community.nf.text" | t(other) }}</p>
-        <p class="mt-3 text-xs text-white/50"><code class="break-all" data-nf-path></code></p>
-      </div>
-      <div class="rounded-2xl bg-white/10 p-5 ring-1 ring-white/20 backdrop-blur sm:p-6">
-        <form action="{{ '/search/' | lurl(lang) }}" method="get" role="search">
-          <label for="nf-q" class="block text-sm font-semibold text-white">{{ "community.nf.search_label" | t(lang) }} <span class="font-normal text-white/65" lang="{{ other }}">· {{ "community.nf.search_label" | t(other) }}</span></label>
-          <div class="mt-2 flex gap-2">
-            <input id="nf-q" name="q" type="search" class="input min-w-0 flex-1" placeholder="{{ 'community.nf.search_ph' | t(lang) }}" data-nf-query autocomplete="off" enterkeyhint="search">
-            <button type="submit" class="btn-light shrink-0" aria-label="{{ 'community.nf.search_btn' | t(lang) }}">{% icon "search", "size-4" %}<span class="hidden sm:inline">{{ "community.nf.search_btn" | t(lang) }}</span></button>
-          </div>
-        </form>
-        <div class="mt-4 flex flex-wrap gap-2">
-          <a class="btn-light btn-sm" href="{{ '/' | lurl(lang) }}">{% icon "house", "size-4" %} {{ "community.nf.home" | t(lang) }}</a>
-          <a class="btn-on-dark btn-sm" href="{{ '/' | lurl(other) }}" hreflang="{{ other }}" lang="{{ other }}">{% icon "languages", "size-4" %} {{ "community.nf.home" | t(other) }}</a>
+{#- The shared hero (same height as every page) in the page language; the other language,
+    the search box and the missing address are in the card right below it. -#}
+{% call ui.pageHero(lang, "community.nf.title" | t(lang), "community.nf.text" | t(lang), "", "community.nf.code" | t(lang), { eyebrowIcon: "circle-help" }) %}
+<div class="hero-actions cm-hero-tight">
+  <a class="btn-light" href="{{ '/' | lurl(lang) }}">{% icon "house", "size-4" %} {{ "community.nf.home" | t(lang) }}</a>
+  <a class="btn-on-dark max-sm:hidden" href="#nf-popular">{% icon "arrow-down", "size-4" %} {{ "community.nf.popular" | t(lang) }}</a>
+</div>
+{% endcall %}
+
+{#- ============ Search + the same message in the other language (tucks into the hero's edge) ============ -#}
+<section class="container-page page-overlap" data-nf aria-label="{{ 'community.nf.search_label' | t(lang) }}">
+  <div class="card grid overflow-hidden lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]">
+    <div class="p-6 sm:p-8" lang="{{ other }}">
+      <p class="font-display text-2xl font-semibold leading-tight text-ink sm:text-3xl">{{ "community.nf.title" | t(other) }}</p>
+      <p class="mt-2 max-w-xl leading-relaxed text-muted">{{ "community.nf.text" | t(other) }}</p>
+      <p class="mt-4"><a class="btn-secondary btn-sm" href="{{ '/' | lurl(other) }}" hreflang="{{ other }}">{% icon "languages", "size-4" %} {{ "community.nf.home" | t(other) }}</a></p>
+    </div>
+    <div class="border-t border-line bg-surface-2/60 p-6 sm:p-8 lg:border-l lg:border-t-0">
+      <form action="{{ '/search/' | lurl(lang) }}" method="get" role="search">
+        <label for="nf-q" class="block text-sm font-semibold text-ink">{{ "community.nf.search_label" | t(lang) }} <span class="font-normal text-muted" lang="{{ other }}">· {{ "community.nf.search_label" | t(other) }}</span></label>
+        <div class="mt-2 flex gap-2">
+          <input id="nf-q" name="q" type="search" class="input min-w-0 flex-1" placeholder="{{ 'community.nf.search_ph' | t(lang) }}" data-nf-query autocomplete="off" enterkeyhint="search">
+          <button type="submit" class="btn-primary shrink-0" aria-label="{{ 'community.nf.search_btn' | t(lang) }}">{% icon "search", "size-4" %}<span class="hidden sm:inline">{{ "community.nf.search_btn" | t(lang) }}</span></button>
         </div>
-      </div>
+      </form>
+      <p class="mt-3 text-xs text-muted"><code class="break-all" data-nf-path></code></p>
     </div>
   </div>
 </section>
 
-<section class="section container-page pt-6" aria-labelledby="nf-popular">
+<section class="section container-page scroll-mt-20" aria-labelledby="nf-popular">
   <h2 id="nf-popular" class="h-section">{{ "community.nf.popular" | t(lang) }} <span class="font-normal text-muted" lang="{{ other }}">· {{ "community.nf.popular" | t(other) }}</span></h2>
-  <ul class="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3" role="list">
+  {#- 9 links: three even rows of 3 on every wide screen -#}
+  <ul class="mt-6 grid-cards-4 [--cards-max:3] [--cards-gap:0.75rem]" role="list">
     {% for p in popular %}
     <li class="card card-link relative flex items-center gap-4 p-4">
       <span class="grid size-11 shrink-0 place-items-center rounded-xl bg-gv-soft text-gv">{% icon p.icon, "size-5" %}</span>

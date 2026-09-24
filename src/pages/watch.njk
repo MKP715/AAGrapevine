@@ -95,19 +95,22 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
 </article>
 {% endmacro %}
 
-{#- ------------------------------------------------------------------ hero -#}
+{#- ------------------------------------------------------------------ hero
+    The shared hero (same height as every page): short lead, ONE actions row and,
+    from 768px, three compact stats (hidden on phones so the hero stays 24–28rem).
+    The latest video + the two "helpful paths" are the first block below it. -#}
 {% call ui.pageHero(lang, "media.watch_title" | t(lang), "media.watch_sub" | t(lang), "circle-play", "media.watch_eyebrow" | t(lang)) %}
-  <div class="flex flex-wrap gap-2">
+  <div class="hero-actions">
     <a class="btn-light" href="{{ subscribeUrl }}" target="_blank" rel="noopener">{% icon "youtube", "size-5 text-[#e62117]" %} {{ "media.subscribe_yt" | t(lang) }}</a>
-    {% if vids.length %}<a class="btn-on-dark" href="#videos">{% icon "layout-grid", "size-4" %} {{ "media.browse_videos" | t(lang) }}</a>{% endif %}
+    {#- phones: one button row (the video grid follows the latest video anyway) -#}
+    {% if vids.length %}<a class="btn-on-dark max-sm:hidden" href="#videos">{% icon "layout-grid", "size-4" %} {{ "media.browse_videos" | t(lang) }}</a>{% endif %}
   </div>
   {% if vids.length %}
-  <dl class="mt-8 flex flex-wrap gap-x-8 gap-y-4 text-white">
-    <div><dt class="sr-only">{{ "media.stat_videos" | t(lang) }}</dt><dd><span class="block font-display text-3xl font-semibold leading-none">{{ vids.length | mediaNumber(lang) }}</span><span class="text-sm text-white/70">{{ "media.stat_videos" | t(lang) }}</span></dd></div>
-    {% if kinds.weekly %}<div><dt class="sr-only">{{ "media.stat_weekly_open" | t(lang) }}</dt><dd><span class="block font-display text-3xl font-semibold leading-none">{{ kinds.weekly }}</span><span class="text-sm text-white/70">{{ "media.stat_weekly_open" | t(lang) }}</span></dd></div>{% endif %}
-    {% if plTotal > 1 %}<div><dt class="sr-only">{{ "media.stat_playlists" | t(lang) }}</dt><dd><span class="block font-display text-3xl font-semibold leading-none">{{ plTotal }}</span><span class="text-sm text-white/70">{{ "media.stat_playlists" | t(lang) }}</span></dd></div>{% endif %}
-    <div class="flex items-end"><dt class="sr-only">{{ "media.filter_lang" | t(lang) }}</dt><dd class="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-sm ring-1 ring-white/15">{% icon "languages", "size-4" %}{{ "media.stat_bilingual" | t(lang) }}</dd></div>
-  </dl>
+  <div class="max-md:hidden">{{ ui.heroStats([
+    { value: vids.length | mediaNumber(lang), label: "media.stat_videos" | t(lang) },
+    { value: kinds.weekly or "", label: "media.stat_weekly_open" | t(lang) },
+    { value: plTotal if plTotal > 1 else "", label: "media.stat_playlists" | t(lang) }
+  ]) }}</div>
   {% endif %}
 {% endcall %}
 
@@ -126,9 +129,12 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
   {%- set fSum = f | tx("summary", lang) -%}
   {%- set fUrl = f.url | mediaSafeUrl("https://www.youtube.com/watch?v=" + fid) -%}
   {%- set fPl = f | mediaCardPlaylist(pls) -%}
-  <section class="container-page relative z-10 -mt-6 sm:-mt-10" aria-labelledby="featured-video-title">
+  {#- < 1440px: the latest video, then the two path cards side by side (md+).
+      ≥ 1440px: the latest video on the left, the two path cards stacked in a
+      fixed-width column on the right, each half the video card's height. -#}
+  <section class="container-page page-overlap watch-top" aria-labelledby="featured-video-title">
     <div class="card overflow-hidden">
-      <div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1.65fr)_minmax(0,1fr)]">
+      <div class="grid h-full grid-cols-1 lg:grid-cols-[minmax(0,1.65fr)_minmax(0,1fr)]">
         <div class="flex items-center bg-black">
           <lite-youtube videoid="{{ fid }}" class="media-lyt" params="rel=0&amp;enablejsapi=1&amp;hl={{ lang }}"
                         style="background-image: url('{{ fid | ytThumb('hqdefault') }}');" playlabel="{{ 'media.play' | t(lang) }}: {{ fTitle }}">
@@ -162,17 +168,29 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
       </div>
     </div>
 
-    {#- Two helpful paths: the live Weekly Open meeting and the podcast -#}
-    <div class="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
-      <a class="card group flex items-center gap-4 p-4 no-underline transition hover:-translate-y-0.5 hover:shadow-[var(--shadow-lift)] sm:p-5" href="{{ '/meeting/#weekly-open' | lurl(lang) }}">
+    {#- Two helpful paths: the live Weekly Open meeting and the podcast.
+        The call to action sits at the right of the card (640px+); in the narrow ≥1440px
+        column it moves under the text. Only one of the two copies is displayed at a time,
+        so the link's accessible name always contains the visible words. -#}
+    <div class="watch-paths">
+      <a class="card group flex items-center gap-4 p-4 no-underline transition hover:-translate-y-0.5 hover:shadow-[var(--shadow-lift)] sm:p-5 min-[90rem]:p-6" href="{{ '/meeting/#weekly-open' | lurl(lang) }}">
         <span class="grid size-12 shrink-0 place-items-center rounded-2xl bg-grape-soft text-grape">{% icon "users", "size-6" %}</span>
-        <span class="min-w-0 flex-1"><span class="block font-display text-lg font-semibold text-ink">{{ "media.weekly_title" | t(lang) }}</span><span class="block text-sm text-muted">{{ "media.weekly_text" | t(lang) }}</span>{% if woWhen %}<span class="mt-1 block text-xs font-semibold text-grape">{{ "media.wo_live" | t(lang, { when: woWhen }) }}</span>{% endif %}</span>
-        <span class="hidden shrink-0 items-center gap-1 text-sm font-semibold text-gv sm:inline-flex">{{ "media.wo_join" | t(lang) }} {% icon "arrow-right", "size-4" %}</span>
+        <span class="min-w-0 flex-1">
+          <span class="block font-display text-lg font-semibold text-ink">{{ "media.weekly_title" | t(lang) }}</span>
+          <span class="block text-sm text-muted">{{ "media.weekly_text" | t(lang) }}</span>
+          {% if woWhen %}<span class="mt-1 block text-xs font-semibold text-grape">{{ "media.wo_live" | t(lang, { when: woWhen }) }}</span>{% endif %}
+          <span class="mt-2.5 hidden items-center gap-1 text-sm font-semibold text-gv min-[90rem]:inline-flex">{{ "media.wo_join" | t(lang) }} {% icon "arrow-right", "size-4" %}</span>
+        </span>
+        <span class="hidden shrink-0 items-center gap-1 text-sm font-semibold text-gv sm:inline-flex min-[90rem]:hidden">{{ "media.wo_join" | t(lang) }} {% icon "arrow-right", "size-4" %}</span>
       </a>
-      <a class="card group flex items-center gap-4 p-4 no-underline transition hover:-translate-y-0.5 hover:shadow-[var(--shadow-lift)] sm:p-5" href="{{ '/listen/' | lurl(lang) }}">
+      <a class="card group flex items-center gap-4 p-4 no-underline transition hover:-translate-y-0.5 hover:shadow-[var(--shadow-lift)] sm:p-5 min-[90rem]:p-6" href="{{ '/listen/' | lurl(lang) }}">
         <span class="grid size-12 shrink-0 place-items-center rounded-2xl bg-lv-soft text-lv">{% icon "headphones", "size-6" %}</span>
-        <span class="min-w-0 flex-1"><span class="block font-display text-lg font-semibold text-ink">{{ "media.podcast_title" | t(lang) }}</span><span class="block text-sm text-muted">{{ "media.podcast_text" | t(lang) }}</span></span>
-        <span class="hidden shrink-0 items-center gap-1 text-sm font-semibold text-gv sm:inline-flex">{{ "media.podcast_cta" | t(lang) }} {% icon "arrow-right", "size-4" %}</span>
+        <span class="min-w-0 flex-1">
+          <span class="block font-display text-lg font-semibold text-ink">{{ "media.podcast_title" | t(lang) }}</span>
+          <span class="block text-sm text-muted">{{ "media.podcast_text" | t(lang) }}</span>
+          <span class="mt-2.5 hidden items-center gap-1 text-sm font-semibold text-gv min-[90rem]:inline-flex">{{ "media.podcast_cta" | t(lang) }} {% icon "arrow-right", "size-4" %}</span>
+        </span>
+        <span class="hidden shrink-0 items-center gap-1 text-sm font-semibold text-gv sm:inline-flex min-[90rem]:hidden">{{ "media.podcast_cta" | t(lang) }} {% icon "arrow-right", "size-4" %}</span>
       </a>
     </div>
   </section>
@@ -235,11 +253,11 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
     </div>
     <p class="mb-3 rounded-xl bg-lv-soft px-4 py-2 text-sm text-lv-strong" x-show="failed" x-cloak role="status">{{ "media.index_error" | t(lang) }} <button type="button" class="font-semibold underline" @click="retryIndex()">{{ "media.retry" | t(lang) }}</button></p>
 
-    <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4" x-show="!client">
+    <div class="grid-cards" x-show="!client">
       {% for v in ssr %}{{ vCard(v, lang, loop.index0, true) }}{% endfor %}
     </div>
     <template x-if="client">
-      <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4" x-show="visible.length">
+      <div class="grid-cards" x-show="visible.length">
         <template x-for="v in visible" :key="v.id">{{ vCard(null, lang, 0, false) }}</template>
       </div>
     </template>
@@ -278,7 +296,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
   </dialog>
 </div>
 {% else %}
-<section class="section container-page">
+<section class="container-page page-start">
   {{ ui.emptyState("circle-play", "media.empty_videos_title" | t(lang), "media.empty_videos_text" | t(lang), channelUrl, "media.watch_on_yt" | t(lang)) }}
   <div class="mt-8 grid gap-4 md:grid-cols-2">
     <a class="card flex items-center gap-4 p-5 no-underline hover:shadow-[var(--shadow-lift)]" href="{{ '/meeting/#weekly-open' | lurl(lang) }}">

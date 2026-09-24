@@ -1,0 +1,237 @@
+---
+pagination: { data: languages, size: 1, alias: lang }
+permalink: "{{ '/' if lang == 'en' else '/es/' }}published/index.html"
+layout: layouts/base.njk
+pageKey: published
+titleKey: nav.published
+descKey: published.meta_desc
+pageScripts: ["/assets/js/published.js"]
+---
+{#- PUBLISHED WRITERS — Grapevine / La Viña stories by writers from Area 65 (Northeast Texas),
+    the rest of Texas and everywhere else, from db.spotlight (data/site/spotlight.json, built
+    daily by scripts/sync/build_data.py; see docs/DATA_SCHEMA.md "spotlight.json").
+    View model: eleventy/filters/published.js → pwView. EVERY story of the longest window is
+    rendered here; the DEFAULT view (config/site.yml spotlight.default_scope + the first
+    list_days window, both magazines, no search) is visible without JavaScript and the rest
+    carry `hidden`. /assets/js/published.js then filters these same cards in place:
+    scope / period / magazine / search, counts, empty states, URL state ?scope=&days=&pub=&q=,
+    recounting the windows from the browser's own today (America/Chicago) with data-date. -#}
+{% import "macros/ui.njk" as ui with context %}
+{%- set V = db | pwView(lang) -%}
+{%- set D = V.defDays -%}
+{%- set SC = V.defScope -%}
+{%- set scopeIcon = { neta65: "map-pin", texas: "map-pin", other: "globe", unknown: "user-round" } -%}
+{%- set groupIcon = { neta65: "map-pinned", texas: "map", other: "globe", unknown: "feather" } -%}
+{%- set pubName = { gv: "Grapevine", lv: "La Viña" } -%}
+{%- set nShown = V.counts[D][SC].all -%}
+
+{#- ---------- one story card (published.js only shows / hides these) ----------
+    Icons come from the sprite below ({{ name | pwIcon }} → <use href="#pw-i-name">): the
+    card repeats 150+ times, so each icon is defined once. Add a new card icon to CARD_ICONS. -#}
+{%- set CARD_ICONS = "quote,map-pin,globe,user-round,feather,grapes,lock,lock-open,sparkles,languages" -%}
+{% macro pwCard(it, lang) -%}
+<article class="pw-card" data-scope="{{ it.scope }}" data-pub="{{ it.pub }}" data-date="{{ it.date }}" data-s="{{ it.search }}"{% if not it.visible %} hidden{% endif %}><div class="pw-card-in">
+<div class="pw-media" data-pub="{{ it.pub }}">
+<div class="pw-tile" aria-hidden="true"><span class="pw-tile-mark">{{ "quote" | pwIcon("size-6") | safe }}</span><span class="pw-tile-pub">{{ pubName[it.pub] }}</span>{% if it.issue %}<span class="pw-tile-issue">{{ it.issue }}</span>{% endif %}</div>
+{%- if it.image %}<img src="{{ it.image }}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.remove()">{% endif %}
+<span class="pw-scope" data-scope="{{ it.scope }}">{{ scopeIcon[it.scope] | pwIcon("size-3.5") | safe }}{{ ("published.badge." + it.scope) | t(lang) }}</span>
+</div>
+<div class="pw-body">
+<div class="pw-byline"><span class="pw-avatar" data-scope="{{ it.scope }}" aria-hidden="true">{% if it.initials %}{{ it.initials }}{% else %}{{ "feather" | pwIcon("size-4") | safe }}{% endif %}</span>
+<div class="min-w-0"><p class="pw-writer"><span class="sr-only">{{ "published.writer" | t(lang) }}: </span>{{ it.author }}</p>
+<p class="pw-place">{% if it.place %}{{ it.place }}{% if it.county %}<span class="pw-county"> · {{ it.county }}</span>{% endif %}{% else %}{{ "published.place_unknown" | t(lang) }}{% endif %}</p></div></div>
+<h3 class="pw-title"{% if it.titleLang and it.titleLang != lang %} lang="{{ it.titleLang }}"{% endif %}><a class="pw-link" href="{{ it.url }}" target="_blank" rel="noopener">{{ it.title }}{% if it.host %}<span class="sr-only"> {{ "published.opens_on" | t(lang, {host: it.host}) }}</span>{% endif %}</a></h3>
+{%- if it.origTitle %}
+<p class="pw-orig"><span class="sr-only">{{ "published.original_title" | t(lang) }}: </span><span lang="{{ it.origLang }}">{{ it.origTitle }}</span></p>
+{%- endif %}
+<p class="pw-issue"><span class="{{ 'badge-lv' if it.pub == 'lv' else 'badge-gv' }}">{{ "grapes" | pwIcon("size-3") | safe }} {{ pubName[it.pub] }}</span>{% if it.issue %}<span>{{ it.issue }}</span>{% endif %}</p>
+{%- if it.meta.length %}
+<p class="pw-meta">{{ it.meta | join(" · ") }}</p>
+{%- endif %}
+<div class="pw-foot"><time datetime="{{ it.date }}">{{ "published.published_on" | t(lang, {date: it.date | fmtDate(lang, "medium")}) }}</time>
+{%- if it.free === false %}<span class="pw-flag" title="{{ 'published.subscribers_help' | t(lang) }}">{{ "lock" | pwIcon("size-3") | safe }}{{ "published.subscribers" | t(lang) }}</span>
+{%- elif it.free === true %}<span class="pw-flag">{{ "lock-open" | pwIcon("size-3") | safe }}{{ "published.free" | t(lang) }}</span>{% endif %}
+{%- if it.exclusive %}<span class="pw-flag">{{ "sparkles" | pwIcon("size-3") | safe }}{{ "published.online_exclusive" | t(lang) }}</span>{% endif %}
+{%- if it.isNew %}<span class="badge-new">{{ "common.new" | t(lang) }}</span>{% endif %}
+{%- if it.machine %}<span class="auto-note" title="{{ 'common.auto_translated_help' | t(lang) }}">{{ "languages" | pwIcon("size-3") | safe }} {{ "common.auto_translated" | t(lang) }}</span>{% endif %}</div>
+</div>
+</div></article>
+{%- endmacro %}
+
+{#- ---------- one filter choice: a native radio inside a chip (arrow keys move between them) ---------- -#}
+{% macro pwChip(name, value, label, n, checked, dot="") -%}
+<label class="pw-chip{{ ' is-zero' if not n }}"><input type="radio" class="sr-only" name="{{ name }}" value="{{ value }}"{% if checked %} checked{% endif %} disabled data-pw-ctl>
+  {%- if dot %}<span class="pw-dot" data-pub="{{ dot }}" aria-hidden="true"></span>{% endif -%}
+  <span>{{ label }}</span><span class="pw-n" data-n>{{ n }}</span></label>
+{%- endmacro %}
+
+{#- ---------- hero ---------- -#}
+{% call ui.pageHero(lang, "nav.published" | t(lang), "published.hero_sub" | t(lang), "award", "published.eyebrow" | t(lang)) %}
+  <div class="hero-actions">
+    <a class="btn-light" href="{{ '/contribute/' | lurl(lang) }}">{% icon "pen-line", "size-4" %} {{ "nav.contribute" | t(lang) }}</a>
+    <a class="btn-on-dark max-sm:hidden" href="#pw-how">{% icon "info", "size-4" %} {{ "published.cta_how" | t(lang) }}</a>
+  </div>
+{% endcall %}
+
+{#- ---------- filters (tucked into the hero's faded edge) ---------- -#}
+<section class="container-page page-overlap" aria-labelledby="pw-filters-title">
+  <form id="pw-form" class="card card-pad pw-filters" role="search" aria-labelledby="pw-filters-title" action="{{ '/published/' | lurl(lang) }}" method="get" autocomplete="off">
+    <h2 id="pw-filters-title" class="sr-only">{{ "published.filters_title" | t(lang) }}</h2>
+    {#- The controls are enabled by published.js (data-pw-ctl); without JavaScript the default
+        list below is the whole page and the <noscript> note says so. -#}
+    <div class="pw-filter-row">
+      <fieldset class="pw-group-fs">
+        <legend class="pw-legend">{{ "published.scope_legend" | t(lang) }}</legend>
+        <div class="pw-chips">
+          {%- for s in ["neta65", "texas", "all"] %}
+          {{ pwChip("scope", s, ("published.scope." + s) | t(lang), V.counts[D][s].all, s == SC) }}
+          {%- endfor %}
+        </div>
+      </fieldset>
+      <fieldset class="pw-group-fs">
+        <legend class="pw-legend">{{ "published.days_legend" | t(lang) }}</legend>
+        <div class="pw-chips">
+          {%- for d in V.listDays %}
+          {{ pwChip("days", d, "published.days" | t(lang, {n: d}), V.counts[d][SC].all, d == D) }}
+          {%- endfor %}
+        </div>
+      </fieldset>
+      <fieldset class="pw-group-fs">
+        <legend class="pw-legend">{{ "published.pub_legend" | t(lang) }}</legend>
+        <div class="pw-chips">
+          {{ pwChip("pub", "all", "published.pub.all" | t(lang), V.counts[D][SC].all, true) }}
+          {{ pwChip("pub", "gv", "Grapevine", V.counts[D][SC].gv, false, "gv") }}
+          {{ pwChip("pub", "lv", "La Viña", V.counts[D][SC].lv, false, "lv") }}
+        </div>
+      </fieldset>
+    </div>
+    <div class="pw-find-row">
+      <div class="pw-search">
+        <label for="pw-q" class="pw-legend">{{ "published.search_label" | t(lang) }}</label>
+        <div class="relative">
+          <span class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-faint">{% icon "search", "size-4" %}</span>
+          <input id="pw-q" name="q" type="search" class="input pw-q pl-10 pr-12" placeholder="{{ 'published.search_ph' | t(lang) }}" maxlength="100" spellcheck="false" autocapitalize="off" enterkeyhint="search" aria-describedby="pw-status" disabled data-pw-ctl>
+          <button type="button" id="pw-q-clear" class="absolute right-1 top-1/2 grid size-10 -translate-y-1/2 place-items-center rounded-full text-muted transition hover:bg-surface-2 hover:text-ink" aria-label="{{ 'published.search_clear' | t(lang) }}" hidden>{% icon "x", "size-4" %}</button>
+        </div>
+      </div>
+      <div class="pw-status-row">
+        <p id="pw-status" class="pw-status" role="status" aria-live="polite">
+          {%- if nShown %}{{ ("published.status." + SC + (".one" if nShown == 1 else ".other")) | t(lang, {n: nShown, days: D}) }}
+          {%- else %}{{ ("published.empty." + SC) | t(lang, {days: D}) }}{% endif -%}
+        </p>
+        <button type="button" id="pw-reset" class="pw-reset" hidden>{% icon "rotate-ccw", "size-3.5" %} {{ "published.reset" | t(lang) }}</button>
+      </div>
+    </div>
+    <noscript><p class="pw-noscript">{% icon "info", "size-4 shrink-0" %}<span>{{ "published.noscript" | t(lang) }}</span></p></noscript>
+  </form>
+</section>
+
+{#- ---------- results + explainer ---------- -#}
+<div class="container-page pt-8 pb-12 sm:pt-10 sm:pb-16">
+  <div class="grid gap-10 xl:grid-cols-[minmax(0,1fr)_20rem] xl:gap-12 2xl:grid-cols-[minmax(0,1fr)_24rem] 2xl:gap-16">
+    <div id="pw-results" class="pw-results">
+      {{ CARD_ICONS | pwSprite | safe }}
+      {%- for g in V.groups %}
+      <section class="pw-group" data-group="{{ g.key }}" aria-labelledby="pw-g-{{ g.key }}"{% if not g.matchCount %} hidden{% endif %}>
+        <div class="pw-group-head">
+          <span class="pw-group-icon" data-scope="{{ g.key }}" aria-hidden="true">{% icon groupIcon[g.key], "size-5" %}</span>
+          <div class="min-w-0">
+            <h2 id="pw-g-{{ g.key }}" class="pw-group-title">{{ ("published.group." + g.key) | t(lang) }} <span class="pw-group-n" data-group-n>{{ g.matchCount | pwStories(lang) }}</span></h2>
+            <p class="pw-group-desc">{{ ("published.group_desc." + g.key) | t(lang, {n: V.countyCount}) }}</p>
+          </div>
+        </div>
+        <div class="grid-cards pw-grid">
+          {%- for it in g.items %}
+          {{ pwCard(it, lang) }}
+          {%- endfor %}
+        </div>
+        <div class="pw-showall"{% if not g.hiddenByLimit %} hidden{% endif %}>
+          <button type="button" class="btn-secondary" data-pw-showall="{{ g.key }}">{% icon "chevron-down", "size-4" %}<span data-label>{{ "published.show_all" | t(lang, {n: g.matchCount}) }}</span></button>
+        </div>
+      </section>
+      {%- endfor %}
+
+      {#- nothing in this view: say so, and offer wider views + Share Your Story -#}
+      <div id="pw-empty" class="pw-empty"{% if nShown %} hidden{% endif %}>
+        <span class="pw-empty-icon" aria-hidden="true">{% icon "feather", "size-6" %}</span>
+        <h2 id="pw-empty-title" class="pw-empty-title">{{ ("published.empty." + SC) | t(lang, {days: D}) }}</h2>
+        <p class="pw-empty-text">{{ "published.empty.text" | t(lang) }}</p>
+        <div class="pw-empty-actions">
+          {%- for d in V.listDays %}
+          <button type="button" class="btn-secondary btn-sm" data-pw-set="days" data-v="{{ d }}"{% if d <= D or not V.counts[d][SC].all %} hidden{% endif %}>{% icon "calendar-range", "size-4" %}<span>{{ "published.btn.days" | t(lang, {n: d}) }}</span><span class="pw-n" data-n>{{ V.counts[d][SC].all }}</span></button>
+          {%- endfor %}
+          <button type="button" class="btn-secondary btn-sm" data-pw-set="scope" data-v="texas"{% if SC != "neta65" or not V.counts[D].texas.all %} hidden{% endif %}>{% icon "map", "size-4" %}<span>{{ "published.btn.texas" | t(lang) }}</span><span class="pw-n" data-n>{{ V.counts[D].texas.all }}</span></button>
+          <button type="button" class="btn-secondary btn-sm" data-pw-set="scope" data-v="all"{% if SC == "all" or not V.counts[D].all.all %} hidden{% endif %}>{% icon "globe", "size-4" %}<span>{{ "published.btn.all" | t(lang) }}</span><span class="pw-n" data-n>{{ V.counts[D].all.all }}</span></button>
+          <button type="button" class="btn-secondary btn-sm" data-pw-clear hidden>{% icon "x", "size-4" %}<span>{{ "published.btn.clear" | t(lang) }}</span></button>
+          <a class="btn-primary btn-sm" href="{{ '/contribute/' | lurl(lang) }}">{% icon "pen-line", "size-4" %} {{ "nav.contribute" | t(lang) }}</a>
+        </div>
+      </div>
+
+      {#- there are more Texas writers (or writers elsewhere) than this view shows -#}
+      <div id="pw-nudge" class="pw-nudge"{% if not (V.nextScope and V.moreCount > 0 and nShown > 0) %} hidden{% endif %}>
+        <span class="pw-nudge-icon" aria-hidden="true">{% icon "map", "size-5" %}</span>
+        <p id="pw-nudge-text" class="pw-nudge-text">{% if V.nextScope %}{{ ("published.more." + V.nextScope) | t(lang, {days: D, stories: V.moreCount | pwStories(lang)}) }}{% endif %}</p>
+        <button type="button" class="btn-secondary btn-sm shrink-0" data-pw-nudge data-v="{{ V.nextScope }}">
+          <span data-label>{% if V.nextScope %}{{ ("published.btn." + V.nextScope) | t(lang) }}{% endif %}</span>{% icon "arrow-right", "size-4" %}
+        </button>
+      </div>
+
+      {#- were you published? / write one — after the results, whatever the filters show -#}
+      <section class="pw-tell" aria-labelledby="pw-tell-title">
+        <span class="pw-tell-icon" aria-hidden="true">{% icon "award", "size-6" %}</span>
+        <div class="pw-tell-copy">
+          <h2 id="pw-tell-title" class="pw-tell-title">{{ "published.tell.title" | t(lang) }}</h2>
+          <p class="pw-tell-text">{{ "published.tell.text" | t(lang) }}</p>
+          <p class="pw-tell-text">{{ "published.tell.write" | t(lang) }}</p>
+        </div>
+        <div class="pw-tell-actions">
+          {%- if site.contact_email %}
+          <a class="btn-primary" href="{{ site.contact_email | pwMailto('published.tell.subject' | t(lang), 'published.tell.body' | t(lang)) }}">{% icon "mail", "size-4" %} {{ "published.tell.btn" | t(lang) }}</a>
+          {%- endif %}
+          <a class="btn-secondary" href="{{ '/contribute/' | lurl(lang) }}">{% icon "pen-line", "size-4" %} {{ "nav.contribute" | t(lang) }}</a>
+          {%- if site.contact_email %}
+          <p class="pw-tell-mail">{{ site.contact_email }}</p>
+          {%- endif %}
+        </div>
+      </section>
+    </div>
+
+    <aside class="pw-aside" aria-label="{{ 'published.aside_label' | t(lang) }}">
+      <section id="pw-how" class="card card-pad" aria-labelledby="pw-how-title">
+        <h2 id="pw-how-title" class="pw-aside-title">{% icon "info", "size-5 text-gv" %}<span>{{ "published.how.title" | t(lang) }}</span></h2>
+        <ul class="pw-how">
+          <li>{% icon "newspaper", "size-4" %}<span>{{ "published.how.printed" | t(lang) }}</span></li>
+          <li>{% icon "refresh-cw", "size-4" %}<span>{{ "published.how.daily" | t(lang) }}</span></li>
+          <li>{% icon "map", "size-4" %}<span>{{ "published.how.area" | t(lang, {n: V.countyCount}) }} <a class="link" href="{{ '/districts/' | lurl(lang) }}">{{ "published.how.districts" | t(lang) }}</a>
+            {%- if V.counties.length %}
+            <details class="pw-counties">
+              <summary>{{ "published.how.counties" | t(lang, {n: V.countyCount}) }}</summary>
+              <ul class="pw-county-list">
+                {%- for c in V.counties %}<li>{{ c }}</li>{% endfor %}
+              </ul>
+            </details>
+            {%- endif %}</span></li>
+          <li>{% icon "landmark", "size-4" %}<span>{{ "published.how.census" | t(lang) }}</span></li>
+          <li>{% icon "venetian-mask", "size-4" %}<span>{{ "published.how.unmatched" | t(lang) }}</span></li>
+          <li>{% icon "calendar-range", "size-4" %}<span>{{ "published.how.window" | t(lang) }}</span></li>
+        </ul>
+        {%- if V.updated %}
+        <p class="pw-updated">{% icon "clock", "size-3.5" %}<span>{{ "published.how.updated" | t(lang, {date: V.updated | fmtDate(lang, "medium")}) }}</span></p>
+        {%- endif %}
+      </section>
+    </aside>
+  </div>
+</div>
+
+{#- settings + strings for published.js -#}
+<script type="application/json" id="pw-config">{{ {
+  lang: lang,
+  tz: "America/Chicago",
+  today: V.today,
+  listDays: V.listDays,
+  defDays: D,
+  defScope: SC,
+  limit: V.limit,
+  pubs: pubName,
+  s: lang | pwStrings
+} | pwJson | safe }}</script>

@@ -9,7 +9,10 @@ pageScripts: ["/assets/js/committee.js"]
 ---
 {#- Committee documents from the public Google Drive folder (reports, notes,
     slides, workshops, flyers, forms, and any other folder by name), grouped by
-    category and panel. Preview opens an accessible modal with Drive's viewer. -#}
+    category and panel. Preview opens an accessible modal with Drive's viewer.
+    Layout below the shared page hero: with files - category chips + search, one card grid
+    per category (grid-cards: up to 5 columns), then "how the committee adds documents";
+    with no files yet - the empty state and the how-to card side by side from 1280px. -#}
 {% import "macros/ui.njk" as ui with context %}
 {%- set dt = db.drive.items | cmDocTabs(lang) -%}
 {%- set emptyTabs = dt.tabs | where("count", 0) | length -%}
@@ -17,27 +20,31 @@ pageScripts: ["/assets/js/committee.js"]
 {%- set di = db.status | cmDriveInfo(site) -%}
 
 {% call ui.pageHero(lang, "nav.documents" | t(lang), "committee.docs.hero_sub" | t(lang), "folder-open", "committee.docs.eyebrow" | t(lang)) %}
-  <div class="flex flex-wrap items-center gap-3">
+  <div class="hero-actions">
     {% if di.url %}<a class="btn-light" href="{{ di.url }}" target="_blank" rel="noopener">{% icon "folder-open", "size-4" %} {{ "committee.drive.open_folder" | t(lang) }}</a>{% endif %}
     <a class="btn-on-dark" href="#how-docs">{% icon "folder-up", "size-4" %} {{ "committee.docs.how_btn" | t(lang) }}</a>
   </div>
+  {#- The counts are on the category chips too, so phones skip them (shorter hero) -#}
   {% if dt.total %}
-  <dl class="mt-8 flex flex-wrap items-end gap-x-8 gap-y-3">
-    <div><dt class="text-xs uppercase tracking-[0.14em] text-white/60">{{ "committee.docs.stat_files" | t(lang) }}</dt><dd class="font-display text-3xl font-semibold text-white">{{ dt.total }}</dd></div>
-    <div><dt class="text-xs uppercase tracking-[0.14em] text-white/60">{{ "committee.docs.stat_folders" | t(lang) }}</dt><dd class="font-display text-3xl font-semibold text-white">{{ nonEmpty }}</dd></div>
-    {% if dt.panels | length == 1 and dt.panels[0] %}<div><dt class="text-xs uppercase tracking-[0.14em] text-white/60">{{ "committee.docs.stat_panel" | t(lang) }}</dt><dd class="pb-1 font-display text-xl font-semibold text-white">{{ dt.panels[0] }}</dd></div>{% endif %}
-  </dl>
+  <div class="max-sm:hidden">
+    {{ ui.heroStats([
+      { value: dt.total, label: "committee.docs.stat_files" | t(lang) },
+      { value: nonEmpty, label: "committee.docs.stat_folders" | t(lang) },
+      { value: (dt.panels[0] if (dt.panels | length == 1 and dt.panels[0]) else null), label: "committee.docs.stat_panel" | t(lang) }
+    ]) }}
+  </div>
   {% endif %}
 {% endcall %}
 
 {% committeeNav lang, "documents", db %}
 
-<section class="section container-page" x-data="cmDocs()" data-count-label="{{ 'committee.docs.showing' | t(lang) }}" data-count-label-one="{{ 'committee.docs.showing_one' | t(lang) }}">
-  <h2 class="sr-only">{{ "nav.documents" | t(lang) }}</h2>
+<div class="page-start container-page">
+{% if dt.total > 0 %}
+<section x-data="cmDocs()" data-count-label="{{ 'committee.docs.showing' | t(lang) }}" data-count-label-one="{{ 'committee.docs.showing_one' | t(lang) }}" aria-labelledby="docs-list-h">
+  <h2 id="docs-list-h" class="sr-only">{{ "nav.documents" | t(lang) }}</h2>
 
   {#- ---------- Category "tabs" (toggle buttons; without JS every section is shown).
-       Hidden while the Drive is empty: six "0" chips would only be noise. ---------- -#}
-  {% if dt.total > 0 %}
+       Only when there are files: six "0" chips would only be noise. ---------- -#}
   <div class="mb-8 flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
     <div class="cm-tabs no-scrollbar" role="group" aria-label="{{ 'committee.docs.tabs_aria' | t(lang) }}">
       <button type="button" class="chip cm-tab" @click="set('all')" :aria-pressed="(tab === 'all').toString()" aria-pressed="true">
@@ -56,31 +63,8 @@ pageScripts: ["/assets/js/committee.js"]
     </div>
   </div>
   <p class="sr-only" aria-live="polite" x-text="q ? countText() : ''"></p>
-  {% endif %}
-
-  {% if dt.total == 0 %}
-  {#- ---------- Launch state: nothing uploaded yet ---------- -#}
-  <div class="cm-empty-hero" aria-labelledby="docs-empty-title">
-    <div class="cm-folder-illo" aria-hidden="true">
-      {% for tb in dt.tabs | limit(6) %}<span class="cm-folder-chip">{% icon tb.icon, "size-4" %}<span>{{ tb.label }}</span></span>{% endfor %}
-    </div>
-    <h2 id="docs-empty-title" class="h-section mt-6 text-center text-balance">{{ ("committee.docs.empty_title_panel" | t(lang, { panel: di.panel.label })) if di.panel else ("committee.docs.empty_title" | t(lang)) }}</h2>
-    <p class="mx-auto mt-3 max-w-xl text-center leading-relaxed text-muted">{{ "committee.docs.empty_text" | t(lang) }}</p>
-    <div class="mx-auto mt-6 flex max-w-2xl flex-col items-center gap-2">
-      <p class="eyebrow">{{ "committee.docs.empty_where" | t(lang) }}</p>
-      {% cmDrivePath lang, di, "reports", ("committee.docs.empty_example" | t(lang)) %}
-    </div>
-    <div class="mt-6 flex flex-wrap justify-center gap-2.5">
-      {% if di.url %}<a class="btn-primary" href="{{ di.url }}" target="_blank" rel="noopener">{% icon "folder-open", "size-4" %} {{ "committee.drive.open_folder" | t(lang) }}</a>{% endif %}
-      <a class="btn-secondary" href="#how-docs">{% icon "list-checks", "size-4" %} {{ "committee.docs.how_btn" | t(lang) }}</a>
-      <a class="btn-ghost" href="{{ '/library/' | lurl(lang) }}">{% icon "library", "size-4" %} {{ "committee.docs.browse_library" | t(lang) }}</a>
-    </div>
-    <div class="mt-5 flex justify-center">{% cmDriveChecked lang, di %}</div>
-  </div>
-  {% endif %}
 
   {#- ---------- One section per category ---------- -#}
-  {% if dt.total > 0 %}
   {% for tb in dt.tabs %}
   <section id="docs-{{ tb.key }}" class="cm-doc-section scroll-mt-28{{ ' is-empty' if not tb.count }}" x-show="sectionVisible('{{ tb.key }}', {{ tb.count }}, $el)" aria-labelledby="docs-h-{{ tb.key }}">
     <div class="mb-5 flex flex-wrap items-end justify-between gap-2">
@@ -92,11 +76,12 @@ pageScripts: ["/assets/js/committee.js"]
     {% if tb.count %}
       {% for g in tb.groups %}
       {% if dt.multiPanel %}<h3 class="eyebrow mb-3 mt-6 flex items-center gap-2">{% icon "layers", "size-3.5" %} {{ g.label }}</h3>{% endif %}
-      <ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <ul class="grid-cards">
         {% for d in g.items %}
         <li data-text="{{ (d.title + ' ' + (d.item.title or '')) | lower }}" x-show="match($el)">
-          <article class="card cm-doc group relative flex h-full flex-row overflow-hidden sm:flex-col">
-            <div class="cm-doc-thumb cm-tone-{{ d.type.tone }} w-32 shrink-0 sm:w-auto">
+          {#- One column (phones): compact card, thumbnail on the left. In the grid (from 660px): thumbnail on top -#}
+          <article class="card cm-doc group relative flex h-full flex-row overflow-hidden min-[41.25rem]:flex-col">
+            <div class="cm-doc-thumb cm-tone-{{ d.type.tone }} w-32 shrink-0 min-[41.25rem]:w-auto">
               <span class="cm-doc-icon" aria-hidden="true">{% icon d.type.icon, "size-9" %}</span>
               {% if d.thumb %}<img src="{{ d.thumb }}" alt="" loading="lazy" decoding="async" width="600" height="450" referrerpolicy="no-referrer" onerror="this.remove()">{% endif %}
               <span class="cm-doc-type">{{ ("committee.type." + d.type.key) | t(lang) }}</span>
@@ -139,16 +124,40 @@ pageScripts: ["/assets/js/committee.js"]
   <div x-show="q && visibleCount === 0" x-cloak>
     {{ ui.emptyState("search-x", "common.no_results" | t(lang), "committee.docs.no_match" | t(lang)) }}
   </div>
-  {% endif %}
 </section>
+{% endif %}
 
-{#- ---------- How the committee adds documents ---------- -#}
-<section id="how-docs" class="container-page scroll-mt-24">
-  <div class="card cm-howcard overflow-hidden">
-    <div class="grid lg:grid-cols-[1fr_1.1fr]">
+{#- ---------- No files yet: the empty state and the how-to side by side from 1280px.
+     With files: the how-to card below the grids. ---------- -#}
+<div class="{{ 'cm-docs-start' if dt.total == 0 else 'mt-12 sm:mt-16' }}">
+  {% if dt.total == 0 %}
+  {#- ---------- Launch state: nothing uploaded yet ---------- -#}
+  <section class="cm-empty-hero flex flex-col justify-center" aria-labelledby="docs-empty-title">
+    <div class="cm-folder-illo" aria-hidden="true">
+      {% for tb in dt.tabs | limit(6) %}<span class="cm-folder-chip">{% icon tb.icon, "size-4" %}<span>{{ tb.label }}</span></span>{% endfor %}
+    </div>
+    <h2 id="docs-empty-title" class="h-section mt-6 text-center text-balance">{{ ("committee.docs.empty_title_panel" | t(lang, { panel: di.panel.label })) if di.panel else ("committee.docs.empty_title" | t(lang)) }}</h2>
+    <p class="mx-auto mt-3 max-w-xl text-center leading-relaxed text-muted">{{ "committee.docs.empty_text" | t(lang) }}</p>
+    <div class="mx-auto mt-6 flex max-w-2xl flex-col items-center gap-2">
+      <p class="eyebrow">{{ "committee.docs.empty_where" | t(lang) }}</p>
+      {% cmDrivePath lang, di, "reports", ("committee.docs.empty_example" | t(lang)) %}
+    </div>
+    <div class="mt-6 flex flex-wrap justify-center gap-2.5">
+      {% if di.url %}<a class="btn-primary" href="{{ di.url }}" target="_blank" rel="noopener">{% icon "folder-open", "size-4" %} {{ "committee.drive.open_folder" | t(lang) }}</a>{% endif %}
+      <a class="btn-secondary" href="#how-docs">{% icon "list-checks", "size-4" %} {{ "committee.docs.how_btn" | t(lang) }}</a>
+      <a class="btn-ghost" href="{{ '/library/' | lurl(lang) }}">{% icon "library", "size-4" %} {{ "committee.docs.browse_library" | t(lang) }}</a>
+    </div>
+    <div class="mt-5 flex justify-center">{% cmDriveChecked lang, di %}</div>
+  </section>
+  {% endif %}
+
+  {#- ---------- How the committee adds documents (inside: steps | folder names side by side
+       when the card is at least 56rem wide) ---------- -#}
+  <section id="how-docs" class="card cm-howcard @container scroll-mt-24 overflow-hidden" aria-labelledby="how-docs-h">
+    <div class="grid h-full @4xl:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
       <div class="p-6 sm:p-8">
         <p class="eyebrow flex items-center gap-2">{% icon "sparkles", "size-4 text-vine" %} {{ "committee.docs.how_eyebrow" | t(lang) }}</p>
-        <h2 class="h-section mt-2">{{ "committee.docs.how_title" | t(lang) }}</h2>
+        <h2 id="how-docs-h" class="h-section mt-2">{{ "committee.docs.how_title" | t(lang) }}</h2>
         <ol class="mt-5 space-y-4">
           {% for k in ["1", "2", "3"] %}
           <li class="flex gap-3.5">
@@ -162,9 +171,9 @@ pageScripts: ["/assets/js/committee.js"]
           <a class="btn-secondary" href="mailto:{{ site.contact_email }}?subject={{ 'committee.docs.mail_subject' | t(lang) | urlencode }}">{% icon "mail", "size-4" %} {{ "committee.docs.ask_access" | t(lang) }}</a>
         </div>
       </div>
-      <div class="cm-howcard-side p-6 sm:p-8">
+      <div class="cm-howcard-side @container p-6 sm:p-8">
         <p class="eyebrow">{{ "committee.docs.folders_title" | t(lang) }}</p>
-        <ul class="mt-4 grid gap-2 sm:grid-cols-2">
+        <ul class="mt-4 grid gap-2 @lg:grid-cols-2">
           {% for f in [["reports", "informes", "file-bar-chart"], ["notes", "notas", "notebook-pen"], ["slides", "presentaciones", "presentation"], ["workshops", "talleres", "pen-line"], ["flyers", "volantes", "megaphone"], ["forms", "formularios", "clipboard-list"], ["photos", "fotos", "images"], ["announcements", "anuncios", "bell-ring"]] %}
           <li class="flex items-center gap-2.5 rounded-xl bg-surface px-3 py-2.5 text-sm ring-1 ring-line">
             <span class="text-gv">{% icon f[2], "size-4" %}</span>
@@ -173,10 +182,11 @@ pageScripts: ["/assets/js/committee.js"]
           </li>
           {% endfor %}
         </ul>
-        <p class="mt-4 flex gap-2 text-xs leading-relaxed text-muted">{% icon "info", "size-4 shrink-0 text-faint" %} {{ "committee.docs.folders_note" | t(lang) }}</p>
+        <p class="measure mt-4 flex gap-2 text-xs leading-relaxed text-muted">{% icon "info", "size-4 shrink-0 text-faint" %} {{ "committee.docs.folders_note" | t(lang) }}</p>
       </div>
     </div>
-  </div>
-</section>
+  </section>
+</div>
+</div>
 
 {% cmPreviewDialog lang %}

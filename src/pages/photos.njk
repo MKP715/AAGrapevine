@@ -9,25 +9,30 @@ pageScripts: ["/assets/vendor/glightbox.min.js", "/assets/js/committee.js"]
 pageStyles: ["/assets/vendor/glightbox.min.css"]
 ---
 {#- Photo albums from the committee's Google Drive "photos" folder.
-    Every sub-folder becomes an album. Lightbox: GLightbox (MIT, self-hosted). -#}
+    Every sub-folder becomes an album. Lightbox: GLightbox (MIT, self-hosted).
+    Below the shared page hero: the album index (grid-cards), one photo grid per album
+    (2 → 3 → 4 → 5 → 6 columns), then anonymity + how to add photos. With no photos yet:
+    the empty state next to those two cards from 1280px. -#}
 {% import "macros/ui.njk" as ui with context %}
 {%- set albums = db.drive.items | cmAlbums(lang) -%}
 {%- set nPhotos = albums | pluck("photos") | sum -%}
 {%- set nVideos = albums | pluck("videos") | sum -%}
-{%- set PER = 12 -%}
 {%- set di = db.status | cmDriveInfo(site) -%}
 
 {% call ui.pageHero(lang, "nav.photos" | t(lang), "committee.photos.hero_sub" | t(lang), "images", "committee.photos.eyebrow" | t(lang)) %}
-  <div class="flex flex-wrap items-center gap-3">
+  <div class="hero-actions">
     {% if albums | length %}<a class="btn-light" href="#albums">{% icon "layout-grid", "size-4" %} {{ "committee.photos.browse" | t(lang) }}</a>{% endif %}
     <a class="btn-on-dark" href="#share-photos">{% icon "image-plus", "size-4" %} {{ "committee.photos.add_btn" | t(lang) }}</a>
   </div>
+  {#- Each album card shows its own counts, so phones skip these (shorter hero) -#}
   {% if albums | length %}
-  <dl class="mt-8 flex flex-wrap gap-x-8 gap-y-3">
-    <div><dt class="text-xs uppercase tracking-[0.14em] text-white/60">{{ "committee.photos.stat_albums" | t(lang) }}</dt><dd class="font-display text-3xl font-semibold text-white">{{ albums | length }}</dd></div>
-    <div><dt class="text-xs uppercase tracking-[0.14em] text-white/60">{{ "committee.photos.stat_photos" | t(lang) }}</dt><dd class="font-display text-3xl font-semibold text-white">{{ nPhotos }}</dd></div>
-    {% if nVideos %}<div><dt class="text-xs uppercase tracking-[0.14em] text-white/60">{{ "committee.photos.stat_videos" | t(lang) }}</dt><dd class="font-display text-3xl font-semibold text-white">{{ nVideos }}</dd></div>{% endif %}
-  </dl>
+  <div class="max-sm:hidden">
+    {{ ui.heroStats([
+      { value: albums | length, label: "committee.photos.stat_albums" | t(lang) },
+      { value: nPhotos, label: "committee.photos.stat_photos" | t(lang) },
+      { value: (nVideos if nVideos else null), label: "committee.photos.stat_videos" | t(lang) }
+    ]) }}
+  </div>
   {% endif %}
 {% endcall %}
 
@@ -36,7 +41,7 @@ pageStyles: ["/assets/vendor/glightbox.min.css"]
 
 {% if albums | length %}
 {#- ---------- Album index ---------- -#}
-<section id="albums" class="section container-page scroll-mt-24">
+<section id="albums" class="page-start container-page scroll-mt-24">
   {{ ui.sectionHead("committee.photos.albums" | t(lang), "committee.photos.albums_sub" | t(lang), "", "", "layout-grid") }}
   <ul class="grid-cards">
     {% for a in albums %}
@@ -64,7 +69,7 @@ pageStyles: ["/assets/vendor/glightbox.min.css"]
 {#- ---------- Albums ---------- -#}
 {% for a in albums %}
 {% if a.alias and a.alias != a.slug %}<span id="{{ a.alias }}" class="block scroll-mt-24" aria-hidden="true"></span>{% endif %}
-<section id="{{ a.slug }}" class="container-page cm-album scroll-mt-24" x-data="{ all: false }" aria-labelledby="{{ a.slug }}-h">
+<section id="{{ a.slug }}" class="container-page cm-album scroll-mt-24" x-data="cmAlbum()" aria-labelledby="{{ a.slug }}-h">
   <div class="mb-5 flex flex-wrap items-end justify-between gap-3 border-t border-line pt-8">
     <div class="min-w-0">
       <p class="eyebrow">{{ a.panelLabel }}{% if a.newest %} · <time datetime="{{ a.newest }}">{{ a.newest | fmtDate(lang, "month") }}</time>{% endif %}</p>
@@ -77,11 +82,15 @@ pageStyles: ["/assets/vendor/glightbox.min.css"]
       <a class="btn-ghost btn-sm" href="#albums">{% icon "arrow-up", "size-4" %}<span class="sr-only">{{ "committee.photos.back_to_albums" | t(lang) }}</span></a>
     </div>
   </div>
-  <ul class="cm-photo-grid">
+  {#- An album of 5+ photos opens with a big first photo and shows only as many photos as
+      fill whole rows at the current column count (committee.css, "photo grid"); "Show all"
+      reveals the rest. Without JavaScript every photo shows. -#}
+  {%- set feat = a.count >= 5 -%}
+  <ul class="cm-photo-grid{{ ' has-feature' if feat }}" :class="all && 'is-all'">
     {#- data-title / data-description go through cmLbText: GLightbox inserts them with
         innerHTML, so a Drive file or folder name must be escaped twice (XSS). -#}
     {% for p in a.items %}
-    <li class="{{ 'cm-photo-feature' if loop.first and a.count >= 5 }}"{% if loop.index0 >= PER %} x-show="all"{% endif %}>
+    <li class="{{ 'cm-photo-feature' if loop.first and feat }}">
       <a href="{{ p.full }}" class="cm-photo glightbox-cm" data-gallery="{{ a.slug }}" data-type="{{ 'external' if p.isVideo else 'image' }}"{% if p.isVideo %} data-width="960px" data-height="540px"{% endif %}
          data-title="{{ p.title | cmLbText }}" data-description="{{ (a.title + ((' · ' + (p.date | fmtDate(lang, 'medium'))) if p.date else '')) | cmLbText }}"
          aria-label="{{ ('committee.photos.open_video' if p.isVideo else 'committee.photos.open_photo') | t(lang, { title: p.title }) }}">
@@ -93,24 +102,33 @@ pageStyles: ["/assets/vendor/glightbox.min.css"]
     </li>
     {% endfor %}
   </ul>
-  {% if a.count > PER %}
-  <div class="mt-5 text-center">
-    <button type="button" class="btn-secondary" x-show="!all" @click="all = true">{% icon "images", "size-4" %} {{ "committee.photos.show_all" | t(lang, { n: a.count }) }}</button>
+  {#- The button shows only at the column counts where photos are hidden (cm-more-N:
+      N columns → 11 / 12 / 13 / 12 / 15 photos shown at 2 / 3 / 4 / 5 / 6 columns). -#}
+  {%- set more = [] -%}
+  {%- if feat -%}
+  {%- for c in [[2, 11], [3, 12], [4, 13], [5, 12], [6, 15]] %}{% if a.count > c[1] and more.push("cm-more-" ~ c[0]) %}{% endif %}{% endfor -%}
+  {%- endif %}
+  {% if more | length %}
+  <div class="cm-more {{ more | join(' ') }} mt-5 text-center" x-show="!all" data-cm-js>
+    <button type="button" class="btn-secondary" @click="showAll()">{% icon "images", "size-4" %} {{ "committee.photos.show_all" | t(lang, { n: a.count }) }}</button>
   </div>
   {% endif %}
 </section>
 {% endfor %}
 
-{% else %}
-{#- ---------- Launch state: no photos yet ---------- -#}
-<section class="container-page pt-12 pb-6 sm:pt-16">
-  <div class="cm-empty-hero cm-empty-photos">
+{% endif %}
+
+{#- ---------- No photos yet: the empty state | anonymity + how to add (stacked), from 1280px.
+     With albums: the two cards side by side below the albums. ---------- -#}
+<div class="{{ 'page-start container-page cm-photos-start' if not (albums | length) else 'container-page pb-12 pt-6 sm:pb-16' }}">
+{% if not (albums | length) %}
+<section class="cm-empty-hero cm-empty-photos flex flex-col justify-center" aria-labelledby="photos-empty-h">
     <div class="cm-polaroids" aria-hidden="true">
       <span class="cm-polaroid -rotate-6">{% icon "grapes", "size-10" %}</span>
       <span class="cm-polaroid rotate-3">{% icon "book-open-text", "size-10" %}</span>
       <span class="cm-polaroid -rotate-2">{% icon "users", "size-10" %}</span>
     </div>
-    <h2 class="h-section mt-8 text-center">{{ "committee.photos.empty_title" | t(lang) }}</h2>
+    <h2 id="photos-empty-h" class="h-section mt-8 text-center">{{ "committee.photos.empty_title" | t(lang) }}</h2>
     <p class="mx-auto mt-3 max-w-xl text-center leading-relaxed text-muted">{{ "committee.photos.empty_text" | t(lang) }}</p>
     <div class="mx-auto mt-6 flex max-w-2xl flex-col items-center gap-2">
       <p class="eyebrow">{{ "committee.photos.empty_where" | t(lang) }}</p>
@@ -121,13 +139,11 @@ pageStyles: ["/assets/vendor/glightbox.min.css"]
       <a class="btn-secondary" href="{{ '/instagram/' | lurl(lang) }}">{% icon "instagram", "size-4" %} {{ "committee.photos.see_instagram" | t(lang) }}</a>
     </div>
     <div class="mt-5 flex justify-center">{% cmDriveChecked lang, di %}</div>
-  </div>
 </section>
 {% endif %}
 
 {#- ---------- Anonymity + how to add photos ---------- -#}
-<section id="share-photos" class="container-page scroll-mt-24 pb-12 pt-6 sm:pb-16">
-  <div class="grid gap-6 lg:grid-cols-2">
+<div id="share-photos" class="cm-share-cards scroll-mt-24">
     <div class="card card-pad cm-anon relative overflow-hidden">
       <span class="grid size-12 place-items-center rounded-2xl bg-vine-soft text-vine">{% icon "shield-check", "size-6" %}</span>
       <h2 class="h-section mt-4">{{ "committee.photos.anon_title" | t(lang) }}</h2>
@@ -158,5 +174,5 @@ pageStyles: ["/assets/vendor/glightbox.min.css"]
         <a class="btn-ghost" href="mailto:{{ site.contact_email }}?subject={{ 'committee.photos.mail_subject' | t(lang) | urlencode }}">{% icon "mail", "size-4" %} {{ "committee.photos.send_photos" | t(lang) }}</a>
       </div>
     </div>
-  </div>
-</section>
+</div>
+</div>

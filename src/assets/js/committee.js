@@ -110,7 +110,7 @@
       var i18n = cfg.i18n || {};
       return {
         phase: "upcoming", d: 0, h: 0, m: 0, s: 0,
-        dateLabel: "", timeLabel: "", localLabel: "", joinText: i18n.join || "",
+        dateLabel: "", timeLabel: "", whenLabel: "", localLabel: "", joinText: i18n.join || "",
         tile: { mon: "", day: "", wd: "" }, gcal: "", outlook: "",
         _start: null, _end: null, _ymd: "",
         init: function () {
@@ -128,6 +128,8 @@
           this._start = start; this._end = end; this._ymd = nx ? nx.ymd : chicagoYmd(start);
           this.dateLabel = cap(fmt(start, { weekday: "long", month: "long", day: "numeric", year: "numeric" }));
           this.timeLabel = range(start, end, { hour: "numeric", minute: "2-digit", timeZoneName: "short" });
+          // One line for the hero: "Wednesday, October 21 · 7:00 PM CDT" (same as the build's whenLabel)
+          this.whenLabel = cap(fmt(start, { weekday: "long", month: "long", day: "numeric" })) + " · " + fmt(start, { hour: "numeric", minute: "2-digit", timeZoneName: "short" });
           this.tile = {
             mon: fmt(start, { month: "short" }).replace(/\.$/, ""),
             day: fmt(start, { day: "numeric" }),
@@ -213,6 +215,27 @@
       };
     });
 
+    /* /photos/ album: "Show all" reveals the photos the CSS hides (committee.css, photo grid)
+       and moves keyboard focus to the first photo that was hidden — the button disappears,
+       so focus would otherwise be lost. x-data="cmAlbum()" on the album <section>. */
+    Alpine.data("cmAlbum", function () {
+      return {
+        all: false,
+        showAll: function () {
+          var first = null;
+          var items = this.$root.querySelectorAll(".cm-photo-grid > li");
+          for (var i = 0; i < items.length; i++) {
+            if (getComputedStyle(items[i]).display === "none") { first = items[i]; break; }
+          }
+          this.all = true;
+          this.$nextTick(function () {
+            var a = first && first.querySelector("a");
+            if (a) a.focus();
+          });
+        },
+      };
+    });
+
     /* /documents/ category toggles + quick search */
     Alpine.data("cmDocs", function () {
       return {
@@ -263,6 +286,20 @@
     closeMenus(menu);
     if (menu && e.target.closest(".cm-menu-panel a")) setTimeout(function () { menu.removeAttribute("open"); }, 0);
   });
+  // Keep an opened menu on the screen: it opens under its button, aligned left; if that
+  // would run past the right edge (a button far right on a phone), align it right, and if
+  // it then starts off the left edge, pin it 8px from the edge. "toggle" does not bubble,
+  // so it is caught in the capture phase.
+  document.addEventListener("toggle", function (e) {
+    var d = e.target;
+    if (!d || !d.matches || !d.matches("details.cm-menu") || !d.open) return;
+    var panel = d.querySelector(".cm-menu-panel");
+    if (!panel) return;
+    panel.style.left = ""; panel.style.right = "";
+    var M = 8, vw = document.documentElement.clientWidth, r = panel.getBoundingClientRect();
+    if (r.right > vw - M) { panel.style.left = "auto"; panel.style.right = "0"; r = panel.getBoundingClientRect(); }
+    if (r.left < M) { panel.style.right = "auto"; panel.style.left = (M - d.getBoundingClientRect().left) + "px"; }
+  }, true);
   document.addEventListener("keydown", function (e) {
     if (e.key !== "Escape") return;
     var open = document.querySelector("details.cm-menu[open]");

@@ -46,15 +46,18 @@ descKey: read.about.meta_desc
   ["Pillow", "https://python-pillow.org", "MIT-CMU", "pillow"]
 ] -%}
 
-{% call ui.pageHero(lang, "read.about.title" | t(lang), "read.about.subtitle" | t(lang), "info", "read.about.eyebrow" | t(lang)) %}
-  <div class="flex flex-wrap gap-2.5">
+{#- The shared hero (same height on every page). Its buttons are the standard 44px / 14px size
+    at every width, like every other page; "read-hero" (read.css) keeps phone heroes within
+    24–28rem. -#}
+{% call ui.pageHero(lang, "read.about.title" | t(lang), "read.about.subtitle" | t(lang), "info", "read.about.eyebrow" | t(lang), { class: "read-hero" }) %}
+  <div class="hero-actions">
     <a class="btn-light" href="#how">{% icon "workflow", "size-4" %} {{ "read.about.how_btn" | t(lang) }}</a>
     <a class="btn-on-dark" href="#contact">{% icon "mail", "size-4" %} {{ "read.about.contact_btn" | t(lang) }}</a>
   </div>
 {% endcall %}
 
 {#- ---------- The two magazines ---------- -#}
-<section class="section container-page pt-6 sm:pt-8" aria-labelledby="mags-title">
+<section class="container-page page-start" aria-label="{{ 'read.about.mags_title' | t(lang) }}">
   {{ ui.sectionHead("read.about.mags_title" | t(lang), "read.about.mags_sub" | t(lang), "", "", "grapes") }}
 
   <ol class="read-timeline mb-10 grid grid-cols-1 gap-6 pl-8 md:grid-cols-3 md:pl-0 md:pt-8">
@@ -70,21 +73,25 @@ descKey: read.about.meta_desc
   <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
     {% for p in (["lv", "gv"] if lang == "es" else ["gv", "lv"]) %}
     {%- set isLv = p == "lv" -%}
-    <article class="card overflow-hidden">
+    {#- @container: when the card is wide (two cards side by side on a big screen) the story
+        keeps a readable line length and the facts move into a column beside it -#}
+    <article class="card @container overflow-hidden">
       <header class="read-cover {{ 'read-cover--lv' if isLv else 'read-cover--gv' }} relative isolate overflow-hidden px-6 py-6 text-white sm:px-8">
         <svg class="read-cover-art w-36!" viewBox="0 0 200 240" fill="none" aria-hidden="true"><g fill="currentColor"><circle cx="82" cy="96" r="17"/><circle cx="116" cy="96" r="17"/><circle cx="66" cy="126" r="17"/><circle cx="100" cy="126" r="17"/><circle cx="134" cy="128" r="17"/><circle cx="82" cy="156" r="17"/><circle cx="116" cy="156" r="17"/><circle cx="100" cy="186" r="17"/></g></svg>
         <p class="text-xs font-semibold uppercase tracking-[0.18em] text-white/70">{{ ("read.about.lv_kicker" if isLv else "read.about.gv_kicker") | t(lang) }}</p>
         <h3 class="mt-1 flex items-center gap-2 font-display text-3xl font-semibold">{% icon "grapes", "size-7" %} {{ "La Viña" if isLv else "AA Grapevine" }}</h3>
       </header>
-      <div class="p-6 sm:p-8">
-        <p class="leading-relaxed text-ink">{{ ("read.about.lv_p1" if isLv else "read.about.gv_p1") | t(lang) }}</p>
-        <p class="mt-3 leading-relaxed text-muted">{{ ("read.about.lv_p2" if isLv else "read.about.gv_p2") | t(lang) }}</p>
-        <dl class="mt-5 grid grid-cols-3 gap-3 border-t border-line pt-5 text-sm">
+      <div class="grid grid-cols-1 p-6 sm:p-8 @3xl:grid-cols-[minmax(0,1fr)_12rem] @3xl:gap-x-10">
+        <div class="measure">
+          <p class="leading-relaxed text-ink">{{ ("read.about.lv_p1" if isLv else "read.about.gv_p1") | t(lang) }}</p>
+          <p class="mt-3 leading-relaxed text-muted">{{ ("read.about.lv_p2" if isLv else "read.about.gv_p2") | t(lang) }}</p>
+        </div>
+        <dl class="mt-5 grid grid-cols-3 gap-3 border-t border-line pt-5 text-sm @3xl:mt-0 @3xl:grid-cols-1 @3xl:content-start @3xl:gap-4 @3xl:border-t-0 @3xl:border-l @3xl:pt-0 @3xl:pl-6">
           <div><dt class="text-xs font-semibold uppercase tracking-wider text-muted">{{ "read.about.f_first" | t(lang) }}</dt><dd class="mt-0.5 font-semibold text-ink">{{ ("read.about.lv_first" if isLv else "read.about.gv_first") | t(lang) }}</dd></div>
           <div><dt class="text-xs font-semibold uppercase tracking-wider text-muted">{{ "read.about.f_freq" | t(lang) }}</dt><dd class="mt-0.5 font-semibold text-ink">{{ ("read.subs.f_every2" if isLv else "read.subs.f_monthly") | t(lang) }}</dd></div>
           <div><dt class="text-xs font-semibold uppercase tracking-wider text-muted">{{ "read.about.f_lang" | t(lang) }}</dt><dd class="mt-0.5 font-semibold text-ink">{{ ("common.spanish" if isLv else "common.english") | t(lang) }}</dd></div>
         </dl>
-        <a class="link mt-5 inline-flex items-center gap-1 text-sm" href="{{ site.links.lv_home if isLv else site.links.gv_home }}" target="_blank" rel="noopener">{{ (site.links.lv_home if isLv else site.links.gv_home) | hostname }} {% icon "arrow-up-right", "size-4" %}</a>
+        <a class="link mt-5 inline-flex items-center gap-1 justify-self-start text-sm @3xl:col-span-2" href="{{ site.links.lv_home if isLv else site.links.gv_home }}" target="_blank" rel="noopener">{{ (site.links.lv_home if isLv else site.links.gv_home) | hostname }} {% icon "arrow-up-right", "size-4" %}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a>
       </div>
     </article>
     {% endfor %}
@@ -268,16 +275,18 @@ descKey: read.about.meta_desc
 </section>
 
 {#- ---------- Open-source credits ---------- -#}
-<section class="section border-t border-line bg-surface-2/60" aria-labelledby="credits-title">
+<section class="section border-t border-line bg-surface-2/60" aria-label="{{ 'read.about.credits_title' | t(lang) }}">
   <div class="container-page">
     {{ ui.sectionHead("read.about.credits_title" | t(lang), "read.about.credits_sub" | t(lang), "", "", "heart") }}
     <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
       {% for group in [["cr_web", credits_web, "layout-template"], ["cr_bot", credits_bot, "bot"]] %}
-      <div>
+      {#- @container: each list splits into two columns when it is wide (read.css .read-credit-list) -#}
+      {%- set half = ((group[1].length + 1) / 2) | round(0, "floor") %}
+      <div class="@container">
         <h3 class="mb-3 flex items-center gap-2 font-sans text-sm font-semibold uppercase tracking-[0.12em] text-muted">{% icon group[2], "size-4 text-gv" %} {{ ("read.about." + group[0]) | t(lang) }}</h3>
-        <ul class="card divide-y divide-line">
+        <ul class="read-credit-list card overflow-hidden" style="--rows: {{ half }}">
           {% for c in group[1] %}
-          <li>
+          <li class="{{ 'read-credit-c1' if loop.index <= half }}{{ ' read-credit-c2top' if loop.index == half + 1 }}">
             <a class="group flex min-h-14 items-center gap-3 px-4 py-2.5 no-underline transition hover:bg-surface-2" href="{{ c[1] }}" target="_blank" rel="noopener">
               <span class="min-w-0 flex-1">
                 <span class="block font-semibold text-ink group-hover:text-gv">{{ c[0] }}</span>
@@ -291,14 +300,20 @@ descKey: read.about.meta_desc
       </div>
       {% endfor %}
     </div>
-    <p class="mt-6 text-sm text-muted">{% icon "server", "size-4 inline -mt-0.5 text-gv" %} {{ "read.about.cr_hosting" | t(lang) }}</p>
   </div>
 </section>
 
-{#- ---------- Disclaimer ---------- -#}
+{#- ---------- Disclaimer + how the site is hosted (two notes side by side from 1024px) ---------- -#}
 <section class="container-page pb-4 pt-10" aria-labelledby="disclaimer-title">
-  <div class="rounded-[var(--radius-card)] border border-dashed border-line p-5 text-sm leading-relaxed text-muted sm:p-6">
-    <h2 id="disclaimer-title" class="mb-1 font-sans text-sm font-semibold text-ink">{{ "read.about.disclaimer_title" | t(lang) }}</h2>
-    <p>{{ "read.about.disclaimer" | t(lang) }}</p>
+  <div class="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
+    <div class="rounded-[var(--radius-card)] border border-dashed border-line p-5 text-sm leading-relaxed text-muted sm:p-6">
+      <h2 id="disclaimer-title" class="mb-1 font-sans text-sm font-semibold text-ink">{{ "read.about.disclaimer_title" | t(lang) }}</h2>
+      <p class="measure">{{ "read.about.disclaimer" | t(lang) }}</p>
+    </div>
+    <div class="rounded-[var(--radius-card)] border border-dashed border-line p-5 text-sm leading-relaxed text-muted sm:p-6">
+      <h2 class="mb-1 flex items-center gap-2 font-sans text-sm font-semibold text-ink">{% icon "server", "size-4 text-gv" %} {{ "read.about.hosting_title" | t(lang) }}</h2>
+      <p>{{ "read.about.cr_hosting" | t(lang) }}</p>
+      <a class="mt-1.5 inline-flex min-h-10 items-center gap-1 font-semibold text-gv hover:underline" href="{{ '/status/' | lurl(lang) }}">{{ "read.about.status_link" | t(lang) }} {% icon "arrow-right", "size-4" %}</a>
+    </div>
   </div>
 </section>

@@ -2,8 +2,8 @@
   "media.listen_eyebrow": { "en": "AA Grapevine podcasts", "es": "Podcasts de AA Grapevine" },
   "media.listen_title": { "en": "Listen", "es": "Escuchar" },
   "media.listen_sub": {
-    "en": "AA members sharing experience, strength and hope — new episodes every week from AA Grapevine. Play them right here, pick up where you left off, or follow along in your favorite podcast app.",
-    "es": "Miembros de AA compartiendo su experiencia, fortaleza y esperanza — episodios nuevos cada semana de AA Grapevine. Escúchalos aquí mismo, continúa donde lo dejaste o síguelos en tu app de podcasts favorita."
+    "en": "AA members sharing experience, strength and hope — new episodes every week. Play them here; the player remembers where you left off.",
+    "es": "Miembros de AA compartiendo experiencia, fortaleza y esperanza — episodios nuevos cada semana. Escúchalos aquí; el reproductor recuerda dónde te quedaste."
   },
   "media.listen_meta": {
     "en": "Listen to AA Grapevine's podcasts — AA Grapevine's Podcast and the Grapevine Weekly Open AA Meeting — with a built-in player that remembers where you left off. Updated automatically every day.",
@@ -13,7 +13,6 @@
   "media.stat_shows": { "en": "shows", "es": "programas" },
   "media.stat_seasons": { "en": "seasons", "es": "temporadas" },
   "media.stat_hours": { "en": "hours of stories", "es": "horas de historias" },
-  "media.stat_weekly": { "en": "New every week", "es": "Nuevo cada semana" },
   "media.browse_episodes": { "en": "Browse episodes", "es": "Ver episodios" },
   "media.meet_shows": { "en": "Meet the shows", "es": "Conoce los programas" },
 
@@ -129,8 +128,8 @@
   "media.watch_eyebrow": { "en": "AA Grapevine & La Viña on YouTube", "es": "La Viña y AA Grapevine en YouTube" },
   "media.watch_title": { "en": "Watch", "es": "Ver" },
   "media.watch_sub": {
-    "en": "Grapevine Weekly Open meeting recordings, podcast episodes, ASL shares and La Viña audio stories from the official channel — in English and Spanish.",
-    "es": "Grabaciones de la Reunión Abierta Semanal de Grapevine, episodios del podcast, historias en lenguaje de señas y audios de La Viña del canal oficial — en español y en inglés."
+    "en": "Weekly Open meeting recordings, podcast episodes, ASL shares and La Viña audio stories — in English and Spanish.",
+    "es": "Grabaciones de la Reunión Abierta Semanal, episodios del podcast, historias en lenguaje de señas y audios de La Viña — en español y en inglés."
   },
   "media.watch_meta": {
     "en": "Watch the latest AA Grapevine and La Viña videos: Weekly Open meeting recordings, podcast episodes, ASL shares and more. Updated automatically every day.",
@@ -141,7 +140,6 @@
   "media.stat_videos": { "en": "videos", "es": "videos" },
   "media.stat_weekly_open": { "en": "Weekly Open recordings", "es": "reuniones abiertas grabadas" },
   "media.stat_playlists": { "en": "playlists", "es": "listas" },
-  "media.stat_bilingual": { "en": "English & Spanish", "es": "Español e inglés" },
   "media.latest_video": { "en": "Latest video", "es": "Video más reciente" },
   "media.watch_on_yt": { "en": "Watch on YouTube", "es": "Ver en YouTube" },
   "media.all_videos": { "en": "All videos", "es": "Todos los videos" },
@@ -189,8 +187,8 @@
   "media.ig_eyebrow": { "en": "AA Grapevine & La Viña", "es": "La Viña y AA Grapevine" },
   "media.ig_title": { "en": "Instagram", "es": "Instagram" },
   "media.ig_sub": {
-    "en": "The latest posts from AA Grapevine and La Viña — daily inspiration, new issues and ways to be of service. Updated automatically.",
-    "es": "Las publicaciones más recientes de La Viña y AA Grapevine — inspiración diaria, nuevas ediciones y maneras de prestar servicio. Se actualiza automáticamente."
+    "en": "Daily inspiration, new issues and ways to be of service — the latest posts from AA Grapevine and La Viña.",
+    "es": "Inspiración diaria, nuevas ediciones y maneras de servir — lo más reciente de La Viña y AA Grapevine."
   },
   "media.ig_meta": {
     "en": "Latest Instagram posts from AA Grapevine (@alcoholicsanonymous_gv) and La Viña (@alcoholicosanonimos_lv), collected automatically every day.",

@@ -13,9 +13,14 @@ import fs from "node:fs";
 import path from "node:path";
 import { safeUrl } from "../../eleventy.config.js";
 
+// "spotlight" = the published-writers file (Grapevine / La Viña stories by Texas writers, Area 65
+// first — docs/DATA_SCHEMA.md → "spotlight.json"), read by the home page, /published/, /read/,
+// /contribute/ and the search index as db.spotlight. Its links (url, image, extra.issue_url) get the
+// same cleaning as every other file here. Without the file, db.spotlight is { updated: null, items: [] }.
 const FILES = [
   "episodes", "videos", "instagram", "articles", "pdfs", "drive", "events",
   "announcements", "editorial", "weekly_open", "whatsnew", "status", "districts",
+  "spotlight",
 ];
 
 // Field names that hold a link or an image address: url, image, extra.online_url, extra.thumbs[],

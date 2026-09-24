@@ -159,6 +159,103 @@ sources:
   ics_feeds: []
 
 # ---------------------------------------------------------------------
+#  Published-writers spotlight (home page + /published/ page)
+#  Grapevine and La Viña stories whose author lists a Texas location.
+#  Writers from Area 65 (the counties below) are always shown first,
+#  then the rest of Texas. Places are matched to counties with the U.S.
+#  Census place-by-county table (data/geo/texas_places.json).
+# ---------------------------------------------------------------------
+spotlight:
+  home_days: 60              # home page: stories published in the last N days
+  list_days: [60, 90]        # choices on the /published/ page (first = default)
+  default_scope: "neta65"    # /published/ default: neta65 | texas | all
+  # Area 65 counties — from the official NETA 65 district map
+  # (neta65.org/wp-content/uploads/2019/03/NETA65Map.jpg). Borderline counties
+  # NOT included (add them here if the Area map says otherwise):
+  # Brown, Mills, Coryell, Falls, Leon, Angelina, Stonewall.
+  neta65_counties:
+    # North (Red River) — Districts 03, 24, 22, 01
+    - Hardeman
+    - Wilbarger
+    - Wichita
+    - Clay
+    - Montague
+    - Cooke
+    - Grayson
+    - Fannin
+    - Lamar
+    - Red River
+    - Bowie
+    - Foard
+    - Knox
+    - Baylor
+    - Archer
+    - Young
+    # North Central / Metroplex — Districts 21, 74, 5x, 6x
+    - Jack
+    - Wise
+    - Denton
+    - Collin
+    - Hunt
+    - Rockwall
+    - Dallas
+    - Tarrant
+    - Parker
+    - Palo Pinto
+    - Kaufman
+    - Ellis
+    - Johnson
+    - Hood
+    - Somervell
+    # West Central — Districts 71, 73, 65
+    - Haskell
+    - Throckmorton
+    - Fisher
+    - Jones
+    - Shackelford
+    - Stephens
+    - Nolan
+    - Taylor
+    - Callahan
+    - Eastland
+    - Erath
+    - Comanche
+    - Hamilton
+    # Central — Districts 92, 91, 56, 09
+    - Bosque
+    - Hill
+    - McLennan
+    - Limestone
+    - Navarro
+    - Freestone
+    - Anderson
+    - Houston
+    # Northeast / East Texas — Districts 22, 01, 42, 41, 82
+    - Delta
+    - Hopkins
+    - Rains
+    - Franklin
+    - Titus
+    - Camp
+    - Morris
+    - Cass
+    - Marion
+    - Van Zandt
+    - Wood
+    - Upshur
+    - Gregg
+    - Harrison
+    - Smith
+    - Henderson
+    - Cherokee
+    - Rusk
+    - Panola
+    - Nacogdoches
+    - Shelby
+    - San Augustine
+    - Sabine
+
+# ---------------------------------------------------------------------
 #  Links used across the site (official, public)
 # ---------------------------------------------------------------------
 links:

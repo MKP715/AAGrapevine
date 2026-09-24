@@ -23,17 +23,17 @@ pageScripts: ["/assets/js/read.js"]
 {%- set gvCur = (gvIssues[0] | readIssueView(lang)) if gvIssues.length else null -%}
 {%- set lvCur = (lvIssues[0] | readIssueView(lang)) if lvIssues.length else null -%}
 {%- set kitOrder = ["rlv", "gvr"] if lang == "es" else ["gvr", "rlv"] -%}
-{%- set PER_GROUP = 6 -%}{#- files shown per group before "Show more" (3 on phones, see .read-kit-group in read.css) -#}
-{%- set PER_GROUP_SM = 3 -%}
+{#- Kit grids (.read-kit-grid in read.css): 1 → 2 (640px) → 3 (1024px) → 4 (1536px) → 5 (1800px)
+    columns. Each group shows two full rows (3 files on phones) until "Show all" or a search. -#}
 {%- set groupIcons = { news: "newspaper", guides: "book-marked", flyers: "image", forms: "clipboard-list", other: "sparkles" } -%}
 
 {#- One PDF in a kit -#}
-{% macro kitCard(p, kit, lang, extra=false, group="", smExtra=false) %}
+{% macro kitCard(p, kit, lang, group="") %}
 {%- set info = p | readPdfTitleInfo(lang) -%}
 {%- set ex = p.extra or {} -%}
 {%- set dl = p | readDocLang -%}
-<li data-kit-item data-kit="{{ kit }}" data-text="{{ (info.title + ' ' + (info.gloss or '') + ' ' + (p.title or '') + ' ' + group + ' ' + ((p.tags or []) | join(' '))) | lower }}" {% if extra %}data-extra{% endif %}{% if smExtra %} class="read-kit-sm-extra"{% endif %}
-    x-show="match($el) && (more || q || !$el.hasAttribute('data-extra'))">
+<li data-kit-item data-kit="{{ kit }}" data-text="{{ (info.title + ' ' + (info.gloss or '') + ' ' + (p.title or '') + ' ' + group + ' ' + ((p.tags or []) | join(' '))) | lower }}"
+    x-show="match($el)">
   <a href="{{ p.url }}" target="_blank" rel="noopener" class="card card-link group flex h-full items-start gap-3 p-2.5 no-underline sm:p-3">
     <span class="relative aspect-[3/4] w-11 shrink-0 overflow-hidden rounded-lg border border-line bg-surface-2 sm:w-14">
       {% if ex.thumb %}<img src="{{ ex.thumb }}" alt="" loading="lazy" decoding="async" class="absolute inset-0 size-full object-cover object-top">
@@ -69,17 +69,21 @@ pageScripts: ["/assets/js/read.js"]
   {% if items.length %}
   <div class="mt-5 space-y-8">
     {% for g in items | readKitGroups %}
-    <div role="group" class="read-kit-group" x-data="{ more: false }" :class="{ 'is-more': more || q }" x-show="groupHas($el)" aria-labelledby="kit-{{ kit }}-{{ g.key }}">
+    <div role="group" class="read-kit-group" x-data="{ more: false }" :class="{ 'is-js': true, 'is-more': more || q }" x-show="groupHas($el)" aria-labelledby="kit-{{ kit }}-{{ g.key }}">
       <h4 id="kit-{{ kit }}-{{ g.key }}" class="mb-3 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.12em] text-muted">
         <span class="{{ 'text-lv' if isLv else 'text-gv' }}">{% icon groupIcons[g.key], "size-4" %}</span>{{ ("read.gvr.g_" + g.key) | t(lang) }}
         <span class="badge-muted normal-case tracking-normal">{{ g.items.length }}</span>
       </h4>
-      <ul class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {% for p in g.items %}{{ kitCard(p, kit, lang, loop.index > PER_GROUP, ("read.gvr.g_" + g.key) | t(lang), loop.index > PER_GROUP_SM and loop.index <= PER_GROUP) }}{% endfor %}
+      <ul class="read-kit-grid">
+        {% for p in g.items %}{{ kitCard(p, kit, lang, ("read.gvr.g_" + g.key) | t(lang)) }}{% endfor %}
       </ul>
-      {% if g.items.length > PER_GROUP_SM %}
-      <button type="button" class="btn-ghost btn-sm mt-2 {{ 'text-lv' if isLv else 'text-gv' }}{{ ' sm:hidden' if g.items.length <= PER_GROUP }}" x-show="!q" x-cloak @click="more = !more" :aria-expanded="more.toString()">
-        <span x-show="!more"><span class="sm:hidden">{{ "read.gvr.show_more" | t(lang, {n: g.items.length - PER_GROUP_SM}) }}</span><span class="hidden sm:inline">{{ "read.gvr.show_more" | t(lang, {n: g.items.length - PER_GROUP}) }}</span></span>
+      {#- The button only shows at widths where some files are folded away: 3 on phones, then
+          two rows of 2 / 3 / 4 / 5 columns (4 · 6 · 8 · 10 files) — same steps as read.css. -#}
+      {%- set nk = g.items.length -%}
+      {% if nk > 3 %}
+      {%- set btnHide = "sm:hidden" if nk <= 4 else ("lg:hidden" if nk <= 6 else ("2xl:hidden" if nk <= 8 else ("min-[1800px]:hidden" if nk <= 10 else ""))) -%}
+      <button type="button" class="btn-ghost btn-sm mt-2 {{ 'text-lv' if isLv else 'text-gv' }} {{ btnHide }}" x-show="!q" x-cloak @click="more = !more" :aria-expanded="more.toString()">
+        <span x-show="!more">{{ "read.gvr.show_all" | t(lang, {n: nk}) }}</span>
         <span x-show="more">{{ "common.show_less" | t(lang) }}</span>
         {% icon "chevron-down", "size-4 transition" %}
       </button>
@@ -95,23 +99,25 @@ pageScripts: ["/assets/js/read.js"]
 </div>
 {% endmacro %}
 
-{% call ui.pageHero(lang, "nav.gvr" | t(lang), "read.gvr.subtitle" | t(lang), "badge-check", "read.gvr.eyebrow" | t(lang)) %}
-  <div class="flex flex-wrap gap-2.5">
-    <a class="btn-light" href="{{ L.rlv_register if lang == 'es' else L.gvr_register }}" target="_blank" rel="noopener">{% icon "user-plus", "size-4" %} {{ ("read.gvr.register_rlv" if lang == "es" else "read.gvr.register_gvr") | t(lang) }}</a>
-    <a class="btn-on-dark" href="{{ L.gvr_register if lang == 'es' else L.rlv_register }}" target="_blank" rel="noopener">{% icon "user-plus", "size-4" %} {{ ("read.gvr.register_gvr" if lang == "es" else "read.gvr.register_rlv") | t(lang) }}</a>
-    <a class="btn-on-dark" href="#kits">{% icon "folder-open", "size-4" %} {{ "read.gvr.see_kits" | t(lang) }}</a>
+{#- The shared hero (same height on every page). Its buttons are the standard 44px / 14px size
+    at every width, like every other page; "read-hero" (read.css) keeps phone heroes within
+    24–28rem (both buttons on one row, like the home page). Phones get no stats, and the
+    in-page "Resource kits" jump shows from 768px, so the row does not wrap on small tablets.
+    The "updates daily" note is on the Official resource kits heading. -#}
+{% call ui.pageHero(lang, "nav.gvr" | t(lang), "read.gvr.subtitle" | t(lang), "badge-check", "read.gvr.eyebrow" | t(lang), { class: "read-hero" }) %}
+  <div class="hero-actions">
+    <a class="btn-light" href="{{ L.rlv_register if lang == 'es' else L.gvr_register }}" target="_blank" rel="noopener">{% icon "user-plus", "size-4" %} {{ ("read.gvr.register_rlv" if lang == "es" else "read.gvr.register_gvr") | t(lang) }}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a>
+    <a class="btn-on-dark" href="{{ L.gvr_register if lang == 'es' else L.rlv_register }}" target="_blank" rel="noopener">{% icon "user-plus", "size-4" %} {{ ("read.gvr.register_gvr" if lang == "es" else "read.gvr.register_rlv") | t(lang) }}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a>
+    <a class="btn-on-dark max-md:hidden" href="#kits">{% icon "folder-open", "size-4" %} {{ "read.gvr.see_kits" | t(lang) }}</a>
   </div>
   {% if gvrKit.length or rlvKit.length %}
-  <dl class="mt-8 flex flex-wrap gap-x-8 gap-y-3 text-white/80">
-    <div class="flex flex-row-reverse items-baseline justify-end gap-2"><dt class="text-sm">{{ "read.gvr.stat_gvr" | t(lang) }}</dt><dd class="font-display text-2xl font-semibold text-white">{{ gvrKit.length }}</dd></div>
-    <div class="flex flex-row-reverse items-baseline justify-end gap-2"><dt class="text-sm">{{ "read.gvr.stat_rlv" | t(lang) }}</dt><dd class="font-display text-2xl font-semibold text-white">{{ rlvKit.length }}</dd></div>
-    <div class="flex items-center text-sm"><dt class="sr-only">{{ "common.updated" | t(lang) }}</dt><dd class="flex items-center gap-2"><span class="relative flex size-2"><span class="absolute inline-flex size-full animate-ping rounded-full bg-white/70 opacity-60"></span><span class="relative inline-flex size-2 rounded-full bg-white"></span></span>{{ "common.updates_daily" | t(lang) }}</dd></div>
-  </dl>
+  {%- set kitStats = [{ value: gvrKit.length, label: "read.gvr.stat_gvr" | t(lang) }, { value: rlvKit.length, label: "read.gvr.stat_rlv" | t(lang) }] -%}
+  <div class="max-sm:hidden">{{ ui.heroStats((kitStats | reverse) if lang == "es" else kitStats) }}</div>
   {% endif %}
 {% endcall %}
 
 {#- ---------- The job ---------- -#}
-<section class="section container-page pt-6 sm:pt-8" aria-labelledby="job-title">
+<section class="container-page page-start" aria-labelledby="job-title">
   <div class="grid grid-cols-1 gap-10 lg:grid-cols-[1fr_1.35fr]">
     <div>
       <p class="eyebrow">{{ "read.gvr.job_eyebrow" | t(lang) }}</p>
@@ -129,7 +135,8 @@ pageScripts: ["/assets/js/read.js"]
       </div>
       <p class="mt-5 flex items-start gap-2 text-sm leading-relaxed text-muted">{% icon "users-round", "mt-0.5 size-4 shrink-0 text-vine" %}<span><strong class="text-ink">{{ "read.gvr.who_t" | t(lang) }}</strong> {{ "read.gvr.who" | t(lang) }}</span></p>
     </div>
-    <ul class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <div class="@container">
+    <ul class="grid grid-cols-1 gap-4 @md:grid-cols-2 @4xl:grid-cols-3">
       {% for d in [["library", "bg-gv-soft text-gv"], ["megaphone", "bg-lv-soft text-lv"], ["gift", "bg-vine-soft text-vine"], ["pen-line", "bg-grape-soft text-grape"], ["map", "bg-gv-soft text-gv"], ["languages", "bg-lv-soft text-lv"]] %}
       <li class="card card-pad">
         <span class="grid size-11 place-items-center rounded-xl {{ d[1] }}">{% icon d[0], "size-5" %}</span>
@@ -138,6 +145,7 @@ pageScripts: ["/assets/js/read.js"]
       </li>
       {% endfor %}
     </ul>
+    </div>
   </div>
 </section>
 
@@ -153,8 +161,8 @@ pageScripts: ["/assets/js/read.js"]
   { id: "district", icon: "map" }
 ] -%}
 <section class="border-y border-line bg-surface-2/60" aria-labelledby="steps-title">
-  <div class="container-page section grid grid-cols-1 gap-10 lg:grid-cols-[1.4fr_1fr]">
-    <div class="card overflow-hidden" x-data="gvrChecklist('gvr-checklist-v1', {{ steps.length }})">
+  <div class="container-page section layout-aside">
+    <div class="card @container overflow-hidden" x-data="gvrChecklist('gvr-checklist-v1', {{ steps.length }})">
       <div class="border-b border-line p-5 sm:p-6">
         <div class="flex flex-wrap items-start justify-between gap-3">
           <div>
@@ -169,9 +177,12 @@ pageScripts: ["/assets/js/read.js"]
         </div>
         <p class="mt-3 text-sm font-semibold text-vine" x-show="count() === total" x-cloak>{% icon "party-popper", "size-4 inline -mt-0.5" %} {{ "read.gvr.all_done" | t(lang) }}</p>
       </div>
-      <ol class="divide-y divide-line">
+      {#- Two columns when the card is wide (read.css .read-check-list): steps read DOWN each
+          column (1–4, then 5–8), the same order as the list itself. -#}
+      {%- set half = ((steps.length + 1) / 2) | round(0, "floor") -%}
+      <ol class="read-check-list" style="--rows: {{ half }}">
         {% for s in steps %}
-        <li class="read-check-row flex items-start gap-3 px-5 py-4 transition sm:px-6" :class="{ 'is-done': isDone('{{ s.id }}') }">
+        <li class="read-check-row flex items-start gap-3 px-5 py-4 transition sm:px-6{{ " read-check-c1" if loop.index <= half }}{{ " read-check-c2top" if loop.index == half + 1 }}" :class="{ 'is-done': isDone('{{ s.id }}') }">
           <input type="checkbox" id="chk-{{ s.id }}" class="read-check mt-0.5" :checked="isDone('{{ s.id }}')" @change="toggle('{{ s.id }}')">
           <div class="min-w-0 flex-1">
             <label for="chk-{{ s.id }}" class="read-check-label flex cursor-pointer items-center gap-2 font-semibold text-ink">{{ ("read.gvr.s_" + s.id + "_t") | t(lang) }}</label>
@@ -271,9 +282,9 @@ pageScripts: ["/assets/js/read.js"]
 </section>
 
 {#- ---------- Ideas for the home group ---------- -#}
-<section class="section container-page pt-0" aria-labelledby="ideas-title">
+<section class="section container-page pt-0" aria-label="{{ 'read.gvr.ideas_title' | t(lang) }}">
   {{ ui.sectionHead("read.gvr.ideas_title" | t(lang), "read.gvr.ideas_sub" | t(lang), "", "", "lightbulb") }}
-  <div class="grid-cards">
+  <div class="grid-cards-fit [--cards-min:15rem] [--cards-max:3] min-[1800px]:[--cards-max:6]">
     {% for i in [["library", "bg-gv-soft text-gv", "/subscribe/"], ["clipboard-list", "bg-lv-soft text-lv", "/subscribe/"], ["gift", "bg-vine-soft text-vine", "/subscribe/"], ["pen-line", "bg-grape-soft text-grape", "/contribute/"], ["headphones", "bg-grape-soft text-grape", "/listen/"], ["book-open", "bg-gv-soft text-gv", "/read/"]] %}
     <a href="{{ i[2] | lurl(lang) }}" class="card card-link card-pad group flex flex-col no-underline">
       <span class="grid size-11 place-items-center rounded-xl {{ i[1] }}">{% icon i[0], "size-5" %}</span>

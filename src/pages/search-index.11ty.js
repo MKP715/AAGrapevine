@@ -7,7 +7,10 @@
 //   dp ("m" = only the month is known), l (content language),
 //   src (gv|lv|neta|podcast|youtube|site), im (image), yt (YouTube id → thumbnail),
 //   ic (icon for site pages), m (machine-translated), n (new),
-//   pw (subscriber story), z (de-emphasized: PDF no longer linked, past event)
+//   pw (subscriber story), z (de-emphasized: PDF no longer linked, past event),
+//   a (a story's byline: writer · hometown, e.g. "Victor R. · Grand Prairie, Texas" —
+//   searched and shown under the result). The Published Writers page entry is also
+//   found by the names, cities and counties of the Texas writers it spotlights.
 // Built by the searchIndexJson filter in eleventy/filters/library.js.
 export default class SearchIndex {
   data() {

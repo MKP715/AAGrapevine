@@ -2,6 +2,10 @@
 // alternates (en / es / x-default) so search engines pair the translations.
 // Built from collections.all, so new pages are picked up automatically.
 // A page opts out with `sitemap: false` in its front matter.
+// Pages that must always be listed (both languages) are checked at build time: if one is
+// missing (renamed, excluded by mistake) the build log says so. Not checked in ONLY= dev builds.
+const REQUIRED = ["/", "/whats-new/", "/published/", "/read/", "/districts/", "/digest/"];
+
 export const data = {
   permalink: "/sitemap.xml",
   eleventyExcludeFromCollections: true,
@@ -29,6 +33,11 @@ export function render(data) {
   // "/es/x/" ⇄ "/x/"
   const enOf = (u) => (u.startsWith("/es/") ? u.slice(3) : u === "/es" ? "/" : u);
   const esOf = (u) => "/es" + enOf(u);
+
+  if (!process.env.ONLY) {
+    const missing = REQUIRED.flatMap((u) => [u, esOf(u)]).filter((u) => !urls.has(u));
+    if (missing.length) console.warn(`[sitemap] missing page(s): ${missing.join(", ")}`);
+  }
 
   const isEs = (u) => (u.startsWith("/es/") ? 1 : 0);
   const sorted = [...urls].sort((a, b) => enOf(a).localeCompare(enOf(b)) || isEs(a) - isEs(b));

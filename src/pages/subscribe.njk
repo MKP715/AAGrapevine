@@ -85,17 +85,22 @@ descKey: read.subs.meta_desc
 </li>
 {% endmacro %}
 
-{% call ui.pageHero(lang, "read.subs.title" | t(lang), "read.subs.subtitle" | t(lang), "mail-open", "read.subs.eyebrow" | t(lang)) %}
-  <div class="flex flex-wrap gap-2.5">
+{#- The shared hero (same height on every page). Its buttons are the standard 44px / 14px size
+    at every width, like every other page; "read-hero" (read.css) keeps phone heroes within
+    24–28rem (below ~414px the two buttons stack, so the subtitle is kept to three phone lines).
+    The in-page "Gift a subscription" jump shows from 768px, so the row does not wrap on small
+    tablets. -#}
+{% call ui.pageHero(lang, "read.subs.title" | t(lang), "read.subs.subtitle" | t(lang), "mail-open", "read.subs.eyebrow" | t(lang), { class: "read-hero" }) %}
+  <div class="hero-actions">
     {% for p in pubOrder %}
-    <a class="{{ 'btn-light' if loop.first else 'btn-on-dark' }}" href="{{ L.lv_subscribe if p == 'lv' else L.gv_subscribe }}" target="_blank" rel="noopener">{% icon "grapes", "size-4" %} {{ ("read.subs.sub_lv" if p == "lv" else "read.subs.sub_gv") | t(lang) }}</a>
+    <a class="{{ 'btn-light' if loop.first else 'btn-on-dark' }}" href="{{ L.lv_subscribe if p == 'lv' else L.gv_subscribe }}" target="_blank" rel="noopener">{% icon "grapes", "size-4" %} {{ ("read.subs.sub_lv" if p == "lv" else "read.subs.sub_gv") | t(lang) }}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a>
     {% endfor %}
-    <a class="btn-on-dark" href="#carry">{% icon "gift", "size-4" %} {{ "read.subs.ctm_short" | t(lang) }}</a>
+    <a class="btn-on-dark max-md:hidden" href="#carry">{% icon "gift", "size-4" %} {{ "read.subs.ctm_short" | t(lang) }}</a>
   </div>
 {% endcall %}
 
 {#- ---------- The two magazines ---------- -#}
-<section class="section container-page pt-6 sm:pt-8" aria-labelledby="mags-title">
+<section class="container-page page-start" aria-label="{{ 'read.subs.mags_title' | t(lang) }}">
   {{ ui.sectionHead("read.subs.mags_title" | t(lang), "read.subs.mags_sub" | t(lang), "", "", "grapes") }}
   <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
     {% for p in pubOrder %}
@@ -152,7 +157,7 @@ descKey: read.subs.meta_desc
     </div>
     {% endfor %}
   </div>
-  <p class="mt-5 flex items-start gap-2 text-sm text-muted">{% icon "info", "mt-0.5 size-4 text-gv" %} <span>{{ "read.subs.no_prices" | t(lang) }}</span></p>
+  <p class="measure mt-5 flex items-start gap-2 text-sm text-muted">{% icon "info", "mt-0.5 size-4 text-gv" %} <span>{{ "read.subs.no_prices" | t(lang) }}</span></p>
 </section>
 
 {#- ---------- Carry the Message ---------- -#}
@@ -161,7 +166,7 @@ descKey: read.subs.meta_desc
     <div>
       <p class="eyebrow text-lv">{{ "read.subs.ctm_eyebrow" | t(lang) }}</p>
       <h2 id="ctm-title" class="h-display mt-2 text-3xl sm:text-4xl">{{ "read.subs.ctm_title" | t(lang) }}</h2>
-      <p class="lead mt-4">{{ "read.subs.ctm_text" | t(lang) }}</p>
+      <p class="lead measure mt-4">{{ "read.subs.ctm_text" | t(lang) }}</p>
       <ul class="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
         {% for w in [["landmark", "ctm_w1"], ["hospital", "ctm_w2"], ["sprout", "ctm_w3"], ["map", "ctm_w4"]] %}
         <li class="flex items-center gap-3 rounded-xl bg-surface p-3 shadow-[var(--shadow-card)]"><span class="grid size-9 shrink-0 place-items-center rounded-lg bg-lv-soft text-lv">{% icon w[0], "size-4" %}</span><span class="text-sm font-medium text-ink">{{ ("read.subs." + w[1]) | t(lang) }}</span></li>
@@ -188,8 +193,8 @@ descKey: read.subs.meta_desc
 </section>
 
 {#- ---------- Home group subscriptions ---------- -#}
-<section class="section container-page" aria-labelledby="group-title">
-  <div class="grid grid-cols-1 gap-10 lg:grid-cols-[1.25fr_1fr]">
+<section class="section container-page" aria-label="{{ 'read.subs.group_title' | t(lang) }}">
+  <div class="grid grid-cols-1 gap-10 lg:grid-cols-[1.25fr_1fr] 2xl:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] 2xl:gap-12">
     <div>
       {{ ui.sectionHead("read.subs.group_title" | t(lang), "read.subs.group_sub" | t(lang), "", "", "house") }}
       <ol class="relative space-y-4 border-l-2 border-line pl-6">
@@ -202,14 +207,19 @@ descKey: read.subs.meta_desc
         {% endfor %}
       </ol>
     </div>
-    <aside class="card card-pad self-start" aria-labelledby="forms-title">
+    {#- @container: the Grapevine and La Viña form lists sit side by side when the card is wide -#}
+    <aside class="card card-pad @container self-start" aria-labelledby="forms-title">
       <h3 id="forms-title" class="flex items-center gap-2 font-display text-xl font-semibold">{% icon "clipboard-list", "size-5 text-gv" %} {{ "read.subs.forms_title" | t(lang) }}</h3>
       <p class="mt-1 text-sm text-muted">{{ "read.subs.forms_sub" | t(lang) }}</p>
       {% if forms.gv.length or forms.lv.length %}
+      <div class="grid grid-cols-1 gap-x-8 @2xl:grid-cols-2">
       {% for pub in pubOrder %}{% if forms[pub].length %}
-      <p class="mt-4 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider {{ 'text-lv' if pub == 'lv' else 'text-gv' }}">{% icon "grapes", "size-3.5" %} {{ "La Viña" if pub == "lv" else "Grapevine" }}</p>
-      <ul class="-mx-3 mt-1">{% for f in forms[pub] | limit(6) %}{{ pdfRow(f, lang) }}{% endfor %}</ul>
+      <div class="min-w-0">
+        <p class="mt-4 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider {{ 'text-lv' if pub == 'lv' else 'text-gv' }}">{% icon "grapes", "size-3.5" %} {{ "La Viña" if pub == "lv" else "Grapevine" }}</p>
+        <ul class="-mx-3 mt-1">{% for f in forms[pub] | limit(6) %}{{ pdfRow(f, lang) }}{% endfor %}</ul>
+      </div>
       {% endif %}{% endfor %}
+      </div>
       {% else %}
       <p class="mt-4 rounded-xl border border-dashed border-line p-4 text-sm text-muted">{{ "read.subs.forms_empty" | t(lang) }}</p>
       {% endif %}
@@ -219,9 +229,10 @@ descKey: read.subs.meta_desc
 </section>
 
 {#- ---------- Free resources ---------- -#}
-<section class="section container-page pt-0" aria-labelledby="free-title">
+<section class="section container-page pt-0" aria-label="{{ 'read.subs.free_title' | t(lang) }}">
   {{ ui.sectionHead("read.subs.free_title" | t(lang), "read.subs.free_sub" | t(lang), "", "", "heart") }}
-  <div class="grid-cards">
+  {#- six cards → at most three per row: two even rows on wide screens, no lone card -#}
+  <div class="grid-cards-fit [--cards-max:3]">
     {% set free = [
       { href: "/listen/" | lurl(lang), ext: false, icon: "headphones", c: "bg-grape-soft text-grape", k: "podcast" },
       { href: "/watch/" | lurl(lang), ext: false, icon: "youtube", c: "bg-grape-soft text-grape", k: "youtube" },
@@ -244,8 +255,32 @@ descKey: read.subs.meta_desc
 </section>
 
 {#- ---------- Catalogs (auto) ---------- -#}
+{#- A few catalogs (the usual case): the text on the left, the covers on the right from 1024px.
+    Many: a heading row, then a cover grid that gains columns on wide screens (up to 8). -#}
+{%- set fewCats = catalogs.length and catalogs.length <= 3 -%}
+{%- set coverCols = [
+  "",
+  "lg:grid-cols-[minmax(0,15rem)] 2xl:grid-cols-[minmax(0,17rem)]",
+  "lg:grid-cols-[repeat(2,minmax(0,15rem))] 2xl:grid-cols-[repeat(2,minmax(0,17rem))]",
+  "sm:grid-cols-3 lg:grid-cols-[repeat(3,minmax(0,15rem))] 2xl:grid-cols-[repeat(3,minmax(0,17rem))]"
+] -%}{#- index = number of catalogs (1–3); literal class names so Tailwind finds them -#}
 <section class="section border-t border-line bg-surface-2/60" aria-labelledby="cat-title">
   <div class="container-page">
+    {% if fewCats %}
+    <div class="grid grid-cols-1 items-center gap-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-12 2xl:gap-20">
+      <div>
+        <h2 id="cat-title" class="h-section flex items-center gap-2.5"><span class="text-gv">{% icon "book-open", "size-6" %}</span>{{ "read.subs.cat_title" | t(lang) }}</h2>
+        <p class="mt-1.5 max-w-2xl text-muted">{{ "read.subs.cat_sub" | t(lang) }}</p>
+        <p class="mt-4"><span class="badge-vine py-1!">{% icon "refresh-cw", "size-3" %} {{ "common.updates_daily" | t(lang) }}</span></p>
+        <div class="mt-6 flex flex-wrap gap-2.5">
+          {% for pub in pubOrder %}<a class="btn-secondary" href="{{ L.lv_store if pub == 'lv' else L.gv_store }}" target="_blank" rel="noopener">{% icon "store", "size-4" %} {{ ("read.subs.lv_store" if pub == "lv" else "read.subs.gv_store") | t(lang) }}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a>{% endfor %}
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-4 sm:gap-5 {{ coverCols[catalogs.length] }}">
+        {% for p in catalogs %}{{ pdfCover(p, lang) }}{% endfor %}
+      </div>
+    </div>
+    {% else %}
     <div class="mb-6 flex flex-wrap items-end justify-between gap-4">
       <div>
         <h2 id="cat-title" class="h-section flex items-center gap-2.5"><span class="text-gv">{% icon "book-open", "size-6" %}</span>{{ "read.subs.cat_title" | t(lang) }}</h2>
@@ -254,7 +289,7 @@ descKey: read.subs.meta_desc
       <span class="badge-vine py-1!">{% icon "refresh-cw", "size-3" %} {{ "common.updates_daily" | t(lang) }}</span>
     </div>
     {% if catalogs.length %}
-    <div class="grid grid-cols-1 gap-4 sm:gap-5 {{ 'grid-cols-2 sm:max-w-2xl md:grid-cols-2' if catalogs.length <= 2 else 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4' }}">
+    <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4 xl:grid-cols-6 min-[1800px]:grid-cols-8">
       {% for p in catalogs | limit(8) %}{{ pdfCover(p, lang) }}{% endfor %}
     </div>
     {% if catalogs.length > 8 %}
@@ -266,6 +301,7 @@ descKey: read.subs.meta_desc
     {% else %}
       {{ ui.emptyState("book-open", "read.subs.cat_empty" | t(lang), "read.subs.cat_empty_text" | t(lang), L.gv_store, "read.subs.gv_store" | t(lang)) }}
       <p class="mt-3 text-center text-sm"><a class="link" href="{{ L.lv_store }}" target="_blank" rel="noopener">{{ "read.subs.lv_store" | t(lang) }}</a></p>
+    {% endif %}
     {% endif %}
   </div>
 </section>

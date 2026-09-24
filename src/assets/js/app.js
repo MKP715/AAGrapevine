@@ -130,10 +130,13 @@
   document.addEventListener("alpine:init", function () {
     var Alpine = window.Alpine;
 
+    /* Header: transparent (white text) over the dark page hero, solid once scrolled.
+       A page without a hero (no ui.pageHero) — or <body data-header="solid"> — gets the
+       solid header from the start, so its white text never sits on the light page. */
     Alpine.data("siteHeader", function () {
       return {
         solid: false, drawer: false, theme: document.documentElement.getAttribute("data-theme") || "light",
-        force: document.body.getAttribute("data-header") === "solid",
+        force: document.body.getAttribute("data-header") === "solid" || !document.querySelector("[data-gv-hero], .page-hero, #homeHero"),
         init: function () {
           var self = this;
           var onScroll = function () { self.solid = self.force || window.scrollY > 24; };

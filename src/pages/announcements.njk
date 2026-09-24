@@ -9,14 +9,17 @@ pageScripts: ["/assets/js/committee.js"]
 ---
 {#- Committee announcements (Google Docs in the Drive "announcements" folder or
     content/announcements/*.md). Pinned first, full body, auto-translated,
-    each with a deep-link anchor (#ann-…) and share buttons. -#}
+    each with a deep-link anchor (#ann-…) and share buttons.
+    Below the shared page hero: the announcements next to a sidebar (layout-aside, from
+    1024px). Two announcements per row from 1536px (each keeps a readable line length);
+    with none, the empty state and "Coming up" side by side from 1536px. -#}
 {% import "macros/ui.njk" as ui with context %}
 {%- set anns = db.announcements.items | cmAnnouncements -%}
 {%- set pageAbs = page.url | siteUrl(site) -%}
 {%- set di = db.status | cmDriveInfo(site) -%}
 
 {% call ui.pageHero(lang, "nav.announcements" | t(lang), "committee.ann.hero_sub" | t(lang), "megaphone", "committee.ann.eyebrow" | t(lang)) %}
-  <div class="flex flex-wrap items-center gap-3">
+  <div class="hero-actions">
     <a class="btn-light" href="{{ '/digest/' | lurl(lang) }}">{% icon "mail-plus", "size-4" %} {{ "committee.ann.get_digest" | t(lang) }}</a>
     <a class="btn-on-dark" href="#how-to-post">{% icon "pen-line", "size-4" %} {{ "committee.ann.how_btn" | t(lang) }}</a>
   </div>
@@ -24,18 +27,18 @@ pageScripts: ["/assets/js/committee.js"]
 
 {% committeeNav lang, "announcements", db %}
 
-<section class="section container-page">
-  <div class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_20rem] xl:gap-12">
+<section class="page-start container-page">
+  <div class="layout-aside">
     <div class="min-w-0">
       {% if anns | length %}
-      <ol class="space-y-6">
+      <ol class="cm-ann-list{{ ' is-multi' if anns | length > 1 }}">
         {% for a in anns %}
         {%- set title = a | tx("title", lang) -%}
         {%- set body = a | tx("body_md", lang) or (a | tx("summary", lang)) -%}
         {%- set when = a.date or a.first_seen -%}
-        <li>
-          <article id="{{ a._anchor }}" class="card cm-ann scroll-mt-28{{ ' is-pinned' if a._pinned }}" aria-labelledby="{{ a._anchor }}-h">
-            <div class="p-5 sm:p-7">
+        <li class="min-w-0">
+          <article id="{{ a._anchor }}" class="card cm-ann flex h-full flex-col scroll-mt-28{{ ' is-pinned' if a._pinned }}" aria-labelledby="{{ a._anchor }}-h">
+            <div class="flex-1 p-5 sm:p-7">
               <div class="flex flex-wrap items-center gap-2 text-sm">
                 {% if a._pinned %}<span class="badge-lv">{% icon "pin", "size-3" %} {{ "committee.ann.pinned" | t(lang) }}</span>{% endif %}
                 {% if a.is_new %}<span class="badge-new">{{ "common.new" | t(lang) }}</span>{% endif %}
@@ -73,19 +76,22 @@ pageScripts: ["/assets/js/committee.js"]
         {% endfor %}
       </ol>
       {% else %}
-      <div class="cm-empty-hero">
+      <div class="cm-ann-empty">
+      <div class="cm-empty-hero flex flex-col justify-center">
         <div class="cm-megaphone" aria-hidden="true">{% icon "megaphone", "size-10" %}</div>
         <h2 class="h-section mt-6 text-center">{{ "committee.ann.empty_title" | t(lang) }}</h2>
         <p class="mx-auto mt-3 max-w-lg text-center leading-relaxed text-muted">{{ "committee.ann.empty_text" | t(lang) }}</p>
         <div class="mt-5 flex justify-center">{% cmDriveChecked lang, di %}</div>
       </div>
 
+      <div class="min-w-0">
+
       {#- Meanwhile: the next committee meeting + the next event, so the page is still useful -#}
       {%- set nm = site | cmNextMeeting(lang) -%}
       {%- set ne = (db.events.items | cmEvents(site, lang)) | where("past", false) | whereNot("committee", true) | first -%}
       {% if nm or ne %}
-      <h2 class="eyebrow mt-10 mb-4 font-sans">{{ "committee.ann.meanwhile" | t(lang) }}</h2>
-      <div class="grid gap-4 sm:grid-cols-2">
+      <h2 class="eyebrow mb-4 font-sans">{{ "committee.ann.meanwhile" | t(lang) }}</h2>
+      <div class="grid gap-4 sm:grid-cols-2 min-[96rem]:grid-cols-1">
         {% if nm %}
         <a href="{{ '/meeting/' | lurl(lang) }}" class="card card-link cm-mini-card group">
           <span class="cm-date-tile cm-tone-gv" aria-hidden="true"><span class="cm-tile-mon">{{ nm.tile.mon }}</span><span class="cm-tile-day">{{ nm.tile.day }}</span><span class="cm-tile-wd">{{ nm.tile.wd }}</span></span>
@@ -119,11 +125,13 @@ pageScripts: ["/assets/js/committee.js"]
         <a class="btn-secondary" href="{{ '/events/' | lurl(lang) }}">{% icon "calendar-days", "size-4" %} {{ "committee.ann.see_events" | t(lang) }}</a>
         <a class="btn-ghost" href="{{ '/whats-new/' | lurl(lang) }}">{% icon "sparkles", "size-4" %} {{ "nav.whats_new" | t(lang) }}</a>
       </div>
+      </div>
+      </div>
       {% endif %}
     </div>
 
     {#- ---------- Sidebar ---------- -#}
-    <aside class="space-y-6 lg:sticky lg:top-24 lg:self-start">
+    <aside class="cm-ann-aside space-y-6">
       <div id="how-to-post" class="card card-pad scroll-mt-24">
         <span class="grid size-11 place-items-center rounded-xl bg-lv-soft text-lv">{% icon "pen-line", "size-5" %}</span>
         <h2 class="h-card mt-4 text-xl">{{ "committee.ann.how_title" | t(lang) }}</h2>

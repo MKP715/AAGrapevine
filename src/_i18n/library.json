@@ -35,9 +35,17 @@
     "en": "New this month",
     "es": "Nuevos este mes"
   },
-  "library.stat_sources": {
-    "en": "Sources",
-    "es": "Fuentes"
+  "library.stat_src.gv": {
+    "en": "From Grapevine",
+    "es": "De Grapevine"
+  },
+  "library.stat_src.lv": {
+    "en": "From La Viña",
+    "es": "De La Viña"
+  },
+  "library.stat_src.neta": {
+    "en": "From our committee",
+    "es": "De nuestro comité"
   },
   "library.stat_daily": {
     "en": "Checked for new files every day",
@@ -483,6 +491,10 @@
     "en": "Filter results by type",
     "es": "Filtrar resultados por tipo"
   },
+  "search.filter_title": {
+    "en": "Type of content",
+    "es": "Tipo de contenido"
+  },
   "search.kind.all": {
     "en": "All",
     "es": "Todo"
@@ -783,6 +795,18 @@
     "en": "weekly open meeting online wednesday",
     "es": "reunión abierta semanal en línea miércoles"
   },
+  "search.kw.published": {
+    "en": "published writers authors spotlight stories texas northeast texas area 65 neta 65 local members",
+    "es": "escritores publicados autores historias destacadas texas tejas noreste de texas área 65 neta 65 miembros locales"
+  },
+  "search.kw.writer_neta65": {
+    "en": "Area 65 Northeast Texas published writer",
+    "es": "Área 65 noreste de Texas Tejas escritor publicado"
+  },
+  "search.kw.writer_texas": {
+    "en": "Texas published writer",
+    "es": "Texas Tejas escritor publicado"
+  },
   "library.col.reports_empty": {
     "en": "Added here as soon as the committee uploads them",
     "es": "Aparecerán aquí en cuanto el comité los suba"
@@ -830,5 +854,37 @@
   "search.browse_one": {
     "en": "1 item",
     "es": "1 elemento"
+  },
+  "search.browse_pw.neta65": {
+    "en": "{n} stories by Area 65 writers in the last {days} days",
+    "es": "{n} historias de escritores del Área 65 en los últimos {days} días"
+  },
+  "search.browse_pw.neta65_one": {
+    "en": "1 story by an Area 65 writer in the last {days} days",
+    "es": "1 historia de un escritor del Área 65 en los últimos {days} días"
+  },
+  "search.browse_pw.texas": {
+    "en": "{n} stories by Texas writers in the last {days} days",
+    "es": "{n} historias de escritores de Texas en los últimos {days} días"
+  },
+  "search.browse_pw.texas_one": {
+    "en": "1 story by a Texas writer in the last {days} days",
+    "es": "1 historia de un escritor de Texas en los últimos {days} días"
+  },
+  "search.browse_pw.all": {
+    "en": "{n} stories in the last {days} days",
+    "es": "{n} historias en los últimos {days} días"
+  },
+  "search.browse_pw.all_one": {
+    "en": "1 story in the last {days} days",
+    "es": "1 historia en los últimos {days} días"
+  },
+  "search.byline": {
+    "en": "Written by",
+    "es": "Escrito por"
+  },
+  "search.county": {
+    "en": "{county} County",
+    "es": "condado de {county}"
   }
 }

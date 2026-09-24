@@ -9,7 +9,8 @@ pageScripts: ["/assets/js/committee.js"]
 ---
 {#- Events: committee meetings (computed), Drive flyers with dated names,
     manual events, Texas GV/LV calendar events. Grouped by month, filterable,
-    with per-event calendar buttons and the .ics subscription card. -#}
+    with per-event calendar buttons. Below the shared page hero: the agenda on the left and,
+    from 1024px, a sidebar with the .ics subscription card and "how events get here". -#}
 {% import "macros/ui.njk" as ui with context %}
 {%- set all = db.events.items | cmEvents(site, lang) -%}
 {%- set upcoming = all | where("past", false) -%}
@@ -44,23 +45,30 @@ pageScripts: ["/assets/js/committee.js"]
 {% endmacro %}
 
 {% call ui.pageHero(lang, "nav.events" | t(lang), "committee.events.hero_sub" | t(lang), "calendar-days", "committee.events.eyebrow" | t(lang)) %}
-  <div class="flex flex-wrap items-center gap-3">
+  <div class="hero-actions">
     <a class="btn-light" href="#subscribe">{% icon "calendar-sync", "size-4" %} {{ "committee.events.subscribe_btn" | t(lang) }}</a>
     <a class="btn-on-dark" href="{{ '/meeting/' | lurl(lang) }}">{% icon "video", "size-4" %} {{ "nav.meeting" | t(lang) }}</a>
   </div>
-  <dl class="mt-8 flex flex-wrap gap-x-8 gap-y-3 text-white/85">
-    {% if nOther %}<div><dt class="text-xs uppercase tracking-[0.14em] text-white/60">{{ "committee.events.stat_upcoming" | t(lang) }}</dt><dd class="font-display text-3xl font-semibold text-white">{{ nOther }}</dd></div>{% endif %}
-    {% if next %}<div><dt class="text-xs uppercase tracking-[0.14em] text-white/60">{{ "committee.events.stat_next_meeting" | t(lang) }}</dt><dd class="font-display text-3xl font-semibold text-white">{{ next.shortLabel }}</dd></div>{% endif %}
-  </dl>
+  {#- The same numbers are on the filter chips below, so phones skip them (shorter hero) -#}
+  {% if nOther or next %}
+  <div class="max-sm:hidden">
+    {{ ui.heroStats([
+      { value: (nOther if nOther else null), label: "committee.events.stat_upcoming" | t(lang) },
+      { value: (next.shortLabel if next else null), label: "committee.events.stat_next_meeting" | t(lang) }
+    ]) }}
+  </div>
+  {% endif %}
 {% endcall %}
 
 {% committeeNav lang, "events", db %}
 
-<section class="section container-page" x-data="cmEvents()" data-count-label="{{ 'committee.events.showing' | t(lang) }}" data-count-label-one="{{ 'committee.events.showing_one' | t(lang) }}" aria-labelledby="ev-upcoming-title">
+<div class="page-start container-page">
+<div class="layout-aside">
+<section class="min-w-0" x-data="cmEvents()" data-count-label="{{ 'committee.events.showing' | t(lang) }}" data-count-label-one="{{ 'committee.events.showing_one' | t(lang) }}" aria-labelledby="ev-upcoming-title">
   <h2 id="ev-upcoming-title" class="sr-only">{{ "committee.events.upcoming" | t(lang) }}</h2>
 
   {#- ---------- Filter bar ---------- -#}
-  <div class="mb-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+  <div class="mb-8 flex flex-wrap items-center justify-between gap-x-6 gap-y-4">
     <div class="flex flex-wrap gap-2" role="group" aria-label="{{ 'committee.events.filter_aria' | t(lang) }}">
       {% for f in [["all", "common.all", "", "layout-grid"], ["committee", "committee.events.f_committee", meetings.length, "users"], ["neta", "committee.events.f_neta", nNeta, "map-pin"], ["calendar", "committee.events.f_calendar", nCal, "grapes"]] %}
       <button type="button" class="chip" data-cm-filter="{{ f[0] }}" @click="set('{{ f[0] }}')" :aria-pressed="(filter === '{{ f[0] }}').toString()" aria-pressed="{{ 'true' if f[0] == 'all' else 'false' }}">
@@ -78,8 +86,8 @@ pageScripts: ["/assets/js/committee.js"]
   {#- ---------- Pinned: next committee meeting ---------- -#}
   {% if next %}
   {%- set cfg = { rule: m | cmRuleObj, start: next.startIso, end: next.endIso, title: next.title, description: next.calDescription, location: next.calLocation, url: ('/meeting/' | lurl(lang) | siteUrl(site)), i18n: { join: "committee.meeting.join" | t(lang), soon: "committee.meeting.join_soon" | t(lang), live: "committee.meeting.join_live" | t(lang), yourTime: "committee.meeting.your_time" | t(lang) } } -%}
-  <article class="cm-pinned mb-10" x-show="filter === 'all' && !showAll" x-data="cmMeeting({{ cfg | json }})" aria-labelledby="ev-next-title">
-    <div class="flex flex-col gap-5 sm:flex-row sm:items-center">
+  <article class="cm-pinned @container mb-10" x-show="filter === 'all' && !showAll" x-data="cmMeeting({{ cfg | json }})" aria-labelledby="ev-next-title">
+    <div class="cm-pinned-grid">
       <div class="cm-date-tile cm-tone-light" aria-hidden="true">
         <span class="cm-tile-mon" x-text="tile.mon">{{ next.tile.mon }}</span>
         <span class="cm-tile-day" x-text="tile.day">{{ next.tile.day }}</span>
@@ -99,7 +107,7 @@ pageScripts: ["/assets/js/committee.js"]
         </p>
         <p class="mt-1 text-xs text-white/65" x-show="localLabel" x-text="localLabel" x-cloak></p>
       </div>
-      <div class="flex flex-wrap gap-2 sm:flex-col sm:items-stretch lg:flex-row lg:items-center">
+      <div class="cm-pinned-actions flex flex-wrap items-center gap-2">
         <a href="{{ m.zoom_url }}" target="_blank" rel="noopener" class="btn-light btn-sm" :class="phase !== 'upcoming' && 'cm-join-live'">{% icon "video", "size-4" %} <span x-text="joinText">{{ "committee.meeting.join" | t(lang) }}</span></a>
         <details class="cm-menu">
           <summary class="btn-on-dark btn-sm">{% icon "calendar-plus", "size-4" %} {{ "common.add_to_calendar" | t(lang) }}</summary>
@@ -187,13 +195,13 @@ pageScripts: ["/assets/js/committee.js"]
   {% if nNeta == 0 %}
   {#- No flyers / manual events yet: explain the flyer → event naming rule, with real examples -#}
   {%- set exDate = "2027-03-14" | fmtDate(lang, "medium") -%}
-  <div class="cm-empty-flyer mt-2" x-show="filter === 'all' || filter === 'neta'" aria-labelledby="ev-empty-neta">
-    <div class="grid gap-6 md:grid-cols-[auto_1fr] md:gap-8">
+  <div class="cm-empty-flyer @container mt-2" x-show="filter === 'all' || filter === 'neta'">
+    <div class="grid gap-6 @xl:grid-cols-[auto_1fr] @xl:gap-8">
       <div class="cm-flyer-illo" aria-hidden="true">
         <span class="cm-illo-sheet">{% icon "calendar-days", "size-7" %}<span>2027-03-14</span></span>
         <span class="cm-illo-sheet cm-illo-back"></span>
       </div>
-      <div class="min-w-0">
+      <div class="cm-naming-box min-w-0">
         <h3 id="ev-empty-neta" class="h-card text-xl">{{ "committee.events.empty_neta_title" | t(lang) }}</h3>
         <p class="mt-2 max-w-2xl text-sm leading-relaxed text-muted">{{ "committee.events.empty_neta_text" | t(lang) }}</p>
         {% cmDrivePath lang, di, "flyers" %}
@@ -249,23 +257,30 @@ pageScripts: ["/assets/js/committee.js"]
   {% endif %}
 </section>
 
-{#- ---------- Subscribe (.ics) ---------- -#}
-<section id="subscribe" class="container-page scroll-mt-24">
-  {% cmSubscribe lang, site, false %}
-</section>
-
-{#- ---------- How events get here ---------- -#}
-<section class="section container-page">
-  {{ ui.sectionHead("committee.events.sources_title" | t(lang), "committee.events.sources_sub" | t(lang), "", "", "sparkles") }}
-  <div class="grid gap-4 md:grid-cols-3">
-    {% for s in [["meetings", "users", "bg-gv-soft text-gv"], ["flyers", "folder-up", "bg-vine-soft text-vine"], ["calendars", "grapes", "bg-lv-soft text-lv"]] %}
-    <div class="card card-pad">
-      <span class="grid size-11 place-items-center rounded-xl {{ s[2] }}">{% icon s[1], "size-5" %}</span>
-      <h3 class="h-card mt-4">{{ ("committee.events.src_" + s[0]) | t(lang) }}</h3>
-      <p class="mt-1.5 text-sm leading-relaxed text-muted">{{ ("committee.events.src_" + s[0] + "_text") | t(lang) }}</p>
-    </div>
-    {% endfor %}
+{#- ---------- Sidebar: subscribe (.ics) + how events get here ----------
+     Next to the agenda from 1024px (layout-aside: 20rem, 24rem from 1536px); below it on
+     smaller screens, where "how events get here" shows its three sources side by side. -#}
+<aside class="space-y-6" aria-label="{{ 'committee.events.aside_aria' | t(lang) }}">
+  <div id="subscribe" class="scroll-mt-24">
+    {% cmSubscribe lang, site, false %}
   </div>
-</section>
+  <section class="card card-pad" aria-labelledby="ev-src-title">
+    <h2 id="ev-src-title" class="h-card flex items-center gap-2 text-xl"><span class="text-gv">{% icon "sparkles", "size-5" %}</span>{{ "committee.events.sources_title" | t(lang) }}</h2>
+    <p class="mt-1.5 text-sm text-muted">{{ "committee.events.sources_sub" | t(lang) }}</p>
+    <ul class="mt-5 grid gap-5 md:grid-cols-3 lg:grid-cols-1">
+      {% for s in [["meetings", "users", "bg-gv-soft text-gv"], ["flyers", "folder-up", "bg-vine-soft text-vine"], ["calendars", "grapes", "bg-lv-soft text-lv"]] %}
+      <li class="flex gap-3.5">
+        <span class="grid size-10 shrink-0 place-items-center rounded-xl {{ s[2] }}">{% icon s[1], "size-5" %}</span>
+        <div class="min-w-0">
+          <h3 class="h-card text-base">{{ ("committee.events.src_" + s[0]) | t(lang) }}</h3>
+          <p class="mt-1 text-sm leading-relaxed text-muted">{{ ("committee.events.src_" + s[0] + "_text") | t(lang) }}</p>
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+</aside>
+</div>
+</div>
 
 {% cmPreviewDialog lang %}

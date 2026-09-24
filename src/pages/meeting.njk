@@ -7,8 +7,10 @@ titleKey: nav.meeting
 descKey: committee.meeting.meta_desc
 pageScripts: ["/assets/js/committee.js"]
 ---
-{#- Monthly committee meeting: live countdown, Zoom details, calendar, next dates,
-    who can attend, what happens, chair contact, and the Grapevine Weekly Open. -#}
+{#- Monthly committee meeting: the shared page hero (with a one-line "next meeting" and the
+    Join button), then — below the hero — the live countdown, Zoom details and the Grapevine
+    Weekly Open side by side on wide screens, the next dates, who can attend, the chair, the
+    calendar feed and what happens at the meeting. -#}
 {% import "macros/ui.njk" as ui with context %}
 {%- set m = site.meeting -%}
 {%- set next = site | cmNextMeeting(lang) -%}
@@ -33,72 +35,106 @@ pageScripts: ["/assets/js/committee.js"]
   }
 } -%}
 
+{#- ============ Hero: title, schedule, one line for the next meeting + Join ============ -#}
 {% call ui.pageHero(lang, "nav.meeting" | t(lang), "committee.meeting.hero_sub" | t(lang, { rule: rule, time: timeRange }), "video", "committee.meeting.eyebrow" | t(lang)) %}
   {% if next %}
-  <div x-data="cmMeeting({{ cfg | json }})" class="cm-glass max-w-4xl rounded-3xl p-5 sm:p-7">
-    <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-      <div class="min-w-0">
-        <p class="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-white/75">
-          <span class="cm-live-dot" x-show="phase !== 'upcoming'" x-cloak></span>
-          <span x-show="phase === 'upcoming'">{{ "committee.meeting.next" | t(lang) }}</span>
-          <span x-show="phase === 'soon'" x-cloak>{{ "committee.meeting.starting_soon" | t(lang) }}</span>
-          <span x-show="phase === 'live'" x-cloak>{{ "committee.meeting.live_now" | t(lang) }}</span>
-        </p>
-        <p class="mt-2 font-display text-2xl font-semibold leading-tight sm:text-3xl" x-text="dateLabel">{{ next.dateLabel }}</p>
-        <p class="mt-1 text-white/80">
-          <span x-text="timeLabel">{{ next.timeLabel }}</span>
-          <span class="block text-sm text-white/65" x-show="localLabel" x-text="localLabel" x-cloak></span>
-        </p>
-      </div>
-      <div role="timer" aria-live="off" class="flex gap-2 sm:gap-3" x-cloak x-show="phase !== 'live'">
-        {% for u in [["d", "common.days"], ["h", "common.hours"], ["m", "common.min"], ["s", "common.sec"]] %}
-        <div class="cm-tile">
-          <span class="cm-tile-num" x-text="{{ 'd' if u[0] == 'd' else 'pad(' + u[0] + ')' }}">–</span>
-          <span class="cm-tile-label">{{ u[1] | t(lang) }}</span>
-        </div>
-        {% endfor %}
-      </div>
-    </div>
-
-    <div class="mt-6 flex flex-wrap items-center gap-2.5">
-      <a href="{{ m.zoom_url }}" target="_blank" rel="noopener" class="btn-light" :class="phase !== 'upcoming' && 'cm-join-live'">
-        <span class="cm-live-dot" x-show="phase !== 'upcoming'" x-cloak></span>
-        {% icon "video", "size-4" %}
-        <span x-text="joinText">{{ "committee.meeting.join" | t(lang) }}</span>
-      </a>
-      <details class="cm-menu cm-menu-up">
-        <summary class="btn-on-dark">{% icon "calendar-plus", "size-4" %} {{ "common.add_to_calendar" | t(lang) }} {% icon "chevron-down", "size-4 opacity-70" %}</summary>
-        <div class="cm-menu-panel">
-          <a :href="gcal" href="{{ next.gcal }}" target="_blank" rel="noopener">{% icon "calendar", "size-4" %} Google Calendar</a>
-          <a :href="outlook" href="{{ next.outlook }}" target="_blank" rel="noopener">{% icon "calendar", "size-4" %} Outlook.com</a>
-          <button type="button" @click="downloadIcs()" data-cm-js>{% icon "download", "size-4" %} {{ "committee.cal.ics_file" | t(lang) }}</button>
-        </div>
-      </details>
-      <button type="button" class="btn-on-dark" data-share="{{ pageAbs }}" data-share-title="{{ 'nav.meeting' | t(lang) }} — NETA 65" data-share-text="{{ rule }} · {{ timeRange }}">{% icon "share-2", "size-4" %} {{ "common.share" | t(lang) }}</button>
-    </div>
-    <p class="mt-3 text-sm text-white/65" x-show="phase === 'upcoming'">{{ "committee.meeting.join_hint" | t(lang) }}</p>
+  <div class="hero-actions" x-data="cmMeeting({{ cfg | json }})">
+    <a href="{{ m.zoom_url }}" target="_blank" rel="noopener" class="btn-light" :class="phase !== 'upcoming' && 'cm-join-live'">
+      <span class="cm-live-dot" x-show="phase !== 'upcoming'" x-cloak></span>
+      {% icon "video", "size-4" %}
+      <span x-text="joinText">{{ "committee.meeting.join" | t(lang) }}</span>
+    </a>
+    <a href="#next-meeting" class="cm-hero-next">
+      {% icon "calendar-clock", "size-4 shrink-0" %}
+      <span>
+        <span class="cm-hero-next-label" x-show="phase === 'upcoming'">{{ "committee.meeting.next" | t(lang) }}</span>
+        <span class="cm-hero-next-label" x-show="phase === 'soon'" x-cloak>{{ "committee.meeting.starting_soon" | t(lang) }}</span>
+        <span class="cm-hero-next-label" x-show="phase === 'live'" x-cloak>{{ "committee.meeting.live_now" | t(lang) }}</span>
+        <strong x-text="whenLabel">{{ next.whenLabel }}</strong>
+      </span>
+    </a>
   </div>
   {% else %}
-  <div class="cm-glass max-w-2xl rounded-3xl p-6 text-white/85">{{ "committee.meeting.no_next" | t(lang) }}</div>
+  <p class="gv-hero-sub">{{ "committee.meeting.no_next" | t(lang) }}</p>
   {% endif %}
 {% endcall %}
 
 {% committeeNav lang, "meeting", db %}
 
-{#- ============ Join details + next dates ============ -#}
-<section class="section container-page">
-  {#- lg:items-start: each card is as tall as its own content (the dates list is longer). -#}
-  <div class="grid gap-6 lg:grid-cols-12 lg:items-start">
-    <div class="card card-pad lg:col-span-7">
-      <h2 class="h-section flex items-center gap-2.5"><span class="text-gv">{% icon "video", "size-6" %}</span>{{ "committee.meeting.how_to_join" | t(lang) }}</h2>
-      <p class="mt-2 text-muted">{{ "committee.meeting.how_to_join_text" | t(lang) }}</p>
+{#- ============ The meeting board (one grid, so every card lines up) ============
+    Phones: one column. From 1024px two columns: countdown | how to join, then the next
+    dates (two rows tall) next to who can attend and the chair, then the calendar feed.
+    From 1440px three columns: the countdown and the dates on the left, how to join across
+    the other two, who | chair side by side, the calendar feed under them. The cards lay out
+    their own insides by their width (container queries), so they fit any of those slots. -#}
+<section class="container-page pt-8 pb-12 sm:pt-10 sm:pb-16">
+  <div class="cm-board">
 
-      <dl class="mt-6 grid gap-3 sm:grid-cols-2">
+    {#- ---------- Live countdown ---------- -#}
+    {% if next %}
+    <article id="next-meeting" class="cm-count scroll-mt-24" x-data="cmMeeting({{ cfg | json }})" aria-labelledby="next-meeting-h">
+      <span class="cm-count-art" aria-hidden="true">{% icon "calendar-clock", "size-full" %}</span>
+      <h2 id="next-meeting-h" class="flex items-center gap-2 font-sans text-xs font-semibold uppercase tracking-[0.16em] text-white/80">
+        <span class="cm-live-dot" x-show="phase !== 'upcoming'" x-cloak></span>
+        <span x-show="phase === 'upcoming'">{{ "committee.meeting.next" | t(lang) }}</span>
+        <span x-show="phase === 'soon'" x-cloak>{{ "committee.meeting.starting_soon" | t(lang) }}</span>
+        <span x-show="phase === 'live'" x-cloak>{{ "committee.meeting.live_now" | t(lang) }}</span>
+      </h2>
+      <p class="mt-3 font-display text-2xl font-semibold leading-tight text-balance text-white sm:text-3xl" x-text="dateLabel">{{ next.dateLabel }}</p>
+      <p class="mt-1.5 text-white/85">
+        <span x-text="timeLabel">{{ next.timeLabel }}</span>
+        <span class="block text-sm text-white/70" x-show="localLabel" x-text="localLabel" x-cloak></span>
+      </p>
+
+      {#- The tiles sit in the middle of whatever height the card gets from its row -#}
+      <div class="flex flex-1 flex-col justify-center py-6">
+        <div role="timer" aria-live="off" class="flex flex-wrap gap-2 sm:gap-3" x-cloak x-show="phase !== 'live'">
+          {% for u in [["d", "common.days"], ["h", "common.hours"], ["m", "common.min"], ["s", "common.sec"]] %}
+          <div class="cm-tile">
+            <span class="cm-tile-num" x-text="{{ 'd' if u[0] == 'd' else 'pad(' + u[0] + ')' }}">–</span>
+            <span class="cm-tile-label">{{ u[1] | t(lang) }}</span>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div>
+        <div class="flex flex-wrap items-center gap-2.5">
+          <a href="{{ m.zoom_url }}" target="_blank" rel="noopener" class="btn-light" :class="phase !== 'upcoming' && 'cm-join-live'">
+            <span class="cm-live-dot" x-show="phase !== 'upcoming'" x-cloak></span>
+            {% icon "video", "size-4" %}
+            <span x-text="joinText">{{ "committee.meeting.join" | t(lang) }}</span>
+          </a>
+          <details class="cm-menu">
+            <summary class="btn-on-dark">{% icon "calendar-plus", "size-4" %} {{ "common.add_to_calendar" | t(lang) }} {% icon "chevron-down", "size-4 opacity-70" %}</summary>
+            <div class="cm-menu-panel">
+              <a :href="gcal" href="{{ next.gcal }}" target="_blank" rel="noopener">{% icon "calendar", "size-4" %} Google Calendar</a>
+              <a :href="outlook" href="{{ next.outlook }}" target="_blank" rel="noopener">{% icon "calendar", "size-4" %} Outlook.com</a>
+              <button type="button" @click="downloadIcs()" data-cm-js>{% icon "download", "size-4" %} {{ "committee.cal.ics_file" | t(lang) }}</button>
+            </div>
+          </details>
+          <button type="button" class="btn-on-dark" data-share="{{ pageAbs }}" data-share-title="{{ 'nav.meeting' | t(lang) }} — NETA 65" data-share-text="{{ rule }} · {{ timeRange }}">{% icon "share-2", "size-4" %} {{ "common.share" | t(lang) }}</button>
+        </div>
+        <p class="mt-3 text-sm leading-relaxed text-white/75" x-show="phase === 'upcoming'">{{ "committee.meeting.join_hint" | t(lang) }}</p>
+      </div>
+    </article>
+    {% else %}
+    <div id="next-meeting" class="cm-count scroll-mt-24 justify-center">
+      <p class="text-lg text-white/90">{{ "committee.meeting.no_next" | t(lang) }}</p>
+    </div>
+    {% endif %}
+
+    {#- ---------- How to join (Zoom ID + passcode) ---------- -#}
+    <section class="cm-join card card-pad @container flex flex-col" aria-labelledby="join-h">
+      <h2 id="join-h" class="h-section flex items-center gap-2.5"><span class="text-gv">{% icon "video", "size-6" %}</span>{{ "committee.meeting.how_to_join" | t(lang) }}</h2>
+      <p class="mt-2 max-w-[60ch] text-muted">{{ "committee.meeting.how_to_join_text" | t(lang) }}</p>
+
+      <dl class="mt-6 grid gap-3 @min-[38rem]:grid-cols-2">
         {% if m.meeting_id %}
         <div class="cm-field">
           <dt class="eyebrow">{{ "committee.meeting.id" | t(lang) }}</dt>
           <dd class="mt-1.5 flex items-center justify-between gap-3">
-            <span class="font-mono text-xl font-semibold tracking-wide text-ink sm:text-2xl">{{ m.meeting_id }}</span>
+            <span class="font-mono text-xl font-semibold tracking-wide text-ink @sm:text-2xl">{{ m.meeting_id }}</span>
             <button type="button" class="btn-secondary btn-sm" data-copy="{{ m.meeting_id | cmDigits }}" aria-label="{{ 'committee.meeting.copy_id' | t(lang) }}">{% icon "copy", "size-4" %} {{ "common.copy" | t(lang) }}</button>
           </dd>
         </div>
@@ -107,7 +143,7 @@ pageScripts: ["/assets/js/committee.js"]
         <div class="cm-field">
           <dt class="eyebrow">{{ "committee.meeting.passcode" | t(lang) }}</dt>
           <dd class="mt-1.5 flex items-center justify-between gap-3">
-            <span class="font-mono text-xl font-semibold tracking-wide text-ink sm:text-2xl">{{ m.passcode }}</span>
+            <span class="font-mono text-xl font-semibold tracking-wide text-ink @sm:text-2xl">{{ m.passcode }}</span>
             <button type="button" class="btn-secondary btn-sm" data-copy="{{ m.passcode }}" aria-label="{{ 'committee.meeting.copy_passcode' | t(lang) }}">{% icon "copy", "size-4" %} {{ "common.copy" | t(lang) }}</button>
           </dd>
         </div>
@@ -119,14 +155,17 @@ pageScripts: ["/assets/js/committee.js"]
         <button type="button" class="btn-secondary" data-copy="{{ m.zoom_url }}">{% icon "link", "size-4" %} {{ "committee.meeting.copy_link" | t(lang) }}</button>
       </div>
 
-      <ul class="mt-7 grid gap-3 border-t border-line pt-6 text-sm text-muted sm:grid-cols-3">
-        <li class="flex gap-2.5"><span class="mt-0.5 text-gv">{% icon "clock-3", "size-4" %}</span><span>{{ "committee.meeting.tip_early" | t(lang) }}</span></li>
-        <li class="flex gap-2.5"><span class="mt-0.5 text-gv">{% icon "smartphone", "size-4" %}</span><span>{{ "committee.meeting.tip_phone" | t(lang) }}</span></li>
-        <li class="flex gap-2.5"><span class="mt-0.5 text-gv">{% icon "languages", "size-4" %}</span><span>{{ "committee.meeting.tip_lang" | t(lang) }}</span></li>
-      </ul>
-    </div>
+      <div class="mt-auto pt-7">
+        <ul class="grid gap-3 border-t border-line pt-5 text-sm text-muted @3xl:grid-cols-3">
+          <li class="flex gap-2.5"><span class="mt-0.5 text-gv">{% icon "clock-3", "size-4" %}</span><span>{{ "committee.meeting.tip_early" | t(lang) }}</span></li>
+          <li class="flex gap-2.5"><span class="mt-0.5 text-gv">{% icon "smartphone", "size-4" %}</span><span>{{ "committee.meeting.tip_phone" | t(lang) }}</span></li>
+          <li class="flex gap-2.5"><span class="mt-0.5 text-gv">{% icon "languages", "size-4" %}</span><span>{{ "committee.meeting.tip_lang" | t(lang) }}</span></li>
+        </ul>
+      </div>
+    </section>
 
-    <div class="card card-pad lg:col-span-5">
+    {#- ---------- Next dates · who can attend · chair · calendar feed ---------- -#}
+    <div class="card card-pad flex flex-col lg:row-span-2">
       <h2 class="h-card flex items-center gap-2 text-xl"><span class="text-gv">{% icon "calendar-days", "size-5" %}</span>{{ "committee.meeting.next_dates" | t(lang) }}</h2>
       <p class="mt-1 text-sm text-muted">{{ rule }} · {{ timeRange }}</p>
       {% set dates = meeting.upcoming | limit(7) %}
@@ -149,40 +188,42 @@ pageScripts: ["/assets/js/committee.js"]
       {% else %}
       <p class="mt-5 text-sm text-muted">{{ "committee.meeting.no_next" | t(lang) }}</p>
       {% endif %}
-      <a href="#subscribe" class="mt-5 inline-flex min-h-10 items-center gap-1.5 text-sm font-semibold text-gv hover:underline">{% icon "calendar-sync", "size-4" %} {{ "committee.meeting.subscribe_all" | t(lang) }}</a>
+      <a href="#subscribe" class="mt-auto inline-flex min-h-10 items-center gap-1.5 pt-5 text-sm font-semibold text-gv hover:underline">{% icon "calendar-sync", "size-4" %} {{ "committee.meeting.subscribe_all" | t(lang) }}</a>
     </div>
-  </div>
-</section>
 
-{#- ============ Who can attend + chair ============ -#}
-<section class="container-page">
-  <div class="grid gap-6 md:grid-cols-2">
     <div class="card card-pad relative overflow-hidden">
       <span class="cm-deco-icon text-vine">{% icon "hand-heart", "size-28" %}</span>
       <p class="eyebrow">{{ "committee.meeting.who_eyebrow" | t(lang) }}</p>
       <h2 class="h-section mt-2">{{ "committee.meeting.who_title" | t(lang) }}</h2>
-      <p class="mt-3 leading-relaxed text-muted">{{ "committee.meeting.who_text" | t(lang) }}</p>
+      <p class="mt-3 max-w-[65ch] leading-relaxed text-muted">{{ "committee.meeting.who_text" | t(lang) }}</p>
       <ul class="mt-4 flex flex-wrap gap-2">
         {% for k in ["gvr", "rlv", "dcm", "members"] %}<li class="badge-muted text-xs">{{ ("committee.meeting.who_" + k) | t(lang) }}</li>{% endfor %}
       </ul>
     </div>
+
     <div class="card card-pad relative overflow-hidden">
       <span class="cm-deco-icon text-gv">{% icon "mail", "size-28" %}</span>
       <p class="eyebrow">{{ "committee.meeting.contact_eyebrow" | t(lang) }}</p>
       <h2 class="h-section mt-2">{{ m | pick(lang, "chair_title") }}</h2>
-      <p class="mt-3 leading-relaxed text-muted">{{ "committee.meeting.contact_text" | t(lang) }}</p>
+      <p class="mt-3 max-w-[65ch] leading-relaxed text-muted">{{ "committee.meeting.contact_text" | t(lang) }}</p>
       <div class="mt-5 flex flex-wrap gap-2.5">
         <a class="btn-primary" href="{{ (m.chair_email or site.contact_email) | mailto('committee.meeting.mail_subject' | t(lang)) }}">{% icon "mail", "size-4" %} {{ "committee.meeting.write_chair" | t(lang) }}</a>
-        <button type="button" class="btn-secondary" data-copy="{{ m.chair_email or site.contact_email }}">{% icon "copy", "size-4" %} {{ m.chair_email or site.contact_email }}</button>
+        <button type="button" class="btn-secondary max-w-full" data-copy="{{ m.chair_email or site.contact_email }}">{% icon "copy", "size-4" %} <span class="truncate">{{ m.chair_email or site.contact_email }}</span></button>
       </div>
+    </div>
+
+    {#- Subscribe to the whole calendar -#}
+    <div id="subscribe" class="scroll-mt-24 lg:col-span-2">
+      {% cmSubscribe lang, site, false %}
     </div>
   </div>
 </section>
 
-{#- ============ What happens at the meeting ============ -#}
-<section class="section container-page">
+{#- ============ What happens at the meeting ============
+    3 columns from 1024px; all six in one row from 1800px. -#}
+<section class="container-page pb-12 sm:pb-16">
   {{ ui.sectionHead("committee.meeting.agenda_title" | t(lang), "committee.meeting.agenda_sub" | t(lang), "", "", "list-ordered") }}
-  <ol class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+  <ol class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 min-[112.5rem]:grid-cols-6">
     {% for s in [["welcome", "coffee"], ["reports", "users"], ["news", "book-open-text"], ["plan", "calendar-check"], ["questions", "message-circle-question"], ["close", "heart-handshake"]] %}
     <li class="card card-pad cm-step">
       <span class="cm-step-num" aria-hidden="true">{{ loop.index }}</span>
@@ -194,23 +235,18 @@ pageScripts: ["/assets/js/committee.js"]
   </ol>
 </section>
 
-{#- ============ Subscribe to the whole calendar ============ -#}
-<section id="subscribe" class="container-page scroll-mt-24">
-  {% cmSubscribe lang, site, true %}
-</section>
-
 {#- ============ Grapevine Weekly Open AA Meeting ============
-    #weekly-open (the card) is linked from /listen/ ("How to join"), /watch/, the home page
-    and the site search. html's scroll-padding-top keeps it clear of the fixed header;
-    scroll-mt-6 adds a little air (instead of landing on the section's top padding). -#}
-<section class="section container-page" aria-labelledby="weekly-title">
+    Not our meeting, so it comes last, across the full width: details | Zoom fields side by
+    side from 768px of card width. #weekly-open is linked from /listen/, /watch/, the home
+    page and the site search. -#}
+<div class="container-page pb-12 sm:pb-16">
   {% if wo %}
-  <div id="weekly-open" class="card cm-weekly scroll-mt-6 overflow-hidden">
-    <div class="grid md:grid-cols-[1.15fr_1fr]">
+  <section id="weekly-open" class="card cm-weekly @container scroll-mt-6 overflow-hidden" aria-labelledby="weekly-title">
+    <div class="grid h-full @3xl:grid-cols-[1.15fr_1fr]">
       <div class="cm-weekly-art p-6 sm:p-8">
         <p class="eyebrow flex items-center gap-2 text-grape">{% icon "grapes", "size-4" %} {{ "committee.weekly.eyebrow" | t(lang) }}</p>
         <h2 id="weekly-title" class="h-section mt-2">{{ "committee.weekly.title" | t(lang) }}</h2>
-        <p class="mt-3 leading-relaxed text-muted">{{ "committee.weekly.text" | t(lang) }}</p>
+        <p class="measure mt-3 leading-relaxed text-muted">{{ "committee.weekly.text" | t(lang) }}</p>
         {% if wk.when %}
         <div class="mt-5 flex flex-col items-start gap-2">
           <p class="inline-flex flex-wrap items-center gap-2 rounded-full bg-surface px-4 py-2 text-sm font-semibold text-ink shadow-sm ring-1 ring-line">
@@ -231,8 +267,8 @@ pageScripts: ["/assets/js/committee.js"]
         </p>
         {% endif %}
       </div>
-      <div class="p-6 sm:p-8">
-        <dl class="grid gap-3">
+      <div class="cm-weekly-join @container flex flex-col p-6 sm:p-8">
+        <dl class="grid gap-3 @min-[34rem]:grid-cols-2">
           {% if wk.zoomId %}
           <div class="cm-field">
             <dt class="eyebrow">{{ "committee.meeting.id" | t(lang) }}</dt>
@@ -257,17 +293,16 @@ pageScripts: ["/assets/js/committee.js"]
           <a class="btn-secondary" href="{{ '/listen/?show=wo#episodes' | lurl(lang) }}">{% icon "headphones", "size-4" %} {{ "committee.weekly.listen" | t(lang) }}</a>
           <a class="btn-ghost" href="{{ wk.detailsUrl or site.links.weekly_open }}" target="_blank" rel="noopener">{% icon "external-link", "size-4" %} {{ "committee.weekly.details" | t(lang) }}</a>
         </div>
-        <p class="mt-4 text-xs text-faint">{{ "committee.weekly.source_note" | t(lang) }}</p>
+        <p class="mt-auto pt-4 text-xs text-faint">{{ "committee.weekly.source_note" | t(lang) }}</p>
       </div>
     </div>
-  </div>
+  </section>
   {% else %}
-  <div id="weekly-open" class="card card-pad scroll-mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-    <div>
-      <h2 id="weekly-title" class="h-card text-xl">{{ "committee.weekly.title" | t(lang) }}</h2>
-      <p class="mt-1 text-sm text-muted">{{ "committee.weekly.text" | t(lang) }}</p>
-    </div>
-    <a class="btn-secondary shrink-0" href="{{ site.links.weekly_open }}" target="_blank" rel="noopener">{% icon "external-link", "size-4" %} {{ "committee.weekly.details" | t(lang) }}</a>
-  </div>
+  <section id="weekly-open" class="card card-pad cm-weekly scroll-mt-6 flex flex-col gap-4" aria-labelledby="weekly-title">
+    <p class="eyebrow flex items-center gap-2 text-grape">{% icon "grapes", "size-4" %} {{ "committee.weekly.eyebrow" | t(lang) }}</p>
+    <h2 id="weekly-title" class="h-card text-xl">{{ "committee.weekly.title" | t(lang) }}</h2>
+    <p class="text-sm leading-relaxed text-muted">{{ "committee.weekly.text" | t(lang) }}</p>
+    <a class="btn-secondary mt-auto self-start" href="{{ site.links.weekly_open }}" target="_blank" rel="noopener">{% icon "external-link", "size-4" %} {{ "committee.weekly.details" | t(lang) }}</a>
+  </section>
   {% endif %}
-</section>
+</div>

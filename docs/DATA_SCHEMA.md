@@ -98,8 +98,11 @@ translation, or the original again when no translation exists (yet). Fields writ
 only if that was more than 2 days after the source's *first* harvest (so launch day is not a
 flood of the back catalog). Undated PDFs are never news by themselves (the crawler already dates
 PDFs that appear on a page it knew). `is_new` = news date within 14 days. Never new: kind
-`topic` (editorial themes; their date is a deadline), kind `meeting` (Weekly Open) and committee
-meetings. `whatsnew.json` = the newest 150 by news date (`wn_date`), same exclusions; events
+`topic` (editorial themes; their date is a deadline), kind `meeting` (Weekly Open), committee
+meetings and **back-catalog magazine stories** (articles of an issue that was never the current
+issue on a magazine hub while we watched — the archive backfill found them; their issue is not in
+the raw `issues` map). Back-catalog stories are real and appear on /read/ and in the spotlight, but
+never in What's New. `whatsnew.json` = the newest 150 by news date (`wn_date`), same exclusions; events
 appear there for 30 days after they were first announced; several Drive photos of one album on
 one day become one group item (`extra.is_group`, `count`, `thumbs`).
 
@@ -107,13 +110,42 @@ Files: `episodes.json`, `videos.json`, `instagram.json`, `articles.json`, `pdfs.
 `drive.json`, `events.json` (committee meetings auto-generated for 12 months + Drive flyers +
 TX calendar events + manual), `announcements.json`, `editorial.json`, `weekly_open.json`,
 `whatsnew.json` (newest 150 across all sources, sorted by date desc),
-`status.json` (below), `districts.json` (from `content/districts.yml`).
+`spotlight.json` (published-writers spotlight, below), `status.json` (below),
+`districts.json` (from `content/districts.yml`).
 
 Each site file is `{ "updated": "...", "fixture": false, <extra top-level keys>, "items": [...] }`,
 items sorted newest first (events: soonest first). Extra top-level keys: `instagram.profiles`,
 `videos.playlists`, `episodes.shows`, `articles.issues` (§5). `drive.json` never contains a Google
 Form whose `extra.form_closed` is `true`. Output is deterministic: a re-run with the same raw data
 changes only `status.json` (and `updated` stamps).
+
+### spotlight.json — published writers (home page + /published/)
+Grapevine and La Viña stories published in the last 60/90 days, with where each writer is from.
+Settings: `config/site.yml` → `spotlight:` (`home_days`, `list_days`, `default_scope`,
+`neta65_counties`).
+```json
+{
+  "updated": "2026-09-23T23:40:00Z", "fixture": false,
+  "today": "2026-09-23",              // build day (America/Chicago) the windows were counted from
+  "home_days": 60,                     // home page window
+  "list_days": [60, 90],               // windows offered on the list page (first = default)
+  "default_scope": "neta65",           // list page default: neta65 | texas | all
+  "counts": {                          // stories per window and scope; "texas" INCLUDES neta65
+    "60": { "neta65": 2, "texas": 8, "all": 100 },
+    "90": { "neta65": 4, "texas": 15, "all": 156 }
+  },
+  "items": [ Article, … ]
+}
+```
+* `items` = every **story with a byline** (`extra.author` or `extra.author_location`; "In Every Issue"
+  departments such as Letter from the Editor / Dear Grapevine / Cartas del lector are left out) whose
+  `extra.pub_date` lies within the longest window (`today − max(list_days)` … `today`, inclusive),
+  from **any** place — so the page can offer an "everyone" view.
+* Sorted: scope (`neta65`, `texas`, `other`, `unknown`), then `extra.pub_date` newest first, then title.
+* Each item is the complete article item of `articles.json` (same fields, `i18n`, `machine`, `is_new`)
+  — including `extra.geo` and `extra.pub_date`. To show a window of N days:
+  `extra.pub_date >= today − N days`; for "Texas": scope `neta65` or `texas`.
+* With no Area 65 writer in the window, `counts[..].neta65` is 0 and the page must say so gracefully.
 
 ### status.json
 ```json
@@ -134,6 +166,8 @@ changes only `status.json` (and `updated` stamps).
                     "translated_this_run": 0, "from_cache": 1620, "pending": 0, "rejected_by_guard": 0,
                     "seconds": 0.1, "model_seconds": 0.0, "texts_per_second": null, "glossary_entries": 162 },
   "counts": { "videos": 528, "episodes": 295, "…": 0, "whatsnew": 150, "districts": 2 },
+  "spotlight": { "today": "2026-09-23", "home_days": 60, "list_days": [60, 90],
+                 "counts": { "60": { "neta65": 2, "texas": 8, "all": 100 }, "90": { … } }, "items": 156 },
   "problems": { }          // raw files that were missing/unreadable ("missing" = module never ran)
 }
 ```
@@ -160,12 +194,36 @@ field also gets `i18n.<name> = {en, es}` in the site file.
 
 | raw file | extra top-level keys |
 |---|---|
-| `articles.json` | `issues` {"gv:2026-10": {`publication`, `key`, `label`, `theme`, `description`, `url`, `image`, `cover` (local WebP), `hub`, `seen`}}, `detail_state` (module bookkeeping) |
+| `articles.json` | `issues` {"gv:2026-10": {`publication`, `key`, `label`, `theme`, `description`, `url`, `image`, `cover` (local WebP), `hub`, `seen`}} — only issues seen as the CURRENT issue on a magazine hub; `detail_state` (module bookkeeping: retry state; `byline_at` = the article page was read and has no author/place, do not ask again); `archive_state` (below) |
 | `podcasts.json` | `shows` [{`key`, `name`, `title`, `feed`, `description`, `image`, `language`, `web`, `apple`, `spotify`, `amazon`, `episodes`}], `discovery` (weekly feed discovery) |
 | `youtube.json` | `playlists` [{`id`, `title`, `lang` (en/es/und), `count`, `channel_id`, `url`}], `backfilled_at`, `detail_fails`, `channel_ids` |
 | `instagram.json` | `profiles` {gv/lv: {`username`, `name`, `full_name`, `url`, `followers`, `posts`, `owner_id`, `checked`, `avatar`}} |
 | `pdfs.json` | `crawl` {`known_pages`, `crawled_pages`, `pdfs`, `last_run_pages`}; crawler counters are in `stats` |
 | `events_external.json` | `cache`, `sitemap` (module bookkeeping — not used by the site) |
+
+`articles.json` → `archive_state` — the archive listings (aagrapevine.org/archive, aalavina.org/archivo):
+```json
+{ "gv": { "backfilled": "2026-09-23T23:31:00Z",   // first full walk back finished (absent until then)
+          "backfill_days": 120,                    // how far back it went (--backfill-days)
+          "resume_page": 14,                        // only while an interrupted backfill is pending
+          "backfill_stopped_at": 40,                // only when the backfill was given up (see below)
+          "last_run": "…", "pages_last_run": 1, "new_last_run": 0,
+          "oldest_seen": "2026-05",                 // oldest issue on the pages read last run
+          "error": "page 0: no answer" },           // only when the last run had a problem
+  "lv": { … } }
+```
+A daily run after the backfill reads page 0 and stops at the first page whose stories are all known.
+Delete `archive_state` (or raise `--backfill-days`) to walk back again.
+Safety stops for a site whose page links break: a page that still offers "Next" but lists only stories
+already read earlier in the same run ends the walk (`error` "page N repeats stories of earlier pages
+(pager broken?)", and the source shows as failing on /status/); an unfinished backfill that would have to
+resume deeper than 6 pages per month of `--backfill-days` (at least 2 × `--archive-pages`; 40 for 120
+days) is given up: it is marked `backfilled`, with `backfill_stopped_at` and an `error`, so it stops
+costing requests.
+
+`detail_state` holds only records whose article page still has something to tell. A Grapevine
+"Online Exclusive" page prints no section, so for it title + paywall flag (`free`) count as complete and
+it is read once.
 
 ### Site file top-level keys
 
@@ -184,7 +242,7 @@ field also gets `i18n.<name> = {en, es}` in the site file.
 | episode (`episodes`) | `audio_url`, `audio_type`, `audio_bytes`, `duration_sec`, `season`, `episode`, `episode_type`, `show`, `show_name`, `show_web`, `link`, `player_url`, `apple`, `spotify`, `amazon` | — |
 | video (`videos`) | `video_id`, `channel_id`, `duration_sec`, `playlists` [names], `is_short`, `views`, `is_live_recording`, `date_approx`, `season`, `episode` (podcast videos only) | — |
 | post (`instagram`) | `shortcode`, `account`, `username`, `media_type`, `thumb`, `embed_url`, `permalink`, `is_reel`, `manual`, `strategy`, `caption_known`, `embed_checked` | — |
-| article (`articles`) | `publication`, `issue_key`, `issue_label`, `issue_date` (cover date), `issue_theme`, `issue_url`, `topic`, `section`, `author`, `author_location`, `subtitle`, `teaser`, `free`, `online_exclusive`, `department` (bool) | `section`, `topic`, `issue_theme` (machine); `issue_label` (rules) |
+| article (`articles`, `spotlight`) | `publication`, `issue_key`, `issue_label`, `issue_date` (cover date), `issue_theme`, `issue_url`, `topic`, `section`, `author`, `author_location`, `subtitle`, `teaser`, `free`, `online_exclusive`, `department` (bool); written by build_data: `geo`, `pub_date` (below) | `section`, `topic`, `issue_theme` (machine); `issue_label`, `author_location` (rules — from `geo.label_en/label_es`, only when a place is known) |
 | pdf (`pdfs`) | `host`, `file_url`, `filename`, `size_bytes`, `pages`, `thumb`, `referrers` [{url, title}], `upload_month`, `link_texts`, `event_date`, `doc_lang`, `section` (heading on the referring page), `external`, `orphan` | — |
 | topic (`editorial`) | `publication`, `theme`, `evergreen`, and for dated GV themes `issue_key`, `issue_label`, `deadline`, `due_text`, `pdf_url`, `submit_url`, `guidelines_url` | `issue_label` (rules); `theme` when it differs from the title |
 | meeting (`weekly_open`) | `zoom_id`, `zoom_url`, `passcode`, `day`, `time`, `time_central`, `sentence`, `weekday`, `start_local`, `timezone`, `next_start`, `url`, `player_url` | written by rules from weekday/start_local/timezone: `day` ("Wednesdays"/"Miércoles"), `time` ("Noon Eastern"/"mediodía (hora del Este)"), `time_central` ("11:00 AM Central"/"11:00 a. m. (hora del Centro)"), `when` ("Wednesdays at 11:00 AM Central"/"Miércoles a las 11:00 a. m. (hora del Centro)"), `sentence` (join line with Zoom ID + passcode). Machine-translated only if those fields are missing |
@@ -192,6 +250,48 @@ field also gets `i18n.<name> = {en, es}` in the site file.
 | document / slides / photo / video_file / form (`drive`) | `file_id`, `mime`, `name`, `panel`, `panel_label`, `path`, `album`, `view_url`, `preview_url`, `download_url`, `thumb_url`, `image_url`, `is_image`, `is_video`, `is_pdf`, `file_type`, `folder_id`, `folder_url`, `folder_chain`, `modified_text`, `size_bytes`, `duration_sec`, `shortcut_id`, `generic_name`, flyers: `event_date`, `event_title`, `event_time`, `event_end_time`, `event_location` / `event_month`, forms: `form_closed`, `form_signin_required` | `album` (photos in a sub-folder) |
 | announcement (`announcements`) | `body_md`, `expires`, `pinned`, `slug`, `file`, `link` | `body_md` |
 | district (`districts`) | top-level `number`, `name`, `language`, `website`, `gvr_contact`, `meets` (+ any extra YAML keys) | `name`, `meets` |
+
+#### Articles: `extra.geo` and `extra.pub_date` (site files only; build_data.py)
+`extra.geo` = where the writer is from, read from `extra.author_location` by `scripts/sync/geo.py`:
+```json
+"geo": { "scope": "neta65",                         // neta65 | texas | other | unknown
+         "city": "Grand Prairie",                   // as the writer gave it (tidied), or null
+         "county": "Dallas",                        // principal county, or null (unknown / not Texas)
+         "counties": ["Dallas", "Ellis", "Tarrant"],// every Texas county the place lies in ([] outside Texas)
+         "state": "TX",                             // US/Canada postal code, Mexican state name, or null
+         "country": "US",                           // ISO code, or null when unknown
+         "label_en": "Grand Prairie, Texas",        // display label (null when no place)
+         "label_es": "Grand Prairie, Texas" }       // ("Nueva Jersey" / "New Jersey", "Condado de Houston, Texas" …)
+```
+* `neta65` — the place lies in an Area 65 county (`config/site.yml` `spotlight.neta65_counties`); a place
+  in several counties counts if ANY of them is in Area 65. Cities are matched to counties with
+  `data/geo/texas_places.json` (U.S. Census 2020 place-by-county table; see `data/geo/README.md`).
+* `texas` — elsewhere in Texas, or "Texas" with no usable city. `other` — anywhere else, including a bare
+  city name without a state that is not on geo.py's short list of unambiguous Texas cities ("Paris"
+  alone is Paris, France; "Dallas" alone is Dallas, Texas). `unknown` — no place given (or a note printed
+  where the place goes, e.g. a reprint's "Excerpt. Original title: …, August 1948").
+* "Houston, Texas" is Harris County (`texas`); only "Houston County, Texas" is Area 65.
+* A region counts only when it stands alone: "West Texas" / "West TX" is the region (`texas`), "West,
+  Texas" is the town of West (McLennan County, `neta65`); "Panhandle, Texas" is the town of Panhandle.
+* Also read as Texas: "Denton (Texas)", "Dallas, Texas USA", "Fort Worth, TX, 76102", "Tyler, Texas,
+  District 42", "Texarkana, TX-AR"; words around the place are left out ("near Tyler", "Tyler area",
+  "cerca de Tyler", "somewhere in East Texas" → East Texas); "N. Richland Hills", "De Soto", "Mc Kinney",
+  "North Dallas", "Hurst-Euless-Bedford", Dallas / Fort Worth neighborhoods ("Oak Cliff" → Dallas County)
+  and Spanish town names ("Palestina" → Palestine, English label "Palestine, Texas") are matched to
+  their county. The list of rules is in the docstring of `scripts/sync/geo.py`.
+* Mexican state abbreviations are written out ("Guadalajara, Jal." → Jalisco). "N.L.", "B.C.", "Mich."
+  and "Col." are Mexican states in La Viña bylines (Nuevo León, Baja California, Michoacán, Colima)
+  unless the country or a well-known city says otherwise ("Vancouver, B.C."); in Grapevine bylines they
+  are Newfoundland and Labrador, British Columbia, Michigan, Colorado unless the country or city says
+  otherwise ("Tijuana, B.C."). `label_en` is written in English only for a Spanish town name; otherwise
+  both labels keep the writer's spelling of the city.
+
+`extra.pub_date` (`YYYY-MM-DD`) = the day the story counts as published for the 60/90-day windows and the
+weekly digest: the EARLIER of the first day of its issue (La Viña's bimonthly issues: the first month) and
+the day the story was first seen online (`first_seen`, in America/Chicago) — never later than today. It
+does not move: an October issue seen online on September 16 counts from September 16, also after
+October 1 (so the digest lists it once); a back-catalog story found by the archive backfill counts
+from its issue's first day (its `first_seen` is the later backfill day).
 
 ### Translation rules that affect what you see
 * Brand names are never translated (glossary `keep`: Grapevine, La Viña, Dear Grapevine, AA Grapevine,

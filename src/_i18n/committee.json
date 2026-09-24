@@ -104,8 +104,8 @@
     "es": "NETA 65 · Cada mes por Zoom"
   },
   "committee.meeting.hero_sub": {
-    "en": "{rule} · {time} Central time, on Zoom. Every AA member is welcome — come as you are.",
-    "es": "{rule} · {time}, hora del Centro, por Zoom. Todo miembro de AA es bienvenido — ven tal como eres."
+    "en": "{rule} · {time} Central time, on Zoom — every AA member is welcome.",
+    "es": "{rule} · {time}, hora del Centro, por Zoom — todo miembro de AA es bienvenido."
   },
   "committee.meeting.next": {
     "en": "Next meeting",
@@ -408,8 +408,8 @@
     "es": "Calendario · Hora del Centro"
   },
   "committee.events.hero_sub": {
-    "en": "Committee meetings, writing workshops, assembly booths and Grapevine & La Viña events in Texas — one calendar that updates itself.",
-    "es": "Reuniones del comité, talleres de escritura, mesas en asambleas y eventos de Grapevine y La Viña en Texas — un solo calendario que se actualiza solo."
+    "en": "Committee meetings, workshops, assembly booths and Grapevine & La Viña events in Texas — one calendar that updates itself.",
+    "es": "Reuniones del comité, talleres, asambleas y eventos de Grapevine y La Viña en Texas — un calendario que se actualiza solo."
   },
   "committee.events.subscribe_btn": {
     "en": "Subscribe to calendar",
@@ -619,6 +619,10 @@
     "en": "Texas and online events from the official aagrapevine.org and aalavina.org calendars, checked every day.",
     "es": "Eventos de Texas y en línea de los calendarios oficiales de aagrapevine.org y aalavina.org, revisados cada día."
   },
+  "committee.events.aside_aria": {
+    "en": "About this calendar",
+    "es": "Sobre este calendario"
+  },
   "committee.docs.meta_desc": {
     "en": "Reports, meeting notes, slides, workshop materials, flyers and sign-up forms from the NETA 65 Grapevine / La Viña Committee — updated automatically from our Google Drive.",
     "es": "Informes, notas de reuniones, presentaciones, materiales de talleres, volantes y formularios del Comité de Grapevine / La Viña de NETA 65 — actualizados automáticamente desde nuestro Google Drive."
@@ -628,8 +632,8 @@
     "es": "Desde nuestro Google Drive"
   },
   "committee.docs.hero_sub": {
-    "en": "Reports, meeting notes, slides and workshop materials — straight from the committee's shared Google Drive, updated every day.",
-    "es": "Informes, notas de reuniones, presentaciones y materiales de talleres — directo del Google Drive compartido del comité, actualizados cada día."
+    "en": "Reports, meeting notes, slides and workshop materials — updated every day.",
+    "es": "Informes, notas, presentaciones y materiales de talleres — actualizados cada día."
   },
   "committee.docs.how_btn": {
     "en": "How to add documents",

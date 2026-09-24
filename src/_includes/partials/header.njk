@@ -1,10 +1,12 @@
-{#- Site header: transparent over the dark page hero, solid once scrolled.
-    Desktop: primary nav + dropdowns. Mobile: slide-in drawer. -#}
+{#- Site header: transparent over the dark page hero (ui.pageHero), solid once scrolled
+    (a page without a hero gets the solid header from the start — app.js siteHeader).
+    Same container-page as the page and footer, so the edges line up at every width.
+    Desktop: primary nav + dropdowns. Mobile: slide-in drawer. Print: logo + name only. -#}
 {%- set L = lang or "en" -%}
 {%- set alt = page.url | altLangUrl(L) -%}
 <header x-data="siteHeader"
         :class="solid ? 'bg-surface/92! text-ink! border-line! shadow-sm backdrop-blur-md' : 'bg-transparent text-white border-transparent'"
-        class="fixed inset-x-0 top-0 z-50 border-b bg-transparent text-white transition-colors duration-300"
+        class="site-header fixed inset-x-0 top-0 z-50 border-b bg-transparent text-white transition-colors duration-300"
         style="padding-top: env(safe-area-inset-top)">
   <div class="container-page flex h-16 items-center gap-3">
     <a href="{{ '/' | lurl(L) }}" class="group flex min-w-0 items-center gap-2.5 no-underline" aria-label="{{ 'nav.home_aria' | t(L) }}">

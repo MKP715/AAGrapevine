@@ -1,9 +1,12 @@
 /* =====================================================================
    Area styles: LIBRARY (/library/) + SITE SEARCH (/search/)
    Owned by the library page agent. Only what utilities can't express
-   cleanly lives here: the document card (shared by the Nunjucks macro and
-   library.js), grid/list view switching, the paper "file tile", facets,
-   collections and search results. Theme tokens only (dark mode works).
+   cleanly lives here: the find bar below the hero, the document card
+   (shared by the Nunjucks macro and library.js), grid/list view switching,
+   the paper "file tile", facets, collections and search results.
+   Theme tokens only (dark mode works).
+   Both pages start with the shared ui.pageHero (same height as every page);
+   their search box is the first block BELOW it (.lib-find in page-overlap).
    ===================================================================== */
 
 /* ---------- tones (source colors) ---------- */
@@ -16,30 +19,55 @@
 .lib-q::-webkit-search-cancel-button,
 .ss-q::-webkit-search-cancel-button { appearance: none; }
 
-/* ---------- hero stats ---------- */
-.lib-stat {
-  border-radius: 1rem;
-  padding: 0.7rem 0.95rem;
-  background: rgb(255 255 255 / 0.08);
-  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.14);
-  backdrop-filter: blur(6px);
-  min-width: 0;
+/* ---------- hero numbers (ui.heroStats) ----------
+   Phones show the first two (documents, new this month) so the hero keeps its height;
+   the per-source numbers are on the Source filter chips too. */
+@media (width < 40rem) { .lib-hero-stats .hero-stat:nth-child(n+3) { display: none; } }
+
+/* ---------- find bar: the search box right below the hero (library + site search) ----------
+   <div class="container-page page-overlap"><div class="lib-find"><form class="lib-find-form">…
+   A full-width card; from 1024px the note / keyboard hint sits to the right of the box. */
+.lib-find {
+  display: grid; align-items: center; gap: 0.65rem 2rem;
+  padding: 0.75rem; border-radius: 1.25rem;
+  border: 1px solid var(--c-line); background: var(--c-surface); box-shadow: var(--shadow-lift);
 }
-.lib-stat dt { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.04em; color: rgb(255 255 255 / 0.72); }
-.lib-stat dd { margin-top: 0.1rem; font-family: var(--font-display); font-size: 1.65rem; font-weight: 600; line-height: 1.15; color: #fff; font-variant-numeric: tabular-nums; }
-.lib-stat .lib-stat-sources { display: flex; flex-wrap: wrap; gap: 0.2rem 0.9rem; font-family: var(--font-sans); font-size: 0.85rem; font-weight: 500; line-height: 1.9; }
-.lib-stat-sources > span { display: inline-flex; align-items: center; gap: 0.4rem; white-space: nowrap; }
-.lib-stat-sources b { font-family: var(--font-display); font-size: 1.05rem; font-weight: 600; }
-/* On the dark hero the source dots use fixed light tints so they read in both themes. */
-.lib-stat .lib-dot[data-tone="gv"] { background: #7cc0ff; }
-.lib-stat .lib-dot[data-tone="lv"] { background: #ffb27a; }
-.lib-stat .lib-dot[data-tone="neta"] { background: #9fdc98; }
+@media (width >= 40rem) { .lib-find { padding: 1rem; } }
+@media (width >= 64rem) { .lib-find { grid-template-columns: minmax(0, 1fr) auto; padding: 1rem 1.75rem 1rem 1rem; } }
+.lib-find-form { min-width: 0; }
+.lib-find-input {
+  display: block; width: 100%; height: 3.5rem; padding: 0 3.5rem 0 3rem;
+  border-radius: 1rem; border: 1px solid var(--c-line); background: var(--c-paper);
+  font-size: 1rem; color: var(--c-ink);
+  transition: border-color 0.15s, box-shadow 0.15s, background-color 0.15s;
+}
+.lib-find-input::placeholder { color: var(--c-faint); opacity: 1; }
+.lib-find-input:hover { border-color: color-mix(in srgb, var(--c-gv) 45%, var(--c-line)); }
+.lib-find-input:focus { outline: none; border-color: var(--c-gv); background: var(--c-surface); box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-gv) 35%, transparent); }
+@media (width >= 40rem) { .lib-find-input { height: 3.75rem; font-size: 1.125rem; } }
+.lib-find-clear {
+  position: absolute; right: 0.5rem; top: 50%; transform: translateY(-50%);
+  display: grid; place-items: center; width: 2.75rem; height: 2.75rem; border-radius: 999px;
+  color: var(--c-muted); transition: background-color 0.15s, color 0.15s;
+}
+.lib-find-clear:hover { background: var(--c-surface-2); color: var(--c-ink); }
+.lib-find-kbd {
+  position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); display: none; pointer-events: none;
+  padding: 0.125rem 0.5rem; border-radius: 0.375rem; border: 1px solid var(--c-line); background: var(--c-surface-2);
+  font-family: var(--font-sans); font-size: 0.75rem; font-weight: 600; color: var(--c-muted);
+}
+@media (width >= 40rem) { .lib-find-kbd { display: block; } }
+.lib-find-clear[hidden], .lib-find-kbd[hidden] { display: none; }
+.lib-find-note { display: flex; align-items: flex-start; gap: 0.5rem; padding-inline: 0.35rem; font-size: 0.8rem; line-height: 1.45; color: var(--c-muted); }
+@media (width >= 64rem) { .lib-find-note { max-width: 24rem; padding: 0; font-size: 0.85rem; } }
+.lib-find-note .icon { color: var(--c-faint); }
 
 .lib-dot { display: inline-block; width: 0.55rem; height: 0.55rem; flex-shrink: 0; border-radius: 999px; background: var(--tone, var(--c-faint)); }
 
-/* ---------- quick collections ---------- */
+/* ---------- quick collections (always 6): 2 columns → 3 (768px) → one row of 6 (1800px) ---------- */
 .lib-cols { display: grid; gap: 0.75rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
 @media (width >= 48rem) { .lib-cols { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (width >= 112.5rem) { .lib-cols { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
 
 .lib-col {
   position: relative;
@@ -113,10 +141,14 @@
 .lib-pill:hover { background: color-mix(in srgb, var(--c-gv) 18%, var(--c-surface)); }
 .lib-pill .icon { opacity: 0.8; }
 
-/* ---------- results: grid / list ---------- */
+/* ---------- results: grid / list ----------
+   Next to the fixed-width filter sidebar (layout-sidebar) the grid grows with the screen:
+   2 columns on tablets, 3 at 1280–1440px, 5 at 1920px (cards ≥ 16rem). The list view is
+   one column, two side by side from 1536px (rows ≥ 38rem, so titles stay readable). */
 .lib-results { display: grid; gap: 1.1rem; grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr)); }
 .lib-results[aria-busy="true"] { opacity: 0.6; transition: opacity 0.2s; }
 .lib-results[data-view="list"] { grid-template-columns: minmax(0, 1fr); gap: 0.7rem; }
+@media (width >= 96rem) { .lib-results[data-view="list"] { grid-template-columns: repeat(auto-fill, minmax(min(100%, 38rem), 1fr)); column-gap: 1rem; } }
 
 .lib-card {
   position: relative; display: flex; flex-direction: column; min-width: 0; overflow: hidden;
@@ -255,9 +287,24 @@
 .lib-dialog[open] { animation: lib-pop 0.2s ease-out; }
 @keyframes lib-pop { from { opacity: 0; transform: translateY(8px) scale(0.985); } to { opacity: 1; transform: none; } }
 
-/* ---------- "how it works" ---------- */
+/* ---------- "how it works" ----------
+   Stacked: heading · three cards · "ask us" row · copyright line.
+   From 1536px: heading, "ask us" and copyright in a left column, the three cards on the right. */
 .lib-how { border-radius: 1.4rem; border: 1px solid var(--c-line); background: linear-gradient(160deg, var(--c-surface), var(--c-surface-2)); padding: 1.5rem; }
 @media (width >= 40rem) { .lib-how { padding: 2rem; } }
+.lib-how-items { display: grid; gap: 1rem; margin-top: 1.5rem; }
+@media (width >= 48rem) { .lib-how-items { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.lib-how-foot { display: flex; flex-direction: column; gap: 1rem; margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--c-line); }
+.lib-how-foot > div { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+@media (width >= 40rem) { .lib-how-foot { flex-direction: row; align-items: center; justify-content: space-between; } }
+.lib-how-copy { margin-top: 1rem; }
+@media (width >= 96rem) {
+  .lib-how { display: grid; grid-template-columns: 22rem minmax(0, 1fr); grid-template-rows: auto auto 1fr; column-gap: 3rem; padding: 2.25rem 2.5rem; }
+  .lib-how-head { grid-column: 1; grid-row: 1; }
+  .lib-how-items { grid-column: 2; grid-row: 1 / span 3; margin-top: 0; }
+  .lib-how-foot { grid-column: 1; grid-row: 2; flex-direction: column; align-items: flex-start; margin-top: 1.25rem; }
+  .lib-how-copy { grid-column: 1; grid-row: 3; align-self: end; }
+}
 .lib-how-item { border-radius: var(--radius-card); background: var(--c-surface); border: 1px solid var(--c-line); padding: 1.1rem 1.15rem; }
 .lib-how-item p { margin-top: 0.35rem; font-size: 0.88rem; line-height: 1.55; color: var(--c-muted); }
 .lib-how-item .lib-how-note { display: flex; align-items: flex-start; gap: 0.45rem; margin-top: 0.8rem; padding-top: 0.7rem; border-top: 1px dashed var(--c-line); font-size: 0.8rem; line-height: 1.5; color: var(--c-muted); }
@@ -266,14 +313,34 @@
 
 /* =====================================================================
    SITE SEARCH
+   #ss-layout (only while there is a query): type filters + results. From 1024px the
+   filters are a fixed-width sidebar (same widths as layout-sidebar) and the results grow;
+   while the filters are hidden (loading, no results) the results use the whole width.
    ===================================================================== */
-.ss-kinds { display: flex; gap: 0.5rem; overflow-x: auto; padding-bottom: 0.25rem; scrollbar-width: none; margin-inline: -1rem; padding-inline: 1rem; }
+.ss-layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.25rem; }
+@media (width >= 64rem) {
+  .ss-layout:has(> .ss-side:not([hidden])) { grid-template-columns: 16.5rem minmax(0, 1fr); column-gap: 2.5rem; }
+  .ss-side { position: sticky; top: calc(var(--header-h) + 1.5rem); align-self: start; }
+}
+@media (width >= 96rem) { .ss-layout:has(> .ss-side:not([hidden])) { grid-template-columns: 18rem minmax(0, 1fr); column-gap: 3rem; } }
+.ss-side, .ss-main { min-width: 0; }
+.ss-main { display: flex; flex-direction: column; gap: 1.25rem; }
+.ss-main > .ss-results:empty, .ss-more-wrap:has(> [hidden]) { display: none; }
+
+.ss-kinds { display: flex; gap: 0.5rem; overflow-x: auto; padding-bottom: 0.25rem; scrollbar-width: none; margin-inline: calc(-1 * var(--gutter)); padding-inline: var(--gutter); }
 .ss-kinds::-webkit-scrollbar { display: none; }
 @media (width >= 40rem) { .ss-kinds { flex-wrap: wrap; overflow: visible; margin-inline: 0; padding-inline: 0; } }
 .ss-kinds .chip { flex-shrink: 0; min-height: 2.5rem; }
 .ss-kinds .chip .lib-chip-n { margin-left: 0.1rem; }
+/* Sidebar: one type per row, count on the right */
+@media (width >= 64rem) {
+  .ss-side .ss-kinds { flex-direction: column; flex-wrap: nowrap; gap: 0.4rem; }
+  .ss-side .ss-kinds .chip { justify-content: space-between; min-height: 2.75rem; padding-inline: 1rem 0.9rem; border-radius: 0.8rem; font-size: 0.9rem; }
+}
 
+/* Results: one column; two side by side from 1536px (each ≥ 34rem, so snippets stay readable) */
 .ss-results { display: grid; gap: 0.35rem; }
+@media (width >= 96rem) { .ss-results { grid-template-columns: repeat(auto-fill, minmax(min(100%, 34rem), 1fr)); column-gap: 1rem; align-items: start; } }
 .ss-result > a {
   position: relative; display: flex; gap: 0.9rem; align-items: flex-start; padding: 0.8rem; border-radius: 1rem;
   text-decoration: none; border: 1px solid transparent; transition: background-color 0.15s, border-color 0.15s, box-shadow 0.15s;
@@ -300,8 +367,12 @@
 .ss-snippet { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-top: 0.3rem; font-size: 0.88rem; line-height: 1.5; color: var(--c-muted); overflow-wrap: anywhere; }
 .ss-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 0.2rem 0.9rem; margin-top: 0.35rem; }
 .ss-host { display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.72rem; color: var(--c-faint); }
+/* A story's writer · hometown */
+.ss-by { display: inline-flex; align-items: center; gap: 0.3rem; min-width: 0; font-size: 0.76rem; font-weight: 600; color: var(--c-muted); }
+.ss-by > .icon { color: var(--c-faint); }
+.ss-by mark { background: color-mix(in srgb, var(--c-lv) 22%, transparent); color: var(--c-ink); border-radius: 0.2rem; padding: 0 0.08em; }
 
-.ss-jump { display: grid; gap: 0.6rem; grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr)); }
+.ss-jump { display: grid; gap: 0.6rem; grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr)); }
 .ss-jump a {
   display: flex; align-items: center; gap: 0.75rem; min-height: 3.5rem; padding: 0.6rem 0.9rem; border-radius: 0.9rem;
   border: 1px solid var(--c-line); background: var(--c-surface); text-decoration: none; transition: border-color 0.15s, box-shadow 0.15s;
@@ -311,8 +382,18 @@
 .ss-jump .ss-jump-t { display: block; font-size: 0.92rem; font-weight: 700; color: var(--c-ink); }
 .ss-jump .ss-jump-d { display: block; font-size: 0.74rem; line-height: 1.35; color: var(--c-muted); display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
 
-.ss-browse { display: grid; gap: 0.6rem; grid-template-columns: repeat(auto-fill, minmax(min(100%, 10rem), 1fr)); }
-@media (width >= 40rem) { .ss-browse { gap: 0.75rem; grid-template-columns: repeat(auto-fill, minmax(13.5rem, 1fr)); } }
+/* Start state (no query): tips + popular searches | "browse everything" (side by side from 1280px) */
+.ss-start-grid { display: grid; gap: 2.5rem; }
+@media (width >= 80rem) { .ss-start-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr); gap: 3rem; } }
+@media (width >= 96rem) { .ss-start-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr); gap: 4rem; } }
+
+/* 9 tiles: 2 columns on phones (an odd last tile spans the row), 3 columns from 640px */
+.ss-browse { display: grid; gap: 0.6rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.ss-browse > a:last-child:nth-child(odd) { grid-column: 1 / -1; }
+@media (width >= 40rem) {
+  .ss-browse { gap: 0.75rem; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .ss-browse > a:last-child:nth-child(odd) { grid-column: auto; }
+}
 .ss-browse a {
   display: flex; align-items: center; gap: 0.7rem; padding: 0.8rem 0.8rem; min-width: 0; border-radius: var(--radius-card);
   border: 1px solid var(--c-line); background: var(--c-surface); box-shadow: var(--shadow-card); text-decoration: none;

@@ -6,6 +6,21 @@
    text on a deep gradient in both themes.
    ===================================================================== */
 
+/* ---------- Page hero (ui.pageHero with opts.class "read-hero") ----------
+   The hero buttons are the standard size on every page (44px tall, 14px text). On phones
+   the two magazine buttons would wrap onto a second row and push the hero past 28rem, so,
+   like the home page's hero: no icon and a little less side padding, which keeps them on one
+   row on a 390px phone in both languages (Subscribe's longer labels stack below ~414px; its
+   subtitle is kept short for that). Below 360px the eyebrow pill is left out (the title says
+   the same), so heroes whose buttons stack there stay within 28rem too. */
+@media (width < 40rem) {
+  .read-hero .hero-actions > :is(a, button) { padding-inline: 0.875rem; }
+  .read-hero .hero-actions > :is(a, button) > .icon { display: none; }
+}
+@media (width < 22.5rem) {
+  .read-hero .gv-hero-eyebrow { display: none; }
+}
+
 /* ---------- Magazine "cover" panels (GV = navy/blue, LV = deep amber) ---------- */
 .read-cover--gv {
   background:
@@ -43,6 +58,31 @@
 }
 .read-cover-frame:hover { transform: translateY(-3px) rotate(-0.6deg); box-shadow: 0 1px 2px rgb(0 0 0 / 0.35), 0 26px 50px -14px rgb(0 0 0 / 0.7), 0 0 0 1px rgb(255 255 255 / 0.22); }
 .read-cover-frame:focus-visible { outline-color: #fff; }
+
+/* ---------- Wide screens (Read page) ----------
+   Current issues: Grapevine and La Viña side by side from 1440px (each card then lays itself
+   out by its own width — container queries in read.njk). When the visitor filters to one
+   magazine (Alpine adds .is-single) that one takes the full width again. */
+.read-issues { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2rem; align-items: start; }
+@media (width >= 90rem) {
+  .read-issues { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; }
+  .read-issues.is-single { grid-template-columns: minmax(0, 1fr); }
+}
+/* Previous issues: one column, two from 1440px (an opened issue only grows its own column) */
+.read-archive-list { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.75rem; align-items: start; }
+@media (width >= 90rem) { .read-archive-list { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* "See who from our Area got published" link card (Read + Share your story → /published/):
+   a soft vine glow in the corner and a thin three-color rule on top. */
+.read-spot {
+  background:
+    radial-gradient(85% 75% at 100% 0%, color-mix(in srgb, var(--c-vine) 12%, transparent), transparent 70%),
+    var(--c-surface);
+}
+.read-spot::before {
+  content: ""; position: absolute; inset: 0 0 auto 0; height: 4px; pointer-events: none;
+  background: linear-gradient(90deg, var(--c-vine), var(--c-gv) 55%, var(--c-lv));
+}
 
 /* Table of contents: small group headings; phones show the first 6 stories until "Show all" is opened */
 .read-toc-head {
@@ -117,12 +157,33 @@
 .read-accent-grape { --read-accent: var(--c-grape); }
 .read-accent-vine { --read-accent: var(--c-vine); }
 
-/* Resource kits: phones show 3 files per group (desktop 6) until "Show more" or a search */
-@media (width < 40rem) {
-  .read-kit-group:not(.is-more) .read-kit-sm-extra { display: none; }
-}
+/* ---------- Resource kits (GVR / RLV Corner) ----------
+   Columns: 1 → 2 (640px) → 3 (1024px) → 4 (1536px) → 5 (1800px); cards stay ≥ ~290px wide.
+   Until "Show all" (.is-more — also set while searching) a group shows 3 files on phones and
+   two full rows above that (4 · 6 · 8 · 10). The button's own visibility (gvr.njk) uses the
+   same steps. Folding needs .is-js (added by Alpine), so without JavaScript every file shows. */
+.read-kit-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.75rem; }
+@media (width >= 40rem) { .read-kit-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (width >= 64rem) { .read-kit-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (width >= 96rem) { .read-kit-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (width >= 112.5rem) { .read-kit-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+@media (width < 40rem) { .read-kit-group.is-js:not(.is-more) .read-kit-grid > li:nth-child(n+4) { display: none; } }
+@media (40rem <= width < 64rem) { .read-kit-group.is-js:not(.is-more) .read-kit-grid > li:nth-child(n+5) { display: none; } }
+@media (64rem <= width < 96rem) { .read-kit-group.is-js:not(.is-more) .read-kit-grid > li:nth-child(n+7) { display: none; } }
+@media (96rem <= width < 112.5rem) { .read-kit-group.is-js:not(.is-more) .read-kit-grid > li:nth-child(n+9) { display: none; } }
+@media (width >= 112.5rem) { .read-kit-group.is-js:not(.is-more) .read-kit-grid > li:nth-child(n+11) { display: none; } }
 
-/* ---------- GVR checklist ---------- */
+/* ---------- GVR checklist ----------
+   One column; two when the checklist card is at least 56rem wide (its @container), filled
+   column by column (--rows = half the steps) so the steps still read 1, 2, 3… downwards.
+   gvr.njk marks the first column (.read-check-c1) and the top of the second (.read-check-c2top). */
+.read-check-list { display: grid; grid-template-columns: minmax(0, 1fr); }
+.read-check-list > li + li { border-top: 1px solid var(--c-line); }
+@container (width >= 56rem) {
+  .read-check-list { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(var(--rows, 4), auto); grid-auto-flow: column; }
+  .read-check-list > li.read-check-c2top { border-top: 0; }
+  .read-check-list > li.read-check-c1 { border-right: 1px solid var(--c-line); }
+}
 .read-check { accent-color: var(--c-vine); width: 1.35rem; height: 1.35rem; flex-shrink: 0; cursor: pointer; }
 .read-check-row.is-done .read-check-label { color: var(--c-faint); text-decoration: line-through; text-decoration-color: color-mix(in srgb, var(--c-faint) 60%, transparent); }
 .read-progress { height: 0.5rem; border-radius: 999px; background: var(--c-surface-2); overflow: hidden; }
@@ -156,6 +217,16 @@
 @media (prefers-reduced-motion: no-preference) {
   .read-flow-pulse { animation: read-pulse 2.4s ease-in-out infinite; }
   @keyframes read-pulse { 0%, 100% { opacity: 0.55; transform: scale(0.92); } 50% { opacity: 1; transform: scale(1); } }
+}
+
+/* Open-source credits (About): one column; two when the list is at least 48rem wide (its
+   @container), filled column by column (--rows) so the list still reads top to bottom. */
+.read-credit-list { display: grid; grid-template-columns: minmax(0, 1fr); }
+.read-credit-list > li + li { border-top: 1px solid var(--c-line); }
+@container (width >= 48rem) {
+  .read-credit-list { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(var(--rows, 5), auto); grid-auto-flow: column; }
+  .read-credit-list > li.read-credit-c2top { border-top: 0; }
+  .read-credit-list > li.read-credit-c1 { border-right: 1px solid var(--c-line); }
 }
 
 /* Timeline (About) */

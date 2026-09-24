@@ -482,5 +482,13 @@
   "nav.dark_mode": {
     "en": "Dark mode",
     "es": "Modo oscuro"
+  },
+  "nav.published": {
+    "en": "Published Writers",
+    "es": "Escritores Publicados"
+  },
+  "nav.published_desc": {
+    "en": "Stories by writers from our Area & Texas",
+    "es": "Historias de escritores de nuestra Área y de Texas"
   }
 }

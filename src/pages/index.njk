@@ -4,15 +4,18 @@ permalink: "{{ '/' if lang == 'en' else '/es/' }}index.html"
 layout: layouts/base.njk
 pageKey: home
 descKey: home.meta_desc
-pageScripts: ["/assets/js/hero-canvas.js", "/assets/vendor/lite-yt-embed.js", "/assets/js/home.js"]
+pageScripts: ["/assets/vendor/lite-yt-embed.js", "/assets/js/home.js"]
 pageStyles: ["/assets/vendor/lite-yt-embed.css"]
 ---
 {#- ======================================================================
     HOME PAGE — NETA 65 Grapevine / La Viña Committee (EN + ES)
     Every section reads synced data through `D` (= db | homeData) and hides
     itself or shows a friendly empty state when its data is empty.
-    Section order: hero · fresh · announcements · magazines · listen & watch ·
-    events · library · instagram · service band · committee uploads.
+    Section order: hero (the shared ui.pageHero, with the next-meeting card on the
+    right from 1024px) · meeting card (below 1024px) + site counters · PUBLISHED
+    WRITERS spotlight · fresh · announcements · magazines · listen & watch · events ·
+    library · instagram · service band · committee uploads.
+    The hero art (hero-canvas.js) is loaded by layouts/base.njk on every page.
     ====================================================================== -#}
 {% import "macros/ui.njk" as ui with context %}
 {% set L = lang %}
@@ -42,6 +45,104 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
 
 {#- Remote images can vanish (expired CDN links, private Drive files): drop them and let the tile underneath show. -#}
 {% macro img(src, cls="", alt="") %}<img src="{{ src }}" alt="{{ alt }}" loading="lazy" decoding="async" referrerpolicy="no-referrer" class="{{ cls }}" onerror="this.remove()">{% endmacro %}
+
+{#- Compact "next committee meeting" card with a live countdown (home.js → homeMeeting).
+    v = "hero": dark glass, in the hero's right column (1024px and up);
+    v = "page": light card right below the hero (below 1024px). Only one of the two is
+    ever displayed, so each has its own heading id. Meeting ID and passcode are on /meeting/
+    ("Details"); the Zoom link carries the passcode. -#}
+{% macro meetingCard(v, L, meeting, mt) %}
+{%- set dark = v == "hero" -%}
+{%- set tid = "home-meeting-title" if dark else "home-meeting-title-2" -%}
+<div class="home-meet home-meet--{{ v }}" role="group" aria-labelledby="{{ tid }}"
+     x-data="homeMeeting" data-rule="{{ meeting.rule | json }}" data-start="{{ meeting.next.start }}" data-end="{{ meeting.next.end }}"
+     data-cal-title="{{ 'home.meeting_cal_title' | t(L) }}" data-cal-desc="{{ 'home.meeting_cal_desc' | t(L) }} {{ mt.zoom_url }}" data-cal-loc="{{ mt.zoom_url }}">
+  <div class="home-meet-info">
+    <div class="flex flex-wrap items-center justify-between gap-2">
+      <h2 id="{{ tid }}" class="home-meet-eyebrow">{{ "home.meeting_eyebrow" | t(L) }}</h2>
+      <span x-show="live" x-cloak class="home-live-pill">{{ "home.meeting_live" | t(L) }}</span>
+    </div>
+    <p class="home-meet-date" x-ref="date" x-text="dateLabel">{{ meeting.next.start | homeMeetingDate(L) }}</p>
+    <p class="home-meet-time">
+      {% icon "clock", "size-4 shrink-0" %}<span x-ref="time" x-text="timeLabel">{{ meeting.next.start | homeTimeRange(meeting.next.end, L) }}</span>
+      <span aria-hidden="true">·</span><span>{{ mt.platform or "Zoom" }}</span>
+    </p>
+    {% if not dark and meeting.rule and meeting.rule.n %}
+    <p class="home-meet-rule">{{ "home.meeting_rule" | t(L, { nth: ("home.nth." ~ meeting.rule.n) | t(L), weekday: meeting.rule.weekday | homeWeekday(L) }) }}</p>
+    {% endif %}
+  </div>
+  <div class="home-meet-count" role="timer" aria-label="{{ 'home.countdown_aria' | t(L) }}" x-show="!live">
+    {% for u in [["d", "common.days"], ["h", "common.hours"], ["m", "common.min"], ["s", "common.sec"]] %}
+    <div class="home-count"><span class="home-count-n" x-text="pad({{ u[0] }})">--</span><span class="home-count-l">{{ u[1] | t(L) }}</span></div>
+    {% endfor %}
+  </div>
+  <div class="home-meet-actions">
+    <a class="{{ 'btn-light' if dark else 'btn-primary' }} home-meet-join" href="{{ mt.zoom_url }}" target="_blank" rel="noopener">{% icon "video", "size-4" %} {{ "home.meeting_join" | t(L) }}<span class="sr-only"> {{ "home.opens_new_tab" | t(L) }}</span></a>
+    <button type="button" class="{{ 'btn-on-dark' if dark else 'btn-secondary' }} btn-sm" x-show="ready" x-cloak @click="addToCalendar()" title="{{ 'common.add_to_calendar' | t(L) }}">{% icon "calendar-plus", "size-4" %} {{ "home.meeting_add_cal" | t(L) }}</button>
+    <a class="{{ 'btn-on-dark' if dark else 'btn-secondary' }} btn-sm" href="{{ '/meeting/' | lurl(L) }}">{{ "home.meeting_details_short" | t(L) }} {% icon "arrow-right", "size-3.5" %}<span class="sr-only"> — {{ "home.meeting_eyebrow" | t(L) }}</span></a>
+  </div>
+</div>
+{% endmacro %}
+
+{#- One published-writer card (Published writers spotlight). featured = Area 65 writer:
+    wider (two grid columns, picture on the left from 640px), vine-green accent + ribbon.
+    The writer's name is printed exactly as the magazine printed it ("Jake B."). -#}
+{% macro spotCard(a, L, featured) %}
+{%- set x = a.extra or {} -%}
+{%- set g = x.geo or {} -%}
+{%- set isLv = x.publication == "lv" -%}
+{%- set mag = "La Viña" if isLv else "Grapevine" -%}
+{%- set ttl = a | tx("title", L) -%}
+{%- set sec = a | tx("section", L) -%}
+{%- set topic = a | tx("topic", L) -%}
+{%- set kicker = sec or topic -%}
+{%- set kickerOrig = x.section if sec else x.topic -%}
+{%- set place = g["label_" ~ L] or (a | tx("author_location", L)) or x.author_location -%}
+{%- set writer = (x.author or "") | trim -%}
+{%- set ini = writer | homeInitials -%}
+{%- set pic = a | homeImage -%}
+{%- set sum = (a | tx("summary", L)) if featured else "" -%}
+{%- set foreign = a.lang and a.lang != L and a.lang != "und" -%}
+<article class="home-spot-card card card-link group relative flex h-full overflow-hidden{{ ' is-featured' if featured }}">
+  <div class="home-spot-media home-tone-{{ 'lv' if isLv else 'gv' }}">
+    <div class="home-tile absolute inset-0 flex flex-col items-center justify-center gap-1 p-4 text-center" aria-hidden="true">
+      {% icon "grapes", "size-7 opacity-70" %}
+      <span class="font-display text-xl font-semibold italic leading-none">{{ mag }}</span>
+    </div>
+    {% if pic %}{{ img(pic, "absolute inset-0 size-full object-cover transition duration-500 group-hover:scale-[1.04]") }}{% endif %}
+    {% if featured %}<span class="home-spot-ribbon">{% icon "award", "size-3.5 shrink-0" %} {{ "home.spot_featured" | t(L) }}</span>{% endif %}
+  </div>
+  <div class="home-spot-body">
+    <div class="flex items-center gap-3">
+      <span class="home-spot-avatar home-tone-{{ 'vine' if featured else ('lv' if isLv else 'gv') }}" aria-hidden="true">{% if ini %}{{ ini }}{% else %}{% icon "feather", "size-5" %}{% endif %}</span>
+      <div class="min-w-0">
+        <h3 class="home-spot-writer">{{ writer or ("home.spot_no_name" | t(L)) }}</h3>
+        {% if place %}<p class="home-spot-place">{% icon "map-pin", "size-3.5 shrink-0" %}<span class="min-w-0 truncate">{{ place }}</span></p>{% endif %}
+      </div>
+    </div>
+    <p class="home-spot-title"{% if foreign and ttl == a.title %} lang="{{ a.lang }}"{% endif %}>
+      <a href="{{ a.url }}" target="_blank" rel="noopener" class="no-underline after:absolute after:inset-0 {{ 'group-hover:text-lv' if isLv else 'group-hover:text-gv' }}">{{ ttl }}<span class="sr-only"> {{ "home.opens_new_tab" | t(L) }}</span></a>
+    </p>
+    {% if sum %}<p class="mt-1.5 line-clamp-2 text-sm leading-relaxed text-muted"{% if foreign and sum == a.summary %} lang="{{ a.lang }}"{% endif %}>{{ sum | excerpt(180) }}</p>{% endif %}
+    {% if x.issue_label or kicker or x.online_exclusive %}
+    <p class="home-spot-meta">
+      {%- set sep = joiner('<span aria-hidden="true">·</span>' | safe) -%}
+      {% if x.issue_label %}{{ sep() }}<span>{{ "home.issue_label" | t(L, { label: x.issue_label | homeIssueLabel(L) }) }}</span>{% endif %}
+      {% if kicker %}{{ sep() }}<span{% if foreign and kicker == kickerOrig %} lang="{{ a.lang }}"{% endif %}>{{ kicker }}</span>{% endif %}
+      {% if x.online_exclusive %}{{ sep() }}<span>{{ "home.spot_online" | t(L) }}</span>{% endif %}
+    </p>
+    {% endif %}
+    <p class="home-spot-foot">
+      {% if featured %}<span class="badge-vine">{% icon "grapes", "size-3" %} {{ "home.spot_badge_a65" | t(L) }}</span>
+      {% else %}<span class="home-badge-tx badge">{% icon "star", "size-3" %} {{ "home.spot_badge_tx" | t(L) }}</span>{% endif %}
+      <span class="{{ 'badge-lv' if isLv else 'badge-gv' }}"{% if isLv and L != "es" %} lang="es"{% endif %}>{{ mag }}</span>
+      {% if x.free === false %}<span class="inline-flex items-center gap-1 font-medium" title="{{ 'home.subscriber_help' | t(L) }}">{% icon "lock", "size-3" %} {{ "home.spot_subscriber" | t(L) }}</span>
+      {% elif x.free === true %}<span class="inline-flex items-center gap-1 font-medium text-vine">{% icon "lock-open", "size-3" %} {{ "home.free_read" | t(L) }}</span>{% endif %}
+      {{ ui.autoNote(a, L) }}
+    </p>
+  </div>
+</article>
+{% endmacro %}
 
 {#- One magazine column (Grapevine = blue, La Viña = amber): current cover + a few stories. -#}
 {% macro magColumn(pub, issue, L, site) %}
@@ -115,103 +216,149 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
 {% endmacro %}
 
 {#- =====================================================================
-    1. HERO — the committee's animated grapevine art + next meeting
+    1. HERO — the shared page hero (ui.pageHero: the committee's animated grapevine art,
+       same height as every other page) · headline, lead, two CTAs · from 1024px the
+       compact next-meeting card on the right (below 1024px it is the first block under
+       the hero, so the hero keeps its standard height on tablets and phones).
     ===================================================================== -#}
-<section id="homeHero" class="home-hero relative isolate overflow-hidden text-white" aria-labelledby="home-title">
-  <canvas id="grapevineCanvas" aria-hidden="true" class="pointer-events-none absolute inset-0 z-[1] size-full"></canvas>
-  <div class="home-hero-scrim pointer-events-none absolute inset-0 z-[2]" aria-hidden="true"></div>
+{%- set mt = site.meeting -%}
+{% call(slot) ui.pageHero(L, ("home.hero_title" | t(L)) | mdInline | safe, "home.hero_lead" | t(L), "", "home.hero_eyebrow" | t(L), { id: "homeHero", titleId: "home-title", aside: true, eyebrowIcon: "grapes" }) %}
+  {%- if slot == "aside" %}
+  {% if meeting.next %}{{ meetingCard("hero", L, meeting, mt) }}{% endif %}
+  {%- else %}
+  <div class="hero-actions home-hero-actions">
+    <a class="btn-light" href="{{ '/whats-new/' | lurl(L) }}">{% icon "sparkles", "size-4" %} {{ "home.cta_whats_new" | t(L) }}</a>
+    <a class="btn-on-dark" href="{{ '/library/' | lurl(L) }}">{% icon "library", "size-4" %} {{ "home.cta_library" | t(L) }}</a>
+  </div>
+  {%- endif %}
+{% endcall %}
 
-  {#- Phones get a lighter hero (tighter padding, no stats, a compact meeting card) so the
-      newest stories start about one screen down; the full meeting card is on /meeting/. -#}
-  <div class="container-page relative z-10 grid items-center gap-8 pt-24 pb-16 sm:gap-10 sm:pt-32 sm:pb-28 lg:min-h-[44rem] lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.85fr)] lg:gap-14 lg:pt-36 lg:pb-32 2xl:min-h-[48rem]">
-    <div class="home-hero-copy">
-      <p class="inline-flex max-w-full items-center gap-2 rounded-full bg-white/10 px-3.5 py-1.5 text-xs font-semibold tracking-wide ring-1 ring-white/20 backdrop-blur-sm">
-        {% icon "grapes", "size-4 shrink-0" %}<span class="truncate">{{ "home.hero_eyebrow" | t(L) }}</span>
-      </p>
-      <h1 id="home-title" class="home-hero-title mt-5 font-display text-[2.35rem] font-semibold leading-[1.05] sm:text-6xl lg:text-[3.9rem] xl:text-[4.25rem]">{{ ("home.hero_title" | t(L)) | mdInline | safe }}</h1>
-      <p class="mt-5 max-w-xl text-base leading-relaxed text-pretty text-white/90 sm:text-xl">{{ "home.hero_lead" | t(L) }}</p>
-      <div class="mt-7 flex flex-wrap gap-3 sm:mt-8">
-        <a class="btn-light" href="{{ '/whats-new/' | lurl(L) }}">{% icon "sparkles", "size-4" %} {{ "home.cta_whats_new" | t(L) }}</a>
-        <a class="btn-on-dark" href="{{ '/library/' | lurl(L) }}">{% icon "library", "size-4" %} {{ "home.cta_library" | t(L) }}</a>
-      </div>
-
-      {%- set stats = [
-        { n: D.pdfs.items.length, key: "home.stat_pdfs", url: "/library/" },
-        { n: D.episodes.items.length, key: "home.stat_episodes", url: "/listen/" },
-        { n: D.videos.items.length, key: "home.stat_videos", url: "/watch/" },
-        { n: D.articles.items.length, key: "home.stat_articles", url: "/read/" }
-      ] %}
-      {#- Hidden on phones: the same sections are in the menu and further down the page. -#}
-      <ul class="home-stats mt-10 grid max-w-xl max-sm:hidden grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-4" aria-label="{{ 'home.stats_aria' | t(L) }}">
+{#- Right below the hero, tucked into its faded edge (page-overlap): the next-meeting card
+    (below 1024px — from 1024px it is inside the hero) and the site counters (from 640px;
+    on phones the same sections are in the menu and further down the page). The counters
+    link to their pages, so the strip doubles as a quick way in. -#}
+{%- set stats = [
+  { n: D.pdfs.items.length, key: "home.stat_pdfs", url: "/library/", icon: "file-text", tone: "gv" },
+  { n: D.episodes.items.length, key: "home.stat_episodes", url: "/listen/", icon: "headphones", tone: "grape" },
+  { n: D.videos.items.length, key: "home.stat_videos", url: "/watch/", icon: "circle-play", tone: "grape" },
+  { n: D.articles.items.length, key: "home.stat_articles", url: "/read/", icon: "book-open-text", tone: "lv" }
+] %}
+{%- set statCount = 0 %}{% for s in stats %}{% if s.n %}{% set statCount = statCount + 1 %}{% endif %}{% endfor %}
+{% if meeting.next or statCount %}
+<div class="container-page page-overlap home-under{{ ' max-sm:hidden' if not meeting.next }}{{ ' lg:hidden' if not statCount }}">
+  <div class="card home-under-card">
+    {% if meeting.next %}<div class="home-under-meet lg:hidden">{{ meetingCard("page", L, meeting, mt) }}</div>{% endif %}
+    {% if statCount %}
+    <div class="home-under-stats">
+      <p class="home-under-label">{% icon "sprout", "size-4 shrink-0" %} {{ "home.stats_label" | t(L) }}</p>
+      <ul class="home-stats" role="list" aria-label="{{ 'home.stats_aria' | t(L) }}">
         {% for s in stats %}{% if s.n %}
-        <li><a href="{{ s.url | lurl(L) }}" class="group block no-underline">
-          <span class="block font-display text-3xl font-semibold leading-none tabular-nums">{{ s.n | homeNum(L) }}</span>
-          <span class="mt-1.5 block text-sm leading-snug text-white/85 group-hover:text-white group-hover:underline">{{ s.key | t(L) }}</span>
+        <li><a href="{{ s.url | lurl(L) }}" class="home-stat group">
+          <span class="home-stat-icon home-tone-{{ s.tone }}" aria-hidden="true">{% icon s.icon, "size-5" %}</span>
+          <span class="min-w-0"><span class="home-stat-n">{{ s.n | homeNum(L) }}</span> <span class="home-stat-l">{{ s.key | t(L) }}</span></span>
         </a></li>
         {% endif %}{% endfor %}
       </ul>
     </div>
-
-    {% if meeting.next %}
-    {%- set mt = site.meeting -%}
-    <aside class="home-glass relative rounded-3xl p-5 sm:p-7" aria-labelledby="home-meeting-title"
-           x-data="homeMeeting" data-rule="{{ meeting.rule | json }}" data-start="{{ meeting.next.start }}" data-end="{{ meeting.next.end }}"
-           data-cal-title="{{ 'home.meeting_cal_title' | t(L) }}" data-cal-desc="{{ 'home.meeting_cal_desc' | t(L) }} {{ mt.zoom_url }}" data-cal-loc="{{ mt.zoom_url }}">
-      <div class="flex flex-wrap items-center justify-between gap-2">
-        <h2 id="home-meeting-title" class="font-sans text-xs font-semibold uppercase tracking-[0.16em] text-white/90">{{ "home.meeting_eyebrow" | t(L) }}</h2>
-        <span x-show="live" x-cloak class="home-live-pill">{{ "home.meeting_live" | t(L) }}</span>
-      </div>
-      <p class="mt-3 font-display text-[1.6rem] font-semibold leading-tight sm:text-3xl" x-ref="date" x-text="dateLabel">{{ meeting.next.start | fmtDate(L, "long") }}</p>
-      <p class="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-[0.95rem] text-white/90">
-        {% icon "clock", "size-4 shrink-0" %}<span x-ref="time" x-text="timeLabel">{{ meeting.next.start | homeTimeRange(meeting.next.end, L) }}</span>
-        <span aria-hidden="true">·</span><span>{{ mt.platform or "Zoom" }}</span>
-      </p>
-      {% if meeting.rule and meeting.rule.n %}
-      <p class="mt-1 text-sm text-white/85">{{ "home.meeting_rule" | t(L, { nth: ("home.nth." ~ meeting.rule.n) | t(L), weekday: meeting.rule.weekday | homeWeekday(L) }) }}</p>
-      {% endif %}
-
-      <div class="mt-5 grid grid-cols-4 gap-2 max-sm:hidden sm:gap-3" role="timer" aria-label="{{ 'home.countdown_aria' | t(L) }}" x-show="!live">
-        {% for u in [["d", "common.days"], ["h", "common.hours"], ["m", "common.min"], ["s", "common.sec"]] %}
-        <div class="home-count rounded-2xl px-1 py-3 text-center">
-          <span class="block font-display text-[1.7rem] font-semibold leading-none tabular-nums sm:text-4xl" x-text="pad({{ u[0] }})">--</span>
-          <span class="mt-1.5 block text-[0.66rem] font-semibold uppercase tracking-wider text-white/85">{{ u[1] | t(L) }}</span>
-        </div>
-        {% endfor %}
-      </div>
-
-      <div class="mt-5 flex flex-wrap gap-2">
-        <a class="btn-light grow" href="{{ mt.zoom_url }}" target="_blank" rel="noopener">{% icon "video", "size-4" %} {{ "home.meeting_join" | t(L) }}<span class="sr-only"> {{ "home.opens_new_tab" | t(L) }}</span></a>
-        <button type="button" class="btn-on-dark grow max-sm:hidden" x-show="ready" x-cloak @click="addToCalendar()">{% icon "calendar-plus", "size-4" %} {{ "common.add_to_calendar" | t(L) }}</button>
-        {#- Phones: countdown, meeting ID and calendar options live on /meeting/ (the Zoom link carries the passcode). -#}
-        <a class="btn-on-dark grow sm:hidden" href="{{ '/meeting/' | lurl(L) }}">{{ "home.meeting_details_short" | t(L) }}<span class="sr-only"> — {{ "home.meeting_eyebrow" | t(L) }}</span></a>
-      </div>
-      {% if mt.meeting_id %}
-      <div class="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-white/15 pt-4 text-sm max-sm:hidden">
-        <dl class="grid grid-cols-[auto_auto] gap-x-3 gap-y-1">
-          <dt class="text-white/85">{{ "home.meeting_id" | t(L) }}</dt>
-          <dd class="font-semibold whitespace-nowrap tabular-nums text-white">{{ mt.meeting_id }}</dd>
-          {% if mt.passcode %}
-          <dt class="text-white/85">{{ "home.meeting_passcode" | t(L) }}</dt>
-          <dd class="font-semibold whitespace-nowrap text-white">{{ mt.passcode }}</dd>
-          {% endif %}
-        </dl>
-        <button type="button" class="btn-on-dark btn-sm max-sm:min-h-11 shrink-0" data-copy="{{ mt.meeting_id | replace(' ', '') }}" title="{{ 'home.meeting_copy_id' | t(L) }}">{% icon "copy", "size-3.5" %} {{ "common.copy" | t(L) }}<span class="sr-only"> {{ "home.meeting_id" | t(L) }}</span></button>
-      </div>
-      {% endif %}
-      <p class="mt-4 text-sm leading-relaxed text-white/85 max-sm:hidden">
-        {{ "home.meeting_welcome" | t(L) }}
-        <a href="{{ '/meeting/' | lurl(L) }}" class="font-semibold whitespace-nowrap text-white underline decoration-white/40 underline-offset-2 hover:decoration-white">{{ "home.meeting_details" | t(L) }} →</a>
-      </p>
-    </aside>
     {% endif %}
   </div>
-  <div class="home-hero-fade pointer-events-none absolute inset-x-0 bottom-0 z-[3]" aria-hidden="true"></div>
+</div>
+{% endif %}
+
+{#- =====================================================================
+    2. PUBLISHED WRITERS — every Grapevine / La Viña story published in the last 60 days
+       (spotlight.home_days) by a writer from Texas: Area 65 writers first (featured, wider
+       cards), then the rest of Texas; newest first in each group. The whole list — every
+       place, 60 or 90 days, Area 65 by default — is on /published/.
+       home.js recounts the window in the visitor's browser (data-pub / data-days), so the
+       page stays right between daily builds; this server-rendered version is the same
+       list for visitors without JavaScript.
+    ===================================================================== -#}
+{% set spot = D | homeSpotlight(site.spotlight.home_days if site.spotlight else 60, site.spotlight.list_days if site.spotlight else null) %}
+{% set spotHref = "/published/" | lurl(L) %}
+{#- Phones get the short label (one line in English and Spanish); 640px and up the full one. -#}
+{% set spotAllLabel = ("home.spot_all" | t(L, { a: spot.listDays[0], b: spot.listDays[1] })) if spot.listDays.length > 1 else ("home.spot_all_one" | t(L)) %}
+{% set spotAllHtml %}<span class="sm:hidden">{{ "home.spot_all_short" | t(L) }}</span><span class="max-sm:hidden">{{ spotAllLabel }}</span>{% endset %}
+{#- How the grid closes its last row at 2 / 3 / 4 / 5 columns (see homeSpotFill); home.js redoes it in the browser. -#}
+{% set fill = spot | homeSpotFill %}
+<section id="published-writers" class="home-spot section" aria-labelledby="spot-title" data-home-spot data-days="{{ spot.days }}">
+  <div class="container-page">
+    <div class="mb-8 flex flex-wrap items-end justify-between gap-x-10 gap-y-5">
+      <div class="max-w-3xl">
+        <p class="eyebrow flex items-center gap-2 text-vine">{% icon "award", "size-4 shrink-0" %} {{ "home.spot_eyebrow" | t(L) }}</p>
+        <h2 id="spot-title" class="h-section mt-1.5">{{ "home.spot_title" | t(L) }}</h2>
+        <p class="mt-2 text-muted">{{ "home.spot_sub" | t(L, { days: spot.days }) }}</p>
+        <p class="mt-4 flex flex-wrap items-center gap-2"{% if not spot.total %} hidden{% endif %} data-spot-counts>
+          <span class="badge-vine home-spot-count" data-spot-count="neta65" data-one="{{ 'home.spot_count_a65_one' | t(L) }}" data-many="{{ 'home.spot_count_a65' | t(L) }}"{% if not spot.a65.length %} hidden{% endif %}>{% icon "grapes", "size-3.5" %} <span data-text>{{ ("home.spot_count_a65_one" | t(L)) if spot.a65.length == 1 else ("home.spot_count_a65" | t(L, { n: spot.a65.length | homeNum(L) })) }}</span></span>
+          <span class="home-badge-tx badge home-spot-count" data-spot-count="texas" data-one="{{ 'home.spot_count_tx_one' | t(L) }}" data-many="{{ 'home.spot_count_tx' | t(L) }}"{% if not spot.tx.length %} hidden{% endif %}>{% icon "star", "size-3.5" %} <span data-text>{{ ("home.spot_count_tx_one" | t(L)) if spot.tx.length == 1 else ("home.spot_count_tx" | t(L, { n: spot.tx.length | homeNum(L) })) }}</span></span>
+        </p>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <a class="btn-primary" href="{{ spotHref }}">{% icon "users", "size-4" %} {{ spotAllHtml | safe }}</a>
+        <a class="btn-secondary" href="{{ '/contribute/' | lurl(L) }}">{% icon "feather", "size-4" %} {{ "home.spot_share" | t(L) }}</a>
+      </div>
+    </div>
+
+    {#- One grid for both groups (the lists use display: contents from 640px): Area 65 cards
+        span two columns, the Texas cards fill in around them. Phones: Area 65 cards stacked,
+        the Texas cards in a swipe row. From 640px a "see the full list" tile closes the last
+        row (data-f2…data-f5 = its width at 2 / 3 / 4 / 5 columns, 0 = the row is full: no
+        tile); data-full = the column counts at which each Area 65 card takes a whole row
+        (only when too few Texas cards are left to sit beside them). -#}
+    <div class="home-spot-grid" data-spot-grid{% if fill.full %} data-full="{{ fill.full }}"{% endif %}{% if not spot.total %} hidden{% endif %}>
+      <ul class="home-spot-list home-spot-list--a65" role="list" aria-label="{{ 'home.spot_list_a65' | t(L) }}" data-spot-list{% if not spot.a65.length %} hidden{% endif %}>
+        {% for a in spot.a65 %}
+        <li class="home-spot-item is-featured" data-pub="{{ a | homePubDate }}" data-scope="neta65">{{ spotCard(a, L, true) }}</li>
+        {% endfor %}
+      </ul>
+      <div class="home-spot-none" data-spot-none-a65{% if spot.a65.length or not spot.tx.length %} hidden{% endif %}>
+        <span class="grid size-12 shrink-0 place-items-center rounded-2xl bg-vine-soft text-vine">{% icon "sprout", "size-6" %}</span>
+        <div class="min-w-0">
+          <h3 class="font-display text-lg font-semibold leading-snug text-ink">{{ "home.spot_none_a65_title" | t(L, { days: spot.days }) }}</h3>
+          <p class="mt-1 text-sm leading-relaxed text-muted">{{ "home.spot_none_a65_text" | t(L) }}</p>
+          <a class="link mt-3 inline-flex min-h-10 items-center gap-1.5 text-sm" href="{{ '/contribute/' | lurl(L) }}">{% icon "feather", "size-4" %} {{ "home.spot_share" | t(L) }}</a>
+        </div>
+      </div>
+      <ul class="home-spot-list home-spot-list--tx rail no-scrollbar" role="list" aria-label="{{ 'home.spot_list_tx' | t(L) }}" data-spot-list{% if not spot.tx.length %} hidden{% endif %}>
+        {% for a in spot.tx %}
+        <li class="home-spot-item rail-item" data-pub="{{ a | homePubDate }}" data-scope="texas">{{ spotCard(a, L, false) }}</li>
+        {% endfor %}
+      </ul>
+      <div class="home-spot-fill" data-spot-fill data-f2="{{ fill.f2 }}" data-f3="{{ fill.f3 }}" data-f4="{{ fill.f4 }}" data-f5="{{ fill.f5 }}">
+        <div class="home-spot-fill-in">
+          <span class="home-spot-fill-icon" aria-hidden="true">{% icon "users", "size-6" %}</span>
+          <div class="home-spot-fill-text">
+            <h3 class="font-display text-lg font-semibold leading-snug text-ink">{{ "home.spot_fill_title" | t(L) }}</h3>
+            <p class="mt-1 text-sm leading-relaxed text-muted">{{ "home.spot_fill_text" | t(L, { days: spot.maxDays }) }}</p>
+          </div>
+          <div class="home-spot-fill-actions">
+            <a class="btn-primary btn-sm" href="{{ spotHref }}">{% icon "users", "size-4" %} {{ "home.spot_fill_cta" | t(L) }}</a>
+            <a class="btn-secondary btn-sm" href="{{ '/contribute/' | lurl(L) }}">{% icon "feather", "size-4" %} {{ "home.spot_share" | t(L) }}</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="home-spot-empty" data-spot-empty{% if spot.total %} hidden{% endif %}>
+      <span class="grid size-14 shrink-0 place-items-center rounded-2xl bg-vine-soft text-vine">{% icon "feather", "size-7" %}</span>
+      <div class="min-w-0 flex-1">
+        <h3 class="font-display text-xl font-semibold leading-snug text-ink sm:text-2xl">{{ "home.spot_empty_title" | t(L, { days: spot.days }) }}</h3>
+        <p class="mt-2 max-w-2xl leading-relaxed text-muted">{{ "home.spot_empty_text" | t(L) }}</p>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <a class="btn-primary" href="{{ '/contribute/' | lurl(L) }}">{% icon "feather", "size-4" %} {{ "home.spot_share" | t(L) }}</a>
+        <a class="btn-secondary" href="{{ spotHref }}">{% icon "users", "size-4" %} {{ spotAllHtml | safe }}</a>
+      </div>
+    </div>
+  </div>
 </section>
 
 {#- =====================================================================
-    2. FRESH THIS WEEK — newest items across every source (mixed kinds)
+    3. FRESH THIS WEEK — newest items across every source (mixed kinds). Always full rows:
+       phones swipe through all 10 · 2 columns × 3 rows · 3 × 2 (1024px) · 4 × 2 (1280px) ·
+       5 × 2 (1800px) — home.css hides the cards that would start an incomplete row.
     ===================================================================== -#}
-{% set fresh = D.whatsnew.items | homeFresh(8) %}
+{% set fresh = D.whatsnew.items | homeFresh(10) %}
 {% set newWeek = D.whatsnew.items | homeRecentCount(7) %}
 <section class="section relative" aria-labelledby="fresh-title">
   <div class="container-page">
@@ -284,7 +431,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
 </section>
 
 {#- =====================================================================
-    3. ANNOUNCEMENTS — pinned first; hidden when there are none
+    4. ANNOUNCEMENTS — pinned first; hidden when there are none
     ===================================================================== -#}
 {% set anns = (D.announcements.items | homeAnnouncements) | limit(2) %}
 {% if anns.length %}
@@ -323,7 +470,9 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
 {% endif %}
 
 {#- =====================================================================
-    4. FROM THE MAGAZINES — latest Grapevine + La Viña issues side by side
+    5. FROM THE MAGAZINES — latest Grapevine + La Viña issues side by side (from 1536px the
+       "Write for the magazines" themes are a third column, only as tall as its own content
+       and, on tall enough screens, sticky while the magazine columns scroll — home.css)
     ===================================================================== -#}
 {% set gvIssue = D.articles.items | homeLatestIssue("gv", 5, D.articles.issues, L) %}
 {% set lvIssue = D.articles.items | homeLatestIssue("lv", 5, D.articles.issues, L) %}
@@ -335,54 +484,56 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
       <h2 id="mag-title" class="h-section mt-1.5">{{ "home.mag_title" | t(L) }}</h2>
       <p class="mt-2 text-muted">{{ "home.mag_sub" | t(L) }}</p>
     </div>
-    <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+    <div class="home-mags grid grid-cols-1 gap-6 lg:grid-cols-2{{ ' has-write' if themes.length }}">
       {{ magColumn("gv", gvIssue, L, site) }}
       {{ magColumn("lv", lvIssue, L, site) }}
-    </div>
 
-    {% if themes.length %}
-    <div class="home-write mt-8 rounded-[var(--radius-card)] border border-line bg-paper p-5 sm:p-7">
-      <div class="flex flex-wrap items-start justify-between gap-4">
-        <div class="flex items-start gap-4">
-          <span class="grid size-11 shrink-0 place-items-center rounded-xl bg-grape-soft text-grape">{% icon "pen-line", "size-5" %}</span>
-          <div>
-            <h3 class="font-display text-xl font-semibold text-ink">{{ "home.write_title" | t(L) }}</h3>
-            <p class="mt-0.5 max-w-xl text-sm text-muted">{{ "home.write_sub" | t(L) }}</p>
+      {% if themes.length %}
+      <div class="home-write flex flex-col rounded-[var(--radius-card)] border border-line bg-paper p-5 sm:p-7 lg:col-span-2 2xl:col-span-1">
+        <div class="flex flex-wrap items-start justify-between gap-4">
+          <div class="flex items-start gap-4">
+            <span class="grid size-11 shrink-0 place-items-center rounded-xl bg-grape-soft text-grape">{% icon "pen-line", "size-5" %}</span>
+            <div>
+              <h3 class="font-display text-xl font-semibold text-ink">{{ "home.write_title" | t(L) }}</h3>
+              <p class="mt-0.5 max-w-xl text-sm text-muted">{{ "home.write_sub" | t(L) }}</p>
+            </div>
           </div>
+          <a href="{{ '/contribute/' | lurl(L) }}" class="btn-secondary">{% icon "feather", "size-4" %} {{ "home.write_cta" | t(L) }}</a>
         </div>
-        <a href="{{ '/contribute/' | lurl(L) }}" class="btn-secondary">{% icon "feather", "size-4" %} {{ "home.write_cta" | t(L) }}</a>
+        {#- 1536px and up the panel is the third column next to the magazines: themes stacked. -#}
+        <ul class="mt-5 grid gap-3 sm:grid-cols-2 {{ 'lg:grid-cols-4' if themes.length >= 4 else ('lg:grid-cols-3' if themes.length == 3 else '') }} 2xl:grid-cols-1" role="list">
+          {% for th in themes %}
+          {%- set isLv = (th.extra.publication == "lv") -%}
+          {%- set tt = th | tx("title", L) -%}
+          <li class="home-theme group relative flex flex-col rounded-xl border border-line bg-surface p-4 transition {{ 'hover:border-lv' if isLv else 'hover:border-gv' }}">
+            <p class="flex flex-wrap items-center gap-1.5">
+              <span class="{{ 'badge-lv' if isLv else 'badge-gv' }}">{{ "La Viña" if isLv else "Grapevine" }}</span>
+              {% if th.extra.issue_label %}<span class="text-xs text-faint">{{ th.extra.issue_label | homeIssueLabel(L) }}</span>{% endif %}
+            </p>
+            <p class="mt-2 font-display text-lg font-semibold leading-snug text-ink"{% if th.lang and th.lang != L and tt == th.title %} lang="{{ th.lang }}"{% endif %}>
+              <a href="{{ '/contribute/#deadlines' | lurl(L) }}" class="no-underline after:absolute after:inset-0 {{ 'group-hover:text-lv' if isLv else 'group-hover:text-gv' }}">{{ tt }}</a>
+            </p>
+            <p class="mt-auto inline-flex items-center gap-1.5 pt-2 text-xs font-medium text-muted">
+              {% if th.extra.deadline %}{% icon "calendar-clock", "size-3.5 shrink-0" %} {{ "home.deadline" | t(L, { date: th.extra.deadline | fmtDate(L, "short") }) }}
+              {% else %}{% icon "infinity", "size-3.5 shrink-0" %} {{ "home.no_deadline" | t(L) }}{% endif %}
+            </p>
+          </li>
+          {% endfor %}
+        </ul>
       </div>
-      <ul class="mt-5 grid gap-3 sm:grid-cols-2 {{ 'lg:grid-cols-4' if themes.length >= 4 else ('lg:grid-cols-3' if themes.length == 3 else '') }}" role="list">
-        {% for th in themes %}
-        {%- set isLv = (th.extra.publication == "lv") -%}
-        {%- set tt = th | tx("title", L) -%}
-        <li class="home-theme group relative flex flex-col rounded-xl border border-line bg-surface p-4 transition {{ 'hover:border-lv' if isLv else 'hover:border-gv' }}">
-          <p class="flex flex-wrap items-center gap-1.5">
-            <span class="{{ 'badge-lv' if isLv else 'badge-gv' }}">{{ "La Viña" if isLv else "Grapevine" }}</span>
-            {% if th.extra.issue_label %}<span class="text-xs text-faint">{{ th.extra.issue_label | homeIssueLabel(L) }}</span>{% endif %}
-          </p>
-          <p class="mt-2 font-display text-lg font-semibold leading-snug text-ink"{% if th.lang and th.lang != L and tt == th.title %} lang="{{ th.lang }}"{% endif %}>
-            <a href="{{ '/contribute/#deadlines' | lurl(L) }}" class="no-underline after:absolute after:inset-0 {{ 'group-hover:text-lv' if isLv else 'group-hover:text-gv' }}">{{ tt }}</a>
-          </p>
-          <p class="mt-auto inline-flex items-center gap-1.5 pt-2 text-xs font-medium text-muted">
-            {% if th.extra.deadline %}{% icon "calendar-clock", "size-3.5 shrink-0" %} {{ "home.deadline" | t(L, { date: th.extra.deadline | fmtDate(L, "short") }) }}
-            {% else %}{% icon "infinity", "size-3.5 shrink-0" %} {{ "home.no_deadline" | t(L) }}{% endif %}
-          </p>
-        </li>
-        {% endfor %}
-      </ul>
+      {% endif %}
     </div>
-    {% endif %}
   </div>
 </section>
 
 {#- =====================================================================
-    5. LISTEN & WATCH — featured podcast episode (inline player) + videos
+    6. LISTEN & WATCH — featured podcast episode (inline player) + videos
     ===================================================================== -#}
 {% set epPick = D.episodes.items | homeEpisodes(D.episodes.shows or site.sources.podcasts) %}
 {% set ep = epPick.featured %}
 {% set moreEps = epPick.more %}
-{% set vids = D.videos.items | homeVideos(4, ep, moreEps) %}
+{#- 5 videos: phones swipe through all 5; 4 columns from 640px (2 × 2) and 1024px; 5 from 1800px. -#}
+{% set vids = D.videos.items | homeVideos(5, ep, moreEps) %}
 {%- set podCfg = (site.sources.podcasts | homeShow(ep)) if ep else {} -%}
 {%- set show = (D.episodes.shows | homeShow(ep)) if ep else {} -%}
 {%- set pod = {
@@ -501,7 +652,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
       </div>
     </div>
     {% if vids.length %}
-    <ul class="home-rail no-scrollbar" role="list">
+    <ul class="home-rail home-rail--videos no-scrollbar" role="list">
       {% for v in vids %}
       {%- set vt = v | mediaTitle(L) -%}
       {%- set vse = v | mediaSE(L) -%}
@@ -531,7 +682,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
 </section>
 
 {#- =====================================================================
-    6. UPCOMING EVENTS — date tiles (the next committee meeting is in the hero)
+    7. UPCOMING EVENTS — date tiles (the next committee meeting is in the card at the top)
     ===================================================================== -#}
 {% set evs = D.events.items | homeEvents(meeting.next, 4) %}
 <section class="section border-t border-line" aria-labelledby="events-title">
@@ -604,17 +755,18 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
 </section>
 
 {#- =====================================================================
-    7. LIBRARY — PDF count, search, categories, newest PDFs
+    8. LIBRARY — PDF count, search, categories, newest PDFs
     ===================================================================== -#}
 {% set pdfCount = D.pdfs.items.length %}
-{% set newestPdfs = D.pdfs.items | homeNewestPdfs(6) %}
+{#- 6 newest PDFs (3 × 2); 8 from 1800px, where the grid has 4 columns. -#}
+{% set newestPdfs = D.pdfs.items | homeNewestPdfs(8) %}
 {% set cats = D | homeLibChips(L, 5) %}
 <section class="home-lib section border-y border-line" aria-labelledby="lib-title">
   <div class="container-page grid gap-10 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.3fr)] lg:gap-14">
     <div>
       <p class="eyebrow text-gv">{{ "home.lib_eyebrow" | t(L) }}</p>
       <h2 id="lib-title" class="h-section mt-1.5">{{ "home.lib_title" | t(L) }}</h2>
-      <p class="mt-3 leading-relaxed text-muted">{{ "home.lib_sub" | t(L) }}</p>
+      <p class="measure mt-3 leading-relaxed text-muted">{{ "home.lib_sub" | t(L) }}</p>
       {% if pdfCount %}
       <p class="mt-7 flex items-end gap-4">
         <span class="font-display text-6xl font-semibold leading-none text-gv tabular-nums">{{ pdfCount | homeNum(L) }}</span>
@@ -646,7 +798,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
     <div>
       <h3 class="eyebrow mb-4 font-sans">{{ "home.lib_newest" | t(L) }}</h3>
       {% if newestPdfs.length %}
-      <ul class="grid grid-cols-2 gap-4 sm:grid-cols-3" role="list">
+      <ul class="home-pdfs grid grid-cols-2 gap-4 sm:grid-cols-3" role="list">
         {% for p in newestPdfs %}
         {%- set thumb = p | homeImage -%}
         {%- set docLang = p | homeDocLang -%}
@@ -679,7 +831,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
 </section>
 
 {#- =====================================================================
-    8. INSTAGRAM — newest posts from both accounts + follow buttons
+    9. INSTAGRAM — newest posts from both accounts + follow buttons
     ===================================================================== -#}
 {% set posts = D.instagram.items | homeInstagram(6) %}
 {% set igAccounts = site.sources.instagram.accounts if (site.sources.instagram and site.sources.instagram.accounts) else [] %}
@@ -731,7 +883,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
 </section>
 
 {#- =====================================================================
-    9. FOR GVRs, RLVs & DISTRICTS — call-to-action band
+    10. FOR GVRs, RLVs & DISTRICTS — call-to-action band
     ===================================================================== -#}
 {%- set svcLinks = [
   { url: "/gvr/", icon: "badge-check", key: "nav.gvr", desc: "home.svc_corner_desc" },
@@ -752,7 +904,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
         <a class="home-btn-amber btn" href="{{ site.links.rlv_register }}" target="_blank" rel="noopener">{% icon "badge-check", "size-4" %} {{ "home.svc_rlv" | t(L) }}<span class="sr-only"> {{ "home.opens_new_tab" | t(L) }}</span></a>
       </div>
     </div>
-    <ul class="grid gap-3 sm:grid-cols-2" role="list">
+    <ul class="grid gap-3 sm:grid-cols-2 2xl:grid-cols-3" role="list">
       {% for s in svcLinks %}
       <li>
         <a href="{{ s.url | lurl(L) }}" class="home-band-link group flex h-full items-start gap-3.5 rounded-2xl p-4 no-underline">
@@ -770,7 +922,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
 </section>
 
 {#- =====================================================================
-    10. COMMITTEE DRIVE UPLOADS — newest docs/photos (friendly note when empty)
+    11. COMMITTEE DRIVE UPLOADS — newest docs/photos (friendly note when empty)
     ===================================================================== -#}
 {% set driveItems = D.drive.items | homeDrive(6) %}
 <section class="section" aria-labelledby="drive-title">

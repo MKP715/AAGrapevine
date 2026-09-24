@@ -1,0 +1,326 @@
+{
+  "published.meta_desc": {
+    "en": "Stories by writers from Northeast Texas Area 65 and all of Texas published in Grapevine and La Viña in the last 60 and 90 days.",
+    "es": "Historias de escritores del Área 65 del noreste de Texas y de todo Texas publicadas en Grapevine y La Viña en los últimos 60 y 90 días."
+  },
+  "published.eyebrow": {
+    "en": "Grapevine & La Viña",
+    "es": "Grapevine y La Viña"
+  },
+  "published.hero_sub": {
+    "en": "Celebrating Northeast Texas writers — and all of Texas — whose stories appear in Grapevine and La Viña.",
+    "es": "Celebramos a los escritores del noreste de Texas —y de todo Texas— cuyas historias salen en Grapevine y La Viña."
+  },
+  "published.cta_how": {
+    "en": "How we find writers",
+    "es": "Cómo los encontramos"
+  },
+  "published.filters_title": {
+    "en": "Choose which writers to show",
+    "es": "Elige qué escritores ver"
+  },
+  "published.scope_legend": {
+    "en": "Where the writers are from",
+    "es": "De dónde son los escritores"
+  },
+  "published.scope.neta65": {
+    "en": "Area 65 (Northeast Texas)",
+    "es": "Área 65 (noreste de Texas)"
+  },
+  "published.scope.texas": {
+    "en": "All of Texas",
+    "es": "Todo Texas"
+  },
+  "published.scope.all": {
+    "en": "Everyone",
+    "es": "Todos"
+  },
+  "published.days_legend": {
+    "en": "Published in the last",
+    "es": "Publicadas en los últimos"
+  },
+  "published.days": {
+    "en": "{n} days",
+    "es": "{n} días"
+  },
+  "published.pub_legend": {
+    "en": "Magazine",
+    "es": "Revista"
+  },
+  "published.pub.all": {
+    "en": "All",
+    "es": "Todas"
+  },
+  "published.search_label": {
+    "en": "Search by writer, city or story title",
+    "es": "Busca por escritor, ciudad o título"
+  },
+  "published.search_ph": {
+    "en": "Writer, city or title…",
+    "es": "Escritor, ciudad o título…"
+  },
+  "published.reset": {
+    "en": "Reset filters",
+    "es": "Restablecer filtros"
+  },
+  "published.aside_label": {
+    "en": "About this list",
+    "es": "Sobre esta lista"
+  },
+  "published.search_clear": {
+    "en": "Clear search",
+    "es": "Borrar búsqueda"
+  },
+  "published.noscript": {
+    "en": "Turn on JavaScript to change the filters — for example, to see all of Texas, everyone, or a longer period.",
+    "es": "Activa JavaScript para cambiar los filtros; por ejemplo, para ver todo Texas, a todos o un periodo más largo."
+  },
+  "published.status.neta65.one": {
+    "en": "1 story by an Area 65 writer in the last {days} days",
+    "es": "1 historia de un escritor del Área 65 en los últimos {days} días"
+  },
+  "published.status.neta65.other": {
+    "en": "{n} stories by Area 65 writers in the last {days} days",
+    "es": "{n} historias de escritores del Área 65 en los últimos {days} días"
+  },
+  "published.status.texas.one": {
+    "en": "1 story by a Texas writer in the last {days} days",
+    "es": "1 historia de un escritor de Texas en los últimos {days} días"
+  },
+  "published.status.texas.other": {
+    "en": "{n} stories by Texas writers in the last {days} days — Area 65 first",
+    "es": "{n} historias de escritores de Texas en los últimos {days} días; primero el Área 65"
+  },
+  "published.status.all.one": {
+    "en": "1 story in the last {days} days",
+    "es": "1 historia en los últimos {days} días"
+  },
+  "published.status.all.other": {
+    "en": "{n} stories by writers everywhere in the last {days} days — Area 65 first, then Texas",
+    "es": "{n} historias de escritores de todas partes en los últimos {days} días; primero el Área 65 y luego Texas"
+  },
+  "published.status.none": {
+    "en": "No stories match these filters",
+    "es": "Ninguna historia coincide con estos filtros"
+  },
+  "published.status.pub": {
+    "en": " · {pub} only",
+    "es": " · solo {pub}"
+  },
+  "published.status.q": {
+    "en": " · search: “{q}”",
+    "es": " · búsqueda: «{q}»"
+  },
+  "published.group.neta65": {
+    "en": "Area 65 (Northeast Texas)",
+    "es": "Área 65 (noreste de Texas)"
+  },
+  "published.group.texas": {
+    "en": "Rest of Texas",
+    "es": "Resto de Texas"
+  },
+  "published.group.other": {
+    "en": "Elsewhere",
+    "es": "Otros lugares"
+  },
+  "published.group.unknown": {
+    "en": "Place not given",
+    "es": "Lugar no indicado"
+  },
+  "published.group_desc.neta65": {
+    "en": "Writers from the {n} counties of Northeast Texas Area 65.",
+    "es": "Escritores de los {n} condados del Área 65 del noreste de Texas."
+  },
+  "published.group_desc.texas": {
+    "en": "Writers from other parts of Texas.",
+    "es": "Escritores de otras partes de Texas."
+  },
+  "published.group_desc.other": {
+    "en": "Writers from other states and countries.",
+    "es": "Escritores de otros estados y países."
+  },
+  "published.group_desc.unknown": {
+    "en": "Anonymous stories and stories printed without a place.",
+    "es": "Historias anónimas o publicadas sin lugar."
+  },
+  "published.n_stories.one": {
+    "en": "1 story",
+    "es": "1 historia"
+  },
+  "published.n_stories.other": {
+    "en": "{n} stories",
+    "es": "{n} historias"
+  },
+  "published.show_all": {
+    "en": "Show all {n} stories",
+    "es": "Ver las {n} historias"
+  },
+  "published.badge.neta65": {
+    "en": "Area 65",
+    "es": "Área 65"
+  },
+  "published.badge.texas": {
+    "en": "Texas",
+    "es": "Texas"
+  },
+  "published.badge.other": {
+    "en": "Elsewhere",
+    "es": "Otro lugar"
+  },
+  "published.badge.unknown": {
+    "en": "No place given",
+    "es": "Sin lugar"
+  },
+  "published.county": {
+    "en": "{county} County",
+    "es": "Condado de {county}"
+  },
+  "published.place_unknown": {
+    "en": "Place not given",
+    "es": "Lugar no indicado"
+  },
+  "published.anonymous": {
+    "en": "Anonymous",
+    "es": "Anónimo"
+  },
+  "published.writer": {
+    "en": "Writer",
+    "es": "Escritor"
+  },
+  "published.original_title": {
+    "en": "Original title",
+    "es": "Título original"
+  },
+  "published.opens_on": {
+    "en": "(opens on {host})",
+    "es": "(se abre en {host})"
+  },
+  "published.published_on": {
+    "en": "Published {date}",
+    "es": "Publicada el {date}"
+  },
+  "published.subscribers": {
+    "en": "For subscribers",
+    "es": "Para suscriptores"
+  },
+  "published.subscribers_help": {
+    "en": "The full story is for magazine subscribers; the page shows the opening lines to everyone.",
+    "es": "La historia completa es para suscriptores de la revista; la página muestra el comienzo a todos."
+  },
+  "published.free": {
+    "en": "Free to read",
+    "es": "Lectura gratis"
+  },
+  "published.online_exclusive": {
+    "en": "Online exclusive",
+    "es": "Exclusiva en línea"
+  },
+  "published.more.texas": {
+    "en": "Also in the last {days} days: {stories} by writers from other parts of Texas.",
+    "es": "También en los últimos {days} días: {stories} de escritores de otras partes de Texas."
+  },
+  "published.more.all": {
+    "en": "Also in the last {days} days: {stories} by writers outside Texas.",
+    "es": "También en los últimos {days} días: {stories} de escritores de fuera de Texas."
+  },
+  "published.btn.texas": {
+    "en": "Show all of Texas",
+    "es": "Ver todo Texas"
+  },
+  "published.btn.all": {
+    "en": "Show everyone",
+    "es": "Ver a todos"
+  },
+  "published.btn.days": {
+    "en": "Widen to {n} days",
+    "es": "Ampliar a {n} días"
+  },
+  "published.btn.clear": {
+    "en": "Clear search and magazine",
+    "es": "Quitar búsqueda y revista"
+  },
+  "published.empty.neta65": {
+    "en": "No Area 65 writers in the last {days} days",
+    "es": "No hay escritores del Área 65 en los últimos {days} días"
+  },
+  "published.empty.texas": {
+    "en": "No Texas writers in the last {days} days",
+    "es": "No hay escritores de Texas en los últimos {days} días"
+  },
+  "published.empty.all": {
+    "en": "No stories in the last {days} days",
+    "es": "No hay historias en los últimos {days} días"
+  },
+  "published.empty.filtered": {
+    "en": "No stories match these filters",
+    "es": "Ninguna historia coincide con estos filtros"
+  },
+  "published.empty.text": {
+    "en": "New issues come out every month. Widen the list — or share your own story: the next one could be yours.",
+    "es": "Cada mes salen nuevas ediciones. Amplía la lista o comparte tu historia: la próxima podría ser la tuya."
+  },
+  "published.how.title": {
+    "en": "How we find these writers",
+    "es": "Cómo encontramos a estos escritores"
+  },
+  "published.how.printed": {
+    "en": "Grapevine and La Viña print each writer’s first name, last initial and hometown with the story. We show only what the magazines themselves print.",
+    "es": "Grapevine y La Viña publican el nombre, la inicial del apellido y la ciudad de cada escritor junto a su historia. Aquí solo mostramos lo que las propias revistas publican."
+  },
+  "published.how.daily": {
+    "en": "Every day this site reads the newest stories on aagrapevine.org and aalavina.org.",
+    "es": "Cada día este sitio lee las historias más recientes de aagrapevine.org y aalavina.org."
+  },
+  "published.how.area": {
+    "en": "Area 65 means the {n} counties on the official NETA 65 district map.",
+    "es": "El Área 65 son los {n} condados del mapa oficial de distritos de NETA 65."
+  },
+  "published.how.counties": {
+    "en": "See the {n} counties",
+    "es": "Ver los {n} condados"
+  },
+  "published.how.census": {
+    "en": "Each hometown is matched to its county with U.S. Census Bureau place data. A city that spans several counties counts as Area 65 if any of them is in the Area.",
+    "es": "Cada ciudad se ubica en su condado con los datos de lugares de la Oficina del Censo de EE. UU. Una ciudad que abarca varios condados cuenta como Área 65 si alguno de ellos está en el Área."
+  },
+  "published.how.unmatched": {
+    "en": "Pen names, anonymous stories and stories printed without a place can’t be matched. You’ll find them under “Place not given” when you choose Everyone.",
+    "es": "Los seudónimos, las historias anónimas y las publicadas sin lugar no se pueden ubicar. Las encontrarás en «Lugar no indicado» al elegir Todos."
+  },
+  "published.how.window": {
+    "en": "The 60- and 90-day windows count from the first day of each issue, or from the day a story went online when the issue comes out early.",
+    "es": "Los periodos de 60 y 90 días se cuentan desde el primer día de cada edición, o desde el día en que la historia salió en línea si la edición se adelanta."
+  },
+  "published.how.updated": {
+    "en": "List updated {date}",
+    "es": "Lista actualizada el {date}"
+  },
+  "published.how.districts": {
+    "en": "Our districts",
+    "es": "Nuestros distritos"
+  },
+  "published.tell.title": {
+    "en": "Were you published? Let us know",
+    "es": "¿Te publicaron? Avísanos"
+  },
+  "published.tell.text": {
+    "en": "If your story ran in Grapevine or La Viña and it’s missing here, or your place looks wrong, email us — we’d love to celebrate it.",
+    "es": "Si tu historia salió en Grapevine o La Viña y no aparece aquí, o tu lugar está mal, escríbenos: nos encantaría celebrarla."
+  },
+  "published.tell.btn": {
+    "en": "Email the committee",
+    "es": "Escribe al comité"
+  },
+  "published.tell.subject": {
+    "en": "I was published in Grapevine / La Viña",
+    "es": "Me publicaron en Grapevine / La Viña"
+  },
+  "published.tell.body": {
+    "en": "Hello! My story was published.\n\nMagazine and issue:\nStory title:\nName as printed:\nCity and state:\n",
+    "es": "¡Hola! Me publicaron una historia.\n\nRevista y edición:\nTítulo de la historia:\nNombre como salió publicado:\nCiudad y estado:\n"
+  },
+  "published.tell.write": {
+    "en": "Haven’t written one yet? Your story could be next.",
+    "es": "¿Todavía no has escrito una? Tu historia podría ser la próxima."
+  }
+}

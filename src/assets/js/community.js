@@ -172,7 +172,7 @@
       var path = location.pathname;
       try { path = decodeURIComponent(path); } catch (e) { /* malformed %-escape: use as-is */ }
       if (path.indexOf(base) === 0) path = path.slice(base.length);
-      var words = path.replace(/^es\//, "").replace(/\.(html?|php|aspx?)$/i, "")
+      var words = path.replace(/^es\//, "").replace(/\.[a-z0-9]{2,5}$/i, "")  // any file extension (.html, .php, .pdf …)
         .split(/[\/\-_.+]+/).filter(function (w) { return w && w.length > 2 && !/^(index|grapevine|es|en|www|\d+)$/i.test(w); });
       var q = words.slice(-4).join(" ");
       if (q) document.querySelectorAll("[data-nf-query]").forEach(function (i) { if (!i.value) i.value = q; });

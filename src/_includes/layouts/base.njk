@@ -1,6 +1,9 @@
 {#- Base layout. Every page sets in front matter:
       lang (via pagination alias), pageKey, titleKey (i18n key) or title, descKey/description,
-      optional: pageScripts [..], pageStyles [..], bodyClass, noHero -#}
+      optional: pageScripts [..], pageStyles [..], bodyClass, noHero
+    Every page starts with the shared hero, ui.pageHero (macros/ui.njk): the header is
+    transparent over it and turns solid on scroll. hero-canvas.js (the animated grapevine art
+    in that hero) is loaded here for every page — pages don't list it in pageScripts. -#}
 {%- set L = lang or "en" -%}
 {%- set pageTitle = (titleKey | t(L)) if titleKey else (title or "") -%}
 {%- set siteTitle = site | pick(L, "title") -%}
@@ -65,9 +68,10 @@
   {% include "partials/footer.njk" %}
 
   <script src="/assets/js/app.js" defer></script>
-  {%- for s in pageScripts %}
+  <script src="/assets/js/hero-canvas.js" defer></script>
+  {%- for s in pageScripts %}{% if s != "/assets/js/hero-canvas.js" %}
   <script src="{{ s }}" defer></script>
-  {%- endfor %}
+  {%- endif %}{% endfor %}
   <script src="/assets/vendor/alpine.min.js" defer></script>
 </body>
 </html>

@@ -37,19 +37,46 @@
      white pill with white text was 4.1:1 at 11px, below WCAG AA. */
   .cm-subnav-link.is-current .cm-subnav-count { background: var(--c-surface); color: var(--c-gv); }
 
-  /* ---------- hero glass panel + countdown ---------- */
-  .cm-glass {
-    background: linear-gradient(135deg, rgb(255 255 255 / 0.13), rgb(255 255 255 / 0.05));
-    border: 1px solid rgb(255 255 255 / 0.18);
-    box-shadow: 0 24px 60px -24px rgb(0 0 0 / 0.55), inset 0 1px 0 rgb(255 255 255 / 0.08);
-    -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+  /* ---------- /meeting/ hero: one line for the next meeting (a link to the countdown) ---------- */
+  .cm-hero-next {
+    display: inline-flex; align-items: center; gap: 0.6rem; min-height: 2.75rem; max-width: 100%;
+    padding: 0.45rem 1.1rem; border-radius: 1.375rem; font-size: 0.875rem; line-height: 1.35;
+    color: #fff; text-decoration: none; background: rgb(255 255 255 / 0.1);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.22);
+    -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); transition: background-color 0.15s;
   }
+  .cm-hero-next:hover { background: rgb(255 255 255 / 0.18); }
+  .cm-hero-next strong { font-weight: 600; }
+  .cm-hero-next-label { margin-right: 0.4rem; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: rgb(255 255 255 / 0.85); }
+
+  /* ---------- /meeting/ board below the hero (one grid, so the cards line up) ----------
+     countdown · how to join (.cm-join) · next dates (lg:row-span-2) · who · chair · feed.
+     One column → two from 1024px → three from 1440px, where how to join spans columns 2–3
+     and the feed sits under who | chair. */
+  .cm-board { display: grid; gap: 1.5rem; grid-template-columns: minmax(0, 1fr); }
+  @media (width >= 64rem) { .cm-board { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (width >= 90rem) {
+    .cm-board { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .cm-board > .cm-join { grid-column: span 2; }
+  }
+
+  /* The live countdown card: always dark (the hero's navy → NETA blue), in both themes. */
+  .cm-count {
+    position: relative; display: flex; flex-direction: column; min-width: 0;
+    border-radius: 1.25rem; padding: 1.5rem; color: #fff;
+    background: radial-gradient(120% 120% at 100% 0%, rgb(108 176 239 / 0.3), transparent 55%), linear-gradient(135deg, #0f172a 0%, #0b2f55 50%, #0a5fa8 100%);
+    box-shadow: var(--shadow-lift);
+  }
+  @media (width >= 40rem) { .cm-count { padding: 2rem; } }
+  .cm-count-art { position: absolute; right: 1.5rem; top: 1.5rem; width: 6.5rem; height: 6.5rem; color: #fff; opacity: 0.08; pointer-events: none; }
+  .cm-count > :not(.cm-count-art) { position: relative; }
+  .cm-count :focus-visible { outline-color: #fff; }
   .cm-tile {
     display: flex; flex-direction: column; align-items: center; min-width: 4.4rem; padding: 0.8rem 0.5rem 0.65rem;
     border-radius: 1rem; background: rgb(255 255 255 / 0.1); border: 1px solid rgb(255 255 255 / 0.16);
   }
   .cm-tile-num { font-family: var(--font-display); font-size: 2.35rem; font-weight: 600; line-height: 1; font-variant-numeric: tabular-nums; color: #fff; }
-  .cm-tile-label { margin-top: 0.4rem; font-size: 0.62rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: rgb(255 255 255 / 0.68); }
+  .cm-tile-label { margin-top: 0.4rem; font-size: 0.62rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: rgb(255 255 255 / 0.82); }
   @media (width < 26rem) {
     .cm-tile { min-width: 3.55rem; padding-inline: 0.25rem; }
     .cm-tile-num { font-size: 1.8rem; }
@@ -76,8 +103,6 @@
     animation: cm-pop 0.14s ease-out;
   }
   @media (width >= 40rem) { .cm-menu-right { left: auto; right: 0; } }
-  /* Opens upward — used inside the hero, whose overflow is clipped at the bottom. */
-  .cm-menu-up > .cm-menu-panel { top: auto; bottom: calc(100% + 0.4rem); }
   .cm-menu-panel > a, .cm-menu-panel > button {
     display: flex; align-items: center; gap: 0.6rem; min-height: 2.75rem; padding: 0 0.8rem; border-radius: 0.6rem;
     font-size: 0.875rem; font-weight: 500; text-align: left; text-decoration: none; color: var(--c-ink); cursor: pointer;
@@ -97,8 +122,10 @@
   .cm-deco-icon { position: absolute; right: -1.25rem; top: -1.25rem; opacity: 0.07; pointer-events: none; }
   .cm-step { position: relative; overflow: hidden; }
   .cm-step-num { position: absolute; right: 1.25rem; top: 0.75rem; font-family: var(--font-display); font-size: 3.25rem; font-weight: 600; line-height: 1; color: var(--c-line); }
+  /* Weekly Open card: stacked in a narrow column, side by side when the CARD is ≥ 48rem wide
+     (the card is an @container). */
   .cm-weekly-art { background: radial-gradient(120% 100% at 0% 0%, var(--c-grape-soft), transparent 70%), var(--c-surface-2); border-bottom: 1px solid var(--c-line); }
-  @media (width >= 48rem) { .cm-weekly-art { border-bottom: 0; border-right: 1px solid var(--c-line); } }
+  @container (width >= 48rem) { .cm-weekly-art { border-bottom: 0; border-right: 1px solid var(--c-line); } }
 
   /* ---------- subscribe card ---------- */
   .cm-subscribe::before {
@@ -120,6 +147,17 @@
     box-shadow: var(--shadow-lift);
   }
   @media (width >= 40rem) { .cm-pinned { padding: 1.5rem 1.75rem; } }
+  /* Pinned card in the agenda column (an @container): stacked when narrow → date tile | text
+     from 30rem → tile | text | buttons in one row from 60rem. */
+  .cm-pinned-grid { display: grid; gap: 1.25rem; grid-template-columns: minmax(0, 1fr); align-items: center; }
+  @container (width >= 30rem) {
+    .cm-pinned-grid { grid-template-columns: auto minmax(0, 1fr); column-gap: 1.5rem; }
+    .cm-pinned-actions { grid-column: 1 / -1; }
+  }
+  @container (width >= 60rem) {
+    .cm-pinned-grid { grid-template-columns: auto minmax(0, 1fr) auto; }
+    .cm-pinned-actions { grid-column: auto; justify-content: flex-end; }
+  }
   .cm-date-tile {
     display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0;
     width: 4.4rem; height: 5rem; border-radius: 1rem; background: var(--tone-soft); color: var(--tone);
@@ -211,7 +249,9 @@
   .cm-naming-file > svg, .cm-naming-out > svg { margin-top: 0.1rem; }
   .cm-naming-file code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.76rem; color: var(--c-ink); overflow-wrap: anywhere; }
   .cm-naming-out { color: var(--c-muted); }
-  @media (width >= 48rem) {
+  /* Two columns (file name | what it becomes) when the text column is ≥ 34rem wide. */
+  .cm-naming-box { container-type: inline-size; }
+  @container (width >= 34rem) {
     .cm-naming-head, .cm-naming-row { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); align-items: start; }
     .cm-naming-head > span:last-child { display: block; }
   }
@@ -240,17 +280,23 @@
   }
 
   /* ---------- documents ---------- */
-  .cm-tabs { display: flex; gap: 0.5rem; overflow-x: auto; margin-inline: -1rem; padding: 0.15rem 1rem 0.35rem; scroll-snap-type: x proximity; }
+  /* Category chips: one scrolling row that bleeds to the screen edge (like a rail), wrapping from 1280px */
+  .cm-tabs {
+    display: flex; gap: 0.5rem; overflow-x: auto; scroll-snap-type: x proximity;
+    margin-inline: calc(-1 * var(--gutter)); padding: 0.15rem var(--gutter) 0.35rem; scroll-padding-inline: var(--gutter);
+  }
   .cm-tabs > * { flex-shrink: 0; scroll-snap-align: start; min-height: 2.75rem; white-space: nowrap; }
-  @media (width >= 40rem) { .cm-tabs { margin-inline: -1.5rem; padding-inline: 1.5rem; } }
   @media (width >= 80rem) { .cm-tabs { flex-wrap: wrap; overflow: visible; margin-inline: 0; padding-inline: 0; } }
+  /* No files yet: the empty state | the how-to card, side by side from 1280px */
+  .cm-docs-start { display: grid; gap: 1.5rem; grid-template-columns: minmax(0, 1fr); }
+  @media (width >= 80rem) { .cm-docs-start { grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); } }
   .cm-doc-section + .cm-doc-section { margin-top: 3rem; }
   .cm-doc-thumb { position: relative; aspect-ratio: 4 / 3; overflow: hidden; background: var(--tone-soft); border-bottom: 1px solid var(--c-line); }
   .cm-doc-thumb img { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; object-fit: cover; object-position: top; transition: transform 0.35s; }
   .cm-doc:hover .cm-doc-thumb img { transform: scale(1.035); }
   .cm-doc-icon { position: absolute; inset: 0; display: grid; place-items: center; color: var(--tone); opacity: 0.85; }
-  /* Phones: compact horizontal card (thumbnail on the left). */
-  @media (width < 40rem) {
+  /* One column (below 660px, where grid-cards has a single column): compact horizontal card. */
+  @media (width < 41.25rem) {
     .cm-doc-thumb { aspect-ratio: auto; min-height: 8.5rem; border-bottom: 0; border-right: 1px solid var(--c-line); }
     .cm-doc-type { left: 0.5rem; bottom: 0.5rem; max-width: calc(100% - 1rem); font-size: 0.58rem; letter-spacing: 0.04em; padding: 0.15rem 0.45rem; }
   }
@@ -273,8 +319,9 @@
   .cm-folder-chip > svg { color: var(--c-gv); }
   .cm-folder-chip:nth-child(odd) { transform: rotate(-2deg); }
   .cm-folder-chip:nth-child(3n) { transform: rotate(1.5deg); }
+  /* How-to card (an @container): steps above the folder list, side by side from 56rem of card width */
   .cm-howcard-side { background: var(--c-surface-2); border-top: 1px solid var(--c-line); }
-  @media (width >= 64rem) { .cm-howcard-side { border-top: 0; border-left: 1px solid var(--c-line); } }
+  @container (width >= 56rem) { .cm-howcard-side { border-top: 0; border-left: 1px solid var(--c-line); } }
 
   /* ---------- photos ---------- */
   .cm-mosaic { display: grid; gap: 2px; aspect-ratio: 16 / 10; overflow: hidden; background: var(--c-surface-2); }
@@ -287,10 +334,49 @@
   .cm-mosaic-3 > span:first-child { grid-row: span 2; }
   .cm-mosaic-2 { grid-template-columns: 1fr 1fr; }
   .cm-album { padding-bottom: 2.5rem; }
+  /* ---------- photo grid: 2 → 3 (640px) → 4 (1024px) → 5 (1536px) → 6 (1800px) columns ----------
+     An album of 5+ photos (.has-feature) opens with a 2×2 first photo and, until "Show all"
+     (.is-all), shows only the photos that fill whole rows at the current column count:
+     2 cols → 11 · 3 → 12 · 4 → 13 · 5 → 12 · 6 → 15 (the big photo counts as 4 cells).
+     photos.njk adds cm-more-N to the "Show all" button for every column count N at which
+     the album has more photos than that, so the button only shows when something is hidden.
+     Only with JavaScript (html.cm-js): without it every photo shows and the button is hidden. */
   .cm-photo-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem; }
   @media (width >= 40rem) { .cm-photo-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.75rem; } }
   @media (width >= 64rem) { .cm-photo-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+  @media (width >= 96rem) { .cm-photo-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+  @media (width >= 112.5rem) { .cm-photo-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
   .cm-photo-feature { grid-column: span 2; grid-row: span 2; }
+  .cm-more { display: none; }
+  @media (width < 40rem) {
+    .cm-js .cm-photo-grid.has-feature:not(.is-all) > li:nth-child(n + 12) { display: none; }
+    .cm-more.cm-more-2 { display: block; }
+  }
+  @media (40rem <= width < 64rem) {
+    .cm-js .cm-photo-grid.has-feature:not(.is-all) > li:nth-child(n + 13) { display: none; }
+    .cm-more.cm-more-3 { display: block; }
+  }
+  @media (64rem <= width < 96rem) {
+    .cm-js .cm-photo-grid.has-feature:not(.is-all) > li:nth-child(n + 14) { display: none; }
+    .cm-more.cm-more-4 { display: block; }
+  }
+  @media (96rem <= width < 112.5rem) {
+    .cm-js .cm-photo-grid.has-feature:not(.is-all) > li:nth-child(n + 13) { display: none; }
+    .cm-more.cm-more-5 { display: block; }
+  }
+  @media (width >= 112.5rem) {
+    .cm-js .cm-photo-grid.has-feature:not(.is-all) > li:nth-child(n + 16) { display: none; }
+    .cm-more.cm-more-6 { display: block; }
+  }
+  /* No photos yet: the empty state | anonymity + how to add (stacked) from 1280px.
+     With albums (.cm-share-cards alone): the two cards side by side from 1024px. */
+  .cm-photos-start { display: grid; gap: 1.5rem; grid-template-columns: minmax(0, 1fr); }
+  .cm-share-cards { display: grid; gap: 1.5rem; grid-template-columns: minmax(0, 1fr); }
+  @media (width >= 64rem) { .cm-share-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (width >= 80rem) {
+    .cm-photos-start { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); }
+    .cm-photos-start .cm-share-cards { grid-template-columns: minmax(0, 1fr); }
+  }
   .cm-photo { position: relative; display: block; aspect-ratio: 1; overflow: hidden; border-radius: 0.9rem; background: var(--c-surface-2); }
   .cm-photo img { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s; }
   .cm-photo:hover img, .cm-photo:focus-visible img { transform: scale(1.05); }
@@ -317,7 +403,17 @@
   .cm-polaroid:nth-child(2) { position: relative; z-index: 1; color: var(--c-lv); margin-top: -0.6rem; }
   .cm-polaroid:nth-child(3) { color: var(--c-gv); }
 
-  /* ---------- announcements ---------- */
+  /* ---------- announcements ----------
+     Next to the sidebar (layout-aside). Two per row from 1536px when there are several: each
+     card is then ~640px wide, so the text keeps a readable line length without leaving half
+     of every card empty. With none: the empty state | "Coming up", side by side from 1536px. */
+  .cm-ann-list { display: grid; gap: 1.5rem; grid-template-columns: minmax(0, 1fr); }
+  @media (width >= 96rem) { .cm-ann-list.is-multi { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .cm-ann-empty { display: grid; gap: 2.5rem 1.5rem; grid-template-columns: minmax(0, 1fr); }
+  @media (width >= 96rem) { .cm-ann-empty { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); align-items: start; } }
+  /* The sidebar is ~57–64rem tall: it stays in view while the announcements scroll only when the
+     whole of it fits on the screen (otherwise its last card could not be reached until the end). */
+  @media (width >= 64rem) and (height >= 72rem) { .cm-ann-aside { position: sticky; top: 6rem; align-self: start; } }
   .cm-anchor-link { text-decoration: none; }
   .cm-hash { margin-left: 0.4rem; color: var(--c-faint); opacity: 0; transition: opacity 0.15s; }
   .cm-anchor-link:hover .cm-hash, .cm-anchor-link:focus-visible .cm-hash { opacity: 1; }

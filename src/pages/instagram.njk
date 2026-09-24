@@ -90,29 +90,39 @@ pageScripts: ["/assets/js/media.js"]
 </article>
 {% endmacro %}
 
-{#- ------------------------------------------------------------------ hero -#}
+{#- ------------------------------------------------------------------ hero
+    The shared hero (same height as every page): short lead + ONE row of follow
+    buttons. The privacy note is the first line below the hero. -#}
 {% call ui.pageHero(lang, "media.ig_title" | t(lang), "media.ig_sub" | t(lang), "instagram", "media.ig_eyebrow" | t(lang)) %}
-  <div class="flex flex-wrap gap-2">
+  {% if accounts.length %}
+  <div class="hero-actions">
     {% for acc in accounts %}
-    <a class="{{ 'btn-light' if loop.first else 'btn-on-dark' }} max-w-full" href="https://www.instagram.com/{{ acc.username }}/" target="_blank" rel="noopener">{% icon "instagram", "size-4" %} {{ "media.ig_follow" | t(lang, { u: acc.username }) }}</a>
+    {#- < 360px: a bit tighter so "@alcoholicsanonymous_gv" stays on one line -#}
+    <a class="{{ 'btn-light' if loop.first else 'btn-on-dark' }} max-w-full max-[359px]:px-4 max-[359px]:text-[0.8125rem]" href="https://www.instagram.com/{{ acc.username }}/" target="_blank" rel="noopener">{% icon "instagram", "size-4" %} {{ "media.ig_follow" | t(lang, { u: acc.username }) }}</a>
     {% endfor %}
   </div>
-  <p class="mt-5 flex items-center gap-2 text-sm text-white/70">{% icon "shield-check", "size-4 shrink-0" %}{{ "media.ig_privacy" | t(lang) }}</p>
+  {% endif %}
 {% endcall %}
 
-<section class="section container-page pt-6 sm:pt-8" x-data="igPage" aria-label="{{ 'media.ig_title' | t(lang) }}">
-  {#- Phone: pick an account (both columns show side by side on large screens) -#}
-  {% if accounts.length > 1 %}
-  <div class="mb-6 flex justify-center lg:hidden" role="group" aria-label="{{ 'media.ig_tabs_label' | t(lang) }}">
-    <div class="inline-flex gap-1 rounded-full border border-line bg-surface p-1 shadow-[var(--shadow-card)]">
-      {% for acc in accounts %}
-      <button type="button" class="chip border-transparent" :aria-pressed="(tab === '{{ acc.key }}').toString()" aria-pressed="{{ 'true' if loop.first else 'false' }}" @click="tab = '{{ acc.key }}'">{% icon "grapes", "size-4" %}{{ acc.name }}</button>
-      {% endfor %}
+{#- Both accounts side by side from 1024px (EN left, ES right); each account's posts in
+    2 columns, 3 from 1800px (6 across at 1920). Phones/tablets: one account at a time
+    (tabs) with 2 columns, 3 from 768px. -#}
+<section class="container-page page-start" x-data="igPage" aria-label="{{ 'media.ig_title' | t(lang) }}">
+  <div class="mb-6 flex flex-col gap-4 lg:mb-8">
+    {#- Phone: pick an account (both columns show side by side on large screens) -#}
+    {% if accounts.length > 1 %}
+    <div class="flex justify-center lg:hidden" role="group" aria-label="{{ 'media.ig_tabs_label' | t(lang) }}">
+      <div class="inline-flex gap-1 rounded-full border border-line bg-surface p-1 shadow-[var(--shadow-card)]">
+        {% for acc in accounts %}
+        <button type="button" class="chip border-transparent" :aria-pressed="(tab === '{{ acc.key }}').toString()" aria-pressed="{{ 'true' if loop.first else 'false' }}" @click="tab = '{{ acc.key }}'">{% icon "grapes", "size-4" %}{{ acc.name }}</button>
+        {% endfor %}
+      </div>
     </div>
+    {% endif %}
+    <p class="text-center text-sm text-muted text-pretty lg:text-left">{% icon "shield-check", "mr-1.5 inline size-4 align-[-3px] text-vine" %}{{ "media.ig_privacy" | t(lang) }}</p>
   </div>
-  {% endif %}
 
-  <div class="grid grid-cols-1 items-start gap-10 lg:grid-cols-2 lg:gap-8">
+  <div class="grid grid-cols-1 items-start gap-10 lg:grid-cols-2 lg:gap-8 min-[112.5rem]:gap-12">
     {% for acc in accounts %}
     {%- set accPosts = posts | mediaIgFor(acc) | limit(MAX_POSTS) -%}
     {%- set prof = db.instagram | mediaIgProfile(acc) -%}
@@ -145,7 +155,7 @@ pageScripts: ["/assets/js/media.js"]
       </div>
 
       {% if accPosts.length %}
-      <div class="mt-4 grid grid-cols-2 gap-3 sm:gap-4">
+      <div class="mt-4 grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-2 min-[112.5rem]:grid-cols-3">
         {% for p in accPosts %}{{ igCard(p, lang, acc, loop.index0) }}{% endfor %}
       </div>
       <div class="mt-5 flex flex-col items-center gap-3">
@@ -166,12 +176,14 @@ pageScripts: ["/assets/js/media.js"]
 
 {#- ------------------------------------------------------------------ tell your group -#}
 <section class="section-tight container-page" aria-labelledby="ig-share-title">
-  <div class="card media-anywhere grid grid-cols-[minmax(0,1fr)] gap-6 p-6 sm:p-8 md:grid-cols-[auto_minmax(0,1fr)] md:items-center">
+  <div class="card media-anywhere media-share p-6 sm:p-8">
     <span class="grid size-14 place-items-center rounded-2xl bg-grape-soft text-grape">{% icon "megaphone", "size-7" %}</span>
     <div>
       <h2 id="ig-share-title" class="h-section">{{ "media.ig_share_title" | t(lang) }}</h2>
-      <p class="mt-1 text-muted">{{ "media.ig_share_text" | t(lang) }}</p>
-      <blockquote class="mt-4 rounded-2xl border border-line bg-surface p-4 font-display text-lg leading-snug text-ink">{{ "media.ig_announcement" | t(lang) }}</blockquote>
+      <p class="measure mt-1 text-muted">{{ "media.ig_share_text" | t(lang) }}</p>
+    </div>
+    <div class="media-share-quote">
+      <blockquote class="rounded-2xl border border-line bg-surface p-4 font-display text-lg leading-snug text-ink [overflow-wrap:anywhere]">{{ "media.ig_announcement" | t(lang) }}</blockquote>
       <div class="mt-4 flex flex-wrap gap-2">
         <button type="button" class="btn-primary btn-sm" data-copy="{{ 'media.ig_announcement' | t(lang) }}">{% icon "copy", "size-4" %} {{ "media.copy_announcement" | t(lang) }}</button>
         <button type="button" class="btn-secondary btn-sm" data-share="{{ page.url | siteUrl(site) }}" data-share-title="{{ 'media.ig_title' | t(lang) }} — {{ 'media.ig_eyebrow' | t(lang) }}">{% icon "share-2", "size-4" %} {{ "common.share" | t(lang) }}</button>

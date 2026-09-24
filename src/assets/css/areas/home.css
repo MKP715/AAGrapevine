@@ -1,52 +1,87 @@
 /* =====================================================================
    Area styles: HOME page (owned by the home page).
    Only what Tailwind utilities can't express nicely lives here. Colors come
-   from the theme tokens (var(--c-*)) so dark mode works; the hero and the
-   service band are always dark, so they use fixed white-on-navy values.
+   from the theme tokens (var(--c-*)) so dark mode works; the meeting card in
+   the hero and the service band are always dark, so they use fixed
+   white-on-navy values.
+   The hero itself is the shared ui.pageHero (main.css → "PAGE HERO"): same art,
+   gradient and height as every other page. Only home-specific parts are here.
    ===================================================================== */
 
-/* ---------- 1. Hero ---------- */
-.home-hero {
-  /* The committee's original hero palette: deep navy → NETA blue */
-  background: linear-gradient(155deg, #0f172a 0%, #0b2f55 38%, #025a94 72%, #0170b9 100%);
-  min-height: 34rem;
-}
-/* Darkens the area behind the text so the glowing string lights never cost contrast. */
-.home-hero-scrim {
-  background:
-    radial-gradient(120% 90% at 0% 40%, rgb(8 16 36 / 0.62) 0%, rgb(8 16 36 / 0.35) 45%, transparent 75%),
-    linear-gradient(to bottom, rgb(8 16 36 / 0.35), transparent 30%);
-}
-@media (width < 64rem) {
-  /* Stacked layout: text and card sit over the full canvas → even scrim */
-  .home-hero-scrim { background: linear-gradient(to bottom, rgb(8 16 36 / 0.5), rgb(8 16 36 / 0.38) 60%, rgb(8 16 36 / 0.25)); }
-}
-.home-hero-fade {
-  height: 5.5rem;
-  background: linear-gradient(to top, var(--c-paper) 0%, color-mix(in srgb, var(--c-paper) 55%, transparent) 45%, transparent 100%);
-}
-/* Phones use a shorter bottom padding (pb-16): keep the fade below the meeting card. */
-@media (width < 40rem) { .home-hero-fade { height: 3.5rem; } }
-.home-hero-copy { text-shadow: 0 1px 2px rgb(0 0 0 / 0.28); }
-.home-hero-title { text-wrap: balance; letter-spacing: -0.02em; }
-.home-hero-title em {
-  font-style: italic;
-  font-weight: 500;
-  color: #ffd79a; /* warm "vine light" gold — 11:1 on the navy */
+/* ---------- 1. Hero (shared ui.pageHero) — home additions ---------- */
+/* The next-meeting card is the hero's right column from 1024px. Below that it is the
+   first block under the hero (.home-under), so the hero keeps its standard height. */
+@media (width < 64rem) { #homeHero .gv-hero-aside { display: none; } }
+/* Phones: keep the hero within the phone height (24–28rem) in English and Spanish — both
+   CTAs on one row (no icons, a little less padding), and no eyebrow pill: on phones it only
+   repeats the site name the header shows right above it ("Grapevine / La Viña"). */
+@media (width < 40rem) {
+  #homeHero .gv-hero-eyebrow { display: none; }
+  .home-hero-actions > a { padding-inline: 1rem; }
+  .home-hero-actions > a > .icon { display: none; }
 }
 
-/* Glassy "next meeting" card — dark glass so contrast holds over bright lights */
-.home-glass {
-  background: linear-gradient(160deg, rgb(15 30 60 / 0.72), rgb(8 20 45 / 0.6));
+/* Compact "next committee meeting" card (index.njk → meetingCard): heading, date, time,
+   a live countdown and the actions. Two looks: --hero (dark glass, in the hero) and
+   --page (a light card, below the hero on tablets and phones). */
+.home-meet { display: grid; gap: 0.875rem; }
+.home-meet-eyebrow {
+  font-family: var(--font-sans); font-size: 0.72rem; font-weight: 600; line-height: 1.35;
+  letter-spacing: 0.16em; text-transform: uppercase;
+}
+.home-meet-date {
+  margin-top: 0.375rem;
+  font-family: var(--font-display); font-size: 1.375rem; font-weight: 600; line-height: 1.2;
+  letter-spacing: -0.01em; text-wrap: balance;
+}
+.home-meet-time { margin-top: 0.25rem; display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem 0.5rem; font-size: 0.9rem; line-height: 1.4; }
+.home-meet-rule { margin-top: 0.125rem; font-size: 0.85rem; line-height: 1.4; }
+.home-meet-count { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.5rem; }
+.home-count { border-radius: 0.875rem; padding: 0.45rem 0.25rem 0.4rem; text-align: center; }
+.home-count-n { display: block; font-family: var(--font-display); font-size: 1.5rem; font-weight: 600; line-height: 1; font-variant-numeric: tabular-nums; }
+.home-count-l { display: block; margin-top: 0.3rem; font-size: 0.62rem; font-weight: 600; line-height: 1.2; letter-spacing: 0.08em; text-transform: uppercase; }
+.home-meet-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.home-meet-actions > * { flex: 1 1 auto; }
+.home-meet-actions > .home-meet-join { flex-basis: 100%; }
+.home-meet-actions > .btn-sm { padding-inline: 0.75rem; }
+
+/* --hero: dark glass, so contrast holds over the bright string lights. Sized to fit the
+   hero's 30rem with room to spare (e.g. a two-line Spanish date: "Miércoles, 16 de septiembre"). */
+.home-meet--hero {
+  padding: 1.125rem 1.25rem;
+  border-radius: 1.5rem;
+  color: #fff;
+  background: linear-gradient(160deg, rgb(15 30 60 / 0.76), rgb(8 20 45 / 0.64));
   border: 1px solid rgb(255 255 255 / 0.18);
   box-shadow: 0 24px 60px -24px rgb(0 0 0 / 0.55), inset 0 1px 0 rgb(255 255 255 / 0.12);
   -webkit-backdrop-filter: blur(14px) saturate(140%);
   backdrop-filter: blur(14px) saturate(140%);
+  text-shadow: none;
 }
-.home-count {
-  background: rgb(255 255 255 / 0.08);
-  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.14);
+.home-meet--hero .home-meet-eyebrow, .home-meet--hero .home-meet-time { color: rgb(255 255 255 / 0.9); }
+.home-meet--hero .home-count { background: rgb(255 255 255 / 0.08); box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.14); }
+.home-meet--hero .home-count-l { color: rgb(255 255 255 / 0.85); }
+@media (width >= 80rem) {
+  .home-meet--hero { padding: 1.5rem; }
+  .home-meet--hero .home-meet-date { font-size: 1.625rem; }
+  .home-meet--hero .home-count-n { font-size: 1.75rem; }
 }
+
+/* --page: light card under the hero (tablets and phones) */
+.home-meet--page .home-meet-eyebrow { color: var(--c-gv); }
+.home-meet--page .home-meet-date { color: var(--c-ink); }
+.home-meet--page .home-meet-time, .home-meet--page .home-meet-rule { color: var(--c-muted); }
+.home-meet--page .home-count { color: var(--c-gv); background: var(--c-gv-soft); }
+.home-meet--page .home-live-pill { color: var(--c-vine); background: var(--c-vine-soft); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--c-vine) 40%, transparent); }
+.home-meet--page .home-live-pill::before { background: var(--c-vine); }
+@media (width >= 48rem) {
+  /* date + time on the left, countdown on the right, the actions underneath */
+  .home-meet--page { grid-template-columns: minmax(0, 1fr) minmax(17rem, 20rem); align-items: center; column-gap: 2rem; }
+  .home-meet--page .home-meet-actions { grid-column: 1 / -1; }
+  .home-meet--page .home-meet-actions > * { flex-grow: 0; }
+  .home-meet--page .home-meet-actions > .home-meet-join { flex-basis: auto; }
+}
+
 .home-live-pill {
   display: inline-flex; align-items: center; gap: 0.4rem;
   border-radius: 9999px;
@@ -66,7 +101,194 @@
   100% { box-shadow: 0 0 0 0 rgb(74 222 128 / 0); }
 }
 
-/* ---------- 2. Fresh strip ---------- */
+/* ---------- 1b. Under the hero: meeting card (below 1024px) + site counters ---------- */
+.home-under-card { padding: 1.25rem; }
+@media (width >= 40rem) { .home-under-card { padding: 1.25rem 1.5rem; } }
+@media (width < 64rem) {
+  .home-under-meet + .home-under-stats { margin-top: 1.25rem; padding-top: 1.25rem; border-top: 1px solid var(--c-line); }
+}
+.home-under-stats { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem 2rem; }
+/* Phones: no counters (the same sections are in the menu and further down the page) */
+@media (width < 40rem) { .home-under-stats { display: none; } }
+.home-under-label {
+  display: inline-flex; flex-basis: 100%; align-items: center; gap: 0.5rem;
+  font-size: 0.72rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--c-muted);
+}
+.home-under-label .icon { color: var(--c-vine); }
+@media (width >= 64rem) { .home-under-label { flex-basis: auto; } }
+.home-stats { flex: 1 1 0%; min-width: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem 1.5rem; }
+@media (width >= 48rem) { .home-stats { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.home-stat {
+  display: flex; align-items: center; gap: 0.75rem; min-height: 2.75rem;
+  margin: -0.25rem; padding: 0.25rem; border-radius: 0.875rem;
+  text-decoration: none; transition: background-color 0.2s ease;
+}
+.home-stat:hover { background: var(--c-surface-2); }
+.home-stat-icon {
+  display: grid; place-items: center; width: 2.5rem; height: 2.5rem; flex-shrink: 0; border-radius: 0.75rem;
+  color: var(--tone); background: var(--tone-soft);
+}
+.home-stat-n { display: block; font-family: var(--font-display); font-size: 1.35rem; font-weight: 600; line-height: 1.1; color: var(--c-ink); font-variant-numeric: tabular-nums; }
+.home-stat-l { display: block; font-size: 0.85rem; line-height: 1.3; color: var(--c-muted); }
+.home-stat:hover .home-stat-l { color: var(--c-ink); text-decoration: underline; }
+
+/* ---------- 2. Published writers spotlight ---------- */
+.home-spot {
+  background:
+    radial-gradient(55% 60% at 100% 0%, color-mix(in srgb, var(--c-vine) 8%, transparent), transparent 70%),
+    radial-gradient(45% 55% at 0% 100%, color-mix(in srgb, var(--c-lv) 6%, transparent), transparent 70%);
+}
+/* Phones: Area 65 cards stacked, then the Texas cards in a swipe row (the `rail` utility).
+   From 640px ONE grid holds both lists (display: contents): Area 65 cards span two columns,
+   and the Texas cards fill in around them (dense). Columns: 2 → 3 (1024px) → 4 (1360px) →
+   5 (1800px) — a step earlier than grid-cards' 4 at 1536px, so 1440px screens get 4 columns
+   (cards stay ≥ 300px wide: 301px at 1360, 320 at 1440, 341 at 1920). */
+.home-spot-grid { display: grid; gap: 1rem; }
+.home-spot-list--a65 { display: grid; gap: 1rem; }
+@media (width >= 40rem) {
+  .home-spot-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-flow: row dense; gap: 1.25rem; }
+  .home-spot-list { display: contents; }
+  .home-spot-item.is-featured, .home-spot-none { grid-column: span 2; }
+}
+@media (width >= 64rem) { .home-spot-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (width >= 85rem) { .home-spot-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (width >= 112.5rem) { .home-spot-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+.home-spot-item { min-width: 0; }
+
+/* "See the full list" tile: closes the grid's last row, so no row ends in empty columns,
+   whatever the number of stories. Its width at 2 / 3 / 4 / 5 columns is data-f2…data-f5
+   (eleventy/filters/home.js homeSpotFill → index.njk; home.js redoes it in the browser);
+   0 = that row is already full, so no tile. data-full on the grid = the column counts at which
+   each Area 65 card takes a whole row (only when too few Texas cards are left to sit beside
+   them, which would leave gaps higher up). The ranges below MUST match the column counts above.
+   Phones: no tile (the same two links are right above the list). */
+.home-spot-fill { display: none; }
+@media (width >= 40rem) { .home-spot-fill { display: flex; min-width: 0; container-type: inline-size; } }
+@media (40rem <= width < 64rem) {
+  .home-spot-fill[data-f2="0"] { display: none; }
+}
+@media (64rem <= width < 85rem) {
+  .home-spot-fill[data-f3="0"] { display: none; }
+  .home-spot-fill[data-f3="2"] { grid-column: span 2; }
+  .home-spot-grid[data-full~="3"] .home-spot-item.is-featured { grid-column: 1 / -1; }
+  .home-spot-grid[data-full~="3"] .home-spot-card.is-featured .home-spot-media { width: min(38%, 30rem); }
+}
+@media (85rem <= width < 112.5rem) {
+  .home-spot-fill[data-f4="0"] { display: none; }
+  .home-spot-fill[data-f4="2"] { grid-column: span 2; }
+  .home-spot-fill[data-f4="3"] { grid-column: span 3; }
+  .home-spot-grid[data-full~="4"] .home-spot-item.is-featured { grid-column: 1 / -1; }
+  .home-spot-grid[data-full~="4"] .home-spot-card.is-featured .home-spot-media { width: min(38%, 30rem); }
+}
+@media (width >= 112.5rem) {
+  .home-spot-fill[data-f5="0"] { display: none; }
+  .home-spot-fill[data-f5="2"] { grid-column: span 2; }
+  .home-spot-fill[data-f5="3"] { grid-column: span 3; }
+  .home-spot-fill[data-f5="4"] { grid-column: span 4; }
+  .home-spot-grid[data-full~="5"] .home-spot-item.is-featured { grid-column: 1 / -1; }
+  .home-spot-grid[data-full~="5"] .home-spot-card.is-featured .home-spot-media { width: min(38%, 30rem); }
+}
+.home-spot-fill {
+  border: 1.5px dashed color-mix(in srgb, var(--c-vine) 45%, var(--c-line));
+  border-radius: var(--radius-card);
+  background:
+    radial-gradient(90% 70% at 100% 0%, color-mix(in srgb, var(--c-vine) 10%, transparent), transparent 70%),
+    color-mix(in srgb, var(--c-vine-soft) 45%, var(--c-surface));
+}
+/* One column wide: stacked, centred in the row's height. Wider (≥ 34rem): icon · text · buttons. */
+.home-spot-fill-in { display: flex; flex-direction: column; justify-content: center; gap: 1rem; width: 100%; padding: 1.5rem; }
+.home-spot-fill-icon {
+  display: grid; place-items: center; flex-shrink: 0;
+  width: 3rem; height: 3rem; border-radius: 1rem;
+  color: var(--c-vine); background: var(--c-vine-soft);
+}
+.home-spot-fill-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.home-spot-fill-actions > a { flex: 1 1 auto; }
+@container (width >= 34rem) {
+  .home-spot-fill-in { flex-direction: row; align-items: center; gap: 1.25rem 1.75rem; padding: 1.5rem 2rem; }
+  .home-spot-fill-text { flex: 1 1 0%; min-width: 0; max-width: 40rem; }
+  .home-spot-fill-actions { flex-direction: column; flex-shrink: 0; margin-left: auto; }
+}
+
+.home-spot-card { flex-direction: column; }
+.home-spot-media { position: relative; flex-shrink: 0; aspect-ratio: 5 / 2; overflow: hidden; background: var(--tone-soft); }
+.is-featured .home-spot-media { aspect-ratio: 16 / 9; }
+.home-spot-body { display: flex; flex: 1 1 auto; flex-direction: column; min-width: 0; padding: 1rem 1.125rem 1.125rem; }
+@media (width >= 40rem) {
+  /* Area 65: picture on the left, the story on the right */
+  .home-spot-card.is-featured { flex-direction: row; }
+  .home-spot-card.is-featured .home-spot-media { width: 38%; aspect-ratio: auto; min-height: 15rem; }
+  .home-spot-card.is-featured .home-spot-body { padding: 1.375rem 1.5rem 1.25rem; }
+}
+/* Area 65 writers: vine-green accent, a soft green wash and a ribbon on the picture */
+.home-spot-card.is-featured {
+  border-color: color-mix(in srgb, var(--c-vine) 45%, var(--c-line));
+  background: linear-gradient(135deg, color-mix(in srgb, var(--c-vine-soft) 75%, var(--c-surface)) 0%, var(--c-surface) 60%);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--c-vine) 22%, transparent), var(--shadow-card);
+}
+.home-spot-card.is-featured:hover, .home-spot-card.is-featured:focus-within {
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--c-vine) 35%, transparent), var(--shadow-lift);
+}
+.home-spot-ribbon {
+  position: absolute; left: 0.75rem; top: 0.75rem; z-index: 1;
+  display: inline-flex; align-items: center; gap: 0.35rem;
+  border-radius: 9999px; padding: 0.3rem 0.75rem;
+  font-size: 0.72rem; font-weight: 700; line-height: 1.3;
+  color: #fff; background: var(--c-vine);
+  box-shadow: 0 4px 14px -4px rgb(0 0 0 / 0.45);
+}
+[data-theme="dark"] .home-spot-ribbon { color: var(--c-paper); }
+/* Writer monogram (initials as printed: "Victor R." → VR) */
+.home-spot-avatar {
+  display: grid; place-items: center; flex-shrink: 0;
+  width: 2.75rem; height: 2.75rem; border-radius: 9999px;
+  font-family: var(--font-display); font-size: 1rem; font-weight: 600; letter-spacing: 0.02em;
+  color: var(--tone); background: var(--tone-soft);
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--tone) 30%, transparent);
+}
+.is-featured .home-spot-avatar { width: 3.25rem; height: 3.25rem; font-size: 1.15rem; }
+.home-spot-writer { font-family: var(--font-display); font-size: 1.125rem; font-weight: 600; line-height: 1.25; color: var(--c-ink); overflow-wrap: anywhere; }
+.is-featured .home-spot-writer { font-size: 1.375rem; }
+.home-spot-place { margin-top: 0.15rem; display: flex; align-items: center; gap: 0.3rem; font-size: 0.85rem; line-height: 1.35; color: var(--c-muted); }
+.home-spot-title { margin-top: 0.75rem; font-family: var(--font-display); font-size: 1.1rem; font-weight: 600; line-height: 1.3; color: var(--c-ink); text-wrap: pretty; }
+.is-featured .home-spot-title { font-size: 1.35rem; }
+.home-spot-meta { margin-top: 0.4rem; display: flex; flex-wrap: wrap; gap: 0.2rem 0.4rem; font-size: 0.78rem; line-height: 1.4; color: var(--c-faint); }
+/* Footer line: place badge (Area 65 / Texas) · magazine · subscriber hint · auto-translated */
+.home-spot-foot { margin-top: auto; padding-top: 0.875rem; display: flex; flex-wrap: wrap; align-items: center; gap: 0.375rem 0.625rem; font-size: 0.75rem; line-height: 1.4; color: var(--c-faint); }
+.home-spot-foot > .badge, .home-spot-foot > [class^="badge-"] { margin-right: -0.25rem; }
+/* "Texas" badge: neutral, with an amber lone star (Area 65 = vine green, GV = blue, LV = amber) */
+.home-badge-tx { background: var(--c-surface-2); color: var(--c-ink); box-shadow: inset 0 0 0 1px var(--c-line); }
+.home-badge-tx .icon { color: var(--c-lv); }
+.home-spot-count { font-size: 0.78rem; padding: 0.25rem 0.75rem; }
+/* No Area 65 story in the window (but Texas ones): a friendly note where the featured cards go */
+.home-spot-none {
+  display: flex; align-items: flex-start; gap: 1rem;
+  border: 1.5px dashed color-mix(in srgb, var(--c-vine) 45%, var(--c-line));
+  border-radius: var(--radius-card);
+  padding: 1.25rem 1.5rem;
+  background: color-mix(in srgb, var(--c-vine-soft) 55%, var(--c-surface));
+}
+/* No Texas story at all in the window */
+.home-spot-empty {
+  display: grid; align-items: center; gap: 1.25rem;
+  border: 1.5px dashed color-mix(in srgb, var(--c-vine) 45%, var(--c-line));
+  border-radius: var(--radius-card);
+  padding: 1.5rem;
+  background:
+    radial-gradient(60% 90% at 100% 0%, color-mix(in srgb, var(--c-vine) 10%, transparent), transparent 70%),
+    var(--c-surface);
+}
+@media (width >= 48rem) {
+  .home-spot-empty { grid-template-columns: auto minmax(0, 1fr); gap: 1.25rem 2rem; padding: 2rem 2.5rem; }
+  .home-spot-empty > :last-child { grid-column: 2; }
+}
+@media (width >= 64rem) {
+  /* message in the middle, the two buttons stacked on the right */
+  .home-spot-empty { grid-template-columns: auto minmax(0, 1fr) auto; }
+  .home-spot-empty > :last-child { grid-column: auto; flex-direction: column; align-items: stretch; }
+}
+
+/* ---------- 3. Fresh strip ---------- */
 .home-trust {
   display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem 0.6rem;
   width: fit-content; max-width: 100%;
@@ -88,8 +310,10 @@
   70%, 100% { box-shadow: 0 0 0 0.5rem transparent; }
 }
 
-/* Mobile: horizontal scroll-snap row that bleeds to the screen edges.
-   ≥ 40rem: a regular grid (2 → 4 columns). */
+/* Mobile: horizontal scroll-snap row that bleeds to the screen edges (all items).
+   ≥ 40rem: a grid that always shows FULL rows of the 10 "fresh" items:
+   2 columns × 3 rows · 3 × 2 from 1024px (cards ≥ 300px) · 4 × 2 from 1280px · 5 × 2 from 1800px.
+   Videos (.home-rail--videos, 5 items): 2 × 2 · 4 × 1 from 1024px · 5 × 1 from 1800px. */
 .home-rail {
   display: grid;
   grid-auto-flow: column;
@@ -98,9 +322,9 @@
   overflow-x: auto;
   overscroll-behavior-x: contain;
   scroll-snap-type: x mandatory;
-  scroll-padding-inline: 1rem;
-  margin-inline: -1rem;
-  padding: 0.25rem 1rem 1rem;
+  scroll-padding-inline: var(--gutter);
+  margin-inline: calc(-1 * var(--gutter));
+  padding: 0.25rem var(--gutter) 1rem;
 }
 .home-rail-item { scroll-snap-align: start; min-width: 0; }
 @media (width >= 40rem) {
@@ -114,7 +338,14 @@
     padding: 0;
   }
 }
-@media (width >= 64rem) { .home-rail { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (width >= 64rem) { .home-rail { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (width >= 80rem) { .home-rail { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (width >= 112.5rem) { .home-rail { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+@media (40rem <= width < 80rem) { .home-rail:not(.home-rail--videos) > .home-rail-item:nth-child(n+7) { display: none; } }
+@media (80rem <= width < 112.5rem) { .home-rail:not(.home-rail--videos) > .home-rail-item:nth-child(n+9) { display: none; } }
+@media (width >= 64rem) { .home-rail--videos { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (width >= 112.5rem) { .home-rail--videos { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+@media (40rem <= width < 112.5rem) { .home-rail--videos > .home-rail-item:nth-child(n+5) { display: none; } }
 
 /* Tone families used by tiles, date tiles, magazine heads, IG placeholders */
 .home-tone-gv { --tone: var(--c-gv); --tone-soft: var(--c-gv-soft); }
@@ -159,13 +390,25 @@
 }
 [data-theme="dark"] .home-sheet-tag { color: var(--c-paper); }
 
-/* ---------- 3. Announcements ---------- */
+/* ---------- 4. Announcements ---------- */
 .home-ann::before {
   content: ""; position: absolute; inset: 0 auto 0 0; width: 4px;
   background: linear-gradient(to bottom, var(--c-vine), var(--c-gv));
 }
 
-/* ---------- 4. Magazines ---------- */
+/* ---------- 5. Magazines ---------- */
+/* From 1536px the "Write for the magazines" panel is a third column next to the two magazines */
+@media (width >= 96rem) {
+  .home-mags.has-write { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(22rem, 0.72fr); }
+  /* The panel is as tall as its own themes — not stretched down beside the taller magazine
+     columns, which left an empty tinted lower third. */
+  .home-mags.has-write > .home-write { align-self: start; }
+}
+/* …and on screens tall enough to show all of it, it stays in view (below the fixed header)
+   while the magazine columns scroll past. */
+@media (width >= 96rem) and (height >= 56rem) {
+  .home-mags.has-write > .home-write { position: sticky; top: 6rem; }
+}
 .home-mag-head {
   color: var(--tone);
   background:
@@ -208,7 +451,7 @@
 .home-mag-mt { background: color-mix(in srgb, var(--c-surface-2) 60%, transparent); }
 @media (width >= 80rem) { .home-mag-cover { width: 8rem; } }
 
-/* ---------- 5. Listen & watch ---------- */
+/* ---------- 6. Listen & watch ---------- */
 .home-episode::before {
   content: ""; position: absolute; inset: 0; pointer-events: none;
   background: radial-gradient(70% 90% at 100% 0%, color-mix(in srgb, var(--c-grape) 10%, transparent), transparent 70%);
@@ -230,7 +473,7 @@ lite-youtube.home-yt:hover { box-shadow: var(--shadow-lift); transform: translat
 lite-youtube.home-yt::before { display: none; } /* title is shown under the video instead */
 lite-youtube.home-yt > .lyt-playbtn:focus-visible { outline: 3px solid #fff; outline-offset: -6px; }
 
-/* ---------- 6. Events: date tiles ---------- */
+/* ---------- 7. Events: date tiles ---------- */
 .home-datetile {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   width: 4.25rem; flex-shrink: 0;
@@ -253,7 +496,12 @@ lite-youtube.home-yt > .lyt-playbtn:focus-visible { outline: 3px solid #fff; out
   .home-datetile-wd { margin-top: 0; }
 }
 
-/* ---------- 7. Library band ---------- */
+/* ---------- 8. Library band ---------- */
+/* Newest PDFs: 6 (3 × 2); from 1800px 4 columns × 2 rows, with the 7th and 8th.
+   (Plain CSS on purpose: a Tailwind `min-[1800px]:` class sorts BEFORE `sm:` in the built CSS —
+   px vs the rem breakpoints — so `sm:grid-cols-3` would win over it.) */
+@media (width < 112.5rem) { .home-pdfs > li:nth-child(n+7) { display: none; } }
+@media (width >= 112.5rem) { .home-pdfs { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 .home-lib {
   background:
     radial-gradient(60% 80% at 0% 0%, color-mix(in srgb, var(--c-gv) 7%, transparent), transparent 70%),
@@ -261,7 +509,7 @@ lite-youtube.home-yt > .lyt-playbtn:focus-visible { outline: 3px solid #fff; out
     var(--c-surface-2);
 }
 
-/* ---------- 8. Instagram ---------- */
+/* ---------- 9. Instagram ---------- */
 .home-ig-ph {
   color: var(--tone);
   background:
@@ -281,7 +529,7 @@ lite-youtube.home-yt > .lyt-playbtn:focus-visible { outline: 3px solid #fff; out
 .home-ig-avatar { position: relative; display: grid; place-items: center; width: 1.5rem; height: 1.5rem; flex-shrink: 0; margin-left: -0.35rem; }
 .home-ig-avatar img { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; border-radius: 9999px; object-fit: cover; box-shadow: 0 0 0 1px var(--c-line); }
 
-/* ---------- 9. Service band ---------- */
+/* ---------- 10. Service band ---------- */
 .home-band { background: linear-gradient(135deg, #0f172a 0%, #0b2f55 50%, #025a94 100%); }
 .home-band::before {
   content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
@@ -297,12 +545,11 @@ lite-youtube.home-yt > .lyt-playbtn:focus-visible { outline: 3px solid #fff; out
 .home-band-link:hover { background: rgb(255 255 255 / 0.12); box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.28); transform: translateY(-1px); }
 .home-band-link:focus-visible { outline-color: #fff; }
 .home-band :focus-visible { outline-color: #fff; }
-.home-hero :focus-visible { outline-color: #fff; }
 /* Amber La Viña button that reads well on the dark band in both themes */
 .home-btn-amber { background: #f59a5b; color: #2a1606; }
 .home-btn-amber:hover { background: #f8b88a; }
 
-/* ---------- 6b. "Calendar on your phone" filler card ---------- */
+/* ---------- 7b. "Calendar on your phone" filler card ---------- */
 .home-cal-cta {
   background:
     radial-gradient(90% 70% at 100% 0%, color-mix(in srgb, var(--c-vine) 10%, transparent), transparent 70%),
@@ -310,7 +557,7 @@ lite-youtube.home-yt > .lyt-playbtn:focus-visible { outline: 3px solid #fff; out
   border-style: dashed;
 }
 
-/* ---------- 10. Drive (empty state) ---------- */
+/* ---------- 11. Drive (empty state) ---------- */
 .home-drive-empty::before {
   content: ""; position: absolute; inset: 0; pointer-events: none;
   background:
@@ -329,5 +576,5 @@ lite-youtube.home-yt > .lyt-playbtn:focus-visible { outline: 3px solid #fff; out
 
 @media (prefers-reduced-motion: reduce) {
   .home-live-pill::before, .home-trust-dot { animation: none; }
-  .home-sheet, lite-youtube.home-yt, .home-mag-cover { transition: none; }
+  .home-sheet, lite-youtube.home-yt, .home-mag-cover, .home-stat { transition: none; }
 }

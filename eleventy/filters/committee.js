@@ -446,6 +446,8 @@ function shapeEvent(it, site, lang, now, descOverride) {
     expireIso: end.toISOString(),
     tile, dateLabel, timeLabel, monthKey, monthLabel,
     shortLabel: cap(fmt(tileSrc, lang, { month: "short", day: "numeric", ...tileOpts })).replace(/\.(?=\s|$)/, ""),
+    // One line for the /meeting/ hero: "Wednesday, October 21 · 7:00 PM CDT" (committee.js keeps it current)
+    whenLabel: allDay ? dateLabel : cap(fmt(start, lang, { weekday: "long", month: "long", day: "numeric" })) + " · " + fmt(start, lang, { hour: "numeric", minute: "2-digit", timeZoneName: "short" }),
     location, online, link, linkExternal: /^https?:/.test(link || ""),
     detailsUrl,
     flyer: flyerView ? { view: flyerView, preview: drivePreviewUrl(flyerView), thumb: flyerThumb } : null,
@@ -936,6 +938,9 @@ export default function (eleventyConfig, helpers) {
 
   // "Subscribe to the calendar" card (used on /meeting/ and /events/):
   // {% cmSubscribe lang, site, compact %}
+  // The card lays itself out by its OWN width (container queries), not the screen's: two
+  // columns (buttons | feed address) when it is at least 48rem wide, stacked in a narrow
+  // column or sidebar. compact = no "how to set up" row.
   eleventyConfig.addShortcode("cmSubscribe", function (lang, site, compact = false) {
     const L = lang || "en";
     const other = L === "es" ? "en" : "es";
@@ -948,7 +953,7 @@ export default function (eleventyConfig, helpers) {
     const btn = (href, ic, label, cls = "btn-secondary") =>
       `<a class="${cls}" href="${esc(href)}"${href.startsWith("http") ? ' target="_blank" rel="noopener"' : ""}>${icon(ic, "size-4")} ${esc(label)}</a>`;
     const howto = compact ? "" : `
-      <div class="mt-6 grid gap-3 md:grid-cols-3">
+      <div class="mt-6 grid gap-3 @3xl:grid-cols-3">
         ${["google", "apple", "outlook"].map((k) => `
         <details class="cm-howto">
           <summary>${icon(k === "apple" ? "smartphone" : "calendar", "size-4 text-gv")} <span>${esc(t(`committee.sub.howto_${k}`, L))}</span>${icon("chevron-down", "size-4 ml-auto opacity-60 cm-chev")}</summary>
@@ -956,11 +961,11 @@ export default function (eleventyConfig, helpers) {
         </details>`).join("")}
       </div>`;
     return `
-<div class="card cm-subscribe relative overflow-hidden card-pad">
-  <div class="grid gap-6 lg:grid-cols-[1.1fr_1fr] lg:items-center">
+<div class="card cm-subscribe @container relative h-full overflow-hidden card-pad">
+  <div class="grid grid-cols-1 gap-6 @3xl:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] @3xl:items-center">
     <div>
       <p class="eyebrow flex items-center gap-2">${icon("calendar-sync", "size-4 text-gv")} ${esc(t("committee.sub.eyebrow", L))}</p>
-      <h2 class="h-section mt-2">${esc(t("committee.sub.title", L))}</h2>
+      <h2 class="mt-2 font-display text-2xl font-semibold leading-tight text-ink @xl:text-3xl">${esc(t("committee.sub.title", L))}</h2>
       <p class="mt-2 max-w-xl leading-relaxed text-muted">${esc(t("committee.sub.text", L))}</p>
       <div class="mt-5 flex flex-wrap gap-2">
         ${btn(gcal, "calendar-plus", "Google Calendar", "btn-primary")}
@@ -1002,6 +1007,8 @@ export default function (eleventyConfig, helpers) {
       const count = n[p.key] ? `<span class="cm-subnav-count">${n[p.key]}</span>` : "";
       return `<a href="${localPath(p.url, L)}" class="cm-subnav-link${on ? " is-current" : ""}"${on ? ' aria-current="page"' : ""}>${icon(p.icon, "size-4")}<span>${esc(t("committee.subnav." + p.key, L))}</span>${count}</a>`;
     });
-    return `<nav class="container-page relative z-10 -mt-7 sm:-mt-9" aria-label="${esc(t("committee.subnav.aria", L))}"><div class="cm-subnav no-scrollbar">${links.join("")}</div></nav>`;
+    // page-overlap (main.css): the pill bar tucks into the hero's faded bottom edge — the
+    // shared "page start" for pages whose first block overlaps the hero.
+    return `<nav class="container-page page-overlap" aria-label="${esc(t("committee.subnav.aria", L))}"><div class="cm-subnav no-scrollbar">${links.join("")}</div></nav>`;
   });
 }

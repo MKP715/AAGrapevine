@@ -39,7 +39,10 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
     open-ended suggested topics (La Viña), plus recently closed deadlines. -#}
 {% macro themeList(ed, pub, lang, calUrl, calPdf) %}
 {%- set isLv = pub == "lv" -%}
-<div class="card flex flex-col overflow-hidden {{ 'read-accent-lv' if isLv else 'read-accent-gv' }}">
+{%- set nextRows = ed.upcoming | selectattr("isNext") -%}
+{%- set restRows = ed.upcoming | rejectattr("isNext") -%}
+{#- @container: the rows below the next deadline run in two columns when the card is wide -#}
+<div class="card @container flex flex-col overflow-hidden {{ 'read-accent-lv' if isLv else 'read-accent-gv' }}">
   <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-b border-line px-5 py-4 sm:px-6">
     <h3 class="flex items-center gap-2 font-display text-xl font-semibold">
       <span class="grid size-9 place-items-center rounded-xl {{ 'bg-lv-soft text-lv' if isLv else 'bg-gv-soft text-gv' }}">{% icon "grapes", "size-5" %}</span>
@@ -51,8 +54,7 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
     </p>
   </div>
   <div class="flex flex-1 flex-col gap-3 p-4 sm:p-5">
-    {% for r in ed.upcoming %}
-      {% if r.isNext %}
+    {% for r in nextRows %}
       <div class="read-deadline-next read-deadline-row rounded-2xl border border-line bg-surface-2 p-4 pl-5 sm:p-5 sm:pl-6" data-deadline-row {{ dlAttrs(r, lang) }}>
         <p class="eyebrow {{ 'text-lv' if isLv else 'text-gv' }}">{{ "read.contrib.next_deadline" | t(lang) }}</p>
         <div class="mt-2 flex items-start gap-4">
@@ -70,7 +72,10 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
         {% if r.summary %}<p class="mt-3 line-clamp-4 text-sm leading-relaxed text-muted" lang="{{ r.summaryLang }}">{{ r.summary }}</p>{% endif %}
         {% if r.summaryMachine %}<p class="auto-note mt-2" title="{{ 'common.auto_translated_help' | t(lang) }}">{% icon "languages", "size-3" %} {{ "common.auto_translated" | t(lang) }}</p>{% endif %}
       </div>
-      {% else %}
+    {% endfor %}
+    {% if restRows.length %}
+    <div class="grid grid-cols-1 gap-x-4 gap-y-1 @2xl:grid-cols-2">
+      {% for r in restRows %}
       <div class="read-deadline-row flex items-start gap-3 rounded-xl px-2 py-2" data-deadline-row {% if r.deadline %}{{ dlAttrs(r, lang) }}{% endif %}>
         <span class="read-num grid w-14 shrink-0 place-items-center rounded-xl border border-line bg-surface py-1.5 text-center leading-tight">
           {% if r.deadline %}<span class="text-[0.65rem] font-semibold uppercase {{ 'text-lv' if isLv else 'text-gv' }}">{{ r.deadline | fmtDate(lang, "monthShort") }}</span><span class="font-display text-xl font-semibold text-ink">{{ r.deadline | fmtDate(lang, "day") }}</span>
@@ -82,15 +87,16 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
           <p class="text-xs text-muted">{% if r.issueLabel %}{{ "read.contrib.for_issue" | t(lang, {issue: r.issueLabel}) }} · {% endif %}<span data-days-label>{{ dueText(r, lang) }}</span></p>
         </div>
       </div>
-      {% endif %}
-    {% endfor %}
+      {% endfor %}
+    </div>
+    {% endif %}
 
     {% if ed.evergreen.length %}
     {%- set EV_SHOW = 8 -%}
     <div class="{{ 'mt-1 border-t border-line pt-4' if ed.upcoming.length }}">
       <p class="flex items-center gap-2 font-semibold text-ink"><span class="{{ 'text-lv' if isLv else 'text-gv' }}">{% icon "feather", "size-5" %}</span>{{ "read.contrib.evergreen_title" | t(lang) }}</p>
       <p class="mt-0.5 text-sm text-muted">{{ ("read.contrib.evergreen_sub_lv" if isLv else "read.contrib.evergreen_sub_gv") | t(lang) }}</p>
-      <ul class="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
+      <ul class="mt-3 grid grid-cols-1 gap-2 @md:grid-cols-2 @4xl:grid-cols-3">
         {% for r in ed.evergreen | limit(EV_SHOW) %}{{ topicChip(r, lang, isLv) }}{% endfor %}
       </ul>
       {% if ed.evergreen.length > EV_SHOW %}
@@ -100,7 +106,7 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
           <span class="hidden group-open/ev:inline">{{ "common.show_less" | t(lang) }}</span>
           {% icon "chevron-down", "size-4 transition group-open/ev:rotate-180" %}
         </summary>
-        <ul class="mt-1 grid grid-cols-1 gap-2 sm:grid-cols-2">
+        <ul class="mt-1 grid grid-cols-1 gap-2 @md:grid-cols-2 @4xl:grid-cols-3">
           {% for r in ed.evergreen | offset(EV_SHOW) %}{{ topicChip(r, lang, isLv) }}{% endfor %}
         </ul>
       </details>
@@ -191,17 +197,68 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
 </div>
 {% endmacro %}
 
-{% call ui.pageHero(lang, "read.contrib.title" | t(lang), "read.contrib.subtitle" | t(lang), "pen-line", "read.contrib.eyebrow" | t(lang)) %}
-  <div class="flex flex-wrap gap-2.5">
+{#- Link card to the /published/ page — writers from our Area (and all of Texas) in the magazines.
+    Same card as on /read/ (read.njk); lays itself out by its own width: here it spans the page,
+    so from ~900px wide it runs as a row (text · numbers · newest writers). -#}
+{% macro spotCard(sp, lang, variant="read") %}
+{%- set hasArea = sp and sp.area.writers > 0 -%}
+{%- set list = ((sp.area.list if hasArea else sp.texas.list) if sp else []) -%}
+<article class="read-spot card card-link group @container relative flex h-full flex-col overflow-hidden" aria-labelledby="spot-title">
+  <div class="grid flex-1 content-start gap-5 p-6 sm:p-7 @4xl:grid-cols-[minmax(0,1.2fr)_auto] @4xl:items-center @4xl:gap-x-10 @6xl:grid-cols-[minmax(0,1.2fr)_auto_minmax(0,1fr)]">
+    <div class="min-w-0">
+      <p class="eyebrow flex items-center gap-2.5 text-vine"><span class="grid size-9 shrink-0 place-items-center rounded-xl bg-vine-soft">{% icon "award", "size-5" %}</span>{{ "read.spot.eyebrow" | t(lang) }}</p>
+      <h2 id="spot-title" class="mt-3 font-display text-2xl font-semibold leading-tight text-ink"><a href="{{ '/published/' | lurl(lang) }}" class="no-underline after:absolute after:inset-0 after:content-[''] group-hover:text-gv">{{ "read.spot.title" | t(lang) }}</a></h2>
+      <p class="mt-2 text-sm leading-relaxed text-muted">
+        {%- if not sp or not sp.texas.writers %}{{ "read.spot.nodata" | t(lang) }}
+        {%- elif not hasArea %}{{ "read.spot.none_area" | t(lang, {days: sp.days}) }}
+        {%- elif variant == "contrib" %}{{ "read.spot.text_contrib" | t(lang) }}
+        {%- else %}{{ "read.spot.text" | t(lang, {days: sp.days}) }}{% endif -%}
+      </p>
+    </div>
+    {% if sp and sp.texas.writers %}
+    <div>
+      <p class="text-xs font-semibold uppercase tracking-wider text-muted">{{ "read.spot.window" | t(lang, {days: sp.days}) }}</p>
+      <dl class="mt-2 flex flex-wrap gap-x-8 gap-y-3">
+        {% if hasArea %}<div class="flex flex-col-reverse gap-1"><dt class="text-sm text-muted">{{ ("read.spot.area_one" if sp.area.writers == 1 else "read.spot.area") | t(lang) }}</dt><dd class="read-num font-display text-4xl font-semibold leading-none text-vine">{{ sp.area.writers }}</dd></div>{% endif %}
+        <div class="flex flex-col-reverse gap-1"><dt class="text-sm text-muted">{{ ("read.spot.texas_one" if sp.texas.writers == 1 else "read.spot.texas") | t(lang) }}</dt><dd class="read-num font-display text-4xl font-semibold leading-none text-ink">{{ sp.texas.writers }}</dd></div>
+      </dl>
+    </div>
+    {% endif %}
+    <div class="flex min-w-0 flex-col gap-4 @4xl:col-span-2 @6xl:col-span-1">
+      {% if list.length %}
+      <div>
+        <p class="text-xs font-semibold text-muted">{{ ("read.spot.newest_area" if hasArea else "read.spot.newest_texas") | t(lang) }}</p>
+        <ul class="mt-1.5 flex flex-wrap gap-1.5">
+          {% for w in list %}<li class="inline-flex max-w-full items-center gap-1.5 rounded-full border border-line bg-surface px-2.5 py-1 text-xs"><span class="size-2 shrink-0 rounded-full {{ 'bg-lv' if w.pub == 'lv' else 'bg-gv' }}" aria-hidden="true"></span><span class="font-semibold text-ink">{{ w.name }}</span>{% if w.place[lang] %}<span class="min-w-0 truncate text-muted">· {{ w.place[lang] }}</span>{% endif %}<span class="sr-only"> ({{ "La Viña" if w.pub == "lv" else "Grapevine" }})</span></li>{% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+      <span class="mt-auto inline-flex items-center gap-1 text-sm font-semibold text-gv" aria-hidden="true">{{ "read.spot.cta" | t(lang) }} {% icon "arrow-right", "size-4 transition group-hover:translate-x-0.5" %}</span>
+    </div>
+  </div>
+</article>
+{% endmacro %}
+
+{#- The shared hero (same height on every page). Its buttons are the standard 44px / 14px size
+    at every width, like every other page; "read-hero" (read.css) keeps phone heroes within
+    24–28rem (both buttons on one row, like the home page). The in-page "Upcoming themes"
+    jump shows from 768px, so the row does not wrap on small tablets. -#}
+{% call ui.pageHero(lang, "read.contrib.title" | t(lang), "read.contrib.subtitle" | t(lang), "pen-line", "read.contrib.eyebrow" | t(lang), { class: "read-hero" }) %}
+  <div class="hero-actions">
     {% for p in pubOrder %}
-    <a class="{{ 'btn-light' if loop.first else 'btn-on-dark' }}" href="{{ L.lv_share_story if p == 'lv' else L.gv_share_story }}" target="_blank" rel="noopener">{% icon "send", "size-4" %} {{ ("read.contrib.send_lv" if p == "lv" else "read.contrib.send_gv") | t(lang) }}</a>
+    <a class="{{ 'btn-light' if loop.first else 'btn-on-dark' }}" href="{{ L.lv_share_story if p == 'lv' else L.gv_share_story }}" target="_blank" rel="noopener">{% icon "send", "size-4" %} {{ ("read.contrib.send_lv" if p == "lv" else "read.contrib.send_gv") | t(lang) }}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a>
     {% endfor %}
-    <a class="btn-on-dark" href="#deadlines">{% icon "calendar-clock", "size-4" %} {{ "read.contrib.see_themes" | t(lang) }}</a>
+    <a class="btn-on-dark max-md:hidden" href="#deadlines">{% icon "calendar-clock", "size-4" %} {{ "read.contrib.see_themes" | t(lang) }}</a>
   </div>
 {% endcall %}
 
+{#- ---------- Who from our Area got published (→ /published/) ---------- -#}
+<section class="container-page page-overlap" aria-label="{{ 'read.spot.eyebrow' | t(lang) }}">
+  {{ spotCard(db.spotlight | readSpotlight, lang, "contrib") }}
+</section>
+
 {#- ---------- Why write ---------- -#}
-<section class="section container-page pt-6 sm:pt-8" aria-labelledby="why-title">
+<section class="section container-page" aria-label="{{ 'read.contrib.why_title' | t(lang) }}">
   {{ ui.sectionHead("read.contrib.why_title" | t(lang), "read.contrib.why_sub" | t(lang), "", "", "heart-handshake") }}
   <div class="grid grid-cols-1 gap-5 md:grid-cols-3">
     {% for w in [["message-circle-heart", "bg-gv-soft text-gv", "why1"], ["sprout", "bg-vine-soft text-vine", "why2"], ["globe", "bg-lv-soft text-lv", "why3"]] %}
@@ -258,7 +315,7 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
 </section>
 
 {#- ---------- How to submit ---------- -#}
-<section class="section container-page pt-0" aria-labelledby="how-title" id="submit">
+<section class="section container-page pt-0" aria-label="{{ 'read.contrib.how_title' | t(lang) }}" id="submit">
   {{ ui.sectionHead("read.contrib.how_title" | t(lang), "read.contrib.how_sub" | t(lang), "", "", "send") }}
   <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
     {% for p in pubOrder %}{{ submitPanel(p, lang) }}{% endfor %}
@@ -289,11 +346,11 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
 </section>
 
 {#- ---------- Tips + anonymity ---------- -#}
-<section class="section container-page" aria-labelledby="tips-title">
-  <div class="grid grid-cols-1 gap-8 lg:grid-cols-[1.35fr_1fr]">
-    <div>
+<section class="section container-page" aria-label="{{ 'read.contrib.tips_title' | t(lang) }}">
+  <div class="grid grid-cols-1 gap-8 lg:grid-cols-[1.35fr_1fr] 2xl:grid-cols-[minmax(0,1fr)_30rem] 2xl:gap-12">
+    <div class="@container">
       {{ ui.sectionHead("read.contrib.tips_title" | t(lang), "read.contrib.tips_sub" | t(lang), "", "", "lightbulb") }}
-      <ol class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+      <ol class="grid grid-cols-1 gap-3 @lg:grid-cols-2 @6xl:grid-cols-4">
         {% for n in range(1, 9) %}
         <li class="card flex gap-3 p-4">
           <span class="read-num grid size-8 shrink-0 place-items-center rounded-full bg-gv-soft font-display text-sm font-semibold text-gv">{{ n }}</span>
@@ -368,7 +425,7 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
 {#- ---------- FAQ ---------- -#}
 <section class="section container-page" aria-labelledby="faq-title">
   <h2 id="faq-title" class="h-section mb-6">{{ "read.contrib.faq_title" | t(lang) }}</h2>
-  <div class="grid grid-cols-1 gap-3 lg:grid-cols-2">
+  <div class="grid grid-cols-1 items-start gap-3 lg:grid-cols-2 2xl:grid-cols-3">
     {% for n in range(1, 7) %}
     <details class="read-faq card group/faq">
       <summary class="flex min-h-14 cursor-pointer items-center justify-between gap-3 px-5 py-4 font-semibold text-ink">

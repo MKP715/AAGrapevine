@@ -10,23 +10,25 @@ pageScripts: ["/assets/js/community.js"]
 {% import "macros/ui.njk" as ui with context %}
 {#- For district committee members: directory (content/districts.yml → db.districts),
     the District Service Kit (feeds, calendar, digest, poster) and a self-filling
-    GV/LV report template. -#}
+    GV/LV report template — including the published writers from our Area (db.spotlight,
+    last 60 days, Area 65 first, then the rest of Texas), also shown as a card next to it. -#}
 {%- set districts = db.districts.items | cmDistricts -%}
 {%- set other = lang | otherLang -%}
 {%- set rssUrl = '/feed.xml' | lurl(lang) | siteUrl(site) -%}
 {%- set icsUrl = '/events.ics' | lurl(lang) | siteUrl(site) -%}
 {%- set rd = db | cmReport(meeting) -%}
 {%- set contact = site.contact_email -%}
+{%- set W = rd.writers -%}
 
 {% call ui.pageHero(lang, "nav.districts" | t(lang), "community.districts.hero_sub" | t(lang), "map", "community.districts.eyebrow" | t(lang)) %}
-<div class="flex flex-wrap gap-3">
+<div class="hero-actions cm-hero-tight">
   <a class="btn-light" href="#kit">{% icon "package-open", "size-4" %} {{ "community.districts.btn_kit" | t(lang) }}</a>
   <a class="btn-on-dark" href="#report">{% icon "clipboard-list", "size-4" %} {{ "community.districts.btn_report" | t(lang) }}</a>
 </div>
 {% endcall %}
 
-{#- ============ How it works ============ -#}
-<section class="container-page pt-4 sm:pt-6" aria-labelledby="how-title">
+{#- ============ How it works (tucks into the hero's faded edge) ============ -#}
+<section class="container-page page-overlap" aria-labelledby="how-title">
   <h2 id="how-title" class="sr-only">{{ "community.districts.how_title" | t(lang) }}</h2>
   <ol class="grid gap-4 md:grid-cols-3" role="list">
     {% for s in [{ n: "s1", icon: "refresh-cw", cls: "bg-gv-soft text-gv" }, { n: "s2", icon: "rss", cls: "bg-lv-soft text-lv" }, { n: "s3", icon: "megaphone", cls: "bg-vine-soft text-vine" }] %}
@@ -48,7 +50,9 @@ pageScripts: ["/assets/js/community.js"]
     <h2 id="dir-title" class="h-section flex items-center gap-2.5"><span class="text-gv">{% icon "map-pin", "size-6" %}</span>{{ "community.districts.dir_title" | t(lang) }}</h2>
     <p class="mt-1.5 max-w-2xl text-muted">{{ "community.districts.dir_sub" | t(lang) }}</p>
   </div>
-  <ul class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3" role="list">
+  {#- grid-cards-fit: 1 → 2 → 3 → 4 → 5 columns as the screen grows; a short list stretches
+      to fill the row instead of leaving empty columns. -#}
+  <ul class="grid-cards-fit" role="list">
     {% for d in districts %}
     {#- `name` and `meets` come translated from the pipeline (i18n.name / i18n.meets).
         One "auto-translated" note per card, next to the first field that really is a
@@ -62,14 +66,15 @@ pageScripts: ["/assets/js/community.js"]
     {%- set hasDetails = d.website or d.gvr_contact or meets -%}
     <li class="card relative flex flex-col overflow-hidden {{ 'cm-district-es' if isEs }}">
       <div class="flex flex-1 flex-col p-5 sm:p-6">
-        <div class="flex items-start justify-between gap-3">
+        {#- The language pill never breaks inside itself: on a narrow card it drops under the number. -#}
+        <div class="flex flex-wrap items-start justify-between gap-x-3 gap-y-2">
           <p class="leading-none">
             <span class="block text-xs font-bold uppercase tracking-[0.14em] text-muted">{{ "community.districts.district" | t(lang) }}</span>
             <span class="mt-1 block font-display text-5xl font-semibold text-ink">{{ d.number }}</span>
           </p>
-          {% if isEs %}<span class="badge-lv">{% icon "languages", "size-3" %} {{ "community.districts.lang_es" | t(lang) }}</span>
-          {% elif d.language == "both" %}<span class="badge-grape">{% icon "languages", "size-3" %} {{ "community.districts.lang_both" | t(lang) }}</span>
-          {% elif d.language == "en" %}<span class="badge-muted">{{ "community.districts.lang_en" | t(lang) }}</span>{% endif %}
+          {% if isEs %}<span class="badge-lv whitespace-nowrap">{% icon "languages", "size-3" %} {{ "community.districts.lang_es" | t(lang) }}</span>
+          {% elif d.language == "both" %}<span class="badge-grape whitespace-nowrap">{% icon "languages", "size-3" %} {{ "community.districts.lang_both" | t(lang) }}</span>
+          {% elif d.language == "en" %}<span class="badge-muted whitespace-nowrap">{{ "community.districts.lang_en" | t(lang) }}</span>{% endif %}
         </div>
         {% if name %}<p class="mt-3 font-semibold text-ink">{{ name }}{% if mtName %} {{ ui.autoNote(d, lang) }}{% endif %}</p>{% endif %}
         {% if hasDetails %}
@@ -86,7 +91,7 @@ pageScripts: ["/assets/js/community.js"]
     </li>
     {% endfor %}
     {#- Always offer the "missing district" call to action (it is the whole list when empty). -#}
-    <li class="flex flex-col justify-center rounded-[var(--radius-card)] border-2 border-dashed border-line bg-surface/60 p-6 {{ 'items-center text-center sm:col-span-2 lg:col-span-3' if not (districts | length) else 'items-start' }}">
+    <li class="flex flex-col justify-center rounded-[var(--radius-card)] border-2 border-dashed border-line bg-surface/60 p-6 {{ 'col-span-full items-center text-center' if not (districts | length) else 'items-start' }}">
       <span class="grid size-11 place-items-center rounded-full bg-gv-soft text-gv">{% icon "map-pin-plus", "size-5" %}</span>
       <h3 class="h-card mt-3">{{ ("community.districts.missing_title" if districts | length else "community.districts.empty_title") | t(lang) }}</h3>
       <p class="mt-1 max-w-sm text-sm leading-relaxed text-muted">{{ "community.districts.missing_text" | t(lang) }}</p>
@@ -105,7 +110,9 @@ pageScripts: ["/assets/js/community.js"]
         <p class="mt-1.5 max-w-2xl text-muted">{{ "community.districts.kit_sub" | t(lang) }}</p>
       </div>
     </div>
-    <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+    {#- 2 × 2 cards; from 1536px three columns: feed | calendar | digest + poster stacked
+        (the two link cards are short; the feed and calendar cards need room for their URLs). -#}
+    <div class="cm-kit grid grid-cols-1 gap-5 md:grid-cols-2">
       {#- RSS -#}
       <article class="card card-pad flex min-w-0 flex-col">
         <div class="flex items-center gap-3">
@@ -140,6 +147,7 @@ pageScripts: ["/assets/js/community.js"]
           <a class="btn-secondary btn-sm" href="{{ icsUrl | cmWebcal }}">{% icon "calendar-check", "size-4" %} {{ "community.districts.kit_ics_apple" | t(lang) }}</a>
         </div>
       </article>
+      <div class="cm-kit-stack">
       {#- Digest -#}
       <article class="card card-pad flex min-w-0 flex-col">
         <div class="flex items-center gap-3">
@@ -158,13 +166,16 @@ pageScripts: ["/assets/js/community.js"]
         <p class="mt-3 text-sm leading-relaxed text-muted">{{ "community.districts.kit_poster_d" | t(lang) }}</p>
         <p class="mt-auto pt-4"><a class="btn-secondary btn-sm" href="{{ '/share/' | lurl(lang) }}">{% icon "printer", "size-4" %} {{ "community.districts.kit_poster_btn" | t(lang) }}</a></p>
       </article>
+      </div>
     </div>
   </div>
 </section>
 
 {#- ============ District report template ============ -#}
+{#- Report + a sidebar (tips, published writers): 20rem from 1024px, 22rem from 1536px; from
+    1800px the sidebar's two cards sit side by side so the report keeps a comfortable width. -#}
 <section id="report" class="section container-page scroll-mt-20" aria-labelledby="report-title" x-data="reportBox('{{ lang }}')">
-  <div class="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_20rem] xl:gap-12">
+  <div class="cm-rp-layout">
     <div class="min-w-0">
       <h2 id="report-title" class="h-section flex items-center gap-2.5"><span class="text-gv">{% icon "clipboard-list", "size-6" %}</span>{{ "community.districts.report_title" | t(lang) }}</h2>
       <p class="mt-1.5 max-w-2xl text-muted">{{ "community.districts.report_sub" | t(lang) }}</p>
@@ -187,8 +198,9 @@ pageScripts: ["/assets/js/community.js"]
       </div>
     </div>
 
-    <aside class="lg:pt-20" aria-labelledby="tips-title">
-      <div class="rounded-2xl border border-line p-5">
+    <div class="cm-rp-side lg:pt-20">
+    <aside class="rounded-2xl border border-line p-5" aria-labelledby="tips-title">
+      <div>
         <h3 id="tips-title" class="h-card flex items-center gap-2">{% icon "lightbulb", "size-5 text-lv" %} {{ "community.districts.tips_title" | t(lang) }}</h3>
         <ul class="mt-3 space-y-3 text-sm leading-relaxed text-muted" role="list">
           {% for k in ["tip1", "tip2", "tip3", "tip4", "tip5"] %}
@@ -201,5 +213,46 @@ pageScripts: ["/assets/js/community.js"]
         </div>
       </div>
     </aside>
+
+    {#- Published writers from our Area — the same list as the report's item, with links -#}
+    {% if W %}
+    <div class="card card-pad">
+      <h3 id="writers-title" class="h-card flex items-center gap-2">{% icon "award", "size-5 text-lv" %} {{ "community.writers.card_title" | t(lang) }}</h3>
+      <p class="mt-1 text-sm leading-relaxed text-muted">{{ "community.writers.card_sub" | t(lang, { n: W.days }) }}</p>
+      <h4 class="eyebrow mt-4 flex items-center gap-1.5">{% icon "map-pin", "size-3.5" %} {{ "community.writers.group_neta65" | t(lang) }}</h4>
+      {% if W.neta65 | length %}
+      <ul class="mt-2 space-y-3" role="list">
+        {% for it in W.neta65 | limit(6) %}
+        {%- set isLv = it.source == "lavina" or it.extra.publication == "lv" -%}
+        {%- set place = it | cmWriterPlace(lang) -%}
+        <li class="text-sm">
+          <a class="font-semibold leading-snug text-ink no-underline hover:text-gv hover:underline" href="{{ it.url }}" target="_blank" rel="noopener">{{ it | tx("title", lang) }}<span class="sr-only"> {{ "community.new_tab" | t(lang) }}</span></a>
+          <p class="text-ink">{{ it | cmWriterName(lang) }}{% if place %}<span class="text-muted"> · {{ place }}</span>{% endif %}</p>
+          <p class="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-muted"><span class="{{ 'badge-lv' if isLv else 'badge-gv' }}">{{ "La Viña" if isLv else "Grapevine" }}</span>{% if it.extra.issue_label %}<span>{{ it | cmItemIssue(lang) }}</span>{% endif %}{{ ui.autoNote(it, lang) }}</p>
+        </li>
+        {% endfor %}
+      </ul>
+      {% if (W.neta65 | length) > 6 %}<p class="mt-2 text-sm text-muted">{{ "community.digest.and_more" | t(lang, { n: (W.neta65 | length) - 6 }) }}</p>{% endif %}
+      {% else %}
+      <p class="mt-2 text-sm leading-relaxed text-muted">{{ ("community.writers.card_none" if W.texas | length else "community.writers.card_empty") | t(lang) }}</p>
+      {% endif %}
+      {% if W.texas | length %}
+      <h4 class="eyebrow mt-5 flex items-center gap-1.5">{% icon "map-pin", "size-3.5" %} {{ "community.writers.group_texas" | t(lang) }}</h4>
+      <ul class="mt-2 space-y-1.5 text-sm" role="list">
+        {% for it in W.texas | limit(5) %}
+        {%- set place = it | cmWriterPlace(lang) -%}
+        <li class="leading-snug"><a class="font-medium text-ink no-underline hover:text-gv hover:underline" href="{{ it.url }}" target="_blank" rel="noopener">{{ it | tx("title", lang) }}<span class="sr-only"> {{ "community.new_tab" | t(lang) }}</span></a> <span class="text-muted">— {{ it | cmWriterName(lang) }}{% if place %}, {{ place }}{% endif %}</span></li>
+        {% endfor %}
+      </ul>
+      {% if (W.texas | length) > 5 %}<p class="mt-2 text-sm text-muted">{{ "community.digest.and_more" | t(lang, { n: (W.texas | length) - 5 }) }}</p>{% endif %}
+      {% endif %}
+      {#- Full-width buttons: the card is narrow (20–22rem), so the labels get the whole row. -#}
+      <div class="mt-5 flex flex-wrap gap-2 border-t border-line pt-4">
+        <a class="btn-secondary btn-sm w-full text-center" href="{{ '/published/' | lurl(lang) }}">{% icon "award", "size-4 shrink-0" %} {{ "community.writers.see_all" | t(lang, { n: W.allDays }) }}</a>
+        {% if not (W.neta65 | length) %}<a class="btn-secondary btn-sm w-full text-center" href="{{ '/contribute/' | lurl(lang) }}">{% icon "pen-line", "size-4 shrink-0" %} {{ "community.writers.write_cta" | t(lang) }}</a>{% endif %}
+      </div>
+    </div>
+    {% endif %}
+    </div>
   </div>
 </section>

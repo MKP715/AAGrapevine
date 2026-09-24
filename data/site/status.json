@@ -1,6 +1,6 @@
 {
- "generated": "2026-09-23T23:00:41Z",
- "updated": "2026-09-23T23:00:41Z",
+ "generated": "2026-09-24T03:05:17Z",
+ "updated": "2026-09-24T03:05:17Z",
  "fixture": false,
  "sources": [
   {
@@ -102,21 +102,24 @@
    "label": "Grapevine & La Viña articles",
    "label_es": "Artículos de Grapevine y La Viña",
    "ok": true,
-   "updated": "2026-09-23T22:20:48Z",
-   "attempted": "2026-09-23T22:20:48Z",
-   "count": 56,
-   "new_7d": 56,
+   "updated": "2026-09-24T00:38:12Z",
+   "attempted": "2026-09-24T00:38:12Z",
+   "count": 224,
+   "new_7d": 224,
    "error": null,
    "stats": {
     "hub_articles": 56,
-    "details_fetched": 0,
+    "details_fetched": 40,
     "details_failed": 0,
-    "thumbs": 0,
-    "details_pending": 0,
-    "details_left": 0,
+    "thumbs": 8,
+    "archive_pages": 2,
+    "archive_new": 0,
+    "details_pending": 124,
+    "byline_pending": 0,
+    "details_left": 84,
     "new": 0,
-    "total": 56,
-    "requests": 2
+    "total": 224,
+    "requests": 52
    }
   },
   {
@@ -367,11 +370,11 @@
   "updated": "2026-09-23T23:00:40Z"
  },
  "translations": {
-  "cached": 1632,
+  "cached": 1915,
   "engine": "argos1.0-ct2/v5",
   "model_enabled": true,
   "translated_this_run": 0,
-  "from_cache": 1632,
+  "from_cache": 1915,
   "pending": 0,
   "rejected_by_guard": 0,
   "seconds": 0.1,
@@ -383,7 +386,7 @@
   "videos": 528,
   "episodes": 295,
   "instagram": 24,
-  "articles": 56,
+  "articles": 224,
   "pdfs": 130,
   "drive": 0,
   "editorial": 37,
@@ -394,5 +397,26 @@
   "districts": 2
  },
  "problems": {},
- "items": []
+ "items": [],
+ "spotlight": {
+  "today": "2026-09-23",
+  "home_days": 60,
+  "list_days": [
+   60,
+   90
+  ],
+  "counts": {
+   "60": {
+    "neta65": 2,
+    "texas": 8,
+    "all": 100
+   },
+   "90": {
+    "neta65": 4,
+    "texas": 15,
+    "all": 156
+   }
+  },
+  "items": 156
+ }
 }

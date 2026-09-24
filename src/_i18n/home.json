@@ -8,12 +8,12 @@
     "es": "NETA 65 · Comité de Grapevine y La Viña"
   },
   "home.hero_title": {
-    "en": "AA's *meeting in print*, right here in Northeast Texas",
-    "es": "La *reunión impresa* de AA, aquí mismo en el Noreste de Texas"
+    "en": "AA's *meeting in print*, here in Northeast Texas",
+    "es": "La *reunión impresa* de AA en el Noreste de Texas"
   },
   "home.hero_lead": {
-    "en": "The newest stories, podcasts, videos and service resources from AA Grapevine and La Viña — gathered for every group and district in Area 65, in English and Spanish.",
-    "es": "Las historias, podcasts, videos y recursos de servicio más recientes de La Viña y AA Grapevine — reunidos para cada grupo y distrito del Área 65, en español y en inglés."
+    "en": "Grapevine and La Viña stories, podcasts, videos and service resources for every group in Area 65 — in English and Spanish.",
+    "es": "Historias, podcasts, videos y recursos de servicio de La Viña y Grapevine para cada grupo del Área 65 — en español y en inglés."
   },
   "home.cta_whats_new": {
     "en": "See what's new",
@@ -21,7 +21,7 @@
   },
   "home.cta_library": {
     "en": "Explore the library",
-    "es": "Explorar la biblioteca"
+    "es": "Ver la biblioteca"
   },
   "home.stats_aria": {
     "en": "What you'll find on this site",
@@ -42,6 +42,10 @@
   "home.stat_articles": {
     "en": "magazine stories",
     "es": "historias de revista"
+  },
+  "home.stats_label": {
+    "en": "On this site",
+    "es": "En este sitio"
   },
   "home.auto_updated": {
     "en": "Updated automatically every day",
@@ -87,6 +91,10 @@
     "en": "Join on Zoom",
     "es": "Unirse por Zoom"
   },
+  "home.meeting_add_cal": {
+    "en": "Add to calendar",
+    "es": "Agendar"
+  },
   "home.meeting_id": {
     "en": "Meeting ID",
     "es": "ID de reunión"
@@ -122,6 +130,110 @@
   "home.countdown_aria": {
     "en": "Time left until the meeting starts",
     "es": "Tiempo que falta para que empiece la reunión"
+  },
+  "home.spot_eyebrow": {
+    "en": "Congratulations!",
+    "es": "¡Felicidades!"
+  },
+  "home.spot_title": {
+    "en": "Published writers from our Area",
+    "es": "Escritores publicados de nuestra Área"
+  },
+  "home.spot_sub": {
+    "en": "Congratulations to the members from Area 65 and across Texas whose stories appeared in Grapevine and La Viña in the last {days} days.",
+    "es": "Felicidades a los miembros del Área 65 y de todo Texas cuyas historias se publicaron en La Viña y Grapevine en los últimos {days} días."
+  },
+  "home.spot_all": {
+    "en": "See all published writers ({a} or {b} days)",
+    "es": "Ver todos los escritores publicados ({a} o {b} días)"
+  },
+  "home.spot_all_one": {
+    "en": "See all published writers",
+    "es": "Ver todos los escritores publicados"
+  },
+  "home.spot_all_short": {
+    "en": "See all published writers",
+    "es": "Ver todos los escritores"
+  },
+  "home.spot_fill_title": {
+    "en": "More writers to celebrate",
+    "es": "Más escritores para celebrar"
+  },
+  "home.spot_fill_text": {
+    "en": "Browse the last {days} days and choose Area 65, all of Texas or every writer.",
+    "es": "Consulta los últimos {days} días y elige entre el Área 65, todo Texas o todos los escritores."
+  },
+  "home.spot_fill_cta": {
+    "en": "See the full list",
+    "es": "Ver la lista completa"
+  },
+  "home.spot_share": {
+    "en": "Share your story",
+    "es": "Comparte tu historia"
+  },
+  "home.spot_count_a65_one": {
+    "en": "1 story by an Area 65 writer",
+    "es": "1 historia de un escritor del Área 65"
+  },
+  "home.spot_count_a65": {
+    "en": "{n} stories by Area 65 writers",
+    "es": "{n} historias de escritores del Área 65"
+  },
+  "home.spot_count_tx_one": {
+    "en": "1 from elsewhere in Texas",
+    "es": "1 de otra parte de Texas"
+  },
+  "home.spot_count_tx": {
+    "en": "{n} from elsewhere in Texas",
+    "es": "{n} de otras partes de Texas"
+  },
+  "home.spot_list_a65": {
+    "en": "Stories by writers from Area 65",
+    "es": "Historias de escritores del Área 65"
+  },
+  "home.spot_list_tx": {
+    "en": "Stories by writers from elsewhere in Texas",
+    "es": "Historias de escritores de otras partes de Texas"
+  },
+  "home.spot_badge_a65": {
+    "en": "Area 65",
+    "es": "Área 65"
+  },
+  "home.spot_badge_tx": {
+    "en": "Texas",
+    "es": "Texas"
+  },
+  "home.spot_featured": {
+    "en": "From our Area",
+    "es": "De nuestra Área"
+  },
+  "home.spot_no_name": {
+    "en": "A member",
+    "es": "Un miembro"
+  },
+  "home.spot_subscriber": {
+    "en": "Subscriber story",
+    "es": "Historia para suscriptores"
+  },
+  "home.spot_online": {
+    "en": "Online exclusive",
+    "es": "Exclusiva en línea"
+  },
+  "home.spot_none_a65_title": {
+    "en": "No Area 65 stories in the last {days} days",
+    "es": "No hay historias del Área 65 en los últimos {days} días"
+  },
+  "home.spot_none_a65_text": {
+    "en": "Yours could be next! Grapevine and La Viña welcome stories from every member.",
+    "es": "¡La tuya podría ser la próxima! La Viña y Grapevine reciben historias de todos los miembros."
+  },
+  "home.spot_empty_title": {
+    "en": "No stories from Texas writers in the last {days} days — yours could be next!",
+    "es": "No hay historias de escritores de Texas en los últimos {days} días — ¡la tuya podría ser la próxima!"
+  },
+  "home.spot_empty_text": {
+    "en": "Every member's experience, strength and hope has a place in Grapevine and La Viña. Here's how to send yours.",
+    "es": "La experiencia, fortaleza y esperanza de cada miembro tiene un lugar en La Viña y Grapevine. Así puedes enviar la tuya."
   },
   "home.fresh_eyebrow": {
     "en": "What's new",

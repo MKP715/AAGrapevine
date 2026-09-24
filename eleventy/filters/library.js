@@ -8,6 +8,11 @@
 //   * libStats(docs)           → hero counters
 //   * libIndexJson(db, lang)   → compact JSON for /library-index.json (client search)
 //   * searchIndexJson(db, nav, lang, site) → compact JSON for /search-index.json
+//                                 (story entries carry the writer + hometown, `a`; the
+//                                 Published Writers page lists the Texas writers' names/cities)
+//   * searchSpotlightTile(view, db) → the "Published Writers" browse tile on /search/: the
+//                                 count of the view it links to (normally the /published/
+//                                 default: Area 65 writers, first list_days window), + ?query
 //   * libNum(n, lang)          → 3,100 (same locales as the rest of the site: en-US / es-US)
 //   * jsonScript               → JSON safe to embed inside <script type="application/json">
 //
@@ -23,7 +28,7 @@
 //
 // Dev/test switch: LIB_EMPTY=1 npx @11ty/eleventy …  builds the library and the
 // search index as if no content had been synced yet (to check empty states).
-import { openSync, readSync, closeSync } from "node:fs";
+import { openSync, readSync, closeSync, readFileSync } from "node:fs";
 import path from "node:path";
 
 const EMPTY = () => !!process.env.LIB_EMPTY;
@@ -504,6 +509,66 @@ const PAST_EVENTS_SHOWN = 40;
 // Icons for site pages that have none in nav.js (footer links).
 const PAGE_ICONS = { home: "house", about: "info", digest: "mail", share: "qr-code", search: "search", status: "activity" };
 
+// Published-writers spotlight (data/site/spotlight.json, see docs/DATA_SCHEMA.md): db.spotlight when
+// the data loader provides it, else the file itself (read once per build). Only names, places and
+// counts are used from it — no links. null when there is none yet.
+let spotFile;
+function spotlightOf(db) {
+  if (db && db.spotlight && Array.isArray(db.spotlight.items)) return db.spotlight;
+  if (spotFile === undefined) {
+    try { spotFile = JSON.parse(readFileSync(path.join("data", "site", "spotlight.json"), "utf8")); } catch { spotFile = null; }
+    if (!spotFile || !Array.isArray(spotFile.items)) spotFile = null;
+  }
+  return spotFile;
+}
+const TEXAS_SCOPES = new Set(["neta65", "texas"]);
+// The /published/ scope choices, narrowest first ("texas" includes Area 65; "all" = everyone).
+const SPOT_SCOPES = ["neta65", "texas", "all"];
+/**
+ * The "Published Writers" browse tile on /search/ — the number it shows must be what the visitor
+ * sees after clicking. `view` = db | pwView(lang) (eleventy/filters/published.js: the SAME counts
+ * the /published/ page renders, windows counted from today in America/Chicago); without it, the
+ * counts stored in spotlight.json. Normally the page's default view (default_scope + first
+ * list_days window, no query string). When that view is empty, the first non-empty one — Area 65
+ * first (longer window), then Texas, then everyone — and `query` opens /published/ on exactly
+ * that view (?scope=&days=, which published.js reads; defaults are left out, as it does).
+ * → { n, scope: "neta65" | "texas" | "all", days, query }; n = 0 when there is nothing to show.
+ */
+export function spotlightTile(view, db) {
+  const fromView = !!(view && view.counts && Array.isArray(view.listDays) && view.listDays.length);
+  const sp = fromView || EMPTY() ? null : spotlightOf(db);
+  const num = (v) => (Number.isFinite(Number(v)) ? Number(v) : 0);
+  let list, defDays, defScope, count;
+  if (fromView) {
+    list = view.listDays.map(Number).filter((d) => Number.isInteger(d) && d > 0);
+    defDays = list.includes(Number(view.defDays)) ? Number(view.defDays) : list[0];
+    defScope = view.defScope;
+    // pwView: counts[days][scope][pub] ("all" = both magazines).
+    count = (d, s) => { const c = view.counts[d] && view.counts[d][s]; return num(c && typeof c === "object" ? c.all : c); };
+  } else {
+    const raw = sp && Array.isArray(sp.list_days) ? sp.list_days.map(Number).filter((d) => Number.isInteger(d) && d > 0) : [];
+    list = raw.length ? [...new Set(raw)] : [60, 90];
+    defDays = list[0]; // "first = default"
+    defScope = sp && sp.default_scope;
+    count = (d, s) => { const c = sp && sp.counts && sp.counts[String(d)]; return num(c && c[s]); };
+  }
+  if (!SPOT_SCOPES.includes(defScope)) defScope = "neta65";
+  const tile = { n: 0, scope: defScope, days: defDays, query: "" };
+  if (EMPTY() || !list.length) return tile;
+  const windows = [defDays, ...list.filter((d) => d > defDays).sort((a, b) => a - b)];
+  for (const scope of SPOT_SCOPES.slice(SPOT_SCOPES.indexOf(defScope))) {
+    for (const days of windows) {
+      const n = count(days, scope);
+      if (n <= 0) continue;
+      const q = [];
+      if (scope !== defScope) q.push("scope=" + scope);
+      if (days !== defDays) q.push("days=" + days);
+      return { n, scope, days, query: q.length ? "?" + q.join("&") : "" };
+    }
+  }
+  return tile;
+}
+
 // Language-neutral internal path → path in the page language ("/events/#x" → "/es/events/#x").
 const lurl = (u, lang) => (!u || /^(https?:|mailto:|tel:|#)/.test(u) ? u : (lang && lang !== "en" ? `/${lang}` : "") + (u.startsWith("/") ? u : "/" + u));
 // Data items link to our own pages with language-neutral paths ("/announcements/#slug").
@@ -518,6 +583,7 @@ export function searchIndex(db, nav, lang, helpers, site) {
   const out = [];
   const seenId = new Set();
   // `u`: absolute link, or a language-neutral internal path (prefixed here, once).
+  // `a`: a story's byline — writer · hometown ("Victor R. · Grand Prairie, Texas"), searched and shown.
   // Languages (for lang="" in search.js): `l` = the item's language (badge); `ol` = language
   // of the original title `o` (default `l`); `tl` = language of the shown title `t` when
   // known. With `o` given, a `t` equal to it IS the untranslated original (language `ol`).
@@ -546,6 +612,7 @@ export function searchIndex(db, nav, lang, helpers, site) {
     if (e.pw) o.pw = 1;
     if (e.z) o.z = 1;
     if (e.ic) o.ic = e.ic;
+    if (e.a && squish(e.a)) o.a = squish(e.a);
     out.push(o);
   };
   const mach = (it) => !!(it.machine && it.machine.includes(lang)) && fold(helpers.pickLang(it, "title", lang)) !== fold(it.title);
@@ -558,6 +625,22 @@ export function searchIndex(db, nav, lang, helpers, site) {
   walk(nav && nav.primary);
   walk(nav && nav.footer);
   const seenPage = new Set();
+  // The Published Writers page is also found by the names, cities and counties of the Texas
+  // writers it spotlights (Area 65 included): searching "Tyler" or "Grayson" offers the page.
+  let spotWords = "";
+  if (!EMPTY()) {
+    safely("spotlight", () => {
+      const sp = spotlightOf(db);
+      const words = [];
+      for (const it of sp?.items || []) {
+        const ex = it?.extra || {};
+        const g = ex.geo || {};
+        if (!TEXAS_SCOPES.has(g.scope)) continue;
+        words.push(ex.author, g.city, g.county);
+      }
+      spotWords = uniq(words.map(squish), " ");
+    });
+  }
   for (const p of pages) {
     const pk = p.page || p.url.replace(/^\/|\/$/g, "") || "home";
     if (seenPage.has(p.url)) continue;
@@ -571,7 +654,7 @@ export function searchIndex(db, nav, lang, helpers, site) {
       o: tryKey(helpers, p.key, lang === "es" ? "en" : "es"),
       ol: lang === "es" ? "en" : "es",
       s: desc,
-      x: both(`search.kw.${pk}`),
+      x: [both(`search.kw.${pk}`), pk === "published" ? spotWords : ""].filter(Boolean).join(" "),
       u: p.url,
       src: "site",
       ic: p.icon || PAGE_ICONS[pk] || "file-text",
@@ -579,16 +662,27 @@ export function searchIndex(db, nav, lang, helpers, site) {
   }
   if (EMPTY() || !db) return out;
 
-  /* ---- articles (Grapevine & La Viña) ---- */
+  /* ---- articles (Grapevine & La Viña) ----
+     Byline `a` = writer · hometown (the place only when geo.py recognised it, in the page
+     language). Writers from Texas are also found by their county and "Texas" / "Area 65". */
+  const bothVars = (k, vars) => [tryKey(helpers, k, "en", vars), tryKey(helpers, k, "es", vars)].filter(Boolean).join(" ");
   safely("articles", () => {
     for (const it of db.articles?.items || []) {
       if (!ok(it)) continue;
       const ex = it.extra || {};
+      const g = ex.geo || {};
       const lv = ex.publication === "lv" || it.source === "lavina" || it.category === "lv";
+      const place = squish(it.i18n?.author_location?.[lang] || g[`label_${lang}`] || "");
+      const placeOther = squish(it.i18n?.author_location?.[lang === "es" ? "en" : "es"] || g[`label_${lang === "es" ? "en" : "es"}`] || "");
+      const texan = TEXAS_SCOPES.has(g.scope);
       push({
         id: it.id, k: "article", t: P(it, "title"), o: it.title,
         s: snippet(P(it, "summary")),
-        x: uniq([P(it, "issue_label"), P(it, "topic"), P(it, "section"), ...["issue_label", "topic", "section"].flatMap((f) => [it.i18n?.[f]?.en, it.i18n?.[f]?.es]), ex.issue_label, ex.topic, ex.author, lv ? "La Viña" : "Grapevine"].map(squish)),
+        a: [squish(ex.author), place].filter(Boolean).join(" · "),
+        x: uniq([P(it, "issue_label"), P(it, "topic"), P(it, "section"), ...["issue_label", "topic", "section"].flatMap((f) => [it.i18n?.[f]?.en, it.i18n?.[f]?.es]), ex.issue_label, ex.topic, lv ? "La Viña" : "Grapevine",
+          fold(placeOther) !== fold(place) ? placeOther : "",
+          texan && g.county ? bothVars("search.county", { county: g.county }) : "",
+          g.scope === "neta65" ? both("search.kw.writer_neta65") : g.scope === "texas" ? both("search.kw.writer_texas") : ""].map(squish)),
         u: it.url, d: ymd(helpers, it.date), l: it.lang, src: lv ? "lv" : "gv",
         im: it.image || "", m: mach(it), n: it.is_new, pw: ex.free === false,
       });
@@ -824,11 +918,12 @@ export default function (eleventyConfig, helpers) {
     if (!searchCache.has(lang)) searchCache.set(lang, searchIndex(db, nav, lang, helpers, site));
     return searchCache.get(lang);
   };
-  eleventyConfig.on("eleventy.before", () => searchCache.clear());
+  eleventyConfig.on("eleventy.before", () => { searchCache.clear(); spotFile = undefined; });
   eleventyConfig.addFilter("searchIndexJson", (db, nav, lang, site) => {
     const items = getSearch(db, nav, lang, site);
     return JSON.stringify({ v: 2, lang, built: new Date().toISOString(), count: items.length, items });
   });
+  eleventyConfig.addFilter("searchSpotlightTile", (view, db) => spotlightTile(view, db));
   eleventyConfig.addFilter("searchKindCounts", (db, nav, lang, site) => {
     const counts = {};
     for (const e of getSearch(db, nav, lang, site)) counts[e.k] = (counts[e.k] || 0) + 1;

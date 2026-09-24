@@ -571,8 +571,86 @@ export function editorialFor(items, pub, helpers, lang, pastN = 3) {
 }
 
 /* ------------------------------------------------------------------ */
+/*  Published writers (data/site/spotlight.json — docs/DATA_SCHEMA.md) */
+/* ------------------------------------------------------------------ */
+/* db.spotlight when the data loader provides it; otherwise the site file is read from disk
+   (once per build), so the /read/ and /contribute/ link cards work either way. */
+let spotlightDisk;
+function spotlightFile(v) {
+  if (EMPTY) return null;
+  if (v && typeof v === "object" && Array.isArray(v.items) && (v.items.length || v.counts)) return v;
+  if (spotlightDisk === undefined) {
+    try { spotlightDisk = JSON.parse(fs.readFileSync(path.join("data", "site", "spotlight.json"), "utf8")); } catch { spotlightDisk = null; }
+    if (!spotlightDisk || !Array.isArray(spotlightDisk.items)) spotlightDisk = null;
+  }
+  return spotlightDisk;
+}
+
+/* The day a spotlight story counts as published (YYYY-MM-DD): extra.pub_date, else its date —
+   the same rule as the home page (home.js spotPubDate) and /published/ (published.js). */
+function spotDate(i) {
+  const p = String((i && i.extra && i.extra.pub_date) || "").slice(0, 10);
+  return /^\d{4}-\d{2}-\d{2}$/.test(p) ? p : (String((i && i.date) || "").match(/^\d{4}-\d{2}-\d{2}/) || [""])[0];
+}
+
+/** Link-card numbers for the /published/ page: writers from Area 65 and from all of Texas (Area 65
+ *  included) whose stories came out in the last `days` days (default: spotlight.home_days, 60).
+ *  Same window as the home page and /published/: counted from TODAY in Central time (the day the
+ *  site is built — NOT spotlight.today, the data-build day), story date (extra.pub_date, else
+ *  date) >= today − days, inclusive and open-ended at the top; articles with a link only, each
+ *  story once. So a rebuild after a failed data sync, or for a code change, still agrees with
+ *  the home page on the same day.
+ *  → null without data, else { days, area: {stories, writers, list}, texas: {…}, all }
+ *  list = newest distinct named writers [{ name, place: {en, es}, pub }] (max 4). */
+export function spotlightSummary(file, days) {
+  const f = spotlightFile(file);
+  if (!f) return null;
+  const n = Math.max(1, Math.round(Number(days) || Number(f.home_days) || 60));
+  const cutoff = new Date(todayChicagoNoon().getTime() - n * 864e5).toISOString().slice(0, 10);
+  const seen = new Set();
+  const inWindow = live(f.items)
+    .filter((i) => {
+      if (i.kind !== "article" || !i.url) return false;
+      const d = spotDate(i);
+      if (!d || d < cutoff) return false;
+      const key = i.id || i.url;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    })
+    .sort((a, b) => spotDate(b).localeCompare(spotDate(a)) || String(a.title || "").localeCompare(String(b.title || "")));
+  const scopeOf = (i) => (i.extra && i.extra.geo && i.extra.geo.scope) || "unknown";
+  const tally = (items) => {
+    const seen = new Set(), list = [];
+    let anon = 0;
+    for (const i of items) {
+      const e = i.extra || {}, g = e.geo || {};
+      const name = EMPTY_AUTHOR.test(String(e.author || "")) ? "" : String(e.author).trim();
+      const where = g.city || g.label_en || e.author_location || "";
+      if (!name) { anon++; continue; }                     // unnamed bylines: one writer per story
+      const key = squash(name) + "|" + squash(where);
+      if (seen.has(key)) continue;
+      seen.add(key);
+      if (list.length < 4) {
+        const city = String(g.city || "").trim();
+        list.push({ name, pub: pubOf(i), place: { en: city || g.label_en || "", es: city || g.label_es || g.label_en || "" } });
+      }
+    }
+    return { stories: items.length, writers: seen.size + anon, list };
+  };
+  return {
+    days: n,
+    area: tally(inWindow.filter((i) => scopeOf(i) === "neta65")),
+    texas: tally(inWindow.filter((i) => scopeOf(i) === "neta65" || scopeOf(i) === "texas")),
+    all: inWindow.length,
+  };
+}
+
+/* ------------------------------------------------------------------ */
 export default function (eleventyConfig, helpers) {
   const h = helpers || {};
+  eleventyConfig.on("eleventy.before", () => { spotlightDisk = undefined; }); // re-read on every (watch) build
+  eleventyConfig.addFilter("readSpotlight", (file, days) => spotlightSummary(file, days));
   eleventyConfig.addFilter("readPub", (item) => pubOf(item));
   eleventyConfig.addFilter("readDocLang", (item) => docLang(item));
   eleventyConfig.addFilter("readIssues", (file, pub) => groupIssues(file, pub || ""));

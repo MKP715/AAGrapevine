@@ -1,6 +1,8 @@
 """Assemble the site data — data/site/*.json, the ONLY files the templates read — from the raw
 source files (data/raw/*.json). Adds English ⇄ Spanish translations, "new" flags, the events
-calendar, What's New, districts and the /status/ page. Contract: docs/DATA_SCHEMA.md §3 + §5.
+calendar, What's New, districts, the published-writers spotlight (spotlight.json: where each
+Grapevine / La Viña writer is from, Area 65 first) and the /status/ page.
+Contract: docs/DATA_SCHEMA.md §3 + §5.
 
     python -m scripts.sync.build_data                    # normal daily run
     python -m scripts.sync.build_data --out .tmp/site    # write somewhere else (testing)
@@ -30,6 +32,7 @@ import yaml
 from . import translate as T
 from .common import (CONTENT_DIR, RAW_DIR, SITE_DIR, STATE_DIR, clean_text, get_logger, load_config, now_iso,
                      parse_iso, read_json, short_hash, slugify, strip_html, to_iso, truncate, write_json)
+from .geo import SCOPES, classify_location, fold
 from .meeting import upcoming_meetings
 
 log = get_logger("build_data")
@@ -39,6 +42,11 @@ WHATSNEW_MAX = 150
 PAST_EVENTS_KEEP = 12
 RECENT_EVENT_DAYS = 30        # events announced within N days appear in What's New
 LANGS = ("en", "es")
+# Published-writers spotlight defaults (config/site.yml `spotlight:` overrides them)
+SPOTLIGHT_HOME_DAYS = 60
+SPOTLIGHT_LIST_DAYS = (60, 90)
+SPOTLIGHT_SCOPES = ("neta65", "texas", "all")
+_EVERY_ISSUE = re.compile(r"(?i)in every issue|en cada (?:edici[oó]n|n[uú]mero)")
 NEVER_NEW_KINDS = ("topic", "meeting")   # editorial themes (date = a deadline) and the Weekly Open
 
 # raw source → labels on the /status/ page (order = order shown)
@@ -195,6 +203,7 @@ class Ctx:
         self.raw: dict[str, dict] = {}
         self.raw_problems: dict[str, str] = {}
         self.births: dict[str, float] = {}
+        self.hub_issues: set[str] = set()      # "gv:2026-10" — magazine issues seen on a hub (current issues)
 
     # ---------------------------------------------------------------- raw loading
     def load_raw(self) -> None:
@@ -218,6 +227,10 @@ class Ctx:
             firsts = [t for t in (ts(i.get("first_seen")) for i in env["items"]) if t]
             if firsts:
                 self.births[name] = min(firsts)
+        iss = (self.raw.get("articles") or {}).get("issues")
+        rows = iss.values() if isinstance(iss, dict) else iss if isinstance(iss, list) else []
+        self.hub_issues = {f"{r.get('publication')}:{r.get('key')}" for r in rows
+                           if isinstance(r, dict) and r.get("publication") and r.get("key")}
         loaded = {k: len(v["items"]) for k, v in self.raw.items() if v["items"]}
         log.info("raw items: %s%s", loaded, f"  (problems: {self.raw_problems})" if self.raw_problems else "")
 
@@ -248,8 +261,19 @@ class Ctx:
             return min(fs, self.now_ts)
         return None
 
+    def back_catalog(self, it: dict) -> bool:
+        """A magazine story of an OLDER issue that articles.py found only in the site's archive
+        (its issue was never the current one on a hub while we watched). Real stories, shown on
+        /read/ and in the spotlight — but not "news": they stay out of What's New and get no
+        "New" badge, so the first archive backfill does not flood the feed with months of stories."""
+        if it.get("kind") != "article" or not self.hub_issues:
+            return False
+        ex = it.get("extra") or {}
+        pub, key = ex.get("publication") or it.get("category"), ex.get("issue_key")
+        return bool(pub and key) and f"{pub}:{key}" not in self.hub_issues
+
     def is_new(self, it: dict, source: str | None = None) -> bool:
-        if it.get("kind") in NEVER_NEW_KINDS:
+        if it.get("kind") in NEVER_NEW_KINDS or self.back_catalog(it):
             return False
         if it.get("kind") == "event":               # "new" = newly announced, not "happening soon"
             if it.get("category") == "committee" or (it.get("extra") or {}).get("past"):
@@ -563,7 +587,8 @@ def text_fields(it: dict) -> list[tuple[str, str, bool, str | None]]:
 
 
 def local_fields(it: dict) -> dict[str, dict]:
-    """i18n entries written by rules (never machine-translated): issue labels, Weekly Open times."""
+    """i18n entries written by rules (never machine-translated): issue labels, Weekly Open times,
+    the writer's place ("Nueva Jersey" → "New Jersey"; from extra.geo, see scripts/sync/geo.py)."""
     ex = it.get("extra") or {}
     out: dict[str, dict] = {}
     if it.get("kind") in ("article", "topic") and (ex.get("issue_key") or ex.get("issue_label")):
@@ -572,6 +597,9 @@ def local_fields(it: dict) -> dict[str, dict]:
             out["issue_label"] = lab
         elif ex.get("issue_label"):
             out["issue_label"] = {"en": clean_text(ex["issue_label"]), "es": clean_text(ex["issue_label"])}
+    geo = ex.get("geo")
+    if it.get("kind") == "article" and isinstance(geo, dict) and geo.get("label_en"):
+        out["author_location"] = {"en": geo["label_en"], "es": geo.get("label_es") or geo["label_en"]}
     if it.get("kind") == "meeting":
         out.update(weekly_open_labels(it))
     return out
@@ -866,7 +894,7 @@ def plan_whatsnew(ctx: Ctx, cols: dict[str, list[dict]]) -> list[tuple[float, di
     out: list[tuple[float, dict]] = []
     for name in ("articles", "pdfs", "videos", "episodes", "instagram", "announcements"):
         for it in cols.get(name, []):
-            if it.get("kind") in NEVER_NEW_KINDS:
+            if it.get("kind") in NEVER_NEW_KINDS or ctx.back_catalog(it):
                 continue
             wn = ctx.effective_ts(it, raw_source(it))
             if wn is not None:
@@ -941,6 +969,127 @@ def materialize_whatsnew(plan: list[tuple[float, dict]]) -> list[dict]:
         c["wn_date"] = to_iso(datetime.fromtimestamp(wn, timezone.utc))
         items.append(c)
     return items
+
+
+# =========================================================================== published-writers spotlight
+def local_day(ctx: Ctx, v: Any) -> str | None:
+    """ISO datetime/date → 'YYYY-MM-DD' in the site's time zone (a bare date is kept as is)."""
+    s = str(v or "").strip()
+    if re.fullmatch(r"\d{4}-\d{2}-\d{2}", s):
+        return s
+    d = parse_iso(s) if s else None
+    if d is None:
+        return None
+    if d.tzinfo is None:
+        d = d.replace(tzinfo=timezone.utc)
+    return d.astimezone(ctx.tz).date().isoformat()
+
+
+def article_pub_date(ctx: Ctx, it: dict) -> str:
+    """The day a magazine story counts as published, for the 60/90-day windows and the weekly digest:
+    the EARLIER of the first day of its issue (La Viña's bimonthly "Septiembre / Octubre" issue →
+    September 1) and the day we first saw it online (`first_seen`, site time zone) — never after today.
+    It does not move: the October issue seen online on September 16 counts from September 16, also
+    after October 1 (so the digest does not list it twice); a back-catalog story found by the archive
+    backfill counts from its issue's first day (its first_seen is the later backfill day)."""
+    ex = it.get("extra") or {}
+    today = ctx.today_local.isoformat()
+    key = str(ex.get("issue_key") or "")
+    if re.fullmatch(r"\d{4}-(0[1-9]|1[0-2])", key):
+        start = f"{key}-01"
+    else:
+        start = local_day(ctx, ex.get("issue_date")) or local_day(ctx, it.get("date"))
+    seen = local_day(ctx, it.get("first_seen"))
+    days = [d for d in (start, seen) if d]
+    return min(min(days), today) if days else today
+
+
+def byline_lang(it: dict) -> str | None:
+    """The language the byline's place is written in: La Viña prints Spanish bylines ("Monterrey, N.L."
+    is Nuevo León there), the Grapevine English ones — whatever language the title was detected in."""
+    pub = (it.get("extra") or {}).get("publication") or it.get("category")
+    return "es" if pub == "lv" else "en" if pub == "gv" else it.get("lang")
+
+
+def enrich_articles(ctx: Ctx, items: list[dict]) -> None:
+    """extra.geo (where the writer is from — scripts/sync/geo.py) and extra.pub_date on every story."""
+    for it in items:
+        ex = it.setdefault("extra", {})
+        try:
+            ex["geo"] = classify_location(ex.get("author_location"), byline_lang(it))
+            ex["pub_date"] = article_pub_date(ctx, it)
+        except Exception as e:      # never fatal: the story simply stays out of the spotlight
+            log.warning("spotlight fields for %s skipped: %s: %s", it.get("id"), type(e).__name__, e)
+            ex.setdefault("geo", classify_location(None))
+            ex.setdefault("pub_date", None)
+
+
+def spotlight_settings(ctx: Ctx) -> tuple[int, list[int], str]:
+    """(home_days, list_days, default_scope) from config/site.yml `spotlight:`, sanity-checked."""
+    sp = ctx.cfg.get("spotlight") if isinstance(ctx.cfg.get("spotlight"), dict) else {}
+
+    def days(v: Any) -> int | None:
+        try:
+            n = int(v)
+        except (TypeError, ValueError):
+            return None
+        return n if 1 <= n <= 366 else None
+
+    home = days(sp.get("home_days")) or SPOTLIGHT_HOME_DAYS
+    raw = sp.get("list_days") if isinstance(sp.get("list_days"), list) else list(SPOTLIGHT_LIST_DAYS)
+    lst: list[int] = []
+    for v in raw:
+        n = days(v)
+        if n and n not in lst:
+            lst.append(n)
+    lst = lst or list(SPOTLIGHT_LIST_DAYS)
+    scope = str(sp.get("default_scope") or "neta65").strip().lower()
+    return home, lst, scope if scope in SPOTLIGHT_SCOPES else "neta65"
+
+
+def spotlight_candidate(it: dict) -> bool:
+    """A story with a byline — not an "In Every Issue" department (Letter from the Editor, Dear
+    Grapevine, Cartas del lector …), which has no single writer."""
+    ex = it.get("extra") or {}
+    if it.get("kind") != "article" or ex.get("department") is True or _EVERY_ISSUE.search(str(ex.get("section") or "")):
+        return False
+    return bool(clean_text(ex.get("author")) or clean_text(ex.get("author_location")))
+
+
+def spotlight_scope(it: dict) -> str:
+    s = ((it.get("extra") or {}).get("geo") or {}).get("scope")
+    return s if s in SCOPES else "unknown"
+
+
+def plan_spotlight(ctx: Ctx, articles: list[dict]) -> tuple[list[dict], dict]:
+    """→ (the stories of the longest window, sorted: Area 65, rest of Texas, elsewhere, unknown; then
+    newest pub_date first; then title) and the counts per window {"60": {"neta65", "texas", "all"}}
+    ("texas" includes Area 65). Items are the article dicts themselves (copied when written)."""
+    home, lst, _scope = spotlight_settings(ctx)
+    windows = sorted(set(lst) | {home})
+    today = ctx.today_local
+    starts = {d: (today - timedelta(days=d)).isoformat() for d in windows}
+    end = today.isoformat()
+    cands = [it for it in articles if spotlight_candidate(it) and (it.get("extra") or {}).get("pub_date")]
+    counts: dict[str, dict[str, int]] = {}
+    for d in windows:
+        inside = [it for it in cands if starts[d] <= it["extra"]["pub_date"] <= end]
+        scopes = [spotlight_scope(it) for it in inside]
+        counts[str(d)] = {"neta65": scopes.count("neta65"),
+                          "texas": scopes.count("neta65") + scopes.count("texas"), "all": len(inside)}
+    longest = max(windows)
+    items = [it for it in cands if starts[longest] <= it["extra"]["pub_date"] <= end]
+    items.sort(key=lambda it: (SCOPES.index(spotlight_scope(it)),
+                               -date.fromisoformat(it["extra"]["pub_date"]).toordinal(),
+                               fold(it.get("title")), it["id"]))
+    return items, counts
+
+
+def build_spotlight(ctx: Ctx, items: list[dict], counts: dict, now: str) -> dict:
+    home, lst, scope = spotlight_settings(ctx)
+    return {"updated": now, "fixture": False, "today": ctx.today_local.isoformat(),
+            "home_days": home, "list_days": lst, "default_scope": scope, "counts": counts,
+            "items": [clean_private(copy.deepcopy(i)) for i in items]}
 
 
 # =========================================================================== districts
@@ -1111,10 +1260,13 @@ def main(argv: list[str] | None = None) -> int:
             "announcements": build_announcements(ctx),
             "events": build_events(ctx),
         }
+        enrich_articles(ctx, cols["articles"])
         meta, meta_wanted = build_meta(ctx, i18n)
         wn_plan = plan_whatsnew(ctx, cols)
+        spot_items, spot_counts = plan_spotlight(ctx, cols["articles"])
         districts = build_districts(ctx, i18n)
-        plan_translations(ctx, cols, {id(it) for _, it in wn_plan}, i18n)
+        # What's New and the spotlight (home page) are translated first
+        plan_translations(ctx, cols, {id(it) for _, it in wn_plan} | {id(it) for it in spot_items}, i18n)
         for _, it in wn_plan:
             if it.get("_album"):
                 i18n.want(it["_album"], T.detect_language(it["_album"], "en"), (0, 0.0))
@@ -1157,7 +1309,13 @@ def main(argv: list[str] | None = None) -> int:
                                               "items": [clean_private(i) for i in whatsnew]})
         write_json(out_dir / "districts.json", {"updated": now, "fixture": False,
                                                "items": [clean_private(d) for d in districts]})
+        spot_items, spot_counts = plan_spotlight(ctx, cols["articles"])     # again: translated + kept items
+        spotlight = build_spotlight(ctx, spot_items, spot_counts, now)
+        write_json(out_dir / "spotlight.json", spotlight)
         status = build_status(ctx, translator, i18n, counts, not a.no_translate, i18n.seconds)
+        status["spotlight"] = {"today": spotlight["today"], "home_days": spotlight["home_days"],
+                               "list_days": spotlight["list_days"], "counts": spotlight["counts"],
+                               "items": len(spotlight["items"])}
         write_json(out_dir / "status.json", status)
         completed = True
     finally:

@@ -1,12 +1,36 @@
 /* Grapevine hero art — animated vineyard with string lights.
-   Original artwork code by the NETA 65 GV/LV committee web servant (carried over
-   unchanged from the previous site). Draws into <canvas id="grapevineCanvas">
-   inside the element with id="homeHero". Auto-starts; honors reduced motion. */
-const GV_CANVAS = (function(){
+   Original artwork code by the NETA 65 GV/LV committee web servant, carried over
+   unchanged from the previous site: everything between the "ARTWORK" and "SETUP"
+   markers below is the original drawing code, line for line — the one exception is
+   that `reducedMotion` is a `let` (not a `const`), so the setup code can follow the
+   OS setting when it changes while the page is open.
+
+   SETUP (generalized for the shared page hero, ui.pageHero in macros/ui.njk):
+   - layouts/base.njk loads this file (defer) on EVERY page — pages need no pageScripts entry.
+   - Every hero gets its own art: <section data-gv-hero> (the macro), plus the legacy
+     .page-hero class and the old home hero (#homeHero) until those are migrated. The art
+     draws into the hero's <canvas class="gv-hero-canvas"> (or #grapevineCanvas); a hero
+     without a canvas gets one added as its first child.
+   - The canvas follows the hero's size (ResizeObserver + window resize: rotation, zoom,
+     web fonts arriving, Alpine filling in text). The vineyard is re-planted only when the
+     width changes or the height changes a lot, so small reflows never make it jump.
+   - The animation pauses while the hero is scrolled out of view (IntersectionObserver) and
+     while the tab is hidden, and picks up again when it comes back.
+   - prefers-reduced-motion: no animation loop — one still picture is painted, and repainted
+     at the right size on every resize. Changing the OS setting while the page is open works.
+   - Loading the file twice, or on a page without a hero, is harmless (it does nothing).
+   Optional API: window.GVHeroArt.init(root) sets up heroes added later; GVHeroArt.pause()
+   and .resume(); window.GV_CANVAS.start()/.stop() are kept for older callers. */
+(function(){
+  if(window.GVHeroArt)return; // already running on this page
+  const RM=window.matchMedia?window.matchMedia("(prefers-reduced-motion: reduce)"):{matches:false};
+
+  function createGrapevineArt(hero,canvasEl){
+  // ======================= ARTWORK (original, unchanged) =======================
   let cvs,ctx,W,H,raf=null,scene=null,mouseX=-1,mouseY=-1;
   // Offscreen canvas for static elements (canes, branches, leaves, clusters, tendrils)
   let staticCvs=null,staticCtx=null,staticDirty=true;
-  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let reducedMotion=RM.matches; // SETUP: kept live, see setReducedMotion() below
   const PI=Math.PI, TAU=PI*2;
   // Throttle: target ~18fps (every ~55ms) instead of 60fps
   const FRAME_INTERVAL=55;
@@ -389,60 +413,124 @@ const GV_CANVAS = (function(){
     }
     raf=requestAnimationFrame(draw);
   }
-  function resize(){
-    const hero=document.getElementById("homeHero");
-    if(!hero||!cvs)return;
-    const dpr=Math.min(window.devicePixelRatio||1,2);
-    W=hero.offsetWidth;H=hero.offsetHeight;
-    cvs.width=W*dpr;cvs.height=H*dpr;
-    cvs.style.width=W+"px";cvs.style.height=H+"px";
-    ctx.setTransform(dpr,0,0,dpr,0,0);
-    buildScene();
-    // Reduced motion: no draw loop runs, so paint the still picture for the new size here.
-    if(reducedMotion){renderStaticLayer();ctx.drawImage(staticCvs,0,0,W,H)}
+  // ======================= SETUP (generalized initialization) =======================
+  // Nothing above this line was changed; below: sizing, start / pause, events.
+  let dprNow=0,onScreen=true,held=false,alive=true,resizeTimer=null,ro=null,io=null;
+  cvs=canvasEl;
+  ctx=cvs.getContext("2d");
+  function running(){return alive&&!held&&!reducedMotion&&onScreen&&tabVisible&&W>0&&H>0}
+  // Start or stop the draw loop to match the current state.
+  function sync(){
+    if(running()){if(!raf){lastDrawTime=0;raf=requestAnimationFrame(draw)}}
+    else if(raf){cancelAnimationFrame(raf);raf=null}
   }
+  // A still picture: the static layer plus one pass of the original draw() for the lights.
+  function paintStill(){
+    if(raf||!scene||!W||!H)return;
+    renderStaticLayer();
+    ctx.clearRect(0,0,W,H);
+    if(staticCvs)ctx.drawImage(staticCvs,0,0,W,H);
+    if(!tabVisible)return;
+    lastDrawTime=-1e9;
+    draw(performance.now());
+    if(raf){cancelAnimationFrame(raf);raf=null} // draw() queues its next frame — not wanted here
+  }
+  function resize(force){
+    if(!alive||!ctx)return;
+    const w=hero.offsetWidth,h=hero.offsetHeight;
+    if(!w||!h)return; // hidden (display:none, print) — the next resize tries again
+    const dpr=Math.min(window.devicePixelRatio||1,2);
+    if(force!==true&&scene&&w===W&&h===H&&dpr===dprNow)return; // same size: keep the picture
+    const replant=force===true||!scene||w!==W||Math.abs(h-H)>64;
+    W=w;H=h;dprNow=dpr;
+    cvs.width=Math.round(W*dpr);cvs.height=Math.round(H*dpr);
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    if(replant)buildScene();else staticDirty=true;
+    if(raf)return; // the running loop repaints on its next frame
+    paintStill();
+    sync();
+  }
+  function onResize(){clearTimeout(resizeTimer);resizeTimer=setTimeout(resize,150)}
   function onMove(e){
-    const hero=document.getElementById("homeHero");
-    if(!hero)return;
     const rect=hero.getBoundingClientRect();
-    const cx=e.touches?e.touches[0].clientX:e.clientX;
-    const cy=e.touches?e.touches[0].clientY:e.clientY;
-    mouseX=cx-rect.left;mouseY=cy-rect.top;
+    const pt=e.touches?e.touches[0]:e;
+    if(!pt)return;
+    mouseX=pt.clientX-rect.left;mouseY=pt.clientY-rect.top;
   }
   function onLeave(){mouseX=-1;mouseY=-1}
-  let _resizeTimer=null;
-  function onResize(){clearTimeout(_resizeTimer);_resizeTimer=setTimeout(resize,200)}
-  function onVisChange(){tabVisible=!document.hidden}
+  function onVisChange(){tabVisible=!document.hidden;sync()}
+  hero.addEventListener("mousemove",onMove);
+  hero.addEventListener("touchmove",onMove,{passive:true});
+  hero.addEventListener("mouseleave",onLeave);
+  document.addEventListener("visibilitychange",onVisChange);
+  window.addEventListener("resize",onResize);
+  if("ResizeObserver" in window){ro=new ResizeObserver(onResize);ro.observe(hero)}
+  if("IntersectionObserver" in window){
+    io=new IntersectionObserver(function(entries){onScreen=entries[entries.length-1].isIntersecting;sync()},{rootMargin:"80px 0px"});
+    io.observe(hero);
+  }
+  tabVisible=!document.hidden;
+  resize(true);
+  sync();
   return {
-    start:function(){
-      cvs=document.getElementById("grapevineCanvas");
-      if(!cvs)return;
-      if(raf){cancelAnimationFrame(raf);raf=null}
-      ctx=cvs.getContext("2d");
-      if(!ctx)return;
-      // Follow the hero's size in both modes (rotation, window resize, the synthetic
-      // "resize" home.js sends once the web fonts have settled the hero's height).
-      window.addEventListener("resize",onResize);
-      resize(); // with reduced motion this also paints the still picture
-      if(reducedMotion)return;
-      lastDrawTime=0;
-      raf=requestAnimationFrame(draw);
-      const hero=document.getElementById("homeHero");
-      if(hero){hero.addEventListener("mousemove",onMove);hero.addEventListener("touchmove",onMove,{passive:true});hero.addEventListener("mouseleave",onLeave)}
-      document.addEventListener("visibilitychange",onVisChange);
-    },
-    stop:function(){
-      if(raf){cancelAnimationFrame(raf);raf=null}
-      const hero=document.getElementById("homeHero");
-      if(hero){hero.removeEventListener("mousemove",onMove);hero.removeEventListener("touchmove",onMove);hero.removeEventListener("mouseleave",onLeave)}
-      window.removeEventListener("resize",onResize);
-      document.removeEventListener("visibilitychange",onVisChange);
+    hero:hero,
+    refresh:function(){resize(true)},
+    pause:function(){held=true;sync()},
+    resume:function(){held=false;resize();sync()},
+    setReducedMotion:function(m){reducedMotion=!!m;sync();if(reducedMotion)paintStill()},
+    destroy:function(){
+      alive=false;sync();clearTimeout(resizeTimer);
+      if(ro)ro.disconnect();
+      if(io)io.disconnect();
+      hero.removeEventListener("mousemove",onMove);hero.removeEventListener("touchmove",onMove);hero.removeEventListener("mouseleave",onLeave);
+      document.removeEventListener("visibilitychange",onVisChange);window.removeEventListener("resize",onResize);
       mouseX=-1;mouseY=-1;
     },
   };
-})();
-window.GV_CANVAS = GV_CANVAS;
-(function () {
-  function boot() { if (document.getElementById("grapevineCanvas")) GV_CANVAS.start(); }
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot); else boot();
+  }
+
+  // ---------- find the heroes and give each one its own art ----------
+  const HERO_SEL="[data-gv-hero], .page-hero, #homeHero";
+  const arts=[];
+  const seen=new WeakSet();
+  function findCanvas(hero){
+    for(let i=0;i<hero.children.length;i++){
+      const c=hero.children[i];
+      if(c.tagName==="CANVAS"&&(c.classList.contains("gv-hero-canvas")||c.id==="grapevineCanvas"))return c;
+    }
+    return null;
+  }
+  function init(root){
+    const scope=root&&root.querySelectorAll?root:document;
+    const list=[];
+    if(scope.matches&&scope.matches(HERO_SEL))list.push(scope);
+    scope.querySelectorAll(HERO_SEL).forEach(function(h){list.push(h)});
+    list.forEach(function(hero){
+      if(seen.has(hero))return;
+      seen.add(hero);
+      let cvs=findCanvas(hero);
+      if(!cvs){
+        cvs=document.createElement("canvas");
+        cvs.className="gv-hero-canvas";
+        cvs.setAttribute("aria-hidden","true");
+        hero.insertBefore(cvs,hero.firstChild);
+      }
+      if(!cvs.getContext||!cvs.getContext("2d"))return;
+      try{arts.push(createGrapevineArt(hero,cvs))}
+      catch(e){if(window.console)console.warn("[hero art]",e)}
+    });
+  }
+  function onMotionPref(){arts.forEach(function(a){a.setReducedMotion(RM.matches)})}
+  if(RM.addEventListener)RM.addEventListener("change",onMotionPref);
+  else if(RM.addListener)RM.addListener(onMotionPref);
+
+  window.GVHeroArt={
+    init:init,
+    arts:arts,
+    pause:function(){arts.forEach(function(a){a.pause()})},
+    resume:function(){arts.forEach(function(a){a.resume()})},
+  };
+  window.GV_CANVAS={start:function(){init(document);window.GVHeroArt.resume()},stop:function(){window.GVHeroArt.pause()}};
+  function boot(){init(document)}
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot);else boot();
 })();
