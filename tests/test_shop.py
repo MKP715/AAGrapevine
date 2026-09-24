@@ -2,7 +2,7 @@
 La Viña's weekly open meeting (scripts/sync/weekly_open.py, second item).
 
 Fixtures in tests/fixtures/shop/ are trimmed copies of the official store pages (September 2026).
-Run:  python -m pytest -q tests/test_shop.py
+Run:  python -m unittest tests.test_shop -v   (CI: python -m unittest discover -s tests)
 """
 from __future__ import annotations
 
