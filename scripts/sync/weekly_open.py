@@ -8,11 +8,17 @@ The page currently says, in one sentence:
 We extract the Zoom meeting ID, passcode, weekday and time *as written on the page*, and also
 compute the Central-time equivalent (NETA 65 is in Central time) plus the next occurrence.
 
-Output: a single Item (id "weekly_open", kind "meeting") — see docs/DATA_SCHEMA.md:
-    extra = zoom_id, passcode, day, time, url  (+ weekday, time_central, start_local, timezone,
-            next_start, zoom_url, player_url, sentence)
+Output: Items of kind "meeting" — see docs/DATA_SCHEMA.md:
+  1. id "weekly_open": the Grapevine Weekly Open (from the page above; always FIRST — templates read
+     db.weekly_open.items[0]):
+       extra = zoom_id, passcode, day, time, url  (+ weekday, time_central, start_local, timezone,
+               next_start, zoom_url, player_url, sentence)
+  2. id "weekly_open_lv": La Viña's weekly open meeting in Spanish, from config/site.yml
+     `lavina_weekly_open` (an official La Viña flyer; there is no web page to read). Same extra fields
+     (no player_url / sentence), plus `starts` (first meeting); next_start is never before `starts`.
+     Written on every run, also when the Grapevine page cannot be read.
 
-If the page can't be fetched or parsed, the previous item is kept and the envelope gets ok=false.
+If the page can't be fetched or parsed, the previous Grapevine item is kept and the envelope gets ok=false.
 
 Run:  python -m scripts.sync.weekly_open [--dry-run] [--html FILE]
 """
@@ -30,6 +36,7 @@ from .common import (clean_text, get_logger, load_config, load_raw, make_item, m
 
 SOURCE = "weekly_open"
 ITEM_ID = "weekly_open"
+LV_ITEM_ID = "weekly_open_lv"      # La Viña's weekly open meeting (config/site.yml lavina_weekly_open)
 log = get_logger(SOURCE)
 
 DEFAULT_URL = "https://www.aagrapevine.org/grapevine-weekly-open"
@@ -223,6 +230,86 @@ def build_item(p: dict, page_url: str) -> dict:
     )
 
 
+def lavina_item(cfg: dict | None, now: datetime | None = None) -> dict | None:
+    """La Viña's weekly open meeting from config/site.yml `lavina_weekly_open` → an Item shaped like the
+    Grapevine one (lang "es"), or None when the block is missing, disabled or incomplete."""
+    c = cfg if isinstance(cfg, dict) else {}
+    if not c or c.get("enabled") is False:
+        return None
+    wd = WEEKDAY_PREFIX.get(str(c.get("day") or "").strip().lower()[:3])
+    clock = _parse_clock(str(c.get("time") or ""))
+    tzname = str(c.get("timezone") or "America/New_York")
+    try:
+        tz = ZoneInfo(tzname)
+    except Exception:
+        log.warning("lavina_weekly_open: unknown timezone %r — item left out", tzname)
+        return None
+    if wd is None or not clock:
+        log.warning("lavina_weekly_open: day %r / time %r not understood — item left out", c.get("day"), c.get("time"))
+        return None
+    hh, mm = clock
+    starts = str(c.get("starts") or "").strip()
+    now = (now or datetime.now(timezone.utc)).astimezone(tz)
+    ref = now
+    if re.fullmatch(r"\d{4}-\d{2}-\d{2}", starts):
+        first = datetime.fromisoformat(starts).replace(tzinfo=tz)       # midnight local on the first day
+        if first > now:
+            ref = first - timedelta(seconds=1)                          # → the first meeting itself
+    else:
+        starts = ""
+    nxt = _next_occurrence(wd, hh, mm, tz, ref)
+    if starts and datetime.fromisoformat(starts).weekday() != wd:
+        # A start date on another weekday: the first meeting shown is the first real occurrence
+        log.warning("lavina_weekly_open: starts %s is not a %s — using %s", starts, list(WEEKDAYS)[wd],
+                    nxt.date().isoformat())
+        starts = nxt.date().isoformat()
+    central = nxt.astimezone(ZoneInfo("America/Chicago"))
+    digits = re.sub(r"\D", "", str(c.get("zoom_id") or ""))
+    weekday = list(WEEKDAYS)[wd]
+    day_es = {"monday": "Lunes", "tuesday": "Martes", "wednesday": "Miércoles", "thursday": "Jueves",
+              "friday": "Viernes", "saturday": "Sábados", "sunday": "Domingos"}[weekday]
+    zone_es = {"America/New_York": "hora del Este", "America/Chicago": "hora del Centro",
+               "America/Denver": "hora de la Montaña", "America/Los_Angeles": "hora del Pacífico"}.get(tzname, tzname)
+    time_es = ("12 p. m." if (hh, mm) == (12, 0) else
+               f"{hh % 12 or 12}{f':{mm:02d}' if mm else ''} {'a. m.' if hh < 12 else 'p. m.'}")
+    title_es = clean_text(c.get("title_es")) or "Reunión Abierta de La Viña"
+    title_en = clean_text(c.get("title_en"))
+    summary_es, summary_en = clean_text(c.get("summary_es")), clean_text(c.get("summary_en"))
+    own = {"title": {"es": title_es, **({"en": title_en} if title_en else {})},
+           "summary": {**({"es": summary_es} if summary_es else {}), **({"en": summary_en} if summary_en else {})}}
+    extra = {
+        "zoom_id": _format_zoom_id(digits) if 9 <= len(digits) <= 11 else None,
+        "passcode": clean_text(c.get("passcode")) or None,
+        "day": day_es,                                   # as on the flyer ("Día: jueves")
+        "time": f"{time_es} ({zone_es})",                # as on the flyer ("12 p. m. (hora del Este)")
+        "weekday": weekday,
+        "start_local": f"{hh:02d}:{mm:02d}",
+        "timezone": tzname,
+        "time_central": f"{_fmt_clock(central.hour, central.minute)} Central",
+        "next_start": to_iso(nxt),
+        "zoom_url": f"https://zoom.us/j/{digits}" if 9 <= len(digits) <= 11 else None,
+        "starts": starts or None,
+        "url": clean_text(c.get("url")) or None,
+        "source_note": clean_text(c.get("source")) or None,
+        "own_i18n": {k: v for k, v in own.items() if v},
+    }
+    return make_item(
+        id=LV_ITEM_ID, source="lavina", kind="meeting", url=clean_text(c.get("url")),
+        title=title_es, summary=summary_es, lang="es", date=None, category=None,
+        extra={k: v for k, v in extra.items() if v not in (None, "", {})},
+    )
+
+
+def with_lavina(items: list[dict], prev_items: list[dict], cfg: dict | None) -> list[dict]:
+    """`items` (the Grapevine item(s)) + La Viña's item from config, merged with its previous copy."""
+    lv = lavina_item(cfg)
+    rest = [i for i in items if i.get("id") != LV_ITEM_ID]
+    if lv is None:
+        return rest
+    lv_merged, _ = merge_items([i for i in prev_items if i.get("id") == LV_ITEM_ID], [lv], authoritative=True)
+    return rest + lv_merged
+
+
 # Join details and the fields derived from them. When one is missing today (a partial parse after a
 # layout change is likelier than the meeting losing its Zoom ID), yesterday's group is kept.
 JOIN_GROUPS = {
@@ -256,10 +343,13 @@ def main(argv=None) -> None:
     ap.add_argument("--html", help="parse a saved HTML file instead of fetching (testing)")
     args = ap.parse_args(argv)
 
-    cfg = load_config().get("sources", {}).get("grapevine", {}) or {}
+    full_cfg = load_config()
+    cfg = full_cfg.get("sources", {}).get("grapevine", {}) or {}
+    lv_cfg = full_cfg.get("lavina_weekly_open")
     page_url = (cfg.get("base") or "https://www.aagrapevine.org").rstrip("/") + (cfg.get("weekly_open") or "/grapevine-weekly-open")
     prev = load_raw(SOURCE)
     prev_items = prev.get("items", [])
+    prev_gv = [i for i in prev_items if i.get("id") != LV_ITEM_ID]
 
     if args.html:
         with open(args.html, encoding="utf-8") as f:
@@ -269,7 +359,8 @@ def main(argv=None) -> None:
     if not html:
         log.warning("could not fetch %s — keeping previous item", page_url)
         if not args.dry_run:
-            save_raw(SOURCE, prev_items, ok=False, error=f"fetch failed: {page_url}", stats=prev.get("stats"))
+            save_raw(SOURCE, with_lavina(prev_gv, prev_items, lv_cfg), ok=False, error=f"fetch failed: {page_url}",
+                     stats=prev.get("stats"))
         return
 
     try:
@@ -289,18 +380,19 @@ def main(argv=None) -> None:
         err = err or "could not find the Zoom ID or meeting day on the page (layout changed?)"
         log.warning(err)
         if not args.dry_run:
-            save_raw(SOURCE, prev_items, ok=False, error=err, stats={"missing": missing})
+            save_raw(SOURCE, with_lavina(prev_gv, prev_items, lv_cfg), ok=False, error=err, stats={"missing": missing})
         return
 
     item = build_item(parsed, page_url)
     if args.dry_run:
         import json
-        print(json.dumps(item, ensure_ascii=False, indent=1))
+        print(json.dumps([item, lavina_item(lv_cfg)], ensure_ascii=False, indent=1))
         return
     # Today's page is the truth (a link or note the page dropped disappears), except for the join
     # details: if the parser missed one today, yesterday's value is kept and listed in stats.
     carried = carry_join_details(item, prev_items)
-    merged, _ = merge_items(prev_items, [item], drop_missing=True, authoritative=True)
+    merged, _ = merge_items(prev_gv, [item], drop_missing=True, authoritative=True)
+    merged = with_lavina(merged, prev_items, lv_cfg)       # Grapevine first, then La Viña
     stats = {"found": found, "missing": missing}
     if carried:
         stats["kept_from_previous"] = carried

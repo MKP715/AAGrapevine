@@ -732,8 +732,8 @@
     "es": "biblioteca pdf documentos archivos descargar volantes catálogo formularios kit"
   },
   "search.kw.meeting": {
-    "en": "meeting zoom monthly committee meeting id passcode password link join countdown third wednesday",
-    "es": "reunión zoom mensual comité id contraseña clave enlace unirse cuenta regresiva tercer miércoles"
+    "en": "meeting zoom monthly committee meeting id passcode password link join countdown third wednesday weekly open meetings la viña thursday spanish",
+    "es": "reunión zoom mensual comité id contraseña clave enlace unirse cuenta regresiva tercer miércoles reuniones abiertas semanales la viña jueves español"
   },
   "search.kw.events": {
     "en": "events calendar workshop booth assembly conference ics",
@@ -763,9 +763,9 @@
     "en": "share your story write submit contribute editorial themes deadlines guidelines record",
     "es": "comparte tu historia escribir enviar contribuir temas editoriales fechas límite pautas grabar"
   },
-  "search.kw.subscribe": {
-    "en": "subscribe subscription magazine app gift carry the message store buy order",
-    "es": "suscribirse suscripción revista app regalo lleva el mensaje tienda comprar pedido"
+  "search.kw.shop": {
+    "en": "shop store buy order subscribe subscription price prices book of the month books catalog order form magazine app gift carry the message",
+    "es": "tienda comprar pedido suscribirse suscripción precio precios libro del mes libros catálogo formulario de pedido revista app regalo lleva el mensaje"
   },
   "search.kw.instagram": {
     "en": "instagram posts social media photos",
@@ -794,6 +794,10 @@
   "search.kw.weekly_open": {
     "en": "weekly open meeting online wednesday",
     "es": "reunión abierta semanal en línea miércoles"
+  },
+  "search.kw.weekly_open_lv": {
+    "en": "la viña weekly open meeting online spanish thursday",
+    "es": "la viña reunión abierta semanal en línea español jueves"
   },
   "search.kw.published": {
     "en": "published writers authors spotlight stories texas northeast texas area 65 neta 65 local members",

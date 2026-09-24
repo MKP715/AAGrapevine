@@ -184,6 +184,7 @@ export default function (eleventyConfig) {
     [nm("glightbox/dist/css/glightbox.min.css")]: "assets/vendor/glightbox.min.css",
     [nm("lite-youtube-embed/src/lite-yt-embed.js")]: "assets/vendor/lite-yt-embed.js",
     [nm("lite-youtube-embed/src/lite-yt-embed.css")]: "assets/vendor/lite-yt-embed.css",
+    [nm("html-to-image/dist/html-to-image.js")]: "assets/vendor/html-to-image.js", // /monthly/ poster → PNG
   });
   for (const f of ["inter-latin-wght-normal", "inter-latin-ext-wght-normal", "inter-latin-wght-italic"]) {
     eleventyConfig.addPassthroughCopy({ [nm(`@fontsource-variable/inter/files/${f}.woff2`)]: `assets/fonts/${f}.woff2` });

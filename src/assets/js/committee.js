@@ -432,20 +432,28 @@
     return t;
   }
 
+  // A meeting that has not started yet (La Viña's Reunión Abierta, from its first date) carries
+  // data-cm-weekly-starts="ISO of the first meeting": until then the build's own "Starts Thursday,
+  // November 5, 2026" line stays as it is; from that moment on it reads like the other one
+  // ("Live now" / "Next meeting: …" — the label's data-next).
   function weekly() {
     document.querySelectorAll("[data-cm-weekly]").forEach(function (box) {
       var t = Date.parse(box.getAttribute("data-cm-weekly"));
       if (!t) return;
       var now = Date.now(), LIVE = 75 * 60000;
-      t = nextWeekly(t, now, box.getAttribute("data-cm-weekly-tz") || TZ, box.getAttribute("data-cm-weekly-at") || "", LIVE);
+      var first = Date.parse(box.getAttribute("data-cm-weekly-starts") || "");
+      var before = first && now < first;
+      if (before) t = first;
+      else t = nextWeekly(t, now, box.getAttribute("data-cm-weekly-tz") || TZ, box.getAttribute("data-cm-weekly-at") || "", LIVE);
       var d = new Date(t), live = now >= t;
       var lab = box.querySelector("[data-cm-weekly-label]");
-      if (lab) {
+      if (lab && !before) {
         if (!lab.hasAttribute("data-next")) lab.setAttribute("data-next", lab.textContent);
         lab.textContent = live ? (lab.getAttribute("data-live") || lab.getAttribute("data-next")) : lab.getAttribute("data-next");
       }
+      box.classList.toggle("is-live", !before && live);
       var dt = box.querySelector("[data-cm-weekly-date]");
-      if (dt) dt.textContent = cap(fmt(d, { weekday: "long", month: "long", day: "numeric" })) + " · " + fmt(d, { hour: "numeric", minute: "2-digit", timeZoneName: "short" });
+      if (dt && !before) dt.textContent = cap(fmt(d, { weekday: "long", month: "long", day: "numeric" })) + " · " + fmt(d, { hour: "numeric", minute: "2-digit", timeZoneName: "short" });
       var loc = box.querySelector("[data-cm-weekly-local]");
       if (loc) {
         try {

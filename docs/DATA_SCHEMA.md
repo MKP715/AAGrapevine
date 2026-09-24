@@ -38,7 +38,7 @@ source drops old items.
 
 Source file names: `drive.json`, `youtube.json`, `podcasts.json`, `instagram.json`,
 `articles.json`, `pdfs.json`, `events_external.json`, `editorial.json`,
-`weekly_open.json`, `announcements.json`.
+`weekly_open.json`, `announcements.json`, `shop.json`.
 
 ## 2. Item (common shape for every piece of content)
 
@@ -86,8 +86,22 @@ Spanish file): the place in the other language — a place is never machine-tran
 `extra.tentative` (content/events `tentative: true` / `yes` / `sí`; an .ics feed's `STATUS:TENTATIVE`):
 the details are not final — the pages show "Details to be confirmed" / "Detalles por confirmar" and the
 calendar feeds write `STATUS:TENTATIVE` (every other event `STATUS:CONFIRMED`). Absent otherwise.
-`weekly_open.json`: single item (kind `meeting`) with `extra` = `zoom_id`, `passcode`, `day`, `time`, `url`
-(+ structured `weekday`, `start_local`, `timezone`, `next_start` — see §5).
+`weekly_open.json`: items of kind `meeting` with `extra` = `zoom_id`, `passcode`, `day`, `time`, `url`
+(+ structured `weekday`, `start_local`, `timezone`, `next_start` — see §5):
+1. id `weekly_open` — the **Grapevine Weekly Open** (Wednesdays), read from aagrapevine.org/grapevine-weekly-open.
+   Always the FIRST item of `data/site/weekly_open.json`: templates read `db.weekly_open.items[0]`.
+2. id `weekly_open_lv` — **La Viña's weekly open meeting** in Spanish (Thursdays, from Nov 5, 2026), written
+   from `config/site.yml` → `lavina_weekly_open` (an official La Viña flyer; there is no web page to read), on
+   every run — also when the Grapevine page cannot be read. `lang` "es", `source` "lavina", `url` "" until
+   La Viña publishes a page (config `url`). Same `extra` fields as the Grapevine item (no `player_url`,
+   `sentence`) plus `starts` (first meeting, "2026-11-05") and `source_note`; `next_start` is never before
+   `starts`. Title and summary are the config's own words in both languages (`extra.own_i18n` → `i18n.title`,
+   `i18n.summary`, never machine-translated); `i18n.day/time/time_central/when/sentence` are written by rules as
+   for the Grapevine item ("Thursdays at 11:00 AM Central" / "Jueves a las 11:00 a. m. (hora del Centro)").
+   Delete the config block or set `enabled: false` to take it off the site. A `starts` date that is not on
+   the configured weekday is replaced by the first real meeting (with a warning in the log). The title has no
+   "New": the /monthly/ poster adds a "New" badge in the first month only.
+The raw file may list them in another order (save_raw sorts by date); build_data puts Grapevine first.
 Every module adds more `extra` fields than listed here; §5 lists all of them as built.
 
 ## 3. Site files — `data/site/*.json` (what templates read)
@@ -133,7 +147,7 @@ Files: `episodes.json`, `videos.json`, `instagram.json`, `articles.json`, `pdfs.
 `sources.ics_feeds` calendars — each real event ONCE, see *Events from several places* in §5), `announcements.json`, `editorial.json`, `weekly_open.json`,
 `whatsnew.json` (newest 150 across all sources, sorted by date desc),
 `spotlight.json` (published-writers spotlight, below), `status.json` (below),
-`districts.json` (from `content/districts.yml`).
+`districts.json` (from `content/districts.yml`), `shop.json` (official store data, below — no `items`).
 
 Each site file is `{ "updated": "...", "fixture": false, <extra top-level keys>, "items": [...] }`,
 items sorted newest first (events: soonest first). Extra top-level keys: `instagram.profiles`,
@@ -168,6 +182,71 @@ Settings: `config/site.yml` → `spotlight:` (`home_days`, `list_days`, `default
   — including `extra.geo` and `extra.pub_date`. To show a window of N days:
   `extra.pub_date >= today − N days`; for "Texas": scope `neta65` or `texas`.
 * With no Area 65 writer in the window, `counts[..].neta65` is 0 and the page must say so gracefully.
+
+### shop.json — Book of the Month, bulk discounts, subscription prices
+Read daily from the official stores by `scripts/sync/shop.py` (URLs: `config/site.yml` → `sources.grapevine` /
+`sources.lavina` → `botm`, `subscriptions`, `subscription_regions`; ~12 page requests a day through the shared
+polite session, + a product page per subscription type once a month, + each product image once), then
+`build_data.py`. Grapevine and La Viña are published by AA Grapevine, Inc.: every `url` is an official store
+page — purchases always happen there. **ONE canonical home** for these prices and dates: templates never
+hard-code a price, percent or date; other pages show at most a compact teaser that links to the shop page.
+```json
+{
+  "updated": "2026-09-24T15:43:29Z", "fixture": false,
+  "botm": [                                   // 0–2 entries, Grapevine first
+    { "id": "botm:gv", "pub": "gv", "lang": "en",
+      "title": "No Matter What: Dealing With Adversity in Sobriety",
+      "url": "https://www.aagrapevine.org/store/no-matter-what-dealing-adversity-sobriety",   // buy here
+      "page_url": "https://www.aagrapevine.org/BOTM",                                         // the offer page
+      "image": "/assets/cache/shop/657477448ef71903.webp",    // ≤480 px WebP (cover), or null
+      "price": 14.99, "sale_price": 11.99, "discount_pct": 20, "currency": "USD", "sku": "GV31",
+      "starts": "2026-09-15", "ends": "2026-10-14",           // either may be null (dates not readable)
+      "month_label": "October",                               // in the item's language ("Octubre" for LV)
+      "blurb": "All recovering alcoholics have had to deal with adversity …",
+      "i18n": { "title": {"en","es"}, "blurb": {"en","es"}, "month_label": {"en","es"} },
+      "machine": ["es"] } ],                                  // languages machine-translated (title/blurb)
+  "bulk_discounts": {                         // physical books only (see note); per-book discount in USD
+    "source_url": "https://www.aagrapevine.org/store/no-matter-what-dealing-adversity-sobriety",
+    "tiers": [ {"min":1,"max":4,"off":0}, {"min":5,"max":9,"off":0.5}, {"min":10,"max":19,"off":1.0},
+               {"min":20,"max":29,"off":2.0}, {"min":30,"max":null,"off":3.0} ],
+    "note": { "en": "These discounts apply exclusively to physical books. …", "es": "Esta oferta se aplica …" } },
+  "subscriptions": [                          // one entry per publication × region that has plans; gv first, us/ca/intl
+    { "pub": "gv", "region": "us", "url": "https://www.aagrapevine.org/store/us-subscriptions",
+      "plans": [                              // the store's own order
+        { "type": "print", "term_months": 12, "title": "Grapevine Print Subscriptions: 1-Year",
+          "price": 36.0, "currency": "USD", "sku": "GVUS1",
+          "url": "https://www.aagrapevine.org/store/grapevine-print-subscriptions-1-year",
+          "image": "/assets/cache/shop/b863047b363d0518.webp",
+          "volume": [ {"min":2,"max":19,"price":35.5}, {"min":20,"max":39,"price":35.0}, {"min":40,"max":null,"price":34.0} ] } ] } ],
+  "types": {                                  // short official descriptions (first feature of a product page); may be {}
+    "gv": { "print": {"en","es"}, "digital": {"en","es"}, "complete": {"en","es"} }, "lv": { … } }
+}
+```
+* `type` is `print` | `digital` | `complete` | `other`, from the title (English or Spanish: "Print",
+  "impresa", "Digital", "Complete"/"completa"); `term_months` 1 / 12 / 24 / 36 (or null) from "1-Month",
+  "2-Years", "1 año", "3 años". `volume` is [] when the store shows no volume pricing (digital/complete).
+  Plan titles are the store's own (Spanish for La Viña) — label plans from `type` + `term_months` in the page's
+  language. Prices are in USD as the stores list them ("subject to Canadian or International conversion rates").
+* `sale_price` = round(`price` × (1 − `discount_pct`/100), 2); the percent is read from the offer page.
+* An offer whose `ends` is before today (site time zone) is left out even if the official page still shows it;
+  a page with no offer gives no entry. Years are inferred around the sync date ("SEPT. 15 thru OCt. 14"): the
+  latest window that has already started (or starts within 31 days), so an old offer left on the page reads as
+  past, never as next year's. An offer line with one date ("through October 14") gives `starts: null`.
+* The Book of the Month page must look like one (the content block + "Book of the Month" / "Libro del mes" in
+  its title or heading): an unrelated 200 page (maintenance, a redirect home) is an error (previous offer kept,
+  `ok: false`), never "no offer today".
+* `currency` is read from the price ("CA$ 30" → "CAD", else "USD"); `types_checked` is stamped only when every
+  publication's type descriptions were read (else the next run tries again). The print plans' card text is always
+  the site's own (`shop.desc_print_*`): the store's sentence counts one year's copies.
+* A book is always shown under the title it is sold under (`title`, in `lang`) — on /shop/, the home teaser,
+  the posters and the digest (web, text, e-mail); `i18n.title` of the other language is only a small subtitle.
+* `month_label` i18n is written by rule (never machine-translated); `title`/`blurb`/`types` texts are
+  machine-translated into the other language (cached, like every other text).
+* A part that cannot be fetched or parsed (GV offer, LV offer, GV subscriptions, LV subscriptions — or one
+  region) keeps its previous data; the raw envelope gets `ok: false` with the reason, so /status/ shows
+  "Book of the Month & subscription prices" as failing and the 7-day "not updating" report catches it.
+* Without data (never synced) the file is `{updated: null, botm: [], bulk_discounts: {source_url: null,
+  tiers: []}, subscriptions: [], types: {}}` — pages must show a graceful "see the official store" state.
 
 ### status.json
 ```json
@@ -222,6 +301,17 @@ updating" issue.
 `rejected_by_guard` counts sentences whose machine translation was refused (repeated words,
 > 2.5× longer, changed numbers, HTML entities) — those keep their original text.
 
+### The monthly toolkit (`/monthly/`) — no data file of its own
+`eleventy/filters/monthly.js` builds one model per month at build time (America/Chicago): this month + the
+next 12 (`monthlyPages` → `/monthly/YYYY-MM/` × en/es; `mpMonths` / `mpMonth` filters) from `db.editorial`
+(themes, story deadlines, La Viña's suggested topics), `db.articles.issues`, `config/carry.yml` (the 10 ways,
+the "put it to work" tips), `db.events` (+ the committee meeting from `site.meeting` and recurring dates from
+`site.recurring_events` for months past `events.json`), `db.weekly_open` and `db.shop.botm`. The hub (`/monthly/`)
+is the canonical home of the 10 ways; each month page of that month's toolkit and poster (PNG 1080 × 1350,
+share, print on one Letter page). The 3 months before this one keep small redirect pages to `/monthly/`
+(`monthlyPastPages`, `src/pages/monthly-past.njk`), so a printed poster's QR code never lands on a 404.
+`MONTHLY_NOW=2026-12-15` fixes "today" for testing.
+
 ## 4. Template helpers (Eleventy filters)
 
 * `{{ "nav.home" | t(lang) }}` — UI string from `src/_i18n/*.json`
@@ -247,6 +337,7 @@ field also gets `i18n.<name> = {en, es}` in the site file.
 | `instagram.json` | `profiles` {gv/lv: {`username`, `name`, `full_name`, `url`, `followers`, `posts`, `owner_id`, `checked`, `avatar`}} |
 | `pdfs.json` | `crawl` {`known_pages`, `crawled_pages`, `pdfs`, `last_run_pages`}; crawler counters are in `stats` |
 | `events_external.json` | `cache`, `sitemap` (module bookkeeping — not used by the site) |
+| `shop.json` | `bulk_discounts` {`source_url`, `tiers`, `note` {en?, es?}}, `types` {gv/lv: {print/digital/complete: {`text`, `lang`, `url`}}}, `listings` [{`pub`, `region`, `url`}], `types_checked` (ISO; type descriptions are re-read every 30 days). Items: `botm:gv` / `botm:lv` (kind `botm`; `extra` = `pub`, `page_url`, `price`, `sale_price`, `discount_pct`, `currency`, `sku`, `starts`, `ends`, `month`, `month_label`, `offer_text`, `product_name`, `image_src`) and `sub:<pub>:<region>:<sku>` (kind `subscription`; `extra` = `pub`, `region`, `listing_url`, `type`, `term_months`, `price`, `currency`, `sku`, `volume`, `position`, `image_src`) |
 
 `articles.json` → `archive_state` — the archive listings (aagrapevine.org/archive, aalavina.org/archivo):
 ```json
@@ -292,14 +383,16 @@ it is read once.
 | article (`articles`, `spotlight`) | `publication`, `issue_key`, `issue_label`, `issue_date` (cover date), `issue_theme`, `issue_url`, `topic`, `section`, `author`, `author_location`, `subtitle`, `teaser`, `free`, `online_exclusive`, `department` (bool); written by build_data: `geo`, `pub_date` (below) | `section`, `topic`, `issue_theme` (machine); `issue_label`, `author_location` (rules — from `geo.label_en/label_es`, only when a place is known) |
 | pdf (`pdfs`) | `host`, `file_url`, `filename`, `size_bytes`, `pages`, `thumb`, `referrers` [{url, title}], `upload_month`, `link_texts`, `event_date`, `doc_lang`, `multilingual` (`true` when one file holds several languages — two or more page languages, language-only links for 2+ languages, or a heading such as "Catalog • Catálogo • Catalogue"; otherwise `null`: such a file takes the host site's language and gets no "(Spanish)" title suffix), `section` (heading on the referring page), `external`, `orphan` | — |
 | topic (`editorial`) | `publication`, `theme`, `evergreen`, and for dated GV themes `issue_key`, `issue_label`, `deadline`, `due_text`, `pdf_url`, `submit_url`, `guidelines_url` | `issue_label` (rules); `theme` when it differs from the title |
-| meeting (`weekly_open`) | `zoom_id`, `zoom_url`, `passcode`, `day`, `time`, `time_central`, `sentence`, `weekday`, `start_local`, `timezone`, `next_start`, `url`, `player_url` | written by rules from weekday/start_local/timezone: `day` ("Wednesdays"/"Miércoles"), `time` ("Noon Eastern"/"mediodía (hora del Este)"), `time_central` ("11:00 AM Central"/"11:00 a. m. (hora del Centro)"), `when` ("Wednesdays at 11:00 AM Central"/"Miércoles a las 11:00 a. m. (hora del Centro)"), `sentence` (join line with Zoom ID + passcode). Machine-translated only if those fields are missing |
+| meeting (`weekly_open`) | `zoom_id`, `zoom_url`, `passcode`, `day`, `time`, `time_central`, `sentence`, `weekday`, `start_local`, `timezone`, `next_start`, `url`, `player_url`; La Viña item (`weekly_open_lv`, §2): no `sentence`/`player_url`, plus `starts`, `source_note`, `own_i18n` | written by rules from weekday/start_local/timezone: `day` ("Wednesdays"/"Miércoles"), `time` ("Noon Eastern"/"mediodía (hora del Este)"), `time_central` ("11:00 AM Central"/"11:00 a. m. (hora del Centro)"), `when` ("Wednesdays at 11:00 AM Central"/"Miércoles a las 11:00 a. m. (hora del Centro)"), `sentence` (join line with Zoom ID + passcode). Machine-translated only if those fields are missing |
 | event (`events`) | common: `start`, `end`, `all_day`, `location`, `online_url`, `flyer_url`, `flyer_thumb`, `city`, `state`, `past`; `tentative` (`true` only: details to be confirmed), `location_tba` (`true` only: the place is not known yet — "Venue to be announced"; decided by the item's own `location`, by `location_es` / `location_en` only when there is no `location`). Committee: `meeting_id`, `passcode`, `recurring`. Recurring (category `recurring`, below): `recurring` (`true`), `series`, `rule`, `recurrence_label`. External calendar: `platform`, `online`, `scope`, `site`, `country`, `website`, `organizer`, `date_text`. Drive flyer: `drive_id`, `is_pdf`, `is_image`. Manual: `body_md`, `slug`, `file`, `own_i18n`; `also_in_feed` (the key of an .ics feed that lists the same event — also on a flyer, committee or recurring event) + `feed_match` (`url` / `title`). .ics feed (category `neta65` / `ics` / `gv-calendar` / `lv-calendar`, source `calendar`): `feed` (the feed's key), `uid` | committee meetings and recurring events: fixed human `title`/`summary` in both languages; recurring: `recurrence_label` (rules); manual: `body_md` (+ the file's own `title_es` / `summary_es`, never machine-translated); `location` (the file's `location_es` / `location_en`, or the site's own words for a place not known yet — never machine-translated) |
 | document / slides / photo / video_file / form (`drive`) | `file_id`, `mime`, `name`, `panel`, `panel_label`, `path`, `album`, `view_url`, `preview_url`, `download_url`, `thumb_url`, `image_url`, `is_image`, `is_video`, `is_pdf`, `file_type`, `folder_id`, `folder_url`, `folder_chain`, `modified_text`, `size_bytes`, `duration_sec`, `shortcut_id`, `generic_name`, flyers: `event_date`, `event_title`, `event_time`, `event_end_time`, `event_location` / `event_month`, forms: `form_closed`, `form_signin_required` | `album` (photos in a sub-folder) |
 | announcement (`announcements`) | `body_md`, `expires`, `pinned`, `slug`, `file`, `link`, `own_i18n` | `body_md` (+ the file's own `title_es` / `summary_es`) |
 | district (`districts`) | top-level `number`, `name`, `language`, `website`, `gvr_contact`, `meets` (+ any extra YAML keys) | `name`, `meets` |
 
 #### Recurring events (category `recurring`; build_data.recurring_events)
-One item per date of each `recurring_events:` entry in `config/site.yml` — the next `months_ahead` (default 6)
+One item per date of each `recurring_events:` entry in `config/site.yml` — the next `months_ahead` (default 6;
+/events/ and the calendar feed list only these — the /monthly/ posters work out later months from the same rule,
+`site.recurring_events`, so the booth is on every month's poster without 13 cards on /events/)
 dates plus the dates of the last 90 days (those have `extra.past: true`; the pages never list them, the
 calendar feed keeps them for subscribers):
 ```json

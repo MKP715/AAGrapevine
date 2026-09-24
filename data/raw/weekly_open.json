@@ -1,7 +1,7 @@
 {
  "source": "weekly_open",
- "updated": "2026-09-24T15:21:00Z",
- "attempted": "2026-09-24T15:21:00Z",
+ "updated": "2026-09-24T15:46:38Z",
+ "attempted": "2026-09-24T15:46:38Z",
  "ok": true,
  "error": null,
  "stats": {
@@ -43,6 +43,46 @@
     "timezone": "America/New_York",
     "time_central": "11 AM Central",
     "next_start": "2026-09-30T16:00:00Z"
+   }
+  },
+  {
+   "id": "weekly_open_lv",
+   "source": "lavina",
+   "kind": "meeting",
+   "url": "",
+   "title": "Reunión Abierta de La Viña",
+   "summary": "Una reunión abierta virtual de AA en español, cada semana: dos miembros comparten su experiencia, fortaleza y esperanza. La reunión se graba para publicarse como pódcast. ¡Sigamos extendiendo juntos esta poderosa cuerda salvavidas!",
+   "lang": "es",
+   "date": null,
+   "first_seen": "2026-09-24T15:46:38Z",
+   "last_seen": "2026-09-24T15:46:38Z",
+   "image": null,
+   "tags": [],
+   "category": null,
+   "status": "ok",
+   "extra": {
+    "zoom_id": "871 2036 8287",
+    "passcode": "238047",
+    "day": "Jueves",
+    "time": "12 p. m. (hora del Este)",
+    "weekday": "thursday",
+    "start_local": "12:00",
+    "timezone": "America/New_York",
+    "time_central": "11 AM Central",
+    "next_start": "2026-11-05T17:00:00Z",
+    "zoom_url": "https://zoom.us/j/87120368287",
+    "starts": "2026-11-05",
+    "source_note": "Official La Viña flyer (November 2026), shared with the committee",
+    "own_i18n": {
+     "title": {
+      "es": "Reunión Abierta de La Viña",
+      "en": "La Viña Open Meeting (in Spanish)"
+     },
+     "summary": {
+      "es": "Una reunión abierta virtual de AA en español, cada semana: dos miembros comparten su experiencia, fortaleza y esperanza. La reunión se graba para publicarse como pódcast. ¡Sigamos extendiendo juntos esta poderosa cuerda salvavidas!",
+      "en": "A weekly virtual open AA meeting in Spanish where two members share their experience, strength and hope. It is recorded to be published as a podcast. Let's keep extending this powerful lifeline together!"
+     }
+    }
    }
   }
  ],

@@ -968,7 +968,33 @@ export function weeklyOpen(wo, lang = "en", now = new Date()) {
       time: fmt(d, lang, { hour: "numeric", minute: "2-digit", timeZoneName: "short" }),
     };
   }
+  // A meeting that has not started yet (La Viña's, from extra.starts = "2026-11-05"): its first
+  // start, in the host's zone. Until then the page says "Starts Thursday, November 5, 2026".
+  let starts = null;
+  if (isYmd(x.starts) && next) {
+    const [y, mo, dd] = x.starts.split("-").map(Number);
+    const tz = next.tz;
+    const at = /^(\d{1,2}):(\d{2})$/.exec(next.at || "");
+    const p = zoneParts(Date.parse(next.iso), tz); // no start_local: the clock time of next_start
+    const ms = zoneInstant(y, mo - 1, dd, at ? Number(at[1]) : p.h, at ? Number(at[2]) : p.mi, tz);
+    if (Number.isFinite(ms) && now.getTime() < ms) {
+      const d = new Date(ms);
+      // "Thursday, November 5, 2026" / "jueves 5 de noviembre de 2026" (no comma after the weekday in Spanish)
+      let long = fmt(d, lang, { weekday: "long", month: "long", day: "numeric", year: "numeric" });
+      if (lang === "es") long = long.replace(/^([^\d,]+),\s*/, "$1 ");
+      starts = { iso: d.toISOString(), date: lang === "es" ? long : cap(long), time: fmt(d, lang, { hour: "numeric", minute: "2-digit", timeZoneName: "short" }) };
+    }
+  }
+  const isLv = wo.source === "lavina" || wo.id === "weekly_open_lv";
   return {
+    id: wo.id || "",
+    isLv,
+    lang: wo.lang || (isLv ? "es" : "en"),
+    title: pick("title") || String(wo.title || ""),
+    summary: pick("summary") || String(wo.summary || ""),
+    summaryMachine: Array.isArray(wo.machine) && wo.machine.includes(lang),
+    day: pick("day") || whenText(x.day, lang),
+    timeCentral: pick("time_central") || whenText(x.time_central, lang),
     when,
     hostTime: hostTime && !when.toLowerCase().includes(hostTime.toLowerCase()) ? hostTime : "",
     zoomId: x.zoom_id || "",
@@ -978,7 +1004,105 @@ export function weeklyOpen(wo, lang = "en", now = new Date()) {
     detailsUrl: x.url || wo.url || "",
     playerUrl: x.player_url || "",
     next,
+    starts,
   };
+}
+
+/**
+ * Every weekly open meeting (data/site/weekly_open.json: the Grapevine Weekly Open, then La Viña's
+ * Reunión Abierta) → display objects, the page language's meeting first (La Viña on /es/).
+ */
+export function weeklyOpenAll(items, lang = "en", now = new Date()) {
+  const list = (items || []).filter((it) => it && it.kind === "meeting" && it.status !== "gone")
+    .map((it) => weeklyOpen(it, lang, now)).filter(Boolean);
+  const rank = (w) => (w.lang === lang ? 0 : 1);
+  return list.map((w, i) => ({ w, i })).sort((a, b) => rank(a.w) - rank(b.w) || a.i - b.i).map((o) => o.w);
+}
+
+/* ------------------------------------------------------------------ */
+/*  Weekly digest: Book of the Month teaser + this month's toolkit     */
+/* ------------------------------------------------------------------ */
+// The one canonical home for prices and dates is /shop/ (data/site/shop.json → db.shop): the digest
+// only shows a compact teaser — title, sale price, end date — linking there and to the official store.
+const moneyFmt = (v, lang) => {
+  const n = Number(v);
+  if (!Number.isFinite(n)) return "";
+  try {
+    return new Intl.NumberFormat(LOCALES[lang] || "en-US", { style: "currency", currency: "USD" }).format(n);
+  } catch {
+    return `$${n.toFixed(2)}`;
+  }
+};
+export function digestShop(shop, lang = "en", now = new Date()) {
+  const today = new Intl.DateTimeFormat("en-CA", { timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit" }).format(now);
+  const offers = (shop?.botm || [])
+    .filter((b) => b && b.url && Number.isFinite(Number(b.sale_price)) && (!isYmd(b.ends) || b.ends >= today))
+    .map((b) => {
+      const isLv = b.pub === "lv";
+      let host = "";
+      try { host = new URL(b.url).hostname.replace(/^www\./, ""); } catch { host = isLv ? "aalavina.org" : "aagrapevine.org"; }
+      return {
+        pub: b.pub, isLv, host, raw: b,
+        pubName: isLv ? "La Viña" : "Grapevine",
+        // The title the book is sold under (a Grapevine book in English, a La Viña book in Spanish),
+        // never a translation; the translation is only a small gloss under it (like /shop/).
+        title: b.title || (b.i18n?.title?.[lang]) || "",
+        titleLang: b.lang || (isLv ? "es" : "en"),
+        gloss: b.title && b.i18n?.title?.[lang] && b.i18n.title[lang] !== b.title ? b.i18n.title[lang] : "",
+        machine: Array.isArray(b.machine) && b.machine.includes(lang),
+        url: b.url,
+        image: b.image || "",
+        pct: Number(b.discount_pct) || null,
+        sale: moneyFmt(b.sale_price, lang),
+        price: Number(b.price) > Number(b.sale_price) ? moneyFmt(b.price, lang) : "",
+        ends: isYmd(b.ends) ? b.ends : "",
+        endsLabel: isYmd(b.ends) ? fmt(parseInstant(b.ends), lang, { month: "long", day: "numeric" }) : "", // "October 14" / "14 de octubre"
+      };
+    })
+    // the page language's magazine first
+    .sort((a, b) => ((a.isLv ? "es" : "en") === lang ? 0 : 1) - ((b.isLv ? "es" : "en") === lang ? 0 : 1));
+  const pcts = [...new Set(offers.map((o) => o.pct).filter(Boolean))];
+  // This month's poster & toolkit: /monthly/YYYY-MM/ (America/Chicago)
+  const ym = today.slice(0, 7);
+  const monthLabel = fmt(parseInstant(`${ym}-15`), lang, { month: "long", year: "numeric" }); // "September 2026" / "septiembre de 2026"
+  return { offers, pct: pcts.length === 1 ? pcts[0] : null, month: { key: ym, path: `/monthly/${ym}/`, label: monthLabel } };
+}
+
+/**
+ * The digest's plain text (community.js digestText) + the Book of the Month teaser and the
+ * toolkit line, inserted before the closing "everything new" footer (the last paragraph).
+ */
+export function digestShopText(text, shop, langs, style, site, now = new Date()) {
+  const L = Array.isArray(langs) ? langs : [langs];
+  const main = L[0] || "en";
+  const wa = style === "whatsapp";
+  const base = String(site?.url || "").replace(/\/+$/, "");
+  const abs = (p, l) => `${base}${l === "es" ? "/es" : ""}${p}`;
+  // vars: an object, or a function of the language (a month name differs by language)
+  const both = (key, vars) => L.map((l) => t(key, l, typeof vars === "function" ? vars(l) : vars)).filter((v, i, a) => a.indexOf(v) === i).join(" / ");
+  const head = (s) => (wa ? `*${s}*` : `${s.toUpperCase()}\n${"-".repeat(Math.min(s.length, 60))}`);
+  const dg = digestShop(shop, main, now);
+  const out = [];
+  if (dg.offers.length) {
+    const label = dg.pct ? both("community.digest.botm_title", { pct: dg.pct }) : both("community.digest.botm_title_plain");
+    out.push(wa ? `📚 ${head(label)}` : head(label));
+    for (const o of dg.offers) {
+      // the title it is sold under first, then the translations as a second line
+      const titles = [o.raw.title, ...L.map((l) => o.raw.i18n?.title?.[l])].filter((v, i, a) => v && a.indexOf(v) === i);
+      const price = o.price ? t("community.digest.botm_price", main, { sale: o.sale, price: o.price }) : o.sale;
+      const ends = o.endsLabel ? ` · ${t("community.digest.botm_ends", main, { date: o.endsLabel })}` : "";
+      out.push(`${wa ? "•" : "-"} "${titles[0] || o.title}" (${o.pubName}) — ${price}${ends}`);
+      for (const r of titles.slice(1)) out.push(`  "${r}"`);
+      out.push(`  ${o.url}`);
+    }
+    out.push(`${both("community.digest.botm_more")}: ${abs("/shop/", main)}#botm`);
+    out.push("");
+  }
+  out.push(`${wa ? "🖼️ " : ""}${both("community.digest.monthly", (l) => ({ month: digestShop(null, l, now).month.label }))}: ${abs(dg.month.path, main)}`);
+  const block = out.join("\n");
+  const s = String(text || "").replace(/\s+$/, "");
+  const cut = s.lastIndexOf("\n\n");
+  return (cut > 0 ? `${s.slice(0, cut)}\n\n${block}\n\n${s.slice(cut + 2)}` : `${s}\n\n${block}`) + "\n";
 }
 
 /**
@@ -1032,6 +1156,11 @@ export default function (eleventyConfig, helpers) {
   eleventyConfig.addFilter("cmPreview", (u) => drivePreviewUrl(u));
   eleventyConfig.addFilter("cmWebcal", (u) => String(u || "").replace(/^https?:\/\//, "webcal://"));
   eleventyConfig.addFilter("cmWeekly", (wo, lang) => weeklyOpen(wo, lang));
+  // Both weekly open meetings (Grapevine Weekly Open + La Viña), the page language's first — /meeting/#weekly-open
+  eleventyConfig.addFilter("cmWeeklyAll", (items, lang) => weeklyOpenAll(EMPTY ? [] : items, lang));
+  // Weekly digest (/digest/): Book of the Month teaser + this month's toolkit link, and the same in the copy text
+  eleventyConfig.addFilter("cmDigestShop", (shop, lang) => digestShop(shop, lang));
+  eleventyConfig.addFilter("cmDigestShopText", (text, shop, langs, style, site) => digestShopText(text, shop, langs, style, site));
   // Text for GLightbox's data-title / data-description. GLightbox puts those values into the
   // page with innerHTML, so plain autoescaping is not enough (the browser decodes the
   // attribute first). This returns HTML-escaped text as a normal string; autoescape then

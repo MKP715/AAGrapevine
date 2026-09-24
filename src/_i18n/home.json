@@ -411,6 +411,10 @@
     "en": "Grapevine Weekly Open meeting",
     "es": "Reunión Abierta Semanal de Grapevine"
   },
+  "home.weekly_opens": {
+    "en": "Weekly open meetings",
+    "es": "Reuniones abiertas semanales"
+  },
   "home.weekly_open_text": {
     "en": "{when} · on Zoom, open to everyone",
     "es": "{when} · por Zoom, abierta a todos"
@@ -770,5 +774,33 @@
   "home.mag_mt_from_es": {
     "en": "Titles auto-translated from Spanish — the stories are in Spanish",
     "es": "Historias en español"
+  },
+  "home.botm_title": {
+    "en": "{pct}% off this month's books",
+    "es": "{pct}% de descuento en los libros del mes"
+  },
+  "home.botm_title_plain": {
+    "en": "This month's books are on sale",
+    "es": "Los libros del mes están en oferta"
+  },
+  "home.botm_cta": {
+    "en": "See the offer",
+    "es": "Ver la oferta"
+  },
+  "home.subs_desc": {
+    "en": "Print, digital or both — compare the plans.",
+    "es": "Impresa, digital o ambas: compara los planes."
+  },
+  "home.monthly_title": {
+    "en": "Monthly toolkit & poster",
+    "es": "Kit del mes y cartel"
+  },
+  "home.monthly_desc": {
+    "en": "Print it for your group or share it online.",
+    "es": "Imprímelo para tu grupo o compártelo en línea."
+  },
+  "home.shop_label": {
+    "en": "This month: Book of the Month, subscriptions and the monthly toolkit",
+    "es": "Este mes: libro del mes, suscripciones y el kit del mes"
   }
 }

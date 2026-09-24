@@ -907,18 +907,20 @@ export function searchIndex(db, nav, lang, helpers, site) {
     }
   });
 
-  /* ---- Grapevine Weekly Open meeting → its section on our Meeting page (Zoom ID, passcode,
+  /* ---- Weekly open meetings (Grapevine + La Viña) → their section on our Meeting page (Zoom ID, passcode,
      day and time in both languages; the official page is linked from there) ---- */
   safely("weekly_open", () => {
     for (const it of db.weekly_open?.items || []) {
       if (!ok(it)) continue;
       const ex = it.extra || {};
       const when = P(it, "when") || [P(it, "day"), P(it, "time")].filter(Boolean).join(" · ");
+      // One entry per meeting (Grapevine's on Wednesdays, La Viña's in Spanish on Thursdays)
+      const lv = it.source === "lavina";
       push({
-        id: "weekly-open", k: "meeting", t: P(it, "title"), o: it.title,
+        id: "weekly-open:" + it.id, k: "meeting", t: P(it, "title"), o: it.title,
         s: [when, ex.zoom_id ? "Zoom " + ex.zoom_id : ""].filter(Boolean).join(" · "),
-        x: ["zoom", both("search.kw.weekly_open"), it.i18n?.when?.[lang === "es" ? "en" : "es"]].filter(Boolean).join(" "),
-        u: "/meeting/#weekly-open", l: it.lang, src: "gv",
+        x: ["zoom", both(lv ? "search.kw.weekly_open_lv" : "search.kw.weekly_open"), it.i18n?.when?.[lang === "es" ? "en" : "es"]].filter(Boolean).join(" "),
+        u: "/meeting/#weekly-open", l: it.lang, src: lv ? "lv" : "gv",
       });
     }
   });

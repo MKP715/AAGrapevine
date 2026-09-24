@@ -57,8 +57,8 @@
     "es": "Reunión del comité"
   },
   "nav.meeting_desc": {
-    "en": "Monthly Zoom meeting, countdown & details",
-    "es": "Reunión mensual por Zoom, cuenta regresiva y detalles"
+    "en": "Monthly committee meeting + weekly open meetings on Zoom",
+    "es": "Reunión mensual del comité y reuniones abiertas semanales por Zoom"
   },
   "nav.events": {
     "en": "Events",
@@ -92,10 +92,6 @@
     "en": "News from the committee",
     "es": "Noticias del comité"
   },
-  "nav.service": {
-    "en": "Service",
-    "es": "Servicio"
-  },
   "nav.gvr": {
     "en": "GVR / RLV Corner",
     "es": "Rincón del RLV / GVR"
@@ -120,13 +116,25 @@
     "en": "Write for Grapevine or La Viña",
     "es": "Escribe para La Viña o Grapevine"
   },
-  "nav.subscribe": {
-    "en": "Subscribe",
-    "es": "Suscríbete"
+  "nav.shop": {
+    "en": "Shop",
+    "es": "Tienda"
   },
-  "nav.subscribe_desc": {
-    "en": "Magazines, apps, gifts & Carry the Message",
-    "es": "Revistas, apps, regalos y Lleva el Mensaje"
+  "nav.shop_desc": {
+    "en": "Book of the Month, subscriptions and prices, catalogs and order forms — from the official stores",
+    "es": "Libro del mes, suscripciones y precios, catálogos y formularios de pedido, de las tiendas oficiales"
+  },
+  "nav.get_involved": {
+    "en": "Get Involved",
+    "es": "Participa"
+  },
+  "nav.monthly": {
+    "en": "Monthly toolkit & posters",
+    "es": "Kit del mes y carteles"
+  },
+  "nav.monthly_desc": {
+    "en": "This month's issue, how to put it to work, printable posters",
+    "es": "La revista del mes, cómo usarla y carteles para imprimir"
   },
   "nav.instagram": {
     "en": "Instagram",
@@ -187,10 +195,6 @@
   "footer.explore": {
     "en": "Explore",
     "es": "Explorar"
-  },
-  "footer.committee": {
-    "en": "Committee & Service",
-    "es": "Comité y Servicio"
   },
   "footer.stay_updated": {
     "en": "Stay updated",

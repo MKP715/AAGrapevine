@@ -616,4 +616,36 @@ export default function (eleventyConfig, helpers) {
     return safeJson(o);
   });
 
+  /** The weekly open meetings as ONE short line for /listen/ and /watch/, which only point to their
+      canonical home (/meeting/#weekly-open — Zoom details live there only):
+      db.weekly_open.items → "Wednesdays (English) and Thursdays (Spanish, from November 5)" /
+      "miércoles (inglés) y jueves (español, desde el 5 de noviembre)". Weekday order; a meeting
+      that has not started yet (extra.starts after today, Central time) says from when.
+      source ("grapevine" | "lavina"): only that meeting, as its bare day ("Wednesdays") — for a
+      card about one show (the Grapevine Weekly Open podcast on /listen/). */
+  eleventyConfig.addFilter("mediaWeeklyDays", (items, lang = "en", source = "") => {
+    const WD = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
+    const today = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Chicago", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
+    const parts = (items || [])
+      .filter((it) => it && it.kind === "meeting" && it.status !== "gone" && (!source || it.source === source))
+      .map((it, i) => ({ it, i, wd: WD.indexOf(String(it.extra?.weekday || "").toLowerCase()) }))
+      .sort((a, b) => (a.wd < 0 ? 9 : a.wd) - (b.wd < 0 ? 9 : b.wd) || a.i - b.i)
+      .map(({ it }) => {
+        let day = tx(it, "day", lang);
+        if (!day) return "";
+        if (lang === "es") day = day.toLowerCase(); // "Miércoles" inside a sentence
+        if (source) return day;
+        const language = translateKey(`media.wo_lang_${it.lang === "es" ? "es" : "en"}`, lang);
+        const starts = String(it.extra?.starts || "");
+        if (/^\d{4}-\d{2}-\d{2}$/.test(starts) && starts > today) {
+          const date = new Intl.DateTimeFormat(LOCALES[lang] || "en-US", { month: "long", day: "numeric", timeZone: "UTC" }).format(new Date(starts + "T12:00:00Z"));
+          return translateKey("media.wo_day_lang_from", lang, { day, lang: language, date });
+        }
+        return translateKey("media.wo_day_lang", lang, { day, lang: language });
+      })
+      .filter(Boolean);
+    if (parts.length < 2) return parts[0] || "";
+    return translateKey("media.wo_days_two", lang, { a: parts.slice(0, -1).join(", "), b: parts[parts.length - 1] });
+  });
+
 }

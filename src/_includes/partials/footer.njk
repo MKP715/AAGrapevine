@@ -1,11 +1,11 @@
 {%- set L = lang or "en" -%}
 {%- set st = db.status -%}
 <footer class="mt-16 border-t border-line bg-surface text-sm text-muted" style="padding-bottom: env(safe-area-inset-bottom)">
-  {#- Phones: the three link groups stack, each list in two columns; small tablets: three
-      columns side by side; md+: four columns with the about blurb (the wrapper becomes
-      display:contents so the groups are items of the outer grid); xl+ (full-width desktop):
-      the long "Committee & service" list splits into two columns so the footer stays short. -#}
-  <div class="container-page grid gap-8 py-10 md:grid-cols-[1.4fr_1fr_1fr_1fr] md:gap-10 md:py-12 xl:grid-cols-[minmax(0,1.3fr)_minmax(0,0.75fr)_minmax(0,1.5fr)_minmax(0,1fr)] xl:gap-12">
+  {#- The footer mirrors the header: "Explore" (the top-level pages), one list per dropdown group
+      (Get Involved, Committee — nav.primary items with children) and "Stay updated".
+      Phones: the groups sit two per row; sm: four across; lg+: the about blurb joins the row
+      (the wrapper becomes display:contents so the groups are items of the outer grid). -#}
+  <div class="container-page grid gap-8 py-10 md:py-12 lg:grid-cols-[minmax(0,1.4fr)_repeat(4,minmax(0,1fr))] lg:gap-8 xl:gap-12">
     <div>
       <a href="{{ '/' | lurl(L) }}" class="inline-flex items-center gap-3 no-underline">
         <span class="grid h-11 place-items-center rounded-lg bg-white px-1.5 ring-1 ring-black/5"><img src="/assets/img/logo-wide.png" alt="NETA 65" width="128" height="63" class="h-9 w-auto" loading="lazy"></span>
@@ -17,26 +17,28 @@
         <a class="btn-secondary btn-sm" href="{{ site.area_website }}" rel="noopener" target="_blank">{% icon "globe", "size-4" %} neta65.org</a>
       </p>
     </div>
-    <div class="grid gap-7 sm:grid-cols-3 sm:gap-6 md:contents">
+    <div class="grid grid-cols-2 gap-x-6 gap-y-7 sm:grid-cols-4 lg:contents">
       <div>
         <h2 class="eyebrow mb-3 font-sans">{{ "footer.explore" | t(L) }}</h2>
-        <ul class="grid grid-cols-2 gap-x-6 gap-y-2 sm:grid-cols-1">
+        <ul class="grid gap-y-2">
           {%- for item in nav.primary %}{% if not item.children %}
           <li><a class="hover:text-gv" href="{{ item.url | lurl(L) }}">{{ item.key | t(L) }}</a></li>
           {%- endif %}{% endfor %}
         </ul>
       </div>
+      {%- for item in nav.primary %}{% if item.children %}
       <div>
-        <h2 class="eyebrow mb-3 font-sans">{{ "footer.committee" | t(L) }}</h2>
-        <ul class="grid grid-cols-2 gap-x-6 gap-y-2 sm:grid-cols-1 xl:grid-cols-2">
-          {%- for item in nav.primary %}{% if item.children %}{% for c in item.children %}
+        <h2 class="eyebrow mb-3 font-sans">{{ item.key | t(L) }}</h2>
+        <ul class="grid gap-y-2">
+          {%- for c in item.children %}
           <li><a class="hover:text-gv" href="{{ c.url | lurl(L) }}">{{ c.key | t(L) }}</a></li>
-          {%- endfor %}{% endif %}{% endfor %}
+          {%- endfor %}
         </ul>
       </div>
+      {%- endif %}{% endfor %}
       <div>
         <h2 class="eyebrow mb-3 font-sans">{{ "footer.stay_updated" | t(L) }}</h2>
-        <ul class="grid grid-cols-2 gap-x-6 gap-y-2 sm:grid-cols-1">
+        <ul class="grid gap-y-2">
           <li><a class="inline-flex items-center gap-2 hover:text-gv" href="{{ '/feed.xml' | lurl(L) }}">{% icon "rss", "size-4" %} {{ "feeds.rss" | t(L) }}</a></li>
           <li><a class="inline-flex items-center gap-2 hover:text-gv" href="{{ '/events.ics' | lurl(L) }}">{% icon "calendar-plus", "size-4" %} {{ "feeds.ics" | t(L) }}</a></li>
           {%- for f in nav.footer %}

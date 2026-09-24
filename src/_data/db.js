@@ -17,10 +17,13 @@ import { safeUrl } from "../../eleventy.config.js";
 // first — docs/DATA_SCHEMA.md → "spotlight.json"), read by the home page, /published/, /read/,
 // /contribute/ and the search index as db.spotlight. Its links (url, image, extra.issue_url) get the
 // same cleaning as every other file here. Without the file, db.spotlight is { updated: null, items: [] }.
+// "shop" = the official stores' Book of the Month offers, bulk-book discounts and subscription prices
+// (scripts/sync/shop.py → build_data; docs/DATA_SCHEMA.md → "shop.json"): db.shop.botm, db.shop.bulk_discounts,
+// db.shop.subscriptions, db.shop.types. It has no `items` list of its own (db.js adds an empty one).
 const FILES = [
   "episodes", "videos", "instagram", "articles", "pdfs", "drive", "events",
   "announcements", "editorial", "weekly_open", "whatsnew", "status", "districts",
-  "spotlight",
+  "spotlight", "shop",
 ];
 
 // Field names that hold a link or an image address: url, image, extra.online_url, extra.thumbs[],

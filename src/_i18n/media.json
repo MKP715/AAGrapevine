@@ -61,7 +61,12 @@
   "media.play_latest": { "en": "Play the latest", "es": "Escuchar el más reciente" },
   "media.see_episodes": { "en": "See episodes", "es": "Ver episodios" },
   "media.follow_in": { "en": "Follow in your app", "es": "Síguelo en tu app" },
-  "media.wo_live": { "en": "Live on Zoom · {when}", "es": "En vivo por Zoom · {when}" },
+  "media.wo_live": { "en": "Live on Zoom: {when}", "es": "En vivo por Zoom: {when}" },
+  "media.wo_day_lang": { "en": "{day} ({lang})", "es": "{day} ({lang})" },
+  "media.wo_day_lang_from": { "en": "{day} ({lang}, from {date})", "es": "{day} ({lang}, desde el {date})" },
+  "media.wo_days_two": { "en": "{a} and {b}", "es": "{a} y {b}" },
+  "media.wo_lang_en": { "en": "English", "es": "inglés" },
+  "media.wo_lang_es": { "en": "Spanish", "es": "español" },
   "media.wo_join": { "en": "How to join", "es": "Cómo unirse" },
 
   "media.all_episodes": { "en": "All episodes", "es": "Todos los episodios" },
@@ -166,10 +171,10 @@
     "en": "Videos load from YouTube's privacy-enhanced mode (youtube-nocookie.com) only when you press play.",
     "es": "Los videos se cargan desde el modo de privacidad mejorada de YouTube (youtube-nocookie.com) solo cuando presionas reproducir."
   },
-  "media.weekly_title": { "en": "Grapevine Weekly Open", "es": "Reunión Abierta Semanal de Grapevine" },
+  "media.weekly_title": { "en": "Weekly open meetings", "es": "Reuniones abiertas semanales" },
   "media.weekly_text": {
-    "en": "An open AA meeting on Zoom every week, built around Grapevine stories. Recordings land here automatically.",
-    "es": "Una reunión abierta de AA por Zoom cada semana, basada en historias de Grapevine. Las grabaciones llegan aquí automáticamente."
+    "en": "Open AA meetings on Zoom every week. Recordings of the Grapevine Weekly Open land here automatically.",
+    "es": "Reuniones abiertas de AA por Zoom cada semana. Las grabaciones de Grapevine Weekly Open llegan aquí automáticamente."
   },
   "media.weekly_cta": { "en": "Join the live meeting", "es": "Únete a la reunión en vivo" },
   "media.podcast_title": { "en": "Prefer to listen?", "es": "¿Prefieres escuchar?" },

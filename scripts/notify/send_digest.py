@@ -8,6 +8,9 @@ announcements.json — and sends ONE clean e-mail (HTML + plain text) with:
   * upcoming events (next 30 days; a monthly event from `recurring_events:` once, with its next date)
   * everything new in the last N days (config/site.yml → digest.days): magazine
     articles, podcast episodes, videos, Instagram, PDFs, committee uploads
+  * a compact Book of the Month teaser (data/site/shop.json → botm: title, sale price, last
+    day, the official store link + the site's /shop/#botm) and one line to this month's
+    poster & toolkit (/monthly/YYYY-MM/) — never counted as news on their own
   * each section in English first, then in Spanish (titles are already translated)
 
 Standard library only (smtplib + email.mime) so it runs anywhere without installing
@@ -119,6 +122,12 @@ T = {
         "pages": "{n} pages",
         "min": "{n} min",
         "episode": "S{s} · E{e}",
+        "botm_title": "Book of the Month — {pct}% off",
+        "botm_title_plain": "Book of the Month",
+        "botm_regular": "(regular {price})",
+        "botm_until": "until {date}",
+        "botm_more": "Book of the Month details on our shop page",
+        "toolkit": "This month's poster & toolkit ({month})",
     },
     "es": {
         "lang_name": "Español",
@@ -162,6 +171,12 @@ T = {
         "pages": "{n} páginas",
         "min": "{n} min",
         "episode": "T{s} · E{e}",
+        "botm_title": "Libro del mes — {pct}% de descuento",
+        "botm_title_plain": "Libro del mes",
+        "botm_regular": "(precio regular {price})",
+        "botm_until": "hasta el {date}",
+        "botm_more": "Detalles del libro del mes en nuestra página de la tienda",
+        "toolkit": "El cartel y el kit de este mes ({month})",
     },
 }
 
@@ -262,6 +277,21 @@ def load_items(name: str) -> list[dict]:
     except Exception as e:  # corrupt JSON must never stop the digest
         log(f"could not read {shown}: {e}")
     return []
+
+
+def load_botm() -> list[dict]:
+    """The Book of the Month offers of data/site/shop.json (`botm`, 0–2 entries, Grapevine first —
+    docs/DATA_SCHEMA.md → shop.json). That file has no `items`; a missing or broken file = no offers."""
+    try:
+        with open(SITE_DIR / "shop.json", encoding="utf-8") as f:
+            data = json.load(f)
+        botm = data.get("botm") if isinstance(data, dict) else None
+        return [b for b in (botm or []) if isinstance(b, dict)]
+    except FileNotFoundError:
+        return []
+    except Exception as e:  # corrupt JSON must never stop the digest
+        log(f"could not read data/site/shop.json: {e}")
+        return []
 
 
 # ---------------------------------------------------------------------------- time
@@ -642,7 +672,16 @@ def collect(now: datetime, days: int, event_days: int, max_per: int) -> dict:
             series_seen.add(series)
         data["events"].append(it)
 
+    # ---- Book of the Month (a compact teaser: the prices and dates live on the site's /shop/#botm)
+    # An offer whose last day has passed (Central time) is left out, like the website.
+    data["botm"] = [b for b in load_botm()
+                    if b.get("url") and isinstance(b.get("sale_price"), (int, float))
+                    and not (is_date_only(b.get("ends")) and str(b["ends"]) < today)]
+    # This month's poster & toolkit page: /monthly/YYYY-MM/ (Central time)
+    data["month"] = to_central(now).strftime("%Y-%m")
+
     # which languages carry machine translations (for the small footnote)
+    # (Book of the Month titles are shown as sold, never translated, so they bring no footnote)
     every = [i for g in data["groups"].values() for i in g[:max_per]] + data["announcements"] + data["events"]
     for lang in ("en", "es"):
         data["machine"][lang] = any(is_machine(i, lang) for i in every)
@@ -738,6 +777,46 @@ def event_row(it: dict, lang: str, links: Links) -> dict:
     url = it.get("url") or ex.get("flyer_url") or ex.get("online_url") or ""
     url = links.item({**it, "url": url}, lang, "/events/")
     return {"title": tx(it, "title", lang), "when": when, "where": where, "url": url}
+
+
+def fmt_money(v: Any) -> str:
+    """11.99 → "$11.99" (the stores list prices in USD; the website shows them the same way)."""
+    try:
+        return f"${float(v):,.2f}"
+    except (TypeError, ValueError):
+        return ""
+
+
+def fmt_month_day(ymd: str, lang: str) -> str:
+    """'2026-10-14' → "October 14" / "14 de octubre"."""
+    d = date.fromisoformat(ymd)
+    return f"{d.day} de {MONTHS['es'][d.month - 1]}" if lang == "es" else f"{MONTHS['en'][d.month - 1]} {d.day}"
+
+
+def botm_block(data: dict, lang: str, links: Links) -> dict:
+    """The Book of the Month teaser + this month's toolkit link, shared by the HTML and the text:
+    {title, rows: [{label, fg, bg, title, url, price, regular, until}], more_url, month_label, month_url}.
+    The magazine of the section's language comes first (La Viña in the Spanish half)."""
+    t = T[lang]
+    offers = sorted(data.get("botm") or [], key=lambda b: (b.get("pub") == "lv") != (lang == "es"))
+    pcts = {b.get("discount_pct") for b in offers if b.get("discount_pct")}
+    rows = []
+    for b in offers:
+        lv = b.get("pub") == "lv"
+        price, sale = b.get("price"), b.get("sale_price")
+        regular = t["botm_regular"].format(price=fmt_money(price)) if isinstance(price, (int, float)) and price > sale else ""
+        rows.append({"label": "La Viña" if lv else "Grapevine", "fg": C["lv"] if lv else C["gv"],
+                     "bg": C["lv_soft"] if lv else C["gv_soft"],
+                     # the title the book is sold under (never a translation: no such edition exists)
+                     "title": str(b.get("title") or "").strip() or tx(b, "title", lang),
+                     "url": b["url"], "price": fmt_money(sale), "regular": regular,
+                     "until": t["botm_until"].format(date=fmt_month_day(b["ends"], lang)) if is_date_only(b.get("ends")) else ""})
+    ym = data.get("month") or to_central(data["end"]).strftime("%Y-%m")
+    y, m = (int(x) for x in ym.split("-"))
+    month_label = f"{MONTHS['es'][m - 1]} de {y}" if lang == "es" else f"{MONTHS['en'][m - 1]} {y}"
+    return {"title": t["botm_title"].format(pct=pcts.pop()) if len(pcts) == 1 else t["botm_title_plain"],
+            "rows": rows, "more_url": links.page("/shop/", lang) + "#botm",
+            "month_label": t["toolkit"].format(month=month_label), "month_url": links.page(f"/monthly/{ym}/", lang)}
 
 
 # ---------------------------------------------------------------------------- HTML
@@ -914,6 +993,32 @@ def render_lang_html(lang: str, data: dict, cfg: dict, links: Links, max_per: in
     if not total_count(data):     # (a monthly recurring event alone is not news)
         parts.append(f'<tr><td style="padding:16px 32px;font-size:14px;color:{C["muted"]};">{_esc(t["nothing"])}</td></tr>')
 
+    # ---- Book of the Month (compact) + this month's poster & toolkit
+    bm = botm_block(data, lang, links)
+    month_line = (f'<p style="margin:{12 if bm["rows"] else 0}px 0 0;font-size:14px;">'
+                  f'<a href="{_esc(bm["month_url"])}" style="color:{C["gv"]};font-weight:bold;">{_esc(bm["month_label"])} →</a></p>')
+    if bm["rows"]:
+        rows = []
+        for r in bm["rows"]:
+            pill = (f'<span style="display:inline-block;font-size:11px;font-weight:bold;letter-spacing:.02em;color:{r["fg"]};'
+                    f'background:{r["bg"]};border-radius:999px;padding:2px 8px;margin-right:6px;vertical-align:1px;">'
+                    f'{_esc(r["label"])}</span>')
+            meta = " · ".join(x for x in (
+                f'<strong style="color:{C["ink"]};">{_esc(r["price"])}</strong>' + (f' {_esc(r["regular"])}' if r["regular"] else ""),
+                _esc(r["until"])) if x)
+            rows.append(f"""<tr><td style="padding:8px 0;border-bottom:1px solid {C['line']};font-size:15px;line-height:1.4;">
+  {pill}<a href="{_esc(r['url'])}" style="{link_style}">{_esc(r['title'])}</a>
+  <div style="font-size:13px;color:{C['muted']};margin-top:3px;">{meta}</div>
+</td></tr>""")
+        parts.append(f"""<tr><td style="padding:20px 32px 4px;">
+  <h3 style="{h3.format(color=C['grape'])}">{_esc(bm['title'])}</h3>
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">{"".join(rows)}</table>
+  <p style="margin:8px 0 0;font-size:13px;"><a href="{_esc(bm['more_url'])}" style="color:{C['gv']};">{_esc(t['botm_more'])} →</a></p>
+  {month_line}
+</td></tr>""")
+    else:
+        parts.append(f'<tr><td style="padding:16px 32px 0;">{month_line}</td></tr>')
+
     # ---- call to action + machine translation note
     def btn(label: str, url: str, primary: bool) -> str:
         style = (f"background:{C['gv']};color:#ffffff;border:1px solid {C['gv']};" if primary
@@ -986,6 +1091,15 @@ def render_text(data: dict, cfg: dict, links: Links, max_per: int) -> str:
             out += [f"  → {more}: {links.page(page, lang)}", ""]
         if not total_count(data):
             out += [t["nothing"], ""]
+        bm = botm_block(data, lang, links)
+        if bm["rows"]:
+            out += [bm["title"].upper(), "-" * len(bm["title"])]
+            for r in bm["rows"]:
+                price = f"{r['price']} {r['regular']}".strip()
+                out.append(f"* [{r['label']}] {r['title']} — {price}{(' · ' + r['until']) if r['until'] else ''}")
+                out.append(f"  {r['url']}")
+            out.append(f"  → {t['botm_more']}: {bm['more_url']}")
+        out += [f"{bm['month_label']}: {bm['month_url']}", ""]
         out.append(f"{t['cta_new']}: {links.page('/whats-new/', lang)}")
         if data["machine"].get(lang):
             out.append(t["machine"])

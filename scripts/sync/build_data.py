@@ -72,6 +72,7 @@ SOURCES: list[tuple[str, str, str]] = [
     ("instagram", "Instagram posts", "Publicaciones de Instagram"),
     ("weekly_open", "Grapevine Weekly Open meeting", "Reunión Grapevine Weekly Open"),
     ("events_external", "GV/LV event calendars", "Calendarios de eventos de GV/LV"),
+    ("shop", "Book of the Month & subscription prices", "Libro del mes y precios de suscripción"),
 ]
 
 # Canonical key order of a site item. `last_seen` is deliberately NOT here: it only serves the sync
@@ -2001,6 +2002,160 @@ def finish_district(it: dict, i18n: I18n) -> None:
     it["machine"] = sorted(machine)
 
 
+# =========================================================================== shop (official store data)
+# data/raw/shop.json (scripts/sync/shop.py) → data/site/shop.json: the Book of the Month offers, the
+# bulk-book discount tiers, the subscription prices per publication × region and short descriptions of
+# the subscription types. Contract: docs/DATA_SCHEMA.md → "shop.json". Prices and dates always come
+# from the synced data (never written into a template); purchases link to the official stores.
+SHOP_PUBS = ("gv", "lv")
+SHOP_REGIONS = ("us", "ca", "intl")
+SHOP_TYPES = ("print", "digital", "complete")
+
+
+def _num(v: Any) -> float | None:
+    try:
+        return None if v is None or isinstance(v, bool) else round(float(v), 2)
+    except (TypeError, ValueError):
+        return None
+
+
+def _int_or_none(v: Any) -> int | None:
+    try:
+        return None if v is None or isinstance(v, bool) else int(v)
+    except (TypeError, ValueError):
+        return None
+
+
+def empty_shop(updated: str | None = None) -> dict:
+    return {"updated": updated, "fixture": False, "botm": [],
+            "bulk_discounts": {"source_url": None, "tiers": []}, "subscriptions": [], "types": {}}
+
+
+def build_shop(ctx: Ctx, i18n: I18n) -> tuple[dict, list[tuple[dict, str, str, str]]]:
+    """shop.json without its translations (→ finish_shop); the texts to translate are registered
+    with `i18n` (Book of the Month titles and blurbs, type descriptions, the bulk-discount note).
+    An offer whose end date has passed is left out (the official page may still show it)."""
+    env = ctx.raw.get("shop") or {}
+    items = ctx.items("shop")
+    today = ctx.today_local.isoformat()
+    doc = empty_shop(env.get("updated"))
+    wanted: list[tuple[dict, str, str, str]] = []
+
+    for pub in SHOP_PUBS:
+        it = next((i for i in items if i.get("id") == f"botm:{pub}" and i.get("kind") == "botm"), None)
+        if not it:
+            continue
+        ex = it.get("extra") or {}
+        if ex.get("ends") and str(ex["ends"]) < today:
+            log.info("shop: the %s Book of the Month offer ended %s — left out", pub, ex["ends"])
+            continue
+        lang = it.get("lang") if it.get("lang") in LANGS else ("es" if pub == "lv" else "en")
+        title, blurb = fix_title(it.get("title")), clean_text(it.get("summary"))
+        if not title or not it.get("url"):
+            continue
+        row = {"id": it["id"], "pub": pub, "lang": lang, "title": title, "url": it["url"],
+               "page_url": ex.get("page_url"), "image": it.get("image") or None,
+               "price": _num(ex.get("price")), "sale_price": _num(ex.get("sale_price")),
+               "discount_pct": ex.get("discount_pct"), "currency": ex.get("currency") or "USD",
+               "sku": ex.get("sku"), "starts": ex.get("starts"), "ends": ex.get("ends"),
+               "month_label": ex.get("month_label"), "blurb": blurb, "i18n": {}, "machine": set()}
+        for f in ("title", "blurb"):
+            if row[f]:
+                wanted.append((row, f, row[f], lang))
+        month = _int_or_none(ex.get("month"))
+        if month and 1 <= month <= 12:          # written by rule, never machine-translated
+            row["i18n"]["month_label"] = {"en": MONTHS_EN[month - 1], "es": MONTHS_ES[month - 1]}
+        elif row["month_label"]:
+            wanted.append((row, "month_label", row["month_label"], lang))
+        doc["botm"].append(row)
+
+    by_key: dict[tuple[str, str], list[dict]] = {}
+    for it in items:
+        ex = it.get("extra") or {}
+        if it.get("kind") == "subscription" and ex.get("pub") in SHOP_PUBS and ex.get("region") in SHOP_REGIONS:
+            by_key.setdefault((ex["pub"], ex["region"]), []).append(it)
+    listings = [x for x in (env.get("listings") or []) if isinstance(x, dict)]
+    for pub in SHOP_PUBS:
+        for region in SHOP_REGIONS:
+            plans = sorted(by_key.get((pub, region), []),
+                           key=lambda i: (_int_or_none((i.get("extra") or {}).get("position")) or 0, i["id"]))
+            if not plans:
+                continue
+            url = next((x.get("url") for x in listings if x.get("pub") == pub and x.get("region") == region), None)
+            rows = []
+            for i in plans:
+                ex = i.get("extra") or {}
+                rows.append({
+                    "type": ex.get("type") if ex.get("type") in (*SHOP_TYPES, "other") else "other",
+                    "term_months": _int_or_none(ex.get("term_months")), "title": clean_text(i.get("title")),
+                    "price": _num(ex.get("price")), "currency": ex.get("currency") or "USD", "sku": ex.get("sku"),
+                    "url": i.get("url"), "image": i.get("image") or None,
+                    "volume": [{"min": _int_or_none(v.get("min")), "max": _int_or_none(v.get("max")),
+                                "price": _num(v.get("price"))}
+                               for v in (ex.get("volume") or []) if isinstance(v, dict)],
+                })
+            doc["subscriptions"].append({"pub": pub, "region": region,
+                                         "url": url or (plans[0].get("extra") or {}).get("listing_url"),
+                                         "plans": rows})
+
+    bulk = env.get("bulk_discounts") if isinstance(env.get("bulk_discounts"), dict) else {}
+    tiers = [{"min": _int_or_none(t.get("min")), "max": _int_or_none(t.get("max")), "off": _num(t.get("off")) or 0.0}
+             for t in (bulk.get("tiers") or []) if isinstance(t, dict) and _int_or_none(t.get("min")) is not None]
+    doc["bulk_discounts"] = {"source_url": bulk.get("source_url"), "tiers": tiers}
+    note = {k: clean_text(v) for k, v in (bulk.get("note") or {}).items() if k in LANGS and clean_text(v)}
+    if note:
+        cell = dict(note)
+        doc["bulk_discounts"]["note"] = cell
+        if len(note) == 1:                    # only one store printed it: translate it
+            src, text = next(iter(note.items()))
+            wanted.append((cell, "", text, src))
+
+    raw_types = env.get("types") if isinstance(env.get("types"), dict) else {}
+    for pub in SHOP_PUBS:
+        for typ in SHOP_TYPES:
+            t = (raw_types.get(pub) or {}).get(typ)
+            text = clean_text(t.get("text")) if isinstance(t, dict) else ""
+            if text:
+                src = t.get("lang") if t.get("lang") in LANGS else ("es" if pub == "lv" else "en")
+                cell = doc["types"].setdefault(pub, {}).setdefault(typ, {src: text})
+                wanted.append((cell, "", text, src))
+
+    for _t, _f, text, src in wanted:
+        i18n.want(text, src, (0, 0.0))
+    return doc, wanted
+
+
+def finish_shop(doc: dict, wanted: list[tuple[dict, str, str, str]], i18n: I18n) -> None:
+    for target, field, text, src in wanted:
+        pair, machine = i18n.pair(text, src)
+        if not field:                         # a plain {en, es} cell (type description, bulk note)
+            target.update(pair)
+            continue
+        if machine and field in TITLE_FIELDS:
+            en_title_case(pair, src)
+        target["i18n"][field] = pair
+        if machine:
+            target["machine"].add(other(src))
+    for row in doc["botm"]:
+        row["i18n"] = {k: row["i18n"][k] for k in ("title", "blurb", "month_label") if k in row["i18n"]}
+        row["machine"] = sorted(row.get("machine") or [])
+
+
+def shop_count(doc: dict) -> int:
+    return len(doc.get("botm") or []) + sum(len(s.get("plans") or []) for s in doc.get("subscriptions") or [])
+
+
+# Weekly Open meetings: the Grapevine one (Wednesdays) first — templates read db.weekly_open.items[0] —
+# then La Viña's (Thursdays, config/site.yml `lavina_weekly_open`).
+WEEKLY_OPEN_ORDER = ("weekly_open", "weekly_open_lv")
+
+
+def weekly_open_items(ctx: Ctx) -> list[dict]:
+    items = simple(ctx, "weekly_open")
+    n = len(WEEKLY_OPEN_ORDER)
+    return sorted(items, key=lambda i: WEEKLY_OPEN_ORDER.index(i["id"]) if i["id"] in WEEKLY_OPEN_ORDER else n)
+
+
 # =========================================================================== status
 CRAWL_KEYS = ("known_pages", "crawled_pages", "never_crawled", "never_crawled_events", "queue_remaining",
               "est_days_to_full", "last_run_pages", "pdfs", "pdfs_gone", "pdfs_with_details", "pdfs_with_thumbs",
@@ -2125,12 +2280,17 @@ def main(argv: list[str] | None = None) -> int:
             "pdfs": simple(ctx, "pdfs", ("pdf",)),
             "drive": simple(ctx, "drive", exclude=("announcement",), skip=closed_form),
             "editorial": simple(ctx, "editorial"),
-            "weekly_open": simple(ctx, "weekly_open"),
+            "weekly_open": weekly_open_items(ctx),
             "announcements": build_announcements(ctx),
             "events": build_events(ctx),
         }
         enrich_articles(ctx, cols["articles"])
         meta, meta_wanted = build_meta(ctx, i18n)
+        try:
+            shop, shop_wanted = build_shop(ctx, i18n)
+        except Exception as e:  # the store data never breaks the build
+            log.error("shop.json could not be built (%s: %s) — writing an empty one", type(e).__name__, e)
+            shop, shop_wanted = empty_shop(), []
         wn_plan = plan_whatsnew(ctx, cols)
         spot_items, spot_counts = plan_spotlight(ctx, cols["articles"])
         districts = build_districts(ctx, i18n)
@@ -2154,6 +2314,7 @@ def main(argv: list[str] | None = None) -> int:
                     log.warning("skipped %s: %s: %s", it.get("id"), type(e).__name__, e)
             cols[name] = kept
         finish_meta(meta, meta_wanted, i18n)
+        finish_shop(shop, shop_wanted, i18n)
         for _, it in wn_plan:
             if "_album" in it:
                 finish_group(ctx, it, i18n)
@@ -2165,7 +2326,7 @@ def main(argv: list[str] | None = None) -> int:
             it.setdefault("is_new", ctx.is_new(it, raw_source(it)))
 
         counts = {name: len(items) for name, items in cols.items()}
-        counts.update({"whatsnew": len(whatsnew), "districts": len(districts)})
+        counts.update({"whatsnew": len(whatsnew), "districts": len(districts), "shop": shop_count(shop)})
         now = now_iso()
         for name in SITE_FILES:
             src = SINGLE_SOURCE.get(name)
@@ -2181,6 +2342,7 @@ def main(argv: list[str] | None = None) -> int:
         spot_items, spot_counts = plan_spotlight(ctx, cols["articles"])     # again: translated + kept items
         spotlight = build_spotlight(ctx, spot_items, spot_counts, now)
         write_json(out_dir / "spotlight.json", spotlight)
+        write_json(out_dir / "shop.json", {**shop, "updated": shop.get("updated") or now})
         status = build_status(ctx, translator, i18n, counts, not a.no_translate, i18n.seconds)
         status["spotlight"] = {"today": spotlight["today"], "home_days": spotlight["home_days"],
                                "list_days": spotlight["list_days"], "counts": spotlight["counts"],

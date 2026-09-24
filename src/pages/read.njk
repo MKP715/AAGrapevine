@@ -105,7 +105,7 @@ pageScripts: ["/assets/js/read.js"]
       {% endif %}
       <div class="mt-6 flex flex-wrap gap-2">
         <a class="btn-light" href="{{ issueUrl }}" target="_blank" rel="noopener">{% icon "book-open", "size-4" %} {{ "read.read_on" | t(lang, {site: site_}) }}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a>
-        <a class="btn-on-dark" href="{{ '/subscribe/' | lurl(lang) }}">{% icon "mail-open", "size-4" %} {{ "read.subscribe" | t(lang) }}</a>
+        <a class="btn-on-dark" href="{{ '/shop/' | lurl(lang) }}?pub={{ v.pub }}#subscriptions">{% icon "shopping-bag", "size-4" %} {{ "read.subscribe" | t(lang) }}</a>
       </div>
     </header>
 
@@ -317,7 +317,7 @@ pageScripts: ["/assets/js/read.js"]
         <p class="font-semibold text-ink">{{ "read.paywall_title" | t(lang) }}</p>
         <p class="measure mt-1 text-sm leading-relaxed text-muted">{{ "read.paywall_text" | t(lang) }}</p>
       </div>
-      <a class="btn-primary shrink-0" href="{{ '/subscribe/' | lurl(lang) }}">{{ "read.paywall_cta" | t(lang) }} {% icon "arrow-right", "size-4" %}</a>
+      <a class="btn-primary shrink-0" href="{{ '/shop/' | lurl(lang) }}#subscriptions">{{ "read.paywall_cta" | t(lang) }} {% icon "arrow-right", "size-4" %}</a>
     </aside>
   </section>
 
@@ -426,7 +426,7 @@ pageScripts: ["/assets/js/read.js"]
   <h2 id="more-title" class="h-section mb-6">{{ "read.more_title" | t(lang) }}</h2>
   <div class="grid-cards-4">
     {% set tiles = [
-      { href: "/subscribe/" | lurl(lang), icon: "mail-open", t: "read.more_sub_t", d: "read.more_sub", c: "bg-gv-soft text-gv" },
+      { href: "/shop/" | lurl(lang), icon: "shopping-bag", t: "read.more_sub_t", d: "read.more_sub", c: "bg-gv-soft text-gv" },
       { href: "/contribute/" | lurl(lang), icon: "pen-line", t: "read.more_write_t", d: "read.more_write", c: "bg-lv-soft text-lv" },
       { href: "/listen/" | lurl(lang), icon: "headphones", t: "read.more_listen_t", d: "read.more_listen", c: "bg-grape-soft text-grape" },
       { href: "/library/" | lurl(lang), icon: "library", t: "read.more_library_t", d: "read.more_library", c: "bg-vine-soft text-vine" }

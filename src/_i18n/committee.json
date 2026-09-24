@@ -323,10 +323,6 @@
     "en": "Not our committee meeting — an open AA meeting that AA Grapevine hosts every week on Zoom, with a host and two speakers. Anyone interested in AA is welcome, and each meeting is recorded for the Grapevine Weekly Open podcast.",
     "es": "No es nuestra reunión del comité: es una reunión abierta de AA, en inglés, que AA Grapevine ofrece cada semana por Zoom, con un coordinador y dos oradores. Cualquier persona interesada en AA es bienvenida, y cada reunión se graba para el podcast Grapevine Weekly Open."
   },
-  "committee.weekly.host_time": {
-    "en": "AA Grapevine's time: {time}",
-    "es": "Horario de AA Grapevine: {time}"
-  },
   "committee.weekly.next": {
     "en": "Next meeting:",
     "es": "Próxima reunión:"
@@ -335,21 +331,73 @@
     "en": "Listen to past meetings",
     "es": "Escuchar reuniones pasadas"
   },
-  "committee.weekly.copy_id": {
-    "en": "Copy Weekly Open meeting ID",
-    "es": "Copiar ID de la reunión abierta semanal"
+  "committee.weekly.section_title": {
+    "en": "Weekly open meetings",
+    "es": "Reuniones abiertas semanales"
   },
-  "committee.weekly.copy_passcode": {
-    "en": "Copy Weekly Open passcode",
-    "es": "Copiar código de la reunión abierta semanal"
+  "committee.weekly.section_text": {
+    "en": "Not our committee meeting: open AA meetings that AA Grapevine and La Viña hold on Zoom every week. Anyone interested in AA is welcome, and each meeting is recorded as a podcast.",
+    "es": "No son reuniones de nuestro comité: son reuniones abiertas de AA que AA Grapevine y La Viña ofrecen cada semana por Zoom. Cualquier persona interesada en AA es bienvenida, y cada reunión se graba como podcast."
   },
-  "committee.weekly.details": {
+  "committee.weekly.gv_text": {
+    "en": "A host and two speakers, every week. Each meeting is recorded for the Grapevine Weekly Open podcast.",
+    "es": "Un coordinador y dos oradores, cada semana. Cada reunión se graba para el podcast Grapevine Weekly Open."
+  },
+  "committee.weekly.lang_en": {
+    "en": "In English",
+    "es": "En inglés"
+  },
+  "committee.weekly.lang_es": {
+    "en": "In Spanish",
+    "es": "En español"
+  },
+  "committee.weekly.starts": {
+    "en": "Starts {date}",
+    "es": "Comienza el {date}"
+  },
+  "committee.weekly.closing": {
+    "en": "Let's keep extending this powerful lifeline together!",
+    "es": "¡Sigamos extendiendo juntos esta poderosa cuerda salvavidas!"
+  },
+  "committee.weekly.copy_id_gv": {
+    "en": "Copy the Grapevine Weekly Open meeting ID",
+    "es": "Copiar el ID de la reunión Grapevine Weekly Open"
+  },
+  "committee.weekly.copy_passcode_gv": {
+    "en": "Copy the Grapevine Weekly Open passcode",
+    "es": "Copiar el código de acceso de Grapevine Weekly Open"
+  },
+  "committee.weekly.copy_id_lv": {
+    "en": "Copy the meeting ID of La Viña's open meeting",
+    "es": "Copiar el ID de la reunión abierta de La Viña"
+  },
+  "committee.weekly.copy_passcode_lv": {
+    "en": "Copy the passcode of La Viña's open meeting",
+    "es": "Copiar el código de acceso de la reunión abierta de La Viña"
+  },
+  "committee.weekly.join_gv": {
+    "en": "Join on Zoom: Grapevine Weekly Open",
+    "es": "Entrar por Zoom a Grapevine Weekly Open"
+  },
+  "committee.weekly.join_lv": {
+    "en": "Join on Zoom: La Viña's open meeting",
+    "es": "Entrar por Zoom a la reunión abierta de La Viña"
+  },
+  "committee.weekly.details_gv": {
     "en": "Details on aagrapevine.org",
     "es": "Detalles en aagrapevine.org"
   },
-  "committee.weekly.source_note": {
+  "committee.weekly.details_lv": {
+    "en": "Details on aalavina.org",
+    "es": "Detalles en aalavina.org"
+  },
+  "committee.weekly.source_gv": {
     "en": "Meeting details are checked every day on aagrapevine.org.",
     "es": "Los detalles de la reunión se revisan cada día en aagrapevine.org."
+  },
+  "committee.weekly.source_lv": {
+    "en": "Details from an official La Viña flyer shared with the committee.",
+    "es": "Detalles de un volante oficial de La Viña compartido con el comité."
   },
   "committee.sub.eyebrow": {
     "en": "Calendar feed",
