@@ -503,6 +503,10 @@
     "en": "Event",
     "es": "Evento"
   },
+  "home.evcat.recurring": {
+    "en": "Every month",
+    "es": "Cada mes"
+  },
   "home.lib_eyebrow": {
     "en": "The library",
     "es": "La biblioteca"

@@ -5,7 +5,7 @@ announcements.json — and sends ONE clean e-mail (HTML + plain text) with:
 
   * the next committee meeting (Zoom link, ID, passcode)
   * new announcements
-  * upcoming events (next 30 days)
+  * upcoming events (next 30 days; a monthly event from `recurring_events:` once, with its next date)
   * everything new in the last N days (config/site.yml → digest.days): magazine
     articles, podcast episodes, videos, Instagram, PDFs, committee uploads
   * each section in English first, then in Spanish (titles are already translated)
@@ -110,6 +110,7 @@ T = {
         "machine": "Some titles were translated automatically.",
         "online": "Online",
         "all_day": "All day",
+        "monthly": "every month",
         "footer_why": "You are receiving this weekly summary from the {committee}.",
         "footer_unsub": "To stop receiving it, reply with \"unsubscribe\".",
         "footer_anon": "Feel free to forward it to your group or district — and please protect everyone's anonymity.",
@@ -151,6 +152,7 @@ T = {
         "machine": "Algunos títulos se tradujeron automáticamente.",
         "online": "En línea",
         "all_day": "Todo el día",
+        "monthly": "cada mes",
         "footer_why": "Recibe este resumen semanal del {committee}.",
         "footer_unsub": "Para dejar de recibirlo, responda con \"cancelar\".",
         "footer_anon": "Puede reenviarlo a su grupo o distrito — y por favor proteja el anonimato de todos.",
@@ -624,11 +626,17 @@ def collect(now: datetime, days: int, event_days: int, max_per: int) -> dict:
             continue
         upcoming.append((st, it))
     upcoming.sort(key=lambda x: x[0])
+    series_seen: set[str] = set()
     for st, it in upcoming:
         if it.get("category") == "committee":  # auto-generated monthly committee meeting
             if data["meeting"] is None:
                 data["meeting"] = it
             continue
+        if is_recurring(it):  # a monthly event from config/site.yml recurring_events: only its next date
+            series = str((it.get("extra") or {}).get("series") or it.get("id"))
+            if series in series_seen:
+                continue
+            series_seen.add(series)
         data["events"].append(it)
 
     # which languages carry machine translations (for the small footnote)
@@ -638,8 +646,16 @@ def collect(now: datetime, days: int, event_days: int, max_per: int) -> dict:
     return data
 
 
+def is_recurring(item: dict) -> bool:
+    """A date of a monthly event from config/site.yml `recurring_events:` (build_data.recurring_events)."""
+    return item.get("category") == "recurring"
+
+
 def total_count(data: dict) -> int:
-    return sum(len(v) for v in data["groups"].values()) + len(data["announcements"]) + len(data["events"])
+    """How much the digest has to tell — nothing means no e-mail. A recurring event (the monthly booth)
+    comes round every month, like the committee meeting, so it is listed but does not count: on its own
+    it never turns a quiet week into an e-mail."""
+    return sum(len(v) for v in data["groups"].values()) + len(data["announcements"]) +         sum(1 for e in data["events"] if not is_recurring(e))
 
 
 # ---------------------------------------------------------------------------- rows (shared by HTML + text)
@@ -699,6 +715,8 @@ def event_row(it: dict, lang: str, links: Links) -> dict:
     when = fmt_day(st, lang) if st else ""
     if st and not is_date_only(raw_start) and not ex.get("all_day"):
         when += " · " + fmt_time(st, lang)
+    if is_recurring(it):
+        when += " · " + t["monthly"]
     where = ex.get("location") or (t["online"] if ex.get("online_url") else "")
     url = it.get("url") or ex.get("flyer_url") or ex.get("online_url") or ""
     url = links.item({**it, "url": url}, lang, "/events/")
@@ -878,7 +896,7 @@ def render_lang_html(lang: str, data: dict, cfg: dict, links: Links, max_per: in
         body = f'<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">{"".join(rows)}</table>'
         parts.append(section(g, colors[g], body, page, extra))
 
-    if not any_group and not data["announcements"] and not data["events"]:
+    if not total_count(data):     # (a monthly recurring event alone is not news)
         parts.append(f'<tr><td style="padding:16px 32px;font-size:14px;color:{C["muted"]};">{_esc(t["nothing"])}</td></tr>')
 
     # ---- call to action + machine translation note

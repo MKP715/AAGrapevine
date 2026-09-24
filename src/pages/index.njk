@@ -707,8 +707,9 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
       {%- set x = e.extra or {} -%}
       {%- set st = x.start or e.date -%}
       {%- set dateOnly = x.all_day or (st | length) == 10 -%}
-      {%- if e.category == "committee" or e.category == "gv-calendar" %}{% set tone = "gv" %}{% elif e.category == "lv-calendar" %}{% set tone = "lv" %}{% elif e.category == "flyer" %}{% set tone = "vine" %}{% else %}{% set tone = "grape" %}{% endif -%}
-      {%- set href = (e.url or x.flyer_url or x.online_url or "/events/") | lurl(L) -%}
+      {%- if e.category == "committee" or e.category == "gv-calendar" %}{% set tone = "gv" %}{% elif e.category == "lv-calendar" %}{% set tone = "lv" %}{% elif e.category == "flyer" or e.category == "recurring" %}{% set tone = "vine" %}{% else %}{% set tone = "grape" %}{% endif -%}
+      {#- A monthly recurring event (e.g. the CityWide Dallas booth) opens its card on /events/ -#}
+      {%- set href = (("/events/#" ~ (e | homeEventAnchor)) if e.category == "recurring" else (e.url or x.flyer_url or x.online_url or "/events/")) | lurl(L) -%}
       {%- set et = e | tx("title", L) -%}
       <li>
         <article class="card card-link group relative flex h-full gap-4 p-4 sm:flex-col sm:p-5">

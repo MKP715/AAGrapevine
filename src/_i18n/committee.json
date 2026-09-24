@@ -95,6 +95,14 @@
     "en": "Committee meetings, workshops, booths and Grapevine / La Viña events for Northeast Texas Area 65. Updates automatically.",
     "es": "Reuniones del comité, talleres, mesas y eventos de Grapevine / La Viña del Área 65 del Noreste de Texas. Se actualiza automáticamente."
   },
+  "committee.meeting.also_monthly": {
+    "en": "Also every month",
+    "es": "También cada mes"
+  },
+  "committee.meeting.also_next": {
+    "en": "Next date: {date}",
+    "es": "Próxima fecha: {date}"
+  },
   "committee.meeting.meta_desc": {
     "en": "The NETA 65 Grapevine / La Viña Committee meets every month on Zoom. Countdown, Zoom link, meeting ID and what to expect — all AA members are welcome.",
     "es": "El Comité de Grapevine / La Viña de NETA 65 se reúne cada mes por Zoom: enlace, ID de reunión y qué esperar. Todos los miembros de AA son bienvenidos."
@@ -511,6 +519,10 @@
     "en": "La Viña calendar",
     "es": "Calendario de La Viña"
   },
+  "committee.events.badge_recurring": {
+    "en": "Every month",
+    "es": "Cada mes"
+  },
   "committee.events.group.committee": {
     "en": "Committee meeting",
     "es": "Reunión del comité"
@@ -596,12 +608,12 @@
     "es": "Nadie escribe este calendario a mano — se actualiza solo cada día."
   },
   "committee.events.src_meetings": {
-    "en": "Committee meetings",
-    "es": "Reuniones del comité"
+    "en": "Meetings & monthly events",
+    "es": "Reuniones y eventos mensuales"
   },
   "committee.events.src_meetings_text": {
-    "en": "Calculated automatically from our monthly schedule, with the Zoom link included.",
-    "es": "Se calculan automáticamente a partir de nuestro horario mensual, con el enlace de Zoom incluido."
+    "en": "Calculated automatically from our monthly schedule: the committee meeting (with its Zoom link) and the things we do every month, like our literature booths.",
+    "es": "Se calculan automáticamente a partir de nuestro horario mensual: la reunión del comité (con su enlace de Zoom) y lo que hacemos cada mes, como nuestras mesas de literatura."
   },
   "committee.events.src_flyers": {
     "en": "Flyers on Google Drive",

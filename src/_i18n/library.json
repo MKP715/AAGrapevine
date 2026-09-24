@@ -807,6 +807,10 @@
     "en": "Texas published writer",
     "es": "Texas Tejas escritor publicado"
   },
+  "search.kw.recurring": {
+    "en": "every month monthly booth literature table",
+    "es": "cada mes mensual mesa de literatura"
+  },
   "library.col.reports_empty": {
     "en": "Added here as soon as the committee uploads them",
     "es": "Aparecerán aquí en cuanto el comité los suba"

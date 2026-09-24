@@ -404,6 +404,16 @@ jobs:
                   notes += [f"- {label}: " + str(w).replace("\n", " ")[:200] for w in warns[:2]]
           if notes:
               lines += ["", "**Notes** (these sources still updated; only look into a note that repeats for a week):", *notes]
+          # Settings build_data could not use (config/site.yml `meeting:` / `recurring_events:`,
+          # content/districts.yml): that part was skipped or corrected, the rest of the site still updated.
+          probs = s.get("problems") if isinstance(s.get("problems"), dict) else {}
+          settings = [(k, " ".join(str(v).split()).replace("|", "/")[:1000])
+                      for k, v in probs.items() if k in ("meeting", "recurring_events", "districts")]
+          if settings:
+              lines += ["", "**Settings problems** (the rest of the site still updated — fix the file and save it again):",
+                        *[f"- {msg}" for _k, msg in settings]]
+              for k, msg in settings:
+                  print(f"::warning title=Settings problem ({k})::{msg.replace('%', '%25')}")
           # Weekly podcast discovery (scripts/sync/podcasts.py): feeds found on the magazine sites that
           # are not in config/site.yml yet. They are never added automatically.
           pod = next((x for x in s.get("sources", []) if x.get("source") == "podcasts"), None) or {}

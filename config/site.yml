@@ -48,6 +48,35 @@ meeting:
   skip_dates: []
 
 # ---------------------------------------------------------------------
+#  Recurring events — things the committee does EVERY MONTH (a booth,
+#  a workshop …). Each one shows on the Events page, the home page, the
+#  calendar feed, the weekly digest and the search, with the next dates
+#  worked out automatically (Central time, daylight saving included).
+#
+#  To add one: copy the block that starts with "- key:" (keep the
+#  spaces at the start of each line), paste it below the last one and
+#  change the values. To stop one: delete its block.
+#  If a block has a mistake, the rest of the site still updates; the
+#  problem is listed in the Actions run summary (and in status.json).
+# ---------------------------------------------------------------------
+recurring_events:
+  - key: "citywide-dallas"         # short name: letters, numbers and dashes. Keep it the same
+                                   # once published (calendars use it to recognize the event)
+    title: "GV/LV booth at CityWide Dallas"
+    title_es: "Mesa de GV/LV en CityWide Dallas"
+    summary: "Stop by our Grapevine and La Viña literature table at CityWide Dallas, the monthly AA gathering at Lover's Lane United Methodist Church (potluck at 5:30 PM, speaker at 7:00 PM). Browse the magazines and ask us how to subscribe or how to become a GVR or RLV."
+    summary_es: "Visita nuestra mesa de literatura de Grapevine y La Viña en CityWide Dallas, la reunión mensual de AA en la Iglesia Metodista Unida Lover's Lane (comida compartida a las 5:30 p. m. y orador a las 7:00 p. m.). Hojea las revistas y pregúntanos cómo suscribirte o ser RLV o GVR."
+    # When: which weekday of the month (1-5, or -1 for "the last one")
+    week_of_month: 2
+    weekday: "saturday"
+    start: "17:00"                 # 24-hour clock, Central time
+    end: "20:00"
+    location: "Lover's Lane United Methodist Church, 9200 Inwood Road, Dallas, TX 75220"
+    url: "https://citywidedallasaa.org"   # "Event details" link (optional)
+    months_ahead: 6                # how many upcoming dates to list
+    skip_dates: []                 # months with no booth, e.g. ["2026-12-12"]
+
+# ---------------------------------------------------------------------
 #  Google Drive — the committee's upload area
 #  Upload PDFs / photos / slides into the category folders inside your
 #  Panel folder. Sub-folders are followed automatically (a sub-folder

@@ -33,7 +33,8 @@ from . import translate as T
 from .common import (CONTENT_DIR, RAW_DIR, SITE_DIR, STATE_DIR, clean_text, get_logger, load_config, now_iso,
                      parse_iso, read_json, short_hash, slugify, strip_html, to_iso, truncate, write_json)
 from .geo import SCOPES, classify_location, fold
-from .meeting import upcoming_meetings
+from .meeting import (MonthlyRule, parse_hhmm, upcoming_meetings, upcoming_rule_dates, week_of_month_value,
+                      weekday_index, ymd_text)
 
 log = get_logger("build_data")
 
@@ -48,6 +49,15 @@ SPOTLIGHT_LIST_DAYS = (60, 90)
 SPOTLIGHT_SCOPES = ("neta65", "texas", "all")
 _EVERY_ISSUE = re.compile(r"(?i)in every issue|en cada (?:edici[oó]n|n[uú]mero)")
 NEVER_NEW_KINDS = ("topic", "meeting")   # editorial themes (date = a deadline) and the Weekly Open
+# Events computed from config/site.yml (the monthly committee meeting, `recurring_events:`): a date that
+# comes round every month is never "new", never in What's New and never in the "past events" list.
+SCHEDULED_EVENT_CATEGORIES = ("committee", "recurring")
+# recurring_events: (config/site.yml)
+RECURRING_AHEAD = 6           # upcoming dates listed per event (`months_ahead`)
+RECURRING_AHEAD_MAX = 24
+RECURRING_KEEP_PAST_DAYS = 90  # dates of the last 90 days stay in events.json (past: true) so calendar
+                               # subscribers keep them, like the committee meetings in the .ics feed
+RECURRING_KEY_MAX = 32        # "ev-recurring-<key>-<date>" anchors stay within committee.js slugify()'s 60 characters
 
 # raw source → labels on the /status/ page (order = order shown)
 SOURCES: list[tuple[str, str, str]] = [
@@ -280,7 +290,7 @@ class Ctx:
         if it.get("kind") in NEVER_NEW_KINDS or self.back_catalog(it):
             return False
         if it.get("kind") == "event":               # "new" = newly announced, not "happening soon"
-            if it.get("category") == "committee" or (it.get("extra") or {}).get("past"):
+            if it.get("category") in SCHEDULED_EVENT_CATEGORIES or (it.get("extra") or {}).get("past"):
                 return False
             f = self.found_ts(it, source)
             return bool(f and self.now_ts - f < NEW_DAYS * 86400)
@@ -366,6 +376,199 @@ def committee_meetings(ctx: Ctx, count: int = 12) -> list[dict]:
             "i18n": {"title": dict(title), "summary": dict(summary)},
             "machine": list(machine), "is_new": False, "_fixed_i18n": True,
         })
+    return out
+
+
+# --------------------------------------------------------------------------- recurring events (config)
+_ORDINALS = {"en": {1: "1st", 2: "2nd", 3: "3rd", 4: "4th", 5: "5th", -1: "Last"},
+             "es": {1: "1.er", 2: "2.º", 3: "3.er", 4: "4.º", 5: "5.º", -1: "Último"}}
+_DAY_NAMES = {"en": ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"),
+              "es": ("lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo")}
+_NB = " "   # the site writes Spanish times as "8:00 p. m." with no-break spaces (esMeridiem in eleventy.config.js)
+
+
+def clock_range(start: tuple[int, int], end: tuple[int, int], lang: str) -> str:
+    """(17, 0), (20, 0) → "5:00–8:00 PM" / "5:00–8:00 p. m."; "11:00 AM–1:00 PM" when the half of the day changes."""
+    def hm(h: int, m: int) -> str:
+        return f"{(h % 12) or 12}:{m:02d}"
+
+    if lang == "es":
+        a, b = (f"a.{_NB}m." if h < 12 else f"p.{_NB}m." for h in (start[0], end[0]))
+        return f"{hm(*start)}–{hm(*end)}{_NB}{b}" if a == b else f"{hm(*start)}{_NB}{a}–{hm(*end)}{_NB}{b}"
+    a, b = ("AM" if h < 12 else "PM" for h in (start[0], end[0]))
+    return f"{hm(*start)}–{hm(*end)} {b}" if a == b else f"{hm(*start)} {a}–{hm(*end)} {b}"
+
+
+def recurrence_label(rule: MonthlyRule) -> dict[str, str]:
+    """Hand-written, both languages (never machine-translated):
+    "2nd Saturday of every month · 5:00–8:00 PM" / "2.º sábado de cada mes · 5:00–8:00 p. m."."""
+    start, end = rule.span()
+    n, wd = rule.week_of_month, rule.weekday
+    return {"en": f"{_ORDINALS['en'][n]} {_DAY_NAMES['en'][wd]} of every month · {clock_range(start, end, 'en')}",
+            "es": f"{_ORDINALS['es'][n]} {_DAY_NAMES['es'][wd]} de cada mes · {clock_range(start, end, 'es')}"}
+
+
+def _bilingual(en: str, es: str, title: bool = False) -> tuple[dict[str, str], list[str]]:
+    """The committee's own words in both languages. When only one language was written, the other is
+    machine-translated (→ its language in `machine`); if that is not possible right now, the original
+    shows in both (and the next run tries again)."""
+    if en and es or not (en or es):
+        return {"en": en, "es": es}, []
+    src, tgt = ("en", "es") if en else ("es", "en")
+    text = en or es
+    out, machine = text, []
+    try:
+        r = T.get_translator().translate([text], src, tgt)[0]
+        if r[0]:
+            out = T.title_case_en(r[0]) if (title and tgt == "en" and r[1]) else r[0]
+            machine = [tgt] if r[1] and r[0] != text else []
+    except Exception as e:           # translation trouble never stops the calendar
+        log.warning("recurring event text not translated (%s: %s) — shown as written", type(e).__name__, e)
+    return {src: text, tgt: out}, machine
+
+
+def _recurring_url(v: Any) -> str | None:
+    s = clean_text(v)
+    if not s:
+        return None
+    if re.match(r"(?i)^www\.", s):
+        s = "https://" + s
+    return s if re.match(r"(?i)^https?://[^\s/]+\.[^\s]+$", s) else None
+
+
+def recurring_specs(ctx: Ctx) -> tuple[list[dict], list[str]]:
+    """config/site.yml `recurring_events:` → (valid event settings, problems). Hand-edited settings: an
+    entry with a real mistake (no title, a weekday or week that cannot be understood, no start time …)
+    is SKIPPED and named in the problems; small slips (an end time that cannot be read, a bad skip date,
+    a link that is not a web address) are noted but the event still shows."""
+    raw = ctx.cfg.get("recurring_events")
+    if raw is None or raw == "" or raw == []:
+        return [], []
+    if isinstance(raw, dict):              # a single event written without the leading "- "
+        raw = [raw]
+    if not isinstance(raw, list):
+        return [], ["recurring_events: not understood — it must be a list, each event starting with “- key:”"]
+    specs: list[dict] = []
+    problems: list[str] = []
+    seen: set[str] = set()
+    for n, e in enumerate(raw, 1):
+        if not isinstance(e, dict):
+            problems.append(f"recurring_events entry {n}: not understood (its settings must be indented under "
+                            f"“- key:”) — skipped")
+            continue
+        title_en, title_es = clean_text(e.get("title")), clean_text(e.get("title_es"))
+        key = slugify(str(e.get("key") or ""), RECURRING_KEY_MAX).strip("-") if clean_text(e.get("key")) else ""
+        if not key and (title_en or title_es):
+            key = slugify(title_en or title_es, RECURRING_KEY_MAX).strip("-")
+        name = f"recurring_events entry {n} ({key or title_en or title_es or 'no name'})"
+        errors: list[str] = []
+        notes: list[str] = []
+        if not (title_en or title_es):
+            errors.append("it needs a title")
+        if key in seen:
+            errors.append(f"the key “{key}” is used twice (each event needs its own)")
+        def given(k: str) -> bool:
+            return e.get(k) not in (None, "")
+
+        wom = week_of_month_value(e.get("week_of_month"))
+        if wom is None:
+            errors.append(f"week_of_month “{e.get('week_of_month')}” must be 1, 2, 3, 4, 5 or -1 (the last one)"
+                          if given("week_of_month") else "it needs week_of_month (1–5, or -1 for the last one)")
+        wd = weekday_index(e.get("weekday"))
+        if wd is None:
+            errors.append(f"weekday “{e.get('weekday')}” is not a day of the week" if given("weekday")
+                          else "it needs a weekday (like \"saturday\")")
+        start = parse_hhmm(e.get("start"), (-1, -1))
+        if start == (-1, -1):
+            errors.append(f"start time “{e.get('start')}” is not a time like \"17:00\"" if given("start")
+                          else "it needs a start time (like \"17:00\")")
+        end = parse_hhmm(e.get("end"), (-1, -1))
+        if given("end") and end == (-1, -1):
+            notes.append(f"end time “{e.get('end')}” is not a time like \"20:00\" — shown as one hour long")
+        elif end != (-1, -1) and start != (-1, -1) and end <= start:
+            notes.append(f"end time “{e.get('end')}” is not after the start — shown as one hour long")
+        if errors:
+            problems.append(f"{name}: " + "; ".join(errors) + " — skipped")
+            continue
+        seen.add(key)
+        skip: set[str] = set()
+        raw_skip = e.get("skip_dates") or []
+        for s in raw_skip if isinstance(raw_skip, list) else [raw_skip]:
+            ymd = ymd_text(s)
+            if ymd:
+                skip.add(ymd)
+            else:
+                notes.append(f"skip date “{s}” is not a date like \"2027-01-09\" — ignored")
+        ahead = RECURRING_AHEAD
+        if e.get("months_ahead") not in (None, ""):
+            try:
+                ahead = int(e.get("months_ahead"))
+                if not 1 <= ahead <= RECURRING_AHEAD_MAX:
+                    raise ValueError
+            except (TypeError, ValueError):
+                ahead = RECURRING_AHEAD
+                notes.append(f"months_ahead “{e.get('months_ahead')}” must be a number from 1 to "
+                             f"{RECURRING_AHEAD_MAX} — {RECURRING_AHEAD} used")
+        url = _recurring_url(e.get("url"))
+        if e.get("url") and not url:
+            notes.append(f"url “{e.get('url')}” is not a web address (https://…) — left out")
+        online = _recurring_url(e.get("online_url"))
+        if e.get("online_url") and not online:
+            notes.append(f"online_url “{e.get('online_url')}” is not a web address (https://…) — left out")
+        if notes:
+            problems.append(f"{name}: " + "; ".join(notes))
+        location = clean_text(e.get("location"))
+        city, state = city_state(location)
+        specs.append({
+            "key": key, "title": (title_en, title_es),
+            "summary": (clean_text(e.get("summary")), clean_text(e.get("summary_es"))),
+            "rule": MonthlyRule(week_of_month=wom, weekday=wd, start=start, end=end if end != (-1, -1) else start,
+                                skip=frozenset(skip)),
+            "ahead": ahead, "location": location or None, "url": url, "online_url": online,
+            "city": clean_text(e.get("city")) or city, "state": clean_text(e.get("state")) or state,
+        })
+    return specs, problems
+
+
+def recurring_events(ctx: Ctx) -> list[dict]:
+    """Every entry of config/site.yml `recurring_events:` (e.g. the GV/LV booth at CityWide Dallas on the
+    2nd Saturday, 17:00–20:00 Central) → one event per date: the next `months_ahead` dates, plus the
+    dates of the last RECURRING_KEEP_PAST_DAYS days (build_events marks them past; the web pages never
+    list them, the calendar feed keeps them for subscribers). Titles and summaries are the committee's
+    own words in both languages (fixed i18n); the recurrence line is written by rule. An entry with a
+    mistake is skipped and reported (log + status.json `problems.recurring_events`), never fatal."""
+    specs, problems = recurring_specs(ctx)
+    for p in problems:
+        log.warning("config/site.yml %s", p)
+    if problems:
+        ctx.raw_problems["recurring_events"] = ("config/site.yml " + " / ".join(problems))[:2000]
+    out: list[dict] = []
+    for sp in specs:
+        rule = sp["rule"]
+        recent = [d for d in upcoming_rule_dates(rule, 12, ctx.tz, ctx.now, include_recent_days=RECURRING_KEEP_PAST_DAYS)
+                  if (ts(d["end"]) or 0) < ctx.now_ts]
+        dates = recent + upcoming_rule_dates(rule, sp["ahead"], ctx.tz, ctx.now)
+        if not dates:
+            continue
+        title, m1 = _bilingual(*sp["title"], title=True)
+        summary, m2 = _bilingual(*sp["summary"])
+        label = recurrence_label(rule)
+        lang = "en" if sp["title"][0] else "es"
+        machine = sorted(set(m1) | set(m2))
+        for d in dates:
+            out.append({
+                "id": f"ev:recurring:{sp['key']}:{d['ymd']}", "source": "committee", "kind": "event",
+                "url": sp["url"] or "/events/",
+                "title": title[lang], "summary": summary[lang], "lang": lang, "date": d["start"],
+                "first_seen": None, "image": None, "tags": ["recurring"],
+                "category": "recurring", "status": "ok",
+                "extra": {"start": d["start"], "end": d["end"], "all_day": False, "location": sp["location"],
+                          "online_url": sp["online_url"], "flyer_url": None, "flyer_thumb": None,
+                          "city": sp["city"], "state": sp["state"], "recurring": True, "series": sp["key"],
+                          "recurrence_label": label["en"]},
+                "i18n": {"title": dict(title), "summary": dict(summary), "recurrence_label": dict(label)},
+                "machine": list(machine), "is_new": False, "_fixed_i18n": True,
+            })
     return out
 
 
@@ -522,7 +725,13 @@ def build_events(ctx: Ctx) -> list[dict]:
         log.error("committee meetings skipped — config/site.yml `meeting:` problem: %s: %s", type(e).__name__, e)
         ctx.raw_problems["meeting"] = f"config/site.yml meeting: {type(e).__name__}: {e}"[:200]
         committee = []
-    groups = [("committee", committee), ("flyer", flyer_events(ctx)),
+    try:
+        recurring = recurring_events(ctx)
+    except Exception as e:  # likewise for `recurring_events:` (recurring_events() already skips bad entries)
+        log.error("recurring events skipped — config/site.yml `recurring_events:` problem: %s: %s", type(e).__name__, e)
+        ctx.raw_problems["recurring_events"] = f"config/site.yml recurring_events: {type(e).__name__}: {e}"[:200]
+        recurring = []
+    groups = [("committee", committee), ("recurring", recurring), ("flyer", flyer_events(ctx)),
               ("external", safe_each([i for i in ctx.items("events_external") if i.get("kind") == "event"], prep, "event")),
               ("manual", safe_each([i for i in ctx.items("manual_events") if i.get("kind") == "event"], prep, "event")),
               ("ics", ics_events(ctx))]
@@ -536,14 +745,19 @@ def build_events(ctx: Ctx) -> list[dict]:
             evs.setdefault(ev["id"], ev)
     cutoff = ctx.now_ts - 86400
     upcoming = [e for e in evs.values() if event_end_ts(ctx, e) >= cutoff]
-    past = [e for e in evs.values() if event_end_ts(ctx, e) < cutoff and e.get("category") != "committee"]
+    over = [e for e in evs.values() if event_end_ts(ctx, e) < cutoff and e.get("category") != "committee"]
+    # Past dates of a recurring event (the last RECURRING_KEEP_PAST_DAYS days) are kept for the calendar
+    # feed only — they do not use up the PAST_EVENTS_KEEP places of real past events.
+    past = [e for e in over if e.get("category") != "recurring"]
     upcoming.sort(key=lambda e: (event_start_ts(e), e["id"]))
     past.sort(key=lambda e: (-event_start_ts(e), e["id"]))
+    kept = past[:PAST_EVENTS_KEEP] + [e for e in over if e.get("category") == "recurring"]
+    kept.sort(key=lambda e: (-event_start_ts(e), e["id"]))
     for e in upcoming:
         e["extra"]["past"] = False
-    for e in past[:PAST_EVENTS_KEEP]:
+    for e in kept:
         e["extra"]["past"] = True
-    return upcoming + past[:PAST_EVENTS_KEEP]
+    return upcoming + kept
 
 
 # =========================================================================== translation
@@ -957,7 +1171,7 @@ def plan_whatsnew(ctx: Ctx, cols: dict[str, list[dict]]) -> list[tuple[float, di
         }
         out.append((max(m[0] for m in members), g))
     for it in cols.get("events", []):
-        if it.get("category") == "committee" or it["extra"].get("past"):
+        if it.get("category") in SCHEDULED_EVENT_CATEGORIES or it["extra"].get("past"):
             continue
         f = ctx.found_ts(it, raw_source(it) if it.get("category") != "flyer" else "drive")
         if f and ctx.now_ts - f <= RECENT_EVENT_DAYS * 86400:

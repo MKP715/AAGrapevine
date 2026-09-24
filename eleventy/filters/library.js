@@ -839,7 +839,9 @@ export function searchIndex(db, nav, lang, helpers, site) {
      the newest PAST_EVENTS_SHOWN past events, each row with the same anchor as its card
      (a hand-written event's is its file-name slug), and the list opens by itself when a
      link points into it — so those link to /events/#<anchor> too. Older past events
-     link to their own page elsewhere (e.g. the La Viña calendar) or are left out. */
+     link to their own page elsewhere (e.g. the La Viña calendar) or are left out.
+     A monthly recurring event (config/site.yml `recurring_events:`) is ONE entry: its next
+     date, linking to that card; its past dates are left out (/events/ does not list them). */
   safely("events", () => {
     const now = Date.now();
     let evs = null;
@@ -851,17 +853,25 @@ export function searchIndex(db, nav, lang, helpers, site) {
       evs = (db.events?.items || []).filter((it) => ok(it) && it.kind === "event").map((it) => {
         const t0 = helpers.toDate(it.extra?.end || it.extra?.start || it.date);
         return {
-          item: it, committee: it.category === "committee", anchor: "ev-" + slug(String(it.id).replace(/^ev:/, "")),
+          item: it, committee: it.category === "committee", recurring: it.category === "recurring", anchor: "ev-" + slug(String(it.id).replace(/^ev:/, "")),
           past: it.extra?.past === true || (!!t0 && t0.getTime() < now - DAY), link: it.url || "", linkExternal: /^https?:/.test(it.url || ""),
         };
       });
     }
-    // Same selection as events.njk: `all | where("past", true) | whereNot("committee", true) | reverse | limit(40)`
-    // (normalizeEvents sorts soonest first, so the newest past events are the last ones).
-    const pastRows = new Set(anchored ? evs.filter((e) => e.past === true && e.committee !== true).slice(-PAST_EVENTS_SHOWN).map((e) => e.id) : []);
+    // Same selection as events.njk: `all | where("past", true) | whereNot("committee", true) |
+    // whereNot("recurring", true) | reverse | limit(40)` (normalizeEvents sorts soonest first, so the
+    // newest past events are the last ones).
+    const pastRows = new Set(anchored ? evs.filter((e) => e.past === true && e.committee !== true && e.recurring !== true).slice(-PAST_EVENTS_SHOWN).map((e) => e.id) : []);
+    const series = new Set(); // recurring events already indexed (by their next date)
     for (const ev of evs) {
       const it = ev.item;
       if (!it || !ok(it) || ev.committee || it.category === "committee") continue;
+      const recurring = it.category === "recurring";
+      if (recurring) {
+        const k = String(it.extra?.series || it.id);
+        if (ev.past || series.has(k)) continue;
+        series.add(k);
+      }
       const ex = it.extra || {};
       // The card's anchor on /events/. (Without committee.js the anchor is a guess, so the
       // data's own "/events/#<slug>" link wins then.)
@@ -871,11 +881,14 @@ export function searchIndex(db, nav, lang, helpers, site) {
       else if (/^https?:\/\//.test(it.url || "")) u = it.url;
       if (!u) continue;
       const start = ex.start || it.date;
+      // A recurring event is written by the committee in both languages: no "EN" badge on the Spanish
+      // page (search.js shows one when `l` differs), and "every month" / "cada mes" finds it too.
+      const own = recurring && !(it.machine || []).includes(lang) && fold(P(it, "title")) !== fold(it.title);
       push({
-        id: it.id, k: "event", t: P(it, "title") || ev.title, o: it.title,
-        s: [helpers.fmtDate(start, lang, "medium"), ex.location || [ex.city, ex.state].filter(Boolean).join(", ")].filter(Boolean).join(" · "),
-        x: snippet(P(it, "summary"), 120),
-        u, d: ymd(helpers, start), l: it.lang,
+        id: it.id, k: "event", t: P(it, "title") || ev.title, o: it.title, ol: it.lang,
+        s: [helpers.fmtDate(start, lang, "medium"), recurring ? P(it, "recurrence_label") : "", ex.location || [ex.city, ex.state].filter(Boolean).join(", ")].filter(Boolean).join(" · "),
+        x: [snippet(P(it, "summary"), 120), recurring ? both("search.kw.recurring") : ""].filter(Boolean).join(" "),
+        u, d: ymd(helpers, start), l: own ? lang : it.lang,
         src: it.source === "calendar" ? (it.category === "lv-calendar" ? "lv" : "gv") : "neta", m: mach(it), z: ev.past,
       });
     }

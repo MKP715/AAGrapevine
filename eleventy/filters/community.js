@@ -258,6 +258,21 @@ function eventStart(ev) {
   return ev?.extra?.start || ev?.date || null;
 }
 
+/** A date of a monthly event from config/site.yml `recurring_events:` (e.g. the booth at CityWide Dallas). */
+const isRecurring = (ev) => ev?.category === "recurring";
+
+/** Only the first (soonest) date of each recurring event: one line for the booth, not one per month. */
+function nextOfEachSeries(events) {
+  const seen = new Set();
+  return events.filter((e) => {
+    if (!isRecurring(e)) return true;
+    const k = String(e.extra?.series || e.id);
+    if (seen.has(k)) return false;
+    seen.add(k);
+    return true;
+  });
+}
+
 /** "Sat, Oct 17" or "Wed, Oct 21 · 7:00 PM CDT" for an event. */
 export function eventWhen(ev, lang) {
   const s = eventStart(ev);
@@ -519,11 +534,11 @@ export function buildDigest(db, meeting, { days = 7, eventDays = 30, deadlineDay
   const recent = recentNews(db, days, now);
   const groups = DIGEST_ORDER.map((key) => ({ key, ...GROUPS[key], items: recent.filter((i) => i._group === key) })).filter((g) => g.items.length);
 
-  const events = (db?.events?.items || [])
+  const events = nextOfEachSeries((db?.events?.items || [])
     .filter((e) => e && e.status !== "gone" && e.category !== "committee")
     .filter((e) => { const t = ms(eventStart(e)); return t && t >= now - 6 * 3600e3 && t <= now + eventDays * DAY; })
-    .sort((a, b) => ms(eventStart(a)) - ms(eventStart(b)))
-    .map((e) => prep(e, now));
+    .sort((a, b) => ms(eventStart(a)) - ms(eventStart(b))))
+    .map((e) => ({ ...prep(e, now), _recurring: isRecurring(e) }));
 
   const todayYmd = ymdChicago(new Date(now));
   const deadlines = (db?.editorial?.items || [])
@@ -658,7 +673,8 @@ export function digestText(dg, langs, style, site, t, media = {}) {
     for (const ev of dg.events.slice(0, 8)) {
       const [first, ...rest] = titleLines(ev);
       const where = ev.extra?.location || ev.extra?.city || "";
-      out.push(`${bullet} ${eventWhen(ev, main)} — ${first}${where ? ` (${where})` : ""}`);
+      const monthly = ev._recurring ? ` · ${both("community.digest.every_month")}` : "";
+      out.push(`${bullet} ${eventWhen(ev, main)}${monthly} — ${first}${where ? ` (${where})` : ""}`);
       for (const r of rest) out.push(`  ${r}`);
       if (ev.url) out.push(`  ${absUrl(hrefOf(ev, main), site)}`);
     }
@@ -818,7 +834,8 @@ export function reportText(rd, lang, site, t) {
   if (rd.events.length) {
     for (const ev of rd.events) {
       const where = ev.extra?.location || ev.extra?.city || "";
-      out.push(`   • ${eventWhen(ev, lang)} — ${clean(pickLang(ev, "title", lang))}${where ? ` (${where})` : ""}`);
+      const monthly = ev._recurring ? ` · ${t("community.digest.every_month", lang)}` : "";
+      out.push(`   • ${eventWhen(ev, lang)}${monthly} — ${clean(pickLang(ev, "title", lang))}${where ? ` (${where})` : ""}`);
     }
   } else out.push(`   • ${T("t_no_events")}`);
   out.push(`   ${url("/events/")}`);

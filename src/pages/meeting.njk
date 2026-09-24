@@ -18,6 +18,9 @@ pageScripts: ["/assets/js/committee.js"]
 {%- set timeRange = m | cmTimeRange(lang) -%}
 {%- set wo = (db.weekly_open.items | cmData)[0] -%}
 {%- set wk = wo | cmWeekly(lang) if wo else null -%}
+{#- Monthly recurring events (config/site.yml `recurring_events:`, e.g. the CityWide Dallas booth):
+    their next date, as a small "Also every month" box under the meeting dates -#}
+{%- set monthly = db.events.items | cmRecurringNext(site, lang) -%}
 {%- set pageAbs = page.url | siteUrl(site) -%}
 {%- set cfg = {
   rule: m | cmRuleObj,
@@ -187,6 +190,24 @@ pageScripts: ["/assets/js/committee.js"]
       </ol>
       {% else %}
       <p class="mt-5 text-sm text-muted">{{ "committee.meeting.no_next" | t(lang) }}</p>
+      {% endif %}
+      {% if monthly | length %}
+      <div class="mt-6 border-t border-line pt-4">
+        <h3 class="eyebrow font-sans">{{ "committee.meeting.also_monthly" | t(lang) }}</h3>
+        <ul class="mt-2.5 space-y-3">
+          {% for ev in monthly %}
+          <li class="flex gap-2.5">
+            <span class="mt-0.5 text-vine">{% icon "repeat", "size-4" %}</span>
+            <span class="min-w-0">
+              <a class="font-semibold text-ink underline-offset-2 hover:text-gv hover:underline" href="{{ '/events/' | lurl(lang) }}#{{ ev.anchor }}">{{ ev.title }}</a>
+              <span class="block text-sm text-muted">{{ ev.recurrence }}</span>
+              {#- Spanish weekday and month names are lower-case inside a sentence -#}
+              <span class="block text-sm text-muted">{{ "committee.meeting.also_next" | t(lang, { date: (ev.dateLabel | lower) if lang == "es" else ev.dateLabel }) }}</span>
+            </span>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
       {% endif %}
       <a href="#subscribe" class="mt-auto inline-flex min-h-10 items-center gap-1.5 pt-5 text-sm font-semibold text-gv hover:underline">{% icon "calendar-sync", "size-4" %} {{ "committee.meeting.subscribe_all" | t(lang) }}</a>
     </div>

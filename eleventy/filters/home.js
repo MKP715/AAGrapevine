@@ -14,6 +14,8 @@ import path from "node:path";
 // The Library's own rules (which documents, which kit / type, which collections),
 // so the home page's quick links show the same numbers as /library/.
 import { libraryDocs, libraryCollections, docKitType, CATEGORIES, COLLECTIONS } from "./library.js";
+// The id of an event's card on /events/ (a monthly recurring event links there).
+import { eventAnchor } from "./committee.js";
 
 const TZ = "America/Chicago";
 const LOCALES = { en: "en-US", es: "es-US" };
@@ -397,7 +399,9 @@ export default function (eleventyConfig, helpers) {
 
   /* Upcoming events for the home page (soonest first). The very next committee meeting
      is already in the hero, so it is skipped; other events come first and at most ONE
-     more committee meeting is added (a row of identical monthly meetings says little). */
+     more committee meeting is added (a row of identical monthly meetings says little).
+     A monthly recurring event (config/site.yml `recurring_events:`, e.g. the booth at
+     CityWide Dallas) shows only its NEXT date, so one series never fills several places. */
   eleventyConfig.addFilter("homeEvents", (events, next, n = 4) => {
     const now = Date.now();
     const nextT = next && next.start ? time(next.start) : 0;
@@ -409,14 +413,26 @@ export default function (eleventyConfig, helpers) {
       const dateOnly = x.all_day || /^\d{4}-\d{2}-\d{2}$/.test(String(x.start || e.date || ""));
       return s + (dateOnly ? 30 : 2) * 3600e3;
     };
+    const series = new Set();
     const up = arr(events).filter((e) => alive(e) && start(e) && end(e) >= now)
       .filter((e) => !(e.category === "committee" && nextT && Math.abs(start(e) - nextT) < 36 * 3600e3))
-      .sort((a, b) => start(a) - start(b));
+      .sort((a, b) => start(a) - start(b))
+      .filter((e) => {
+        if (e.category !== "recurring") return true;
+        const k = String((e.extra && e.extra.series) || e.id);
+        if (series.has(k)) return false;
+        series.add(k);
+        return true;
+      });
     const pick = up.filter((e) => e.category !== "committee").slice(0, n);
     const committee = up.find((e) => e.category === "committee");
     if (pick.length < n && committee) pick.push(committee);
     return pick.sort((a, b) => start(a) - start(b));
   });
+
+  /* The id of an event's card on /events/ ("/events/#" + this): a monthly recurring event's card
+     there carries its "every month" line, the add-to-calendar menu and the organizers' link. */
+  eleventyConfig.addFilter("homeEventAnchor", (e) => (e ? eventAnchor(e) : ""));
 
   /* Announcements: not expired, pinned first, then newest. */
   eleventyConfig.addFilter("homeAnnouncements", (items) => {

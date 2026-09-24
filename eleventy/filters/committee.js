@@ -306,8 +306,9 @@ function meetingDescription(site, lang, pageUrl) {
 /* ------------------------------------------------------------------ */
 /*  Events                                                             */
 /* ------------------------------------------------------------------ */
-// Filter-chip groups on /events/
-const GROUP_OF = { committee: "committee", flyer: "neta", manual: "neta", ics: "neta", "gv-calendar": "calendar", "lv-calendar": "calendar" };
+// Filter-chip groups on /events/ ("recurring" = a monthly event from config/site.yml
+// `recurring_events:`, e.g. the booth at CityWide Dallas — a NETA 65 event, not a committee meeting)
+const GROUP_OF = { committee: "committee", recurring: "neta", flyer: "neta", manual: "neta", ics: "neta", "gv-calendar": "calendar", "lv-calendar": "calendar" };
 function eventGroup(it) {
   if (GROUP_OF[it.category]) return GROUP_OF[it.category];
   if (it.source === "calendar") return "calendar";
@@ -339,6 +340,12 @@ function itemAnchor(slug, fallback) {
   const s = String(slug || "");
   if (/^[a-z0-9][a-z0-9-]{0,99}$/.test(s) && !RESERVED_IDS.has(s) && !/^(month-|docs-|cm-)/.test(s)) return s;
   return fallback;
+}
+
+// The id of an event's card on /events/ ("ev-recurring-citywide-dallas-2026-10-10"), so other
+// pages (home, search, announcements) can link straight to it.
+export function eventAnchor(it) {
+  return itemAnchor(it?.extra?.slug, "ev-" + slugify(String(it?.id || "").replace(/^ev:/, "")));
 }
 
 // "Zoom", "Online", "En línea"… as a location really means "online on <platform>".
@@ -442,6 +449,9 @@ function shapeEvent(it, site, lang, now, descOverride) {
   const startNoon = new Date(startYmd + "T12:00:00Z");
   const group = eventGroup(it);
   const committee = it.category === "committee";
+  // A date of a monthly event from config/site.yml `recurring_events:` (build_data.recurring_events):
+  // its "every month" line is written by rule in both languages (extra.recurrence_label / i18n).
+  const recurring = it.category === "recurring";
   // An outside calendar (GV/LV websites, .ics feeds) that gives only a date did not list
   // a start time — and its own event page may not either (La Viña's "Taller Mensual"
   // page shows just the date and the Zoom link). So those say "Time not listed — see
@@ -450,6 +460,11 @@ function shapeEvent(it, site, lang, now, descOverride) {
   const timeNotListed = allDay && it.source === "calendar" && /^https?:\/\//.test(it.url || "");
   const title = it._i18nTitle ? it.title : (H.pickLang(it, "title", lang) || it.title || "");
   const summary = it._i18nTitle ? it.summary : (H.pickLang(it, "summary", lang) || "");
+  const recurrence = recurring ? String(H.pickLang(it, "recurrence_label", lang) || x.recurrence_label || "") : "";
+  // The committee wrote this event in both languages (config title / title_es): the other language's
+  // text is not a foreign-language original, so no language pill and no lang="…" on it.
+  const machineHere = Array.isArray(it.machine) && it.machine.includes(lang);
+  const ownWords = recurring && !machineHere && it.lang !== lang && title !== (it.title || "");
   const past = x.past === true || endMs <= now;
 
   // Labels (all in Central time — the Area's time zone)
@@ -493,7 +508,7 @@ function shapeEvent(it, site, lang, now, descOverride) {
   const body = x.body_md ? String(H.pickLang(it, "body_md", lang) || x.body_md || "").trim() : "";
 
   // Text for calendars
-  const anchor = itemAnchor(x.slug, "ev-" + slugify(String(it.id).replace(/^ev:/, "")));
+  const anchor = eventAnchor(it);
   const detailsUrl = link && !selfLink
     ? (link.startsWith("/") ? siteAbs(site, link) : link)
     : siteAbs(site, localPath("/events/", lang)) + (committee ? "" : "#" + anchor);
@@ -502,6 +517,7 @@ function shapeEvent(it, site, lang, now, descOverride) {
   if (descOverride) descLines.push(descOverride);
   else {
     if (summary) descLines.push(summary);
+    if (recurrence) descLines.push(recurrence);
     if (online) descLines.push("", `${platform ? t("committee.events.online_on", lang, { platform }) : t("committee.events.online", lang)}: ${online}`);
     if (flyerView) descLines.push(`${t("committee.events.flyer", lang)}: ${flyerView}`);
     // Date-only outside event: the calendar shows it as all-day, so the note says the time was not listed.
@@ -515,6 +531,9 @@ function shapeEvent(it, site, lang, now, descOverride) {
     anchor,
     uid: slugify(String(it.id).replace(/:/g, "-"), 90),
     group, committee, category: it.category || "", source: it.source || "",
+    // recurrence: "2nd Saturday of every month · 5:00–8:00 PM" (calendars, search); the card, which
+    // already shows the time, uses only the day part: "2nd Saturday of every month".
+    recurring, series: recurring ? String(x.series || "") : "", recurrence, recurrenceDay: recurrence.split(" · ")[0], ownWords,
     title, summary, body, item: it,
     platform, isOnline,
     allDay, startMs, endMs, startYmd, endYmd,
@@ -978,6 +997,14 @@ export default function (eleventyConfig, helpers) {
     const date = H.fmtDate(d.checked, L, "medium");
     const bad = d.ok === false;
     return `<p class="cm-checked${bad ? " is-warn" : ""}">${icon(bad ? "triangle-alert" : "circle-check", "size-4")}<span>${esc(t(bad ? "committee.drive.checked_problem" : "committee.drive.checked_empty", L, { date }))}</span></p>`;
+  });
+
+  // The next date of each monthly recurring event (config/site.yml `recurring_events:`), soonest
+  // first — the "Also every month" box on /meeting/.
+  eleventyConfig.addFilter("cmRecurringNext", (items, site, lang) => {
+    const seen = new Set();
+    return normalizeEvents(EMPTY ? [] : items, site, lang, { monthsBack: 0, monthsAhead: 0 })
+      .filter((e) => e.recurring && !e.past && !seen.has(e.series) && seen.add(e.series));
   });
 
   // Next committee meeting as an event (for the pinned card & calendar buttons)

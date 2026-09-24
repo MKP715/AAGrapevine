@@ -95,6 +95,7 @@
   "community.digest.and_more": { "en": "+ {n} more", "es": "+ {n} más" },
   "community.digest.coming_up": { "en": "Coming up", "es": "Próximamente" },
   "community.digest.coming_up_sub": { "en": "Next 30 days", "es": "Próximos 30 días" },
+  "community.digest.every_month": { "en": "every month", "es": "cada mes" },
   "community.digest.next_meeting": { "en": "Next committee meeting", "es": "Próxima reunión del comité" },
   "community.digest.meeting_text": { "en": "Monthly on Zoom. All AA members are welcome — no registration needed.", "es": "Cada mes por Zoom. Todos los miembros de AA son bienvenidos — no hace falta registrarse." },
   "community.digest.meeting_btn": { "en": "Meeting details", "es": "Detalles de la reunión" },

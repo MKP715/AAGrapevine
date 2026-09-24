@@ -1,6 +1,6 @@
 {
- "generated": "2026-09-24T06:47:38Z",
- "updated": "2026-09-24T06:47:38Z",
+ "generated": "2026-09-24T10:12:13Z",
+ "updated": "2026-09-24T10:12:13Z",
  "fixture": false,
  "sources": [
   {
@@ -387,7 +387,7 @@
   "editorial": 37,
   "weekly_open": 1,
   "announcements": 0,
-  "events": 13,
+  "events": 22,
   "whatsnew": 150,
   "districts": 2
  },

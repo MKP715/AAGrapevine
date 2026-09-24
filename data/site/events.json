@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-24T06:47:38Z",
+ "updated": "2026-09-24T10:12:13Z",
  "fixture": false,
  "items": [
   {
@@ -55,6 +55,54 @@
    "is_new": false
   },
   {
+   "id": "ev:recurring:citywide-dallas:2026-10-10",
+   "source": "committee",
+   "kind": "event",
+   "url": "https://citywidedallasaa.org",
+   "title": "GV/LV booth at CityWide Dallas",
+   "summary": "Stop by our Grapevine and La Viña literature table at CityWide Dallas, the monthly AA gathering at Lover's Lane United Methodist Church (potluck at 5:30 PM, speaker at 7:00 PM). Browse the magazines and ask us how to subscribe or how to become a GVR or RLV.",
+   "lang": "en",
+   "date": "2026-10-10T22:00:00Z",
+   "first_seen": null,
+   "image": null,
+   "tags": [
+    "recurring"
+   ],
+   "category": "recurring",
+   "status": "ok",
+   "extra": {
+    "start": "2026-10-10T22:00:00Z",
+    "end": "2026-10-11T01:00:00Z",
+    "all_day": false,
+    "location": "Lover's Lane United Methodist Church, 9200 Inwood Road, Dallas, TX 75220",
+    "online_url": null,
+    "flyer_url": null,
+    "flyer_thumb": null,
+    "city": "Dallas",
+    "state": "TX",
+    "recurring": true,
+    "series": "citywide-dallas",
+    "recurrence_label": "2nd Saturday of every month · 5:00–8:00 PM",
+    "past": false
+   },
+   "i18n": {
+    "title": {
+     "en": "GV/LV booth at CityWide Dallas",
+     "es": "Mesa de GV/LV en CityWide Dallas"
+    },
+    "summary": {
+     "en": "Stop by our Grapevine and La Viña literature table at CityWide Dallas, the monthly AA gathering at Lover's Lane United Methodist Church (potluck at 5:30 PM, speaker at 7:00 PM). Browse the magazines and ask us how to subscribe or how to become a GVR or RLV.",
+     "es": "Visita nuestra mesa de literatura de Grapevine y La Viña en CityWide Dallas, la reunión mensual de AA en la Iglesia Metodista Unida Lover's Lane (comida compartida a las 5:30 p. m. y orador a las 7:00 p. m.). Hojea las revistas y pregúntanos cómo suscribirte o ser RLV o GVR."
+    },
+    "recurrence_label": {
+     "en": "2nd Saturday of every month · 5:00–8:00 PM",
+     "es": "2.º sábado de cada mes · 5:00–8:00 p. m."
+    }
+   },
+   "machine": [],
+   "is_new": false
+  },
+  {
    "id": "ev:committee:2026-10-21",
    "source": "committee",
    "kind": "event",
@@ -93,6 +141,54 @@
     "summary": {
      "en": "Our monthly committee meeting on Zoom. All AA members are welcome to attend. No registration required.",
      "es": "Nuestra reunión mensual del comité por Zoom. Todos los miembros de AA son bienvenidos. No se requiere inscripción."
+    }
+   },
+   "machine": [],
+   "is_new": false
+  },
+  {
+   "id": "ev:recurring:citywide-dallas:2026-11-14",
+   "source": "committee",
+   "kind": "event",
+   "url": "https://citywidedallasaa.org",
+   "title": "GV/LV booth at CityWide Dallas",
+   "summary": "Stop by our Grapevine and La Viña literature table at CityWide Dallas, the monthly AA gathering at Lover's Lane United Methodist Church (potluck at 5:30 PM, speaker at 7:00 PM). Browse the magazines and ask us how to subscribe or how to become a GVR or RLV.",
+   "lang": "en",
+   "date": "2026-11-14T23:00:00Z",
+   "first_seen": null,
+   "image": null,
+   "tags": [
+    "recurring"
+   ],
+   "category": "recurring",
+   "status": "ok",
+   "extra": {
+    "start": "2026-11-14T23:00:00Z",
+    "end": "2026-11-15T02:00:00Z",
+    "all_day": false,
+    "location": "Lover's Lane United Methodist Church, 9200 Inwood Road, Dallas, TX 75220",
+    "online_url": null,
+    "flyer_url": null,
+    "flyer_thumb": null,
+    "city": "Dallas",
+    "state": "TX",
+    "recurring": true,
+    "series": "citywide-dallas",
+    "recurrence_label": "2nd Saturday of every month · 5:00–8:00 PM",
+    "past": false
+   },
+   "i18n": {
+    "title": {
+     "en": "GV/LV booth at CityWide Dallas",
+     "es": "Mesa de GV/LV en CityWide Dallas"
+    },
+    "summary": {
+     "en": "Stop by our Grapevine and La Viña literature table at CityWide Dallas, the monthly AA gathering at Lover's Lane United Methodist Church (potluck at 5:30 PM, speaker at 7:00 PM). Browse the magazines and ask us how to subscribe or how to become a GVR or RLV.",
+     "es": "Visita nuestra mesa de literatura de Grapevine y La Viña en CityWide Dallas, la reunión mensual de AA en la Iglesia Metodista Unida Lover's Lane (comida compartida a las 5:30 p. m. y orador a las 7:00 p. m.). Hojea las revistas y pregúntanos cómo suscribirte o ser RLV o GVR."
+    },
+    "recurrence_label": {
+     "en": "2nd Saturday of every month · 5:00–8:00 PM",
+     "es": "2.º sábado de cada mes · 5:00–8:00 p. m."
     }
    },
    "machine": [],
@@ -143,6 +239,54 @@
    "is_new": false
   },
   {
+   "id": "ev:recurring:citywide-dallas:2026-12-12",
+   "source": "committee",
+   "kind": "event",
+   "url": "https://citywidedallasaa.org",
+   "title": "GV/LV booth at CityWide Dallas",
+   "summary": "Stop by our Grapevine and La Viña literature table at CityWide Dallas, the monthly AA gathering at Lover's Lane United Methodist Church (potluck at 5:30 PM, speaker at 7:00 PM). Browse the magazines and ask us how to subscribe or how to become a GVR or RLV.",
+   "lang": "en",
+   "date": "2026-12-12T23:00:00Z",
+   "first_seen": null,
+   "image": null,
+   "tags": [
+    "recurring"
+   ],
+   "category": "recurring",
+   "status": "ok",
+   "extra": {
+    "start": "2026-12-12T23:00:00Z",
+    "end": "2026-12-13T02:00:00Z",
+    "all_day": false,
+    "location": "Lover's Lane United Methodist Church, 9200 Inwood Road, Dallas, TX 75220",
+    "online_url": null,
+    "flyer_url": null,
+    "flyer_thumb": null,
+    "city": "Dallas",
+    "state": "TX",
+    "recurring": true,
+    "series": "citywide-dallas",
+    "recurrence_label": "2nd Saturday of every month · 5:00–8:00 PM",
+    "past": false
+   },
+   "i18n": {
+    "title": {
+     "en": "GV/LV booth at CityWide Dallas",
+     "es": "Mesa de GV/LV en CityWide Dallas"
+    },
+    "summary": {
+     "en": "Stop by our Grapevine and La Viña literature table at CityWide Dallas, the monthly AA gathering at Lover's Lane United Methodist Church (potluck at 5:30 PM, speaker at 7:00 PM). Browse the magazines and ask us how to subscribe or how to become a GVR or RLV.",
+     "es": "Visita nuestra mesa de literatura de Grapevine y La Viña en CityWide Dallas, la reunión mensual de AA en la Iglesia Metodista Unida Lover's Lane (comida compartida a las 5:30 p. m. y orador a las 7:00 p. m.). Hojea las revistas y pregúntanos cómo suscribirte o ser RLV o GVR."
+    },
+    "recurrence_label": {
+     "en": "2nd Saturday of every month · 5:00–8:00 PM",
+     "es": "2.º sábado de cada mes · 5:00–8:00 p. m."
+    }
+   },
+   "machine": [],
+   "is_new": false
+  },
+  {
    "id": "ev:committee:2026-12-16",
    "source": "committee",
    "kind": "event",
@@ -181,6 +325,54 @@
     "summary": {
      "en": "Our monthly committee meeting on Zoom. All AA members are welcome to attend. No registration required.",
      "es": "Nuestra reunión mensual del comité por Zoom. Todos los miembros de AA son bienvenidos. No se requiere inscripción."
+    }
+   },
+   "machine": [],
+   "is_new": false
+  },
+  {
+   "id": "ev:recurring:citywide-dallas:2027-01-09",
+   "source": "committee",
+   "kind": "event",
+   "url": "https://citywidedallasaa.org",
+   "title": "GV/LV booth at CityWide Dallas",
+   "summary": "Stop by our Grapevine and La Viña literature table at CityWide Dallas, the monthly AA gathering at Lover's Lane United Methodist Church (potluck at 5:30 PM, speaker at 7:00 PM). Browse the magazines and ask us how to subscribe or how to become a GVR or RLV.",
+   "lang": "en",
+   "date": "2027-01-09T23:00:00Z",
+   "first_seen": null,
+   "image": null,
+   "tags": [
+    "recurring"
+   ],
+   "category": "recurring",
+   "status": "ok",
+   "extra": {
+    "start": "2027-01-09T23:00:00Z",
+    "end": "2027-01-10T02:00:00Z",
+    "all_day": false,
+    "location": "Lover's Lane United Methodist Church, 9200 Inwood Road, Dallas, TX 75220",
+    "online_url": null,
+    "flyer_url": null,
+    "flyer_thumb": null,
+    "city": "Dallas",
+    "state": "TX",
+    "recurring": true,
+    "series": "citywide-dallas",
+    "recurrence_label": "2nd Saturday of every month · 5:00–8:00 PM",
+    "past": false
+   },
+   "i18n": {
+    "title": {
+     "en": "GV/LV booth at CityWide Dallas",
+     "es": "Mesa de GV/LV en CityWide Dallas"
+    },
+    "summary": {
+     "en": "Stop by our Grapevine and La Viña literature table at CityWide Dallas, the monthly AA gathering at Lover's Lane United Methodist Church (potluck at 5:30 PM, speaker at 7:00 PM). Browse the magazines and ask us how to subscribe or how to become a GVR or RLV.",
+     "es": "Visita nuestra mesa de literatura de Grapevine y La Viña en CityWide Dallas, la reunión mensual de AA en la Iglesia Metodista Unida Lover's Lane (comida compartida a las 5:30 p. m. y orador a las 7:00 p. m.). Hojea las revistas y pregúntanos cómo suscribirte o ser RLV o GVR."
+    },
+    "recurrence_label": {
+     "en": "2nd Saturday of every month · 5:00–8:00 PM",
+     "es": "2.º sábado de cada mes · 5:00–8:00 p. m."
     }
    },
    "machine": [],
@@ -231,6 +423,54 @@
    "is_new": false
   },
   {
+   "id": "ev:recurring:citywide-dallas:2027-02-13",
+   "source": "committee",
+   "kind": "event",
+   "url": "https://citywidedallasaa.org",
+   "title": "GV/LV booth at CityWide Dallas",
+   "summary": "Stop by our Grapevine and La Viña literature table at CityWide Dallas, the monthly AA gathering at Lover's Lane United Methodist Church (potluck at 5:30 PM, speaker at 7:00 PM). Browse the magazines and ask us how to subscribe or how to become a GVR or RLV.",
+   "lang": "en",
+   "date": "2027-02-13T23:00:00Z",
+   "first_seen": null,
+   "image": null,
+   "tags": [
+    "recurring"
+   ],
+   "category": "recurring",
+   "status": "ok",
+   "extra": {
+    "start": "2027-02-13T23:00:00Z",
+    "end": "2027-02-14T02:00:00Z",
+    "all_day": false,
+    "location": "Lover's Lane United Methodist Church, 9200 Inwood Road, Dallas, TX 75220",
+    "online_url": null,
+    "flyer_url": null,
+    "flyer_thumb": null,
+    "city": "Dallas",
+    "state": "TX",
+    "recurring": true,
+    "series": "citywide-dallas",
+    "recurrence_label": "2nd Saturday of every month · 5:00–8:00 PM",
+    "past": false
+   },
+   "i18n": {
+    "title": {
+     "en": "GV/LV booth at CityWide Dallas",
+     "es": "Mesa de GV/LV en CityWide Dallas"
+    },
+    "summary": {
+     "en": "Stop by our Grapevine and La Viña literature table at CityWide Dallas, the monthly AA gathering at Lover's Lane United Methodist Church (potluck at 5:30 PM, speaker at 7:00 PM). Browse the magazines and ask us how to subscribe or how to become a GVR or RLV.",
+     "es": "Visita nuestra mesa de literatura de Grapevine y La Viña en CityWide Dallas, la reunión mensual de AA en la Iglesia Metodista Unida Lover's Lane (comida compartida a las 5:30 p. m. y orador a las 7:00 p. m.). Hojea las revistas y pregúntanos cómo suscribirte o ser RLV o GVR."
+    },
+    "recurrence_label": {
+     "en": "2nd Saturday of every month · 5:00–8:00 PM",
+     "es": "2.º sábado de cada mes · 5:00–8:00 p. m."
+    }
+   },
+   "machine": [],
+   "is_new": false
+  },
+  {
    "id": "ev:committee:2027-02-17",
    "source": "committee",
    "kind": "event",
@@ -269,6 +509,54 @@
     "summary": {
      "en": "Our monthly committee meeting on Zoom. All AA members are welcome to attend. No registration required.",
      "es": "Nuestra reunión mensual del comité por Zoom. Todos los miembros de AA son bienvenidos. No se requiere inscripción."
+    }
+   },
+   "machine": [],
+   "is_new": false
+  },
+  {
+   "id": "ev:recurring:citywide-dallas:2027-03-13",
+   "source": "committee",
+   "kind": "event",
+   "url": "https://citywidedallasaa.org",
+   "title": "GV/LV booth at CityWide Dallas",
+   "summary": "Stop by our Grapevine and La Viña literature table at CityWide Dallas, the monthly AA gathering at Lover's Lane United Methodist Church (potluck at 5:30 PM, speaker at 7:00 PM). Browse the magazines and ask us how to subscribe or how to become a GVR or RLV.",
+   "lang": "en",
+   "date": "2027-03-13T23:00:00Z",
+   "first_seen": null,
+   "image": null,
+   "tags": [
+    "recurring"
+   ],
+   "category": "recurring",
+   "status": "ok",
+   "extra": {
+    "start": "2027-03-13T23:00:00Z",
+    "end": "2027-03-14T02:00:00Z",
+    "all_day": false,
+    "location": "Lover's Lane United Methodist Church, 9200 Inwood Road, Dallas, TX 75220",
+    "online_url": null,
+    "flyer_url": null,
+    "flyer_thumb": null,
+    "city": "Dallas",
+    "state": "TX",
+    "recurring": true,
+    "series": "citywide-dallas",
+    "recurrence_label": "2nd Saturday of every month · 5:00–8:00 PM",
+    "past": false
+   },
+   "i18n": {
+    "title": {
+     "en": "GV/LV booth at CityWide Dallas",
+     "es": "Mesa de GV/LV en CityWide Dallas"
+    },
+    "summary": {
+     "en": "Stop by our Grapevine and La Viña literature table at CityWide Dallas, the monthly AA gathering at Lover's Lane United Methodist Church (potluck at 5:30 PM, speaker at 7:00 PM). Browse the magazines and ask us how to subscribe or how to become a GVR or RLV.",
+     "es": "Visita nuestra mesa de literatura de Grapevine y La Viña en CityWide Dallas, la reunión mensual de AA en la Iglesia Metodista Unida Lover's Lane (comida compartida a las 5:30 p. m. y orador a las 7:00 p. m.). Hojea las revistas y pregúntanos cómo suscribirte o ser RLV o GVR."
+    },
+    "recurrence_label": {
+     "en": "2nd Saturday of every month · 5:00–8:00 PM",
+     "es": "2.º sábado de cada mes · 5:00–8:00 p. m."
     }
    },
    "machine": [],
@@ -577,6 +865,150 @@
     "summary": {
      "en": "Our monthly committee meeting on Zoom. All AA members are welcome to attend. No registration required.",
      "es": "Nuestra reunión mensual del comité por Zoom. Todos los miembros de AA son bienvenidos. No se requiere inscripción."
+    }
+   },
+   "machine": [],
+   "is_new": false
+  },
+  {
+   "id": "ev:recurring:citywide-dallas:2026-09-12",
+   "source": "committee",
+   "kind": "event",
+   "url": "https://citywidedallasaa.org",
+   "title": "GV/LV booth at CityWide Dallas",
+   "summary": "Stop by our Grapevine and La Viña literature table at CityWide Dallas, the monthly AA gathering at Lover's Lane United Methodist Church (potluck at 5:30 PM, speaker at 7:00 PM). Browse the magazines and ask us how to subscribe or how to become a GVR or RLV.",
+   "lang": "en",
+   "date": "2026-09-12T22:00:00Z",
+   "first_seen": null,
+   "image": null,
+   "tags": [
+    "recurring"
+   ],
+   "category": "recurring",
+   "status": "ok",
+   "extra": {
+    "start": "2026-09-12T22:00:00Z",
+    "end": "2026-09-13T01:00:00Z",
+    "all_day": false,
+    "location": "Lover's Lane United Methodist Church, 9200 Inwood Road, Dallas, TX 75220",
+    "online_url": null,
+    "flyer_url": null,
+    "flyer_thumb": null,
+    "city": "Dallas",
+    "state": "TX",
+    "recurring": true,
+    "series": "citywide-dallas",
+    "recurrence_label": "2nd Saturday of every month · 5:00–8:00 PM",
+    "past": true
+   },
+   "i18n": {
+    "title": {
+     "en": "GV/LV booth at CityWide Dallas",
+     "es": "Mesa de GV/LV en CityWide Dallas"
+    },
+    "summary": {
+     "en": "Stop by our Grapevine and La Viña literature table at CityWide Dallas, the monthly AA gathering at Lover's Lane United Methodist Church (potluck at 5:30 PM, speaker at 7:00 PM). Browse the magazines and ask us how to subscribe or how to become a GVR or RLV.",
+     "es": "Visita nuestra mesa de literatura de Grapevine y La Viña en CityWide Dallas, la reunión mensual de AA en la Iglesia Metodista Unida Lover's Lane (comida compartida a las 5:30 p. m. y orador a las 7:00 p. m.). Hojea las revistas y pregúntanos cómo suscribirte o ser RLV o GVR."
+    },
+    "recurrence_label": {
+     "en": "2nd Saturday of every month · 5:00–8:00 PM",
+     "es": "2.º sábado de cada mes · 5:00–8:00 p. m."
+    }
+   },
+   "machine": [],
+   "is_new": false
+  },
+  {
+   "id": "ev:recurring:citywide-dallas:2026-08-08",
+   "source": "committee",
+   "kind": "event",
+   "url": "https://citywidedallasaa.org",
+   "title": "GV/LV booth at CityWide Dallas",
+   "summary": "Stop by our Grapevine and La Viña literature table at CityWide Dallas, the monthly AA gathering at Lover's Lane United Methodist Church (potluck at 5:30 PM, speaker at 7:00 PM). Browse the magazines and ask us how to subscribe or how to become a GVR or RLV.",
+   "lang": "en",
+   "date": "2026-08-08T22:00:00Z",
+   "first_seen": null,
+   "image": null,
+   "tags": [
+    "recurring"
+   ],
+   "category": "recurring",
+   "status": "ok",
+   "extra": {
+    "start": "2026-08-08T22:00:00Z",
+    "end": "2026-08-09T01:00:00Z",
+    "all_day": false,
+    "location": "Lover's Lane United Methodist Church, 9200 Inwood Road, Dallas, TX 75220",
+    "online_url": null,
+    "flyer_url": null,
+    "flyer_thumb": null,
+    "city": "Dallas",
+    "state": "TX",
+    "recurring": true,
+    "series": "citywide-dallas",
+    "recurrence_label": "2nd Saturday of every month · 5:00–8:00 PM",
+    "past": true
+   },
+   "i18n": {
+    "title": {
+     "en": "GV/LV booth at CityWide Dallas",
+     "es": "Mesa de GV/LV en CityWide Dallas"
+    },
+    "summary": {
+     "en": "Stop by our Grapevine and La Viña literature table at CityWide Dallas, the monthly AA gathering at Lover's Lane United Methodist Church (potluck at 5:30 PM, speaker at 7:00 PM). Browse the magazines and ask us how to subscribe or how to become a GVR or RLV.",
+     "es": "Visita nuestra mesa de literatura de Grapevine y La Viña en CityWide Dallas, la reunión mensual de AA en la Iglesia Metodista Unida Lover's Lane (comida compartida a las 5:30 p. m. y orador a las 7:00 p. m.). Hojea las revistas y pregúntanos cómo suscribirte o ser RLV o GVR."
+    },
+    "recurrence_label": {
+     "en": "2nd Saturday of every month · 5:00–8:00 PM",
+     "es": "2.º sábado de cada mes · 5:00–8:00 p. m."
+    }
+   },
+   "machine": [],
+   "is_new": false
+  },
+  {
+   "id": "ev:recurring:citywide-dallas:2026-07-11",
+   "source": "committee",
+   "kind": "event",
+   "url": "https://citywidedallasaa.org",
+   "title": "GV/LV booth at CityWide Dallas",
+   "summary": "Stop by our Grapevine and La Viña literature table at CityWide Dallas, the monthly AA gathering at Lover's Lane United Methodist Church (potluck at 5:30 PM, speaker at 7:00 PM). Browse the magazines and ask us how to subscribe or how to become a GVR or RLV.",
+   "lang": "en",
+   "date": "2026-07-11T22:00:00Z",
+   "first_seen": null,
+   "image": null,
+   "tags": [
+    "recurring"
+   ],
+   "category": "recurring",
+   "status": "ok",
+   "extra": {
+    "start": "2026-07-11T22:00:00Z",
+    "end": "2026-07-12T01:00:00Z",
+    "all_day": false,
+    "location": "Lover's Lane United Methodist Church, 9200 Inwood Road, Dallas, TX 75220",
+    "online_url": null,
+    "flyer_url": null,
+    "flyer_thumb": null,
+    "city": "Dallas",
+    "state": "TX",
+    "recurring": true,
+    "series": "citywide-dallas",
+    "recurrence_label": "2nd Saturday of every month · 5:00–8:00 PM",
+    "past": true
+   },
+   "i18n": {
+    "title": {
+     "en": "GV/LV booth at CityWide Dallas",
+     "es": "Mesa de GV/LV en CityWide Dallas"
+    },
+    "summary": {
+     "en": "Stop by our Grapevine and La Viña literature table at CityWide Dallas, the monthly AA gathering at Lover's Lane United Methodist Church (potluck at 5:30 PM, speaker at 7:00 PM). Browse the magazines and ask us how to subscribe or how to become a GVR or RLV.",
+     "es": "Visita nuestra mesa de literatura de Grapevine y La Viña en CityWide Dallas, la reunión mensual de AA en la Iglesia Metodista Unida Lover's Lane (comida compartida a las 5:30 p. m. y orador a las 7:00 p. m.). Hojea las revistas y pregúntanos cómo suscribirte o ser RLV o GVR."
+    },
+    "recurrence_label": {
+     "en": "2nd Saturday of every month · 5:00–8:00 PM",
+     "es": "2.º sábado de cada mes · 5:00–8:00 p. m."
     }
    },
    "machine": [],

@@ -7,14 +7,16 @@ titleKey: nav.events
 descKey: committee.events.meta_desc
 pageScripts: ["/assets/js/committee.js"]
 ---
-{#- Events: committee meetings (computed), Drive flyers with dated names,
-    manual events, Texas GV/LV calendar events. Grouped by month, filterable,
+{#- Events: committee meetings (computed), monthly recurring events (config/site.yml
+    `recurring_events:` — every date is listed, with an "Every month" badge), Drive flyers with
+    dated names, manual events, Texas GV/LV calendar events. Grouped by month, filterable,
     with per-event calendar buttons. Below the shared page hero: the agenda on the left and,
     from 1024px, a sidebar with the .ics subscription card and "how events get here". -#}
 {% import "macros/ui.njk" as ui with context %}
 {%- set all = db.events.items | cmEvents(site, lang) -%}
 {%- set upcoming = all | where("past", false) -%}
-{%- set past = all | where("past", true) | whereNot("committee", true) | reverse -%}
+{#- Past list: real one-off events only (a monthly meeting / booth date that has passed is not news) -#}
+{%- set past = all | where("past", true) | whereNot("committee", true) | whereNot("recurring", true) | reverse -%}
 {%- set meetings = upcoming | where("committee", true) -%}
 {%- set next = meetings[0] -%}
 {%- set nNeta = upcoming | where("group", "neta") | length -%}
@@ -139,8 +141,9 @@ pageScripts: ["/assets/js/committee.js"]
           <div class="min-w-0 flex-1">
             <div class="flex flex-wrap items-center gap-1.5">
               {{ groupBadge(ev) }}
+              {% if ev.recurring %}<span class="badge-muted">{% icon "repeat", "size-3" %} {{ "committee.events.badge_recurring" | t(lang) }}</span>{% endif %}
               {% if ev.isNew %}<span class="badge-new">{{ "common.new" | t(lang) }}</span>{% endif %}
-              {% if not ev.committee %}{{ ui.langPill(ev.item, lang) }}{% endif %}
+              {% if not ev.committee and not ev.ownWords %}{{ ui.langPill(ev.item, lang) }}{% endif %}
             </div>
             <h3 class="h-card mt-2 text-lg sm:text-xl">
               {%- if ev.link and ev.link != (ev.flyer.view if ev.flyer else "") -%}
@@ -152,9 +155,10 @@ pageScripts: ["/assets/js/committee.js"]
               <li class="inline-flex items-center gap-1.5">{% icon "clock-3", "size-4 text-faint" %} {{ ev.timeLabel }}</li>
               {% if ev.location %}<li class="inline-flex items-center gap-1.5">{% set locIcon = "video" if ev.committee else "map-pin" %}{% icon locIcon, "size-4 text-faint" %} {{ ev.location }}</li>{% endif %}
               {% if ev.isOnline %}<li class="inline-flex items-center gap-1.5">{% icon "video", "size-4 text-faint" %} {{ ("committee.events.online_on" | t(lang, { platform: ev.platform })) if ev.platform else ("committee.events.online" | t(lang)) }}</li>{% endif %}
+              {% if ev.recurrenceDay %}<li class="inline-flex items-center gap-1.5">{% icon "repeat", "size-4 text-faint" %} {{ ev.recurrenceDay }}</li>{% endif %}
             </ul>
             {% if not ev.committee %}
-            {%- set foreign = ev.item.lang and ev.item.lang != lang and ev.item.lang != "und" and not (ev.item | machineFor(lang)) -%}
+            {%- set foreign = not ev.ownWords and ev.item.lang and ev.item.lang != lang and ev.item.lang != "und" and not (ev.item | machineFor(lang)) -%}
             {% if ev.body %}
             <div class="prose-site mt-3 max-w-none text-[0.95rem]"{% if foreign %} lang="{{ ev.item.lang }}"{% endif %}>{{ ev.body | md | safe }}</div>
             {% elif ev.summary %}

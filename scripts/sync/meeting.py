@@ -106,6 +106,14 @@ class MonthlyRule:
     end: tuple[int, int]                   # (hour, minute); not after start → a one-hour event
     skip: frozenset[str] = frozenset()     # "YYYY-MM-DD" dates that do not happen
 
+    def span(self) -> tuple[tuple[int, int], tuple[int, int]]:
+        """(start, end) as used for every date: an end that is missing or not after the start makes
+        it a one-hour event (a 23:30 start ends at 23:59, the same day)."""
+        (sh, sm), (eh, em) = self.start, self.end
+        if (eh, em) <= (sh, sm):
+            eh, em = min(sh + 1, 23), (sm if sh < 23 else 59)
+        return (sh, sm), (eh, em)
+
 
 def _nth_weekday(y: int, m: int, weekday: int, n: int) -> date | None:
     if n == -1:
@@ -129,10 +137,7 @@ def upcoming_rule_dates(rule: MonthlyRule, count: int, tz: ZoneInfo, now: dateti
         return []
     now = now or datetime.now(timezone.utc)
     since = now - timedelta(days=include_recent_days)
-    sh, sm = rule.start
-    eh, em = rule.end
-    if (eh, em) <= (sh, sm):               # missing / earlier end → a one-hour event
-        eh, em = min(sh + 1, 23), (sm if sh < 23 else 59)
+    (sh, sm), (eh, em) = rule.span()       # a missing / earlier end → a one-hour event
     local = since.astimezone(tz)
     y, m = (local.year, local.month - 1) if local.month > 1 else (local.year - 1, 12)
     out: list[dict] = []
