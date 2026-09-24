@@ -1,22 +1,22 @@
 {
  "source": "articles",
- "updated": "2026-09-24T00:38:12Z",
- "attempted": "2026-09-24T00:38:12Z",
+ "updated": "2026-09-24T03:16:36Z",
+ "attempted": "2026-09-24T03:16:36Z",
  "ok": true,
  "error": null,
  "stats": {
   "hub_articles": 56,
   "details_fetched": 40,
   "details_failed": 0,
-  "thumbs": 8,
+  "thumbs": 0,
   "archive_pages": 2,
   "archive_new": 0,
-  "details_pending": 124,
+  "details_pending": 84,
   "byline_pending": 0,
-  "details_left": 84,
+  "details_left": 44,
   "new": 0,
   "total": 224,
-  "requests": 52
+  "requests": 44
  },
  "items": [
   {
@@ -4315,7 +4315,7 @@
    "kind": "article",
    "url": "https://www.aagrapevine.org/magazine/2026/jul/someones-waiting",
    "title": "Someone’s Waiting",
-   "summary": "",
+   "summary": "I came to with the sound of my own heartbeat pounding in my ears.",
    "lang": "en",
    "date": "2026-07-01",
    "first_seen": "2026-09-23T23:13:14Z",
@@ -4332,12 +4332,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Annual Prison Issue",
-    "section": null,
+    "section": "Our Personal Stories",
     "author": "Rebecca L.",
     "author_location": "Sunnyside, New York",
     "subtitle": null,
-    "teaser": null,
-    "free": null,
+    "teaser": "I came to with the sound of my own heartbeat pounding in my ears.",
+    "free": false,
     "online_exclusive": false,
     "department": false
    }
@@ -4364,13 +4364,13 @@
     "issue_date": "2026-07-01",
     "issue_theme": null,
     "issue_url": null,
-    "topic": null,
+    "topic": "Magazine",
     "section": null,
     "author": "Definitely Steve",
     "author_location": "Nashville, Tenn.",
     "subtitle": "Setting a powerful example while lacking an ability most of us take for granted",
-    "teaser": null,
-    "free": null,
+    "teaser": "I learned so much from AA’s beginners meetings, which are filled with suggestions on how to get and stay sober.",
+    "free": false,
     "online_exclusive": true,
     "department": false
    }
@@ -4398,12 +4398,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Prisiones / La Viña 30 Aniversario",
-    "section": null,
+    "section": "En cada edición",
     "author": null,
     "author_location": null,
     "subtitle": null,
     "teaser": null,
-    "free": null,
+    "free": false,
     "online_exclusive": false,
     "department": true
    }
@@ -4431,12 +4431,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Annual Prison Issue",
-    "section": null,
+    "section": "In Every Issue",
     "author": null,
     "author_location": null,
     "subtitle": "Relapsing in sobriety",
-    "teaser": null,
-    "free": null,
+    "teaser": "The writer of “Fully Present, Fully Real” came to AA at 26, but didn’t really work the program. He relapsed and drank for another 17 years.",
+    "free": false,
     "online_exclusive": false,
     "department": true
    }
@@ -4497,12 +4497,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Prisiones / La Viña 30 Aniversario",
-    "section": null,
+    "section": "Paso Siete",
     "author": "Lisseth L.",
     "author_location": "Arkansas City, Kansas",
     "subtitle": "“Nos enfrentamos con aquellos graves defectos de carácter que originalmente nos convirtieron en bebedores problema, defectos que tenemos que intentar remediar...” -Doce Pasos y Doce Tradiciones, pág. 71",
-    "teaser": null,
-    "free": null,
+    "teaser": "El Séptimo Paso me está ayudando a darme cuenta de cuándo necesito ser más humilde, reconociendo mis defectos de carácter.",
+    "free": false,
     "online_exclusive": false,
     "department": false
    }
@@ -4530,12 +4530,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Annual Prison Issue",
-    "section": null,
+    "section": "Our Personal Stories",
     "author": "Cherry R.",
     "author_location": "Long Beach, Washington",
     "subtitle": "Five AA women head out for fun, fresh air, s’mores and fellowship. And they even caught a few fish",
-    "teaser": null,
-    "free": null,
+    "teaser": "Last weekend I had the opportunity to go fishing with four women AA friends. We had various sober times in the program, ranging from about four months to 34 years.",
+    "free": false,
     "online_exclusive": false,
     "department": false
    }
@@ -4567,8 +4567,8 @@
     "author": "T.P.",
     "author_location": "Hamilton, Ohio",
     "subtitle": "People come and go and circumstances change, but the spirit of the home group remains alive",
-    "teaser": null,
-    "free": null,
+    "teaser": "It all started on the first Friday night of my stay at the local treatment center. Dave, Hank and George came to host an AA meeting.",
+    "free": false,
     "online_exclusive": true,
     "department": false
    }
@@ -4596,12 +4596,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Prisiones / La Viña 30 Aniversario",
-    "section": null,
+    "section": "Sección Especial",
     "author": "Mario C.",
     "author_location": "High Desert State Prison, Susanville",
     "subtitle": "Cumpliendo su condena, la literatura de AA lo ayuda a descubrir una nueva versión de sí mismo",
-    "teaser": null,
-    "free": null,
+    "teaser": "Muchas gracias por todo el esfuerzo y empeño que hace el equipo para poder proveernos con la revista puntualmente.",
+    "free": false,
     "online_exclusive": false,
     "department": false
    }
@@ -4612,7 +4612,7 @@
    "kind": "article",
    "url": "https://www.aagrapevine.org/magazine/2026/jul/bigger-us",
    "title": "Bigger Than Us",
-   "summary": "",
+   "summary": "“This is hardcore AA!”",
    "lang": "en",
    "date": "2026-07-01",
    "first_seen": "2026-09-23T23:13:14Z",
@@ -4629,12 +4629,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Annual Prison Issue",
-    "section": null,
+    "section": "Featured Section",
     "author": "Glenn K.",
     "author_location": "Phoeniz, Maryland",
     "subtitle": null,
-    "teaser": null,
-    "free": null,
+    "teaser": "“This is hardcore AA!”",
+    "free": false,
     "online_exclusive": false,
     "department": false
    }
@@ -4662,12 +4662,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Annual Prison Issue",
-    "section": null,
+    "section": "Our Personal Stories",
     "author": "Doug G.",
     "author_location": "Fujisawa, Kanagawa",
     "subtitle": "An AA interpreter shares about all the love he experienced at Japan’s 50th AA Anniversary",
-    "teaser": null,
-    "free": null,
+    "teaser": "I woke up this morning bone-tired, worn thin from a week of racing toward fiscal year-end deadlines, averaging maybe three hours of sleep a night.",
+    "free": false,
     "online_exclusive": false,
     "department": false
    }
@@ -4678,7 +4678,7 @@
    "kind": "article",
    "url": "https://www.aagrapevine.org/magazine/2026/jul/letter-editor-july-2026",
    "title": "Letter from the Editor",
-   "summary": "",
+   "summary": "One of the most rewarding and important service positions an AA member can do is carry the message of AA into prisons. Many institutions have meetings inside, but many do not.",
    "lang": "en",
    "date": "2026-07-01",
    "first_seen": "2026-09-23T23:13:14Z",
@@ -4695,12 +4695,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Annual Prison Issue",
-    "section": null,
+    "section": "In Every Issue",
     "author": null,
     "author_location": null,
     "subtitle": null,
-    "teaser": null,
-    "free": null,
+    "teaser": "One of the most rewarding and important service positions an AA member can do is carry the message of AA into prisons. Many institutions have meetings inside, but many do not.",
+    "free": false,
     "online_exclusive": false,
     "department": true
    }
@@ -4728,12 +4728,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Prisiones / La Viña 30 Aniversario",
-    "section": null,
+    "section": "Paso Ocho",
     "author": "Arturo P.",
     "author_location": "Filmore, California",
     "subtitle": "“Estas eran algunas de las formas en las que el temor conspiraba con el orgullo para impedir que hiciéramos una lista...” -Doce Pasos y Doce Tradiciones, pág. 78",
-    "teaser": null,
-    "free": null,
+    "teaser": "Mi nombre es Arturo y soy un alcohólico anónimo. Ahora me encuentro en un taller de escritura de La Viña, llevado a cabo por el distrito 4 del área 93.",
+    "free": false,
     "online_exclusive": false,
     "department": false
    }
@@ -4843,7 +4843,7 @@
    "kind": "article",
    "url": "https://www.aalavina.org/revista/julio-agosto-2026/necesitamos-la-revista",
    "title": "¡Necesitamos la revista!",
-   "summary": "",
+   "summary": "Hola compañeros, mi nombre es Paul y soy un alcohólico bilingüe. Aprendí el idioma español asistiendo a las reuniones de AA hispanas aquí en Massachusetts.",
    "lang": "es",
    "date": "2026-07-01",
    "first_seen": "2026-09-23T23:13:14Z",
@@ -4860,12 +4860,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Prisiones / La Viña 30 Aniversario",
-    "section": null,
+    "section": "Sección Especial",
     "author": "Paul M.",
     "author_location": "Somerville, Massachusetts",
     "subtitle": null,
-    "teaser": null,
-    "free": null,
+    "teaser": "Hola compañeros, mi nombre es Paul y soy un alcohólico bilingüe. Aprendí el idioma español asistiendo a las reuniones de AA hispanas aquí en Massachusetts.",
+    "free": false,
     "online_exclusive": false,
     "department": false
    }
@@ -4893,12 +4893,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Prisiones / La Viña 30 Aniversario",
-    "section": null,
+    "section": "Sección Especial",
     "author": "Gonzalo G.",
     "author_location": "Carpentersville, Illinois",
     "subtitle": "Durante su encierro, las experiencias de la revista lo sostuvieron y le señalaron el camino hacia la libertad",
-    "teaser": null,
-    "free": null,
+    "teaser": "Hola soy Gonzalo, un alcohólico y drogadicto. He pasado por muchas experiencias durante mi alcoholismo.",
+    "free": false,
     "online_exclusive": false,
     "department": false
    }
@@ -4959,12 +4959,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Annual Prison Issue",
-    "section": null,
+    "section": "Featured Section",
     "author": "Scott T.",
     "author_location": "Gaithersburg, Maryland",
     "subtitle": "He and his sponsee have written more than 200 letters, and they get to share the love with their groups",
-    "teaser": null,
-    "free": null,
+    "teaser": "In 2019, when I was sober 18 months, I got my July Grapevine prison issue.",
+    "free": false,
     "online_exclusive": false,
     "department": false
    }
@@ -4992,12 +4992,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Annual Prison Issue",
-    "section": null,
+    "section": "Step Seven",
     "author": "Michelle B.",
     "author_location": "Kelowna, British Columbia",
     "subtitle": "A perfect mom, perfect homemaker, perfect at work— so why was she so unhappy? Step Seven had an answer",
-    "teaser": null,
-    "free": null,
+    "teaser": "I got sober in April of 2015. I had gone to rehab four years earlier, but I wasn’t ready to quit.",
+    "free": false,
     "online_exclusive": false,
     "department": false
    }
@@ -5029,8 +5029,8 @@
     "author": "Catherine L.",
     "author_location": "Ottawa, Ontario",
     "subtitle": "Discovering sobriety and acceptance in AA",
-    "teaser": null,
-    "free": null,
+    "teaser": "I got sober in Ottawa in 1991 and I came out as a gay woman to myself, to my family, and to my friends in 1992. I felt a great deal of relief from both of these revelations in my life.",
+    "free": false,
     "online_exclusive": true,
     "department": false
    }
@@ -5041,7 +5041,7 @@
    "kind": "article",
    "url": "https://www.aagrapevine.org/magazine/2026/jul/dear-grapevine-july-2026",
    "title": "Dear Grapevine",
-   "summary": "",
+   "summary": "A strong dose of gratitude",
    "lang": "en",
    "date": "2026-07-01",
    "first_seen": "2026-09-23T23:13:14Z",
@@ -5058,12 +5058,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Annual Prison Issue",
-    "section": null,
+    "section": "In Every Issue",
     "author": null,
     "author_location": null,
     "subtitle": null,
-    "teaser": null,
-    "free": null,
+    "teaser": "A strong dose of gratitude",
+    "free": false,
     "online_exclusive": false,
     "department": true
    }
@@ -5074,7 +5074,7 @@
    "kind": "article",
    "url": "https://www.aagrapevine.org/magazine/2026/jul/great-way-give-back",
    "title": "A Great Way to Give Back",
-   "summary": "",
+   "summary": "Back in 1986, I was at my end, that jumping off place our Big Book talks about. Fortunately, my boss at the time took me into a back room and shared his story with me.",
    "lang": "en",
    "date": "2026-07-01",
    "first_seen": "2026-09-23T23:13:14Z",
@@ -5091,12 +5091,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Annual Prison Issue",
-    "section": null,
+    "section": "Tradition Seven",
     "author": "Diana M.",
     "author_location": "Largo, Florida",
     "subtitle": null,
-    "teaser": null,
-    "free": null,
+    "teaser": "Back in 1986, I was at my end, that jumping off place our Big Book talks about. Fortunately, my boss at the time took me into a back room and shared his story with me.",
+    "free": false,
     "online_exclusive": false,
     "department": false
    }
@@ -5124,12 +5124,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Prisiones / La Viña 30 Aniversario",
-    "section": null,
+    "section": "Gratitud",
     "author": "Alberto M.",
     "author_location": "Santa Ana, California",
     "subtitle": "Tras años perdido en el alcohol, hoy celebra un cumpleaños rodeado del cariño de su familia y la Comunidad que lo ayudó a despertar",
-    "teaser": null,
-    "free": null,
+    "teaser": "Yo soy Alberto y hoy es mi cumpleaños. Me siento feliz. Estoy agradecido con esta comunidad que me dio la oportunidad de despertar y he podido lograr dejar de beber.",
+    "free": false,
     "online_exclusive": false,
     "department": false
    }
@@ -5157,12 +5157,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Annual Prison Issue",
-    "section": null,
+    "section": "Newcomers",
     "author": "M.M.",
     "author_location": "Drexel Hill, Pennsylvania",
     "subtitle": "It was her first social event sober, and she was freaking out at all the booze. Luckily, a desperate prayer saved her",
-    "teaser": null,
-    "free": null,
+    "teaser": "The elevator doors opened to a magnificent and alluring display of booze. “Oh, no!” I gasped and promptly froze.",
+    "free": false,
     "online_exclusive": false,
     "department": false
    }
@@ -5190,12 +5190,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Annual Prison Issue",
-    "section": null,
+    "section": "Featured Section",
     "author": "Cerina B.",
     "author_location": "Ada, Oklahoma",
     "subtitle": "After tragic losses and a 20 year sentence, she took what she learned in rehab and got to work helping the women inside",
-    "teaser": null,
-    "free": null,
+    "teaser": "For 20 years I was a regular in jails, courtrooms and counselors’ offices. Most of the AA meetings I attended were mandatory.",
+    "free": false,
     "online_exclusive": false,
     "department": false
    }
@@ -5223,12 +5223,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Prisiones / La Viña 30 Aniversario",
-    "section": null,
+    "section": "AA en la cárcel",
     "author": "Leo C.",
     "author_location": "Albuquerque, Nuevo México",
     "subtitle": "Un encierro inesperado que solo logra superar un día a la vez, con el apoyo de sus compañeros y las páginas de La Viña",
-    "teaser": null,
-    "free": null,
+    "teaser": "Buenos días a todos, hoy comparto una historia más, ya que he tenido la fortuna de escribir a La Viña, y mi historia ha sido recientemente publicada. Fui detenido por agentes de ICE.",
+    "free": false,
     "online_exclusive": false,
     "department": false
    }
@@ -5260,8 +5260,8 @@
     "author": "Mike B.",
     "author_location": "Milwaukee, Wis.",
     "subtitle": "For sober living, write three things down each night",
-    "teaser": null,
-    "free": null,
+    "teaser": "A therapist once told me, “It’s difficult for depression to hit a moving target.” That stuck with me. I realized I needed to keep moving, to keep taking right actions.",
+    "free": false,
     "online_exclusive": true,
     "department": false
    }
@@ -5293,8 +5293,8 @@
     "author": "A.R.",
     "author_location": "Potomac, Md.",
     "subtitle": "With a new life on the way, she chronicles her journey to sobriety",
-    "teaser": null,
-    "free": null,
+    "teaser": "I’m sitting in the Vancouver airport waiting for my flight home after attending my first International AA convention.",
+    "free": false,
     "online_exclusive": true,
     "department": false
    }
@@ -5305,7 +5305,7 @@
    "kind": "article",
    "url": "https://www.aalavina.org/revista/julio-agosto-2026/tu-suscripcion-hace-la-diferencia",
    "title": "Tu suscripción hace la diferencia",
-   "summary": "",
+   "summary": "Hace tres décadas, la comunidad hispana de Alcohólicos Anónimos en Estados Unidos y Canadá se dieron la labor de solicitar por medio de nuestra estructura de servicios generales la…",
    "lang": "es",
    "date": "2026-07-01",
    "first_seen": "2026-09-23T23:13:14Z",
@@ -5322,12 +5322,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Prisiones / La Viña 30 Aniversario",
-    "section": null,
+    "section": "Sección Especial",
     "author": "Javier F.",
     "author_location": "Tacoma, Washington",
     "subtitle": null,
-    "teaser": null,
-    "free": null,
+    "teaser": "Hace tres décadas, la comunidad hispana de Alcohólicos Anónimos en Estados Unidos y Canadá se dieron la labor de solicitar por medio de nuestra estructura de servicios generales la…",
+    "free": false,
     "online_exclusive": false,
     "department": false
    }
@@ -5338,7 +5338,7 @@
    "kind": "article",
    "url": "https://www.aalavina.org/revista/julio-agosto-2026/la-magia-de-tu-experiencia",
    "title": "La magia de tu experiencia",
-   "summary": "",
+   "summary": "Mi nombre es Rogelio, soy alcohólico. Ahora mismo estoy siendo parte de un taller de escritura para la revista La Viña.",
    "lang": "es",
    "date": "2026-07-01",
    "first_seen": "2026-09-23T23:13:14Z",
@@ -5355,12 +5355,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Prisiones / La Viña 30 Aniversario",
-    "section": null,
+    "section": "Sección Especial",
     "author": "Rogelio S.",
     "author_location": "Lake Forest, California",
     "subtitle": null,
-    "teaser": null,
-    "free": null,
+    "teaser": "Mi nombre es Rogelio, soy alcohólico. Ahora mismo estoy siendo parte de un taller de escritura para la revista La Viña.",
+    "free": false,
     "online_exclusive": false,
     "department": false
    }
@@ -5371,7 +5371,7 @@
    "kind": "article",
    "url": "https://www.aalavina.org/revista/julio-agosto-2026/una-herramienta-esencial",
    "title": "Una herramienta esencial",
-   "summary": "",
+   "summary": "Cuando llegué a AA no sabía nada de la revista. Es lógico porque llegué desconociendo que existía este programa de recuperación. Solo sabía lo que escuchaba afuera.",
    "lang": "es",
    "date": "2026-07-01",
    "first_seen": "2026-09-23T23:13:14Z",
@@ -5388,12 +5388,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Prisiones / La Viña 30 Aniversario",
-    "section": null,
+    "section": "Sección Especial",
     "author": "Eduardo T.",
     "author_location": "Mableton, Georgia",
     "subtitle": null,
-    "teaser": null,
-    "free": null,
+    "teaser": "Cuando llegué a AA no sabía nada de la revista. Es lógico porque llegué desconociendo que existía este programa de recuperación. Solo sabía lo que escuchaba afuera.",
+    "free": false,
     "online_exclusive": false,
     "department": false
    }
@@ -5404,7 +5404,7 @@
    "kind": "article",
    "url": "https://www.aalavina.org/revista/julio-agosto-2026/motivando-otros",
    "title": "Motivando a otros",
-   "summary": "",
+   "summary": "Hola, me llamo Víctor Manuel S. y soy miembro de AA desde 1999.",
    "lang": "es",
    "date": "2026-07-01",
    "first_seen": "2026-09-23T23:13:14Z",
@@ -5421,12 +5421,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Prisiones / La Viña 30 Aniversario",
-    "section": null,
+    "section": "Sección Especial",
     "author": "Victor M. S.",
     "author_location": "Reedley, California",
     "subtitle": null,
-    "teaser": null,
-    "free": null,
+    "teaser": "Hola, me llamo Víctor Manuel S. y soy miembro de AA desde 1999.",
+    "free": false,
     "online_exclusive": false,
     "department": false
    }
@@ -5458,8 +5458,8 @@
     "author": "Sharron W.",
     "author_location": "Branford, Ontario",
     "subtitle": "Drunk, homeless and helpless, she came to AA and found love and support that lasted 40 years",
-    "teaser": null,
-    "free": null,
+    "teaser": "I've never completed writing a story before. God willing, this will be the first. I came to AA. On May 18th, 1981.",
+    "free": false,
     "online_exclusive": true,
     "department": false
    }
@@ -5487,12 +5487,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Annual Prison Issue",
-    "section": null,
+    "section": "Featured Section",
     "author": "Y.K.P.",
     "author_location": "Agassiz, B.C.",
     "subtitle": "How on earth could he get sober in a jail where everyone was getting wasted? It was tough, but he made a solitary decision",
-    "teaser": null,
-    "free": null,
+    "teaser": "Because our prison was so overpopulated, a third guy was added to our two-man cell. Imagine no room to walk, and the third inmate’s bed touching the toilet.",
+    "free": false,
     "online_exclusive": false,
     "department": false
    }
@@ -5503,7 +5503,7 @@
    "kind": "article",
    "url": "https://www.aagrapevine.org/magazine/2026/jul/deeper-love",
    "title": "Deeper Love",
-   "summary": "",
+   "summary": "Recently, a longtime member of our AA community was hospitalized with dementia. His name isn’t Roger, but Roger is the name I will use.",
    "lang": "en",
    "date": "2026-07-01",
    "first_seen": "2026-09-23T23:13:14Z",
@@ -5520,12 +5520,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Annual Prison Issue",
-    "section": null,
+    "section": "Into Action",
     "author": "George M.",
     "author_location": "Durand, Illinois",
     "subtitle": null,
-    "teaser": null,
-    "free": null,
+    "teaser": "Recently, a longtime member of our AA community was hospitalized with dementia. His name isn’t Roger, but Roger is the name I will use.",
+    "free": false,
     "online_exclusive": false,
     "department": false
    }
@@ -5553,12 +5553,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Annual Prison Issue",
-    "section": null,
+    "section": "Featured Section",
     "author": "Nina M.",
     "author_location": "Louisville, Kentucky",
     "subtitle": "Members at an AA meeting in a Kentucky correctional facility discover a brand-new tool to help them get sober",
-    "teaser": null,
-    "free": null,
+    "teaser": "Today I‘m trusted to bring an AA meeting into a maximum security correctional facility.",
+    "free": false,
     "online_exclusive": false,
     "department": false
    }
@@ -5586,12 +5586,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Prisiones / La Viña 30 Aniversario",
-    "section": null,
+    "section": "Experiencia, Fortaleza y Esperanza",
     "author": "Elizabeth R.",
     "author_location": "San José, California",
     "subtitle": "Su enfermedad avanzaba y el dolor crecía, pero aún no podía ver que el alcoholismo era su verdadero problema",
-    "teaser": null,
-    "free": null,
+    "teaser": "Mi nombre es Elizabeth, tengo siete años y nueve meses de sobriedad. La primera vez que tuve contacto con Alcohólicos Anónimos fue hace quince años aproximadamente.",
+    "free": false,
     "online_exclusive": false,
     "department": false
    }
@@ -5602,7 +5602,7 @@
    "kind": "article",
    "url": "https://www.aalavina.org/revista/julio-agosto-2026/la-vina-en-la-era-digital",
    "title": "La Viña en la era digital",
-   "summary": "",
+   "summary": "Me inspiré a dibujar el lema y el emblema. El día de la elección llegaron 67 dibujos y, después de una votación democrática, el mío quedó entre los cinco finalistas.",
    "lang": "es",
    "date": "2026-07-01",
    "first_seen": "2026-09-23T23:13:14Z",
@@ -5619,12 +5619,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Prisiones / La Viña 30 Aniversario",
-    "section": null,
+    "section": "Sección Especial",
     "author": "Úrsula F.",
     "author_location": "San Juan Capistrano, California",
     "subtitle": null,
-    "teaser": null,
-    "free": null,
+    "teaser": "Me inspiré a dibujar el lema y el emblema. El día de la elección llegaron 67 dibujos y, después de una votación democrática, el mío quedó entre los cinco finalistas.",
+    "free": false,
     "online_exclusive": false,
     "department": false
    }
@@ -5685,12 +5685,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Annual Prison Issue",
-    "section": null,
+    "section": "Into Action",
     "author": "N.O.",
     "author_location": "Freeport, Maine",
     "subtitle": "Sometimes hard, always worth it, general service has become the most rewarding journey of her life",
-    "teaser": null,
-    "free": null,
+    "teaser": "When I first heard about the upside-down triangle in AA, I didn’t fully grasp what it meant. I was new to general service, still figuring out acronyms like GSR and DCMC.",
+    "free": false,
     "online_exclusive": false,
     "department": false
    }
@@ -5751,12 +5751,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Prisiones / La Viña 30 Aniversario",
-    "section": null,
+    "section": "Tradición Siete",
     "author": "Mónica E.",
     "author_location": "Los Baños, California",
     "subtitle": "¿Cuán generosa era cuando andaba por los bares?",
-    "teaser": null,
-    "free": null,
+    "teaser": "Hola, mi nombre es Mónica y soy una alcohólica en recuperación.",
+    "free": false,
     "online_exclusive": false,
     "department": false
    }
@@ -5767,7 +5767,7 @@
    "kind": "article",
    "url": "https://www.aalavina.org/revista/julio-agosto-2026/cartas-del-lector",
    "title": "Cartas del lector",
-   "summary": "",
+   "summary": "BendecidaSan Juan Capistrano, California",
    "lang": "es",
    "date": "2026-07-01",
    "first_seen": "2026-09-23T23:13:14Z",
@@ -5784,12 +5784,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Prisiones / La Viña 30 Aniversario",
-    "section": null,
+    "section": "En cada edición",
     "author": null,
     "author_location": null,
     "subtitle": null,
-    "teaser": null,
-    "free": null,
+    "teaser": "BendecidaSan Juan Capistrano, California",
+    "free": false,
     "online_exclusive": false,
     "department": true
    }
@@ -5817,12 +5817,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Annual Prison Issue",
-    "section": null,
+    "section": "In Every Issue",
     "author": null,
     "author_location": null,
     "subtitle": "Corrections: We’re Here to Help",
-    "teaser": null,
-    "free": null,
+    "teaser": "Grapevine talks to Kacie N., GSO’s Corrections…",
+    "free": false,
     "online_exclusive": false,
     "department": true
    }
@@ -5883,12 +5883,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Annual Prison Issue",
-    "section": null,
+    "section": "Featured Section",
     "author": "Anonymous",
     "author_location": "Connecticut",
     "subtitle": "One day at work this corrections officer found an AA pamphlet. That’s when everything changed",
-    "teaser": null,
-    "free": null,
+    "teaser": "I started working for the Department of Corrections in February of 2004. I was 43.",
+    "free": false,
     "online_exclusive": false,
     "department": false
    }
@@ -7422,7 +7422,7 @@
    "key": "2026-10",
    "publication": "gv",
    "hub": "https://www.aagrapevine.org/magazine",
-   "seen": "2026-09-24T00:33:10Z",
+   "seen": "2026-09-24T03:12:27Z",
    "cover": "/assets/cache/articles/4af15bfa155b69a0.webp"
   },
   "lv:2026-09": {
@@ -7434,7 +7434,7 @@
    "key": "2026-09",
    "publication": "lv",
    "hub": "https://www.aalavina.org/la-revista",
-   "seen": "2026-09-24T00:33:20Z",
+   "seen": "2026-09-24T03:12:37Z",
    "cover": "/assets/cache/articles/5f6983cc446a5d6a.webp"
   }
  },
@@ -7456,91 +7456,11 @@
    "at": "2026-09-23T23:08:52Z",
    "ok": true,
    "byline_at": "2026-09-23T23:08:52Z"
-  },
-  "gv:2026-09:nothing-short-miracle": {
-   "tries": 1,
-   "at": "2026-09-23T23:08:58Z",
-   "ok": true
-  },
-  "gv:2026-09:i-cant-we-can": {
-   "tries": 1,
-   "at": "2026-09-23T23:09:04Z",
-   "ok": true
-  },
-  "gv:2026-09:darkness-light": {
-   "tries": 1,
-   "at": "2026-09-23T23:09:10Z",
-   "ok": true
-  },
-  "gv:2026-09:chrysalis": {
-   "tries": 1,
-   "at": "2026-09-23T23:09:16Z",
-   "ok": true
-  },
-  "gv:2026-09:very-real-virtual-meeting": {
-   "tries": 1,
-   "at": "2026-09-23T23:09:22Z",
-   "ok": true
-  },
-  "gv:2026-09:brilliance": {
-   "tries": 1,
-   "at": "2026-09-23T23:09:28Z",
-   "ok": true
-  },
-  "gv:2026-08:getting-honest": {
-   "tries": 1,
-   "at": "2026-09-23T23:11:59Z",
-   "ok": true
-  },
-  "gv:2026-08:recognizing-my-disease": {
-   "tries": 1,
-   "at": "2026-09-23T23:12:05Z",
-   "ok": true
-  },
-  "gv:2026-08:i-finally-got-message": {
-   "tries": 1,
-   "at": "2026-09-23T23:12:11Z",
-   "ok": true
-  },
-  "gv:2026-08:grace": {
-   "tries": 1,
-   "at": "2026-09-23T23:12:22Z",
-   "ok": true
-  },
-  "gv:2026-08:my-spiritual-gps": {
-   "tries": 1,
-   "at": "2026-09-23T23:12:28Z",
-   "ok": true
-  },
-  "gv:2026-08:life-no-longer-feels-unmanageable": {
-   "tries": 1,
-   "at": "2026-09-23T23:12:39Z",
-   "ok": true
-  },
-  "gv:2026-08:my-higher-power-not-me": {
-   "tries": 1,
-   "at": "2026-09-23T23:12:45Z",
-   "ok": true
-  },
-  "gv:2026-08:worth-every-step": {
-   "tries": 1,
-   "at": "2026-09-23T23:12:51Z",
-   "ok": true
-  },
-  "gv:2026-07:special-noontime-meeting": {
-   "tries": 1,
-   "at": "2026-09-24T00:34:40Z",
-   "ok": true
-  },
-  "gv:2026-07:life-beyond-my-wildest-imagination": {
-   "tries": 1,
-   "at": "2026-09-24T00:37:30Z",
-   "ok": true
   }
  },
  "archive_state": {
   "gv": {
-   "last_run": "2026-09-24T00:33:25Z",
+   "last_run": "2026-09-24T03:12:42Z",
    "pages_last_run": 1,
    "new_last_run": 0,
    "oldest_seen": "2026-10",
@@ -7548,7 +7468,7 @@
    "backfill_days": 120
   },
   "lv": {
-   "last_run": "2026-09-24T00:33:31Z",
+   "last_run": "2026-09-24T03:12:47Z",
    "pages_last_run": 1,
    "new_last_run": 0,
    "oldest_seen": "2026-09",

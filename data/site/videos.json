@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-23T22:20:27Z",
+ "updated": "2026-09-24T03:12:16Z",
  "fixture": false,
  "playlists": [
   {
@@ -208,7 +208,7 @@
    "id": "PL32cyZpp2liATl4raiWYN1v51F_CPqQDq",
    "title": "AA Grapevine's Podcast",
    "lang": "en",
-   "count": 262,
+   "count": 261,
    "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
    "url": "https://www.youtube.com/playlist?list=PL32cyZpp2liATl4raiWYN1v51F_CPqQDq",
    "i18n": {
@@ -402,7 +402,7 @@
    "id": "PL32cyZpp2liBX2H-05LaPThBoZKVDyetG",
    "title": "Zoom \"How to\" Instructionals",
    "lang": "en",
-   "count": 3,
+   "count": 2,
    "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
    "url": "https://www.youtube.com/playlist?list=PL32cyZpp2liBX2H-05LaPThBoZKVDyetG",
    "i18n": {
@@ -538,7 +538,7 @@
      "American Sign Language"
     ],
     "is_short": false,
-    "views": 202,
+    "views": 207,
     "is_live_recording": true,
     "date_approx": false
    },
@@ -581,7 +581,7 @@
      "AA Grapevine's Podcast"
     ],
     "is_short": false,
-    "views": 179,
+    "views": 187,
     "is_live_recording": false,
     "date_approx": false,
     "season": 11,
@@ -628,7 +628,7 @@
      "Grapevine Weekly Open AA Meeting"
     ],
     "is_short": false,
-    "views": 261,
+    "views": 268,
     "is_live_recording": true,
     "date_approx": false,
     "season": 2,
@@ -720,7 +720,7 @@
      "Grapevine Weekly Open AA Meeting"
     ],
     "is_short": false,
-    "views": 346,
+    "views": 351,
     "is_live_recording": true,
     "date_approx": false,
     "season": 2,
@@ -766,7 +766,7 @@
      "American Sign Language"
     ],
     "is_short": false,
-    "views": 271,
+    "views": 272,
     "is_live_recording": true,
     "date_approx": false
    },
@@ -856,7 +856,7 @@
      "Grapevine Weekly Open AA Meeting"
     ],
     "is_short": false,
-    "views": 318,
+    "views": 320,
     "is_live_recording": true,
     "date_approx": false,
     "season": 2,
@@ -948,7 +948,7 @@
      "Grapevine Weekly Open AA Meeting"
     ],
     "is_short": false,
-    "views": 381,
+    "views": 382,
     "is_live_recording": true,
     "date_approx": false,
     "season": 2,
@@ -1086,7 +1086,7 @@
      "American Sign Language"
     ],
     "is_short": false,
-    "views": 233,
+    "views": 234,
     "is_live_recording": true,
     "date_approx": false
    },
@@ -1221,7 +1221,7 @@
      "AA Grapevine's Podcast"
     ],
     "is_short": false,
-    "views": 240,
+    "views": 242,
     "is_live_recording": false,
     "date_approx": false,
     "season": 11,
@@ -1541,7 +1541,7 @@
      "La Viña"
     ],
     "is_short": true,
-    "views": 238,
+    "views": 240,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -1905,7 +1905,7 @@
      "American Sign Language"
     ],
     "is_short": false,
-    "views": 152,
+    "views": 153,
     "is_live_recording": true,
     "date_approx": false
    },
@@ -2310,7 +2310,7 @@
    "extra": {
     "video_id": "wQiTb6JZgl8",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 3303,
+    "duration_sec": 3304,
     "playlists": [
      "Grapevine Weekly Open AA Meeting"
     ],
@@ -2396,7 +2396,7 @@
    "extra": {
     "video_id": "HmczxJLGV5M",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1963,
+    "duration_sec": 1964,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -2441,7 +2441,7 @@
    "extra": {
     "video_id": "cjT9-_EJfT4",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 3040,
+    "duration_sec": 3041,
     "playlists": [
      "Grapevine Weekly Open AA Meeting"
     ],
@@ -2538,7 +2538,7 @@
      "Grapevine Weekly Open AA Meeting"
     ],
     "is_short": false,
-    "views": 258,
+    "views": 259,
     "is_live_recording": true,
     "date_approx": false,
     "season": 1,
@@ -2621,7 +2621,7 @@
    "extra": {
     "video_id": "v0Yz9plY42Y",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1711,
+    "duration_sec": 1712,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -2668,12 +2668,12 @@
    "extra": {
     "video_id": "KNe1xzbGKtU",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 3202,
+    "duration_sec": 3203,
     "playlists": [
      "Grapevine Weekly Open AA Meeting"
     ],
     "is_short": false,
-    "views": 306,
+    "views": 307,
     "is_live_recording": true,
     "date_approx": false,
     "season": 1,
@@ -2713,7 +2713,7 @@
    "extra": {
     "video_id": "Hv307-6D78g",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1851,
+    "duration_sec": 1852,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -2765,7 +2765,7 @@
      "Grapevine Weekly Open AA Meeting"
     ],
     "is_short": false,
-    "views": 289,
+    "views": 291,
     "is_live_recording": true,
     "date_approx": false,
     "season": 1,
@@ -3215,7 +3215,7 @@
    "extra": {
     "video_id": "dISOp52MvvA",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2209,
+    "duration_sec": 2210,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -3307,7 +3307,7 @@
    "extra": {
     "video_id": "o-_e2lh8Ay0",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2059,
+    "duration_sec": 2060,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -3354,7 +3354,7 @@
    "extra": {
     "video_id": "ZqDO7yRSMKQ",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 3120,
+    "duration_sec": 3121,
     "playlists": [
      "Grapevine Weekly Open AA Meeting"
     ],
@@ -3543,7 +3543,7 @@
      "Grapevine Weekly Open AA Meeting"
     ],
     "is_short": false,
-    "views": 505,
+    "views": 506,
     "is_live_recording": true,
     "date_approx": false,
     "season": 1,
@@ -3583,7 +3583,7 @@
    "extra": {
     "video_id": "-cNvLrJlUPg",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1996,
+    "duration_sec": 1997,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -3630,7 +3630,7 @@
    "extra": {
     "video_id": "fEewnjf4rew",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2818,
+    "duration_sec": 2819,
     "playlists": [
      "Grapevine Weekly Open AA Meeting"
     ],
@@ -3814,12 +3814,12 @@
    "extra": {
     "video_id": "wzOGleEcq20",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2581,
+    "duration_sec": 2582,
     "playlists": [
      "Grapevine Weekly Open AA Meeting"
     ],
     "is_short": false,
-    "views": 413,
+    "views": 414,
     "is_live_recording": true,
     "date_approx": false,
     "season": 1,
@@ -3945,7 +3945,7 @@
    "extra": {
     "video_id": "A90dm68ejuQ",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2032,
+    "duration_sec": 2033,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -3992,7 +3992,7 @@
    "extra": {
     "video_id": "Ni1NJ9BAAyU",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2615,
+    "duration_sec": 2616,
     "playlists": [
      "Grapevine Weekly Open AA Meeting"
     ],
@@ -4084,7 +4084,7 @@
    "extra": {
     "video_id": "ciVn9sAZMoQ",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2771,
+    "duration_sec": 2772,
     "playlists": [
      "Grapevine Weekly Open AA Meeting"
     ],
@@ -4129,7 +4129,7 @@
    "extra": {
     "video_id": "k7qVMY3i1WU",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1957,
+    "duration_sec": 1958,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -4176,7 +4176,7 @@
    "extra": {
     "video_id": "DMoToF0bF0c",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 3089,
+    "duration_sec": 3090,
     "playlists": [
      "Grapevine Weekly Open AA Meeting"
     ],
@@ -4221,7 +4221,7 @@
    "extra": {
     "video_id": "gE-o5nJfSkk",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1800,
+    "duration_sec": 1801,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -4405,7 +4405,7 @@
    "extra": {
     "video_id": "7DkD8KrQwPg",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 3544,
+    "duration_sec": 3545,
     "playlists": [
      "Grapevine Weekly Open AA Meeting"
     ],
@@ -4450,7 +4450,7 @@
    "extra": {
     "video_id": "jxlDJkAPrys",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2298,
+    "duration_sec": 2299,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -4495,7 +4495,7 @@
    "extra": {
     "video_id": "JPpgwfiYRco",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1794,
+    "duration_sec": 1795,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -4543,7 +4543,7 @@
     "duration_sec": 128,
     "playlists": [],
     "is_short": true,
-    "views": 3363,
+    "views": 3300,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -4625,7 +4625,7 @@
     "duration_sec": 65,
     "playlists": [],
     "is_short": true,
-    "views": 1426,
+    "views": 1400,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -4663,7 +4663,7 @@
    "extra": {
     "video_id": "C4Z9sNMxt7I",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2063,
+    "duration_sec": 2064,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -4753,7 +4753,7 @@
    "extra": {
     "video_id": "7Y-IAqang6M",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2159,
+    "duration_sec": 2160,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -4798,7 +4798,7 @@
    "extra": {
     "video_id": "cxFByQnrem0",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1696,
+    "duration_sec": 1697,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -4884,7 +4884,7 @@
    "extra": {
     "video_id": "nal_V87jNWg",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1538,
+    "duration_sec": 1539,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -4929,7 +4929,7 @@
    "extra": {
     "video_id": "h29xJWQDGRo",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1808,
+    "duration_sec": 1809,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -5019,7 +5019,7 @@
    "extra": {
     "video_id": "5l74h_X6fQw",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1662,
+    "duration_sec": 1663,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -5067,7 +5067,7 @@
      "AMOR Y SERVICIO"
     ],
     "is_short": false,
-    "views": 213,
+    "views": 214,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -5559,7 +5559,7 @@
      "STAYING SOBER"
     ],
     "is_short": false,
-    "views": 357,
+    "views": 358,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -5802,7 +5802,7 @@
    "extra": {
     "video_id": "qh_bN7c9PrA",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1727,
+    "duration_sec": 1728,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -5850,7 +5850,7 @@
     "duration_sec": 55,
     "playlists": [],
     "is_short": true,
-    "views": 1172,
+    "views": 1100,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -5891,7 +5891,7 @@
     "duration_sec": 44,
     "playlists": [],
     "is_short": true,
-    "views": 1808,
+    "views": 1800,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -5929,7 +5929,7 @@
    "extra": {
     "video_id": "YTq4u9QKD48",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1575,
+    "duration_sec": 1576,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -6199,7 +6199,7 @@
    "extra": {
     "video_id": "qx1bZalMgwo",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1622,
+    "duration_sec": 1623,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -6289,7 +6289,7 @@
    "extra": {
     "video_id": "KhgxvIKZc6U",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1697,
+    "duration_sec": 1698,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -6334,7 +6334,7 @@
    "extra": {
     "video_id": "wof9jNZpcEE",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2312,
+    "duration_sec": 2313,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -6559,7 +6559,7 @@
    "extra": {
     "video_id": "O4IPMwxf8TQ",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2117,
+    "duration_sec": 2118,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -6741,7 +6741,7 @@
     "duration_sec": 316,
     "playlists": [],
     "is_short": false,
-    "views": 3875,
+    "views": 3800,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -6869,7 +6869,7 @@
    "extra": {
     "video_id": "SKqmgNIpKEk",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1644,
+    "duration_sec": 1645,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -7002,7 +7002,7 @@
    "extra": {
     "video_id": "QCCDuYcOtkM",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1947,
+    "duration_sec": 1948,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -7047,7 +7047,7 @@
    "extra": {
     "video_id": "DGUwgBSX3xM",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1761,
+    "duration_sec": 1762,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -7092,7 +7092,7 @@
    "extra": {
     "video_id": "b1sjhMiLR1Y",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1862,
+    "duration_sec": 1863,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -7182,7 +7182,7 @@
    "extra": {
     "video_id": "hZF_VeQUbbo",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2240,
+    "duration_sec": 2241,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -7227,7 +7227,7 @@
    "extra": {
     "video_id": "KOASYfjdd-I",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1890,
+    "duration_sec": 1891,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -7272,7 +7272,7 @@
    "extra": {
     "video_id": "E2KiqL3PTIc",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1935,
+    "duration_sec": 1936,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -7317,7 +7317,7 @@
    "extra": {
     "video_id": "9047x5pgXKQ",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2075,
+    "duration_sec": 2076,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -7362,7 +7362,7 @@
    "extra": {
     "video_id": "oZEaCx600j8",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 596,
+    "duration_sec": 597,
     "playlists": [
      "American Sign Language"
     ],
@@ -7962,7 +7962,7 @@
    "extra": {
     "video_id": "GLpPWcbREbQ",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2289,
+    "duration_sec": 2290,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -8007,7 +8007,7 @@
    "extra": {
     "video_id": "ac-yC7XFq7E",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1955,
+    "duration_sec": 1956,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -8095,7 +8095,7 @@
    "extra": {
     "video_id": "B0D_hKgwAL8",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2110,
+    "duration_sec": 2111,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -8140,7 +8140,7 @@
    "extra": {
     "video_id": "tlhmFiW36Q0",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 443,
+    "duration_sec": 444,
     "playlists": [
      "American Sign Language"
     ],
@@ -8183,7 +8183,7 @@
    "extra": {
     "video_id": "0XT0mt_98Zc",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2013,
+    "duration_sec": 2014,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -8228,7 +8228,7 @@
    "extra": {
     "video_id": "sYhCNoEbhG8",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1864,
+    "duration_sec": 1865,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -8273,12 +8273,12 @@
    "extra": {
     "video_id": "HZjrfG1fzjM",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 404,
+    "duration_sec": 405,
     "playlists": [
      "American Sign Language"
     ],
     "is_short": false,
-    "views": 1698,
+    "views": 1600,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -8316,7 +8316,7 @@
    "extra": {
     "video_id": "v4m6t0rMPcE",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1813,
+    "duration_sec": 1814,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -8451,7 +8451,7 @@
    "extra": {
     "video_id": "YilPfvB111E",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2098,
+    "duration_sec": 2099,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -8496,12 +8496,12 @@
    "extra": {
     "video_id": "ScN9KChAsKs",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 283,
+    "duration_sec": 284,
     "playlists": [
      "American Sign Language"
     ],
     "is_short": false,
-    "views": 1686,
+    "views": 1600,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -8539,7 +8539,7 @@
    "extra": {
     "video_id": "2JzApOfd3RY",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2241,
+    "duration_sec": 2242,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -9211,7 +9211,7 @@
    "extra": {
     "video_id": "XMgeNzP4XGE",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2185,
+    "duration_sec": 2186,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -9346,7 +9346,7 @@
    "extra": {
     "video_id": "puxy4JqIPKU",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2547,
+    "duration_sec": 2548,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -9436,7 +9436,7 @@
    "extra": {
     "video_id": "dN1CJVZKkuQ",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2504,
+    "duration_sec": 2505,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -9481,7 +9481,7 @@
    "extra": {
     "video_id": "WklacGxV08c",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2161,
+    "duration_sec": 2162,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -9571,7 +9571,7 @@
    "extra": {
     "video_id": "V2UT1C3NV9k",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2817,
+    "duration_sec": 2818,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -9985,7 +9985,7 @@
    "extra": {
     "video_id": "BMftNZUVgcc",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1673,
+    "duration_sec": 1674,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -10581,7 +10581,7 @@
    "extra": {
     "video_id": "LhxD3FdD4Ho",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1971,
+    "duration_sec": 1972,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -10626,7 +10626,7 @@
    "extra": {
     "video_id": "o0NEr_1OHEY",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2079,
+    "duration_sec": 2080,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -10671,7 +10671,7 @@
    "extra": {
     "video_id": "D75Ebo_hN1E",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1978,
+    "duration_sec": 1979,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -10764,7 +10764,7 @@
      "La Viña"
     ],
     "is_short": false,
-    "views": 3771,
+    "views": 3700,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -11632,7 +11632,7 @@
    "extra": {
     "video_id": "BX-CorW2JCM",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1755,
+    "duration_sec": 1756,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -11677,7 +11677,7 @@
    "extra": {
     "video_id": "f_n_93cWtKY",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2373,
+    "duration_sec": 2374,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -11722,7 +11722,7 @@
    "extra": {
     "video_id": "GNSyiZyRDAo",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1914,
+    "duration_sec": 1915,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -11855,7 +11855,7 @@
    "extra": {
     "video_id": "WJ1Hn-bt-AM",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2491,
+    "duration_sec": 2492,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -11991,7 +11991,7 @@
      "American Sign Language"
     ],
     "is_short": false,
-    "views": 3630,
+    "views": 3600,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -12029,7 +12029,7 @@
    "extra": {
     "video_id": "vix_kvy8tSE",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1952,
+    "duration_sec": 1953,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -12124,7 +12124,7 @@
      "AA Grapevine's Podcast"
     ],
     "is_short": false,
-    "views": 364,
+    "views": 365,
     "is_live_recording": false,
     "date_approx": false,
     "season": 6,
@@ -12340,7 +12340,7 @@
    "extra": {
     "video_id": "IvJTOz1_h2E",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1754,
+    "duration_sec": 1755,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -12435,7 +12435,7 @@
      "AA Grapevine's Podcast"
     ],
     "is_short": false,
-    "views": 1755,
+    "views": 1700,
     "is_live_recording": false,
     "date_approx": false,
     "season": 6,
@@ -12520,7 +12520,7 @@
    "extra": {
     "video_id": "XDp4TH8bnZg",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1820,
+    "duration_sec": 1821,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -12655,7 +12655,7 @@
    "extra": {
     "video_id": "kjbfgVpYnAc",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2015,
+    "duration_sec": 2016,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -12700,7 +12700,7 @@
    "extra": {
     "video_id": "eNOgJJqfkYc",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1740,
+    "duration_sec": 1741,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -12745,7 +12745,7 @@
    "extra": {
     "video_id": "2WsXnWC8X7c",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2384,
+    "duration_sec": 2385,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -12835,7 +12835,7 @@
    "extra": {
     "video_id": "6lHgxXDyJuk",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2094,
+    "duration_sec": 2095,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -12880,7 +12880,7 @@
    "extra": {
     "video_id": "FP1cut3iaVc",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2029,
+    "duration_sec": 2030,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -12975,7 +12975,7 @@
      "AA Grapevine's Podcast"
     ],
     "is_short": false,
-    "views": 359,
+    "views": 363,
     "is_live_recording": false,
     "date_approx": false,
     "season": 6,
@@ -13015,12 +13015,12 @@
    "extra": {
     "video_id": "fgkkka6j76U",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2379,
+    "duration_sec": 2380,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
     "is_short": false,
-    "views": 614,
+    "views": 615,
     "is_live_recording": false,
     "date_approx": false,
     "season": 6,
@@ -13146,7 +13146,7 @@
    "extra": {
     "video_id": "K_D4vVYb7Ao",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2047,
+    "duration_sec": 2048,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -13191,7 +13191,7 @@
    "extra": {
     "video_id": "VhjRuryG5_U",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2399,
+    "duration_sec": 2400,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -13448,7 +13448,7 @@
      "Blessed"
     ],
     "is_short": false,
-    "views": 1383,
+    "views": 1300,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -13568,7 +13568,7 @@
    "extra": {
     "video_id": "UV1IQllH76g",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1900,
+    "duration_sec": 1901,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -13613,7 +13613,7 @@
    "extra": {
     "video_id": "zuBsjYv4-aQ",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1548,
+    "duration_sec": 1549,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -13663,7 +13663,7 @@
      "AA Grapevine's Podcast"
     ],
     "is_short": false,
-    "views": 67,
+    "views": 68,
     "is_live_recording": false,
     "date_approx": false,
     "season": 1,
@@ -13798,7 +13798,7 @@
      "AA Grapevine's Podcast"
     ],
     "is_short": false,
-    "views": 83,
+    "views": 84,
     "is_live_recording": false,
     "date_approx": false,
     "season": 1,
@@ -13883,7 +13883,7 @@
    "extra": {
     "video_id": "SHjxLXO6vNU",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1580,
+    "duration_sec": 1581,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -13928,7 +13928,7 @@
    "extra": {
     "video_id": "PoXEMghs79A",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1402,
+    "duration_sec": 1403,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -13973,7 +13973,7 @@
    "extra": {
     "video_id": "zbXM27pm-kY",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1644,
+    "duration_sec": 1645,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -14063,7 +14063,7 @@
    "extra": {
     "video_id": "chUCYOzDcTk",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1817,
+    "duration_sec": 1818,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -14153,7 +14153,7 @@
    "extra": {
     "video_id": "V0oTKMfdPUc",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2082,
+    "duration_sec": 2083,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -14198,12 +14198,12 @@
    "extra": {
     "video_id": "TL8XAsIVuto",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1707,
+    "duration_sec": 1708,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
     "is_short": false,
-    "views": 520,
+    "views": 522,
     "is_live_recording": false,
     "date_approx": false,
     "season": 1,
@@ -14243,7 +14243,7 @@
    "extra": {
     "video_id": "HLZ4HO41gC8",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1737,
+    "duration_sec": 1738,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -14333,7 +14333,7 @@
    "extra": {
     "video_id": "4vqcgJ-bVkA",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1662,
+    "duration_sec": 1663,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -14378,7 +14378,7 @@
    "extra": {
     "video_id": "0eNiZKBDuD4",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2239,
+    "duration_sec": 2240,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -14423,7 +14423,7 @@
    "extra": {
     "video_id": "x97MzUB79n4",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1634,
+    "duration_sec": 1635,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -14468,7 +14468,7 @@
    "extra": {
     "video_id": "szaPxqMvZYw",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1793,
+    "duration_sec": 1794,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -14513,7 +14513,7 @@
    "extra": {
     "video_id": "njRPXDlogxE",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1770,
+    "duration_sec": 1771,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -14558,7 +14558,7 @@
    "extra": {
     "video_id": "kHAT8kgeRVE",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2364,
+    "duration_sec": 2365,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -14603,7 +14603,7 @@
    "extra": {
     "video_id": "fNcl8fF0CKQ",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1628,
+    "duration_sec": 1629,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -14914,7 +14914,7 @@
    "extra": {
     "video_id": "yVTMoRS_7oI",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1755,
+    "duration_sec": 1756,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -15004,7 +15004,7 @@
    "extra": {
     "video_id": "UbrruARIOBI",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2207,
+    "duration_sec": 2208,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -15049,7 +15049,7 @@
    "extra": {
     "video_id": "TvLlBam9H50",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1664,
+    "duration_sec": 1665,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -15094,7 +15094,7 @@
    "extra": {
     "video_id": "Ta8ln1C7EWg",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1790,
+    "duration_sec": 1791,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -15184,7 +15184,7 @@
    "extra": {
     "video_id": "B5wLx2Z92sk",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1905,
+    "duration_sec": 1906,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -15229,7 +15229,7 @@
    "extra": {
     "video_id": "9H8t06v7eQA",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1778,
+    "duration_sec": 1779,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -15364,7 +15364,7 @@
    "extra": {
     "video_id": "uE-erDenAq8",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1702,
+    "duration_sec": 1703,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -15454,7 +15454,7 @@
    "extra": {
     "video_id": "krL93n2DIC8",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1876,
+    "duration_sec": 1877,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -15499,7 +15499,7 @@
    "extra": {
     "video_id": "TT_gGjXzVl8",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1989,
+    "duration_sec": 1990,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -15544,7 +15544,7 @@
    "extra": {
     "video_id": "Il5Gn0JtlXg",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1747,
+    "duration_sec": 1748,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -15589,7 +15589,7 @@
    "extra": {
     "video_id": "C3ulelPvSrw",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1732,
+    "duration_sec": 1733,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -15634,7 +15634,7 @@
    "extra": {
     "video_id": "AVmyZkRsego",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1975,
+    "duration_sec": 1976,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -15679,7 +15679,7 @@
    "extra": {
     "video_id": "08G0c8vVBY0",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2012,
+    "duration_sec": 2013,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -15724,7 +15724,7 @@
    "extra": {
     "video_id": "-pbQjjONGZQ",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2102,
+    "duration_sec": 2103,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -15859,7 +15859,7 @@
    "extra": {
     "video_id": "vLm0T04gLt8",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2144,
+    "duration_sec": 2145,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -15950,7 +15950,7 @@
    "extra": {
     "video_id": "pEIBJCK4WiQ",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1575,
+    "duration_sec": 1576,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -16040,7 +16040,7 @@
    "extra": {
     "video_id": "D22-or4QzEI",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1775,
+    "duration_sec": 1776,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -16130,7 +16130,7 @@
    "extra": {
     "video_id": "6g6VHRhwOQE",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2649,
+    "duration_sec": 2650,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -16175,7 +16175,7 @@
    "extra": {
     "video_id": "-oP03w0Crns",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1881,
+    "duration_sec": 1882,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -16400,7 +16400,7 @@
    "extra": {
     "video_id": "TSzj8CBi6TI",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1863,
+    "duration_sec": 1864,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -16445,7 +16445,7 @@
    "extra": {
     "video_id": "JAoajWfS-dg",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2020,
+    "duration_sec": 2021,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -16580,7 +16580,7 @@
    "extra": {
     "video_id": "09qVnsRnZUM",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1760,
+    "duration_sec": 1761,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -16625,7 +16625,7 @@
    "extra": {
     "video_id": "5zmYEVjxDk0",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1907,
+    "duration_sec": 1908,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -16715,7 +16715,7 @@
    "extra": {
     "video_id": "kSUor6kCXqM",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1945,
+    "duration_sec": 1946,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -16760,7 +16760,7 @@
    "extra": {
     "video_id": "kFh0Lnb4Xfs",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2113,
+    "duration_sec": 2114,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -16895,7 +16895,7 @@
    "extra": {
     "video_id": "DoykC14YkTU",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1997,
+    "duration_sec": 1998,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -16985,7 +16985,7 @@
    "extra": {
     "video_id": "6ioB9ia1AeU",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1684,
+    "duration_sec": 1685,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -17075,7 +17075,7 @@
    "extra": {
     "video_id": "0onXItnEyug",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1994,
+    "duration_sec": 1995,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -17120,7 +17120,7 @@
    "extra": {
     "video_id": "naBo_osYbC0",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2292,
+    "duration_sec": 2293,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -17165,7 +17165,7 @@
    "extra": {
     "video_id": "h7SWh2fN-Jc",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2457,
+    "duration_sec": 2458,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -17300,7 +17300,7 @@
    "extra": {
     "video_id": "JQcEaYT8gXU",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2035,
+    "duration_sec": 2036,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -17345,7 +17345,7 @@
    "extra": {
     "video_id": "CFUy7Vdn8eo",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2589,
+    "duration_sec": 2590,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -17435,7 +17435,7 @@
    "extra": {
     "video_id": "mvwjnWIRqFQ",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1820,
+    "duration_sec": 1821,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -17525,7 +17525,7 @@
    "extra": {
     "video_id": "6Gb6rB3slgk",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2256,
+    "duration_sec": 2257,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -17570,7 +17570,7 @@
    "extra": {
     "video_id": "xHSp2UIvoVU",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1914,
+    "duration_sec": 1915,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -17705,7 +17705,7 @@
    "extra": {
     "video_id": "_1utMfXsAlk",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1891,
+    "duration_sec": 1892,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -17795,7 +17795,7 @@
    "extra": {
     "video_id": "Rc9aVCX_4Kw",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1957,
+    "duration_sec": 1958,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -17885,7 +17885,7 @@
    "extra": {
     "video_id": "F-W2X9cV7Ng",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1942,
+    "duration_sec": 1943,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -18110,7 +18110,7 @@
    "extra": {
     "video_id": "QdZ6_yC6ZZs",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1986,
+    "duration_sec": 1987,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -18155,7 +18155,7 @@
    "extra": {
     "video_id": "A4_o-R2JVFs",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2061,
+    "duration_sec": 2062,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -18290,7 +18290,7 @@
    "extra": {
     "video_id": "FZlnGx-jr7k",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2132,
+    "duration_sec": 2133,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -18335,7 +18335,7 @@
    "extra": {
     "video_id": "4q5JEyB0KIY",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2040,
+    "duration_sec": 2041,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -18378,7 +18378,7 @@
    "extra": {
     "video_id": "oxDr2rsLJbw",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1814,
+    "duration_sec": 1815,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -18511,7 +18511,7 @@
    "extra": {
     "video_id": "4u_STiIvbyw",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1870,
+    "duration_sec": 1871,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -18601,7 +18601,7 @@
    "extra": {
     "video_id": "dAlsK3igyzA",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2301,
+    "duration_sec": 2302,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -18646,7 +18646,7 @@
    "extra": {
     "video_id": "aW2HAW9WXM0",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2089,
+    "duration_sec": 2090,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -18736,7 +18736,7 @@
    "extra": {
     "video_id": "hhnjT8mqMVM",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2903,
+    "duration_sec": 2904,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -18781,7 +18781,7 @@
    "extra": {
     "video_id": "K5dhiazI5zw",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2277,
+    "duration_sec": 2278,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -18826,7 +18826,7 @@
    "extra": {
     "video_id": "dWsNIol7ukw",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1979,
+    "duration_sec": 1980,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -18863,20 +18863,24 @@
    "date": "2024-01-11T13:38:10Z",
    "first_seen": "2026-09-23T16:31:23Z",
    "image": "https://i.ytimg.com/vi/KFHJOn3W340/hqdefault.jpg",
-   "tags": [],
+   "tags": [
+    "season-5"
+   ],
    "category": "gv",
    "status": "ok",
    "extra": {
     "video_id": "KFHJOn3W340",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2325,
+    "duration_sec": 2326,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
     "is_short": false,
     "views": 46,
     "is_live_recording": false,
-    "date_approx": false
+    "date_approx": false,
+    "season": 5,
+    "episode": 10
    },
    "i18n": {
     "title": {
@@ -18957,7 +18961,7 @@
    "extra": {
     "video_id": "hXJyuRimRjM",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2631,
+    "duration_sec": 2632,
     "playlists": [
      "AA Grapevine's Podcast"
     ],
@@ -19050,7 +19054,7 @@
      "Grapevine and La Viña Apps"
     ],
     "is_short": true,
-    "views": 1250,
+    "views": 1200,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -19132,7 +19136,7 @@
      "Grapevine and La Viña Apps"
     ],
     "is_short": false,
-    "views": 3608,
+    "views": 3600,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -19173,7 +19177,7 @@
      "Voices of Men in AA"
     ],
     "is_short": false,
-    "views": 2454,
+    "views": 2400,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -19337,7 +19341,7 @@
      "Voices of Men in AA"
     ],
     "is_short": false,
-    "views": 1074,
+    "views": 1000,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -19460,7 +19464,7 @@
      "Willingness"
     ],
     "is_short": false,
-    "views": 2128,
+    "views": 2100,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -19503,7 +19507,7 @@
      "Willingness"
     ],
     "is_short": false,
-    "views": 1149,
+    "views": 1100,
     "is_live_recording": true,
     "date_approx": false
    },
@@ -19749,7 +19753,7 @@
      "Coming in"
     ],
     "is_short": false,
-    "views": 1011,
+    "views": 1000,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -19831,7 +19835,7 @@
      "Coming in"
     ],
     "is_short": false,
-    "views": 1097,
+    "views": 1000,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -19872,7 +19876,7 @@
      "Coming in"
     ],
     "is_short": false,
-    "views": 1307,
+    "views": 1300,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -19996,7 +20000,7 @@
      "La Viña"
     ],
     "is_short": false,
-    "views": 1717,
+    "views": 1700,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -20248,7 +20252,7 @@
      "La Viña"
     ],
     "is_short": false,
-    "views": 1450,
+    "views": 1400,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -20415,7 +20419,7 @@
      "A New Life"
     ],
     "is_short": false,
-    "views": 1026,
+    "views": 1000,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -20456,7 +20460,7 @@
      "A New Life"
     ],
     "is_short": false,
-    "views": 1055,
+    "views": 1000,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -20497,7 +20501,7 @@
      "A New Life"
     ],
     "is_short": false,
-    "views": 1569,
+    "views": 1500,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -20538,7 +20542,7 @@
      "A New Life"
     ],
     "is_short": false,
-    "views": 1158,
+    "views": 1100,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -20661,7 +20665,7 @@
      "A New Life"
     ],
     "is_short": false,
-    "views": 1130,
+    "views": 1100,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -20702,7 +20706,7 @@
      "A New Life"
     ],
     "is_short": false,
-    "views": 1545,
+    "views": 1500,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -20784,7 +20788,7 @@
      "La Viña"
     ],
     "is_short": false,
-    "views": 1837,
+    "views": 1800,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -20825,7 +20829,7 @@
      "Many Roads to Spirituality"
     ],
     "is_short": false,
-    "views": 6445,
+    "views": 6400,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -20866,7 +20870,7 @@
      "Many Roads to Spirituality"
     ],
     "is_short": false,
-    "views": 2695,
+    "views": 2600,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -20907,7 +20911,7 @@
      "Many Roads to Spirituality"
     ],
     "is_short": false,
-    "views": 1234,
+    "views": 1200,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -20948,7 +20952,7 @@
      "Many Roads to Spirituality"
     ],
     "is_short": false,
-    "views": 1254,
+    "views": 1200,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -20989,7 +20993,7 @@
      "Many Roads to Spirituality"
     ],
     "is_short": false,
-    "views": 2683,
+    "views": 2600,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -21030,7 +21034,7 @@
      "Many Roads to Spirituality"
     ],
     "is_short": false,
-    "views": 2305,
+    "views": 2300,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -21071,7 +21075,7 @@
      "Many Roads to Spirituality"
     ],
     "is_short": false,
-    "views": 1938,
+    "views": 1900,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -21397,7 +21401,7 @@
      "From Relapse to Recovery"
     ],
     "is_short": false,
-    "views": 2152,
+    "views": 2100,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -21438,7 +21442,7 @@
      "From Relapse to Recovery"
     ],
     "is_short": false,
-    "views": 2057,
+    "views": 2000,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -21479,7 +21483,7 @@
      "From Relapse to Recovery"
     ],
     "is_short": false,
-    "views": 2710,
+    "views": 2700,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -21520,7 +21524,7 @@
      "From Relapse to Recovery"
     ],
     "is_short": false,
-    "views": 2425,
+    "views": 2400,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -21561,7 +21565,7 @@
      "From Relapse to Recovery"
     ],
     "is_short": false,
-    "views": 1289,
+    "views": 1200,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -21602,7 +21606,7 @@
      "From Relapse to Recovery"
     ],
     "is_short": false,
-    "views": 1023,
+    "views": 1000,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -21643,7 +21647,7 @@
      "From Relapse to Recovery"
     ],
     "is_short": false,
-    "views": 1415,
+    "views": 1400,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -21684,7 +21688,7 @@
      "From Relapse to Recovery"
     ],
     "is_short": false,
-    "views": 6328,
+    "views": 6300,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -21969,7 +21973,7 @@
      "Audios de La Viña del 2018"
     ],
     "is_short": false,
-    "views": 525,
+    "views": 526,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -22010,7 +22014,7 @@
      "Zoom \"How to\" Instructionals"
     ],
     "is_short": false,
-    "views": 4478,
+    "views": 4400,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -22133,7 +22137,7 @@
      "Audios de La Viña del 2019"
     ],
     "is_short": false,
-    "views": 2140,
+    "views": 2142,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -22297,7 +22301,7 @@
      "Zoom \"How to\" Instructionals"
     ],
     "is_short": false,
-    "views": 10052,
+    "views": 10000,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -22339,7 +22343,7 @@
      "CTM"
     ],
     "is_short": false,
-    "views": 6886,
+    "views": 6800,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -22462,7 +22466,7 @@
      "Voices of Women: “We need to give ourselves time.”"
     ],
     "is_short": false,
-    "views": 4746,
+    "views": 4700,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -22503,7 +22507,7 @@
      "CTM"
     ],
     "is_short": false,
-    "views": 14601,
+    "views": 14000,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -22626,7 +22630,7 @@
      "Voices of Women: “We need to give ourselves time.”"
     ],
     "is_short": false,
-    "views": 2891,
+    "views": 2800,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -22667,7 +22671,7 @@
      "Voices of Women: “We need to give ourselves time.”"
     ],
     "is_short": false,
-    "views": 1988,
+    "views": 1900,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -22709,7 +22713,7 @@
      "GVR/RLV"
     ],
     "is_short": false,
-    "views": 1478,
+    "views": 1400,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -22789,7 +22793,7 @@
     "duration_sec": 211,
     "playlists": [],
     "is_short": false,
-    "views": 1184,
+    "views": 1100,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -22825,10 +22829,10 @@
    "extra": {
     "video_id": "PbQq7sQ6358",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 223,
+    "duration_sec": 224,
     "playlists": [],
     "is_short": false,
-    "views": 4711,
+    "views": 4700,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -22869,7 +22873,7 @@
      "Sponsorship: “Willing to go to any length.”"
     ],
     "is_short": false,
-    "views": 1489,
+    "views": 1400,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -22910,7 +22914,7 @@
      "Sponsorship: “Willing to go to any length.”"
     ],
     "is_short": false,
-    "views": 1069,
+    "views": 1000,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -22992,7 +22996,7 @@
      "Sponsorship: “Willing to go to any length.”"
     ],
     "is_short": false,
-    "views": 3044,
+    "views": 3000,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -23033,7 +23037,7 @@
      "Sponsorship: “Willing to go to any length.”"
     ],
     "is_short": false,
-    "views": 3797,
+    "views": 3700,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -23074,7 +23078,7 @@
      "Sponsorship: “Willing to go to any length.”"
     ],
     "is_short": false,
-    "views": 3156,
+    "views": 3100,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -23156,7 +23160,7 @@
      "Sponsorship: “Willing to go to any length.”"
     ],
     "is_short": false,
-    "views": 6834,
+    "views": 6800,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -23192,10 +23196,10 @@
    "extra": {
     "video_id": "NkvUzcEMyyA",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 810,
+    "duration_sec": 811,
     "playlists": [],
     "is_short": false,
-    "views": 1244,
+    "views": 1200,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -23236,7 +23240,7 @@
      "75 YEAR TOOLKITS"
     ],
     "is_short": false,
-    "views": 5765,
+    "views": 5700,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -23277,7 +23281,7 @@
      "75 YEAR TOOLKITS"
     ],
     "is_short": false,
-    "views": 3848,
+    "views": 3800,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -23313,10 +23317,10 @@
    "extra": {
     "video_id": "QigTuObYKT0",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 316,
+    "duration_sec": 317,
     "playlists": [],
     "is_short": false,
-    "views": 2724,
+    "views": 2700,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -23391,7 +23395,7 @@
    "extra": {
     "video_id": "IpL6lGf9ZPs",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 27,
+    "duration_sec": 28,
     "playlists": [],
     "is_short": false,
     "views": 367,
@@ -23430,10 +23434,10 @@
    "extra": {
     "video_id": "K6Oe1tviYHA",
     "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 77,
+    "duration_sec": 78,
     "playlists": [],
     "is_short": false,
-    "views": 2311,
+    "views": 2300,
     "is_live_recording": false,
     "date_approx": false
    },
