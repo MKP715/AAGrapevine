@@ -1,7 +1,478 @@
 {
- "updated": "2026-09-24T10:21:38Z",
+ "updated": "2026-09-24T10:23:54Z",
  "fixture": false,
  "items": [
+  {
+   "id": "ev:manual:2026-09-26-lv-writing-workshop-fort-worth",
+   "source": "committee",
+   "kind": "event",
+   "url": "https://neta65.org/event/lv-writing-workshop/",
+   "title": "La Viña Writing Workshop (in Spanish) — Fort Worth",
+   "summary": "A Spanish-language workshop on writing your story for La Viña, hosted by Grupo Nueva Esperanza in Fort Worth. A NETA 65 Grapevine / La Viña workshop.",
+   "lang": "en",
+   "date": "2026-09-27T00:00:00Z",
+   "first_seen": "2026-09-24T10:23:49Z",
+   "image": null,
+   "tags": [
+    "workshop",
+    "la-vina"
+   ],
+   "category": "manual",
+   "status": "ok",
+   "extra": {
+    "start": "2026-09-27T00:00:00Z",
+    "end": "2026-09-27T02:00:00Z",
+    "all_day": false,
+    "location": "Grupo Nueva Esperanza, 3401 E Belknap, Fort Worth, TX 76111",
+    "online_url": null,
+    "flyer_url": "https://neta65.org/wp-content/uploads/2026/09/New-Writing-Workshop-La-Nueva-Esperanza.jpg",
+    "flyer_thumb": null,
+    "city": "Fort Worth",
+    "state": "TX",
+    "body_md": "A Spanish-language workshop on writing your story for La Viña, hosted by Grupo Nueva Esperanza in Fort Worth. A NETA 65 Grapevine / La Viña workshop.",
+    "slug": "2026-09-26-lv-writing-workshop-fort-worth",
+    "file": "content/events/2026-09-26-lv-writing-workshop-fort-worth.md",
+    "past": false
+   },
+   "i18n": {
+    "title": {
+     "en": "La Viña Writing Workshop (in Spanish) — Fort Worth",
+     "es": "La Viña Taller de Escritura (en español) — Valía la pena"
+    },
+    "summary": {
+     "en": "A Spanish-language workshop on writing your story for La Viña, hosted by Grupo Nueva Esperanza in Fort Worth. A NETA 65 Grapevine / La Viña workshop.",
+     "es": "Un taller en español sobre la redacción de su historia para La Viña, organizado por Grupo Nueva Esperanza en Fort Worth. Un taller NETA 65 Grapevine / La Viña."
+    },
+    "body_md": {
+     "en": "A Spanish-language workshop on writing your story for La Viña, hosted by Grupo Nueva Esperanza in Fort Worth. A NETA 65 Grapevine / La Viña workshop.",
+     "es": "Un taller en español sobre la redacción de su historia para La Viña, organizado por Grupo Nueva Esperanza en Fort Worth. Un taller NETA 65 Grapevine / La Viña."
+    }
+   },
+   "machine": [
+    "es"
+   ],
+   "is_new": true,
+   "wn_date": "2026-09-24T10:23:49Z"
+  },
+  {
+   "id": "ev:manual:2026-10-03-gv-writing-workshop-arlington",
+   "source": "committee",
+   "kind": "event",
+   "url": "https://neta65.org/event/grapevine-writing-workshop-6/",
+   "title": "Grapevine Writing Workshop — Arlington",
+   "summary": "Learn how to write your story for Grapevine and La Viña, and hear from members who have been published. Hosted by the Primary Purpose Group in Arlington.",
+   "lang": "en",
+   "date": "2026-10-03T19:00:00Z",
+   "first_seen": "2026-09-24T10:23:49Z",
+   "image": null,
+   "tags": [
+    "workshop",
+    "grapevine"
+   ],
+   "category": "manual",
+   "status": "ok",
+   "extra": {
+    "start": "2026-10-03T19:00:00Z",
+    "end": "2026-10-03T22:00:00Z",
+    "all_day": false,
+    "location": "Primary Purpose Group – Arlington, 1802 West Division Street, Arlington, TX 76012",
+    "online_url": null,
+    "flyer_url": "https://neta65.org/wp-content/uploads/2026/06/GV-LV-writing-workshop-10-3.png",
+    "flyer_thumb": null,
+    "city": "Arlington",
+    "state": "TX",
+    "body_md": "Learn how to write your story for Grapevine and La Viña, and hear from members who have been published. Hosted by the Primary Purpose Group in Arlington.",
+    "slug": "2026-10-03-gv-writing-workshop-arlington",
+    "file": "content/events/2026-10-03-gv-writing-workshop-arlington.md",
+    "past": false
+   },
+   "i18n": {
+    "title": {
+     "en": "Grapevine Writing Workshop — Arlington",
+     "es": "Grapevine Taller de Escritura — Arlington"
+    },
+    "summary": {
+     "en": "Learn how to write your story for Grapevine and La Viña, and hear from members who have been published. Hosted by the Primary Purpose Group in Arlington.",
+     "es": "Aprenda a escribir su historia para Grapevine y La Viña, y escuchar de miembros que han sido publicados. Hospedado por el grupo de propósito primario en Arlington."
+    },
+    "body_md": {
+     "en": "Learn how to write your story for Grapevine and La Viña, and hear from members who have been published. Hosted by the Primary Purpose Group in Arlington.",
+     "es": "Aprenda a escribir su historia para Grapevine y La Viña, y escuchar de miembros que han sido publicados. Hospedado por el grupo de propósito primario en Arlington."
+    }
+   },
+   "machine": [
+    "es"
+   ],
+   "is_new": true,
+   "wn_date": "2026-09-24T10:23:49Z"
+  },
+  {
+   "id": "ev:manual:2026-10-07-lv-writing-workshop-mansfield",
+   "source": "committee",
+   "kind": "event",
+   "url": "https://neta65.org/event/la-vina-writing-workshop-3/",
+   "title": "La Viña Writing Workshop (in Spanish) — Mansfield",
+   "summary": "A Spanish-language workshop on writing your story for La Viña, hosted by Grupo 7 Defectos y 7 Virtudes in Mansfield.",
+   "lang": "en",
+   "date": "2026-10-08T01:00:00Z",
+   "first_seen": "2026-09-24T10:23:49Z",
+   "image": null,
+   "tags": [
+    "workshop",
+    "la-vina"
+   ],
+   "category": "manual",
+   "status": "ok",
+   "extra": {
+    "start": "2026-10-08T01:00:00Z",
+    "end": "2026-10-08T03:00:00Z",
+    "all_day": false,
+    "location": "Grupo 7 Defectos y 7 Virtudes, 287 Frontage Road, Mansfield, TX 76063",
+    "online_url": null,
+    "flyer_url": "https://neta65.org/wp-content/uploads/2026/09/New-Taller-7-Defectos-.jpg",
+    "flyer_thumb": null,
+    "city": "Mansfield",
+    "state": "TX",
+    "body_md": "A Spanish-language workshop on writing your story for La Viña, hosted by Grupo 7 Defectos y 7 Virtudes in Mansfield.",
+    "slug": "2026-10-07-lv-writing-workshop-mansfield",
+    "file": "content/events/2026-10-07-lv-writing-workshop-mansfield.md",
+    "past": false
+   },
+   "i18n": {
+    "title": {
+     "en": "La Viña Writing Workshop (in Spanish) — Mansfield",
+     "es": "La Viña Taller de Escritura (en español) — Mansfield"
+    },
+    "summary": {
+     "en": "A Spanish-language workshop on writing your story for La Viña, hosted by Grupo 7 Defectos y 7 Virtudes in Mansfield.",
+     "es": "Un taller en español sobre la redacción de su historia para La Viña, organizado por Grupo 7 Defectos y 7 Virtudes en Mansfield."
+    },
+    "body_md": {
+     "en": "A Spanish-language workshop on writing your story for La Viña, hosted by Grupo 7 Defectos y 7 Virtudes in Mansfield.",
+     "es": "Un taller en español sobre la redacción de su historia para La Viña, organizado por Grupo 7 Defectos y 7 Virtudes en Mansfield."
+    }
+   },
+   "machine": [
+    "es"
+   ],
+   "is_new": true,
+   "wn_date": "2026-09-24T10:23:49Z"
+  },
+  {
+   "id": "ev:manual:2026-10-17-lv-recording-workshop-duncanville",
+   "source": "committee",
+   "kind": "event",
+   "url": "https://neta65.org/event/lv-recording-workshop/",
+   "title": "La Viña Recording Workshop (in Spanish) — Duncanville",
+   "summary": "A Spanish-language workshop on recording your story for La Viña, hosted by Grupo Progresso Latino in Duncanville.",
+   "lang": "en",
+   "date": "2026-10-18T00:00:00Z",
+   "first_seen": "2026-09-24T10:23:49Z",
+   "image": null,
+   "tags": [
+    "workshop",
+    "la-vina"
+   ],
+   "category": "manual",
+   "status": "ok",
+   "extra": {
+    "start": "2026-10-18T00:00:00Z",
+    "end": "2026-10-18T02:00:00Z",
+    "all_day": false,
+    "location": "Grupo Progresso Latino, 101 East Camp Wisdom Rd., Duncanville, TX 75116",
+    "online_url": null,
+    "flyer_url": "https://neta65.org/wp-content/uploads/2026/09/Flyer-Progresso-Latino-2026.png",
+    "flyer_thumb": null,
+    "city": "Duncanville",
+    "state": "TX",
+    "body_md": "A Spanish-language workshop on recording your story for La Viña, hosted by Grupo Progresso Latino in Duncanville.",
+    "slug": "2026-10-17-lv-recording-workshop-duncanville",
+    "file": "content/events/2026-10-17-lv-recording-workshop-duncanville.md",
+    "past": false
+   },
+   "i18n": {
+    "title": {
+     "en": "La Viña Recording Workshop (in Spanish) — Duncanville",
+     "es": "La Viña Taller de Grabación (en español) — Duncanville"
+    },
+    "summary": {
+     "en": "A Spanish-language workshop on recording your story for La Viña, hosted by Grupo Progresso Latino in Duncanville.",
+     "es": "Un taller en español sobre la grabación de su historia para La Viña, organizado por Grupo Progresso Latino en Duncanville."
+    },
+    "body_md": {
+     "en": "A Spanish-language workshop on recording your story for La Viña, hosted by Grupo Progresso Latino in Duncanville.",
+     "es": "Un taller en español sobre la grabación de su historia para La Viña, organizado por Grupo Progresso Latino en Duncanville."
+    }
+   },
+   "machine": [
+    "es"
+   ],
+   "is_new": true,
+   "wn_date": "2026-09-24T10:23:49Z"
+  },
+  {
+   "id": "ev:manual:2026-10-26-lv-writing-workshop-tyler",
+   "source": "committee",
+   "kind": "event",
+   "url": "https://neta65.org/event/la-vina-writing-workshop-4/",
+   "title": "La Viña Writing Workshop (in Spanish) — Tyler",
+   "summary": "A Spanish-language workshop on writing your story for La Viña, hosted by Grupo Libro Grande in Tyler.",
+   "lang": "en",
+   "date": "2026-10-27T00:00:00Z",
+   "first_seen": "2026-09-24T10:23:49Z",
+   "image": null,
+   "tags": [
+    "workshop",
+    "la-vina"
+   ],
+   "category": "manual",
+   "status": "ok",
+   "extra": {
+    "start": "2026-10-27T00:00:00Z",
+    "end": "2026-10-27T02:00:00Z",
+    "all_day": false,
+    "location": "Grupo Libro Grande, 623 West Bow, Tyler, TX 75702",
+    "online_url": null,
+    "flyer_url": "https://neta65.org/wp-content/uploads/2026/09/TALLER-DE-ESCRITURA-LIBRO-GRANDE.jpeg",
+    "flyer_thumb": null,
+    "city": "Tyler",
+    "state": "TX",
+    "body_md": "A Spanish-language workshop on writing your story for La Viña, hosted by Grupo Libro Grande in Tyler.",
+    "slug": "2026-10-26-lv-writing-workshop-tyler",
+    "file": "content/events/2026-10-26-lv-writing-workshop-tyler.md",
+    "past": false
+   },
+   "i18n": {
+    "title": {
+     "en": "La Viña Writing Workshop (in Spanish) — Tyler",
+     "es": "La Viña Taller de Escritura (en español) — Tyler"
+    },
+    "summary": {
+     "en": "A Spanish-language workshop on writing your story for La Viña, hosted by Grupo Libro Grande in Tyler.",
+     "es": "Un taller en español sobre la redacción de su historia para La Viña, organizado por Grupo Libro Grande en Tyler."
+    },
+    "body_md": {
+     "en": "A Spanish-language workshop on writing your story for La Viña, hosted by Grupo Libro Grande in Tyler.",
+     "es": "Un taller en español sobre la redacción de su historia para La Viña, organizado por Grupo Libro Grande en Tyler."
+    }
+   },
+   "machine": [
+    "es"
+   ],
+   "is_new": true,
+   "wn_date": "2026-09-24T10:23:49Z"
+  },
+  {
+   "id": "ev:manual:2026-11-07-lv-information-workshop-longview",
+   "source": "committee",
+   "kind": "event",
+   "url": "https://neta65.org/event/la-vina-information-workshop/",
+   "title": "La Viña Information Workshop (in Spanish) — Longview",
+   "summary": "A Spanish-language information session about La Viña, AA's Spanish-language magazine, hosted by Grupo Solo por Hoy in Longview.",
+   "lang": "en",
+   "date": "2026-11-08T01:00:00Z",
+   "first_seen": "2026-09-24T10:23:49Z",
+   "image": null,
+   "tags": [
+    "workshop",
+    "la-vina"
+   ],
+   "category": "manual",
+   "status": "ok",
+   "extra": {
+    "start": "2026-11-08T01:00:00Z",
+    "end": "2026-11-08T03:00:00Z",
+    "all_day": false,
+    "location": "Grupo Solo por Hoy, 2035 South High, Longview, TX 75602",
+    "online_url": null,
+    "flyer_url": "https://neta65.org/wp-content/uploads/2026/09/TALLER-DE-INFORMACION-SOLO-POR-HOY.jpg",
+    "flyer_thumb": null,
+    "city": "Longview",
+    "state": "TX",
+    "body_md": "A Spanish-language information session about La Viña, AA's Spanish-language magazine, hosted by Grupo Solo por Hoy in Longview.",
+    "slug": "2026-11-07-lv-information-workshop-longview",
+    "file": "content/events/2026-11-07-lv-information-workshop-longview.md",
+    "past": false
+   },
+   "i18n": {
+    "title": {
+     "en": "La Viña Information Workshop (in Spanish) — Longview",
+     "es": "La Viña taller de información (en español) — Longview"
+    },
+    "summary": {
+     "en": "A Spanish-language information session about La Viña, AA's Spanish-language magazine, hosted by Grupo Solo por Hoy in Longview.",
+     "es": "Una sesión de información en español sobre la revista en español La Viña, AA, organizada por Grupo Solo por Hoy en Longview."
+    },
+    "body_md": {
+     "en": "A Spanish-language information session about La Viña, AA's Spanish-language magazine, hosted by Grupo Solo por Hoy in Longview.",
+     "es": "Una sesión de información en español sobre la revista en español La Viña, AA, organizada por Grupo Solo por Hoy en Longview."
+    }
+   },
+   "machine": [
+    "es"
+   ],
+   "is_new": true,
+   "wn_date": "2026-09-24T10:23:49Z"
+  },
+  {
+   "id": "ev:manual:2027-03-19-neta65-spring-assembly",
+   "source": "committee",
+   "kind": "event",
+   "url": "/events/#2027-03-19-neta65-spring-assembly",
+   "title": "NETA 65 Spring Assembly 2027",
+   "summary": "Area 65 assembly (Panel 77), co-hosted by Districts 53 and 55, at the DoubleTree by Hilton Hotel Dallas Near the Galleria.",
+   "lang": "en",
+   "date": "2027-03-19",
+   "first_seen": "2026-09-24T10:23:49Z",
+   "image": null,
+   "tags": [
+    "assembly",
+    "neta65",
+    "panel-77"
+   ],
+   "category": "manual",
+   "status": "ok",
+   "extra": {
+    "start": "2027-03-19",
+    "end": "2027-03-21",
+    "all_day": true,
+    "location": "DoubleTree by Hilton Hotel Dallas Near the Galleria, 4099 Valley View Ln, Dallas, TX 75244",
+    "online_url": null,
+    "flyer_url": null,
+    "flyer_thumb": null,
+    "city": "Dallas",
+    "state": "TX",
+    "body_md": "Area 65 assembly (Panel 77), co-hosted by Districts 53 and 55, at the DoubleTree by Hilton Hotel Dallas Near the Galleria.",
+    "slug": "2027-03-19-neta65-spring-assembly",
+    "file": "content/events/2027-03-19-neta65-spring-assembly.md",
+    "past": false
+   },
+   "i18n": {
+    "title": {
+     "en": "NETA 65 Spring Assembly 2027",
+     "es": "NETA 65 asamblea de primavera 2027"
+    },
+    "summary": {
+     "en": "Area 65 assembly (Panel 77), co-hosted by Districts 53 and 55, at the DoubleTree by Hilton Hotel Dallas Near the Galleria.",
+     "es": "Área 65 assembly (Panel 77), co-hosted by Districts 53 and 55, at the DoubleTree by Hilton Hotel Dallas Near the Galleria."
+    },
+    "body_md": {
+     "en": "Area 65 assembly (Panel 77), co-hosted by Districts 53 and 55, at the DoubleTree by Hilton Hotel Dallas Near the Galleria.",
+     "es": "Área 65 assembly (Panel 77), co-hosted by Districts 53 and 55, at the DoubleTree by Hilton Hotel Dallas Near the Galleria."
+    }
+   },
+   "machine": [
+    "es"
+   ],
+   "is_new": true,
+   "wn_date": "2026-09-24T10:23:49Z"
+  },
+  {
+   "id": "ev:manual:2027-06-25-neta65-summer-assembly",
+   "source": "committee",
+   "kind": "event",
+   "url": "/events/#2027-06-25-neta65-summer-assembly",
+   "title": "NETA 65 Summer Assembly 2027",
+   "summary": "Area 65 assembly (Panel 77), hosted by District 91. The venue will be announced soon.",
+   "lang": "en",
+   "date": "2027-06-25",
+   "first_seen": "2026-09-24T10:23:49Z",
+   "image": null,
+   "tags": [
+    "assembly",
+    "neta65",
+    "panel-77"
+   ],
+   "category": "manual",
+   "status": "ok",
+   "extra": {
+    "start": "2027-06-25",
+    "end": "2027-06-27",
+    "all_day": true,
+    "location": "Venue to be announced",
+    "online_url": null,
+    "flyer_url": null,
+    "flyer_thumb": null,
+    "city": null,
+    "state": null,
+    "body_md": "Area 65 assembly (Panel 77), hosted by District 91. The venue will be announced soon.",
+    "slug": "2027-06-25-neta65-summer-assembly",
+    "file": "content/events/2027-06-25-neta65-summer-assembly.md",
+    "past": false
+   },
+   "i18n": {
+    "title": {
+     "en": "NETA 65 Summer Assembly 2027",
+     "es": "NETA 65 Asamblea de verano 2027"
+    },
+    "summary": {
+     "en": "Area 65 assembly (Panel 77), hosted by District 91. The venue will be announced soon.",
+     "es": "Reunión Área 65 (Panel 77), organizada por el Distrito 91. El lugar será anunciado pronto."
+    },
+    "body_md": {
+     "en": "Area 65 assembly (Panel 77), hosted by District 91. The venue will be announced soon.",
+     "es": "Reunión Área 65 (Panel 77), organizada por el Distrito 91. El lugar será anunciado pronto."
+    }
+   },
+   "machine": [
+    "es"
+   ],
+   "is_new": true,
+   "wn_date": "2026-09-24T10:23:49Z"
+  },
+  {
+   "id": "ev:manual:2027-09-17-neta65-fall-assembly",
+   "source": "committee",
+   "kind": "event",
+   "url": "/events/#2027-09-17-neta65-fall-assembly",
+   "title": "NETA 65 Fall Assembly 2027",
+   "summary": "Area 65 assembly (Panel 77). Host districts, venue and format are still to be confirmed.",
+   "lang": "en",
+   "date": "2027-09-17",
+   "first_seen": "2026-09-24T10:23:49Z",
+   "image": null,
+   "tags": [
+    "assembly",
+    "neta65",
+    "panel-77"
+   ],
+   "category": "manual",
+   "status": "ok",
+   "extra": {
+    "start": "2027-09-17",
+    "end": "2027-09-19",
+    "all_day": true,
+    "location": "Venue to be announced",
+    "online_url": null,
+    "flyer_url": null,
+    "flyer_thumb": null,
+    "city": null,
+    "state": null,
+    "body_md": "Area 65 assembly (Panel 77). Host districts, venue and format are still to be confirmed.",
+    "slug": "2027-09-17-neta65-fall-assembly",
+    "file": "content/events/2027-09-17-neta65-fall-assembly.md",
+    "past": false
+   },
+   "i18n": {
+    "title": {
+     "en": "NETA 65 Fall Assembly 2027",
+     "es": "NETA 65 asamblea de otoño 2027"
+    },
+    "summary": {
+     "en": "Area 65 assembly (Panel 77). Host districts, venue and format are still to be confirmed.",
+     "es": "Montaje Área 65 (Panel 77). Los distritos anfitriones, el lugar y el formato aún están por confirmar."
+    },
+    "body_md": {
+     "en": "Area 65 assembly (Panel 77). Host districts, venue and format are still to be confirmed.",
+     "es": "Montaje Área 65 (Panel 77). Los distritos anfitriones, el lugar y el formato aún están por confirmar."
+    }
+   },
+   "machine": [
+    "es"
+   ],
+   "is_new": true,
+   "wn_date": "2026-09-24T10:23:49Z"
+  },
   {
    "id": "ig:DdoQoCVF20S",
    "source": "instagram",
@@ -8378,437 +8849,6 @@
    ],
    "is_new": false,
    "wn_date": "2026-07-06T04:15:00Z"
-  },
-  {
-   "id": "yt:K-W_mtHE1TM",
-   "source": "youtube",
-   "kind": "video",
-   "url": "https://www.youtube.com/watch?v=K-W_mtHE1TM",
-   "title": "Grapevine Weekly Open AA Meeting, July 1, 2026 [Season 2, Episode 1]",
-   "summary": "In this AA Grapevine podcast, you'll hear a recording of Grapevine's open AA meeting, held on July 1, 2026. We meet every Wednesday at Noon Eastern and hope that you will join us. The code on Zoom is 871 2036 8287 and the password is 238047. Each meeting is recorded and distributed as a podcast. This week meeting leader Chris welcomes speaker Paolo and the two share their experience, strength and…",
-   "lang": "en",
-   "date": "2026-07-03T04:26:55Z",
-   "first_seen": "2026-09-23T16:31:23Z",
-   "image": "https://i.ytimg.com/vi/K-W_mtHE1TM/hqdefault.jpg",
-   "tags": [
-    "season-2",
-    "weekly-open",
-    "live"
-   ],
-   "category": "gv",
-   "status": "ok",
-   "extra": {
-    "video_id": "K-W_mtHE1TM",
-    "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 3205,
-    "playlists": [
-     "Grapevine Weekly Open AA Meeting"
-    ],
-    "is_short": false,
-    "views": 257,
-    "is_live_recording": true,
-    "date_approx": false,
-    "season": 2,
-    "episode": 1
-   },
-   "i18n": {
-    "title": {
-     "en": "Grapevine Weekly Open AA Meeting, July 1, 2026 [Season 2, Episode 1]",
-     "es": "Grapevine Weekly Open AA Meeting, 1 de julio de 2026 [Temporada 2, Episodio 1]"
-    },
-    "summary": {
-     "en": "In this AA Grapevine podcast, you'll hear a recording of Grapevine's open AA meeting, held on July 1, 2026. We meet every Wednesday at Noon Eastern and hope that you will join us. The code on Zoom is 871 2036 8287 and the password is 238047. Each meeting is recorded and distributed as a podcast. This week meeting leader Chris welcomes speaker Paolo and the two share their experience, strength and…",
-     "es": "En este AA Grapevine Podcast, usted escuchará una grabación de la reunión abierta AA de Grapevine, celebrada el 1 de julio de 2026. Nos reunimos cada miércoles al mediodía (hora del Este) y esperamos que se una a nosotros. El código de Zoom es 871 2036 8287 y la contraseña es 238047. Cada reunión se graba y distribuye como podcast. Esta semana el líder de la reunión Chris da la bienvenida al orador Paolo y los dos comparten su experiencia, fuerza y …"
-    }
-   },
-   "machine": [
-    "es"
-   ],
-   "is_new": false,
-   "wn_date": "2026-07-03T04:26:55Z"
-  },
-  {
-   "id": "pod:wo:69cf257e97dd",
-   "source": "podcast",
-   "kind": "episode",
-   "url": "https://player.captivate.fm/episode/c0044668-95ef-4cb9-b891-b6350837f394",
-   "title": "Grapevine Weekly Open AA Meeting, July 1, 2026 [Season 2, Episode 1]",
-   "summary": "In this AA Grapevine podcast, you'll hear a recording of Grapevine's open AA meeting, held on July 1, 2026. We meet every Wednesday at Noon Eastern and hope that you will join us. The code on Zoom is 871 2036 8287 and the password is 238047. Each meeting is recorded and distributed as a podcast. This week meeting leader Chris welcomes speaker Paolo and the two share their experience, strength and…",
-   "lang": "en",
-   "date": "2026-07-03T04:15:00Z",
-   "first_seen": "2026-09-23T17:23:49Z",
-   "image": "https://artwork.captivate.fm/6b1f80c3-b80e-4988-bb2d-959fbec5e005/81444FEF-9557-4996-B7AB-9949DD0BA6C3-1-102-o.jpeg",
-   "tags": [
-    "season-2"
-   ],
-   "category": "wo",
-   "status": "ok",
-   "extra": {
-    "audio_url": "https://episodes.captivate.fm/episode/c0044668-95ef-4cb9-b891-b6350837f394.mp3",
-    "audio_type": "audio/mpeg",
-    "audio_bytes": 76921046,
-    "duration_sec": 3205,
-    "season": 2,
-    "episode": 1,
-    "episode_type": "full",
-    "show": "wo",
-    "show_name": "Grapevine Weekly Open AA Meeting",
-    "link": "https://www.aagrapevine.org/grapevine-weekly-open",
-    "player_url": "https://player.captivate.fm/episode/c0044668-95ef-4cb9-b891-b6350837f394",
-    "show_web": "https://www.aagrapevine.org/grapevine-weekly-open",
-    "apple": "https://podcasts.apple.com/us/podcast/grapevine-weekly-open-aa-meeting/id1874809908",
-    "spotify": "https://open.spotify.com/show/2jk469TmDC31spPqf8L0SF",
-    "amazon": "https://music.amazon.com/podcasts/8dfb5269-8733-42f3-b075-2d9e596bf4c5/grapevine-weekly-open-aa-meeting",
-    "thumb": "/assets/cache/pod/3e3cd0ac7162b7fe.webp"
-   },
-   "i18n": {
-    "title": {
-     "en": "Grapevine Weekly Open AA Meeting, July 1, 2026 [Season 2, Episode 1]",
-     "es": "Grapevine Weekly Open AA Meeting, 1 de julio de 2026 [Temporada 2, Episodio 1]"
-    },
-    "summary": {
-     "en": "In this AA Grapevine podcast, you'll hear a recording of Grapevine's open AA meeting, held on July 1, 2026. We meet every Wednesday at Noon Eastern and hope that you will join us. The code on Zoom is 871 2036 8287 and the password is 238047. Each meeting is recorded and distributed as a podcast. This week meeting leader Chris welcomes speaker Paolo and the two share their experience, strength and…",
-     "es": "En este AA Grapevine Podcast, usted escuchará una grabación de la reunión abierta AA de Grapevine, celebrada el 1 de julio de 2026. Nos reunimos cada miércoles al mediodía (hora del Este) y esperamos que se una a nosotros. El código de Zoom es 871 2036 8287 y la contraseña es 238047. Cada reunión se graba y distribuye como podcast. Esta semana el líder de la reunión Chris da la bienvenida al orador Paolo y los dos comparten su experiencia, fuerza y …"
-    }
-   },
-   "machine": [
-    "es"
-   ],
-   "is_new": false,
-   "wn_date": "2026-07-03T04:15:00Z"
-  },
-  {
-   "id": "yt:PSTdDfd10S8",
-   "source": "youtube",
-   "kind": "video",
-   "url": "https://www.youtube.com/watch?v=PSTdDfd10S8",
-   "title": "Service",
-   "summary": "ASL Grapevine night live recording - Topic: Service Transcript available here: https://docs.google.com/document/d/1gcNcYCbFhD8GR2m2mJ_qcEzXlJh3GExoSukEziqwOzg/edit?usp=sharing",
-   "lang": "en",
-   "date": "2026-07-01T16:00:32Z",
-   "first_seen": "2026-09-23T16:31:23Z",
-   "image": "https://i.ytimg.com/vi/PSTdDfd10S8/hqdefault.jpg",
-   "tags": [
-    "live",
-    "asl"
-   ],
-   "category": "gv",
-   "status": "ok",
-   "extra": {
-    "video_id": "PSTdDfd10S8",
-    "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 627,
-    "playlists": [
-     "American Sign Language"
-    ],
-    "is_short": false,
-    "views": 153,
-    "is_live_recording": true,
-    "date_approx": false
-   },
-   "i18n": {
-    "title": {
-     "en": "Service",
-     "es": "Servicio"
-    },
-    "summary": {
-     "en": "ASL Grapevine night live recording - Topic: Service Transcript available here: https://docs.google.com/document/d/1gcNcYCbFhD8GR2m2mJ_qcEzXlJh3GExoSukEziqwOzg/edit?usp=sharing",
-     "es": "ASL Grapevine noche de grabación en vivo - Tema: Servicio de Traducción disponible aquí: https://docs.google.com/document/d/1gcNcYCbFhD8GR2m2mJ_qcEzXlJh3GExoSukEziqwOzg/edit?usp=sharing"
-    }
-   },
-   "machine": [
-    "es"
-   ],
-   "is_new": false,
-   "wn_date": "2026-07-01T16:00:32Z"
-  },
-  {
-   "id": "yt:icWlsGxB7PY",
-   "source": "youtube",
-   "kind": "video",
-   "url": "https://www.youtube.com/watch?v=icWlsGxB7PY",
-   "title": "This is Alcoholism [Season 10, Episode 26]",
-   "summary": "Even though Dana experienced anxiety, perfectionism, self hate, depression, loneliness and no hope with drinking, taking the suggestion of a therapist to try AA did not hit, because that would mean no drinking. Eventually Dana did try AA and felt it was \"alright\", but did come back. Putting alcohol down and learning other coping skills led to a whole new freedom and life. In the Ask it Basket…",
-   "lang": "en",
-   "date": "2026-06-29T04:27:34Z",
-   "first_seen": "2026-09-23T16:31:23Z",
-   "image": "https://i.ytimg.com/vi/icWlsGxB7PY/hqdefault.jpg",
-   "tags": [
-    "season-10"
-   ],
-   "category": "gv",
-   "status": "ok",
-   "extra": {
-    "video_id": "icWlsGxB7PY",
-    "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1951,
-    "playlists": [
-     "AA Grapevine's Podcast"
-    ],
-    "is_short": false,
-    "views": 271,
-    "is_live_recording": false,
-    "date_approx": false,
-    "season": 10,
-    "episode": 26
-   },
-   "i18n": {
-    "title": {
-     "en": "This is Alcoholism [Season 10, Episode 26]",
-     "es": "Esto es alcoholismo [Temporada 10, Episodio 26]"
-    },
-    "summary": {
-     "en": "Even though Dana experienced anxiety, perfectionism, self hate, depression, loneliness and no hope with drinking, taking the suggestion of a therapist to try AA did not hit, because that would mean no drinking. Eventually Dana did try AA and felt it was \"alright\", but did come back. Putting alcohol down and learning other coping skills led to a whole new freedom and life. In the Ask it Basket…",
-     "es": "A pesar de que Dana experimentó ansiedad, perfeccionismo, odio propio, depresión, soledad y ninguna esperanza con la bebida, tomando la sugerencia de un terapeuta para probar AA no golpeó, porque eso significaría no beber. Eventualmente Dana intentó AA y sintió que era \"derecha\", pero volvió. Bajar el alcohol y aprender otras habilidades para hacer frente llevó a una nueva libertad y vida. En el Ask-It-Basket …"
-    }
-   },
-   "machine": [
-    "es"
-   ],
-   "is_new": false,
-   "wn_date": "2026-06-29T04:27:34Z"
-  },
-  {
-   "id": "pod:gv:c0801a0be4e9",
-   "source": "podcast",
-   "kind": "episode",
-   "url": "https://player.captivate.fm/episode/0c71d114-8bb1-46be-83c0-9a4135fbd4a1",
-   "title": "This is Alcoholism [Season 10, Episode 26]",
-   "summary": "Even though Dana experienced anxiety, perfectionism, self hate, depression, loneliness and no hope with drinking, taking the suggestion of a therapist to try AA did not hit, because that would mean no drinking. Eventually Dana did try AA and felt it was \"alright\", but did come back. Putting alcohol down and learning other coping skills led to a whole new freedom and life. In the Ask it Basket…",
-   "lang": "en",
-   "date": "2026-06-29T04:15:00Z",
-   "first_seen": "2026-09-23T16:27:02Z",
-   "image": "https://artwork.captivate.fm/0ad84761-e27d-40a0-be3f-982e28f5cfed/NA7eDTnRxVFYjt4qJyGSFDog.jpeg",
-   "tags": [
-    "season-10"
-   ],
-   "category": "gv",
-   "status": "ok",
-   "extra": {
-    "audio_url": "https://episodes.captivate.fm/episode/0c71d114-8bb1-46be-83c0-9a4135fbd4a1.mp3",
-    "audio_type": "audio/mpeg",
-    "audio_bytes": 19502445,
-    "duration_sec": 1950,
-    "season": 10,
-    "episode": 26,
-    "episode_type": "full",
-    "show": "gv",
-    "show_name": "AA Grapevine's Podcast",
-    "link": "https://www.aagrapevine.org/podcast",
-    "player_url": "https://player.captivate.fm/episode/0c71d114-8bb1-46be-83c0-9a4135fbd4a1",
-    "show_web": "https://www.aagrapevine.org/podcasts",
-    "apple": "https://podcasts.apple.com/us/podcast/aa-grapevines-podcast/id1591924167",
-    "spotify": "https://open.spotify.com/show/714djcL57SFf0Nzf40CL8Q",
-    "amazon": "https://music.amazon.com/podcasts/de231bfa-837b-4a27-a331-a927019cb5d7",
-    "thumb": "/assets/cache/pod/345ae0651cb102a9.webp"
-   },
-   "i18n": {
-    "title": {
-     "en": "This is Alcoholism [Season 10, Episode 26]",
-     "es": "Esto es alcoholismo [Temporada 10, Episodio 26]"
-    },
-    "summary": {
-     "en": "Even though Dana experienced anxiety, perfectionism, self hate, depression, loneliness and no hope with drinking, taking the suggestion of a therapist to try AA did not hit, because that would mean no drinking. Eventually Dana did try AA and felt it was \"alright\", but did come back. Putting alcohol down and learning other coping skills led to a whole new freedom and life. In the Ask it Basket…",
-     "es": "A pesar de que Dana experimentó ansiedad, perfeccionismo, odio propio, depresión, soledad y ninguna esperanza con la bebida, tomando la sugerencia de un terapeuta para probar AA no golpeó, porque eso significaría no beber. Eventualmente Dana intentó AA y sintió que era \"derecha\", pero volvió. Bajar el alcohol y aprender otras habilidades para hacer frente llevó a una nueva libertad y vida. En el Ask-It-Basket …"
-    }
-   },
-   "machine": [
-    "es"
-   ],
-   "is_new": false,
-   "wn_date": "2026-06-29T04:15:00Z"
-  },
-  {
-   "id": "yt:rvV7b0itYFw",
-   "source": "youtube",
-   "kind": "video",
-   "url": "https://www.youtube.com/watch?v=rvV7b0itYFw",
-   "title": "Grapevine Weekly Open AA Meeting, June 24, 2026 [Season 1, Episode 21]",
-   "summary": "In this AA Grapevine podcast, you'll hear a recording of Grapevine's open AA meeting, held on June 24, 2026. We meet every Wednesday at Noon Eastern and hope that you will join us. The code on Zoom is 871 2036 8287 and the password is 238047. Each meeting is recorded and distributed as a podcast. This week meeting leader Teddy welcomes speakers Nancy and Bryana, who share their experience…",
-   "lang": "en",
-   "date": "2026-06-26T04:36:12Z",
-   "first_seen": "2026-09-23T16:31:23Z",
-   "image": "https://i.ytimg.com/vi/rvV7b0itYFw/hqdefault.jpg",
-   "tags": [
-    "season-1",
-    "weekly-open",
-    "live"
-   ],
-   "category": "gv",
-   "status": "ok",
-   "extra": {
-    "video_id": "rvV7b0itYFw",
-    "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 3517,
-    "playlists": [
-     "Grapevine Weekly Open AA Meeting"
-    ],
-    "is_short": false,
-    "views": 236,
-    "is_live_recording": true,
-    "date_approx": false,
-    "season": 1,
-    "episode": 21
-   },
-   "i18n": {
-    "title": {
-     "en": "Grapevine Weekly Open AA Meeting, June 24, 2026 [Season 1, Episode 21]",
-     "es": "Grapevine Weekly Open AA Meeting, 24 de junio de 2026 [Temporada 1, Episodio 21]"
-    },
-    "summary": {
-     "en": "In this AA Grapevine podcast, you'll hear a recording of Grapevine's open AA meeting, held on June 24, 2026. We meet every Wednesday at Noon Eastern and hope that you will join us. The code on Zoom is 871 2036 8287 and the password is 238047. Each meeting is recorded and distributed as a podcast. This week meeting leader Teddy welcomes speakers Nancy and Bryana, who share their experience…",
-     "es": "En este AA Grapevine Podcast, usted escuchará una grabación de la reunión abierta AA de Grapevine, celebrada el 24 de junio de 2026. Nos reunimos cada miércoles al mediodía (hora del Este) y esperamos que se una a nosotros. El código de Zoom es 871 2036 8287 y la contraseña es 238047. Cada reunión se graba y distribuye como podcast. Esta semana el líder de la reunión Teddy da la bienvenida a los oradores Nancy y Bryana, que comparten su experiencia …"
-    }
-   },
-   "machine": [
-    "es"
-   ],
-   "is_new": false,
-   "wn_date": "2026-06-26T04:36:12Z"
-  },
-  {
-   "id": "pod:wo:38682f82c436",
-   "source": "podcast",
-   "kind": "episode",
-   "url": "https://player.captivate.fm/episode/e1816ab3-44b2-4f08-9d4f-fb6ab99b5048",
-   "title": "Grapevine Weekly Open AA Meeting, June 24, 2026 [Season 1, Episode 21]",
-   "summary": "In this AA Grapevine podcast, you'll hear a recording of Grapevine's open AA meeting, held on June 24, 2026. We meet every Wednesday at Noon Eastern and hope that you will join us. The code on Zoom is 871 2036 8287 and the password is 238047. Each meeting is recorded and distributed as a podcast. This week meeting leader Teddy welcomes speakers Nancy and Bryana, who share their experience…",
-   "lang": "en",
-   "date": "2026-06-26T04:15:00Z",
-   "first_seen": "2026-09-23T17:23:49Z",
-   "image": "https://artwork.captivate.fm/6b1f80c3-b80e-4988-bb2d-959fbec5e005/81444FEF-9557-4996-B7AB-9949DD0BA6C3-1-102-o.jpeg",
-   "tags": [
-    "season-1"
-   ],
-   "category": "wo",
-   "status": "ok",
-   "extra": {
-    "audio_url": "https://episodes.captivate.fm/episode/e1816ab3-44b2-4f08-9d4f-fb6ab99b5048.mp3",
-    "audio_type": "audio/mpeg",
-    "audio_bytes": 84417025,
-    "duration_sec": 3517,
-    "season": 1,
-    "episode": 21,
-    "episode_type": "full",
-    "show": "wo",
-    "show_name": "Grapevine Weekly Open AA Meeting",
-    "link": "https://www.aagrapevine.org/grapevine-weekly-open",
-    "player_url": "https://player.captivate.fm/episode/e1816ab3-44b2-4f08-9d4f-fb6ab99b5048",
-    "show_web": "https://www.aagrapevine.org/grapevine-weekly-open",
-    "apple": "https://podcasts.apple.com/us/podcast/grapevine-weekly-open-aa-meeting/id1874809908",
-    "spotify": "https://open.spotify.com/show/2jk469TmDC31spPqf8L0SF",
-    "amazon": "https://music.amazon.com/podcasts/8dfb5269-8733-42f3-b075-2d9e596bf4c5/grapevine-weekly-open-aa-meeting",
-    "thumb": "/assets/cache/pod/3e3cd0ac7162b7fe.webp"
-   },
-   "i18n": {
-    "title": {
-     "en": "Grapevine Weekly Open AA Meeting, June 24, 2026 [Season 1, Episode 21]",
-     "es": "Grapevine Weekly Open AA Meeting, 24 de junio de 2026 [Temporada 1, Episodio 21]"
-    },
-    "summary": {
-     "en": "In this AA Grapevine podcast, you'll hear a recording of Grapevine's open AA meeting, held on June 24, 2026. We meet every Wednesday at Noon Eastern and hope that you will join us. The code on Zoom is 871 2036 8287 and the password is 238047. Each meeting is recorded and distributed as a podcast. This week meeting leader Teddy welcomes speakers Nancy and Bryana, who share their experience…",
-     "es": "En este AA Grapevine Podcast, usted escuchará una grabación de la reunión abierta AA de Grapevine, celebrada el 24 de junio de 2026. Nos reunimos cada miércoles al mediodía (hora del Este) y esperamos que se una a nosotros. El código de Zoom es 871 2036 8287 y la contraseña es 238047. Cada reunión se graba y distribuye como podcast. Esta semana el líder de la reunión Teddy da la bienvenida a los oradores Nancy y Bryana, que comparten su experiencia …"
-    }
-   },
-   "machine": [
-    "es"
-   ],
-   "is_new": false,
-   "wn_date": "2026-06-26T04:15:00Z"
-  },
-  {
-   "id": "yt:aeBuhf4X5h8",
-   "source": "youtube",
-   "kind": "video",
-   "url": "https://www.youtube.com/watch?v=aeBuhf4X5h8",
-   "title": "Grapevine Weekly Open AA Meeting, June 17, 2026 [Season 1, Episode 20]",
-   "summary": "In this AA Grapevine podcast, you'll hear a recording of Grapevine's open AA meeting, held on June 17, 2026. We meet every Wednesday at Noon Eastern and hope that you will join us. The code on Zoom is 871 2036 8287 and the password is 238047. Each meeting is recorded and distributed as a podcast. This week meeting leader Teddy welcomes speakers Cesar and Joann, who share their experience…",
-   "lang": "en",
-   "date": "2026-06-22T17:14:23Z",
-   "first_seen": "2026-09-23T16:31:23Z",
-   "image": "https://i.ytimg.com/vi/aeBuhf4X5h8/hqdefault.jpg",
-   "tags": [
-    "season-1",
-    "weekly-open",
-    "live"
-   ],
-   "category": "gv",
-   "status": "ok",
-   "extra": {
-    "video_id": "aeBuhf4X5h8",
-    "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 3569,
-    "playlists": [
-     "Grapevine Weekly Open AA Meeting"
-    ],
-    "is_short": false,
-    "views": 199,
-    "is_live_recording": true,
-    "date_approx": false,
-    "season": 1,
-    "episode": 20
-   },
-   "i18n": {
-    "title": {
-     "en": "Grapevine Weekly Open AA Meeting, June 17, 2026 [Season 1, Episode 20]",
-     "es": "Grapevine Weekly Open AA Meeting, 17 de junio de 2026 [Temporada 1, Episodio 20]"
-    },
-    "summary": {
-     "en": "In this AA Grapevine podcast, you'll hear a recording of Grapevine's open AA meeting, held on June 17, 2026. We meet every Wednesday at Noon Eastern and hope that you will join us. The code on Zoom is 871 2036 8287 and the password is 238047. Each meeting is recorded and distributed as a podcast. This week meeting leader Teddy welcomes speakers Cesar and Joann, who share their experience…",
-     "es": "En este AA Grapevine Podcast, usted escuchará una grabación de la reunión abierta AA de Grapevine, celebrada el 17 de junio de 2026. Nos reunimos cada miércoles al mediodía (hora del Este) y esperamos que se una a nosotros. El código de Zoom es 871 2036 8287 y la contraseña es 238047. Cada reunión se graba y distribuye como podcast. Esta semana el líder de la reunión Teddy da la bienvenida a los oradores Cesar y Joann, que comparten su experiencia …"
-    }
-   },
-   "machine": [
-    "es"
-   ],
-   "is_new": false,
-   "wn_date": "2026-06-22T17:14:23Z"
-  },
-  {
-   "id": "yt:ldak69Q_1yk",
-   "source": "youtube",
-   "kind": "video",
-   "url": "https://www.youtube.com/watch?v=ldak69Q_1yk",
-   "title": "You Don't Know Me, But You Know Me [Season 10, Episode 25]",
-   "summary": "Trevon was born into alcoholism and suffered through a chaotic childhood. He tells Don and Sam that when he first drank he felt like he could breathe for the first time. Trevon's alcoholism brought troubles including prison time. His amends to his son gave him a profound experience. Trevon also talks about his service work with Young People in AA and Black and Indigenous People of Color in AA…",
-   "lang": "en",
-   "date": "2026-06-22T04:31:00Z",
-   "first_seen": "2026-09-23T16:31:23Z",
-   "image": "https://i.ytimg.com/vi/ldak69Q_1yk/hqdefault.jpg",
-   "tags": [
-    "season-10"
-   ],
-   "category": "gv",
-   "status": "ok",
-   "extra": {
-    "video_id": "ldak69Q_1yk",
-    "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1722,
-    "playlists": [
-     "AA Grapevine's Podcast"
-    ],
-    "is_short": false,
-    "views": 243,
-    "is_live_recording": false,
-    "date_approx": false,
-    "season": 10,
-    "episode": 25
-   },
-   "i18n": {
-    "title": {
-     "en": "You Don't Know Me, But You Know Me [Season 10, Episode 25]",
-     "es": "No me conoces, pero me conoces [Temporada 10, Episodio 25]"
-    },
-    "summary": {
-     "en": "Trevon was born into alcoholism and suffered through a chaotic childhood. He tells Don and Sam that when he first drank he felt like he could breathe for the first time. Trevon's alcoholism brought troubles including prison time. His amends to his son gave him a profound experience. Trevon also talks about his service work with Young People in AA and Black and Indigenous People of Color in AA…",
-     "es": "Trevon nació en alcoholismo y sufrió a través de una infancia caótica. Le dice a Don y a Sam que cuando bebió por primera vez sintió que podía respirar por primera vez. El alcoholismo de Trevon trajo problemas incluyendo el tiempo de prisión. Sus enmiendas a su hijo le dieron una experiencia profunda. Trevon también habla de su trabajo de servicio con Jóvenes en AA y Pueblos Negros e Indígenas de Color en AA …"
-    }
-   },
-   "machine": [
-    "es"
-   ],
-   "is_new": false,
-   "wn_date": "2026-06-22T04:31:00Z"
   }
  ]
 }
