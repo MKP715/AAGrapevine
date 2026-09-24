@@ -1,7 +1,7 @@
 {
  "source": "editorial",
- "updated": "2026-09-24T03:16:46Z",
- "attempted": "2026-09-24T03:16:46Z",
+ "updated": "2026-09-24T15:20:55Z",
+ "attempted": "2026-09-24T15:20:55Z",
  "ok": true,
  "error": null,
  "stats": {
@@ -919,5 +919,6 @@
     "guidelines_url": "https://www.aagrapevine.org/guidelines-contributing-grapevine"
    }
   }
- ]
+ ],
+ "first_harvest": "2026-09-23T16:30:40Z"
 }

@@ -1,7 +1,7 @@
 {
  "source": "pdfs",
- "updated": "2026-09-24T06:35:22Z",
- "attempted": "2026-09-24T06:35:22Z",
+ "updated": "2026-09-24T15:25:03Z",
+ "attempted": "2026-09-24T15:25:03Z",
  "ok": true,
  "error": null,
  "stats": {
@@ -13,15 +13,15 @@
   "pdfs_gone": 12,
   "pdfs_with_details": 129,
   "pdfs_with_thumbs": 129,
-  "last_run_pages": 0,
-  "fetched": 0,
+  "last_run_pages": 39,
+  "fetched": 39,
   "new": 0,
   "not_modified": 0,
   "page_errors": 0,
   "discovered": 0,
   "details": 0,
   "heads": 0,
-  "requests": 0,
+  "requests": 42,
   "queue_remaining": 0,
   "est_days_to_full": 0.0
  },
@@ -5796,6 +5796,6 @@
   "known_pages": 3429,
   "crawled_pages": 3429,
   "pdfs": 130,
-  "last_run_pages": 0
+  "last_run_pages": 39
  }
 }

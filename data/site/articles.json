@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-24T03:16:36Z",
+ "updated": "2026-09-24T15:20:45Z",
  "fixture": false,
  "issues": [
   {
@@ -4702,6 +4702,71 @@
    "is_new": false
   },
   {
+   "id": "gv:2026-09:relapse-58",
+   "source": "grapevine",
+   "kind": "article",
+   "url": "https://www.aagrapevine.org/magazine/2026/sep/relapse-58",
+   "title": "Relapse At 58",
+   "summary": "After a relapse, she finds a life of “joy, connection and service”",
+   "lang": "en",
+   "date": "2026-09-01",
+   "first_seen": "2026-09-24T15:20:45Z",
+   "image": null,
+   "tags": [],
+   "category": "gv",
+   "status": "ok",
+   "extra": {
+    "publication": "gv",
+    "issue_label": "September 2026",
+    "issue_key": "2026-09",
+    "issue_date": "2026-09-01",
+    "issue_theme": null,
+    "issue_url": null,
+    "topic": null,
+    "section": null,
+    "author": "Jodie B.",
+    "author_location": "Thousand Palms, Calif.",
+    "subtitle": "After a relapse, she finds a life of “joy, connection and service”",
+    "teaser": "Going through recovery taught me that the road isn’t always easy.",
+    "free": false,
+    "online_exclusive": true,
+    "department": false,
+    "geo": {
+     "scope": "other",
+     "city": "Thousand Palms",
+     "county": null,
+     "counties": [],
+     "state": "CA",
+     "country": "US",
+     "label_en": "Thousand Palms, California",
+     "label_es": "Thousand Palms, California"
+    },
+    "pub_date": "2026-09-01"
+   },
+   "i18n": {
+    "title": {
+     "en": "Relapse At 58",
+     "es": "Recaídas a las 58"
+    },
+    "summary": {
+     "en": "After a relapse, she finds a life of “joy, connection and service”",
+     "es": "Después de una recaída, encuentra una vida de “joy, conexión y servicio”"
+    },
+    "issue_label": {
+     "en": "September 2026",
+     "es": "Septiembre 2026"
+    },
+    "author_location": {
+     "en": "Thousand Palms, California",
+     "es": "Thousand Palms, California"
+    }
+   },
+   "machine": [
+    "es"
+   ],
+   "is_new": false
+  },
+  {
    "id": "gv:2026-09:ready-set-go",
    "source": "grapevine",
    "kind": "article",
@@ -5692,6 +5757,71 @@
     "author_location": {
      "en": "Pompano Beach, Florida",
      "es": "Pompano Beach, Florida"
+    }
+   },
+   "machine": [
+    "es"
+   ],
+   "is_new": false
+  },
+  {
+   "id": "gv:2026-09:gateway",
+   "source": "grapevine",
+   "kind": "article",
+   "url": "https://www.aagrapevine.org/magazine/2026/sep/gateway",
+   "title": "Gateway",
+   "summary": "Raising her hand for service opens the way to a deeper sobriety",
+   "lang": "en",
+   "date": "2026-09-01",
+   "first_seen": "2026-09-24T15:20:45Z",
+   "image": null,
+   "tags": [],
+   "category": "gv",
+   "status": "ok",
+   "extra": {
+    "publication": "gv",
+    "issue_label": "September 2026",
+    "issue_key": "2026-09",
+    "issue_date": "2026-09-01",
+    "issue_theme": null,
+    "issue_url": null,
+    "topic": null,
+    "section": null,
+    "author": "Chenoa C.",
+    "author_location": "Winnipeg, Manitoba",
+    "subtitle": "Raising her hand for service opens the way to a deeper sobriety",
+    "teaser": "At two years in AA, my desperation to stay sober had made me willing. I was well-versed in at my homegroup in opening the clubroom, greeting people and making coffee.",
+    "free": false,
+    "online_exclusive": true,
+    "department": false,
+    "geo": {
+     "scope": "other",
+     "city": "Winnipeg",
+     "county": null,
+     "counties": [],
+     "state": "MB",
+     "country": "CA",
+     "label_en": "Winnipeg, Manitoba",
+     "label_es": "Winnipeg, Manitoba"
+    },
+    "pub_date": "2026-09-01"
+   },
+   "i18n": {
+    "title": {
+     "en": "Gateway",
+     "es": "Gateway"
+    },
+    "summary": {
+     "en": "Raising her hand for service opens the way to a deeper sobriety",
+     "es": "Aumentar su mano para el servicio abre el camino a una sobriedad más profundo"
+    },
+    "issue_label": {
+     "en": "September 2026",
+     "es": "Septiembre 2026"
+    },
+    "author_location": {
+     "en": "Winnipeg, Manitoba",
+     "es": "Winnipeg, Manitoba"
     }
    },
    "machine": [
@@ -9987,7 +10117,7 @@
    "kind": "article",
    "url": "https://www.aalavina.org/revista/julio-agosto-2026/la-mano-de-aa",
    "title": "La mano de AA",
-   "summary": "",
+   "summary": "Por segunda vez volví a la agrupación de AA. Llevo dos años y medio, y el servicio ha sido el medio por el cual me he mantenido activo y he hecho del programa una forma de vida.",
    "lang": "es",
    "date": "2026-07-01",
    "first_seen": "2026-09-23T23:13:14Z",
@@ -10003,12 +10133,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Prisiones / La Viña 30 Aniversario",
-    "section": null,
+    "section": "Sección Especial",
     "author": "Mario G.",
     "author_location": "Reseda, California",
     "subtitle": null,
-    "teaser": null,
-    "free": null,
+    "teaser": "Por segunda vez volví a la agrupación de AA. Llevo dos años y medio, y el servicio ha sido el medio por el cual me he mantenido activo y he hecho del programa una forma de vida.",
+    "free": false,
     "online_exclusive": false,
     "department": false,
     "geo": {
@@ -10029,8 +10159,12 @@
      "es": "La mano de AA"
     },
     "summary": {
-     "en": "",
-     "es": ""
+     "en": "For the second time I returned to the AA grouping. I have been two and a half years, and the service has been the means by which I have remained active and have made the program a way of life.",
+     "es": "Por segunda vez volví a la agrupación de AA. Llevo dos años y medio, y el servicio ha sido el medio por el cual me he mantenido activo y he hecho del programa una forma de vida."
+    },
+    "section": {
+     "en": "Special Section",
+     "es": "Sección Especial"
     },
     "topic": {
      "en": "Prisons / La Viña 30th Anniversary",
@@ -10779,7 +10913,7 @@
    "kind": "article",
    "url": "https://www.aalavina.org/revista/julio-agosto-2026/carta-de-bienvenida-julioagosto-2026",
    "title": "Carta de Bienvenida julio/agosto 2026",
-   "summary": "",
+   "summary": "Querida familia de La Viña:",
    "lang": "es",
    "date": "2026-07-01",
    "first_seen": "2026-09-23T23:13:14Z",
@@ -10795,12 +10929,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Prisiones / La Viña 30 Aniversario",
-    "section": null,
+    "section": "En cada edición",
     "author": null,
     "author_location": null,
     "subtitle": null,
-    "teaser": null,
-    "free": null,
+    "teaser": "Querida familia de La Viña:",
+    "free": false,
     "online_exclusive": false,
     "department": true,
     "geo": {
@@ -10821,8 +10955,12 @@
      "es": "Carta de Bienvenida julio/agosto 2026"
     },
     "summary": {
-     "en": "",
-     "es": ""
+     "en": "Dear family of La Viña:",
+     "es": "Querida familia de La Viña:"
+    },
+    "section": {
+     "en": "In Each Edition",
+     "es": "En cada edición"
     },
     "topic": {
      "en": "Prisons / La Viña 30th Anniversary",
@@ -11084,12 +11222,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Prisiones / La Viña 30 Aniversario",
-    "section": null,
+    "section": "En cada edición",
     "author": null,
     "author_location": null,
     "subtitle": "Cada año fallecen más de tres millones de personas, sobre todo varones, debido al consumo de alcohol y drogas",
-    "teaser": null,
-    "free": null,
+    "teaser": "De acuerdo con un nuevo informe publicado por la Organización Mundial de la Salud (OMS), cada año se registran 2.6 millones de defunciones atribuibles al consumo de alcohol (que abarcan un 4.",
+    "free": false,
     "online_exclusive": false,
     "department": true,
     "geo": {
@@ -11112,6 +11250,10 @@
     "summary": {
      "en": "More than three million people die each year, especially males, due to alcohol and drug use",
      "es": "Cada año fallecen más de tres millones de personas, sobre todo varones, debido al consumo de alcohol y drogas"
+    },
+    "section": {
+     "en": "In Each Edition",
+     "es": "En cada edición"
     },
     "topic": {
      "en": "Prisons / La Viña 30th Anniversary",
@@ -11364,12 +11506,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Annual Prison Issue",
-    "section": null,
+    "section": "Tradition Seven",
     "author": "Heather K.",
     "author_location": "Holbrook, New York",
     "subtitle": "How do we decide the amount of money we put in the basket each meeting? One member shares what she does",
-    "teaser": null,
-    "free": null,
+    "teaser": "When I came to AA I was utterly without resource. I had demoralized myself to the point where I hid, ashamed from God in all forms. I was also penniless.",
+    "free": false,
     "online_exclusive": false,
     "department": false,
     "geo": {
@@ -11392,6 +11534,10 @@
     "summary": {
      "en": "How do we decide the amount of money we put in the basket each meeting? One member shares what she does",
      "es": "¿Cómo decidimos la cantidad de dinero que ponemos en la canasta cada reunión? Un miembro comparte lo que hace"
+    },
+    "section": {
+     "en": "Tradition Seven",
+     "es": "Séptima Tradición"
     },
     "topic": {
      "en": "Annual Prison Issue",
@@ -11712,12 +11858,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Annual Prison Issue",
-    "section": null,
+    "section": "Our Personal Stories",
     "author": "Laura B.",
     "author_location": "San Francisco, California",
     "subtitle": "In 1968 a drunken college student passed out in a big house in San Francisco. Years later she discovered how important that building was",
-    "teaser": null,
-    "free": null,
+    "teaser": "One morning in the fall of 1968, I woke up in an armchair in someone’s living room.",
+    "free": false,
     "online_exclusive": false,
     "department": false,
     "geo": {
@@ -11740,6 +11886,10 @@
     "summary": {
      "en": "In 1968 a drunken college student passed out in a big house in San Francisco. Years later she discovered how important that building was",
      "es": "En 1968, una estudiante universitaria borracha perdió el conocimiento en una casa grande de San Francisco. Años después descubrió lo importante que era ese edificio"
+    },
+    "section": {
+     "en": "Our Personal Stories",
+     "es": "Nuestras historias personales"
     },
     "topic": {
      "en": "Annual Prison Issue",
@@ -11917,12 +12067,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Annual Prison Issue",
-    "section": null,
+    "section": "Gratitude",
     "author": "Chris M.",
     "author_location": "Hockessin, Delaware",
     "subtitle": "How an hour spent down by the wading pool to do Step work became a powerful spiritual experience",
-    "teaser": null,
-    "free": null,
+    "teaser": "Today I went to a creek in the neighborhood I grew up in to complete my Sixth and Seventh Steps. There’s a small waterfall that empties into a wading pool.",
+    "free": false,
     "online_exclusive": false,
     "department": false,
     "geo": {
@@ -11945,6 +12095,10 @@
     "summary": {
      "en": "How an hour spent down by the wading pool to do Step work became a powerful spiritual experience",
      "es": "Cómo una hora pasada por la piscina desactivada para hacer el trabajo de Paso se convirtió en una experiencia espiritual poderosa"
+    },
+    "section": {
+     "en": "Gratitude",
+     "es": "Gratitud"
     },
     "topic": {
      "en": "Annual Prison Issue",
@@ -12132,8 +12286,8 @@
     "author": "K.SB.",
     "author_location": "Seattle, Wash.",
     "subtitle": "She was on the verge of relapse after 24 years",
-    "teaser": null,
-    "free": null,
+    "teaser": "There have been a few times in my sobriety where I thought I was on the path of recovery and later found out I was sliding back towards a drink.",
+    "free": false,
     "online_exclusive": true,
     "department": false,
     "geo": {
@@ -12193,12 +12347,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Annual Prison Issue",
-    "section": null,
+    "section": "Featured Section",
     "author": "John S.",
     "author_location": "Newark, New Jersey",
     "subtitle": "After 20 years of AA in prison, he’s not the same guy. With a sponsor’s help and a good foundation, he’s ready to get out and live",
-    "teaser": null,
-    "free": null,
+    "teaser": "I am now residing at a halfway house, my final step before freedom. I was imprisoned for 20 years.",
+    "free": false,
     "online_exclusive": false,
     "department": false,
     "geo": {
@@ -12221,6 +12375,10 @@
     "summary": {
      "en": "After 20 years of AA in prison, he’s not the same guy. With a sponsor’s help and a good foundation, he’s ready to get out and live",
      "es": "Después de 20 años de AA en prisión, no es el mismo tipo. Con la ayuda de padrino y una buena base, está listo para salir y vivir"
+    },
+    "section": {
+     "en": "Featured Section",
+     "es": "Sección destacada"
     },
     "topic": {
      "en": "Annual Prison Issue",
@@ -12473,8 +12631,8 @@
     "author": "Matt G.",
     "author_location": "Corvallis, Ore.",
     "subtitle": "He didn’t know what tomorrow would bring. For the first time, it didn’t matter",
-    "teaser": null,
-    "free": null,
+    "teaser": "I am not good at sitting still. I was often chastised as a young kid for my frenetic energy.",
+    "free": false,
     "online_exclusive": true,
     "department": false,
     "geo": {
@@ -12964,12 +13122,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Annual Prison Issue",
-    "section": null,
+    "section": "Our Personal Stories",
     "author": "Anonymous",
     "author_location": "Sarasot, Florida",
     "subtitle": "A dad in Florida who relapsed learns a powerful lesson— make sobriety No. 1 in life",
-    "teaser": null,
-    "free": null,
+    "teaser": "I often say I shouldn’t be here. Not in some dramatic, self-pitying way, but in the quiet recognition that alcoholism doesn’t run in my family.",
+    "free": false,
     "online_exclusive": false,
     "department": false,
     "geo": {
@@ -12992,6 +13150,10 @@
     "summary": {
      "en": "A dad in Florida who relapsed learns a powerful lesson— make sobriety No. 1 in life",
      "es": "Un padre en Florida que recaída aprende una lección poderosa - hacer sobriedad No. 1 en la vida"
+    },
+    "section": {
+     "en": "Our Personal Stories",
+     "es": "Nuestras historias personales"
     },
     "topic": {
      "en": "Annual Prison Issue",
@@ -13804,12 +13966,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Annual Prison Issue",
-    "section": null,
+    "section": "Oldtimers",
     "author": "Joe S.",
     "author_location": "Loveland, Colorado",
     "subtitle": "A retired teacher looks back at his life with gratitude, and high on his list is something hot and delicious",
-    "teaser": null,
-    "free": null,
+    "teaser": "Before entering AA, I lived in depression and fear. In the last two years of my drinking I just wanted to die.",
+    "free": false,
     "online_exclusive": false,
     "department": false,
     "geo": {
@@ -13832,6 +13994,10 @@
     "summary": {
      "en": "A retired teacher looks back at his life with gratitude, and high on his list is something hot and delicious",
      "es": "Un profesor jubilado mira su vida con gratitud, y alto en su lista es algo caliente y delicioso"
+    },
+    "section": {
+     "en": "Oldtimers",
+     "es": "Veteranos"
     },
     "topic": {
      "en": "Annual Prison Issue",
@@ -13942,12 +14108,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Young & Sober",
-    "section": null,
+    "section": "Into Action",
     "author": "Cameron D.",
     "author_location": "Las Vegas, Nevada",
     "subtitle": "A super busy flight attendant has an important meeting he definitely hadn’t expected",
-    "teaser": null,
-    "free": null,
+    "teaser": "As a 40-year veteran of working as a flight attendant, my job is to be of service to others. Everywhere I go and everyone I meet has a journey and a story.",
+    "free": false,
     "online_exclusive": false,
     "department": false,
     "geo": {
@@ -13970,6 +14136,10 @@
     "summary": {
      "en": "A super busy flight attendant has an important meeting he definitely hadn’t expected",
      "es": "Un asistente de vuelo súper ocupado tiene una reunión importante que definitivamente no había esperado"
+    },
+    "section": {
+     "en": "Into Action",
+     "es": "En acción"
     },
     "topic": {
      "en": "Young & Sober",
@@ -13995,7 +14165,7 @@
    "kind": "article",
    "url": "https://www.aagrapevine.org/magazine/2026/jun/wits-end",
    "title": "At Wit’s End",
-   "summary": "",
+   "summary": "Down underTwo newcomers, Tom and Ralph, are sitting in the back row at a meeting complaining about their sponsors.",
    "lang": "en",
    "date": "2026-06-01",
    "first_seen": "2026-09-23T23:13:14Z",
@@ -14011,12 +14181,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Young & Sober",
-    "section": null,
+    "section": "In Every Issue",
     "author": null,
     "author_location": null,
     "subtitle": null,
-    "teaser": null,
-    "free": null,
+    "teaser": "Down underTwo newcomers, Tom and Ralph, are sitting in the back row at a meeting complaining about their sponsors.",
+    "free": false,
     "online_exclusive": false,
     "department": true,
     "geo": {
@@ -14037,8 +14207,12 @@
      "es": "At Wit's End"
     },
     "summary": {
-     "en": "",
-     "es": ""
+     "en": "Down underTwo newcomers, Tom and Ralph, are sitting in the back row at a meeting complaining about their sponsors.",
+     "es": "Bajo dos recién llegados, Tom y Ralph, están sentados en la fila trasera en una reunión que se queja de su padrinos."
+    },
+    "section": {
+     "en": "In Every Issue",
+     "es": "En cada edición"
     },
     "topic": {
      "en": "Young & Sober",
@@ -14060,7 +14234,7 @@
    "kind": "article",
    "url": "https://www.aagrapevine.org/magazine/2026/jun/truly-life-changing",
    "title": "Truly Life-Changing",
-   "summary": "",
+   "summary": "A while back, when I was living in Florida, I kept hearing about Step Six. It was an awakening of sorts. I think this particular Step gets overlooked in AA.",
    "lang": "en",
    "date": "2026-06-01",
    "first_seen": "2026-09-23T23:13:14Z",
@@ -14076,12 +14250,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Young & Sober",
-    "section": null,
+    "section": "Step Six",
     "author": "Jennie S.",
     "author_location": "Zionsville, Indiana",
     "subtitle": null,
-    "teaser": null,
-    "free": null,
+    "teaser": "A while back, when I was living in Florida, I kept hearing about Step Six. It was an awakening of sorts. I think this particular Step gets overlooked in AA.",
+    "free": false,
     "online_exclusive": false,
     "department": false,
     "geo": {
@@ -14102,8 +14276,12 @@
      "es": "De verdad me cambió la vida"
     },
     "summary": {
-     "en": "",
-     "es": ""
+     "en": "A while back, when I was living in Florida, I kept hearing about Step Six. It was an awakening of sorts. I think this particular Step gets overlooked in AA.",
+     "es": "Hace un tiempo, cuando vivía en Florida, seguía oyendo sobre Paso Seis. Fue un despertar de clase. Creo que este paso en particular se pasa por alto en AA."
+    },
+    "section": {
+     "en": "Step Six",
+     "es": "Paso Seis"
     },
     "topic": {
      "en": "Young & Sober",
@@ -14149,8 +14327,8 @@
     "author": "James B.",
     "author_location": "Darlington, Wis.",
     "subtitle": "Successfully navigating sobriety with a toolbox all his own",
-    "teaser": null,
-    "free": null,
+    "teaser": "While growing up on a horse farm in southwest Wisconsin, my dad had a wonderful way of helping me learn. He told me how to do things, then showed me, then let me do it myself.",
+    "free": false,
     "online_exclusive": true,
     "department": false,
     "geo": {
@@ -14210,12 +14388,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Young & Sober",
-    "section": null,
+    "section": "Featured Section",
     "author": "Carol F.",
     "author_location": "Midlothian, Illinois",
     "subtitle": "After 10 years of teenage blackouts, she was ready to be free. It took her a while, but she finally did it",
-    "teaser": null,
-    "free": null,
+    "teaser": "When I was 11, I convinced an altar boy to steal a bottle of sacristy wine and a bag of hosts.",
+    "free": false,
     "online_exclusive": false,
     "department": false,
     "geo": {
@@ -14238,6 +14416,10 @@
     "summary": {
      "en": "After 10 years of teenage blackouts, she was ready to be free. It took her a while, but she finally did it",
      "es": "Después de 10 años de adolescente lagunas mentales, ella estaba lista para ser libre. La tomó un tiempo, pero finalmente lo hizo"
+    },
+    "section": {
+     "en": "Featured Section",
+     "es": "Sección destacada"
     },
     "topic": {
      "en": "Young & Sober",
@@ -14263,7 +14445,7 @@
    "kind": "article",
    "url": "https://www.aagrapevine.org/magazine/2026/jun/thin-ice",
    "title": "Thin Ice",
-   "summary": "",
+   "summary": "With God’s grace I got sober in Minnesota 32 years ago. My first months of sobriety were earned during the coldest and darkest parts of the northern winter.",
    "lang": "en",
    "date": "2026-06-01",
    "first_seen": "2026-09-23T23:13:14Z",
@@ -14279,12 +14461,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Young & Sober",
-    "section": null,
+    "section": "Oldtimers",
     "author": "G.W.",
     "author_location": "West Bend, Wisconsin",
     "subtitle": null,
-    "teaser": null,
-    "free": null,
+    "teaser": "With God’s grace I got sober in Minnesota 32 years ago. My first months of sobriety were earned during the coldest and darkest parts of the northern winter.",
+    "free": false,
     "online_exclusive": false,
     "department": false,
     "geo": {
@@ -14305,8 +14487,12 @@
      "es": "Hielo delgado"
     },
     "summary": {
-     "en": "",
-     "es": ""
+     "en": "With God’s grace I got sober in Minnesota 32 years ago. My first months of sobriety were earned during the coldest and darkest parts of the northern winter.",
+     "es": "Con la gracia de Dios me puse sobrio en Minnesota hace 32 años. Mis primeros meses de sobriedad fueron ganados durante las partes más frías y oscuras del invierno norte."
+    },
+    "section": {
+     "en": "Oldtimers",
+     "es": "Veteranos"
     },
     "topic": {
      "en": "Young & Sober",
@@ -14417,12 +14603,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Young & Sober",
-    "section": null,
+    "section": "Our Personal Stories",
     "author": "Anonymous",
     "author_location": "Woodland Hills, California",
     "subtitle": "She drank where blackouts weren’t the worst things to fear. Now she dedicates her life to helping others back home",
-    "teaser": null,
-    "free": null,
+    "teaser": "It was right after Iran’s revolution and at the beginning of the eight-year war between Iran and Iraq when I was born. Iran is an Islamic country, and it has strict religious laws.",
+    "free": false,
     "online_exclusive": false,
     "department": false,
     "geo": {
@@ -14445,6 +14631,10 @@
     "summary": {
      "en": "She drank where blackouts weren’t the worst things to fear. Now she dedicates her life to helping others back home",
      "es": "Ella bebió donde lagunas mentales no eran las peores cosas que temer. Ahora ella dedica su vida a ayudar a otros de vuelta a casa"
+    },
+    "section": {
+     "en": "Our Personal Stories",
+     "es": "Nuestras historias personales"
     },
     "topic": {
      "en": "Young & Sober",
@@ -14490,8 +14680,8 @@
     "author": "Patrick C.",
     "author_location": "Woodstock, Ga",
     "subtitle": "A very different kind of meeting shows one alcoholic the meaning of “life on life’s terms”",
-    "teaser": null,
-    "free": null,
+    "teaser": "There's a hand-painted wooden plaque that hangs in the Pat W. Room of the HOW Place clubhouse in Woodstock, Georgia. Among the many signs on the wall, this one sticks out.",
+    "free": false,
     "online_exclusive": true,
     "department": false,
     "geo": {
@@ -14551,12 +14741,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Young & Sober",
-    "section": null,
+    "section": "Our Personal Stories",
     "author": "Dea R-G.",
     "author_location": "Galt, California",
     "subtitle": "His morning sober routine didn’t usually include a visit with a police officer, but this morning was special",
-    "teaser": null,
-    "free": null,
+    "teaser": "When you see a stoplight flashing red, that means it’s time to stop the car. It’s not a suggestion. After a few years of sobriety, I mindlessly drove through a flashing red stoplight.",
+    "free": false,
     "online_exclusive": false,
     "department": false,
     "geo": {
@@ -14579,6 +14769,10 @@
     "summary": {
      "en": "His morning sober routine didn’t usually include a visit with a police officer, but this morning was special",
      "es": "Su rutina sobria matutina no suele incluir una visita con un oficial de policía, pero esta mañana fue especial"
+    },
+    "section": {
+     "en": "Our Personal Stories",
+     "es": "Nuestras historias personales"
     },
     "topic": {
      "en": "Young & Sober",
@@ -14620,12 +14814,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Young & Sober",
-    "section": null,
+    "section": "Featured Section",
     "author": "Allie A.",
     "author_location": "Woodland, California",
     "subtitle": "Four years of hell convinced her she wasn’t going to make it to 20. Luckily, AA changed all that",
-    "teaser": null,
-    "free": null,
+    "teaser": "I came to AA completely and absolutely broken. I had just gotten an alcohol-monitoring bracelet, because even the courts knew I had a problem before I did.",
+    "free": false,
     "online_exclusive": false,
     "department": false,
     "geo": {
@@ -14648,6 +14842,10 @@
     "summary": {
      "en": "Four years of hell convinced her she wasn’t going to make it to 20. Luckily, AA changed all that",
      "es": "Cuatro años de infierno la convenció de que no iba a llegar a los 20. Por suerte, AA cambió todo eso"
+    },
+    "section": {
+     "en": "Featured Section",
+     "es": "Sección destacada"
     },
     "topic": {
      "en": "Young & Sober",
@@ -14689,12 +14887,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Young & Sober",
-    "section": null,
+    "section": "Oldtimers",
     "author": "J.J.",
     "author_location": "Louisville, Kentucky",
     "subtitle": "All he wanted was some AA literature, so he headed up the stairs. Luckily, Helen met him at the top",
-    "teaser": null,
-    "free": null,
+    "teaser": "When timing is a gift of grace, miracles can happen.",
+    "free": false,
     "online_exclusive": false,
     "department": false,
     "geo": {
@@ -14717,6 +14915,10 @@
     "summary": {
      "en": "All he wanted was some AA literature, so he headed up the stairs. Luckily, Helen met him at the top",
      "es": "Todo lo que quería era una literatura AA, así que se dirigió por las escaleras. Por suerte, Helen lo conoció en la cima"
+    },
+    "section": {
+     "en": "Oldtimers",
+     "es": "Veteranos"
     },
     "topic": {
      "en": "Young & Sober",
@@ -14762,8 +14964,8 @@
     "author": "Natalie B.",
     "author_location": "Palmdale, Calif.",
     "subtitle": "From morning drinking to morning meetings—the pure joy of awakening in sobriety",
-    "teaser": null,
-    "free": null,
+    "teaser": "One afternoon, three days after I got sober with the help of Alcoholics Anonymous, I was standing in my kitchen, home alone, but miraculously not drinking.",
+    "free": false,
     "online_exclusive": true,
     "department": false,
     "geo": {
@@ -14807,7 +15009,7 @@
    "kind": "article",
    "url": "https://www.aagrapevine.org/magazine/2026/jun/letter-editor",
    "title": "Letter from the Editor",
-   "summary": "",
+   "summary": "It can be a real challenge to get sober early in life while so many of our peers are partying and drinking.",
    "lang": "en",
    "date": "2026-06-01",
    "first_seen": "2026-09-23T23:13:14Z",
@@ -14823,12 +15025,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Young & Sober",
-    "section": null,
+    "section": "In Every Issue",
     "author": null,
     "author_location": null,
     "subtitle": null,
-    "teaser": null,
-    "free": null,
+    "teaser": "It can be a real challenge to get sober early in life while so many of our peers are partying and drinking.",
+    "free": false,
     "online_exclusive": false,
     "department": true,
     "geo": {
@@ -14849,8 +15051,12 @@
      "es": "Carta del editor"
     },
     "summary": {
-     "en": "",
-     "es": ""
+     "en": "It can be a real challenge to get sober early in life while so many of our peers are partying and drinking.",
+     "es": "Puede ser un verdadero desafío para estar sobrio temprano en la vida, mientras que muchos de nuestros compañeros están de fiesta y bebiendo."
+    },
+    "section": {
+     "en": "In Every Issue",
+     "es": "En cada edición"
     },
     "topic": {
      "en": "Young & Sober",
@@ -14888,12 +15094,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Young & Sober",
-    "section": null,
+    "section": "Featured Section",
     "author": "Bill B.",
     "author_location": "Broken Arrow, Oklahoma",
     "subtitle": "When he was younger, he relapsed a lot. Now sober, he can see how his experience can help others",
-    "teaser": null,
-    "free": null,
+    "teaser": "I walked into my first AA meeting in September of 2011. I was a shell of the man I had been. Only 22 years old, beaten and broken, with no hope and nowhere else to go.",
+    "free": false,
     "online_exclusive": false,
     "department": false,
     "geo": {
@@ -14916,6 +15122,10 @@
     "summary": {
      "en": "When he was younger, he relapsed a lot. Now sober, he can see how his experience can help others",
      "es": "Cuando era más joven, recaía mucho. Ahora sobrio, puede ver cómo su experiencia puede ayudar a otros"
+    },
+    "section": {
+     "en": "Featured Section",
+     "es": "Sección destacada"
     },
     "topic": {
      "en": "Young & Sober",
@@ -14961,8 +15171,8 @@
     "author": "Chris W.",
     "author_location": "Oneonta, N.Y.",
     "subtitle": "A priest finds faith and fulfillment in AA",
-    "teaser": null,
-    "free": null,
+    "teaser": "My father was an active alcoholic who never quite got sober. There was a period where he drank orange drink, but eventually he went back to the bottle.",
+    "free": false,
     "online_exclusive": true,
     "department": false,
     "geo": {
@@ -15026,8 +15236,8 @@
     "author": "Ashley J.",
     "author_location": "Winthrop Harbor, Ill.",
     "subtitle": "Her mother was the sober example she didn’t know she needed",
-    "teaser": null,
-    "free": null,
+    "teaser": "After a wedding, I was on my hands and knees in my driveway with little recollection of the night due to my excessive drinking.",
+    "free": false,
     "online_exclusive": true,
     "department": false,
     "geo": {
@@ -15087,12 +15297,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Young & Sober",
-    "section": null,
+    "section": "Featured Section",
     "author": "Jason E.",
     "author_location": "Fort Lauderdale, Florida",
     "subtitle": "After a rough childhood, foster care and relapses, he finally found a safe home in AA",
-    "teaser": null,
-    "free": null,
+    "teaser": "My alcoholic father celebrated my eighth birthday by getting me drunk. In the beginning, I absolutely loved the way alcohol made me feel.",
+    "free": false,
     "online_exclusive": false,
     "department": false,
     "geo": {
@@ -15115,6 +15325,10 @@
     "summary": {
      "en": "After a rough childhood, foster care and relapses, he finally found a safe home in AA",
      "es": "Después de una infancia dura, cuidado de acogida y recaídas, finalmente encontró un hogar seguro en AA"
+    },
+    "section": {
+     "en": "Featured Section",
+     "es": "Sección destacada"
     },
     "topic": {
      "en": "Young & Sober",
@@ -15225,12 +15439,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Young & Sober",
-    "section": null,
+    "section": "Newcomers",
     "author": "P.M.",
     "author_location": "Delhi, Ontario",
     "subtitle": "Be careful confessing to a priest about your drinking. He may just tell you where to go",
-    "teaser": null,
-    "free": null,
+    "teaser": "After confessing to a priest that I drank too much beer, he directed me to a meeting of AA downstairs in the church. I went reluctantly.",
+    "free": false,
     "online_exclusive": false,
     "department": false,
     "geo": {
@@ -15253,6 +15467,10 @@
     "summary": {
      "en": "Be careful confessing to a priest about your drinking. He may just tell you where to go",
      "es": "Ten cuidado de confesarle a un sacerdote lo de beber. Puede que te diga dónde ir"
+    },
+    "section": {
+     "en": "Newcomers",
+     "es": "Recién llegados"
     },
     "topic": {
      "en": "Young & Sober",
@@ -15294,12 +15512,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Young & Sober",
-    "section": null,
+    "section": "Our Personal Stories",
     "author": "Michael P.",
     "author_location": "San Diego, California",
     "subtitle": "He was separated from his family, his dad had just died, he had two months sober and was living alone. Happy what?",
-    "teaser": null,
-    "free": null,
+    "teaser": "In May of 1990 my dad died unexpectedly. He was 77, and I was 38 with about two months sober. When Father’s Day came around the following month I had a rough time.",
+    "free": false,
     "online_exclusive": false,
     "department": false,
     "geo": {
@@ -15322,6 +15540,10 @@
     "summary": {
      "en": "He was separated from his family, his dad had just died, he had two months sober and was living alone. Happy what?",
      "es": "Estaba separado de su familia, su padre acababa de morir, tenía dos meses sobrio y vivía solo. ¿Feliz qué?"
+    },
+    "section": {
+     "en": "Our Personal Stories",
+     "es": "Nuestras historias personales"
     },
     "topic": {
      "en": "Young & Sober",
@@ -15363,12 +15585,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Young & Sober",
-    "section": null,
+    "section": "Tradition Six",
     "author": "Jimmy C.",
     "author_location": "Peculiar, Missouri",
     "subtitle": "A member shares how Tradition Six helped him stop trying to fix AA and get a new perspective on money, property and prestige",
-    "teaser": null,
-    "free": null,
+    "teaser": "I once spent countless hours drunk, solving all the world’s problems. Pick a topic: politics, religion, sports, careers or other people’s relationships.",
+    "free": false,
     "online_exclusive": false,
     "department": false,
     "geo": {
@@ -15391,6 +15613,10 @@
     "summary": {
      "en": "A member shares how Tradition Six helped him stop trying to fix AA and get a new perspective on money, property and prestige",
      "es": "Un miembro comparte cómo Sexta Tradición le ayudó a dejar de intentar arreglar AA y obtener una nueva perspectiva de dinero, propiedad y prestigio"
+    },
+    "section": {
+     "en": "Tradition Six",
+     "es": "Sexta Tradición"
     },
     "topic": {
      "en": "Young & Sober",
@@ -15432,12 +15658,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Young & Sober",
-    "section": null,
+    "section": "Featured Section",
     "author": "Sasha P.",
     "author_location": "Edmonds, Washington",
     "subtitle": "At first she couldn’t identify. But once she found young people’s meetings everything changed",
-    "teaser": null,
-    "free": null,
+    "teaser": "Seventeen is too young to be an alcoholic. Aren’t alcoholics old people who drink from brown paper bags and live under bridges?",
+    "free": false,
     "online_exclusive": false,
     "department": false,
     "geo": {
@@ -15460,6 +15686,10 @@
     "summary": {
      "en": "At first she couldn’t identify. But once she found young people’s meetings everything changed",
      "es": "Al principio no podía identificar. Pero una vez que encontró las reuniones de los jóvenes todo cambió"
+    },
+    "section": {
+     "en": "Featured Section",
+     "es": "Sección destacada"
     },
     "topic": {
      "en": "Young & Sober",
@@ -15505,8 +15735,8 @@
     "author": "Charlie C.",
     "author_location": "Bear, Del.",
     "subtitle": "Upon retiring he faced a choice—general service or gym rat? He let his Higher Power lead the way",
-    "teaser": null,
-    "free": null,
+    "teaser": "I was not a low-bottom drunk. After getting into AA, I felt I did not need or deserve it because my life was not desperate enough to warrant it.",
+    "free": false,
     "online_exclusive": true,
     "department": false,
     "geo": {
@@ -15550,7 +15780,7 @@
    "kind": "article",
    "url": "https://www.aagrapevine.org/magazine/2026/jun/drive-bottom",
    "title": "Drive to the Bottom",
-   "summary": "",
+   "summary": "I was 7 years old when I picked up my first drink. I immediately wanted more. I knew I was an alcoholic by age 9, because my mind would obsess about drinking.",
    "lang": "en",
    "date": "2026-06-01",
    "first_seen": "2026-09-23T23:13:14Z",
@@ -15566,12 +15796,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Young & Sober",
-    "section": null,
+    "section": "Featured Section",
     "author": "Emily B.",
     "author_location": "Riverview, Florida",
     "subtitle": null,
-    "teaser": null,
-    "free": null,
+    "teaser": "I was 7 years old when I picked up my first drink. I immediately wanted more. I knew I was an alcoholic by age 9, because my mind would obsess about drinking.",
+    "free": false,
     "online_exclusive": false,
     "department": false,
     "geo": {
@@ -15592,8 +15822,12 @@
      "es": "Conducir al fondo"
     },
     "summary": {
-     "en": "",
-     "es": ""
+     "en": "I was 7 years old when I picked up my first drink. I immediately wanted more. I knew I was an alcoholic by age 9, because my mind would obsess about drinking.",
+     "es": "Tenía 7 años cuando tomé mi primer trago. Inmediatamente quería más. Sabía que era alcohólico para los 9 años, porque mi mente obsesionaría con la bebida."
+    },
+    "section": {
+     "en": "Featured Section",
+     "es": "Sección destacada"
     },
     "topic": {
      "en": "Young & Sober",
@@ -15684,7 +15918,7 @@
    "kind": "article",
    "url": "https://www.aagrapevine.org/magazine/2026/jun/dear-grapevine",
    "title": "Dear Grapevine",
-   "summary": "",
+   "summary": "Glad we got here early",
    "lang": "en",
    "date": "2026-06-01",
    "first_seen": "2026-09-23T23:13:14Z",
@@ -15700,12 +15934,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Young & Sober",
-    "section": null,
+    "section": "In Every Issue",
     "author": null,
     "author_location": null,
     "subtitle": null,
-    "teaser": null,
-    "free": null,
+    "teaser": "Glad we got here early",
+    "free": false,
     "online_exclusive": false,
     "department": true,
     "geo": {
@@ -15726,8 +15960,12 @@
      "es": "Dear Grapevine"
     },
     "summary": {
-     "en": "",
-     "es": ""
+     "en": "Glad we got here early",
+     "es": "Me alegra que hayamos llegado temprano"
+    },
+    "section": {
+     "en": "In Every Issue",
+     "es": "En cada edición"
     },
     "topic": {
      "en": "Young & Sober",
@@ -15830,12 +16068,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Young & Sober",
-    "section": null,
+    "section": "Featured Section",
     "author": "Campbell B.",
     "author_location": "Dawsonville, Georgia",
     "subtitle": "He came in at 16 and struggled with the idea of a Higher Power. Thanks to the love in the rooms, he now has two years",
-    "teaser": null,
-    "free": null,
+    "teaser": "I first attempted to get sober the week I turned 16. I had been drinking consistently for five years, and as much as I didn’t want to stop, I knew deeply that I had a problem.",
+    "free": false,
     "online_exclusive": false,
     "department": false,
     "geo": {
@@ -15858,6 +16096,10 @@
     "summary": {
      "en": "He came in at 16 and struggled with the idea of a Higher Power. Thanks to the love in the rooms, he now has two years",
      "es": "Llegó a los 16 años y luchó con la idea de un Poder Superior. Gracias al amor en las reuniones, ahora tiene dos años"
+    },
+    "section": {
+     "en": "Featured Section",
+     "es": "Sección destacada"
     },
     "topic": {
      "en": "Young & Sober",
@@ -16050,8 +16292,8 @@
     "author": "Rhiannon N.",
     "author_location": "Kamloops, B.C.",
     "subtitle": "She loved to party, but it took AA to show her real happiness",
-    "teaser": null,
-    "free": null,
+    "teaser": "I’m one of those people that had no idea they had a problem.",
+    "free": false,
     "online_exclusive": true,
     "department": false,
     "geo": {
@@ -16111,12 +16353,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Young & Sober",
-    "section": null,
+    "section": "In Every Issue",
     "author": null,
     "author_location": null,
     "subtitle": "ICYPAA: Connecting Young AAs Everywhere",
-    "teaser": null,
-    "free": null,
+    "teaser": "Grapevine speaks with Krystal M. and Josh C.",
+    "free": false,
     "online_exclusive": false,
     "department": true,
     "geo": {
@@ -16139,6 +16381,10 @@
     "summary": {
      "en": "ICYPAA: Connecting Young AAs Everywhere",
      "es": "ICYPAA: Conectando AAs jóvenes en todas partes"
+    },
+    "section": {
+     "en": "In Every Issue",
+     "es": "En cada edición"
     },
     "topic": {
      "en": "Young & Sober",

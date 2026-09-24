@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-24T03:12:22Z",
+ "updated": "2026-09-24T15:15:00Z",
  "fixture": false,
  "profiles": {
   "gv": {
@@ -8,9 +8,9 @@
    "url": "https://www.instagram.com/alcoholicsanonymous_gv/",
    "full_name": "AA Grapevine Magazine",
    "followers": 16867,
-   "posts": 3896,
+   "posts": 3898,
    "owner_id": "48108439509",
-   "checked": "2026-09-24T03:12:19Z",
+   "checked": "2026-09-24T15:14:55Z",
    "avatar": "/assets/cache/ig/_avatar_gv.webp"
   },
   "lv": {
@@ -18,14 +18,186 @@
    "name": "La Viña",
    "url": "https://www.instagram.com/alcoholicosanonimos_lv/",
    "full_name": "Revista La Viña",
-   "followers": 2417,
-   "posts": 2936,
+   "followers": 2418,
+   "posts": 2938,
    "owner_id": "48275839129",
-   "checked": "2026-09-24T03:12:22Z",
+   "checked": "2026-09-24T15:14:58Z",
    "avatar": "/assets/cache/ig/_avatar_lv.webp"
   }
  },
  "items": [
+  {
+   "id": "ig:DdrKBZ_l5JQ",
+   "source": "instagram",
+   "kind": "post",
+   "url": "https://www.instagram.com/p/DdrKBZ_l5JQ/",
+   "title": "Oración de la Serenidad - Edición de Septiembre/Octubre 2026",
+   "summary": "Oración de la Serenidad - Edición de Septiembre/Octubre 2026 www.aalavina.org",
+   "lang": "es",
+   "date": "2026-09-24T15:00:17Z",
+   "first_seen": "2026-09-24T15:15:00Z",
+   "image": "/assets/cache/ig/DdrKBZ_l5JQ.webp",
+   "tags": [],
+   "category": "lv",
+   "status": "ok",
+   "extra": {
+    "shortcode": "DdrKBZ_l5JQ",
+    "account": "lv",
+    "username": "alcoholicosanonimos_lv",
+    "media_type": "image",
+    "thumb": "/assets/cache/ig/DdrKBZ_l5JQ.webp",
+    "embed_url": "https://www.instagram.com/p/DdrKBZ_l5JQ/embed/captioned/",
+    "permalink": "https://www.instagram.com/p/DdrKBZ_l5JQ/",
+    "is_reel": false,
+    "manual": false,
+    "strategy": "profile_embed",
+    "caption_known": true,
+    "embed_checked": null
+   },
+   "i18n": {
+    "title": {
+     "en": "Serenity Prayer - September / October 2026 Edition",
+     "es": "Oración de la Serenidad - Edición de Septiembre/Octubre 2026"
+    },
+    "summary": {
+     "en": "Serenity Prayer - September / October 2026 www.aalavina.org Edition",
+     "es": "Oración de la Serenidad - Edición de Septiembre/Octubre 2026 www.aalavina.org"
+    }
+   },
+   "machine": [
+    "en"
+   ],
+   "is_new": true
+  },
+  {
+   "id": "ig:DdrKBQkl9NZ",
+   "source": "instagram",
+   "kind": "post",
+   "url": "https://www.instagram.com/p/DdrKBQkl9NZ/",
+   "title": "Serenity Prayer - October issue",
+   "summary": "Serenity Prayer - October issue www.aagrapevine.org",
+   "lang": "en",
+   "date": "2026-09-24T15:00:15Z",
+   "first_seen": "2026-09-24T15:15:00Z",
+   "image": "/assets/cache/ig/DdrKBQkl9NZ.webp",
+   "tags": [],
+   "category": "gv",
+   "status": "ok",
+   "extra": {
+    "shortcode": "DdrKBQkl9NZ",
+    "account": "gv",
+    "username": "alcoholicsanonymous_gv",
+    "media_type": "image",
+    "thumb": "/assets/cache/ig/DdrKBQkl9NZ.webp",
+    "embed_url": "https://www.instagram.com/p/DdrKBQkl9NZ/embed/captioned/",
+    "permalink": "https://www.instagram.com/p/DdrKBQkl9NZ/",
+    "is_reel": false,
+    "manual": false,
+    "strategy": "profile_embed",
+    "caption_known": true,
+    "embed_checked": null
+   },
+   "i18n": {
+    "title": {
+     "en": "Serenity Prayer - October issue",
+     "es": "Serenity Prayer - Cuestión de octubre"
+    },
+    "summary": {
+     "en": "Serenity Prayer - October issue www.aagrapevine.org",
+     "es": "Serenity Prayer - Cuestión de octubre www.aagrapevine.org"
+    }
+   },
+   "machine": [
+    "es"
+   ],
+   "is_new": true
+  },
+  {
+   "id": "ig:DdrCiVJlz6M",
+   "source": "instagram",
+   "kind": "post",
+   "url": "https://www.instagram.com/p/DdrCiVJlz6M/",
+   "title": "“There are winners and whiners, and sometimes I seem to embody both. I am, as my friends…",
+   "summary": "“There are winners and whiners, and sometimes I seem to embody both. I am, as my friends remind me, a human being.” Port Townsend, Wash., October 1994, From: “Winners and Whiners”, Emotional Sobriety: The Next Frontier Daily Quote at www.aagrapevine.org",
+   "lang": "en",
+   "date": "2026-09-24T13:54:51Z",
+   "first_seen": "2026-09-24T15:15:00Z",
+   "image": "/assets/cache/ig/DdrCiVJlz6M.webp",
+   "tags": [],
+   "category": "gv",
+   "status": "ok",
+   "extra": {
+    "shortcode": "DdrCiVJlz6M",
+    "account": "gv",
+    "username": "alcoholicsanonymous_gv",
+    "media_type": "image",
+    "thumb": "/assets/cache/ig/DdrCiVJlz6M.webp",
+    "embed_url": "https://www.instagram.com/p/DdrCiVJlz6M/embed/captioned/",
+    "permalink": "https://www.instagram.com/p/DdrCiVJlz6M/",
+    "is_reel": false,
+    "manual": false,
+    "strategy": "profile_embed",
+    "caption_known": true,
+    "embed_checked": null
+   },
+   "i18n": {
+    "title": {
+     "en": "“There are winners and whiners, and sometimes I seem to embody both. I am, as my friends…",
+     "es": "“Hay ganadores y silbidos, y a veces parezco encarnar ambos. Lo soy, como mis amigos …"
+    },
+    "summary": {
+     "en": "“There are winners and whiners, and sometimes I seem to embody both. I am, as my friends remind me, a human being.” Port Townsend, Wash., October 1994, From: “Winners and Whiners”, Emotional Sobriety: The Next Frontier Daily Quote at www.aagrapevine.org",
+     "es": "“Hay ganadores y silbidos, y a veces parezco encarnar ambos. Soy, como mis amigos me recuerdan, un ser humano”. Port Townsend, lavado., octubre de 1994, de: “ganadores y silbidos”, Sobriedad emocional: la próxima frontera Cita diaria en www.aagrapevine.org"
+    }
+   },
+   "machine": [
+    "es"
+   ],
+   "is_new": true
+  },
+  {
+   "id": "ig:DdrCh86F-sD",
+   "source": "instagram",
+   "kind": "post",
+   "url": "https://www.instagram.com/p/DdrCh86F-sD/",
+   "title": "“El ego del alcohólico muere de forma terrible. Vestirnos con auras angelicales no es…",
+   "summary": "“El ego del alcohólico muere de forma terrible. Vestirnos con auras angelicales no es para nosotros”. \"“Los fundamentos en retrospectiva” DR. BOB, COFUNDADOR DE AA, SEPTIEMBRE DE 1948 De Spiritual Awakenings\" Cita Diaria en www.aalavina.org",
+   "lang": "es",
+   "date": "2026-09-24T13:54:49Z",
+   "first_seen": "2026-09-24T15:15:00Z",
+   "image": "/assets/cache/ig/DdrCh86F-sD.webp",
+   "tags": [],
+   "category": "lv",
+   "status": "ok",
+   "extra": {
+    "shortcode": "DdrCh86F-sD",
+    "account": "lv",
+    "username": "alcoholicosanonimos_lv",
+    "media_type": "image",
+    "thumb": "/assets/cache/ig/DdrCh86F-sD.webp",
+    "embed_url": "https://www.instagram.com/p/DdrCh86F-sD/embed/captioned/",
+    "permalink": "https://www.instagram.com/p/DdrCh86F-sD/",
+    "is_reel": false,
+    "manual": false,
+    "strategy": "profile_embed",
+    "caption_known": true,
+    "embed_checked": null
+   },
+   "i18n": {
+    "title": {
+     "en": "“The alcoholic’s ego dies in a terrible way. Vestirnos with angelic auras is not …",
+     "es": "“El ego del alcohólico muere de forma terrible. Vestirnos con auras angelicales no es…"
+    },
+    "summary": {
+     "en": "“The alcoholic’s ego dies in a terrible way. Vestirnos with angelic auras is not for us.” Dr. Bob, co-founder of AA, September 1948 De Spiritual Awakenings Daily Quote in www.aalavina.org",
+     "es": "“El ego del alcohólico muere de forma terrible. Vestirnos con auras angelicales no es para nosotros”. \"“Los fundamentos en retrospectiva” DR. BOB, COFUNDADOR DE AA, SEPTIEMBRE DE 1948 De Spiritual Awakenings\" Cita Diaria en www.aalavina.org"
+    }
+   },
+   "machine": [
+    "en"
+   ],
+   "is_new": true
+  },
   {
    "id": "ig:DdoQoCVF20S",
    "source": "instagram",

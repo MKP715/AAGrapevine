@@ -1,7 +1,183 @@
 {
- "updated": "2026-09-24T13:21:10Z",
+ "updated": "2026-09-24T15:25:07Z",
  "fixture": false,
  "items": [
+  {
+   "id": "ig:DdrKBZ_l5JQ",
+   "source": "instagram",
+   "kind": "post",
+   "url": "https://www.instagram.com/p/DdrKBZ_l5JQ/",
+   "title": "Oración de la Serenidad - Edición de Septiembre/Octubre 2026",
+   "summary": "Oración de la Serenidad - Edición de Septiembre/Octubre 2026 www.aalavina.org",
+   "lang": "es",
+   "date": "2026-09-24T15:00:17Z",
+   "first_seen": "2026-09-24T15:15:00Z",
+   "image": "/assets/cache/ig/DdrKBZ_l5JQ.webp",
+   "tags": [],
+   "category": "lv",
+   "status": "ok",
+   "extra": {
+    "shortcode": "DdrKBZ_l5JQ",
+    "account": "lv",
+    "username": "alcoholicosanonimos_lv",
+    "media_type": "image",
+    "thumb": "/assets/cache/ig/DdrKBZ_l5JQ.webp",
+    "embed_url": "https://www.instagram.com/p/DdrKBZ_l5JQ/embed/captioned/",
+    "permalink": "https://www.instagram.com/p/DdrKBZ_l5JQ/",
+    "is_reel": false,
+    "manual": false,
+    "strategy": "profile_embed",
+    "caption_known": true,
+    "embed_checked": null
+   },
+   "i18n": {
+    "title": {
+     "en": "Serenity Prayer - September / October 2026 Edition",
+     "es": "Oración de la Serenidad - Edición de Septiembre/Octubre 2026"
+    },
+    "summary": {
+     "en": "Serenity Prayer - September / October 2026 www.aalavina.org Edition",
+     "es": "Oración de la Serenidad - Edición de Septiembre/Octubre 2026 www.aalavina.org"
+    }
+   },
+   "machine": [
+    "en"
+   ],
+   "is_new": true,
+   "wn_date": "2026-09-24T15:00:17Z"
+  },
+  {
+   "id": "ig:DdrKBQkl9NZ",
+   "source": "instagram",
+   "kind": "post",
+   "url": "https://www.instagram.com/p/DdrKBQkl9NZ/",
+   "title": "Serenity Prayer - October issue",
+   "summary": "Serenity Prayer - October issue www.aagrapevine.org",
+   "lang": "en",
+   "date": "2026-09-24T15:00:15Z",
+   "first_seen": "2026-09-24T15:15:00Z",
+   "image": "/assets/cache/ig/DdrKBQkl9NZ.webp",
+   "tags": [],
+   "category": "gv",
+   "status": "ok",
+   "extra": {
+    "shortcode": "DdrKBQkl9NZ",
+    "account": "gv",
+    "username": "alcoholicsanonymous_gv",
+    "media_type": "image",
+    "thumb": "/assets/cache/ig/DdrKBQkl9NZ.webp",
+    "embed_url": "https://www.instagram.com/p/DdrKBQkl9NZ/embed/captioned/",
+    "permalink": "https://www.instagram.com/p/DdrKBQkl9NZ/",
+    "is_reel": false,
+    "manual": false,
+    "strategy": "profile_embed",
+    "caption_known": true,
+    "embed_checked": null
+   },
+   "i18n": {
+    "title": {
+     "en": "Serenity Prayer - October issue",
+     "es": "Serenity Prayer - Cuestión de octubre"
+    },
+    "summary": {
+     "en": "Serenity Prayer - October issue www.aagrapevine.org",
+     "es": "Serenity Prayer - Cuestión de octubre www.aagrapevine.org"
+    }
+   },
+   "machine": [
+    "es"
+   ],
+   "is_new": true,
+   "wn_date": "2026-09-24T15:00:15Z"
+  },
+  {
+   "id": "ig:DdrCiVJlz6M",
+   "source": "instagram",
+   "kind": "post",
+   "url": "https://www.instagram.com/p/DdrCiVJlz6M/",
+   "title": "“There are winners and whiners, and sometimes I seem to embody both. I am, as my friends…",
+   "summary": "“There are winners and whiners, and sometimes I seem to embody both. I am, as my friends remind me, a human being.” Port Townsend, Wash., October 1994, From: “Winners and Whiners”, Emotional Sobriety: The Next Frontier Daily Quote at www.aagrapevine.org",
+   "lang": "en",
+   "date": "2026-09-24T13:54:51Z",
+   "first_seen": "2026-09-24T15:15:00Z",
+   "image": "/assets/cache/ig/DdrCiVJlz6M.webp",
+   "tags": [],
+   "category": "gv",
+   "status": "ok",
+   "extra": {
+    "shortcode": "DdrCiVJlz6M",
+    "account": "gv",
+    "username": "alcoholicsanonymous_gv",
+    "media_type": "image",
+    "thumb": "/assets/cache/ig/DdrCiVJlz6M.webp",
+    "embed_url": "https://www.instagram.com/p/DdrCiVJlz6M/embed/captioned/",
+    "permalink": "https://www.instagram.com/p/DdrCiVJlz6M/",
+    "is_reel": false,
+    "manual": false,
+    "strategy": "profile_embed",
+    "caption_known": true,
+    "embed_checked": null
+   },
+   "i18n": {
+    "title": {
+     "en": "“There are winners and whiners, and sometimes I seem to embody both. I am, as my friends…",
+     "es": "“Hay ganadores y silbidos, y a veces parezco encarnar ambos. Lo soy, como mis amigos …"
+    },
+    "summary": {
+     "en": "“There are winners and whiners, and sometimes I seem to embody both. I am, as my friends remind me, a human being.” Port Townsend, Wash., October 1994, From: “Winners and Whiners”, Emotional Sobriety: The Next Frontier Daily Quote at www.aagrapevine.org",
+     "es": "“Hay ganadores y silbidos, y a veces parezco encarnar ambos. Soy, como mis amigos me recuerdan, un ser humano”. Port Townsend, lavado., octubre de 1994, de: “ganadores y silbidos”, Sobriedad emocional: la próxima frontera Cita diaria en www.aagrapevine.org"
+    }
+   },
+   "machine": [
+    "es"
+   ],
+   "is_new": true,
+   "wn_date": "2026-09-24T13:54:51Z"
+  },
+  {
+   "id": "ig:DdrCh86F-sD",
+   "source": "instagram",
+   "kind": "post",
+   "url": "https://www.instagram.com/p/DdrCh86F-sD/",
+   "title": "“El ego del alcohólico muere de forma terrible. Vestirnos con auras angelicales no es…",
+   "summary": "“El ego del alcohólico muere de forma terrible. Vestirnos con auras angelicales no es para nosotros”. \"“Los fundamentos en retrospectiva” DR. BOB, COFUNDADOR DE AA, SEPTIEMBRE DE 1948 De Spiritual Awakenings\" Cita Diaria en www.aalavina.org",
+   "lang": "es",
+   "date": "2026-09-24T13:54:49Z",
+   "first_seen": "2026-09-24T15:15:00Z",
+   "image": "/assets/cache/ig/DdrCh86F-sD.webp",
+   "tags": [],
+   "category": "lv",
+   "status": "ok",
+   "extra": {
+    "shortcode": "DdrCh86F-sD",
+    "account": "lv",
+    "username": "alcoholicosanonimos_lv",
+    "media_type": "image",
+    "thumb": "/assets/cache/ig/DdrCh86F-sD.webp",
+    "embed_url": "https://www.instagram.com/p/DdrCh86F-sD/embed/captioned/",
+    "permalink": "https://www.instagram.com/p/DdrCh86F-sD/",
+    "is_reel": false,
+    "manual": false,
+    "strategy": "profile_embed",
+    "caption_known": true,
+    "embed_checked": null
+   },
+   "i18n": {
+    "title": {
+     "en": "“The alcoholic’s ego dies in a terrible way. Vestirnos with angelic auras is not …",
+     "es": "“El ego del alcohólico muere de forma terrible. Vestirnos con auras angelicales no es…"
+    },
+    "summary": {
+     "en": "“The alcoholic’s ego dies in a terrible way. Vestirnos with angelic auras is not for us.” Dr. Bob, co-founder of AA, September 1948 De Spiritual Awakenings Daily Quote in www.aalavina.org",
+     "es": "“El ego del alcohólico muere de forma terrible. Vestirnos con auras angelicales no es para nosotros”. \"“Los fundamentos en retrospectiva” DR. BOB, COFUNDADOR DE AA, SEPTIEMBRE DE 1948 De Spiritual Awakenings\" Cita Diaria en www.aalavina.org"
+    }
+   },
+   "machine": [
+    "en"
+   ],
+   "is_new": true,
+   "wn_date": "2026-09-24T13:54:49Z"
+  },
   {
    "id": "ev:manual:2026-09-26-lv-writing-workshop-fort-worth",
    "source": "committee",
@@ -3034,7 +3210,7 @@
      "American Sign Language"
     ],
     "is_short": false,
-    "views": 207,
+    "views": 216,
     "is_live_recording": true,
     "date_approx": false
    },
@@ -3304,7 +3480,7 @@
      "AA Grapevine's Podcast"
     ],
     "is_short": false,
-    "views": 187,
+    "views": 202,
     "is_live_recording": false,
     "date_approx": false,
     "season": 11,
@@ -3798,7 +3974,7 @@
      "Grapevine Weekly Open AA Meeting"
     ],
     "is_short": false,
-    "views": 268,
+    "views": 279,
     "is_live_recording": true,
     "date_approx": false,
     "season": 2,
@@ -4035,7 +4211,7 @@
      "AA Grapevine's Podcast"
     ],
     "is_short": false,
-    "views": 285,
+    "views": 288,
     "is_live_recording": false,
     "date_approx": false,
     "season": 11,
@@ -4133,7 +4309,7 @@
      "Grapevine Weekly Open AA Meeting"
     ],
     "is_short": false,
-    "views": 351,
+    "views": 355,
     "is_live_recording": true,
     "date_approx": false,
     "season": 2,
@@ -4230,7 +4406,7 @@
      "American Sign Language"
     ],
     "is_short": false,
-    "views": 272,
+    "views": 274,
     "is_live_recording": true,
     "date_approx": false
    },
@@ -4274,7 +4450,7 @@
      "AA Grapevine's Podcast"
     ],
     "is_short": false,
-    "views": 307,
+    "views": 311,
     "is_live_recording": false,
     "date_approx": false,
     "season": 11,
@@ -4372,7 +4548,7 @@
      "Grapevine Weekly Open AA Meeting"
     ],
     "is_short": false,
-    "views": 320,
+    "views": 322,
     "is_live_recording": true,
     "date_approx": false,
     "season": 2,
@@ -6718,7 +6894,7 @@
      "AA Grapevine's Podcast"
     ],
     "is_short": false,
-    "views": 449,
+    "views": 452,
     "is_live_recording": false,
     "date_approx": false,
     "season": 11,
@@ -6912,7 +7088,7 @@
      "AA Grapevine's Podcast"
     ],
     "is_short": false,
-    "views": 330,
+    "views": 334,
     "is_live_recording": false,
     "date_approx": false,
     "season": 11,
@@ -7484,7 +7660,7 @@
      "American Sign Language"
     ],
     "is_short": false,
-    "views": 234,
+    "views": 235,
     "is_live_recording": true,
     "date_approx": false
    },
@@ -8110,7 +8286,7 @@
      "Grapevine Weekly Open AA Meeting"
     ],
     "is_short": false,
-    "views": 215,
+    "views": 217,
     "is_live_recording": true,
     "date_approx": false,
     "season": 2,
@@ -8400,7 +8576,7 @@
      "La Viña"
     ],
     "is_short": true,
-    "views": 240,
+    "views": 243,
     "is_live_recording": false,
     "date_approx": false
    },
@@ -8445,7 +8621,7 @@
      "American Sign Language"
     ],
     "is_short": false,
-    "views": 184,
+    "views": 185,
     "is_live_recording": true,
     "date_approx": false
    },
@@ -8754,200 +8930,6 @@
    ],
    "is_new": false,
    "wn_date": "2026-07-13T04:15:00Z"
-  },
-  {
-   "id": "yt:kfCZdFJmE_Y",
-   "source": "youtube",
-   "kind": "video",
-   "url": "https://www.youtube.com/watch?v=kfCZdFJmE_Y",
-   "title": "Grapevine Weekly Open AA Meeting, July 8, 2026 [Season 2, Episode 2]",
-   "summary": "In this AA Grapevine podcast, you'll hear a recording of Grapevine's open AA meeting, held on July 8, 2026. We meet every Wednesday at Noon Eastern and hope that you will join us. The code on Zoom is 871 2036 8287 and the password is 238047. Each meeting is recorded and distributed as a podcast. This week meeting leader Chris welcomes speakers Phil and Tiffany, who share their experience…",
-   "lang": "en",
-   "date": "2026-07-10T04:24:50Z",
-   "first_seen": "2026-09-23T16:31:23Z",
-   "image": "https://i.ytimg.com/vi/kfCZdFJmE_Y/hqdefault.jpg",
-   "tags": [
-    "season-2",
-    "weekly-open",
-    "live"
-   ],
-   "category": "gv",
-   "status": "ok",
-   "extra": {
-    "video_id": "kfCZdFJmE_Y",
-    "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2097,
-    "playlists": [
-     "Grapevine Weekly Open AA Meeting"
-    ],
-    "is_short": false,
-    "views": 198,
-    "is_live_recording": true,
-    "date_approx": false,
-    "season": 2,
-    "episode": 2
-   },
-   "i18n": {
-    "title": {
-     "en": "Grapevine Weekly Open AA Meeting, July 8, 2026 [Season 2, Episode 2]",
-     "es": "Grapevine Weekly Open AA Meeting, 8 de julio de 2026 [Temporada 2, Episodio 2]"
-    },
-    "summary": {
-     "en": "In this AA Grapevine podcast, you'll hear a recording of Grapevine's open AA meeting, held on July 8, 2026. We meet every Wednesday at Noon Eastern and hope that you will join us. The code on Zoom is 871 2036 8287 and the password is 238047. Each meeting is recorded and distributed as a podcast. This week meeting leader Chris welcomes speakers Phil and Tiffany, who share their experience…",
-     "es": "En este AA Grapevine Podcast, usted escuchará una grabación de la reunión abierta AA de Grapevine, celebrada el 8 de julio de 2026. Nos reunimos cada miércoles al mediodía (hora del Este) y esperamos que se una a nosotros. El código de Zoom es 871 2036 8287 y la contraseña es 238047. Cada reunión se graba y distribuye como podcast. Esta semana el líder de la reunión Chris da la bienvenida a los oradores Phil y Tiffany, que comparten su experiencia …"
-    }
-   },
-   "machine": [
-    "es"
-   ],
-   "is_new": false,
-   "wn_date": "2026-07-10T04:24:50Z"
-  },
-  {
-   "id": "pod:wo:670fc29f179a",
-   "source": "podcast",
-   "kind": "episode",
-   "url": "https://player.captivate.fm/episode/c9697eda-532f-460c-81e6-98f528c4053a",
-   "title": "Grapevine Weekly Open AA Meeting, July 8, 2026 [Season 2, Episode 2]",
-   "summary": "In this AA Grapevine podcast, you'll hear a recording of Grapevine's open AA meeting, held on July 8, 2026. We meet every Wednesday at Noon Eastern and hope that you will join us. The code on Zoom is 871 2036 8287 and the password is 238047. Each meeting is recorded and distributed as a podcast. This week meeting leader Chris welcomes speakers Phil and Tiffany, who share their experience…",
-   "lang": "en",
-   "date": "2026-07-10T04:15:00Z",
-   "first_seen": "2026-09-23T17:23:49Z",
-   "image": "https://artwork.captivate.fm/6b1f80c3-b80e-4988-bb2d-959fbec5e005/81444FEF-9557-4996-B7AB-9949DD0BA6C3-1-102-o.jpeg",
-   "tags": [
-    "season-2"
-   ],
-   "category": "wo",
-   "status": "ok",
-   "extra": {
-    "audio_url": "https://episodes.captivate.fm/episode/c9697eda-532f-460c-81e6-98f528c4053a.mp3",
-    "audio_type": "audio/mpeg",
-    "audio_bytes": 50320790,
-    "duration_sec": 2096,
-    "season": 2,
-    "episode": 2,
-    "episode_type": "full",
-    "show": "wo",
-    "show_name": "Grapevine Weekly Open AA Meeting",
-    "link": "https://www.aagrapevine.org/grapevine-weekly-open",
-    "player_url": "https://player.captivate.fm/episode/c9697eda-532f-460c-81e6-98f528c4053a",
-    "show_web": "https://www.aagrapevine.org/grapevine-weekly-open",
-    "apple": "https://podcasts.apple.com/us/podcast/grapevine-weekly-open-aa-meeting/id1874809908",
-    "spotify": "https://open.spotify.com/show/2jk469TmDC31spPqf8L0SF",
-    "amazon": "https://music.amazon.com/podcasts/8dfb5269-8733-42f3-b075-2d9e596bf4c5/grapevine-weekly-open-aa-meeting",
-    "thumb": "/assets/cache/pod/3e3cd0ac7162b7fe.webp"
-   },
-   "i18n": {
-    "title": {
-     "en": "Grapevine Weekly Open AA Meeting, July 8, 2026 [Season 2, Episode 2]",
-     "es": "Grapevine Weekly Open AA Meeting, 8 de julio de 2026 [Temporada 2, Episodio 2]"
-    },
-    "summary": {
-     "en": "In this AA Grapevine podcast, you'll hear a recording of Grapevine's open AA meeting, held on July 8, 2026. We meet every Wednesday at Noon Eastern and hope that you will join us. The code on Zoom is 871 2036 8287 and the password is 238047. Each meeting is recorded and distributed as a podcast. This week meeting leader Chris welcomes speakers Phil and Tiffany, who share their experience…",
-     "es": "En este AA Grapevine Podcast, usted escuchará una grabación de la reunión abierta AA de Grapevine, celebrada el 8 de julio de 2026. Nos reunimos cada miércoles al mediodía (hora del Este) y esperamos que se una a nosotros. El código de Zoom es 871 2036 8287 y la contraseña es 238047. Cada reunión se graba y distribuye como podcast. Esta semana el líder de la reunión Chris da la bienvenida a los oradores Phil y Tiffany, que comparten su experiencia …"
-    }
-   },
-   "machine": [
-    "es"
-   ],
-   "is_new": false,
-   "wn_date": "2026-07-10T04:15:00Z"
-  },
-  {
-   "id": "yt:vz7FumPPU2c",
-   "source": "youtube",
-   "kind": "video",
-   "url": "https://www.youtube.com/watch?v=vz7FumPPU2c",
-   "title": "The No Matter What Club [Season 11, Episode 1]",
-   "summary": "Nina, a self-described raging alcoholic, tells Don and Sam that she did not understand that she could not stop and had no conception of the obsession or allergy of the body. She thought everyone drank like she did. In her drinking years Nina missed exams, lost jobs, and got arrested. The last arrest led to her getting sober in jail. There she learned about the disease and the value of service…",
-   "lang": "en",
-   "date": "2026-07-06T04:28:59Z",
-   "first_seen": "2026-09-23T16:31:23Z",
-   "image": "https://i.ytimg.com/vi/vz7FumPPU2c/hqdefault.jpg",
-   "tags": [
-    "season-11"
-   ],
-   "category": "gv",
-   "status": "ok",
-   "extra": {
-    "video_id": "vz7FumPPU2c",
-    "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1908,
-    "playlists": [
-     "AA Grapevine's Podcast"
-    ],
-    "is_short": false,
-    "views": 283,
-    "is_live_recording": false,
-    "date_approx": false,
-    "season": 11,
-    "episode": 1
-   },
-   "i18n": {
-    "title": {
-     "en": "The No Matter What Club [Season 11, Episode 1]",
-     "es": "El club del «pase lo que pase» [Temporada 11, Episodio 1]"
-    },
-    "summary": {
-     "en": "Nina, a self-described raging alcoholic, tells Don and Sam that she did not understand that she could not stop and had no conception of the obsession or allergy of the body. She thought everyone drank like she did. In her drinking years Nina missed exams, lost jobs, and got arrested. The last arrest led to her getting sober in jail. There she learned about the disease and the value of service…",
-     "es": "Nina, una alcohólica autodescrita, le dice a Don y a Sam que no entendía que no podía parar y no tenía concepción de la obsesión o alergia del cuerpo. Pensó que todos bebían como ella. En sus años de beber, Nina perdió exámenes, perdió empleos y fue arrestada. El último arresto la llevó a estar sobria en la cárcel. Allí aprendió sobre la enfermedad y el valor del servicio …"
-    }
-   },
-   "machine": [
-    "es"
-   ],
-   "is_new": false,
-   "wn_date": "2026-07-06T04:28:59Z"
-  },
-  {
-   "id": "pod:gv:9969d543bfbe",
-   "source": "podcast",
-   "kind": "episode",
-   "url": "https://player.captivate.fm/episode/7248b7c4-86f9-4916-a8c8-f3f1c4f3da45",
-   "title": "The No Matter What Club [Season 11, Episode 1]",
-   "summary": "Nina, a self-described raging alcoholic, tells Don and Sam that she did not understand that she could not stop and had no conception of the obsession or allergy of the body. She thought everyone drank like she did. In her drinking years Nina missed exams, lost jobs, and got arrested. The last arrest led to her getting sober in jail. There she learned about the disease and the value of service…",
-   "lang": "en",
-   "date": "2026-07-06T04:15:00Z",
-   "first_seen": "2026-09-23T16:27:02Z",
-   "image": "https://artwork.captivate.fm/0ad84761-e27d-40a0-be3f-982e28f5cfed/NA7eDTnRxVFYjt4qJyGSFDog.jpeg",
-   "tags": [
-    "season-11"
-   ],
-   "category": "gv",
-   "status": "ok",
-   "extra": {
-    "audio_url": "https://episodes.captivate.fm/episode/7248b7c4-86f9-4916-a8c8-f3f1c4f3da45.mp3",
-    "audio_type": "audio/mpeg",
-    "audio_bytes": 19076205,
-    "duration_sec": 1908,
-    "season": 11,
-    "episode": 1,
-    "episode_type": "full",
-    "show": "gv",
-    "show_name": "AA Grapevine's Podcast",
-    "link": "https://www.aagrapevine.org/podcast",
-    "player_url": "https://player.captivate.fm/episode/7248b7c4-86f9-4916-a8c8-f3f1c4f3da45",
-    "show_web": "https://www.aagrapevine.org/podcasts",
-    "apple": "https://podcasts.apple.com/us/podcast/aa-grapevines-podcast/id1591924167",
-    "spotify": "https://open.spotify.com/show/714djcL57SFf0Nzf40CL8Q",
-    "amazon": "https://music.amazon.com/podcasts/de231bfa-837b-4a27-a331-a927019cb5d7",
-    "thumb": "/assets/cache/pod/345ae0651cb102a9.webp"
-   },
-   "i18n": {
-    "title": {
-     "en": "The No Matter What Club [Season 11, Episode 1]",
-     "es": "El club del «pase lo que pase» [Temporada 11, Episodio 1]"
-    },
-    "summary": {
-     "en": "Nina, a self-described raging alcoholic, tells Don and Sam that she did not understand that she could not stop and had no conception of the obsession or allergy of the body. She thought everyone drank like she did. In her drinking years Nina missed exams, lost jobs, and got arrested. The last arrest led to her getting sober in jail. There she learned about the disease and the value of service…",
-     "es": "Nina, una alcohólica autodescrita, le dice a Don y a Sam que no entendía que no podía parar y no tenía concepción de la obsesión o alergia del cuerpo. Pensó que todos bebían como ella. En sus años de beber, Nina perdió exámenes, perdió empleos y fue arrestada. El último arresto la llevó a estar sobria en la cárcel. Allí aprendió sobre la enfermedad y el valor del servicio …"
-    }
-   },
-   "machine": [
-    "es"
-   ],
-   "is_new": false,
-   "wn_date": "2026-07-06T04:15:00Z"
   }
  ]
 }

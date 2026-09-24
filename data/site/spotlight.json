@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-24T13:21:10Z",
+ "updated": "2026-09-24T15:25:07Z",
  "fixture": false,
  "today": "2026-09-24",
  "home_days": 60,
@@ -12,12 +12,12 @@
   "60": {
    "neta65": 2,
    "texas": 8,
-   "all": 100
+   "all": 102
   },
   "90": {
    "neta65": 4,
    "texas": 15,
-   "all": 156
+   "all": 158
   }
  },
  "items": [
@@ -3941,6 +3941,71 @@
    "is_new": false
   },
   {
+   "id": "gv:2026-09:gateway",
+   "source": "grapevine",
+   "kind": "article",
+   "url": "https://www.aagrapevine.org/magazine/2026/sep/gateway",
+   "title": "Gateway",
+   "summary": "Raising her hand for service opens the way to a deeper sobriety",
+   "lang": "en",
+   "date": "2026-09-01",
+   "first_seen": "2026-09-24T15:20:45Z",
+   "image": null,
+   "tags": [],
+   "category": "gv",
+   "status": "ok",
+   "extra": {
+    "publication": "gv",
+    "issue_label": "September 2026",
+    "issue_key": "2026-09",
+    "issue_date": "2026-09-01",
+    "issue_theme": null,
+    "issue_url": null,
+    "topic": null,
+    "section": null,
+    "author": "Chenoa C.",
+    "author_location": "Winnipeg, Manitoba",
+    "subtitle": "Raising her hand for service opens the way to a deeper sobriety",
+    "teaser": "At two years in AA, my desperation to stay sober had made me willing. I was well-versed in at my homegroup in opening the clubroom, greeting people and making coffee.",
+    "free": false,
+    "online_exclusive": true,
+    "department": false,
+    "geo": {
+     "scope": "other",
+     "city": "Winnipeg",
+     "county": null,
+     "counties": [],
+     "state": "MB",
+     "country": "CA",
+     "label_en": "Winnipeg, Manitoba",
+     "label_es": "Winnipeg, Manitoba"
+    },
+    "pub_date": "2026-09-01"
+   },
+   "i18n": {
+    "title": {
+     "en": "Gateway",
+     "es": "Gateway"
+    },
+    "summary": {
+     "en": "Raising her hand for service opens the way to a deeper sobriety",
+     "es": "Aumentar su mano para el servicio abre el camino a una sobriedad más profundo"
+    },
+    "issue_label": {
+     "en": "September 2026",
+     "es": "Septiembre 2026"
+    },
+    "author_location": {
+     "en": "Winnipeg, Manitoba",
+     "es": "Winnipeg, Manitoba"
+    }
+   },
+   "machine": [
+    "es"
+   ],
+   "is_new": false
+  },
+  {
    "id": "gv:2026-09:get-car",
    "source": "grapevine",
    "kind": "article",
@@ -5105,6 +5170,71 @@
     "author_location": {
      "en": "Virginia Beach, Virginia",
      "es": "Virginia Beach, Virginia"
+    }
+   },
+   "machine": [
+    "es"
+   ],
+   "is_new": false
+  },
+  {
+   "id": "gv:2026-09:relapse-58",
+   "source": "grapevine",
+   "kind": "article",
+   "url": "https://www.aagrapevine.org/magazine/2026/sep/relapse-58",
+   "title": "Relapse At 58",
+   "summary": "After a relapse, she finds a life of “joy, connection and service”",
+   "lang": "en",
+   "date": "2026-09-01",
+   "first_seen": "2026-09-24T15:20:45Z",
+   "image": null,
+   "tags": [],
+   "category": "gv",
+   "status": "ok",
+   "extra": {
+    "publication": "gv",
+    "issue_label": "September 2026",
+    "issue_key": "2026-09",
+    "issue_date": "2026-09-01",
+    "issue_theme": null,
+    "issue_url": null,
+    "topic": null,
+    "section": null,
+    "author": "Jodie B.",
+    "author_location": "Thousand Palms, Calif.",
+    "subtitle": "After a relapse, she finds a life of “joy, connection and service”",
+    "teaser": "Going through recovery taught me that the road isn’t always easy.",
+    "free": false,
+    "online_exclusive": true,
+    "department": false,
+    "geo": {
+     "scope": "other",
+     "city": "Thousand Palms",
+     "county": null,
+     "counties": [],
+     "state": "CA",
+     "country": "US",
+     "label_en": "Thousand Palms, California",
+     "label_es": "Thousand Palms, California"
+    },
+    "pub_date": "2026-09-01"
+   },
+   "i18n": {
+    "title": {
+     "en": "Relapse At 58",
+     "es": "Recaídas a las 58"
+    },
+    "summary": {
+     "en": "After a relapse, she finds a life of “joy, connection and service”",
+     "es": "Después de una recaída, encuentra una vida de “joy, conexión y servicio”"
+    },
+    "issue_label": {
+     "en": "September 2026",
+     "es": "Septiembre 2026"
+    },
+    "author_location": {
+     "en": "Thousand Palms, California",
+     "es": "Thousand Palms, California"
     }
    },
    "machine": [
@@ -7900,12 +8030,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Annual Prison Issue",
-    "section": null,
+    "section": "Oldtimers",
     "author": "Joe S.",
     "author_location": "Loveland, Colorado",
     "subtitle": "A retired teacher looks back at his life with gratitude, and high on his list is something hot and delicious",
-    "teaser": null,
-    "free": null,
+    "teaser": "Before entering AA, I lived in depression and fear. In the last two years of my drinking I just wanted to die.",
+    "free": false,
     "online_exclusive": false,
     "department": false,
     "geo": {
@@ -7928,6 +8058,10 @@
     "summary": {
      "en": "A retired teacher looks back at his life with gratitude, and high on his list is something hot and delicious",
      "es": "Un profesor jubilado mira su vida con gratitud, y alto en su lista es algo caliente y delicioso"
+    },
+    "section": {
+     "en": "Oldtimers",
+     "es": "Veteranos"
     },
     "topic": {
      "en": "Annual Prison Issue",
@@ -8322,8 +8456,8 @@
     "author": "K.SB.",
     "author_location": "Seattle, Wash.",
     "subtitle": "She was on the verge of relapse after 24 years",
-    "teaser": null,
-    "free": null,
+    "teaser": "There have been a few times in my sobriety where I thought I was on the path of recovery and later found out I was sliding back towards a drink.",
+    "free": false,
     "online_exclusive": true,
     "department": false,
     "geo": {
@@ -8813,12 +8947,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Annual Prison Issue",
-    "section": null,
+    "section": "Gratitude",
     "author": "Chris M.",
     "author_location": "Hockessin, Delaware",
     "subtitle": "How an hour spent down by the wading pool to do Step work became a powerful spiritual experience",
-    "teaser": null,
-    "free": null,
+    "teaser": "Today I went to a creek in the neighborhood I grew up in to complete my Sixth and Seventh Steps. There’s a small waterfall that empties into a wading pool.",
+    "free": false,
     "online_exclusive": false,
     "department": false,
     "geo": {
@@ -8841,6 +8975,10 @@
     "summary": {
      "en": "How an hour spent down by the wading pool to do Step work became a powerful spiritual experience",
      "es": "Cómo una hora pasada por la piscina desactivada para hacer el trabajo de Paso se convirtió en una experiencia espiritual poderosa"
+    },
+    "section": {
+     "en": "Gratitude",
+     "es": "Gratitud"
     },
     "topic": {
      "en": "Annual Prison Issue",
@@ -9320,12 +9458,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Annual Prison Issue",
-    "section": null,
+    "section": "Our Personal Stories",
     "author": "Anonymous",
     "author_location": "Sarasot, Florida",
     "subtitle": "A dad in Florida who relapsed learns a powerful lesson— make sobriety No. 1 in life",
-    "teaser": null,
-    "free": null,
+    "teaser": "I often say I shouldn’t be here. Not in some dramatic, self-pitying way, but in the quiet recognition that alcoholism doesn’t run in my family.",
+    "free": false,
     "online_exclusive": false,
     "department": false,
     "geo": {
@@ -9348,6 +9486,10 @@
     "summary": {
      "en": "A dad in Florida who relapsed learns a powerful lesson— make sobriety No. 1 in life",
      "es": "Un padre en Florida que recaída aprende una lección poderosa - hacer sobriedad No. 1 en la vida"
+    },
+    "section": {
+     "en": "Our Personal Stories",
+     "es": "Nuestras historias personales"
     },
     "topic": {
      "en": "Annual Prison Issue",
@@ -9750,8 +9892,8 @@
     "author": "Matt G.",
     "author_location": "Corvallis, Ore.",
     "subtitle": "He didn’t know what tomorrow would bring. For the first time, it didn’t matter",
-    "teaser": null,
-    "free": null,
+    "teaser": "I am not good at sitting still. I was often chastised as a young kid for my frenetic energy.",
+    "free": false,
     "online_exclusive": true,
     "department": false,
     "geo": {
@@ -9941,7 +10083,7 @@
    "kind": "article",
    "url": "https://www.aalavina.org/revista/julio-agosto-2026/la-mano-de-aa",
    "title": "La mano de AA",
-   "summary": "",
+   "summary": "Por segunda vez volví a la agrupación de AA. Llevo dos años y medio, y el servicio ha sido el medio por el cual me he mantenido activo y he hecho del programa una forma de vida.",
    "lang": "es",
    "date": "2026-07-01",
    "first_seen": "2026-09-23T23:13:14Z",
@@ -9957,12 +10099,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Prisiones / La Viña 30 Aniversario",
-    "section": null,
+    "section": "Sección Especial",
     "author": "Mario G.",
     "author_location": "Reseda, California",
     "subtitle": null,
-    "teaser": null,
-    "free": null,
+    "teaser": "Por segunda vez volví a la agrupación de AA. Llevo dos años y medio, y el servicio ha sido el medio por el cual me he mantenido activo y he hecho del programa una forma de vida.",
+    "free": false,
     "online_exclusive": false,
     "department": false,
     "geo": {
@@ -9983,8 +10125,12 @@
      "es": "La mano de AA"
     },
     "summary": {
-     "en": "",
-     "es": ""
+     "en": "For the second time I returned to the AA grouping. I have been two and a half years, and the service has been the means by which I have remained active and have made the program a way of life.",
+     "es": "Por segunda vez volví a la agrupación de AA. Llevo dos años y medio, y el servicio ha sido el medio por el cual me he mantenido activo y he hecho del programa una forma de vida."
+    },
+    "section": {
+     "en": "Special Section",
+     "es": "Sección Especial"
     },
     "topic": {
      "en": "Prisons / La Viña 30th Anniversary",
@@ -10596,12 +10742,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Annual Prison Issue",
-    "section": null,
+    "section": "Our Personal Stories",
     "author": "Laura B.",
     "author_location": "San Francisco, California",
     "subtitle": "In 1968 a drunken college student passed out in a big house in San Francisco. Years later she discovered how important that building was",
-    "teaser": null,
-    "free": null,
+    "teaser": "One morning in the fall of 1968, I woke up in an armchair in someone’s living room.",
+    "free": false,
     "online_exclusive": false,
     "department": false,
     "geo": {
@@ -10624,6 +10770,10 @@
     "summary": {
      "en": "In 1968 a drunken college student passed out in a big house in San Francisco. Years later she discovered how important that building was",
      "es": "En 1968, una estudiante universitaria borracha perdió el conocimiento en una casa grande de San Francisco. Años después descubrió lo importante que era ese edificio"
+    },
+    "section": {
+     "en": "Our Personal Stories",
+     "es": "Nuestras historias personales"
     },
     "topic": {
      "en": "Annual Prison Issue",
@@ -10811,12 +10961,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Annual Prison Issue",
-    "section": null,
+    "section": "Featured Section",
     "author": "John S.",
     "author_location": "Newark, New Jersey",
     "subtitle": "After 20 years of AA in prison, he’s not the same guy. With a sponsor’s help and a good foundation, he’s ready to get out and live",
-    "teaser": null,
-    "free": null,
+    "teaser": "I am now residing at a halfway house, my final step before freedom. I was imprisoned for 20 years.",
+    "free": false,
     "online_exclusive": false,
     "department": false,
     "geo": {
@@ -10839,6 +10989,10 @@
     "summary": {
      "en": "After 20 years of AA in prison, he’s not the same guy. With a sponsor’s help and a good foundation, he’s ready to get out and live",
      "es": "Después de 20 años de AA en prisión, no es el mismo tipo. Con la ayuda de padrino y una buena base, está listo para salir y vivir"
+    },
+    "section": {
+     "en": "Featured Section",
+     "es": "Sección destacada"
     },
     "topic": {
      "en": "Annual Prison Issue",
@@ -11091,12 +11245,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Annual Prison Issue",
-    "section": null,
+    "section": "Tradition Seven",
     "author": "Heather K.",
     "author_location": "Holbrook, New York",
     "subtitle": "How do we decide the amount of money we put in the basket each meeting? One member shares what she does",
-    "teaser": null,
-    "free": null,
+    "teaser": "When I came to AA I was utterly without resource. I had demoralized myself to the point where I hid, ashamed from God in all forms. I was also penniless.",
+    "free": false,
     "online_exclusive": false,
     "department": false,
     "geo": {
@@ -11119,6 +11273,10 @@
     "summary": {
      "en": "How do we decide the amount of money we put in the basket each meeting? One member shares what she does",
      "es": "¿Cómo decidimos la cantidad de dinero que ponemos en la canasta cada reunión? Un miembro comparte lo que hace"
+    },
+    "section": {
+     "en": "Tradition Seven",
+     "es": "Séptima Tradición"
     },
     "topic": {
      "en": "Annual Prison Issue",
