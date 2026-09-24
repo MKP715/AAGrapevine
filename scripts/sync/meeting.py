@@ -123,7 +123,7 @@ def upcoming_rule_dates(rule: MonthlyRule, count: int, tz: ZoneInfo, now: dateti
 
     Months are walked on the LOCAL calendar starting with the month before `now` (so an evening event on
     the last day of a month is still found while it is running, even though it is already the next month
-    in UTC), for at most `horizon_months` months (default count + 14: a "5th Saturday" rule simply lists
+    in UTC), for at most `horizon_months` months (default count + 15: a "5th Saturday" rule simply lists
     the months that have one). A date in `rule.skip` is left out and does not count."""
     if count <= 0:
         return []
@@ -136,7 +136,7 @@ def upcoming_rule_dates(rule: MonthlyRule, count: int, tz: ZoneInfo, now: dateti
     local = since.astimezone(tz)
     y, m = (local.year, local.month - 1) if local.month > 1 else (local.year - 1, 12)
     out: list[dict] = []
-    for _ in range(horizon_months if horizon_months is not None else count + 14):
+    for _ in range(horizon_months if horizon_months is not None else count + 15):
         d = _nth_weekday(y, m, rule.weekday, rule.week_of_month)
         if d and d.isoformat() not in rule.skip:
             start = datetime(d.year, d.month, d.day, sh, sm, tzinfo=tz)
@@ -153,9 +153,12 @@ def upcoming_rule_dates(rule: MonthlyRule, count: int, tz: ZoneInfo, now: dateti
 
 def meeting_rule(cfg: dict | None) -> MonthlyRule:
     """config/site.yml `meeting:` → its rule. Tolerant on purpose (the committee meeting must always
-    show): anything that cannot be understood falls back to the 3rd Wednesday, 19:00–20:00."""
+    show): anything that cannot be understood falls back to the 3rd Wednesday, 19:00–20:00.
+    (The weekday lookup is deliberately NOT weekday_index(): the web pages compute the same meetings
+    themselves — eleventy/filters/committee.js meetingDates() — and a more forgiving reading here, e.g.
+    of "Wednesdays", would make the two disagree about the day.)"""
     cfg = cfg or {}
-    wd = weekday_index(cfg.get("weekday", "wednesday"))
+    wd = WEEKDAYS.get(str(cfg.get("weekday", "wednesday")).strip().lower(), 2)
     try:
         n = int(cfg.get("week_of_month", 3))
     except (TypeError, ValueError):
@@ -164,7 +167,7 @@ def meeting_rule(cfg: dict | None) -> MonthlyRule:
         n = 3
     sh, sm = parse_hhmm(cfg.get("start"), (19, 0))
     eh, em = parse_hhmm(cfg.get("end"), ((sh + 1) % 24, sm))
-    return MonthlyRule(week_of_month=n, weekday=2 if wd is None else wd, start=(sh, sm), end=(eh, em),
+    return MonthlyRule(week_of_month=n, weekday=wd, start=(sh, sm), end=(eh, em),
                        skip=frozenset(str(s) for s in (cfg.get("skip_dates") or [])))
 
 
