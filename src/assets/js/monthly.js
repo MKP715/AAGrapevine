@@ -23,21 +23,39 @@
     Array.prototype.forEach.call(document.querySelectorAll(".mp-fit"), function (f) { ro.observe(f); });
   }
 
-  /* Safety net for unusual months (many events, long titles): if a block does not fit its column,
-     the poster's type is stepped down until everything fits. The PNG and the print use the same DOM. */
+  /* Fill the canvas: the poster's type (all in em) is sized to the largest step at which every
+     block still fits its column — busy months (many events, long Spanish titles) step down,
+     quiet months step up, so no poster is left with a half-empty page. Binary search, ~8 layouts
+     per poster. Without JS the CSS size (by density) is used. The PNG and the print use this DOM. */
+  var BLOCKS = ".mp-b, .mp-foot, .mp-head, .mp-row, .mp-col, .mp-body, .mp-board, .mp-cover, .mp-strip, .mp-page, .mp-main, .mp-stub, .mp-side, .mp-content, .mp-top";
+  // Layout boxes in poster px (offset* ignore the scale and the tilted cork cards' rotation).
+  function box(el, p) {
+    var t = 0, l = 0, e = el;
+    while (e && e !== p) { t += e.offsetTop; l += e.offsetLeft; e = e.offsetParent; }
+    return { t: t, b: t + el.offsetHeight, r: l + el.offsetWidth };
+  }
   function overflowing(p) {
-    var pr = p.getBoundingClientRect();
-    var blocks = p.querySelectorAll(".mp-b, .mp-foot, .mp-head, .mp-row, .mp-col, .mp-body, .mp-board, .mp-cover, .mp-strip, .mp-page");
+    var blocks = p.querySelectorAll(BLOCKS);
     for (var i = 0; i < blocks.length; i++) {
-      var b = blocks[i], br = b.getBoundingClientRect(), par = b.parentElement.getBoundingClientRect();
-      var tol = 6 * (pr.width / 1080);
-      if (br.bottom > par.bottom + tol || br.bottom > pr.bottom + tol) return true;
+      var b = blocks[i], par = b.parentElement, bb = box(b, p);
+      // the parent's content box (inside its padding)
+      var pad = parseFloat(getComputedStyle(par).paddingBottom) || 0;
+      var limit = par === p ? p.clientHeight - pad : box(par, p).t + par.clientTop + par.clientHeight - pad;
+      if (bb.b > limit + 2 || bb.r > p.clientWidth + 2) return true;
     }
     return false;
   }
   function fit(p) {
-    var size = parseFloat(getComputedStyle(p).fontSize) || 23;
-    for (var n = 0; n < 16 && size > 16 && overflowing(p); n++) { size -= 0.5; p.style.fontSize = size + "px"; }
+    p.style.fontSize = "";
+    var base = parseFloat(getComputedStyle(p).fontSize) || 23;
+    var lo = 16, hi = Math.min(base * 1.25, 28);
+    if (overflowing(p)) hi = base; else lo = base;
+    for (var n = 0; n < 7; n++) {
+      var mid = (lo + hi) / 2;
+      p.style.fontSize = mid + "px";
+      if (overflowing(p)) hi = mid; else lo = mid;
+    }
+    p.style.fontSize = Math.floor(lo * 4) / 4 + "px";
   }
   var fitAll = function () { Array.prototype.forEach.call(document.querySelectorAll("[data-mp-poster]"), fit); };
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitAll); else fitAll();
@@ -84,14 +102,17 @@
     return blobPromise;
   }
 
+  // Busy state without `disabled`: a disabled button loses keyboard focus (it drops to <body>),
+  // so the button keeps focus and ignores clicks while the image is being made (WCAG 2.4.3).
   function busy(btn, on) {
+    btn._busy = on;
     if (on) {
       btn.setAttribute("aria-busy", "true");
-      btn.disabled = true;
+      btn.setAttribute("aria-disabled", "true");
       announce(dl.getAttribute("data-working"));
     } else {
       btn.removeAttribute("aria-busy");
-      btn.disabled = false;
+      btn.removeAttribute("aria-disabled");
     }
   }
 
@@ -107,6 +128,7 @@
 
   dl.hidden = false;
   dl.addEventListener("click", function () {
+    if (dl._busy) return;
     busy(dl, true);
     render().then(function (blob) {
       save(blob, dl.getAttribute("data-file"));
@@ -133,6 +155,7 @@
     ["pointerdown", "focus"].forEach(function (ev) { sh.addEventListener(ev, function () { render().catch(function () {}); }, { once: true }); });
   }
   sh.addEventListener("click", function () {
+    if (sh._busy) return;
     if (!navigator.canShare || !navigator.share) { copyLink(); return; }
     busy(sh, true);
     render().then(function (blob) {

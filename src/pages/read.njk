@@ -105,7 +105,7 @@ pageScripts: ["/assets/js/read.js"]
       {% endif %}
       <div class="mt-6 flex flex-wrap gap-2">
         <a class="btn-light" href="{{ issueUrl }}" target="_blank" rel="noopener">{% icon "book-open", "size-4" %} {{ "read.read_on" | t(lang, {site: site_}) }}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a>
-        <a class="btn-on-dark" href="{{ '/shop/' | lurl(lang) }}">{% icon "shopping-bag", "size-4" %} {{ "read.subscribe" | t(lang) }}</a>
+        <a class="btn-on-dark" href="{{ '/shop/' | lurl(lang) }}?pub={{ v.pub }}#subscriptions">{% icon "shopping-bag", "size-4" %} {{ "read.subscribe" | t(lang) }}</a>
       </div>
     </header>
 
@@ -317,7 +317,7 @@ pageScripts: ["/assets/js/read.js"]
         <p class="font-semibold text-ink">{{ "read.paywall_title" | t(lang) }}</p>
         <p class="measure mt-1 text-sm leading-relaxed text-muted">{{ "read.paywall_text" | t(lang) }}</p>
       </div>
-      <a class="btn-primary shrink-0" href="{{ '/shop/' | lurl(lang) }}">{{ "read.paywall_cta" | t(lang) }} {% icon "arrow-right", "size-4" %}</a>
+      <a class="btn-primary shrink-0" href="{{ '/shop/' | lurl(lang) }}#subscriptions">{{ "read.paywall_cta" | t(lang) }} {% icon "arrow-right", "size-4" %}</a>
     </aside>
   </section>
 

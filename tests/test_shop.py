@@ -78,9 +78,17 @@ class BookOfTheMonth(unittest.TestCase):
                          ("2026-12-15", "2027-01-14"))
         self.assertEqual(S.offer_dates("Offer good: Oct. 1, 2026 through Oct. 31, 2026", TODAY), ("2026-10-01", "2026-10-31"))
 
+    def test_an_old_offer_left_on_the_page_is_past_not_next_year(self):
+        self.assertEqual(S.offer_dates("APRIL 15 thru MAY 14", date(2026, 11, 20)), ("2026-04-15", "2026-05-14"))
+
     def test_no_offer_and_broken_offer(self):
-        empty = "<html><body><main><div id='block-neatosub-content'><p>Check back soon!</p></div></main></body></html>"
+        empty = ("<html><head><title>Book of the month! | AA Grapevine</title></head><body><main>"
+                 "<div id='block-neatosub-content'><p>Check back soon!</p></div></main></body></html>")
         self.assertIsNone(S.parse_botm(empty, f"{GV}/BOTM", "en", TODAY))
+        # an unrelated 200 page (maintenance, a redirect home) is an error, so the previous offer is kept
+        maint = "<html><head><title>We'll be back soon</title></head><body><main><p>Maintenance</p></main></body></html>"
+        with self.assertRaises(S.ShopParseError):
+            S.parse_botm(maint, f"{GV}/BOTM", "en", TODAY)
         no_link = fx("gv_botm.html").replace("/store/no-matter-what-dealing-adversity-sobriety", "/somewhere")
         with self.assertRaises(S.ShopParseError):
             S.parse_botm(no_link, f"{GV}/BOTM", "en", TODAY)
@@ -250,6 +258,10 @@ class LaVinaWeeklyOpen(unittest.TestCase):
     def test_after_the_start_it_is_the_next_thursday(self):
         it = W.lavina_item(self.CFG, datetime(2026, 11, 6, 15, 0, tzinfo=timezone.utc))
         self.assertEqual(it["extra"]["next_start"], "2026-11-12T17:00:00Z")
+
+    def test_a_start_date_on_another_weekday_moves_to_the_first_meeting(self):
+        it = W.lavina_item({**self.CFG, "starts": "2026-11-04"}, datetime(2026, 9, 24, 15, 0, tzinfo=timezone.utc))
+        self.assertEqual((it["extra"]["starts"], it["extra"]["next_start"]), ("2026-11-05", "2026-11-05T17:00:00Z"))
 
     def test_disabled_or_broken_config(self):
         self.assertIsNone(W.lavina_item(None))

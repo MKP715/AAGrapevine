@@ -85,7 +85,10 @@ DATE_RE = re.compile(
     rf"|(\d{{1,2}})\s+(?:de\s+)?({_MONTH_RE})\.?(?:,?\s+(?:de\s+|del\s+)?(20\d\d))?)\b")
 PCT_RE = re.compile(r"(\d{1,2}(?:[.,]\d+)?)\s*%")
 OFFER_RE = re.compile(r"(?i)\b(?:offer|good|valid|v[áa]lid[oa]|oferta|thru|through|until|hasta)\b")
-MONEY_RE = re.compile(r"(?:US|CA|C)?\$\s*(\d{1,4}(?:,\d{3})*(?:\.\d{1,2})?)")
+MONEY_RE = re.compile(r"(US|CA|C)?\$\s*(\d{1,4}(?:,\d{3})*(?:\.\d{1,2})?)")
+# The Book of the Month page itself (its <title> / heading), so an unrelated 200 page (maintenance,
+# a redirect to the home page) is never read as "no offer today".
+BOTM_PAGE_RE = re.compile(r"(?i)book\s+of\s+the\s+month|libro\s+del\s+mes")
 TIER_RE = re.compile(r"(?i)(\d+)\s*(?:[–—-]|a|to)\s*(\d+)\s*(?:books?|libros?)\s*:?\s*(?:US)?\$\s*(\d+(?:\.\d+)?)")
 TIER_OPEN_RE = re.compile(r"(?i)(\d+)\s*(?:\+|o\s+m[áa]s|or\s+more)\s*(?:books?|libros?)\s*:?\s*(?:US)?\$\s*(\d+(?:\.\d+)?)")
 RANGE_RE = re.compile(r"(\d+)\s*(?:[–—-]|a|to)\s*(\d+)|(\d+)\s*(?:\+|o\s+m[áa]s|or\s+more)")
@@ -105,7 +108,13 @@ def fold(s: str) -> str:
 
 def money(s: str | None) -> float | None:
     m = MONEY_RE.search(s or "")
-    return float(m[1].replace(",", "")) if m else None
+    return float(m[2].replace(",", "")) if m else None
+
+
+def money_currency(s: str | None) -> str:
+    """"CA$ 30.00" / "C$30" → "CAD"; "$30" / "US$30" → "USD"."""
+    m = MONEY_RE.search(s or "")
+    return "CAD" if m and m[1] in ("CA", "C") else "USD"
 
 
 def sale_price(price: float | None, pct: float | None) -> float | None:
@@ -198,7 +207,8 @@ def _safe_date(y: int, mo: int, d: int) -> date | None:
 
 def offer_dates(text: str, today: date) -> tuple[str | None, str | None]:
     """'SEPT. 15 thru OCt. 14 Only.' → ('2026-09-15', '2026-10-14') with years inferred around today:
-    the end date is the one closest to today; the start is the latest date on or before the end."""
+    the latest window that has already started (or starts within a month), so an old offer left on
+    the page is read as past, never as next year's; the start is the latest date on or before the end."""
     ds = _parse_dates(text)
     if not ds:
         return None, None
@@ -207,7 +217,14 @@ def offer_dates(text: str, today: date) -> tuple[str | None, str | None]:
         end = _safe_date(ey, emo, ed)
     else:
         cands = [c for c in (_safe_date(today.year + k, emo, ed) for k in (-1, 0, 1)) if c]
-        end = min(cands, key=lambda c: abs((c - today).days)) if cands else None
+        if len(ds) >= 2 and not sy:
+            def start_of(e: date) -> date | None:
+                s0 = _safe_date(e.year, smo, sd)
+                return _safe_date(e.year - 1, smo, sd) if s0 and s0 > e else s0
+            ok = [c for c in cands if (start_of(c) or c) <= today + timedelta(days=31)]
+            end = max(ok) if ok else (min(cands) if cands else None)
+        else:
+            end = min(cands, key=lambda c: abs((c - today).days)) if cands else None
     if end is None:
         return None, None
     start = _safe_date(sy, smo, sd) if sy else _safe_date(end.year, smo, sd)
@@ -238,6 +255,9 @@ def parse_botm(html: str, page_url: str, lang: str, today: date) -> dict | None:
             break
     pct_i = next((i for i, (t, el) in enumerate(lines) if PCT_RE.search(t) and not el.find_parent("a")), None)
     if pct_i is None and not product_url:
+        heads = [soup.title.get_text(" ") if soup.title else ""] + [h.get_text(" ") for h in soup.find_all(["h1", "h2"], limit=8)]
+        if not soup.select_one("#block-neatosub-content") or not any(BOTM_PAGE_RE.search(h or "") for h in heads):
+            raise ShopParseError("page does not look like the Book of the Month page (maintenance? redirect?)")
         return None                                   # no offer on the page today
     if pct_i is None:
         raise ShopParseError("Book of the Month: product link found but no discount percent")
@@ -450,6 +470,7 @@ def parse_listing(html: str, listing_url: str) -> tuple[list[dict], str | None]:
         plans.append({
             "type": plan_type(title), "term_months": term_months(title), "title": title,
             "price": money(price_el.get_text(" ") if price_el else ""),
+            "currency": money_currency(price_el.get_text(" ") if price_el else ""),
             "sku": clean_text(sku_el.get_text(" ")) if sku_el else None,
             "url": _no_query(_abs(listing_url, a["href"])),
             "image_src": _abs(listing_url, img["src"]) if img else None,
@@ -575,7 +596,7 @@ def collect_subscriptions(pub: str, s: dict, fetch: Fetch, images: Callable) -> 
         for pos, p in enumerate(plans):
             key = p.get("sku") or slugify(p["title"], 40)
             extra = {"pub": pub, "region": region, "listing_url": url, "type": p["type"],
-                     "term_months": p["term_months"], "price": p["price"], "currency": "USD", "sku": p.get("sku"),
+                     "term_months": p["term_months"], "price": p["price"], "currency": p.get("currency") or "USD", "sku": p.get("sku"),
                      "volume": p["volume"], "position": pos, "image_src": p.get("image_src")}
             items.append(make_item(
                 id=f"sub:{pub}:{region}:{key}", source=s["source"], kind="subscription", url=p["url"],
@@ -679,13 +700,18 @@ def collect(fetch: Fetch, images: Callable, prev: dict, today: date, cfg: dict |
     due = refresh_types or checked is None or datetime.now(timezone.utc) - checked > timedelta(days=TYPES_REFRESH_DAYS)
     types_checked = prev.get("types_checked")
     if due:
+        all_ok = True
         for pub in st:
             plans = [i for i in items if i.get("kind") == "subscription" and i["id"].startswith(f"sub:{pub}:")]
             if plans:
                 got = collect_types(pub, plans, fetch)
                 if got:
                     types[pub] = {**(types.get(pub) or {}), **got}
-        types_checked = now_iso()
+                else:
+                    all_ok = False
+        # Stamped only when every publication's descriptions were read; else tomorrow's run tries again.
+        if all_ok:
+            types_checked = now_iso()
 
     stats.update({"botm": sum(1 for i in items if i.get("kind") == "botm"),
                   "plans": sum(1 for i in items if i.get("kind") == "subscription"),

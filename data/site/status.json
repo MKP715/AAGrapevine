@@ -1,6 +1,6 @@
 {
- "generated": "2026-09-24T15:54:53Z",
- "updated": "2026-09-24T15:54:53Z",
+ "generated": "2026-09-24T16:54:13Z",
+ "updated": "2026-09-24T16:54:13Z",
  "fixture": false,
  "sources": [
   {
@@ -383,16 +383,16 @@
   "updated": "2026-09-24T06:35:22Z"
  },
  "translations": {
-  "cached": 1851,
+  "cached": 1847,
   "engine": "argos1.0-ct2/v5",
   "model_enabled": true,
-  "translated_this_run": 0,
-  "from_cache": 1851,
+  "translated_this_run": 2,
+  "from_cache": 1845,
   "pending": 0,
   "rejected_by_guard": 0,
-  "seconds": 0.1,
-  "model_seconds": 0.0,
-  "texts_per_second": null,
+  "seconds": 0.7,
+  "model_seconds": 0.3,
+  "texts_per_second": 2.8,
   "glossary_entries": 257
  },
  "counts": {
@@ -405,7 +405,7 @@
   "editorial": 37,
   "weekly_open": 2,
   "announcements": 0,
-  "events": 38,
+  "events": 31,
   "whatsnew": 150,
   "districts": 2,
   "shop": 54

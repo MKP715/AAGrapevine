@@ -16,7 +16,7 @@
   "shop.botm_title_pct": { "en": "Book of the Month — {pct}% off", "es": "Libro del mes: {pct}% de descuento" },
   "shop.botm_title": { "en": "Book of the Month", "es": "Libro del mes" },
   "shop.botm_sub": { "en": "Every month, Grapevine and La Viña each put one of their books on sale — real stories from AA members, for your nightstand or to pass along.", "es": "Cada mes, La Viña y Grapevine ponen en oferta uno de sus libros: historias reales de miembros de AA, para tu mesita de noche o para compartir." },
-  "shop.botm_kicker": { "en": "{month} Book of the Month", "es": "Libro del mes de {month}" },
+  "shop.botm_kicker_dates": { "en": "Book of the Month · {start} – {end}", "es": "Libro del mes · del {start} al {end}" },
   "shop.sticker_word": { "en": "off", "es": "descuento" },
   "shop.cover_alt": { "en": "Cover of the book {title}", "es": "Portada del libro {title}" },
   "shop.title_tr": { "en": "Title translation", "es": "Traducción del título" },

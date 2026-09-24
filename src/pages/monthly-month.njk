@@ -7,8 +7,9 @@ bodyClass: mp-page
 pageScripts: ["/assets/js/monthly.js"]
 eleventyComputed:
   lang: "{{ mpage.lang }}"
-  title: "{{ 'monthly.month_title' | t(mpage.lang, { month: (mpage.key | mpMonth(db, carry, site, mpage.lang)).title }) }}"
-  description: "{% set mm = mpage.key | mpMonth(db, carry, site, mpage.lang) %}{{ ('monthly.month_desc' | t(mpage.lang, { month: mm.title, theme: mm.gv.theme })) if mm.gv else ('monthly.month_desc_plain' | t(mpage.lang, { month: mm.title })) }}"
+  # `| safe`: the layout escapes the title and description once (no "&amp;amp;" in the tab / share preview)
+  title: "{{ ('monthly.month_title' | t(mpage.lang, { month: (mpage.key | mpMonth(db, carry, site, mpage.lang)).title })) | safe }}"
+  description: "{% set mm = mpage.key | mpMonth(db, carry, site, mpage.lang) %}{{ (('monthly.month_desc' | t(mpage.lang, { month: mm.title, theme: mm.gv.theme })) if mm.gv else ('monthly.month_desc_plain' | t(mpage.lang, { month: mm.title }))) | safe }}"
 ---
 {#- ONE month of /monthly/: the poster (1080 × 1350, scaled to fit; Download PNG / Share / Print)
     and that month's full toolkit below / beside it, with previous / next month links.
@@ -22,7 +23,7 @@ eleventyComputed:
 {%- set L = site.links -%}
 {%- set pageAbs = m.url | siteUrl(site) -%}
 
-{% call ui.pageHero(lang, m.title, "monthly.month_sub" | t(lang), "calendar-heart", "monthly.eyebrow" | t(lang)) %}
+{% call ui.pageHero(lang, m.title, "monthly.month_sub" | t(lang), "calendar-heart", "monthly.title" | t(lang)) %}
 <div class="hero-actions">
   <a class="btn-light" href="{{ '/monthly/' | lurl(lang) }}">{% icon "layout-grid", "size-4" %} {{ "monthly.back_hub" | t(lang) }}</a>
   {% if m.isCurrent %}<span class="badge-new">{{ "monthly.current" | t(lang) }}</span>{% endif %}
@@ -51,14 +52,14 @@ eleventyComputed:
         {% if lang == "es" and m.lv %}
         <p class="eyebrow text-lv">{{ "monthly.in_lv" | t(lang) }} · {{ m.lv.label }}</p>
         <p class="mt-1 font-display text-xl font-semibold text-ink">{{ m.lv.theme }}</p>
-        {% if m.lv.url %}<a class="link mt-1 inline-flex items-center gap-1 text-sm" href="{{ m.lv.url }}" target="_blank" rel="noopener" hreflang="es">{{ "monthly.issue_link" | t(lang) }} {% icon "external-link", "size-3.5" %}</a>{% endif %}
+        {% if m.lv.url %}<a class="link mt-1 inline-flex items-center gap-1 text-sm max-sm:min-h-11" href="{{ m.lv.url }}" target="_blank" rel="noopener" hreflang="es">{{ "monthly.issue_link" | t(lang) }} {% icon "external-link", "size-3.5" %}</a>{% endif %}
         <hr class="my-5 border-line">
         {% endif %}
-        <p class="eyebrow text-gv">{{ "monthly.in_gv" | t(lang) }}</p>
+        <p class="eyebrow text-gv">{{ "monthly.in_gv" | t(lang, { month: m.monthName }) }}</p>
         <h3 class="h-card mt-1 text-2xl">{{ m.gv.theme if m.gv else ("monthly.no_issue" | t(lang)) }}</h3>
-        {% if m.gv and m.gv.url %}<a class="link mt-1 inline-flex items-center gap-1 text-sm" href="{{ m.gv.url }}" target="_blank" rel="noopener" hreflang="en">{{ "monthly.issue_link" | t(lang) }} {% icon "external-link", "size-3.5" %}</a>{% endif %}
+        {% if m.gv and m.gv.url %}<a class="link mt-1 inline-flex items-center gap-1 text-sm max-sm:min-h-11" href="{{ m.gv.url }}" target="_blank" rel="noopener" hreflang="en">{{ "monthly.issue_link" | t(lang) }} {% icon "external-link", "size-3.5" %}</a>{% endif %}
         {% if lang == "en" and m.lv %}
-        <p class="mt-3 text-sm text-muted"><span class="font-semibold text-lv">{{ "monthly.in_lv" | t(lang) }} ({{ m.lv.label }}):</span> <span lang="es">{{ m.lv.theme }}</span></p>
+        <p class="mt-3 text-sm text-muted"><span class="font-semibold text-lv">{{ "monthly.in_lv" | t(lang) }} ({{ m.lv.label }}):</span> {{ m.lv.theme }}</p>
         {% endif %}
         {% if m.tips.length %}
         <h4 class="mt-5 text-sm font-semibold uppercase tracking-wider text-muted">{{ "monthly.put_to_work" | t(lang) }}</h4>
@@ -78,11 +79,8 @@ eleventyComputed:
         <p class="mt-2 text-sm text-muted">{{ "monthly.lv_topics" | t(lang) }}</p>
         <ul class="mt-2 flex flex-wrap gap-2" role="list">{% for tp in m.lvTopics %}<li class="badge-lv" lang="es">{{ tp.es }}</li>{% endfor %}</ul>
         {% endif %}
-        <div class="mt-4 flex flex-wrap gap-2">
-          <a class="btn-lv btn-sm" href="{{ L.lv_share_story }}" target="_blank" rel="noopener" hreflang="es">{% icon "send", "size-4" %} {{ "monthly.submit_gv" | t(lang) }}</a>
-          <a class="btn-secondary btn-sm" href="mailto:{{ L.lv_email_editorial }}">{% icon "mail", "size-4" %} {{ L.lv_email_editorial }}</a>
-          <a class="btn-ghost btn-sm" href="{{ L.lv_guidelines }}" target="_blank" rel="noopener" hreflang="es">{{ "monthly.guidelines" | t(lang) }}</a>
-        </div>
+        {#- how to send (e-mail, guidelines) has ONE home: /contribute/ (the poster keeps the e-mail for print) -#}
+        <a class="link mt-4 inline-flex min-h-11 items-center gap-1 text-sm font-semibold" href="{{ '/contribute/' | lurl(lang) }}#submit">{{ "monthly.lv_send_link" | t(lang) }} {% icon "arrow-right", "size-4" %}</a>
       </article>
       {% endset %}
       {% set gvCard %}
@@ -95,18 +93,14 @@ eleventyComputed:
           <li class="rounded-xl border border-line bg-surface-2/50 p-4">
             <p class="font-display text-lg font-semibold text-ink">{{ d.theme }}</p>
             <p class="mt-0.5 text-sm font-semibold text-gv">{{ "monthly.for_issue" | t(lang, { issue: d.issueLabel }) }} — {{ "monthly.due" | t(lang, { date: d.dueLong }) }}</p>
-            {% if d.summary %}<p class="mt-1.5 text-sm text-muted">{{ d.summary }}{% if d.machine %} <span class="badge-muted">{{ "monthly.machine" | t(lang) }}</span>{% endif %}</p>{% endif %}
           </li>
           {% endfor %}
         </ul>
         {% else %}
         <p class="mt-2 text-sm text-muted">{{ "monthly.no_deadlines" | t(lang) }}</p>
         {% endif %}
-        <div class="mt-4 flex flex-wrap gap-2">
-          <a class="btn-primary btn-sm" href="{{ (m.deadlines[0].submitUrl if m.deadlines.length and m.deadlines[0].submitUrl else L.gv_share_story) }}" target="_blank" rel="noopener" hreflang="en">{% icon "send", "size-4" %} {{ "monthly.submit_gv" | t(lang) }}</a>
-          <a class="btn-secondary btn-sm" href="mailto:{{ L.gv_email_editorial }}">{% icon "mail", "size-4" %} {{ L.gv_email_editorial }}</a>
-          <a class="btn-ghost btn-sm" href="{{ L.gv_guidelines }}" target="_blank" rel="noopener" hreflang="en">{{ "monthly.guidelines" | t(lang) }}</a>
-        </div>
+        {#- the full prompts, the e-mail and the guidelines have ONE home: /contribute/#deadlines -#}
+        <a class="link mt-4 inline-flex min-h-11 items-center gap-1 text-sm font-semibold" href="{{ '/contribute/' | lurl(lang) }}#deadlines">{{ "monthly.deadlines_link" | t(lang) }} {% icon "arrow-right", "size-4" %}</a>
       </article>
       {% endset %}
       {% if lang == "es" %}{{ lvCard | safe }}{{ gvCard | safe }}{% else %}{{ gvCard | safe }}{{ lvCard | safe }}{% endif %}
@@ -120,7 +114,7 @@ eleventyComputed:
           <li><strong class="text-ink" lang="{{ b.lang }}">{{ b.title }}</strong> <span class="text-sm text-muted">— {{ ("monthly.botm_off" | t(lang, { pct: b.discount, date: b.endsLabel })) if b.discount else ("monthly.botm_until" | t(lang, { date: b.endsLabel })) }}</span></li>
           {% endfor %}
         </ul>
-        <a class="link mt-3 inline-flex items-center gap-1 text-sm font-semibold" href="{{ '/shop/' | lurl(lang) }}#botm">{{ "monthly.botm_more" | t(lang) }} {% icon "arrow-right", "size-4" %}</a>
+        <a class="link mt-3 inline-flex min-h-11 items-center gap-1 text-sm font-semibold" href="{{ '/shop/' | lurl(lang) }}#botm">{{ "monthly.botm_more" | t(lang) }} {% icon "arrow-right", "size-4" %}</a>
       </article>
       {% endif %}
 
@@ -133,7 +127,7 @@ eleventyComputed:
           <li class="flex gap-3 py-3">
             <span class="mp-minichip" aria-hidden="true"><span>{{ d.chip.mon }}</span><strong>{{ d.chip.day }}</strong></span>
             <span class="min-w-0">
-              <a class="font-semibold text-ink no-underline hover:text-gv hover:underline" href="{{ ('/meeting/' | lurl(lang)) if d.kind == 'committee' else (d.url | lurl(lang) if d.url.startsWith('/') else d.url) }}"{% if not d.url.startsWith('/') and d.kind != 'committee' %} target="_blank" rel="noopener"{% endif %}>{{ ("monthly.committee" | t(lang)) if d.kind == "committee" else d.title }}</a>
+              <a class="inline-flex font-semibold text-ink no-underline hover:text-gv hover:underline max-sm:min-h-11 max-sm:items-center" href="{{ ('/meeting/' | lurl(lang)) if d.kind == 'committee' else (d.url | lurl(lang) if d.url.startsWith('/') else d.url) }}"{% if not d.url.startsWith('/') and d.kind != 'committee' %} target="_blank" rel="noopener"{% endif %}>{{ ("monthly.committee" | t(lang)) if d.kind == "committee" else d.title }}</a>
               <span class="block text-sm text-muted">{{ d.day }}{% if d.endDay %} – {{ d.endDay }}{% endif %}{% if d.time %} · {{ d.time }} {{ d.zone }}{% endif %}{% if d.kind == "committee" %} · {{ d.platform }}{% elif d.city %} · {{ d.city }}{% endif %}{% if d.tentative %} · {{ "committee.events.tentative" | t(lang) }}{% endif %}</span>
             </span>
           </li>
@@ -143,8 +137,8 @@ eleventyComputed:
         <p class="mt-2 text-sm text-muted">{{ "monthly.no_dates" | t(lang) }}</p>
         {% endif %}
         <div class="mt-3 flex flex-wrap gap-2">
-          <a class="btn-secondary btn-sm" href="{{ '/events/' | lurl(lang) }}">{% icon "calendar-days", "size-4" %} {{ "monthly.events_link" | t(lang) }}</a>
-          <a class="btn-ghost btn-sm" href="{{ '/meeting/' | lurl(lang) }}">{% icon "video", "size-4" %} {{ "monthly.meeting_link" | t(lang) }}</a>
+          <a class="btn-secondary btn-sm max-sm:min-h-11" href="{{ '/events/' | lurl(lang) }}">{% icon "calendar-days", "size-4" %} {{ "monthly.events_link" | t(lang) }}</a>
+          <a class="btn-ghost btn-sm max-sm:min-h-11" href="{{ '/meeting/' | lurl(lang) }}">{% icon "video", "size-4" %} {{ "monthly.meeting_link" | t(lang) }}</a>
         </div>
       </article>
 
@@ -156,7 +150,7 @@ eleventyComputed:
           <li><strong class="text-ink">{{ w.title }}</strong>{% if w.new %} <span class="badge-new">{{ "monthly.new" | t(lang) }}</span>{% endif %}<span class="block text-sm text-muted">{{ w.when }}{% if w.startsLabel %} · {{ "monthly.weekly_from" | t(lang, { date: w.startsLabel }) }}{% endif %}</span></li>
           {% endfor %}
         </ul>
-        <a class="link mt-3 inline-flex items-center gap-1 text-sm font-semibold" href="{{ '/meeting/' | lurl(lang) }}#weekly-open">{{ "monthly.weekly_link" | t(lang) }} {% icon "arrow-right", "size-4" %}</a>
+        <a class="link mt-3 inline-flex min-h-11 items-center gap-1 text-sm font-semibold" href="{{ '/meeting/' | lurl(lang) }}#weekly-open">{{ "monthly.weekly_link" | t(lang) }} {% icon "arrow-right", "size-4" %}</a>
       </article>
       {% endif %}
     </div>

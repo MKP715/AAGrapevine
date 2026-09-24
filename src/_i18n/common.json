@@ -57,8 +57,8 @@
     "es": "Reunión del comité"
   },
   "nav.meeting_desc": {
-    "en": "Monthly Zoom meeting, countdown & details",
-    "es": "Reunión mensual por Zoom, cuenta regresiva y detalles"
+    "en": "Monthly committee meeting + weekly open meetings on Zoom",
+    "es": "Reunión mensual del comité y reuniones abiertas semanales por Zoom"
   },
   "nav.events": {
     "en": "Events",
@@ -91,10 +91,6 @@
   "nav.announcements_desc": {
     "en": "News from the committee",
     "es": "Noticias del comité"
-  },
-  "nav.service": {
-    "en": "Service",
-    "es": "Servicio"
   },
   "nav.gvr": {
     "en": "GVR / RLV Corner",
@@ -199,10 +195,6 @@
   "footer.explore": {
     "en": "Explore",
     "es": "Explorar"
-  },
-  "footer.committee": {
-    "en": "Get Involved & Committee",
-    "es": "Participa y Comité"
   },
   "footer.stay_updated": {
     "en": "Stay updated",

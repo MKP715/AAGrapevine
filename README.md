@@ -28,6 +28,11 @@ Sitio web del **Comité de Grapevine y La Viña del Área 65 del Noreste de Texa
     `(hasta 2027-02-01)` lo oculta después de esa fecha.
   - Cada **subcarpeta** de `fotos` es un **álbum**. Por favor, solo fotos donde **no se reconozca la
     cara** de ningún miembro de AA.
+- **Tienda** (`/es/shop/`): el **libro del mes** de Grapevine y La Viña y los **precios de suscripción** por
+  región, leídos cada día de las tiendas oficiales (toda compra se hace allí). **Kit del mes y carteles**
+  (`/es/monthly/`): un cartel para cada mes (descargar en PNG, compartir, imprimir) y las 10 maneras de poner
+  una edición a trabajar. La **reunión abierta semanal de La Viña** (jueves, en español) está en
+  `/es/meeting/#weekly-open`.
 - **Ajustes** (reunión del comité, Zoom, correo, eventos de cada mes como la mesa en CityWide Dallas):
   archivo `config/site.yml`.
   **Corregir una traducción:** `data/translations/overrides.yml`.
@@ -95,6 +100,8 @@ It also runs within a few minutes whenever someone saves a change to the setting
 | **Committee Google Drive** | Reports, notes, slides, workshops, forms, photo albums; dated flyers → events; docs in *announcements* → announcements | **Documents · Photos · Events · Announcements** |
 | **Editorial calendar** (Grapevine) and suggested topics (La Viña) | Upcoming themes and story deadlines | **Contribute** |
 | **Grapevine Weekly Open meeting** (web page) | Current day, time and Zoom details | **Meeting** |
+| **La Viña's weekly open meeting** (from the settings, `lavina_weekly_open:` — an official La Viña flyer) | Thursdays in Spanish, first date, Zoom details | **Meeting** (one line on Home · Listen · Watch · monthly posters) |
+| **Official stores** (aagrapevine.org / aalavina.org store pages) | **Book of the Month** (title, cover, percent, sale price, dates) and **subscription prices** per region (U.S. · Canada · International; print / digital / complete) | **Shop** (a short teaser on Home, the monthly posters and the weekly e-mail) |
 | **Committee meeting** (from the settings) | Next dates, countdown, "add to calendar" | **Meeting · Events** |
 | **Monthly events** (from the settings, e.g. our booth at CityWide Dallas) | The next dates, "add to calendar" | **Events · Home · Meeting · calendar feed · weekly e-mail** |
 | **Other calendars** (optional, e.g. the NETA 65 workshop calendar on neta65.org) | Their events, each shown **once** even when it is also in `content/events` (yours wins). *neta65.org currently blocks robots — see [the NETA 65 workshop calendar](#the-neta-65-workshop-calendar)* | **Events** |
@@ -106,9 +113,27 @@ a **search** page, and a **status** page that shows the health of every source. 
 page for subscribing and buying (every purchase links to the official Grapevine / La Viña stores;
 the old `/subscribe/` address redirects there, #anchors included).
 
+What the newer pages do:
+
+- **Book of the Month** (`/shop/#botm`): both magazines' books of the month with cover, percent off, sale and
+  regular price, the offer's dates and a live "N days left" count; the heading and buttons switch to
+  "Offer ended" by themselves on the last day, even before the next update. The home page shows a small teaser.
+- **Subscriptions & prices** (`/shop/#subscriptions`): a switch for magazine × region (U.S., Canada,
+  International) with every term's price as the stores list it, volume prices, gift subscriptions (Carry the
+  Message), home-group order forms and catalogs. Links like `/shop/?pub=lv#subscriptions` open La Viña's prices.
+- **Monthly toolkit & posters** (`/monthly/`): the "10 ways to put an issue to work" guide
+  (`config/carry.yml`), and a page for this month and each of the next 12 — the issue themes, tips, story
+  deadlines, dates (committee meeting, the CityWide booth, workshops) and a **poster** in its own seasonal
+  design to download as a PNG for WhatsApp / Instagram (1080 × 1350), share, or print on one letter page.
+  Its QR code opens that month's page; the three previous months' addresses forward to `/monthly/`.
+- **La Viña's weekly open meeting**: `/meeting/#weekly-open` shows both public weekly meetings (Grapevine on
+  Wednesdays in English, La Viña on Thursdays in Spanish) with day, time and Zoom details — the one place
+  with those details; other pages link there.
+
 **Menus** (`src/_data/nav.js`): What's New · Read · Listen · Watch · Library · Shop ·
 **Get Involved** (monthly toolkit, share your story, published writers, GVR / RLV corner,
-districts, Instagram) · **Committee** (meeting, events, documents, photos, announcements).
+districts) · **Committee** (meeting & weekly open meetings, events, documents, photos, announcements).
+Instagram, the weekly digest, the share kit, search and status are in the footer and the phone menu.
 Each piece of information has one home page; other pages only link to it.
 
 **Respecting AA Grapevine, Inc.:** the site shows titles and the publishers' own public teasers and
@@ -230,9 +255,12 @@ recurring_events:
     end: "20:00"
     location: "Lover's Lane United Methodist Church, 9200 Inwood Road, Dallas, TX 75220"
     url: "https://citywidedallasaa.org"   # the "Event details" link (optional)
-    months_ahead: 6                 # how many upcoming dates to list
+    months_ahead: 6                 # how many upcoming dates to list (Events page, calendar feed)
     skip_dates: []                  # a month without it: ["2026-12-12"] (must be that month's 2nd Saturday)
 ```
+
+`months_ahead` only sets how many dates the **Events** page and the calendar feed list; the monthly posters
+(`/monthly/`, 13 months) work out the later dates from the same rule, so there is no need to raise it.
 
 To add another one, copy the whole block (from `- key:` down), paste it under the last one and
 change the values. Every date then shows on the **Events** page (with an "Every month" badge); the
@@ -247,6 +275,14 @@ on its own, make the weekly e-mail go out. If a block has a mistake (for example
 the **Actions** tab shows a yellow **Settings problem** saying what to fix. The same happens for a
 `skip_dates` date that is not one of the event's days (for example the Sunday, or the 1st Saturday):
 that month still shows, and the note gives the date to use instead.
+
+### La Viña's weekly open meeting
+
+`lavina_weekly_open:` in `config/site.yml` holds La Viña's weekly open meeting (from its official flyer —
+there is no web page to read yet): Spanish and English title and summary, `day`, `time` + `timezone` (the
+meeting's own time zone; the site also shows Central time), `starts` (the first meeting, which must be on
+that `day`), `zoom_id` and `passcode`. When La Viña publishes a page for it, put the address in `url`.
+Set `enabled: false` (or delete the block) to take it off the site.
 
 ---
 

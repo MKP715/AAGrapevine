@@ -102,6 +102,7 @@ function botmView(b, lang, today) {
     ends: b.ends || "",
     endsLabel: b.ends ? dayMonth(b.ends, lang) : "",
     starts: b.starts || "",
+    startsLabel: b.starts ? dayMonth(b.starts, lang) : "",
     monthLabel: i18nField(b, "month_label", lang) || b.month_label || "",
     days,
     ended: days !== null && days < 0,
@@ -185,8 +186,9 @@ function typeView(pub, type, plans, shop, lang, t) {
   // else our short i18n text.
   const official = shop.types && shop.types[pub] && shop.types[pub][type];
   // The card lists every term, so a description written for one term ("Un año de acceso…",
-  // "One year of online access…") loses that lead-in.
-  const officialText = official && lang === STORE_LANG[pub]
+  // "One year of online access…") loses that lead-in. The print text is always ours: the store's
+  // ("seis (6) ejemplares…") counts one year's copies and would read as the total on a 1–3 year card.
+  const officialText = official && lang === STORE_LANG[pub] && type !== "print"
     ? String(official[lang] || "").replace(/^(un|1)\s+años?\s+de\s+|^(one|1)\s+years?\s+of\s+/i, "").replace(/^./, (c) => c.toUpperCase())
     : "";
   const fallbackKey = type === "print" ? "shop.desc_print_" + pub : type === "other" ? "" : "shop.desc_" + type;

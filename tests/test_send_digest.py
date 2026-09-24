@@ -76,15 +76,15 @@ def test_botm_teaser_in_both_languages(site_dir, tmp_path):
     # English half: heading with the percent from the data, GV first, sale + regular price, last day, links
     assert "BOOK OF THE MONTH — 20% OFF" in en
     assert "* [Grapevine] No Matter What: Dealing With Adversity & Sobriety — $11.99 (regular $14.99) · until October 14" in en
-    assert en.index("[Grapevine]") < en.index("[La Viña] Face to Face")
+    assert en.index("[Grapevine]") < en.index("[La Viña] Frente a Frente")   # the title it is sold under
     assert GV_PRODUCT in en and LV_PRODUCT in en
     assert f"→ Book of the Month details on our shop page: {SITE}/shop/#botm" in en
     assert f"This month's poster & toolkit (September 2026): {SITE}/monthly/2026-09/" in en
 
-    # Spanish half: La Viña first, Spanish titles/dates/links
+    # Spanish half: La Viña first, Spanish dates/links; each book keeps its own title
     assert "LIBRO DEL MES — 20% DE DESCUENTO" in es
     assert "* [La Viña] Frente a Frente: El apadrinamiento en acción — $11.99 (precio regular $14.99) · hasta el 14 de octubre" in es
-    assert es.index("[La Viña]") < es.index("[Grapevine] No importa qué")
+    assert es.index("[La Viña]") < es.index("[Grapevine] No Matter What")
     assert f"{SITE}/es/shop/#botm" in es
     assert f"El cartel y el kit de este mes (septiembre de 2026): {SITE}/es/monthly/2026-09/" in es
 
@@ -95,9 +95,9 @@ def test_botm_teaser_in_both_languages(site_dir, tmp_path):
     assert f'href="{SITE}/shop/#botm"' in html and f'href="{SITE}/es/shop/#botm"' in html
     assert f'href="{SITE}/monthly/2026-09/"' in html and f'href="{SITE}/es/monthly/2026-09/"' in html
     assert "<strong" in html and "$11.99</strong> (regular $14.99) · until October 14" in html
-    # The machine-translated titles (GV in Spanish, LV in English) bring the small footnote in both halves
-    assert "Some titles were translated automatically." in en
-    assert "Algunos títulos se tradujeron automáticamente." in es
+    # Book titles are never machine-translated, so they bring no "translated automatically" footnote
+    assert "Some titles were translated automatically." not in en
+    assert "Algunos títulos se tradujeron automáticamente." not in es
 
 
 def test_ended_offer_is_left_out(site_dir, tmp_path):

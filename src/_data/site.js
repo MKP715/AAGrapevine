@@ -10,6 +10,9 @@ export default function () {
     // The GitHub Action exports SITE_URL from actions/configure-pages (custom domains, renames)
     url: String(process.env.SITE_URL || s.url || "").replace(/\/+$/, ""),
     meeting: cfg.meeting || {},
+    // The monthly series (CityWide booth …): /monthly/ works out months past events.json's
+    // `months_ahead` dates from these rules (eleventy/filters/monthly.js).
+    recurring_events: Array.isArray(cfg.recurring_events) ? cfg.recurring_events : [],
     drive: cfg.drive || {},
     sources: cfg.sources || {},
     links: cfg.links || {},

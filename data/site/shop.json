@@ -22,20 +22,18 @@
    "i18n": {
     "title": {
      "en": "No Matter What: Dealing With Adversity in Sobriety",
-     "es": "No importa qué: lidiar con la adversidad en sobriedad"
+     "es": "Pase lo que pase: cómo enfrentar la adversidad en la sobriedad"
     },
     "blurb": {
      "en": "All recovering alcoholics have had to deal with adversity throughout sobriety...a serious illness, an ugly divorce, the death of a child, the loss of a house to fire or to the bank. The stories in this book show how AA members use the tools of the program and embrace the Fellowship to deal with tough issues.",
-     "es": "Todos los alcohólicos recuperados han tenido que lidiar con la adversidad a lo largo de sobriedad... una enfermedad grave, un divorcio feo, la muerte de un niño, la pérdida de una casa a disparar o al banco. Las historias de este libro muestran cómo los miembros de AA utilizan las herramientas del programa y abrazan la Comunidad para tratar problemas difíciles."
+     "es": "Todos los alcohólicos en recuperación han tenido que enfrentar la adversidad durante su sobriedad… una enfermedad grave, un divorcio difícil, la muerte de un hijo, la pérdida de una casa por un incendio o a manos del banco. Las historias de este libro muestran cómo los miembros de AA usan las herramientas del programa y se apoyan en la Comunidad para enfrentar situaciones difíciles."
     },
     "month_label": {
      "en": "October",
      "es": "Octubre"
     }
    },
-   "machine": [
-    "es"
-   ]
+   "machine": []
   },
   {
    "id": "botm:lv",
@@ -56,11 +54,11 @@
    "blurb": "Detrás de cada historia de recuperación suele haber alguien que extendió una mano y compartió su experiencia. En Frente a Frente, miembros de AA relatan cómo el apadrinamiento les brindó esperanza, fortaleció su sobriedad y les enseñó a confiar, a pedir ayuda y a llevar el mensaje a otros alcohólicos.",
    "i18n": {
     "title": {
-     "en": "Face to Face: The Sponsorship in Action",
+     "en": "One on One: AA Sponsorship in Action",
      "es": "Frente a Frente: El apadrinamiento en acción"
     },
     "blurb": {
-     "en": "Behind each recovery story there is usually someone who stretched out a hand and shared his experience. In Face to Face, members of AA relate how the sponsorship gave them hope, strengthened their sobriety and taught them to trust, ask for help and bring the message to other alcoholics.",
+     "en": "Behind almost every recovery story is someone who reached out a hand and shared their experience. In Frente a Frente, AA members tell how sponsorship gave them hope, strengthened their sobriety and taught them to trust, to ask for help and to carry the message to other alcoholics.",
      "es": "Detrás de cada historia de recuperación suele haber alguien que extendió una mano y compartió su experiencia. En Frente a Frente, miembros de AA relatan cómo el apadrinamiento les brindó esperanza, fortaleció su sobriedad y les enseñó a confiar, a pedir ayuda y a llevar el mensaje a otros alcohólicos."
     },
     "month_label": {
@@ -68,9 +66,7 @@
      "es": "Octubre"
     }
    },
-   "machine": [
-    "en"
-   ]
+   "machine": []
   }
  ],
  "bulk_discounts": {

@@ -98,7 +98,9 @@ calendar feeds write `STATUS:TENTATIVE` (every other event `STATUS:CONFIRMED`). 
    `starts`. Title and summary are the config's own words in both languages (`extra.own_i18n` → `i18n.title`,
    `i18n.summary`, never machine-translated); `i18n.day/time/time_central/when/sentence` are written by rules as
    for the Grapevine item ("Thursdays at 11:00 AM Central" / "Jueves a las 11:00 a. m. (hora del Centro)").
-   Delete the config block or set `enabled: false` to take it off the site.
+   Delete the config block or set `enabled: false` to take it off the site. A `starts` date that is not on
+   the configured weekday is replaced by the first real meeting (with a warning in the log). The title has no
+   "New": the /monthly/ poster adds a "New" badge in the first month only.
 The raw file may list them in another order (save_raw sorts by date); build_data puts Grapevine first.
 Every module adds more `extra` fields than listed here; §5 lists all of them as built.
 
@@ -227,7 +229,17 @@ hard-code a price, percent or date; other pages show at most a compact teaser th
   language. Prices are in USD as the stores list them ("subject to Canadian or International conversion rates").
 * `sale_price` = round(`price` × (1 − `discount_pct`/100), 2); the percent is read from the offer page.
 * An offer whose `ends` is before today (site time zone) is left out even if the official page still shows it;
-  a page with no offer gives no entry. Years are inferred around the sync date ("SEPT. 15 thru OCt. 14").
+  a page with no offer gives no entry. Years are inferred around the sync date ("SEPT. 15 thru OCt. 14"): the
+  latest window that has already started (or starts within 31 days), so an old offer left on the page reads as
+  past, never as next year's. An offer line with one date ("through October 14") gives `starts: null`.
+* The Book of the Month page must look like one (the content block + "Book of the Month" / "Libro del mes" in
+  its title or heading): an unrelated 200 page (maintenance, a redirect home) is an error (previous offer kept,
+  `ok: false`), never "no offer today".
+* `currency` is read from the price ("CA$ 30" → "CAD", else "USD"); `types_checked` is stamped only when every
+  publication's type descriptions were read (else the next run tries again). The print plans' card text is always
+  the site's own (`shop.desc_print_*`): the store's sentence counts one year's copies.
+* A book is always shown under the title it is sold under (`title`, in `lang`) — on /shop/, the home teaser,
+  the posters and the digest (web, text, e-mail); `i18n.title` of the other language is only a small subtitle.
 * `month_label` i18n is written by rule (never machine-translated); `title`/`blurb`/`types` texts are
   machine-translated into the other language (cached, like every other text).
 * A part that cannot be fetched or parsed (GV offer, LV offer, GV subscriptions, LV subscriptions — or one
@@ -288,6 +300,17 @@ updating" issue.
 `pending` > 0 means the translation time budget ran out; the rest is translated on the next run.
 `rejected_by_guard` counts sentences whose machine translation was refused (repeated words,
 > 2.5× longer, changed numbers, HTML entities) — those keep their original text.
+
+### The monthly toolkit (`/monthly/`) — no data file of its own
+`eleventy/filters/monthly.js` builds one model per month at build time (America/Chicago): this month + the
+next 12 (`monthlyPages` → `/monthly/YYYY-MM/` × en/es; `mpMonths` / `mpMonth` filters) from `db.editorial`
+(themes, story deadlines, La Viña's suggested topics), `db.articles.issues`, `config/carry.yml` (the 10 ways,
+the "put it to work" tips), `db.events` (+ the committee meeting from `site.meeting` and recurring dates from
+`site.recurring_events` for months past `events.json`), `db.weekly_open` and `db.shop.botm`. The hub (`/monthly/`)
+is the canonical home of the 10 ways; each month page of that month's toolkit and poster (PNG 1080 × 1350,
+share, print on one Letter page). The 3 months before this one keep small redirect pages to `/monthly/`
+(`monthlyPastPages`, `src/pages/monthly-past.njk`), so a printed poster's QR code never lands on a 404.
+`MONTHLY_NOW=2026-12-15` fixes "today" for testing.
 
 ## 4. Template helpers (Eleventy filters)
 
@@ -367,7 +390,9 @@ it is read once.
 | district (`districts`) | top-level `number`, `name`, `language`, `website`, `gvr_contact`, `meets` (+ any extra YAML keys) | `name`, `meets` |
 
 #### Recurring events (category `recurring`; build_data.recurring_events)
-One item per date of each `recurring_events:` entry in `config/site.yml` — the next `months_ahead` (default 6)
+One item per date of each `recurring_events:` entry in `config/site.yml` — the next `months_ahead` (default 6;
+/events/ and the calendar feed list only these — the /monthly/ posters work out later months from the same rule,
+`site.recurring_events`, so the booth is on every month's poster without 13 cards on /events/)
 dates plus the dates of the last 90 days (those have `extra.past: true`; the pages never list them, the
 calendar feed keeps them for subscribers):
 ```json

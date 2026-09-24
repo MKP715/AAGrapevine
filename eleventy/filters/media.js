@@ -620,18 +620,21 @@ export default function (eleventyConfig, helpers) {
       canonical home (/meeting/#weekly-open — Zoom details live there only):
       db.weekly_open.items → "Wednesdays (English) and Thursdays (Spanish, from November 5)" /
       "miércoles (inglés) y jueves (español, desde el 5 de noviembre)". Weekday order; a meeting
-      that has not started yet (extra.starts after today, Central time) says from when. */
-  eleventyConfig.addFilter("mediaWeeklyDays", (items, lang = "en") => {
+      that has not started yet (extra.starts after today, Central time) says from when.
+      source ("grapevine" | "lavina"): only that meeting, as its bare day ("Wednesdays") — for a
+      card about one show (the Grapevine Weekly Open podcast on /listen/). */
+  eleventyConfig.addFilter("mediaWeeklyDays", (items, lang = "en", source = "") => {
     const WD = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
     const today = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Chicago", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
     const parts = (items || [])
-      .filter((it) => it && it.kind === "meeting" && it.status !== "gone")
+      .filter((it) => it && it.kind === "meeting" && it.status !== "gone" && (!source || it.source === source))
       .map((it, i) => ({ it, i, wd: WD.indexOf(String(it.extra?.weekday || "").toLowerCase()) }))
       .sort((a, b) => (a.wd < 0 ? 9 : a.wd) - (b.wd < 0 ? 9 : b.wd) || a.i - b.i)
       .map(({ it }) => {
         let day = tx(it, "day", lang);
         if (!day) return "";
         if (lang === "es") day = day.toLowerCase(); // "Miércoles" inside a sentence
+        if (source) return day;
         const language = translateKey(`media.wo_lang_${it.lang === "es" ? "es" : "en"}`, lang);
         const starts = String(it.extra?.starts || "");
         if (/^\d{4}-\d{2}-\d{2}$/.test(starts) && starts > today) {

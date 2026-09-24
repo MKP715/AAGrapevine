@@ -17,6 +17,7 @@
 //
 // Globals:   monthlyPages  [{ key: "YYYY-MM", lang }]  → pagination for the per-month pages
 //            monthlyKeys   ["YYYY-MM", …]              (13 keys, current month first)
+//            monthlyPastPages [{ key, lang, label }]   the 3 months before: redirect stubs to /monthly/
 // Filters:   mpMonths(db, carry, site, lang)            → [model, …] for the whole window
 //            mpMonth(key, db, carry, site, lang)        → one model
 //            mpQr(url, label)                           → QR code SVG (qrSvg from community.js)
@@ -27,6 +28,7 @@ import { qrSvg } from "./community.js";
 const TZ = "America/Chicago";
 const LOC = { en: "en-US", es: "es-US" };
 const WINDOW = 13;
+const PAST_MONTHS = 3;
 const WD = { sunday: 0, monday: 1, tuesday: 2, wednesday: 3, thursday: 4, friday: 5, saturday: 6 };
 
 // 12 poster designs keyed by calendar month; 6 structurally different layouts, each used twice
@@ -199,6 +201,10 @@ function eventDays(ev) {
   const start = chicagoYmd(ex.start || ev.date);
   let end = ex.end ? chicagoYmd(ex.end) : start;
   // An end at midnight (timed events that finish at 00:00) belongs to the day before; keep ≥ start.
+  if (end && end > start && typeof ex.end === "string" && !/^\d{4}-\d{2}-\d{2}$/.test(ex.end)) {
+    const c = chicagoClock(ex.end);
+    if (c && c.h === 0 && c.mi === 0) end = chicagoYmd(new Date(Date.parse(ex.end) - 1));
+  }
   if (!end || end < start) end = start;
   return { start, end };
 }
@@ -239,7 +245,7 @@ export function monthModel(key, db = {}, carry = {}, site = {}, lang = "en", now
 
   /* La Viña's bimonthly issue, when the synced one covers this month */
   const lvIssue = issues.find((i) => i && i.publication === "lv" && i.key && (i.key === key || addMonths(i.key, 1) === key)) || null;
-  const lv = lvIssue ? { key: lvIssue.key, theme: tr(lvIssue, "theme", L), label: tr(lvIssue, "label", "es"), url: lvIssue.url || "", cover: lvIssue.cover || "" } : null;
+  const lv = lvIssue ? { key: lvIssue.key, theme: tr(lvIssue, "theme", L), label: tr(lvIssue, "label", L), url: lvIssue.url || "", cover: lvIssue.cover || "" } : null;
 
   /* "Put it to work" tips for this month's Grapevine issue */
   const wayById = carry.wayById || {};
@@ -275,13 +281,17 @@ export function monthModel(key, db = {}, carry = {}, site = {}, lang = "en", now
   const lvTopicList = topics.map((i) => ({ id: i.id, es: tr(i, "title", "es"), text: tr(i, "title", L) }));
 
   /* Book of the Month offers whose window overlaps the month */
-  const botm = (((db.shop && db.shop.botm) || []).filter((b) => b && b.starts && b.ends && b.starts <= last && b.ends >= first))
+  const botm = (((db.shop && db.shop.botm) || []).filter((b) => b && b.ends && (!b.starts || b.starts <= last) && b.ends >= first))
     .sort((a, b) => (a.pub === (L === "es" ? "lv" : "gv") ? -1 : 1) - (b.pub === (L === "es" ? "lv" : "gv") ? -1 : 1))
     .map((b) => ({
       // The book's own title (a Grapevine book is in English, a La Viña book in Spanish), never a translation.
       id: b.id, pub: b.pub, title: b.title || tr(b, "title", L), lang: b.lang || (b.pub === "lv" ? "es" : "en"), discount: b.discount_pct || null,
       ends: b.ends, endsLabel: shortDate(b.ends, L, year), starts: b.starts, past: b.ends < today,
     }));
+
+  /* The shared offer when every book has the same discount and end date (the poster says it once) */
+  const botmOffer = botm.length > 1 && botm.every((b) => b.discount === botm[0].discount && b.ends === botm[0].ends)
+    ? { discount: botm[0].discount, endsLabel: botm[0].endsLabel } : null;
 
   /* Dates: committee meeting, the monthly recurring events, other events */
   const events = ((db.events && db.events.items) || []).filter((e) => e && e.kind === "event");
@@ -294,7 +304,7 @@ export function monthModel(key, db = {}, carry = {}, site = {}, lang = "en", now
     const shownDay = d.start < first ? first : d.start;
     return {
       id: e.id, title: tr(e, "title", L), url: e.url || "",
-      ymd: d.start, endYmd: d.end, chip: chip(shownDay, L), day: longDay(d.start, L),
+      ymd: d.start, endYmd: d.end, chip: chip(shownDay, L), dayLabel: shortDate(shownDay, L, year), day: longDay(d.start, L),
       endDay: d.end !== d.start ? longDay(d.end, L) : "",
       range: d.end !== d.start ? dayRange(d.start, d.end, L) : "",
       time: timed ? `${timeRange(ex.start, ex.end, L)}` : "", zone: timed ? zone : "",
@@ -313,7 +323,22 @@ export function monthModel(key, db = {}, carry = {}, site = {}, lang = "en", now
     committee.title = "";
     committee.platform = (site.meeting && site.meeting.platform) || "Zoom";
   }
-  const recurring = events.filter((e) => e.extra && e.extra.recurring && e.extra.series && inMonth(e))
+  /* The recurring series (config/site.yml recurring_events:) — events.json lists only the next
+     `months_ahead` dates, so a later month's date is worked out from the same rule (like the
+     committee meeting from site.meeting), with the series' own title and repeat line. */
+  const recEvents = events.filter((e) => e.extra && e.extra.recurring && e.extra.series);
+  const recIn = recEvents.filter(inMonth);
+  for (const spec of Array.isArray(site.recurring_events) ? site.recurring_events : []) {
+    if (!spec || !spec.key || spec.enabled === false) continue;
+    const series = recEvents.filter((e) => e.extra.series === spec.key);
+    const lastListed = series.reduce((mx, e) => (eventDays(e).start > mx ? eventDays(e).start : mx), "");
+    if (!series.length || series.some(inMonth) || lastListed >= first) continue;
+    const r = meetingByRule(key, { week_of_month: spec.week_of_month, weekday: spec.weekday, start: spec.start, end: spec.end, skip_dates: spec.skip_dates || [] });
+    if (!r) continue;
+    const tpl = series[series.length - 1];
+    recIn.push({ ...tpl, id: `ev:recurring:${spec.key}:${r.ymd}`, date: r.start, extra: { ...tpl.extra, start: r.start, end: r.end } });
+  }
+  const recurring = recIn
     .sort((a, b) => eventDays(a).start.localeCompare(eventDays(b).start))
     .map((e) => evView(e, { kind: "recurring", series: e.extra.series, label: tr(e, "recurrence_label", L) }));
   const other = events.filter((e) => e.source !== "calendar" && !(e.extra && e.extra.recurring) && !String(e.id).startsWith("ev:committee:") && inMonth(e))
@@ -354,10 +379,10 @@ export function monthModel(key, db = {}, carry = {}, site = {}, lang = "en", now
   const url = (L === "es" ? "/es" : "") + path;
   return {
     key, lang: L, year, month: mNum, first, last,
-    name: cap(monthName(key, L)), label: monthLabel(key, L), title: cap(monthLabel(key, L)),
+    name: cap(monthName(key, L)), monthName: monthName(key, L), label: monthLabel(key, L), title: cap(monthLabel(key, L)),
     design: design.id, layout: design.layout, density,
     isCurrent: key === today.slice(0, 7),
-    gv, lv, tips, deadlines, lvTopics: lvTopicList, botm,
+    gv, lv, tips, deadlines, lvTopics: lvTopicList, botm, botmOffer,
     committee, recurring, events: other, dates, weekly, calendar,
     url, absUrl: String(site.url || "").replace(/\/$/, "") + url,
     prev: addMonths(key, -1), next: addMonths(key, 1),
@@ -371,6 +396,13 @@ export default function (eleventyConfig) {
   eleventyConfig.addGlobalData("monthlyPages", () => {
     const keys = windowKeys();
     return ["en", "es"].flatMap((lang) => keys.map((key) => ({ key, lang })));
+  });
+  // The last PAST_MONTHS months keep a small redirect page (src/pages/monthly-past.njk → /monthly/),
+  // so printed posters' QR codes and shared links never land on "page not found".
+  eleventyConfig.addGlobalData("monthlyPastPages", () => {
+    const cur = windowKeys(nowDate(), 1)[0];
+    const keys = Array.from({ length: PAST_MONTHS }, (_, i) => addMonths(cur, -(i + 1)));
+    return ["en", "es"].flatMap((lang) => keys.map((key) => ({ key, lang, label: monthLabel(key, lang) })));
   });
 
   // The window's models are built once per language per build (the hub and 26 pages share them).
@@ -393,5 +425,5 @@ export default function (eleventyConfig) {
   };
   eleventyConfig.addFilter("mpMonths", (db, carry, site, lang) => months(db, carry, site, lang));
   eleventyConfig.addFilter("mpMonth", (key, db, carry, site, lang) => months(db, carry, site, lang).find((m) => m.key === key) || monthModel(key, db || {}, carry || {}, site || {}, lang));
-  eleventyConfig.addFilter("mpQr", (url, label = "") => qrSvg(url, { label, cls: "mp-qr-svg", margin: 1 }));
+  eleventyConfig.addFilter("mpQr", (url, label = "") => qrSvg(url, { label, cls: "mp-qr-svg", margin: 2 }));
 }

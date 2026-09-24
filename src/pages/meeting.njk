@@ -312,7 +312,7 @@ pageScripts: ["/assets/js/committee.js"]
             <dt class="eyebrow">{{ "committee.meeting.id" | t(lang) }}</dt>
             <dd class="mt-1.5 flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
               <span class="font-mono text-lg font-semibold tracking-wide whitespace-nowrap text-ink">{{ w.zoomId }}</span>
-              <button type="button" class="btn-secondary btn-sm" data-copy="{{ w.zoomDigits }}" aria-label="{{ ('committee.weekly.copy_id_' + key) | t(lang) }}">{% icon "copy", "size-4" %} {{ "common.copy" | t(lang) }}</button>
+              <button type="button" class="btn-secondary btn-sm max-sm:min-h-11" data-copy="{{ w.zoomDigits }}" aria-label="{{ ('committee.weekly.copy_id_' + key) | t(lang) }}">{% icon "copy", "size-4" %} {{ "common.copy" | t(lang) }}</button>
             </dd>
           </div>
           {% endif %}
@@ -321,7 +321,7 @@ pageScripts: ["/assets/js/committee.js"]
             <dt class="eyebrow">{{ "committee.meeting.passcode" | t(lang) }}</dt>
             <dd class="mt-1.5 flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
               <span class="font-mono text-lg font-semibold tracking-wide text-ink">{{ w.passcode }}</span>
-              <button type="button" class="btn-secondary btn-sm" data-copy="{{ w.passcode }}" aria-label="{{ ('committee.weekly.copy_passcode_' + key) | t(lang) }}">{% icon "copy", "size-4" %} {{ "common.copy" | t(lang) }}</button>
+              <button type="button" class="btn-secondary btn-sm max-sm:min-h-11" data-copy="{{ w.passcode }}" aria-label="{{ ('committee.weekly.copy_passcode_' + key) | t(lang) }}">{% icon "copy", "size-4" %} {{ "common.copy" | t(lang) }}</button>
             </dd>
           </div>
           {% endif %}

@@ -28,7 +28,8 @@ pageScripts: ["/assets/js/media.js"]
 {%- set ssr = eps | limit(24) -%}
 {#- The weekly open meetings in one short line ("Wednesdays (English) and Thursdays (Spanish)"), linking
     to their one home, /meeting/#weekly-open, where the times and Zoom details are -#}
-{%- set woWhen = (db.weekly_open.items | mediaWeeklyDays(lang)) if db.weekly_open else "" -%}
+{#- (the Grapevine Weekly Open show card names only the Grapevine meeting it records) -#}
+{%- set woWhen = (db.weekly_open.items | mediaWeeklyDays(lang, "grapevine")) if db.weekly_open else "" -%}
 
 {#- ------------------------------------------------------------------ macros -#}
 

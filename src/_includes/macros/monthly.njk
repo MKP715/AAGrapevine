@@ -65,12 +65,13 @@
 {% endmacro %}
 
 {% macro issue(m, lang, max=3) %}
-{%- set n = max if m.density == "roomy" else (2 if max > 2 else max) -%}
+{#- tips shown: all (≤ max) in a quiet month, two in a snug one, one in a busy one — the rest are on the page -#}
+{%- set n = max if m.density == "roomy" else (1 if m.density == "dense" else (2 if max > 2 else max)) -%}
 <section class="mp-b mp-issue">
   {% if lang == "es" and m.lv %}
   <p class="mp-lvline"><span class="mp-sub">{{ "monthly.in_lv" | t(lang) }} · {{ m.lv.label }}</span> <strong>{{ m.lv.theme }}</strong></p>
   {% endif %}
-  <h3 class="mp-h">{% icon "book-open-text", "mp-i" %}<span>{{ "monthly.in_gv" | t(lang) }}</span></h3>
+  <h3 class="mp-h">{% icon "book-open-text", "mp-i" %}<span>{{ "monthly.in_gv" | t(lang, { month: m.monthName }) }}</span></h3>
   <p class="mp-theme">{{ m.gv.theme if m.gv else ("monthly.no_issue" | t(lang)) }}</p>
   {% if m.tips.length %}
   <p class="mp-sub">{{ "monthly.put_to_work" | t(lang) }}</p>
@@ -87,17 +88,21 @@
 {% if m.botm.length %}
 <section class="mp-b mp-botm">
   <h3 class="mp-h">{% icon "book-heart", "mp-i" %}<span>{{ "monthly.botm" | t(lang) }}</span></h3>
+  {#- one offer line when every book shares it (no repeated "20% off through …") -#}
   <ul class="mp-books">
     {% for b in m.botm %}
-    <li><strong lang="{{ b.lang }}">{{ b.title }}</strong> <span class="mp-off">{{ ("monthly.botm_off" | t(lang, { pct: b.discount, date: b.endsLabel })) if b.discount else ("monthly.botm_until" | t(lang, { date: b.endsLabel })) }}</span></li>
+    <li><strong lang="{{ b.lang }}">{{ b.title }}</strong>{% if not m.botmOffer %} <span class="mp-off">{{ ("monthly.botm_off" | t(lang, { pct: b.discount, date: b.endsLabel })) if b.discount else ("monthly.botm_until" | t(lang, { date: b.endsLabel })) }}</span>{% endif %}</li>
     {% endfor %}
   </ul>
+  {% if m.botmOffer %}<p class="mp-off">{{ ("monthly.botm_off" | t(lang, { pct: m.botmOffer.discount, date: m.botmOffer.endsLabel })) if m.botmOffer.discount else ("monthly.botm_until" | t(lang, { date: m.botmOffer.endsLabel })) }}</p>{% endif %}
 </section>
 {% endif %}
 {% endmacro %}
 
 {% macro dates(m, lang, max=5) %}
-{%- set shown = m.dates | limit(max) -%}
+{#- a busy month shows one date fewer (the rest: "+N more on the website") so the type stays large -#}
+{%- set lim = (max - 1) if (m.density == "dense" and max > 3) else max -%}
+{%- set shown = m.dates | limit(lim) -%}
 <section class="mp-b mp-dates">
   <h3 class="mp-h">{% icon "calendar-days", "mp-i" %}<span>{{ "monthly.dates" | t(lang) }}</span></h3>
   {% if shown.length %}
@@ -118,7 +123,7 @@
     </li>
     {% endfor %}
   </ul>
-  {% if m.dates.length > max %}<p class="mp-more">{{ "monthly.more_dates" | t(lang, { n: m.dates.length - max }) }}</p>{% endif %}
+  {% if m.dates.length > lim %}<p class="mp-more">{{ "monthly.more_dates" | t(lang, { n: m.dates.length - lim }) }}</p>{% endif %}
   {% else %}
   <p class="mp-note">{{ "monthly.no_dates" | t(lang) }}</p>
   {% endif %}
@@ -208,13 +213,15 @@
       <div class="mp-stub">{{ dates(m, lang, 4) }}{{ weekly(m, lang) }}{{ foot(m, lang, site) }}</div>
     </div>
   {% elif m.layout == "split" %}
-    <div class="mp-side">{{ head(m, lang, tid) }}{{ calendar(m) }}{{ dates(m, lang, 4) }}{{ foot(m, lang, site) }}</div>
-    <div class="mp-content">{{ story(m, lang, site) }}{{ issue(m, lang, 3) }}{{ botm(m, lang) }}{{ weekly(m, lang) }}</div>
+    <div class="mp-side">{{ head(m, lang, tid) }}{{ calendar(m) }}{{ weekly(m, lang) }}{{ foot(m, lang, site) }}</div>
+    <div class="mp-content">{{ story(m, lang, site) }}{{ issue(m, lang, 3) }}{{ dates(m, lang, 4) }}{{ botm(m, lang) }}</div>
   {% elif m.layout == "cork" %}
-    <div class="mp-top">{{ head(m, lang, tid) }}{{ foot(m, lang, site) }}</div>
+    <div class="mp-top">{{ head(m, lang, tid) }}</div>
     <div class="mp-board">
-      <div class="mp-col">{{ story(m, lang, site) }}{{ issue(m, lang, 3) }}</div>
-      <div class="mp-col">{{ dates(m, lang, 5) }}{{ botm(m, lang) }}{{ weekly(m, lang) }}</div>
+      {#- the weekly note balances the shorter column: left when the Book of the Month fills the right -#}
+      {%- set wkLeft = m.botm.length -%}
+      <div class="mp-col">{{ story(m, lang, site) }}{{ issue(m, lang, 3) }}{% if wkLeft %}{{ weekly(m, lang) }}{% endif %}</div>
+      <div class="mp-col">{{ dates(m, lang, 4) }}{{ botm(m, lang) }}{% if not wkLeft %}{{ weekly(m, lang) }}{% endif %}{{ foot(m, lang, site) }}</div>
     </div>
   {% elif m.layout == "cover" %}
     {{ head(m, lang, tid) }}

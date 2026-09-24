@@ -18,7 +18,6 @@ const nav = {
         { key: "nav.published", url: "/published/", icon: "award", page: "published", descKey: "nav.published_desc" },
         { key: "nav.gvr", url: "/gvr/", icon: "badge-check", page: "gvr", descKey: "nav.gvr_desc" },
         { key: "nav.districts", url: "/districts/", icon: "map", page: "districts", descKey: "nav.districts_desc" },
-        { key: "nav.instagram", url: "/instagram/", icon: "instagram", page: "instagram", descKey: "nav.instagram_desc" },
       ],
     },
     {
@@ -34,6 +33,9 @@ const nav = {
   footer: [
     { key: "nav.about", url: "/about/", page: "about" },
     { key: "nav.digest", url: "/digest/", page: "digest" },
+    // A media feed (like Listen / Watch), not a way to take part: footer + drawer "More", and linked
+    // from the home page and /photos/.
+    { key: "nav.instagram", url: "/instagram/", page: "instagram" },
     { key: "nav.share", url: "/share/", page: "share" },
     { key: "nav.search", url: "/search/", page: "search" },
     { key: "nav.status", url: "/status/", page: "status" },

@@ -73,8 +73,8 @@ recurring_events:
     end: "20:00"
     location: "Lover's Lane United Methodist Church, 9200 Inwood Road, Dallas, TX 75220"
     url: "https://citywidedallasaa.org"   # "Event details" link (optional)
-    months_ahead: 13               # how many upcoming dates to list (13 = every month of the
-                                   # /monthly/ posters: this month + the next 12)
+    months_ahead: 6                # how many upcoming dates to list on /events/ and in the calendar
+                                   # feed (the /monthly/ posters work out later months from this rule)
     skip_dates: []                 # months with no booth, e.g. ["2026-12-12"] (that month's 2nd Saturday)
 
 # ---------------------------------------------------------------------
@@ -250,8 +250,8 @@ sources:
 # ---------------------------------------------------------------------
 lavina_weekly_open:
   enabled: true
-  title_es: "Nueva Reunión Abierta de La Viña"
-  title_en: "La Viña's New Open Meeting"
+  title_es: "Reunión Abierta de La Viña"     # "new" is shown only in its first month (badge)
+  title_en: "La Viña Open Meeting (in Spanish)"
   day: "thursday"               # every week
   time: "12:00"                 # 24h, in `timezone` (12 p. m. hora del Este = 11 a. m. Central)
   timezone: "America/New_York"

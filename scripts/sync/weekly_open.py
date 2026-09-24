@@ -258,6 +258,11 @@ def lavina_item(cfg: dict | None, now: datetime | None = None) -> dict | None:
     else:
         starts = ""
     nxt = _next_occurrence(wd, hh, mm, tz, ref)
+    if starts and datetime.fromisoformat(starts).weekday() != wd:
+        # A start date on another weekday: the first meeting shown is the first real occurrence
+        log.warning("lavina_weekly_open: starts %s is not a %s — using %s", starts, list(WEEKDAYS)[wd],
+                    nxt.date().isoformat())
+        starts = nxt.date().isoformat()
     central = nxt.astimezone(ZoneInfo("America/Chicago"))
     digits = re.sub(r"\D", "", str(c.get("zoom_id") or ""))
     weekday = list(WEEKDAYS)[wd]
@@ -267,7 +272,7 @@ def lavina_item(cfg: dict | None, now: datetime | None = None) -> dict | None:
                "America/Denver": "hora de la Montaña", "America/Los_Angeles": "hora del Pacífico"}.get(tzname, tzname)
     time_es = ("12 p. m." if (hh, mm) == (12, 0) else
                f"{hh % 12 or 12}{f':{mm:02d}' if mm else ''} {'a. m.' if hh < 12 else 'p. m.'}")
-    title_es = clean_text(c.get("title_es")) or "Nueva Reunión Abierta de La Viña"
+    title_es = clean_text(c.get("title_es")) or "Reunión Abierta de La Viña"
     title_en = clean_text(c.get("title_en"))
     summary_es, summary_en = clean_text(c.get("summary_es")), clean_text(c.get("summary_en"))
     own = {"title": {"es": title_es, **({"en": title_en} if title_en else {})},

@@ -1044,7 +1044,11 @@ export function digestShop(shop, lang = "en", now = new Date()) {
       return {
         pub: b.pub, isLv, host, raw: b,
         pubName: isLv ? "La Viña" : "Grapevine",
-        title: (b.i18n?.title?.[lang]) || b.title || "",
+        // The title the book is sold under (a Grapevine book in English, a La Viña book in Spanish),
+        // never a translation; the translation is only a small gloss under it (like /shop/).
+        title: b.title || (b.i18n?.title?.[lang]) || "",
+        titleLang: b.lang || (isLv ? "es" : "en"),
+        gloss: b.title && b.i18n?.title?.[lang] && b.i18n.title[lang] !== b.title ? b.i18n.title[lang] : "",
         machine: Array.isArray(b.machine) && b.machine.includes(lang),
         url: b.url,
         image: b.image || "",
@@ -1083,7 +1087,8 @@ export function digestShopText(text, shop, langs, style, site, now = new Date())
     const label = dg.pct ? both("community.digest.botm_title", { pct: dg.pct }) : both("community.digest.botm_title_plain");
     out.push(wa ? `📚 ${head(label)}` : head(label));
     for (const o of dg.offers) {
-      const titles = L.map((l) => o.raw.i18n?.title?.[l] || o.raw.title).filter((v, i, a) => v && a.indexOf(v) === i);
+      // the title it is sold under first, then the translations as a second line
+      const titles = [o.raw.title, ...L.map((l) => o.raw.i18n?.title?.[l])].filter((v, i, a) => v && a.indexOf(v) === i);
       const price = o.price ? t("community.digest.botm_price", main, { sale: o.sale, price: o.price }) : o.sale;
       const ends = o.endsLabel ? ` · ${t("community.digest.botm_ends", main, { date: o.endsLabel })}` : "";
       out.push(`${wa ? "•" : "-"} "${titles[0] || o.title}" (${o.pubName}) — ${price}${ends}`);

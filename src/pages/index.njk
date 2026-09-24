@@ -269,7 +269,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
 
 {#- =====================================================================
     1c. SHOP TEASER — compact on purpose: the Shop page is the ONE home of these prices and dates.
-        Book of the Month (both covers, sale prices, days left — a direct buy link on each title and
+        Book of the Month (both covers, titles, days left — a direct buy link on each title and
         "See the offer" → /shop/#botm), the lowest monthly subscription price (→ /shop/#subscriptions)
         and this month's poster & toolkit (/monthly/). Numbers come from db.shop (filters/shop.js);
         assets/js/shop.js keeps "N days left" current and hides the offer once it has ended.
@@ -278,7 +278,8 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
 {%- set subsFrom = db.shop | shopFromMonthly -%}
 {%- set shopHref = "/shop/" | lurl(L) -%}
 {%- set hSoon = null -%}
-{%- for b in hBotm %}{% if b.ends and (not hSoon or b.ends < hSoon.ends) %}{% set hSoon = b %}{% endif %}{% endfor -%}
+{#- the card runs until the LAST offer ends (each book's line hides itself after its own last day) -#}
+{%- for b in hBotm %}{% if b.ends and (not hSoon or b.ends > hSoon.ends) %}{% set hSoon = b %}{% endif %}{% endfor -%}
 {%- set hPct = hBotm[0].pct if (hBotm.length and (hBotm.length == 1 or hBotm[0].pct == hBotm[1].pct)) else 0 -%}
 <section class="container-page home-shop pt-6 sm:pt-8" aria-label="{{ 'home.shop_label' | t(L) }}">
   <div class="grid grid-cols-1 gap-4 {{ 'lg:grid-cols-[minmax(0,1.65fr)_minmax(0,1fr)]' if hBotm.length }}">
@@ -288,12 +289,12 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
         <div class="shop-teaser-covers" aria-hidden="true">{% for b in hBotm %}{% if b.image %}<img src="{{ b.image }}" alt="" width="389" height="600" loading="lazy" decoding="async">{% endif %}{% endfor %}</div>
         <div class="min-w-0 flex-1">
           <p class="eyebrow flex items-center gap-1.5 text-lv">{% icon "badge-percent", "size-4 shrink-0" %} {{ "shop.botm_title" | t(L) }}</p>
-          <h2 class="mt-1 font-display text-xl font-semibold leading-snug text-balance text-ink sm:text-2xl">{{ ("home.botm_title" | t(L, { pct: hPct })) if hPct else ("home.botm_title_plain" | t(L)) }}</h2>
+          <h2 class="mt-1 font-display text-xl font-semibold leading-snug text-balance text-ink sm:text-2xl">{% if hPct %}<span data-shop-live>{{ "home.botm_title" | t(L, { pct: hPct }) }}</span><span data-shop-ended hidden>{{ "shop.botm_title" | t(L) }}</span>{% else %}{{ "home.botm_title_plain" | t(L) }}{% endif %}</h2>
+          {#- titles only: the prices have ONE home, /shop/#botm -#}
           <ul class="mt-1 text-sm" role="list" data-shop-live>
             {% for b in hBotm %}
-            <li class="flex flex-wrap items-center gap-x-2">
-              <a class="link inline-flex min-h-6 items-center" href="{{ b.url }}" target="_blank" rel="noopener"><span lang="{{ b.itemLang }}">{{ b.title.split(":")[0] }}</span><span class="sr-only"> ({{ "shop.at_store" | t(L, { mag: b.mag }) }}, {{ "common.external" | t(L) }})</span></a>
-              {% if b.hasPrices %}<span class="whitespace-nowrap"><strong class="font-semibold text-ink"><span class="sr-only">{{ "shop.sale_price" | t(L) }}: </span>{{ b.sale }}</strong> <s class="text-faint"><span class="sr-only">{{ "shop.regular_price" | t(L) }}: </span>{{ b.price }}</s></span>{% endif %}
+            <li class="flex flex-wrap items-center gap-x-2"{% if b.ends %} data-shop-offer data-ends="{{ b.ends }}"{% endif %}>
+              <a class="link inline-flex min-h-6 items-center max-sm:min-h-11" href="{{ b.url }}" target="_blank" rel="noopener"><span lang="{{ b.itemLang }}">{{ b.title.split(":")[0] }}</span><span class="sr-only"> ({{ "shop.at_store" | t(L, { mag: b.mag }) }}, {{ "common.external" | t(L) }})</span></a>
             </li>
             {% endfor %}
           </ul>
@@ -693,11 +694,12 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
         </ul>
         <a href="{{ '/listen/' | lurl(L) }}" class="btn-secondary mt-auto w-full">{% icon "headphones", "size-4" %} {{ "home.all_episodes" | t(L) }}</a>
         {% if wo and wo.extra %}
-        {%- set woWhen = wo | homeWeeklyOpen(L) -%}
+        {#- both weekly open meetings in one line (as on /listen/ and /watch/); details on /meeting/ -#}
+        {%- set woWhen = D.weekly_open.items | mediaWeeklyDays(L) -%}
         <a href="{{ '/meeting/#weekly-open' | lurl(L) }}" class="group mt-4 flex items-start gap-3 rounded-xl border border-line bg-gv-soft/60 p-3.5 no-underline transition hover:border-gv">
           <span class="grid size-10 shrink-0 place-items-center rounded-lg bg-surface text-gv">{% icon "video", "size-5" %}</span>
           <span class="min-w-0">
-            <span class="block text-sm font-semibold text-ink group-hover:text-gv">{{ "home.weekly_open" | t(L) }}</span>
+            <span class="block text-sm font-semibold text-ink group-hover:text-gv">{{ ("home.weekly_opens" if D.weekly_open.items.length > 1 else "home.weekly_open") | t(L) }}</span>
             <span class="block text-xs leading-snug text-muted">{{ "home.weekly_open_text" | t(L, { when: woWhen }) if woWhen else ("home.weekly_open_fallback" | t(L)) }}</span>
           </span>
           <span class="ml-auto self-center text-faint transition group-hover:translate-x-0.5 group-hover:text-gv">{% icon "arrow-right", "size-4" %}</span>

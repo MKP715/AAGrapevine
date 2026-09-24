@@ -282,18 +282,19 @@ pageScripts: ["/assets/js/community.js"]
             <li class="cm-avoid-break flex items-start gap-3 py-3">
               {% if o.image %}<img src="{{ o.image }}" alt="" width="40" height="56" loading="lazy" decoding="async" class="w-10 shrink-0 rounded-sm bg-surface-2 shadow-sm ring-1 ring-line" onerror="this.remove()">{% endif %}
               <div class="min-w-0 flex-1">
-                <a class="font-semibold leading-snug text-ink no-underline hover:text-gv" href="{{ o.url }}" target="_blank" rel="noopener">{{ o.title }}<span class="sr-only"> — {{ o.host }} {{ "community.new_tab" | t(lang) }}</span></a>
+                <a class="font-semibold leading-snug text-ink no-underline hover:text-gv" href="{{ o.url }}" target="_blank" rel="noopener"><span lang="{{ o.titleLang }}">{{ o.title }}</span><span class="sr-only"> — {{ o.host }} {{ "community.new_tab" | t(lang) }}</span></a>
+                {% if o.gloss %}<span class="block text-xs text-muted">{{ o.gloss }}</span>{% endif %}
                 <p class="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-muted">
                   <span class="{{ 'badge-lv' if o.isLv else 'badge-gv' }}">{{ o.pubName }}</span>
                   <span><span class="text-sm font-semibold text-ink">{{ o.sale }}</span>{% if o.price %} {{ "community.digest.botm_regular" | t(lang, { price: o.price }) }}{% endif %}</span>
                   {% if o.endsLabel %}<span class="inline-flex gap-x-2 whitespace-nowrap"><span aria-hidden="true">·</span><time datetime="{{ o.ends }}">{{ "community.digest.botm_ends" | t(lang, { date: o.endsLabel }) }}</time></span>{% endif %}
-                  {% if o.machine %}<span class="auto-note" title="{{ 'common.auto_translated_help' | t(lang) }}">{% icon "languages", "size-3" %} {{ "common.auto_translated" | t(lang) }}</span>{% endif %}
+                  {% if o.machine and o.gloss %}<span class="auto-note" title="{{ 'common.auto_translated_help' | t(lang) }}">{% icon "languages", "size-3" %} {{ "common.auto_translated" | t(lang) }}</span>{% endif %}
                 </p>
               </div>
             </li>
             {% endfor %}
           </ul>
-          <p class="cm-no-print mt-1 text-sm"><a class="link" href="{{ '/shop/' | lurl(lang) }}#botm">{{ "community.digest.botm_more" | t(lang) }}</a></p>
+          <p class="cm-no-print mt-1 text-sm"><a class="link inline-flex items-center max-sm:min-h-11" href="{{ '/shop/' | lurl(lang) }}#botm">{{ "community.digest.botm_more" | t(lang) }}</a></p>
         </section>
         {% endif %}
         <p class="cm-avoid-break flex items-center gap-3 rounded-xl border border-line bg-surface-2/60 px-4 py-3 text-sm">

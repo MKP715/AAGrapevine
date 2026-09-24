@@ -681,8 +681,8 @@ def collect(now: datetime, days: int, event_days: int, max_per: int) -> dict:
     data["month"] = to_central(now).strftime("%Y-%m")
 
     # which languages carry machine translations (for the small footnote)
-    every = ([i for g in data["groups"].values() for i in g[:max_per]] + data["announcements"] + data["events"]
-             + data["botm"])
+    # (Book of the Month titles are shown as sold, never translated, so they bring no footnote)
+    every = [i for g in data["groups"].values() for i in g[:max_per]] + data["announcements"] + data["events"]
     for lang in ("en", "es"):
         data["machine"][lang] = any(is_machine(i, lang) for i in every)
     return data
@@ -806,7 +806,9 @@ def botm_block(data: dict, lang: str, links: Links) -> dict:
         price, sale = b.get("price"), b.get("sale_price")
         regular = t["botm_regular"].format(price=fmt_money(price)) if isinstance(price, (int, float)) and price > sale else ""
         rows.append({"label": "La Viña" if lv else "Grapevine", "fg": C["lv"] if lv else C["gv"],
-                     "bg": C["lv_soft"] if lv else C["gv_soft"], "title": tx(b, "title", lang),
+                     "bg": C["lv_soft"] if lv else C["gv_soft"],
+                     # the title the book is sold under (never a translation: no such edition exists)
+                     "title": str(b.get("title") or "").strip() or tx(b, "title", lang),
                      "url": b["url"], "price": fmt_money(sale), "regular": regular,
                      "until": t["botm_until"].format(date=fmt_month_day(b["ends"], lang)) if is_date_only(b.get("ends")) else ""})
     ym = data.get("month") or to_central(data["end"]).strftime("%Y-%m")

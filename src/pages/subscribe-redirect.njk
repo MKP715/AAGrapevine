@@ -15,7 +15,7 @@ eleventyExcludeFromCollections: true
 <head>
 <meta charset="utf-8">
 {#- the base plugin does not rewrite script text, so the url filter adds the path prefix -#}
-<script>location.replace({{ (target | url) | dump | safe }} + location.search + location.hash);</script>
+<script>var h = location.hash === "#fmt-title" ? "#subscriptions" : location.hash; location.replace({{ (target | url) | dump | safe }} + location.search + h);</script>{#- the old formats section (#fmt-title) is the subscription table now -#}
 <meta http-equiv="refresh" content="0; url={{ target }}">{#- the HTML base plugin adds the path prefix here -#}
 <meta name="robots" content="noindex">
 <link rel="canonical" href="{{ target | siteUrl(site) }}">
@@ -39,6 +39,6 @@ eleventyExcludeFromCollections: true
   <p>{{ "read.subs.moved_text" | t(lang) }}</p>
   <p><a id="go" href="{{ target }}">{{ "read.subs.title" | t(lang) }} →</a></p>
 </main>
-<script>document.getElementById("go").href += location.hash;</script>
+<script>document.getElementById("go").href += (location.hash === "#fmt-title" ? "#subscriptions" : location.hash);</script>
 </body>
 </html>

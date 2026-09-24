@@ -71,7 +71,7 @@
    "source": "lavina",
    "kind": "meeting",
    "url": "",
-   "title": "Nueva Reunión Abierta de La Viña",
+   "title": "Reunión Abierta de La Viña",
    "summary": "Una reunión abierta virtual de AA en español, cada semana: dos miembros comparten su experiencia, fortaleza y esperanza. La reunión se graba para publicarse como pódcast. ¡Sigamos extendiendo juntos esta poderosa cuerda salvavidas!",
    "lang": "es",
    "date": null,
@@ -95,8 +95,8 @@
     "source_note": "Official La Viña flyer (November 2026), shared with the committee",
     "own_i18n": {
      "title": {
-      "es": "Nueva Reunión Abierta de La Viña",
-      "en": "La Viña's New Open Meeting"
+      "es": "Reunión Abierta de La Viña",
+      "en": "La Viña Open Meeting (in Spanish)"
      },
      "summary": {
       "es": "Una reunión abierta virtual de AA en español, cada semana: dos miembros comparten su experiencia, fortaleza y esperanza. La reunión se graba para publicarse como pódcast. ¡Sigamos extendiendo juntos esta poderosa cuerda salvavidas!",
@@ -106,8 +106,8 @@
    },
    "i18n": {
     "title": {
-     "en": "La Viña's New Open Meeting",
-     "es": "Nueva Reunión Abierta de La Viña"
+     "en": "La Viña Open Meeting (in Spanish)",
+     "es": "Reunión Abierta de La Viña"
     },
     "summary": {
      "en": "A weekly virtual open AA meeting in Spanish where two members share their experience, strength and hope. It is recorded to be published as a podcast. Let's keep extending this powerful lifeline together!",

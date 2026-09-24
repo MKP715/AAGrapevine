@@ -411,6 +411,10 @@
     "en": "Grapevine Weekly Open meeting",
     "es": "Reunión Abierta Semanal de Grapevine"
   },
+  "home.weekly_opens": {
+    "en": "Weekly open meetings",
+    "es": "Reuniones abiertas semanales"
+  },
   "home.weekly_open_text": {
     "en": "{when} · on Zoom, open to everyone",
     "es": "{when} · por Zoom, abierta a todos"
@@ -788,15 +792,15 @@
     "es": "Impresa, digital o ambas: compara los planes."
   },
   "home.monthly_title": {
-    "en": "This month's poster & toolkit",
-    "es": "Cartel y kit del mes"
+    "en": "Monthly toolkit & poster",
+    "es": "Kit del mes y cartel"
   },
   "home.monthly_desc": {
     "en": "Print it for your group or share it online.",
     "es": "Imprímelo para tu grupo o compártelo en línea."
   },
   "home.shop_label": {
-    "en": "Shop & subscribe",
-    "es": "Tienda y suscripciones"
+    "en": "This month: Book of the Month, subscriptions and the monthly toolkit",
+    "es": "Este mes: libro del mes, suscripciones y el kit del mes"
   }
 }

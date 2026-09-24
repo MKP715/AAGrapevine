@@ -71,7 +71,10 @@
 .shop-days {
   display: inline-flex; align-items: center; border-radius: 9999px; padding: 0.125rem 0.625rem;
   background: var(--c-lv-soft); color: var(--c-lv-strong); font-size: 0.8rem; font-weight: 600;
+  white-space: nowrap;   /* "Quedan 20 días" never breaks inside the pill (its row wraps instead) */
 }
+/* the home teaser's list: a book whose own offer has ended hides itself (assets/js/shop.js adds .is-ended) */
+.shop-teaser li.is-ended { display: none; }
 .shop-days.is-urgent { background: color-mix(in srgb, var(--c-danger) 12%, var(--c-surface)); color: var(--c-danger); }
 .shop-buy { min-height: 3rem; padding-inline: 1.375rem; font-size: 1rem; }
 
@@ -92,6 +95,7 @@
   display: inline-flex; align-items: center; gap: 0.4rem; min-height: 2.5rem; padding: 0 1rem; border-radius: 9999px;
   font-size: 0.875rem; font-weight: 600; color: var(--c-muted); transition: background-color 0.15s ease, color 0.15s ease;
 }
+@media (width < 40rem) { .shop-seg-opt > span { min-height: 2.75rem; } }
 .shop-seg-opt:hover > span { background: var(--c-surface-2); color: var(--c-ink); }
 .shop-seg-opt input:checked + span { background: var(--c-gv); color: #fff; }
 .shop-seg-opt.shop-seg-lv input:checked + span { background: var(--c-lv); }

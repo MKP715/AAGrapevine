@@ -241,6 +241,7 @@
   "community.share.dl_png": { "en": "Download PNG", "es": "Descargar PNG" },
   "community.share.dl_hint": { "en": "SVG stays sharp at any size — best for print. PNG works everywhere: Word, Canva, slides.", "es": "El SVG se ve nítido en cualquier tamaño — ideal para imprimir. El PNG funciona en todas partes: Word, Canva, presentaciones." },
   "community.share.print_title": { "en": "Posters for your meetings", "es": "Pósters para tus reuniones" },
+  "community.share.monthly_hint": { "en": "Want a new poster every month, with the issue's theme and the month's dates?", "es": "¿Quieres un cartel nuevo cada mes, con el tema de la edición y las fechas del mes?" },
   "community.share.print_sub": { "en": "Print on letter paper — color or black and white both work. The QR code always leads to the latest content.", "es": "Imprime en papel tamaño carta — a color o en blanco y negro. El código QR siempre lleva al contenido más reciente." },
   "community.share.poster_title": { "en": "Printable poster", "es": "Póster para imprimir" },
   "community.share.poster_sub": { "en": "Letter size. For your district office, your group's bulletin board or the literature table.", "es": "Tamaño carta. Para la oficina del distrito, el tablero de anuncios del grupo o la mesa de literatura." },
