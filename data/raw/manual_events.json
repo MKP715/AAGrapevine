@@ -1,7 +1,7 @@
 {
  "source": "manual_events",
- "updated": "2026-09-24T03:11:18Z",
- "attempted": "2026-09-24T03:11:18Z",
+ "updated": "2026-09-24T06:47:35Z",
+ "attempted": "2026-09-24T06:47:35Z",
  "ok": true,
  "error": null,
  "stats": {
@@ -10,5 +10,6 @@
   "problems": 0,
   "errors": []
  },
- "items": []
+ "items": [],
+ "first_harvest": "2026-09-24T06:47:35Z"
 }
