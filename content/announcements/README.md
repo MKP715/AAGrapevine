@@ -15,8 +15,17 @@ title: Welcome, new GVRs and RLVs!
 date: 2027-01-10
 expires: 2027-03-31     # optional — hidden after this date
 pinned: false           # optional — keep at the top
+title_es: "¡Bienvenidos, nuevos GVR y RLV!"   # optional — your own Spanish
+summary_es: "Texto completo del anuncio en español."
 ---
 Write in English **or** Spanish. Links like [aagrapevine.org](https://www.aagrapevine.org) work.
 ```
+
+**Your own translation (optional).** Add `title_es` and `summary_es` to a file
+written in English (or `title_en` and `summary_en` to one written in Spanish)
+and the other-language page shows your words instead of an automatic
+translation, without the "auto-translated" note. `summary_es` replaces the whole
+text below the header on the Spanish page, so write the complete text there.
+Whatever you leave out is still translated automatically.
 
 Files whose name starts with `_` or `README` are ignored.

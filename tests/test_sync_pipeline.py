@@ -688,6 +688,62 @@ class AnnouncementHeaders(TempRaw):
         self.A.main([])
         self.assertEqual(self.env("announcements")["items"], [])
 
+    def test_hand_written_translations_are_kept(self):
+        """title_es / summary_es (content/events, content/announcements) are shown as written — never
+        replaced by a machine translation ("Fort Worth" once became "Valía la pena") — and only a
+        language left out is machine-translated."""
+        from scripts.sync import build_data as B
+        self.write("2026-09-26-lv-writing-workshop-fort-worth.md",
+                   '---\ntitle: "La Viña Writing Workshop (in Spanish) — Fort Worth"\n'
+                   'title_es: "Taller de Escritura de La Viña — Fort Worth"\n'
+                   'start: 2026-09-26T19:00:00-05:00\nlocation: "Fort Worth, TX 76111"\nlang: en\n'
+                   'summary_es: "Taller en español para aprender a escribir tu historia para La Viña."\n'
+                   "---\nA Spanish-language workshop on writing your story for La Viña.\n", self.evs)
+        self.write("2027-03-19-assembly.md", "---\ntitle: Spring Assembly\ntitle_es: Asamblea de Primavera\n"
+                   "start: 2027-03-19\nlang: en\n---\nArea 65 assembly.\n", self.evs)
+        self.write("2027-01-10-bienvenida.md", "---\ntitle: Bienvenidos\nlang: es\ntitle_es: Ignorado\n"
+                   "title_en: Welcome\nsummary_en: Welcome, new GVRs.\n---\nBienvenidos, nuevos GVR.\n")
+        self.A.main([])
+        evs = {i["extra"]["slug"]: i for i in self.env("manual_events")["items"]}
+        fw, asm = evs["2026-09-26-lv-writing-workshop-fort-worth"], evs["2027-03-19-assembly"]
+        spanish = "Taller en español para aprender a escribir tu historia para La Viña."
+        self.assertEqual(fw["extra"]["own_i18n"], {"title": {"es": "Taller de Escritura de La Viña — Fort Worth"},
+                                                   "summary": {"es": spanish}, "body_md": {"es": spanish}})
+        self.assertEqual(asm["extra"]["own_i18n"], {"title": {"es": "Asamblea de Primavera"}})
+        ann = self.env("announcements")["items"][0]
+        self.assertEqual(ann["extra"]["own_i18n"]["title"], {"es": "Ignorado", "en": "Welcome"})
+
+        class Tr:                                  # a "machine" that marks what it translated
+            def translate(self, texts, src, tgt):
+                return [(f"[{tgt}] {t}", True) for t in texts]
+
+            def translate_markdown(self, md, src, tgt):
+                return f"[{tgt}] {md}", True
+
+        i18n = B.I18n(Tr())
+        items = [B.prep(fw), B.prep(asm), B.prep(ann)]
+        B.plan_translations(B.Ctx(offline=True), {"events": items[:2], "announcements": items[2:]}, set(), i18n)
+        wanted = {k[3] for k in i18n.jobs}
+        self.assertNotIn("La Viña Writing Workshop (in Spanish) — Fort Worth", wanted)   # nothing to translate
+        self.assertNotIn("Spring Assembly", wanted)
+        self.assertIn("Area 65 assembly.", wanted)                  # no summary_es → still translated
+        i18n.run()
+        for it in items:
+            i18n.apply(it)
+        fw_i, asm_i, ann_i = items
+        self.assertEqual(fw_i["i18n"]["title"], {"en": "La Viña Writing Workshop (in Spanish) — Fort Worth",
+                                                 "es": "Taller de Escritura de La Viña — Fort Worth"})
+        self.assertEqual((fw_i["i18n"]["summary"]["es"], fw_i["i18n"]["body_md"]["es"]), (spanish, spanish))
+        self.assertEqual(fw_i["i18n"]["body_md"]["en"], "A Spanish-language workshop on writing your story for La Viña.")
+        self.assertEqual(fw_i["machine"], [])                       # nothing "auto-translated"
+        self.assertEqual(asm_i["i18n"]["title"]["es"], "Asamblea de Primavera")
+        self.assertEqual(asm_i["i18n"]["body_md"]["es"], "[es] Area 65 assembly.")
+        self.assertEqual(asm_i["machine"], ["es"])                  # only the description was machine-translated
+        # a file written in Spanish: title_en / summary_en are its English; its own-language title_es is ignored
+        self.assertEqual(ann_i["i18n"]["title"], {"es": "Bienvenidos", "en": "Welcome"})
+        self.assertEqual(ann_i["i18n"]["body_md"], {"es": "Bienvenidos, nuevos GVR.", "en": "Welcome, new GVRs."})
+        self.assertEqual(ann_i["machine"], [])
+
     def test_word_dates_without_a_time_are_all_day(self):
         from zoneinfo import ZoneInfo
         tz = ZoneInfo("America/Chicago")

@@ -655,7 +655,8 @@ def total_count(data: dict) -> int:
     """How much the digest has to tell — nothing means no e-mail. A recurring event (the monthly booth)
     comes round every month, like the committee meeting, so it is listed but does not count: on its own
     it never turns a quiet week into an e-mail."""
-    return sum(len(v) for v in data["groups"].values()) + len(data["announcements"]) +         sum(1 for e in data["events"] if not is_recurring(e))
+    return (sum(len(v) for v in data["groups"].values()) + len(data["announcements"])
+            + sum(1 for e in data["events"] if not is_recurring(e)))
 
 
 # ---------------------------------------------------------------------------- rows (shared by HTML + text)
@@ -877,12 +878,10 @@ def render_lang_html(lang: str, data: dict, cfg: dict, links: Links, max_per: in
     # ---- new content groups
     colors = {"articles": C["gv"], "episodes": C["grape"], "videos": C["grape"], "instagram": C["lv"],
               "pdfs": C["gv"], "drive": C["vine"]}
-    any_group = False
     for g, page in GROUPS:
         items = data["groups"].get(g) or []
         if not items:
             continue
-        any_group = True
         rows_data, extra = build_rows(g, items, lang, links, page, max_per)
         rows = []
         for r in rows_data:

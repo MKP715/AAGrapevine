@@ -74,7 +74,7 @@ recurring_events:
     location: "Lover's Lane United Methodist Church, 9200 Inwood Road, Dallas, TX 75220"
     url: "https://citywidedallasaa.org"   # "Event details" link (optional)
     months_ahead: 6                # how many upcoming dates to list
-    skip_dates: []                 # months with no booth, e.g. ["2026-12-12"]
+    skip_dates: []                 # months with no booth, e.g. ["2026-12-12"] (that month's 2nd Saturday)
 
 # ---------------------------------------------------------------------
 #  Google Drive — the committee's upload area

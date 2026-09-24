@@ -14,6 +14,9 @@ Each file is Markdown with a small YAML header ("front matter"), e.g.
     Write in English **or** Spanish — the site translates automatically.
 
 Events use `title, start, end, location, url` (+ optional `online_url`, `flyer`, `image`).
+Both may add the other language by hand — `title_es` / `summary_es` for a file written in English
+(`title_en` / `summary_en` for one written in Spanish): build_data shows those words instead of a
+machine translation (`extra.own_i18n`; the summary also stands in for the text below the header).
 Files whose name starts with "_" or "README" are ignored; other files that do not end in .md
 (any capitalization) are skipped and listed on /status/. The folder is the source of truth:
 deleting a file removes the item, and deleting a header line removes that value. A file with a
@@ -204,6 +207,23 @@ def as_tags(v) -> list[str]:
     return [clean_text(t) for t in v if clean_text(t)]
 
 
+def own_translations(meta: dict) -> dict[str, dict[str, str]]:
+    """The author's own words in the other language → `extra.own_i18n` {field: {lang: text}}:
+    `title_es` / `summary_es` (`title_en` / `summary_en` for a file written in Spanish). build_data uses
+    them instead of a machine translation. The pages show the text below the header (`body_md`), not
+    the summary, so the hand-written summary is that language's text as well. A value in the file's
+    own language is ignored there (the header's `title` and the text are the originals)."""
+    out: dict[str, dict[str, str]] = {}
+    for lang in ("en", "es"):
+        title, summary = clean_text(meta.get(f"title_{lang}")), clean_text(meta.get(f"summary_{lang}"))
+        if title:
+            out.setdefault("title", {})[lang] = title
+        if summary:
+            out.setdefault("summary", {})[lang] = truncate(summary, 400)
+            out.setdefault("body_md", {})[lang] = summary
+    return out
+
+
 def city_state(location: str) -> tuple[str | None, str | None]:
     m = re.search(r"([A-Za-zÀ-ÿ .'-]+),\s*(TX|Texas|[A-Z]{2})\b", location or "")
     if not m:
@@ -236,12 +256,15 @@ def parse_announcement(path: Path) -> dict:
     summary = clean_text(meta.get("summary")) or text
     image = clean_text(meta.get("image")) or None
     link = clean_text(meta.get("url") or meta.get("link")) or None
+    extra = {"body_md": body, "expires": expires, "pinned": as_bool(meta.get("pinned")), "slug": slug,
+             "file": f"content/announcements/{path.name}", "link": link}
+    own = own_translations(meta)
+    if own:
+        extra["own_i18n"] = own
     return make_item(
         id=f"ann:{slug}", source="committee", kind="announcement", url=link or f"/announcements/#{slug}",
         title=title, summary=truncate(summary, 400), lang=pick_lang(meta, f"{title}. {text}"), date=when,
-        image=image, tags=as_tags(meta.get("tags")), category="manual",
-        extra={"body_md": body, "expires": expires, "pinned": as_bool(meta.get("pinned")), "slug": slug,
-               "file": f"content/announcements/{path.name}", "link": link},
+        image=image, tags=as_tags(meta.get("tags")), category="manual", extra=extra,
     )
 
 
@@ -264,14 +287,17 @@ def parse_event(path: Path, tz: ZoneInfo) -> dict:
     online = clean_text(meta.get("online_url") or meta.get("zoom")) or None
     flyer = clean_text(meta.get("flyer") or meta.get("flyer_url")) or None
     image = clean_text(meta.get("image") or meta.get("flyer_thumb")) or None
+    extra = {"start": start, "end": end, "all_day": all_day, "location": location or None, "online_url": online,
+             "flyer_url": flyer, "flyer_thumb": image, "city": city, "state": state, "body_md": body,
+             "slug": slug, "file": f"content/events/{path.name}"}
+    own = own_translations(meta)
+    if own:
+        extra["own_i18n"] = own
     return make_item(
         id=f"ev:manual:{slug}", source="committee", kind="event",
         url=clean_text(meta.get("url")) or f"/events/#{slug}", title=title, summary=truncate(text, 400),
         lang=pick_lang(meta, f"{title}. {text}"), date=start, image=image, tags=as_tags(meta.get("tags")),
-        category="manual",
-        extra={"start": start, "end": end, "all_day": all_day, "location": location or None, "online_url": online,
-               "flyer_url": flyer, "flyer_thumb": image, "city": city, "state": state, "body_md": body,
-               "slug": slug, "file": f"content/events/{path.name}"},
+        category="manual", extra=extra,
     )
 
 

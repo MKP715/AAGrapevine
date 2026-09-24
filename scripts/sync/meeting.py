@@ -115,7 +115,9 @@ class MonthlyRule:
         return (sh, sm), (eh, em)
 
 
-def _nth_weekday(y: int, m: int, weekday: int, n: int) -> date | None:
+def nth_weekday(y: int, m: int, weekday: int, n: int) -> date | None:
+    """The `n`th `weekday` (0 = Monday) of month `m` of year `y` (n = -1: the last one); None when the
+    month has no such day (a 5th Saturday)."""
     if n == -1:
         last = (date(y + (m == 12), m % 12 + 1, 1) - timedelta(days=1))
         return last - timedelta(days=(last.weekday() - weekday) % 7)
@@ -142,7 +144,7 @@ def upcoming_rule_dates(rule: MonthlyRule, count: int, tz: ZoneInfo, now: dateti
     y, m = (local.year, local.month - 1) if local.month > 1 else (local.year - 1, 12)
     out: list[dict] = []
     for _ in range(horizon_months if horizon_months is not None else count + 15):
-        d = _nth_weekday(y, m, rule.weekday, rule.week_of_month)
+        d = nth_weekday(y, m, rule.weekday, rule.week_of_month)
         if d and d.isoformat() not in rule.skip:
             start = datetime(d.year, d.month, d.day, sh, sm, tzinfo=tz)
             end = datetime(d.year, d.month, d.day, eh, em, tzinfo=tz)

@@ -10,6 +10,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
 import { safeUrl } from "../../eleventy.config.js";
+import { ownLangs } from "./committee.js";
 
 const TZ = "America/Chicago";
 const LOCALES = { en: "en-US", es: "es-US" };
@@ -250,6 +251,8 @@ function prep(item, now = Date.now()) {
     _hasTime: !!item.date && !isDateOnly(item.date) && !ex.date_approx && item.kind !== "event" && ms(item.date) <= now + DAY,
     // A PDF's `lang` is the language of its TITLE; the document itself may differ.
     _docLang: item.kind === "pdf" && ex.doc_lang ? ex.doc_lang : item.lang,
+    // Languages the committee wrote it in by hand too (content/events title_es …): no "Original in …" pill there.
+    _own: ownLangs(item),
     _isGroup: isGroup,
   };
 }

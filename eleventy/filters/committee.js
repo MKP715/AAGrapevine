@@ -283,6 +283,31 @@ function meetingTimeRange(cfg = {}, lang = "en") {
   return fmtRange(a, b, lang, { hour: "numeric", minute: "2-digit" });
 }
 
+// The repeat line of a monthly event from config/site.yml `recurring_events:` (build_data writes its
+// rule into extra.rule in the shape of `meeting:`): "Every second Saturday of the month · 5:00 – 8:00 PM" /
+// "Cada segundo sábado del mes · 5:00–8:00 p. m." — the same words and clock format as the committee
+// meeting's own line ("Every third Wednesday of the month · 7:00 – 8:00 PM"), which sits right above it
+// on /meeting/. Empty when the rule cannot be read (the caller then uses the data's recurrence_label).
+export function recurrenceText(rule, lang = "en") {
+  if (!rule || typeof rule !== "object") return "";
+  const n = Number(rule.week_of_month);
+  const hhmm = (v) => /^\d{1,2}:\d{2}$/.test(String(v || ""));
+  if (![1, 2, 3, 4, 5, -1].includes(n) || !(String(rule.weekday || "").toLowerCase() in WD) || !hhmm(rule.start)) return "";
+  const cfg = { week_of_month: n, weekday: rule.weekday, start: rule.start, end: hhmm(rule.end) ? rule.end : "" };
+  return `${meetingRuleText(cfg, lang)} · ${meetingTimeRange(cfg, lang)}`;
+}
+
+// The languages the committee wrote an item in BY HAND besides its original one: a monthly event from
+// config/site.yml `recurring_events:` (title_es …) or a content/events · content/announcements file with
+// title_es / summary_es (build_data puts them in i18n and never lists them in `machine`). Text in such a
+// language is not a foreign-language original: no "EN" pill and no lang="en" on it.
+export function ownLangs(it) {
+  if (!it || it.source !== "committee" || !["manual", "recurring"].includes(it.category)) return [];
+  const t = (it.i18n && it.i18n.title) || {};
+  const machine = Array.isArray(it.machine) ? it.machine : [];
+  return ["en", "es"].filter((l) => l !== it.lang && !!t[l] && t[l] !== (it.title || "") && !machine.includes(l));
+}
+
 // "NETA 65 Grapevine & La Viña Committee Meeting" / "Reunión del Comité de Grapevine y La Viña de NETA 65"
 // Built from config/site.yml `site.committee(_es)` — the same words build_data.py
 // uses for the committee meetings in data/site/events.json, so every page agrees.
@@ -450,7 +475,8 @@ function shapeEvent(it, site, lang, now, descOverride) {
   const group = eventGroup(it);
   const committee = it.category === "committee";
   // A date of a monthly event from config/site.yml `recurring_events:` (build_data.recurring_events):
-  // its "every month" line is written by rule in both languages (extra.recurrence_label / i18n).
+  // its "every month" line is written from its rule (extra.rule) exactly like the committee meeting's;
+  // the data's own recurrence_label (both languages) is the fallback.
   const recurring = it.category === "recurring";
   // An outside calendar (GV/LV websites, .ics feeds) that gives only a date did not list
   // a start time — and its own event page may not either (La Viña's "Taller Mensual"
@@ -460,11 +486,11 @@ function shapeEvent(it, site, lang, now, descOverride) {
   const timeNotListed = allDay && it.source === "calendar" && /^https?:\/\//.test(it.url || "");
   const title = it._i18nTitle ? it.title : (H.pickLang(it, "title", lang) || it.title || "");
   const summary = it._i18nTitle ? it.summary : (H.pickLang(it, "summary", lang) || "");
-  const recurrence = recurring ? String(H.pickLang(it, "recurrence_label", lang) || x.recurrence_label || "") : "";
-  // The committee wrote this event in both languages (config title / title_es): the other language's
-  // text is not a foreign-language original, so no language pill and no lang="…" on it.
-  const machineHere = Array.isArray(it.machine) && it.machine.includes(lang);
-  const ownWords = recurring && !machineHere && it.lang !== lang && title !== (it.title || "");
+  const recurrence = recurring ? (recurrenceText(x.rule, lang) || String(H.pickLang(it, "recurrence_label", lang) || x.recurrence_label || "")) : "";
+  // The committee wrote this event in both languages (config/site.yml title / title_es, or a
+  // content/events file's title_es / summary_es): the other language's text is not a foreign-language
+  // original, so no language pill and no lang="…" on it. (Anything machine-translated keeps them.)
+  const ownWords = !it._i18nTitle && ownLangs(it).includes(lang);
   const past = x.past === true || endMs <= now;
 
   // Labels (all in Central time — the Area's time zone)
@@ -531,8 +557,8 @@ function shapeEvent(it, site, lang, now, descOverride) {
     anchor,
     uid: slugify(String(it.id).replace(/:/g, "-"), 90),
     group, committee, category: it.category || "", source: it.source || "",
-    // recurrence: "2nd Saturday of every month · 5:00–8:00 PM" (calendars, search); the card, which
-    // already shows the time, uses only the day part: "2nd Saturday of every month".
+    // recurrence: "Every second Saturday of the month · 5:00 – 8:00 PM" (/meeting/, calendars, search);
+    // the card, which already shows the time, uses only the day part: "Every second Saturday of the month".
     recurring, series: recurring ? String(x.series || "") : "", recurrence, recurrenceDay: recurrence.split(" · ")[0], ownWords,
     title, summary, body, item: it,
     platform, isOnline,

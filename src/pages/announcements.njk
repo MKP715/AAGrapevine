@@ -48,7 +48,8 @@ pageScripts: ["/assets/js/committee.js"]
               <h2 id="{{ a._anchor }}-h" class="mt-3 font-display text-2xl font-semibold leading-tight text-ink sm:text-[1.75rem]">
                 <a href="#{{ a._anchor }}" class="cm-anchor-link hover:text-gv">{{ title }}<span class="cm-hash" aria-hidden="true">#</span></a>
               </h2>
-              <div class="prose-site mt-4 max-w-none"{% if a.lang and a.lang != lang and not (a | machineFor(lang)) %} lang="{{ a.lang }}"{% endif %}>
+              {#- lang="…" only when the text shown IS the original: not machine-translated, not the committee's own summary_es -#}
+              <div class="prose-site mt-4 max-w-none"{% if a.lang and a.lang != lang and not (a | machineFor(lang)) and body == ((a.extra.body_md if a.extra) or a.summary) %} lang="{{ a.lang }}"{% endif %}>
                 {{ body | md | safe }}
               </div>
               {% if a | machineFor(lang) %}

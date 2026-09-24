@@ -69,6 +69,21 @@ keep:
   - RLV
   - RLVs
   - ASL
+  # Places in our Area whose names are also everyday English words
+  # (the model turned "Fort Worth" into "Valía la pena")
+  - Fort Worth
+  - Grand Prairie
+  - Farmers Branch
+  - Cedar Hill
+  - Red Oak
+  - Oak Cliff
+  - Pleasant Grove
+  - Balch Springs
+  - Sulphur Springs
+  - Mount Pleasant
+  - Highland Park
+  - University Park
+  - Mesquite
   # Co-founders (anonymity: first name + initial only)
   - Bill W.
   - Dr. Bob

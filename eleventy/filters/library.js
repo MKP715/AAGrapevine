@@ -881,12 +881,16 @@ export function searchIndex(db, nav, lang, helpers, site) {
       else if (/^https?:\/\//.test(it.url || "")) u = it.url;
       if (!u) continue;
       const start = ex.start || it.date;
-      // A recurring event is written by the committee in both languages: no "EN" badge on the Spanish
-      // page (search.js shows one when `l` differs), and "every month" / "cada mes" finds it too.
-      const own = recurring && !(it.machine || []).includes(lang) && fold(P(it, "title")) !== fold(it.title);
+      // A recurring event (and a content/events file with title_es / summary_es) is written by the
+      // committee in both languages: no "EN" badge on the Spanish page (search.js shows one when `l`
+      // differs), and "every month" / "cada mes" finds a recurring one too. Its repeat line is the one
+      // its card and /meeting/ show (committee.js recurrenceText).
+      const own = typeof committee.ownLangs === "function"
+        ? committee.ownLangs(it).includes(lang)
+        : (recurring || it.category === "manual") && !(it.machine || []).includes(lang) && fold(P(it, "title")) !== fold(it.title);
       push({
         id: it.id, k: "event", t: P(it, "title") || ev.title, o: it.title, ol: it.lang,
-        s: [helpers.fmtDate(start, lang, "medium"), recurring ? P(it, "recurrence_label") : "", ex.location || [ex.city, ex.state].filter(Boolean).join(", ")].filter(Boolean).join(" · "),
+        s: [helpers.fmtDate(start, lang, "medium"), recurring ? (ev.recurrence || P(it, "recurrence_label")) : "", ex.location || [ex.city, ex.state].filter(Boolean).join(", ")].filter(Boolean).join(" · "),
         x: [snippet(P(it, "summary"), 120), recurring ? both("search.kw.recurring") : ""].filter(Boolean).join(" "),
         u, d: ymd(helpers, start), l: own ? lang : it.lang,
         src: it.source === "calendar" ? (it.category === "lv-calendar" ? "lv" : "gv") : "neta", m: mach(it), z: ev.past,

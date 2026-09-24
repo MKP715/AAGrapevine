@@ -9,6 +9,7 @@ booth (or add others) without turning these tests red. No network, no translatio
 """
 from __future__ import annotations
 
+import json
 import sys
 import unittest
 from datetime import date, datetime, timezone
@@ -196,18 +197,69 @@ class RecurringEventsBuild(unittest.TestCase):
         self.assertEqual(oct_["i18n"]["title"], {"en": "GV/LV booth at CityWide Dallas", "es": "Mesa de GV/LV en CityWide Dallas"})
         self.assertEqual(oct_["i18n"]["summary"]["es"], "Nuestra mesa de literatura en CityWide Dallas.")
         self.assertEqual(oct_["i18n"]["recurrence_label"], {
-            "en": "2nd Saturday of every month · 5:00–8:00 PM",
-            "es": "2.º sábado de cada mes · 5:00–8:00 p. m."})
+            "en": "Every second Saturday of the month · 5:00\u2009–\u20098:00 PM",
+            "es": "Cada segundo sábado del mes · 5:00–8:00\u00a0p.\u00a0m."})
+        # the rule itself, in the shape of `meeting:` — the web pages write the line from it with the
+        # committee meeting's own helpers (eleventy/filters/committee.js recurrenceText)
+        self.assertEqual(ex["rule"], {"week_of_month": 2, "weekday": "saturday", "start": "17:00", "end": "20:00"})
         self.assertEqual(oct_["machine"], [])
         self.assertIs(oct_["is_new"], False)
 
     def test_recurrence_labels(self):
+        # worded like the committee meeting's line ("Every third Wednesday of the month · 7:00 – 8:00 PM"),
+        # time ranges as the browser writes them (thin spaces around the dash; none in "5:00–8:00 p. m.")
         rule = MonthlyRule(week_of_month=-1, weekday=6, start=(11, 30), end=(13, 0))
         self.assertEqual(B.recurrence_label(rule), {
-            "en": "Last Sunday of every month · 11:30 AM–1:00 PM",
-            "es": "Último domingo de cada mes · 11:30 a. m.–1:00 p. m."})
+            "en": "Every last Sunday of the month · 11:30 AM\u2009–\u20091:00 PM",
+            "es": "Cada último domingo del mes · 11:30\u00a0a.\u00a0m.\u2009–\u20091:00\u00a0p.\u00a0m."})
         self.assertEqual(B.recurrence_label(MonthlyRule(1, 0, (9, 0), (11, 0)))["es"],
-                         "1.er lunes de cada mes · 9:00–11:00 a. m.")
+                         "Cada primer lunes del mes · 9:00–11:00\u00a0a.\u00a0m.")
+        self.assertEqual(B.recurrence_label(MonthlyRule(3, 2, (19, 0), (20, 0)))["en"],
+                         "Every third Wednesday of the month · 7:00\u2009–\u20098:00 PM")
+        # a 23:30 start with no end: the one-hour rule stops at 23:59 (the same day) — so does extra.rule
+        late = MonthlyRule(2, 5, (23, 30), (23, 30))
+        self.assertEqual(B.rule_fields(late), {"week_of_month": 2, "weekday": "saturday", "start": "23:30", "end": "23:59"})
+        self.assertEqual(B.rule_fields(rule)["week_of_month"], -1)
+
+    def test_words_match_the_committee_meeting_line(self):
+        """The rule words are the site's own (src/_i18n/committee.json), so the booth's line and the
+        committee meeting's line on /meeting/ can never be worded differently."""
+        strings = json.loads((ROOT / "src" / "_i18n" / "committee.json").read_text(encoding="utf-8"))
+        for lang in ("en", "es"):
+            self.assertEqual(B._RULE[lang], strings["committee.rule"][lang], lang)
+            for n, word in B._ORD_WORDS[lang].items():
+                key = "committee.ord." + ("last" if n == -1 else str(n))
+                self.assertEqual(word, strings[key][lang], (lang, key))
+
+    def test_a_skip_date_that_is_not_the_events_day_is_reported(self):
+        """A likely slip (the Sunday, the 1st Saturday, the wrong month) would skip nothing: it is ignored
+        as before, but the chair is told (status.json problems.recurring_events → Actions summary)."""
+        ctx = ctx_with(CITYWIDE_YAML.replace("    skip_dates: []",
+                                             '    skip_dates: ["2026-11-14", 2027-01-09, "2027-02-30", "garbage", '
+                                             '"2026-10-11", "2026-12-05"]'))
+        evs = B.recurring_events(ctx)
+        days = [e["extra"]["start"][:10] for e in evs if B.ts(e["extra"]["end"]) >= TODAY.timestamp()]
+        self.assertEqual(days, ["2026-10-10", "2026-12-12", "2027-02-13", "2027-03-13", "2027-04-10", "2027-05-08"])
+        report = ctx.raw_problems["recurring_events"]
+        self.assertIn("skip date “2026-10-11” is not the 2nd Saturday of its month — ignored "
+                      "(that month's is 2026-10-10)", report)
+        self.assertIn("skip date “2026-12-05” is not the 2nd Saturday of its month — ignored "
+                      "(that month's is 2026-12-12)", report)
+        for words in ("“2027-02-30” is not a date", "“garbage” is not a date"):
+            self.assertIn(words, report)
+        for fine in ("2026-11-14", "2027-01-09"):             # real 2nd Saturdays (quoted or not): no note
+            self.assertNotIn(f"“{fine}”", report)
+        # a "5th Saturday" rule and a month that has none; the last Friday of the month
+        _, problems = B.recurring_specs(ctx_with("""
+recurring_events:
+  - {title: "Fifth", week_of_month: 5, weekday: saturday, start: "10:00", skip_dates: ["2026-11-28", "2026-10-31"]}
+  - {title: "Last", week_of_month: -1, weekday: friday, start: "10:00", skip_dates: ["2026-10-30", "2026-10-23"]}
+"""))
+        text = " / ".join(problems)
+        self.assertIn("“2026-11-28” is not the 5th Saturday of its month — ignored (that month has no 5th Saturday)", text)
+        self.assertIn("“2026-10-23” is not the last Friday of its month — ignored (that month's is 2026-10-30)", text)
+        self.assertNotIn("“2026-10-31”", text)
+        self.assertNotIn("“2026-10-30”", text)
 
     def test_never_new_never_in_whats_new_never_a_past_event(self):
         ctx = ctx_with(CITYWIDE_YAML)
@@ -324,7 +376,7 @@ recurring_events:
         self.assertEqual(ev["i18n"]["title"]["es"], "[es] GV/LV booth at CityWide Dallas")
         self.assertEqual(ev["i18n"]["summary"]["es"], "[es] Our literature table at CityWide Dallas.")
         self.assertEqual(ev["machine"], ["es"])
-        self.assertEqual(ev["i18n"]["recurrence_label"]["es"], "2.º sábado de cada mes · 5:00–8:00 p. m.")
+        self.assertEqual(ev["i18n"]["recurrence_label"]["es"], "Cada segundo sábado del mes · 5:00–8:00\u00a0p.\u00a0m.")
         # translation not possible right now: the English shows in both, nothing marked "auto-translated"
         ev = B.recurring_events(ctx_with(CITYWIDE_YAML.replace('    title_es: "Mesa de GV/LV en CityWide Dallas"\n', "")))[0]
         self.assertEqual(ev["i18n"]["title"]["es"], "GV/LV booth at CityWide Dallas")

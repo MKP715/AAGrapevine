@@ -33,8 +33,8 @@ from . import translate as T
 from .common import (CONTENT_DIR, RAW_DIR, SITE_DIR, STATE_DIR, clean_text, get_logger, load_config, now_iso,
                      parse_iso, read_json, short_hash, slugify, strip_html, to_iso, truncate, write_json)
 from .geo import SCOPES, classify_location, fold
-from .meeting import (MonthlyRule, parse_hhmm, upcoming_meetings, upcoming_rule_dates, week_of_month_value,
-                      weekday_index, ymd_text)
+from .meeting import (MonthlyRule, nth_weekday, parse_hhmm, upcoming_meetings, upcoming_rule_dates,
+                      week_of_month_value, weekday_index, ymd_text)
 
 log = get_logger("build_data")
 
@@ -380,32 +380,51 @@ def committee_meetings(ctx: Ctx, count: int = 12) -> list[dict]:
 
 
 # --------------------------------------------------------------------------- recurring events (config)
-_ORDINALS = {"en": {1: "1st", 2: "2nd", 3: "3rd", 4: "4th", 5: "5th", -1: "Last"},
-             "es": {1: "1.er", 2: "2.º", 3: "3.er", 4: "4.º", 5: "5.º", -1: "Último"}}
+# The repeat line uses the SAME words as the committee meeting's line ("Every third Wednesday of the
+# month"): src/_i18n/committee.json `committee.rule` and `committee.ord.*` (a unit test keeps the two
+# in step). The web pages build the line themselves from `extra.rule`, with those strings and the
+# browser's clock format (eleventy/filters/committee.js recurrenceText); this copy is the fallback.
+_RULE = {"en": "Every {ord} {weekday} of the month", "es": "Cada {ord} {weekday} del mes"}
+_ORD_WORDS = {"en": {1: "first", 2: "second", 3: "third", 4: "fourth", 5: "fifth", -1: "last"},
+              "es": {1: "primer", 2: "segundo", 3: "tercer", 4: "cuarto", 5: "quinto", -1: "último"}}
+_ORD_SHORT = {1: "1st", 2: "2nd", 3: "3rd", 4: "4th", 5: "5th", -1: "last"}      # (settings messages)
 _DAY_NAMES = {"en": ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"),
               "es": ("lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo")}
-_NB = " "   # the site writes Spanish times as "8:00 p. m." with no-break spaces (esMeridiem in eleventy.config.js)
+_NB = "\u00a0"      # Spanish "8:00 p. m.": no-break spaces (esMeridiem in eleventy.config.js)
+_THIN = "\u2009"    # "7:00 – 8:00 PM": the browser's time ranges put thin spaces around the dash
 
 
 def clock_range(start: tuple[int, int], end: tuple[int, int], lang: str) -> str:
-    """(17, 0), (20, 0) → "5:00–8:00 PM" / "5:00–8:00 p. m."; "11:00 AM–1:00 PM" when the half of the day changes."""
+    """The time range as the site's pages write it (Intl formatRange, en-US / es-US):
+    (17, 0), (20, 0) → "5:00 – 8:00 PM" / "5:00–8:00 p. m."; when the half of the day changes,
+    "11:00 AM – 1:00 PM" / "11:00 a. m. – 1:00 p. m." (thin spaces around the dash)."""
     def hm(h: int, m: int) -> str:
         return f"{(h % 12) or 12}:{m:02d}"
 
+    dash = f"{_THIN}–{_THIN}"
     if lang == "es":
         a, b = (f"a.{_NB}m." if h < 12 else f"p.{_NB}m." for h in (start[0], end[0]))
-        return f"{hm(*start)}–{hm(*end)}{_NB}{b}" if a == b else f"{hm(*start)}{_NB}{a}–{hm(*end)}{_NB}{b}"
+        return f"{hm(*start)}–{hm(*end)}{_NB}{b}" if a == b else f"{hm(*start)}{_NB}{a}{dash}{hm(*end)}{_NB}{b}"
     a, b = ("AM" if h < 12 else "PM" for h in (start[0], end[0]))
-    return f"{hm(*start)}–{hm(*end)} {b}" if a == b else f"{hm(*start)} {a}–{hm(*end)} {b}"
+    return f"{hm(*start)}{dash}{hm(*end)} {b}" if a == b else f"{hm(*start)} {a}{dash}{hm(*end)} {b}"
 
 
 def recurrence_label(rule: MonthlyRule) -> dict[str, str]:
-    """Hand-written, both languages (never machine-translated):
-    "2nd Saturday of every month · 5:00–8:00 PM" / "2.º sábado de cada mes · 5:00–8:00 p. m."."""
+    """Hand-written, both languages (never machine-translated), worded like the committee meeting's line:
+    "Every second Saturday of the month · 5:00 – 8:00 PM" / "Cada segundo sábado del mes · 5:00–8:00 p. m."."""
     start, end = rule.span()
     n, wd = rule.week_of_month, rule.weekday
-    return {"en": f"{_ORDINALS['en'][n]} {_DAY_NAMES['en'][wd]} of every month · {clock_range(start, end, 'en')}",
-            "es": f"{_ORDINALS['es'][n]} {_DAY_NAMES['es'][wd]} de cada mes · {clock_range(start, end, 'es')}"}
+    return {lang: _RULE[lang].format(ord=_ORD_WORDS[lang][n], weekday=_DAY_NAMES[lang][wd])
+            + f" · {clock_range(start, end, lang)}" for lang in ("en", "es")}
+
+
+def rule_fields(rule: MonthlyRule) -> dict[str, Any]:
+    """`extra.rule` of a recurring event: the rule in the shape of config/site.yml `meeting:` (week_of_month,
+    English weekday, start / end as "HH:MM" — the end as actually used), so the web pages write the repeat
+    line with the committee meeting's own helpers (eleventy/filters/committee.js recurrenceText)."""
+    (sh, sm), (eh, em) = rule.span()
+    return {"week_of_month": rule.week_of_month, "weekday": WEEKDAYS[rule.weekday],
+            "start": f"{sh:02d}:{sm:02d}", "end": f"{eh:02d}:{em:02d}"}
 
 
 def _bilingual(en: str, es: str, title: bool = False) -> tuple[dict[str, str], list[str]]:
@@ -439,8 +458,9 @@ def _recurring_url(v: Any) -> str | None:
 def recurring_specs(ctx: Ctx) -> tuple[list[dict], list[str]]:
     """config/site.yml `recurring_events:` → (valid event settings, problems). Hand-edited settings: an
     entry with a real mistake (no title, a weekday or week that cannot be understood, no start time …)
-    is SKIPPED and named in the problems; small slips (an end time that cannot be read, a bad skip date,
-    a link that is not a web address) are noted but the event still shows."""
+    is SKIPPED and named in the problems; small slips (an end time that cannot be read, a skip date that
+    is not a date or not one of the event's days, a link that is not a web address) are noted but the
+    event still shows."""
     raw = ctx.cfg.get("recurring_events")
     if raw is None or raw == "" or raw == []:
         return [], []
@@ -495,10 +515,18 @@ def recurring_specs(ctx: Ctx) -> tuple[list[dict], list[str]]:
         raw_skip = e.get("skip_dates") or []
         for s in raw_skip if isinstance(raw_skip, list) else [raw_skip]:
             ymd = ymd_text(s)
-            if ymd:
-                skip.add(ymd)
-            else:
+            if not ymd:
                 notes.append(f"skip date “{s}” is not a date like \"2027-01-09\" — ignored")
+                continue
+            # A slip like the Sunday, the 1st Saturday or the wrong month would skip nothing: say so.
+            d = date.fromisoformat(ymd)
+            day = nth_weekday(d.year, d.month, wd, wom)
+            if day != d:
+                nth = f"{_ORD_SHORT[wom]} {_DAY_NAMES['en'][wd]}"
+                notes.append(f"skip date “{ymd}” is not the {nth} of its month — ignored ("
+                             + (f"that month's is {day.isoformat()})" if day else f"that month has no {nth})"))
+                continue
+            skip.add(ymd)
         ahead = RECURRING_AHEAD
         if e.get("months_ahead") not in (None, ""):
             try:
@@ -565,7 +593,7 @@ def recurring_events(ctx: Ctx) -> list[dict]:
                 "extra": {"start": d["start"], "end": d["end"], "all_day": False, "location": sp["location"],
                           "online_url": sp["online_url"], "flyer_url": None, "flyer_thumb": None,
                           "city": sp["city"], "state": sp["state"], "recurring": True, "series": sp["key"],
-                          "recurrence_label": label["en"]},
+                          "rule": rule_fields(rule), "recurrence_label": label["en"]},
                 "i18n": {"title": dict(title), "summary": dict(summary), "recurrence_label": dict(label)},
                 "machine": list(machine), "is_new": False, "_fixed_i18n": True,
             })
@@ -804,6 +832,23 @@ def text_fields(it: dict) -> list[tuple[str, str, bool, str | None]]:
     return fields
 
 
+def own_words(it: dict) -> dict[str, dict[str, str]]:
+    """The author's own translations of a hand-written item (content/events, content/announcements:
+    `title_es`, `summary_es` … → announcements.py → `extra.own_i18n`): {field: {lang: text}}. They are
+    used instead of a machine translation, and only a language left out is machine-translated."""
+    own = (it.get("extra") or {}).get("own_i18n")
+    if not isinstance(own, dict):
+        return {}
+    out: dict[str, dict[str, str]] = {}
+    for field, texts in own.items():
+        if isinstance(texts, dict):
+            kept = {lang: v.strip() if field == "body_md" else clean_text(v)
+                    for lang, v in texts.items() if lang in LANGS and isinstance(v, str) and v.strip()}
+            if kept:
+                out[str(field)] = kept
+    return out
+
+
 def local_fields(it: dict) -> dict[str, dict]:
     """i18n entries written by rules (never machine-translated): issue labels, Weekly Open times,
     the writer's place ("Nueva Jersey" → "New Jersey"; from extra.geo, see scripts/sync/geo.py)."""
@@ -961,13 +1006,22 @@ class I18n:
             return
         src = source_lang(it)
         i18n, machine = {}, set()
+        own = own_words(it)
         for field, text, md, fsrc in text_fields(it):
             s = fsrc or src
             i18n[field], m = self.pair(text, s, md)
+            mine = {lang: v for lang, v in (own.get(field) or {}).items() if lang != s}
+            if mine:               # the author's own words in the other language: never "auto-translated"
+                i18n[field].update(mine)
+                m = False
             if m:
                 machine.add(other(s))  # type: ignore[arg-type]
                 if field in TITLE_FIELDS and it.get("kind") != "post":    # (Instagram "titles" are captions)
                     en_title_case(i18n[field], s)
+        for field in ("body_md",):          # a hand-written description where the file itself has no text
+            if field in own and field not in i18n:
+                base = str((it.get("extra") or {}).get(field) or "")
+                i18n[field] = {lang: own[field].get(lang) or base for lang in LANGS}
         i18n.update(local_fields(it))
         it["i18n"] = i18n
         it["machine"] = sorted(machine)
@@ -981,7 +1035,11 @@ def plan_translations(ctx: Ctx, cols: dict[str, list[dict]], wn_refs: set[int], 
                 continue
             src = source_lang(it)
             when = -(ctx.effective_ts(it, raw_source(it)) or ts(it.get("date")) or ts(it.get("first_seen")) or 0.0)
+            own = own_words(it)
             for field, text, md, fsrc in text_fields(it):
+                s = fsrc or src
+                if s in LANGS and other(s) in (own.get(field) or {}):  # type: ignore[arg-type]
+                    continue                   # written by hand in the other language: nothing to translate
                 if name in small:
                     tier = 0
                 elif id(it) in wn_refs:

@@ -72,10 +72,16 @@ Source file names: `drive.json`, `youtube.json`, `podcasts.json`, `instagram.jso
 | grapevine / lavina | article | publication `gv` / `lv` | `publication`, `issue_label` ("October 2026" / "Septiembre / Octubre 2026"), `issue_key` ("2026-10" / "2026-09"), `topic`, `section`, `author`, `free` (bool\|null) |
 | crawl | pdf | `gvr` `rlv` `catalog` `flyer` `postcard` `news` `guidelines` `order-form` `workbook` `service` `literature` `other` | `host`, `file_url`, `size_bytes`, `pages`, `thumb` (site-relative path or null), `referrers` [{`url`,`title`}], `upload_month` ("2026-02"), `link_texts` [..] |
 | drive | document / slides / photo / video_file / form | `reports` `notes` `slides` `flyers` `photos` `workshops` `announcements` `forms` `other` | `file_id`, `mime`, `panel` (77), `panel_label`, `path` ["photos","WhatsApp"], `album` (sub-folder name or null), `view_url`, `preview_url`, `download_url`, `thumb_url`, `image_url`, `is_image`, `is_video`, `is_pdf` |
-| committee / drive / calendar | event | `committee` `flyer` `gv-calendar` `lv-calendar` `manual` `ics` | `start` (ISO datetime or date), `end`, `all_day`, `location`, `online_url`, `flyer_url`, `flyer_thumb`, `city`, `state` |
-| committee / drive | announcement | `manual` / `drive` | `body_md` (original-language Markdown), `expires` (date|null), `pinned` (bool) |
+| committee / drive / calendar | event | `committee` `recurring` `flyer` `gv-calendar` `lv-calendar` `manual` `ics` | `start` (ISO datetime or date), `end`, `all_day`, `location`, `online_url`, `flyer_url`, `flyer_thumb`, `city`, `state` (+ `recurring`, `series`, `rule`, `recurrence_label` — see §5; manual: `own_i18n`) |
+| committee / drive | announcement | `manual` / `drive` | `body_md` (original-language Markdown), `expires` (date|null), `pinned` (bool); content/announcements: `own_i18n` (below) |
 
 `editorial.json` items (kind `topic`): `extra` = `publication`, `issue_label`, `deadline` (date\|null), `theme`.
+`extra.own_i18n` (content/events and content/announcements files only, when the header has them):
+the author's own words in the other language — `title_es` / `summary_es` (or `title_en` / `summary_en`
+for a file written in Spanish) → `{"title": {"es": …}, "summary": {"es": …}, "body_md": {"es": …}}`
+(the summary is also that language's `body_md`, the text the pages show). build_data puts them in
+`i18n` instead of a machine translation; only a language or field left out is machine-translated
+(→ `machine`).
 `weekly_open.json`: single item (kind `meeting`) with `extra` = `zoom_id`, `passcode`, `day`, `time`, `url`
 (+ structured `weekday`, `start_local`, `timezone`, `next_start` — see §5).
 Every module adds more `extra` fields than listed here; §5 lists all of them as built.
@@ -106,16 +112,17 @@ only if that was more than 2 days after the source's *first* harvest (so launch 
 flood of the back catalog). Undated PDFs are never news by themselves (the crawler already dates
 PDFs that appear on a page it knew). `is_new` = news date within 14 days. Never new: kind
 `topic` (editorial themes; their date is a deadline), kind `meeting` (Weekly Open), committee
-meetings and **back-catalog magazine stories** (articles of an issue that was never the current
+meetings, recurring events (category `recurring`, from `recurring_events:` in the config) and **back-catalog magazine stories** (articles of an issue that was never the current
 issue on a magazine hub while we watched — the archive backfill found them; their issue is not in
 the raw `issues` map). Back-catalog stories are real and appear on /read/ and in the spotlight, but
 never in What's New. `whatsnew.json` = the newest 150 by news date (`wn_date`), same exclusions; events
 appear there for 30 days after they were first announced; several Drive photos of one album on
-one day become one group item (`extra.is_group`, `count`, `thumbs`).
+one day become one group item (`extra.is_group`, `count`, `thumbs`). Committee meetings and recurring
+events never appear in What's New (they come round every month; `SCHEDULED_EVENT_CATEGORIES`).
 
 Files: `episodes.json`, `videos.json`, `instagram.json`, `articles.json`, `pdfs.json`,
-`drive.json`, `events.json` (committee meetings auto-generated for 12 months + Drive flyers +
-TX calendar events + manual), `announcements.json`, `editorial.json`, `weekly_open.json`,
+`drive.json`, `events.json` (committee meetings auto-generated for 12 months + recurring events from
+`recurring_events:` in the config + Drive flyers + TX calendar events + manual), `announcements.json`, `editorial.json`, `weekly_open.json`,
 `whatsnew.json` (newest 150 across all sources, sorted by date desc),
 `spotlight.json` (published-writers spotlight, below), `status.json` (below),
 `districts.json` (from `content/districts.yml`).
@@ -175,7 +182,8 @@ Settings: `config/site.yml` → `spotlight:` (`home_days`, `list_days`, `default
   "counts": { "videos": 528, "episodes": 295, "…": 0, "whatsnew": 150, "districts": 2 },
   "spotlight": { "today": "2026-09-23", "home_days": 60, "list_days": [60, 90],
                  "counts": { "60": { "neta65": 2, "texas": 8, "all": 100 }, "90": { … } }, "items": 156 },
-  "problems": { }          // raw files that were missing/unreadable ("missing" = module never ran)
+  "problems": { }          // raw files that were missing/unreadable ("missing" = module never ran), and settings
+                           // build_data could not use: "meeting", "recurring_events", "districts" (text says what)
 }
 ```
 `pending` > 0 means the translation time budget ran out; the rest is translated on the next run.
@@ -253,10 +261,44 @@ it is read once.
 | pdf (`pdfs`) | `host`, `file_url`, `filename`, `size_bytes`, `pages`, `thumb`, `referrers` [{url, title}], `upload_month`, `link_texts`, `event_date`, `doc_lang`, `multilingual` (`true` when one file holds several languages — two or more page languages, language-only links for 2+ languages, or a heading such as "Catalog • Catálogo • Catalogue"; otherwise `null`: such a file takes the host site's language and gets no "(Spanish)" title suffix), `section` (heading on the referring page), `external`, `orphan` | — |
 | topic (`editorial`) | `publication`, `theme`, `evergreen`, and for dated GV themes `issue_key`, `issue_label`, `deadline`, `due_text`, `pdf_url`, `submit_url`, `guidelines_url` | `issue_label` (rules); `theme` when it differs from the title |
 | meeting (`weekly_open`) | `zoom_id`, `zoom_url`, `passcode`, `day`, `time`, `time_central`, `sentence`, `weekday`, `start_local`, `timezone`, `next_start`, `url`, `player_url` | written by rules from weekday/start_local/timezone: `day` ("Wednesdays"/"Miércoles"), `time` ("Noon Eastern"/"mediodía (hora del Este)"), `time_central` ("11:00 AM Central"/"11:00 a. m. (hora del Centro)"), `when` ("Wednesdays at 11:00 AM Central"/"Miércoles a las 11:00 a. m. (hora del Centro)"), `sentence` (join line with Zoom ID + passcode). Machine-translated only if those fields are missing |
-| event (`events`) | common: `start`, `end`, `all_day`, `location`, `online_url`, `flyer_url`, `flyer_thumb`, `city`, `state`, `past`. Committee: `meeting_id`, `passcode`, `recurring`. External calendar: `platform`, `online`, `scope`, `site`, `country`, `website`, `organizer`, `date_text`. Drive flyer: `drive_id`, `is_pdf`, `is_image`. Manual: `body_md`, `slug`, `file` | committee meetings: fixed human `title`/`summary` in both languages; manual: `body_md` |
+| event (`events`) | common: `start`, `end`, `all_day`, `location`, `online_url`, `flyer_url`, `flyer_thumb`, `city`, `state`, `past`. Committee: `meeting_id`, `passcode`, `recurring`. Recurring (category `recurring`, below): `recurring` (`true`), `series`, `rule`, `recurrence_label`. External calendar: `platform`, `online`, `scope`, `site`, `country`, `website`, `organizer`, `date_text`. Drive flyer: `drive_id`, `is_pdf`, `is_image`. Manual: `body_md`, `slug`, `file`, `own_i18n` | committee meetings and recurring events: fixed human `title`/`summary` in both languages; recurring: `recurrence_label` (rules); manual: `body_md` (+ the file's own `title_es` / `summary_es`, never machine-translated) |
 | document / slides / photo / video_file / form (`drive`) | `file_id`, `mime`, `name`, `panel`, `panel_label`, `path`, `album`, `view_url`, `preview_url`, `download_url`, `thumb_url`, `image_url`, `is_image`, `is_video`, `is_pdf`, `file_type`, `folder_id`, `folder_url`, `folder_chain`, `modified_text`, `size_bytes`, `duration_sec`, `shortcut_id`, `generic_name`, flyers: `event_date`, `event_title`, `event_time`, `event_end_time`, `event_location` / `event_month`, forms: `form_closed`, `form_signin_required` | `album` (photos in a sub-folder) |
-| announcement (`announcements`) | `body_md`, `expires`, `pinned`, `slug`, `file`, `link` | `body_md` |
+| announcement (`announcements`) | `body_md`, `expires`, `pinned`, `slug`, `file`, `link`, `own_i18n` | `body_md` (+ the file's own `title_es` / `summary_es`) |
 | district (`districts`) | top-level `number`, `name`, `language`, `website`, `gvr_contact`, `meets` (+ any extra YAML keys) | `name`, `meets` |
+
+#### Recurring events (category `recurring`; build_data.recurring_events)
+One item per date of each `recurring_events:` entry in `config/site.yml` — the next `months_ahead` (default 6)
+dates plus the dates of the last 90 days (those have `extra.past: true`; the pages never list them, the
+calendar feed keeps them for subscribers):
+```json
+{ "id": "ev:recurring:citywide-dallas:2026-10-10",      // key + local date: stable (calendar UID, card anchor)
+  "source": "committee", "kind": "event", "category": "recurring",
+  "url": "https://citywidedallasaa.org",                // the entry's `url`, or "/events/" without one
+  "title": "GV/LV booth at CityWide Dallas", "lang": "en", "date": "2026-10-10T22:00:00Z",
+  "first_seen": null, "tags": ["recurring"],
+  "extra": { "start": "2026-10-10T22:00:00Z",           // 17:00 CDT; "2026-11-14T23:00:00Z" = 17:00 CST
+             "end": "2026-10-11T01:00:00Z", "all_day": false,
+             "location": "Lover's Lane United Methodist Church, 9200 Inwood Road, Dallas, TX 75220",
+             "city": "Dallas", "state": "TX",              // read from the location (or the entry's city/state)
+             "online_url": null, "flyer_url": null, "flyer_thumb": null,
+             "recurring": true, "series": "citywide-dallas",
+             "rule": {"week_of_month": 2, "weekday": "saturday", "start": "17:00", "end": "20:00"},
+             "recurrence_label": "Every second Saturday of the month · 5:00 – 8:00 PM", "past": false },
+  "i18n": { "title": {"en": "GV/LV booth at CityWide Dallas", "es": "Mesa de GV/LV en CityWide Dallas"},
+            "summary": {"en": "…", "es": "…"},
+            "recurrence_label": {"en": "Every second Saturday of the month · 5:00 – 8:00 PM",
+                                 "es": "Cada segundo sábado del mes · 5:00–8:00 p. m."} },   // thin spaces around " – ", no-break in "p. m."
+  "machine": [], "is_new": false }
+```
+* `title`/`summary` are the committee's own words (`title_es`, `summary_es`); a language left out is
+  machine-translated and listed in `machine`. `recurrence_label` is written by rule, never translated,
+  with the committee meeting's words (src/_i18n/committee.json `committee.rule` / `committee.ord.*`: "Every
+  third Wednesday of the month"). `rule` is the entry's rule in the shape of `meeting:` (the end as used:
+  a missing one is start + 1 hour); the web pages build the line from it with the meeting's own helpers
+  (committee.js `recurrenceText`: same words, the browser's clock format) and fall back to `recurrence_label`.
+* Never `is_new`, never in `whatsnew.json`, never in the /events/ "Past events" list. Home, search, the
+  digest pages and the e-mail show only the next date of each `series`.
+* Entries with a mistake are skipped; `status.json` → `problems.recurring_events` says which and why.
 
 #### Articles: `extra.geo` and `extra.pub_date` (site files only; build_data.py)
 `extra.geo` = where the writer is from, read from `extra.author_location` by `scripts/sync/geo.py`:

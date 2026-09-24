@@ -28,7 +28,8 @@ Sitio web del **Comité de Grapevine y La Viña del Área 65 del Noreste de Texa
     `(hasta 2027-02-01)` lo oculta después de esa fecha.
   - Cada **subcarpeta** de `fotos` es un **álbum**. Por favor, solo fotos donde **no se reconozca la
     cara** de ningún miembro de AA.
-- **Ajustes** (reunión del comité, Zoom, correo): archivo `config/site.yml`.
+- **Ajustes** (reunión del comité, Zoom, correo, eventos de cada mes como la mesa en CityWide Dallas):
+  archivo `config/site.yml`.
   **Corregir una traducción:** `data/translations/overrides.yml`.
 - **¿Funciona todo?** Página **/es/status/** del sitio, o la pestaña **Actions** en GitHub.
   **Actualizar ya:** GitHub → **Actions** → **Update & Deploy** → **Run workflow**.
@@ -93,6 +94,7 @@ It also runs within a few minutes whenever someone saves a change to the setting
 | **Editorial calendar** (Grapevine) and suggested topics (La Viña) | Upcoming themes and story deadlines | **Contribute** |
 | **Grapevine Weekly Open meeting** (web page) | Current day, time and Zoom details | **Meeting** |
 | **Committee meeting** (from the settings) | Next dates, countdown, "add to calendar" | **Meeting · Events** |
+| **Monthly events** (from the settings, e.g. our booth at CityWide Dallas) | The next dates, "add to calendar" | **Events · Home · Meeting · calendar feed · weekly e-mail** |
 | **Translation** | Every title, teaser and announcement in both languages | Everywhere |
 
 The site also offers, automatically: a **What's New** page (the newest items from every source),
@@ -184,6 +186,8 @@ Common changes:
 |---|---|
 | Committee meeting day/time | `meeting:` → `week_of_month`, `weekday`, `start`, `end` (24-hour, Central time) |
 | Skip a meeting (holiday) | `meeting:` → `skip_dates: ["2027-12-15"]` |
+| Something we do every month (a booth, a workshop) | `recurring_events:` — see [below](#add-a-recurring-event) |
+| Skip one month of it | `recurring_events:` → that event's `skip_dates: ["2026-12-12"]` |
 | Zoom link, meeting ID, passcode | `meeting:` → `zoom_url`, `meeting_id`, `passcode` |
 | Contact e-mail | `site:` → `contact_email` and `meeting:` → `chair_email` |
 | Which Drive panels are shown | `drive:` → `min_panel` |
@@ -195,6 +199,41 @@ Common changes:
 If a change breaks the file (for example a missing space), the update shows a **red ✗** in the
 Actions tab and **the website stays as it was**. Open the file's **History**, compare with the
 previous version, and fix or undo the change.
+
+### Add a recurring event
+
+For something the committee does **every month** — like our Grapevine / La Viña booth at
+**CityWide Dallas** (2nd Saturday, 5–8 PM) — add a block under `recurring_events:` in
+`config/site.yml`. This is the one already there:
+
+```yaml
+recurring_events:
+  - key: "citywide-dallas"          # short name: letters, numbers, dashes. Don't change it later.
+    title: "GV/LV booth at CityWide Dallas"
+    title_es: "Mesa de GV/LV en CityWide Dallas"
+    summary: "Stop by our Grapevine and La Viña literature table at CityWide Dallas, …"
+    summary_es: "Visita nuestra mesa de literatura de Grapevine y La Viña en CityWide Dallas, …"
+    week_of_month: 2                # 1–5, or -1 for "the last one"
+    weekday: "saturday"             # English or Spanish ("sábado")
+    start: "17:00"                  # 24-hour clock, Central time
+    end: "20:00"
+    location: "Lover's Lane United Methodist Church, 9200 Inwood Road, Dallas, TX 75220"
+    url: "https://citywidedallasaa.org"   # the "Event details" link (optional)
+    months_ahead: 6                 # how many upcoming dates to list
+    skip_dates: []                  # a month without it: ["2026-12-12"] (must be that month's 2nd Saturday)
+```
+
+To add another one, copy the whole block (from `- key:` down), paste it under the last one and
+change the values. Every date then shows on the **Events** page (with an "Every month" badge), the
+next one on the **home page**, the **Meeting** page and in the **weekly e-mail**, and all of them in
+the **calendar feed** — in both languages, with daylight-saving time handled. Write the Spanish
+yourself (`title_es`, `summary_es`); if you leave it out, the site translates the English
+automatically and marks it "auto-translated". A monthly event never shows as "New" and does not,
+on its own, make the weekly e-mail go out. If a block has a mistake (for example
+`weekday: "funday"`), only that event is left out: the site still updates, and the run summary in
+the **Actions** tab shows a yellow **Settings problem** saying what to fix. The same happens for a
+`skip_dates` date that is not one of the event's days (for example the Sunday, or the 1st Saturday):
+that month still shows, and the note gives the date to use instead.
 
 ---
 
@@ -247,7 +286,11 @@ Drive is the easy way. If you prefer GitHub, you can also add a small text file:
 - **Event without a flyer:** a Markdown file in [`content/events/`](content/events/README.md).
 
 Each folder's README shows a copy-and-paste example. English or Spanish — it is translated automatically.
-Committee meetings are **not** added by hand; they come from the settings.
+To write the other language yourself, add `title_es` and `summary_es` to a file written in English
+(or `title_en` and `summary_en` to one written in Spanish): the other page then shows your words as
+written, not an automatic translation.
+Committee meetings are **not** added by hand; they come from the settings — and so do events that
+happen every month ([`recurring_events:`](#add-a-recurring-event)).
 
 ---
 

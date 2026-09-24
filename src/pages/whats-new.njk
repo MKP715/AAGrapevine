@@ -47,7 +47,7 @@ pageScripts: ["/assets/js/community.js"]
 {#- Language of the CONTENT when it differs from the page (a PDF's document language, not its title's). -#}
 {% macro langPill(it, lang) %}
 {%- set il = it._docLang -%}
-{%- if il and il != lang and il != "und" -%}
+{%- if il and il != lang and il != "und" and not (lang in (it._own or [])) -%}
 {%- set help = (("community.wn.doc_" + il) if it.kind == "pdf" else ("lang." + il)) | cmTOr(lang, il) -%}
 <span class="badge-muted uppercase" title="{{ help }}"><span aria-hidden="true">{{ il }}</span><span class="sr-only">{{ help }}</span></span>
 {%- endif -%}

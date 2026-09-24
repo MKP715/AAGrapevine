@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-24T10:21:38Z",
+ "updated": "2026-09-24T11:30:53Z",
  "fixture": false,
  "items": [
   {
@@ -55,6 +55,186 @@
    "is_new": false
   },
   {
+   "id": "ev:manual:2026-09-26-lv-writing-workshop-fort-worth",
+   "source": "committee",
+   "kind": "event",
+   "url": "https://neta65.org/event/lv-writing-workshop/",
+   "title": "La Viña Writing Workshop (in Spanish) — Fort Worth",
+   "summary": "A Spanish-language workshop on writing your story for La Viña, hosted by Grupo Nueva Esperanza in Fort Worth. A NETA 65 Grapevine / La Viña workshop.",
+   "lang": "en",
+   "date": "2026-09-27T00:00:00Z",
+   "first_seen": "2026-09-24T11:10:08Z",
+   "image": null,
+   "tags": [
+    "workshop",
+    "la-vina"
+   ],
+   "category": "manual",
+   "status": "ok",
+   "extra": {
+    "start": "2026-09-27T00:00:00Z",
+    "end": "2026-09-27T02:00:00Z",
+    "all_day": false,
+    "location": "Grupo Nueva Esperanza, 3401 E Belknap, Fort Worth, TX 76111",
+    "online_url": null,
+    "flyer_url": "https://neta65.org/wp-content/uploads/2026/09/New-Writing-Workshop-La-Nueva-Esperanza.jpg",
+    "flyer_thumb": null,
+    "city": "Fort Worth",
+    "state": "TX",
+    "body_md": "A Spanish-language workshop on writing your story for La Viña, hosted by Grupo Nueva Esperanza in Fort Worth. A NETA 65 Grapevine / La Viña workshop.",
+    "slug": "2026-09-26-lv-writing-workshop-fort-worth",
+    "file": "content/events/2026-09-26-lv-writing-workshop-fort-worth.md",
+    "own_i18n": {
+     "title": {
+      "es": "Taller de Escritura de La Viña — Fort Worth"
+     },
+     "summary": {
+      "es": "Taller en español para aprender a escribir tu historia para La Viña, en el Grupo Nueva Esperanza de Fort Worth. Un taller de Grapevine / La Viña de NETA 65."
+     },
+     "body_md": {
+      "es": "Taller en español para aprender a escribir tu historia para La Viña, en el Grupo Nueva Esperanza de Fort Worth. Un taller de Grapevine / La Viña de NETA 65."
+     }
+    },
+    "past": false
+   },
+   "i18n": {
+    "title": {
+     "en": "La Viña Writing Workshop (in Spanish) — Fort Worth",
+     "es": "Taller de Escritura de La Viña — Fort Worth"
+    },
+    "summary": {
+     "en": "A Spanish-language workshop on writing your story for La Viña, hosted by Grupo Nueva Esperanza in Fort Worth. A NETA 65 Grapevine / La Viña workshop.",
+     "es": "Taller en español para aprender a escribir tu historia para La Viña, en el Grupo Nueva Esperanza de Fort Worth. Un taller de Grapevine / La Viña de NETA 65."
+    },
+    "body_md": {
+     "en": "A Spanish-language workshop on writing your story for La Viña, hosted by Grupo Nueva Esperanza in Fort Worth. A NETA 65 Grapevine / La Viña workshop.",
+     "es": "Taller en español para aprender a escribir tu historia para La Viña, en el Grupo Nueva Esperanza de Fort Worth. Un taller de Grapevine / La Viña de NETA 65."
+    }
+   },
+   "machine": [],
+   "is_new": true
+  },
+  {
+   "id": "ev:manual:2026-10-03-gv-writing-workshop-arlington",
+   "source": "committee",
+   "kind": "event",
+   "url": "https://neta65.org/event/grapevine-writing-workshop-6/",
+   "title": "Grapevine Writing Workshop — Arlington",
+   "summary": "Learn how to write your story for Grapevine and La Viña, and hear from members who have been published. Hosted by the Primary Purpose Group in Arlington.",
+   "lang": "en",
+   "date": "2026-10-03T19:00:00Z",
+   "first_seen": "2026-09-24T11:10:08Z",
+   "image": null,
+   "tags": [
+    "workshop",
+    "grapevine"
+   ],
+   "category": "manual",
+   "status": "ok",
+   "extra": {
+    "start": "2026-10-03T19:00:00Z",
+    "end": "2026-10-03T22:00:00Z",
+    "all_day": false,
+    "location": "Primary Purpose Group – Arlington, 1802 West Division Street, Arlington, TX 76012",
+    "online_url": null,
+    "flyer_url": "https://neta65.org/wp-content/uploads/2026/06/GV-LV-writing-workshop-10-3.png",
+    "flyer_thumb": null,
+    "city": "Arlington",
+    "state": "TX",
+    "body_md": "Learn how to write your story for Grapevine and La Viña, and hear from members who have been published. Hosted by the Primary Purpose Group in Arlington.",
+    "slug": "2026-10-03-gv-writing-workshop-arlington",
+    "file": "content/events/2026-10-03-gv-writing-workshop-arlington.md",
+    "own_i18n": {
+     "title": {
+      "es": "Taller de Escritura de Grapevine (en inglés) — Arlington"
+     },
+     "summary": {
+      "es": "Aprende a escribir tu historia para Grapevine y La Viña, y escucha a miembros que ya han sido publicados. En el Grupo Primary Purpose de Arlington."
+     },
+     "body_md": {
+      "es": "Aprende a escribir tu historia para Grapevine y La Viña, y escucha a miembros que ya han sido publicados. En el Grupo Primary Purpose de Arlington."
+     }
+    },
+    "past": false
+   },
+   "i18n": {
+    "title": {
+     "en": "Grapevine Writing Workshop — Arlington",
+     "es": "Taller de Escritura de Grapevine (en inglés) — Arlington"
+    },
+    "summary": {
+     "en": "Learn how to write your story for Grapevine and La Viña, and hear from members who have been published. Hosted by the Primary Purpose Group in Arlington.",
+     "es": "Aprende a escribir tu historia para Grapevine y La Viña, y escucha a miembros que ya han sido publicados. En el Grupo Primary Purpose de Arlington."
+    },
+    "body_md": {
+     "en": "Learn how to write your story for Grapevine and La Viña, and hear from members who have been published. Hosted by the Primary Purpose Group in Arlington.",
+     "es": "Aprende a escribir tu historia para Grapevine y La Viña, y escucha a miembros que ya han sido publicados. En el Grupo Primary Purpose de Arlington."
+    }
+   },
+   "machine": [],
+   "is_new": true
+  },
+  {
+   "id": "ev:manual:2026-10-07-lv-writing-workshop-mansfield",
+   "source": "committee",
+   "kind": "event",
+   "url": "https://neta65.org/event/la-vina-writing-workshop-3/",
+   "title": "La Viña Writing Workshop (in Spanish) — Mansfield",
+   "summary": "A Spanish-language workshop on writing your story for La Viña, hosted by Grupo 7 Defectos y 7 Virtudes in Mansfield.",
+   "lang": "en",
+   "date": "2026-10-08T01:00:00Z",
+   "first_seen": "2026-09-24T11:10:08Z",
+   "image": null,
+   "tags": [
+    "workshop",
+    "la-vina"
+   ],
+   "category": "manual",
+   "status": "ok",
+   "extra": {
+    "start": "2026-10-08T01:00:00Z",
+    "end": "2026-10-08T03:00:00Z",
+    "all_day": false,
+    "location": "Grupo 7 Defectos y 7 Virtudes, 287 Frontage Road, Mansfield, TX 76063",
+    "online_url": null,
+    "flyer_url": "https://neta65.org/wp-content/uploads/2026/09/New-Taller-7-Defectos-.jpg",
+    "flyer_thumb": null,
+    "city": "Mansfield",
+    "state": "TX",
+    "body_md": "A Spanish-language workshop on writing your story for La Viña, hosted by Grupo 7 Defectos y 7 Virtudes in Mansfield.",
+    "slug": "2026-10-07-lv-writing-workshop-mansfield",
+    "file": "content/events/2026-10-07-lv-writing-workshop-mansfield.md",
+    "own_i18n": {
+     "title": {
+      "es": "Taller de Escritura de La Viña — Mansfield"
+     },
+     "summary": {
+      "es": "Taller en español para aprender a escribir tu historia para La Viña, en el Grupo 7 Defectos y 7 Virtudes de Mansfield."
+     },
+     "body_md": {
+      "es": "Taller en español para aprender a escribir tu historia para La Viña, en el Grupo 7 Defectos y 7 Virtudes de Mansfield."
+     }
+    },
+    "past": false
+   },
+   "i18n": {
+    "title": {
+     "en": "La Viña Writing Workshop (in Spanish) — Mansfield",
+     "es": "Taller de Escritura de La Viña — Mansfield"
+    },
+    "summary": {
+     "en": "A Spanish-language workshop on writing your story for La Viña, hosted by Grupo 7 Defectos y 7 Virtudes in Mansfield.",
+     "es": "Taller en español para aprender a escribir tu historia para La Viña, en el Grupo 7 Defectos y 7 Virtudes de Mansfield."
+    },
+    "body_md": {
+     "en": "A Spanish-language workshop on writing your story for La Viña, hosted by Grupo 7 Defectos y 7 Virtudes in Mansfield.",
+     "es": "Taller en español para aprender a escribir tu historia para La Viña, en el Grupo 7 Defectos y 7 Virtudes de Mansfield."
+    }
+   },
+   "machine": [],
+   "is_new": true
+  },
+  {
    "id": "ev:recurring:citywide-dallas:2026-10-10",
    "source": "committee",
    "kind": "event",
@@ -82,7 +262,13 @@
     "state": "TX",
     "recurring": true,
     "series": "citywide-dallas",
-    "recurrence_label": "2nd Saturday of every month · 5:00–8:00 PM",
+    "rule": {
+     "week_of_month": 2,
+     "weekday": "saturday",
+     "start": "17:00",
+     "end": "20:00"
+    },
+    "recurrence_label": "Every second Saturday of the month · 5:00 – 8:00 PM",
     "past": false
    },
    "i18n": {
@@ -95,12 +281,72 @@
      "es": "Visita nuestra mesa de literatura de Grapevine y La Viña en CityWide Dallas, la reunión mensual de AA en la Iglesia Metodista Unida Lover's Lane (comida compartida a las 5:30 p. m. y orador a las 7:00 p. m.). Hojea las revistas y pregúntanos cómo suscribirte o ser RLV o GVR."
     },
     "recurrence_label": {
-     "en": "2nd Saturday of every month · 5:00–8:00 PM",
-     "es": "2.º sábado de cada mes · 5:00–8:00 p. m."
+     "en": "Every second Saturday of the month · 5:00 – 8:00 PM",
+     "es": "Cada segundo sábado del mes · 5:00–8:00 p. m."
     }
    },
    "machine": [],
    "is_new": false
+  },
+  {
+   "id": "ev:manual:2026-10-17-lv-recording-workshop-duncanville",
+   "source": "committee",
+   "kind": "event",
+   "url": "https://neta65.org/event/lv-recording-workshop/",
+   "title": "La Viña Recording Workshop (in Spanish) — Duncanville",
+   "summary": "A Spanish-language workshop on recording your story for La Viña, hosted by Grupo Progresso Latino in Duncanville.",
+   "lang": "en",
+   "date": "2026-10-18T00:00:00Z",
+   "first_seen": "2026-09-24T11:10:08Z",
+   "image": null,
+   "tags": [
+    "workshop",
+    "la-vina"
+   ],
+   "category": "manual",
+   "status": "ok",
+   "extra": {
+    "start": "2026-10-18T00:00:00Z",
+    "end": "2026-10-18T02:00:00Z",
+    "all_day": false,
+    "location": "Grupo Progresso Latino, 101 East Camp Wisdom Rd., Duncanville, TX 75116",
+    "online_url": null,
+    "flyer_url": "https://neta65.org/wp-content/uploads/2026/09/Flyer-Progresso-Latino-2026.png",
+    "flyer_thumb": null,
+    "city": "Duncanville",
+    "state": "TX",
+    "body_md": "A Spanish-language workshop on recording your story for La Viña, hosted by Grupo Progresso Latino in Duncanville.",
+    "slug": "2026-10-17-lv-recording-workshop-duncanville",
+    "file": "content/events/2026-10-17-lv-recording-workshop-duncanville.md",
+    "own_i18n": {
+     "title": {
+      "es": "Taller de Grabación de La Viña — Duncanville"
+     },
+     "summary": {
+      "es": "Taller en español para aprender a grabar tu historia para La Viña, en el Grupo Progresso Latino de Duncanville."
+     },
+     "body_md": {
+      "es": "Taller en español para aprender a grabar tu historia para La Viña, en el Grupo Progresso Latino de Duncanville."
+     }
+    },
+    "past": false
+   },
+   "i18n": {
+    "title": {
+     "en": "La Viña Recording Workshop (in Spanish) — Duncanville",
+     "es": "Taller de Grabación de La Viña — Duncanville"
+    },
+    "summary": {
+     "en": "A Spanish-language workshop on recording your story for La Viña, hosted by Grupo Progresso Latino in Duncanville.",
+     "es": "Taller en español para aprender a grabar tu historia para La Viña, en el Grupo Progresso Latino de Duncanville."
+    },
+    "body_md": {
+     "en": "A Spanish-language workshop on recording your story for La Viña, hosted by Grupo Progresso Latino in Duncanville.",
+     "es": "Taller en español para aprender a grabar tu historia para La Viña, en el Grupo Progresso Latino de Duncanville."
+    }
+   },
+   "machine": [],
+   "is_new": true
   },
   {
    "id": "ev:committee:2026-10-21",
@@ -147,6 +393,126 @@
    "is_new": false
   },
   {
+   "id": "ev:manual:2026-10-26-lv-writing-workshop-tyler",
+   "source": "committee",
+   "kind": "event",
+   "url": "https://neta65.org/event/la-vina-writing-workshop-4/",
+   "title": "La Viña Writing Workshop (in Spanish) — Tyler",
+   "summary": "A Spanish-language workshop on writing your story for La Viña, hosted by Grupo Libro Grande in Tyler.",
+   "lang": "en",
+   "date": "2026-10-27T00:00:00Z",
+   "first_seen": "2026-09-24T11:10:08Z",
+   "image": null,
+   "tags": [
+    "workshop",
+    "la-vina"
+   ],
+   "category": "manual",
+   "status": "ok",
+   "extra": {
+    "start": "2026-10-27T00:00:00Z",
+    "end": "2026-10-27T02:00:00Z",
+    "all_day": false,
+    "location": "Grupo Libro Grande, 623 West Bow, Tyler, TX 75702",
+    "online_url": null,
+    "flyer_url": "https://neta65.org/wp-content/uploads/2026/09/TALLER-DE-ESCRITURA-LIBRO-GRANDE.jpeg",
+    "flyer_thumb": null,
+    "city": "Tyler",
+    "state": "TX",
+    "body_md": "A Spanish-language workshop on writing your story for La Viña, hosted by Grupo Libro Grande in Tyler.",
+    "slug": "2026-10-26-lv-writing-workshop-tyler",
+    "file": "content/events/2026-10-26-lv-writing-workshop-tyler.md",
+    "own_i18n": {
+     "title": {
+      "es": "Taller de Escritura de La Viña — Tyler"
+     },
+     "summary": {
+      "es": "Taller en español para aprender a escribir tu historia para La Viña, en el Grupo Libro Grande de Tyler."
+     },
+     "body_md": {
+      "es": "Taller en español para aprender a escribir tu historia para La Viña, en el Grupo Libro Grande de Tyler."
+     }
+    },
+    "past": false
+   },
+   "i18n": {
+    "title": {
+     "en": "La Viña Writing Workshop (in Spanish) — Tyler",
+     "es": "Taller de Escritura de La Viña — Tyler"
+    },
+    "summary": {
+     "en": "A Spanish-language workshop on writing your story for La Viña, hosted by Grupo Libro Grande in Tyler.",
+     "es": "Taller en español para aprender a escribir tu historia para La Viña, en el Grupo Libro Grande de Tyler."
+    },
+    "body_md": {
+     "en": "A Spanish-language workshop on writing your story for La Viña, hosted by Grupo Libro Grande in Tyler.",
+     "es": "Taller en español para aprender a escribir tu historia para La Viña, en el Grupo Libro Grande de Tyler."
+    }
+   },
+   "machine": [],
+   "is_new": true
+  },
+  {
+   "id": "ev:manual:2026-11-07-lv-information-workshop-longview",
+   "source": "committee",
+   "kind": "event",
+   "url": "https://neta65.org/event/la-vina-information-workshop/",
+   "title": "La Viña Information Workshop (in Spanish) — Longview",
+   "summary": "A Spanish-language information session about La Viña, AA's Spanish-language magazine, hosted by Grupo Solo por Hoy in Longview.",
+   "lang": "en",
+   "date": "2026-11-08T01:00:00Z",
+   "first_seen": "2026-09-24T11:10:08Z",
+   "image": null,
+   "tags": [
+    "workshop",
+    "la-vina"
+   ],
+   "category": "manual",
+   "status": "ok",
+   "extra": {
+    "start": "2026-11-08T01:00:00Z",
+    "end": "2026-11-08T03:00:00Z",
+    "all_day": false,
+    "location": "Grupo Solo por Hoy, 2035 South High, Longview, TX 75602",
+    "online_url": null,
+    "flyer_url": "https://neta65.org/wp-content/uploads/2026/09/TALLER-DE-INFORMACION-SOLO-POR-HOY.jpg",
+    "flyer_thumb": null,
+    "city": "Longview",
+    "state": "TX",
+    "body_md": "A Spanish-language information session about La Viña, AA's Spanish-language magazine, hosted by Grupo Solo por Hoy in Longview.",
+    "slug": "2026-11-07-lv-information-workshop-longview",
+    "file": "content/events/2026-11-07-lv-information-workshop-longview.md",
+    "own_i18n": {
+     "title": {
+      "es": "Taller de Información de La Viña — Longview"
+     },
+     "summary": {
+      "es": "Taller informativo en español sobre La Viña, la revista de AA en español, en el Grupo Solo por Hoy de Longview."
+     },
+     "body_md": {
+      "es": "Taller informativo en español sobre La Viña, la revista de AA en español, en el Grupo Solo por Hoy de Longview."
+     }
+    },
+    "past": false
+   },
+   "i18n": {
+    "title": {
+     "en": "La Viña Information Workshop (in Spanish) — Longview",
+     "es": "Taller de Información de La Viña — Longview"
+    },
+    "summary": {
+     "en": "A Spanish-language information session about La Viña, AA's Spanish-language magazine, hosted by Grupo Solo por Hoy in Longview.",
+     "es": "Taller informativo en español sobre La Viña, la revista de AA en español, en el Grupo Solo por Hoy de Longview."
+    },
+    "body_md": {
+     "en": "A Spanish-language information session about La Viña, AA's Spanish-language magazine, hosted by Grupo Solo por Hoy in Longview.",
+     "es": "Taller informativo en español sobre La Viña, la revista de AA en español, en el Grupo Solo por Hoy de Longview."
+    }
+   },
+   "machine": [],
+   "is_new": true
+  },
+  {
    "id": "ev:recurring:citywide-dallas:2026-11-14",
    "source": "committee",
    "kind": "event",
@@ -174,7 +540,13 @@
     "state": "TX",
     "recurring": true,
     "series": "citywide-dallas",
-    "recurrence_label": "2nd Saturday of every month · 5:00–8:00 PM",
+    "rule": {
+     "week_of_month": 2,
+     "weekday": "saturday",
+     "start": "17:00",
+     "end": "20:00"
+    },
+    "recurrence_label": "Every second Saturday of the month · 5:00 – 8:00 PM",
     "past": false
    },
    "i18n": {
@@ -187,8 +559,8 @@
      "es": "Visita nuestra mesa de literatura de Grapevine y La Viña en CityWide Dallas, la reunión mensual de AA en la Iglesia Metodista Unida Lover's Lane (comida compartida a las 5:30 p. m. y orador a las 7:00 p. m.). Hojea las revistas y pregúntanos cómo suscribirte o ser RLV o GVR."
     },
     "recurrence_label": {
-     "en": "2nd Saturday of every month · 5:00–8:00 PM",
-     "es": "2.º sábado de cada mes · 5:00–8:00 p. m."
+     "en": "Every second Saturday of the month · 5:00 – 8:00 PM",
+     "es": "Cada segundo sábado del mes · 5:00–8:00 p. m."
     }
    },
    "machine": [],
@@ -266,7 +638,13 @@
     "state": "TX",
     "recurring": true,
     "series": "citywide-dallas",
-    "recurrence_label": "2nd Saturday of every month · 5:00–8:00 PM",
+    "rule": {
+     "week_of_month": 2,
+     "weekday": "saturday",
+     "start": "17:00",
+     "end": "20:00"
+    },
+    "recurrence_label": "Every second Saturday of the month · 5:00 – 8:00 PM",
     "past": false
    },
    "i18n": {
@@ -279,8 +657,8 @@
      "es": "Visita nuestra mesa de literatura de Grapevine y La Viña en CityWide Dallas, la reunión mensual de AA en la Iglesia Metodista Unida Lover's Lane (comida compartida a las 5:30 p. m. y orador a las 7:00 p. m.). Hojea las revistas y pregúntanos cómo suscribirte o ser RLV o GVR."
     },
     "recurrence_label": {
-     "en": "2nd Saturday of every month · 5:00–8:00 PM",
-     "es": "2.º sábado de cada mes · 5:00–8:00 p. m."
+     "en": "Every second Saturday of the month · 5:00 – 8:00 PM",
+     "es": "Cada segundo sábado del mes · 5:00–8:00 p. m."
     }
    },
    "machine": [],
@@ -358,7 +736,13 @@
     "state": "TX",
     "recurring": true,
     "series": "citywide-dallas",
-    "recurrence_label": "2nd Saturday of every month · 5:00–8:00 PM",
+    "rule": {
+     "week_of_month": 2,
+     "weekday": "saturday",
+     "start": "17:00",
+     "end": "20:00"
+    },
+    "recurrence_label": "Every second Saturday of the month · 5:00 – 8:00 PM",
     "past": false
    },
    "i18n": {
@@ -371,8 +755,8 @@
      "es": "Visita nuestra mesa de literatura de Grapevine y La Viña en CityWide Dallas, la reunión mensual de AA en la Iglesia Metodista Unida Lover's Lane (comida compartida a las 5:30 p. m. y orador a las 7:00 p. m.). Hojea las revistas y pregúntanos cómo suscribirte o ser RLV o GVR."
     },
     "recurrence_label": {
-     "en": "2nd Saturday of every month · 5:00–8:00 PM",
-     "es": "2.º sábado de cada mes · 5:00–8:00 p. m."
+     "en": "Every second Saturday of the month · 5:00 – 8:00 PM",
+     "es": "Cada segundo sábado del mes · 5:00–8:00 p. m."
     }
    },
    "machine": [],
@@ -450,7 +834,13 @@
     "state": "TX",
     "recurring": true,
     "series": "citywide-dallas",
-    "recurrence_label": "2nd Saturday of every month · 5:00–8:00 PM",
+    "rule": {
+     "week_of_month": 2,
+     "weekday": "saturday",
+     "start": "17:00",
+     "end": "20:00"
+    },
+    "recurrence_label": "Every second Saturday of the month · 5:00 – 8:00 PM",
     "past": false
    },
    "i18n": {
@@ -463,8 +853,8 @@
      "es": "Visita nuestra mesa de literatura de Grapevine y La Viña en CityWide Dallas, la reunión mensual de AA en la Iglesia Metodista Unida Lover's Lane (comida compartida a las 5:30 p. m. y orador a las 7:00 p. m.). Hojea las revistas y pregúntanos cómo suscribirte o ser RLV o GVR."
     },
     "recurrence_label": {
-     "en": "2nd Saturday of every month · 5:00–8:00 PM",
-     "es": "2.º sábado de cada mes · 5:00–8:00 p. m."
+     "en": "Every second Saturday of the month · 5:00 – 8:00 PM",
+     "es": "Cada segundo sábado del mes · 5:00–8:00 p. m."
     }
    },
    "machine": [],
@@ -542,7 +932,13 @@
     "state": "TX",
     "recurring": true,
     "series": "citywide-dallas",
-    "recurrence_label": "2nd Saturday of every month · 5:00–8:00 PM",
+    "rule": {
+     "week_of_month": 2,
+     "weekday": "saturday",
+     "start": "17:00",
+     "end": "20:00"
+    },
+    "recurrence_label": "Every second Saturday of the month · 5:00 – 8:00 PM",
     "past": false
    },
    "i18n": {
@@ -555,8 +951,8 @@
      "es": "Visita nuestra mesa de literatura de Grapevine y La Viña en CityWide Dallas, la reunión mensual de AA en la Iglesia Metodista Unida Lover's Lane (comida compartida a las 5:30 p. m. y orador a las 7:00 p. m.). Hojea las revistas y pregúntanos cómo suscribirte o ser RLV o GVR."
     },
     "recurrence_label": {
-     "en": "2nd Saturday of every month · 5:00–8:00 PM",
-     "es": "2.º sábado de cada mes · 5:00–8:00 p. m."
+     "en": "Every second Saturday of the month · 5:00 – 8:00 PM",
+     "es": "Cada segundo sábado del mes · 5:00–8:00 p. m."
     }
    },
    "machine": [],
@@ -605,6 +1001,67 @@
    },
    "machine": [],
    "is_new": false
+  },
+  {
+   "id": "ev:manual:2027-03-19-neta65-spring-assembly",
+   "source": "committee",
+   "kind": "event",
+   "url": "/events/#2027-03-19-neta65-spring-assembly",
+   "title": "NETA 65 Spring Assembly 2027",
+   "summary": "Area 65 assembly (Panel 77), co-hosted by Districts 53 and 55, at the DoubleTree by Hilton Hotel Dallas Near the Galleria.",
+   "lang": "en",
+   "date": "2027-03-19",
+   "first_seen": "2026-09-24T11:10:08Z",
+   "image": null,
+   "tags": [
+    "assembly",
+    "neta65",
+    "panel-77"
+   ],
+   "category": "manual",
+   "status": "ok",
+   "extra": {
+    "start": "2027-03-19",
+    "end": "2027-03-21",
+    "all_day": true,
+    "location": "DoubleTree by Hilton Hotel Dallas Near the Galleria, 4099 Valley View Ln, Dallas, TX 75244",
+    "online_url": null,
+    "flyer_url": null,
+    "flyer_thumb": null,
+    "city": "Dallas",
+    "state": "TX",
+    "body_md": "Area 65 assembly (Panel 77), co-hosted by Districts 53 and 55, at the DoubleTree by Hilton Hotel Dallas Near the Galleria.",
+    "slug": "2027-03-19-neta65-spring-assembly",
+    "file": "content/events/2027-03-19-neta65-spring-assembly.md",
+    "own_i18n": {
+     "title": {
+      "es": "Asamblea de Primavera 2027 de NETA 65"
+     },
+     "summary": {
+      "es": "Asamblea del Área 65 (Panel 77), coorganizada por los Distritos 53 y 55, en el DoubleTree by Hilton Hotel Dallas Near the Galleria."
+     },
+     "body_md": {
+      "es": "Asamblea del Área 65 (Panel 77), coorganizada por los Distritos 53 y 55, en el DoubleTree by Hilton Hotel Dallas Near the Galleria."
+     }
+    },
+    "past": false
+   },
+   "i18n": {
+    "title": {
+     "en": "NETA 65 Spring Assembly 2027",
+     "es": "Asamblea de Primavera 2027 de NETA 65"
+    },
+    "summary": {
+     "en": "Area 65 assembly (Panel 77), co-hosted by Districts 53 and 55, at the DoubleTree by Hilton Hotel Dallas Near the Galleria.",
+     "es": "Asamblea del Área 65 (Panel 77), coorganizada por los Distritos 53 y 55, en el DoubleTree by Hilton Hotel Dallas Near the Galleria."
+    },
+    "body_md": {
+     "en": "Area 65 assembly (Panel 77), co-hosted by Districts 53 and 55, at the DoubleTree by Hilton Hotel Dallas Near the Galleria.",
+     "es": "Asamblea del Área 65 (Panel 77), coorganizada por los Distritos 53 y 55, en el DoubleTree by Hilton Hotel Dallas Near the Galleria."
+    }
+   },
+   "machine": [],
+   "is_new": true
   },
   {
    "id": "ev:committee:2027-04-21",
@@ -739,6 +1196,67 @@
    "is_new": false
   },
   {
+   "id": "ev:manual:2027-06-25-neta65-summer-assembly",
+   "source": "committee",
+   "kind": "event",
+   "url": "/events/#2027-06-25-neta65-summer-assembly",
+   "title": "NETA 65 Summer Assembly 2027",
+   "summary": "Area 65 assembly (Panel 77), hosted by District 91. The venue will be announced soon.",
+   "lang": "en",
+   "date": "2027-06-25",
+   "first_seen": "2026-09-24T11:10:08Z",
+   "image": null,
+   "tags": [
+    "assembly",
+    "neta65",
+    "panel-77"
+   ],
+   "category": "manual",
+   "status": "ok",
+   "extra": {
+    "start": "2027-06-25",
+    "end": "2027-06-27",
+    "all_day": true,
+    "location": "Venue to be announced",
+    "online_url": null,
+    "flyer_url": null,
+    "flyer_thumb": null,
+    "city": null,
+    "state": null,
+    "body_md": "Area 65 assembly (Panel 77), hosted by District 91. The venue will be announced soon.",
+    "slug": "2027-06-25-neta65-summer-assembly",
+    "file": "content/events/2027-06-25-neta65-summer-assembly.md",
+    "own_i18n": {
+     "title": {
+      "es": "Asamblea de Verano 2027 de NETA 65"
+     },
+     "summary": {
+      "es": "Asamblea del Área 65 (Panel 77), organizada por el Distrito 91. El lugar se anunciará pronto."
+     },
+     "body_md": {
+      "es": "Asamblea del Área 65 (Panel 77), organizada por el Distrito 91. El lugar se anunciará pronto."
+     }
+    },
+    "past": false
+   },
+   "i18n": {
+    "title": {
+     "en": "NETA 65 Summer Assembly 2027",
+     "es": "Asamblea de Verano 2027 de NETA 65"
+    },
+    "summary": {
+     "en": "Area 65 assembly (Panel 77), hosted by District 91. The venue will be announced soon.",
+     "es": "Asamblea del Área 65 (Panel 77), organizada por el Distrito 91. El lugar se anunciará pronto."
+    },
+    "body_md": {
+     "en": "Area 65 assembly (Panel 77), hosted by District 91. The venue will be announced soon.",
+     "es": "Asamblea del Área 65 (Panel 77), organizada por el Distrito 91. El lugar se anunciará pronto."
+    }
+   },
+   "machine": [],
+   "is_new": true
+  },
+  {
    "id": "ev:committee:2027-07-21",
    "source": "committee",
    "kind": "event",
@@ -871,6 +1389,67 @@
    "is_new": false
   },
   {
+   "id": "ev:manual:2027-09-17-neta65-fall-assembly",
+   "source": "committee",
+   "kind": "event",
+   "url": "/events/#2027-09-17-neta65-fall-assembly",
+   "title": "NETA 65 Fall Assembly 2027",
+   "summary": "Area 65 assembly (Panel 77). Host districts, venue and format are still to be confirmed.",
+   "lang": "en",
+   "date": "2027-09-17",
+   "first_seen": "2026-09-24T11:10:08Z",
+   "image": null,
+   "tags": [
+    "assembly",
+    "neta65",
+    "panel-77"
+   ],
+   "category": "manual",
+   "status": "ok",
+   "extra": {
+    "start": "2027-09-17",
+    "end": "2027-09-19",
+    "all_day": true,
+    "location": "Venue to be announced",
+    "online_url": null,
+    "flyer_url": null,
+    "flyer_thumb": null,
+    "city": null,
+    "state": null,
+    "body_md": "Area 65 assembly (Panel 77). Host districts, venue and format are still to be confirmed.",
+    "slug": "2027-09-17-neta65-fall-assembly",
+    "file": "content/events/2027-09-17-neta65-fall-assembly.md",
+    "own_i18n": {
+     "title": {
+      "es": "Asamblea de Otoño 2027 de NETA 65"
+     },
+     "summary": {
+      "es": "Asamblea del Área 65 (Panel 77). Los distritos anfitriones, el lugar y el formato se confirmarán más adelante."
+     },
+     "body_md": {
+      "es": "Asamblea del Área 65 (Panel 77). Los distritos anfitriones, el lugar y el formato se confirmarán más adelante."
+     }
+    },
+    "past": false
+   },
+   "i18n": {
+    "title": {
+     "en": "NETA 65 Fall Assembly 2027",
+     "es": "Asamblea de Otoño 2027 de NETA 65"
+    },
+    "summary": {
+     "en": "Area 65 assembly (Panel 77). Host districts, venue and format are still to be confirmed.",
+     "es": "Asamblea del Área 65 (Panel 77). Los distritos anfitriones, el lugar y el formato se confirmarán más adelante."
+    },
+    "body_md": {
+     "en": "Area 65 assembly (Panel 77). Host districts, venue and format are still to be confirmed.",
+     "es": "Asamblea del Área 65 (Panel 77). Los distritos anfitriones, el lugar y el formato se confirmarán más adelante."
+    }
+   },
+   "machine": [],
+   "is_new": true
+  },
+  {
    "id": "ev:recurring:citywide-dallas:2026-09-12",
    "source": "committee",
    "kind": "event",
@@ -898,7 +1477,13 @@
     "state": "TX",
     "recurring": true,
     "series": "citywide-dallas",
-    "recurrence_label": "2nd Saturday of every month · 5:00–8:00 PM",
+    "rule": {
+     "week_of_month": 2,
+     "weekday": "saturday",
+     "start": "17:00",
+     "end": "20:00"
+    },
+    "recurrence_label": "Every second Saturday of the month · 5:00 – 8:00 PM",
     "past": true
    },
    "i18n": {
@@ -911,8 +1496,8 @@
      "es": "Visita nuestra mesa de literatura de Grapevine y La Viña en CityWide Dallas, la reunión mensual de AA en la Iglesia Metodista Unida Lover's Lane (comida compartida a las 5:30 p. m. y orador a las 7:00 p. m.). Hojea las revistas y pregúntanos cómo suscribirte o ser RLV o GVR."
     },
     "recurrence_label": {
-     "en": "2nd Saturday of every month · 5:00–8:00 PM",
-     "es": "2.º sábado de cada mes · 5:00–8:00 p. m."
+     "en": "Every second Saturday of the month · 5:00 – 8:00 PM",
+     "es": "Cada segundo sábado del mes · 5:00–8:00 p. m."
     }
    },
    "machine": [],
@@ -946,7 +1531,13 @@
     "state": "TX",
     "recurring": true,
     "series": "citywide-dallas",
-    "recurrence_label": "2nd Saturday of every month · 5:00–8:00 PM",
+    "rule": {
+     "week_of_month": 2,
+     "weekday": "saturday",
+     "start": "17:00",
+     "end": "20:00"
+    },
+    "recurrence_label": "Every second Saturday of the month · 5:00 – 8:00 PM",
     "past": true
    },
    "i18n": {
@@ -959,8 +1550,8 @@
      "es": "Visita nuestra mesa de literatura de Grapevine y La Viña en CityWide Dallas, la reunión mensual de AA en la Iglesia Metodista Unida Lover's Lane (comida compartida a las 5:30 p. m. y orador a las 7:00 p. m.). Hojea las revistas y pregúntanos cómo suscribirte o ser RLV o GVR."
     },
     "recurrence_label": {
-     "en": "2nd Saturday of every month · 5:00–8:00 PM",
-     "es": "2.º sábado de cada mes · 5:00–8:00 p. m."
+     "en": "Every second Saturday of the month · 5:00 – 8:00 PM",
+     "es": "Cada segundo sábado del mes · 5:00–8:00 p. m."
     }
    },
    "machine": [],
@@ -994,7 +1585,13 @@
     "state": "TX",
     "recurring": true,
     "series": "citywide-dallas",
-    "recurrence_label": "2nd Saturday of every month · 5:00–8:00 PM",
+    "rule": {
+     "week_of_month": 2,
+     "weekday": "saturday",
+     "start": "17:00",
+     "end": "20:00"
+    },
+    "recurrence_label": "Every second Saturday of the month · 5:00 – 8:00 PM",
     "past": true
    },
    "i18n": {
@@ -1007,8 +1604,8 @@
      "es": "Visita nuestra mesa de literatura de Grapevine y La Viña en CityWide Dallas, la reunión mensual de AA en la Iglesia Metodista Unida Lover's Lane (comida compartida a las 5:30 p. m. y orador a las 7:00 p. m.). Hojea las revistas y pregúntanos cómo suscribirte o ser RLV o GVR."
     },
     "recurrence_label": {
-     "en": "2nd Saturday of every month · 5:00–8:00 PM",
-     "es": "2.º sábado de cada mes · 5:00–8:00 p. m."
+     "en": "Every second Saturday of the month · 5:00 – 8:00 PM",
+     "es": "Cada segundo sábado del mes · 5:00–8:00 p. m."
     }
    },
    "machine": [],
