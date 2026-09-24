@@ -52,6 +52,13 @@
           this.updateStatus();
         },
         count: function (d) { return this.filter ? d.counts[this.filter] || 0 : d.total; },
+        /* Day heading "7 updates": the day's ITEMS of the chosen type (a magazine issue
+           counts its stories, like the chips and the status line), all items without a filter. */
+        dayLabel: function (day) {
+          var d = this.days.find(function (x) { return x.ymd === day; });
+          var n = d ? (this.filter ? d.icounts[this.filter] || 0 : d.itotal) : 0;
+          return fill(this.$root.getAttribute(n === 1 ? "data-day-one" : "data-day-many"), n);
+        },
         matchingDays: function () { var self = this; return this.days.filter(function (d) { return self.count(d) > 0; }); },
         dayShown: function (day) {
           var list = this.matchingDays().slice(0, this.limit);
@@ -71,7 +78,24 @@
           return d ? Math.max(0, this.count(d) - this.cap) : 0;
         },
         moreLabel: function (day) { return fill(this.$root.getAttribute("data-more"), this.hiddenIn(day)); },
-        openDay: function (day) { this.open[day] = true; },
+        /* The button hides itself once the day is open, so keyboard / screen-reader focus
+           moves to the first entry it revealed (never lost to <body>). */
+        openDay: function (day) {
+          var self = this;
+          var rankAttr = this.filter ? "data-rank" : "data-rank-all";
+          this.open[day] = true;
+          this.$nextTick(function () {
+            var dayEl = self.$root.querySelector('[data-day="' + day + '"]');
+            if (!dayEl) return;
+            var first = Array.prototype.find.call(dayEl.querySelectorAll(".cm-entry"), function (el) {
+              return (!self.filter || el.getAttribute("data-kind") === self.filter) && Number(el.getAttribute(rankAttr)) >= self.cap;
+            });
+            var target = first && first.querySelector(".cm-entry-link");
+            if (!target && first) { target = first.querySelector("h3"); if (target) target.setAttribute("tabindex", "-1"); }
+            if (!target) { target = dayEl.querySelector(".cm-day-head"); if (target) target.setAttribute("tabindex", "-1"); }
+            if (target) target.focus();
+          });
+        },
         moreDays: function () { return this.matchingDays().length > this.limit; },
         showOlder: function () { this.limit += initialDays; },
         filteredTotal: function () {

@@ -41,7 +41,8 @@ pageScripts: ["/assets/js/read.js"]
     </span>
     <span class="flex min-w-0 flex-1 flex-col gap-1">
       <span class="line-clamp-2 text-sm font-semibold leading-snug text-ink transition {{ 'group-hover:text-lv' if kit == 'rlv' else 'group-hover:text-gv' }}" lang="{{ info.lang or p.lang }}">{{ info.title }}</span>
-      {% if info.gloss %}<span class="flex items-center gap-1 text-xs leading-snug text-muted" title="{{ 'common.auto_translated' | t(lang) }} — {{ 'common.auto_translated_help' | t(lang) }}">{% icon "languages", "size-3 shrink-0" %}<span class="sr-only">{{ "common.auto_translated" | t(lang) }}:</span><span class="line-clamp-1" lang="{{ info.glossLang }}">{{ info.gloss }}</span></span>{% endif %}
+      {% if info.gloss and info.machine %}<span class="flex items-center gap-1 text-xs leading-snug text-muted" title="{{ 'common.auto_translated' | t(lang) }} — {{ 'common.auto_translated_help' | t(lang) }}">{% icon "languages", "size-3 shrink-0" %}<span class="sr-only">{{ "common.auto_translated" | t(lang) }}:</span><span class="line-clamp-1" lang="{{ info.glossLang }}">{{ info.gloss }}</span></span>
+      {% elif info.gloss %}<span class="flex items-center gap-1 text-xs leading-snug text-muted" title="{{ 'read.title_translation' | t(lang) }}"><span class="sr-only">{{ "read.title_translation" | t(lang) }}:</span><span class="line-clamp-1" lang="{{ info.glossLang }}">{{ info.gloss }}</span></span>{% endif %}
       <span class="flex flex-wrap items-center gap-1.5 text-xs text-muted">
         {% if p.is_new %}<span class="badge-new">{{ "common.new" | t(lang) }}</span>{% endif %}
         {% if dl and dl != lang %}<span class="badge-muted uppercase" title="{{ ('lang.' + dl) | t(lang) }}">{{ dl }}</span>{% endif %}
@@ -266,7 +267,7 @@ pageScripts: ["/assets/js/read.js"]
       <span class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted">{% icon "search", "size-4" %}</span>
       <input type="search" class="input pl-10" x-model.debounce.150ms="q" placeholder="{{ 'read.gvr.search_ph' | t(lang) }}" autocomplete="off">
     </label>
-    <p class="read-num shrink-0 px-2 text-sm text-muted" aria-live="polite" x-show="q || kit !== 'all'" x-cloak data-t="{{ 'read.gvr.shown' | t(lang) }}" x-text="$el.dataset.t.replace('{n}', shown)"></p>
+    <p class="read-num shrink-0 px-2 text-sm text-muted" aria-live="polite" x-show="q || kit !== 'all'" x-cloak data-t1="{{ 'read.gvr.shown_one' | t(lang) }}" data-t="{{ 'read.gvr.shown' | t(lang) }}" x-text="shown === 1 ? $el.dataset.t1 : $el.dataset.t.replace('{n}', shown)"></p>
   </div>
 
   <div class="space-y-12">
@@ -285,8 +286,9 @@ pageScripts: ["/assets/js/read.js"]
 <section class="section container-page pt-0" aria-label="{{ 'read.gvr.ideas_title' | t(lang) }}">
   {{ ui.sectionHead("read.gvr.ideas_title" | t(lang), "read.gvr.ideas_sub" | t(lang), "", "", "lightbulb") }}
   <div class="grid-cards-fit [--cards-min:15rem] [--cards-max:3] min-[1800px]:[--cards-max:6]">
-    {% for i in [["library", "bg-gv-soft text-gv", "/subscribe/"], ["clipboard-list", "bg-lv-soft text-lv", "/subscribe/"], ["gift", "bg-vine-soft text-vine", "/subscribe/"], ["pen-line", "bg-grape-soft text-grape", "/contribute/"], ["headphones", "bg-grape-soft text-grape", "/listen/"], ["book-open", "bg-gv-soft text-gv", "/read/"]] %}
-    <a href="{{ i[2] | lurl(lang) }}" class="card card-link card-pad group flex flex-col no-underline">
+    {#- [icon, colors, page, anchor on that page]: each idea opens the section it talks about -#}
+    {% for i in [["library", "bg-gv-soft text-gv", "/subscribe/", "#cat-title"], ["clipboard-list", "bg-lv-soft text-lv", "/subscribe/", "#forms-title"], ["gift", "bg-vine-soft text-vine", "/subscribe/", "#carry"], ["pen-line", "bg-grape-soft text-grape", "/contribute/", ""], ["headphones", "bg-grape-soft text-grape", "/listen/", ""], ["book-open", "bg-gv-soft text-gv", "/read/", ""]] %}
+    <a href="{{ i[2] | lurl(lang) }}{{ i[3] }}" class="card card-link card-pad group flex flex-col no-underline">
       <span class="grid size-11 place-items-center rounded-xl {{ i[1] }}">{% icon i[0], "size-5" %}</span>
       <h3 class="h-card mt-3">{{ ("read.gvr.i" + loop.index + "_t") | t(lang) }}</h3>
       <p class="mt-1 text-sm leading-relaxed text-muted">{{ ("read.gvr.i" + loop.index) | t(lang) }}</p>

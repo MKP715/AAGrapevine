@@ -1,7 +1,7 @@
 {
   "home.meta_desc": {
-    "en": "NETA 65 Grapevine & La Viña Committee — new AA Grapevine and La Viña stories, podcasts, videos, PDFs and service resources for every group and district in Northeast Texas. Updated automatically every day, in English and Spanish.",
-    "es": "Comité de Grapevine y La Viña de NETA 65 — nuevas historias de La Viña y AA Grapevine, podcasts, videos, PDF y recursos de servicio para cada grupo y distrito del Noreste de Texas. Se actualiza automáticamente todos los días, en español y en inglés."
+    "en": "NETA 65 Grapevine & La Viña Committee — new stories, podcasts, videos and service resources for Northeast Texas, in English and Spanish.",
+    "es": "Comité de Grapevine y La Viña de NETA 65: nuevas historias, podcasts, videos y recursos de servicio para el Noreste de Texas, en español e inglés."
   },
   "home.hero_eyebrow": {
     "en": "NETA 65 · Grapevine & La Viña Committee",
@@ -89,11 +89,11 @@
   },
   "home.meeting_join": {
     "en": "Join on Zoom",
-    "es": "Unirse por Zoom"
+    "es": "Entrar por Zoom"
   },
   "home.meeting_add_cal": {
     "en": "Add to calendar",
-    "es": "Agendar"
+    "es": "Agregar al calendario"
   },
   "home.meeting_id": {
     "en": "Meeting ID",
@@ -409,7 +409,7 @@
   },
   "home.weekly_open": {
     "en": "Grapevine Weekly Open meeting",
-    "es": "Reunión Grapevine Weekly Open"
+    "es": "Reunión Abierta Semanal de Grapevine"
   },
   "home.weekly_open_text": {
     "en": "{when} · on Zoom, open to everyone",
@@ -652,8 +652,8 @@
     "es": "Códigos QR, volantes y mensajes listos para enviar"
   },
   "home.svc_digest_desc": {
-    "en": "One weekly email with everything new",
-    "es": "Un correo semanal con todas las novedades"
+    "en": "Everything new this week, ready to paste into WhatsApp or e-mail",
+    "es": "Todo lo nuevo de la semana, listo para pegar en WhatsApp o en un correo"
   },
   "home.svc_districts_desc": {
     "en": "Keep every district in the loop",
@@ -711,9 +711,9 @@
     "en": "Every week on Zoom — open to everyone",
     "es": "Cada semana por Zoom — abierta a todos"
   },
-  "home.time_on_page": {
-    "en": "Time on the event page",
-    "es": "Horario en la página del evento"
+  "home.time_not_listed": {
+    "en": "Time not listed — see event details",
+    "es": "Hora no indicada — ver detalles del evento"
   },
   "home.cal_cta_title": {
     "en": "Never miss a meeting",

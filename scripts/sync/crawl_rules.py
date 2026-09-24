@@ -32,20 +32,37 @@ SPANISH_HOSTS = ("www.aalavina.org",)
 # either host. Identity (id / thumbnail name) is therefore computed on this host.
 CANON_FILES_HOST = "www.aagrapevine.org"
 
-# Pages fetched EVERY day (cheap: ~40 pages ≈ 3.5 min at the 5 s crawl-delay).
+# Pages fetched EVERY day (cheap: ~40 pages ≈ 3.5 min at the 5 s crawl-delay). Only pages that are
+# not redirects: "/home" is left out on purpose — both hosts redirect it to "/", already listed.
 HUB_PATHS: dict[str, list[str]] = {
     "www.aagrapevine.org": [
-        "/", "/home", "/gvr-resources", "/catalog", "/magazine", "/archive", "/news-release",
+        "/", "/gvr-resources", "/catalog", "/magazine", "/archive", "/news-release",
         "/important-updates", "/anncmnt", "/announcement", "/carry-the-message", "/get-involved",
         "/get-involved/calendar", "/get-involved/become-grapevine-rep", "/about-us", "/store",
         "/contribute", "/podcasts", "/apps", "/BOTM", "/grapevine-weekly-open", "/share",
     ],
     "www.aalavina.org": [
-        "/", "/principal", "/home", "/recursos", "/catalogo", "/la-revista", "/archivo",
+        "/", "/principal", "/recursos", "/catalogo", "/la-revista", "/archivo",
         "/actualizaciones-importantes", "/anuncio", "/comunicado", "/lleva-el-mensaje", "/servicio",
         "/servicio/conviertete-en-rlv", "/tienda", "/calendario-de-eventos", "/libro-del-mes",
         "/aplicaciones", "/temas-sugeridos", "/comparte",
     ],
+}
+
+# Titles for the few PDFs whose link text, metadata AND file name all fail (a typo, a link that only
+# says "Read it in Spanish here"). Key: the file name as it appears in the URL (decoded); value: the
+# title. A "(Spanish)"-style label is still added when the title's language is not the document's.
+TITLE_OVERRIDES: dict[str, str] = {
+    "Grapevine-Politica-de-Prvacidad(2019-09-05).pdf": "Política de privacidad de Grapevine",
+    # metadata title "Letter to the Fellowahip …" (typo) on aa.org's English and Spanish letters
+    "Retrofit_Completion_Return_to_Office.pdf": "Letter to the Fellowship: Retrofit Completion and Return to Office",
+    "SP_Retrofit_Completion_Return_to_Office.pdf": "Letter to the Fellowship: Retrofit Completion and Return to Office",
+    # only the file name was usable, and it is an abbreviation ("GV Survey Letter", "LV Encuesta Carta")
+    "GV__Survey_Letter.pdf": "Letter about the Grapevine and La Viña Apps Survey",
+    "LV__Encuesta_Carta.pdf": "Carta sobre la encuesta de la aplicación de Grapevine y La Viña",
+    "Formulario Pedido de Materiales Gratuitos .pdf": "Formulario de pedido de materiales gratuitos",
+    # the page names only the edition ("The 30th Anniversary Edition!"), the file "2023_HG_Heartbeat…"
+    "2023_HG_Heartbeat_of_AA_AVAILABLE-NOW.pdf": "The Home Group: Heartbeat of AA (30th Anniversary Edition)",
 }
 
 # Referrer page → category for the representative kits (these win over every other rule).
@@ -77,7 +94,14 @@ SKIP_PATH_PATTERNS = [
     r"^/podcasts?/.+",                                   # episodes come from the podcast RSS module
     r"^/index\.php",
 ]
-_SKIP_RE = re.compile("|".join(f"(?:{p})" for p in SKIP_PATH_PATTERNS), re.I)
+# "Pages" that are really an e-mail address or a host name written without "https://" and resolved
+# as a relative link (/www.aagrapevine.org, …/registration%40midwinterconference.com%20).
+JUNK_PATH_PATTERNS = [
+    r"@|%40",
+    r"^/(?:www\d?\.)?[\w-]+(?:\.[\w-]+)*\.(?:com|org|net|edu|gov|info|biz|us|ca|mx|es|ar|co|uk|fr|de|io)(?:/|$)",
+]
+_JUNK_RE = re.compile("|".join(f"(?:{p})" for p in JUNK_PATH_PATTERNS), re.I)
+_SKIP_RE = re.compile("|".join(f"(?:{p})" for p in SKIP_PATH_PATTERNS + JUNK_PATH_PATTERNS), re.I)
 # File extensions that are never HTML pages.
 _NON_HTML_EXT = re.compile(
     r"\.(jpe?g|png|gif|webp|svg|ico|bmp|tiff?|mp3|m4a|wav|ogg|mp4|m4v|mov|avi|webm|zip|rar|7z|gz|"
@@ -108,14 +132,21 @@ WEAK_WORDS = set("""a an the this our el la los las un una este esta nuestro nue
 file files archivo archivos pdf version versión versions document documento documents documentos copy copia
 flyer flier volante download descarga descargar click clic haga learn more más conoce read lee leer see ver view
 here aquí aqui info information información details detalles link enlace full completo completa printable
-imprimible print imprimir form formulario""".split())
+imprimible print imprimir form formulario letter letters carta cartas announcement announcements anuncio
+anuncios""".split())
+# "Read / Download letter", "Leer / Descargar Carta": a run of verbs joined by "/" (then the noun).
+_VERB = r"(?:read|view|download|open|print|leer|lee|ver|abrir|imprimir|descarga(?:r)?|descargue)"
+VERB_RUN = re.compile(rf"(?i)^(?:{_VERB}\s*/\s*)+(?:{_VERB}\b\s*)?")
 # Links that only name a language ("English", "Spanish version", "leer en Inglés"): the page title
 # describes the document → "<page title> (Spanish)".
+# … also "Read it in Spanish" / "It in Spanish" and lists ("French and Spanish", "Inglés y Español"),
+# which mean the document holds several languages (see language_of_link).
+_LANG_NAME = r"(?:english|spanish|french|ingl[eé]s|espa[nñ]ol|franc[eé]s|fran[cç]ais)"
 LANGUAGE_ONLY = re.compile(
-    r"(?i)^(?:(?:read|view|download|leer|lee|ver|descarga(?:r)?)\s+(?:it\s+)?)?(?:in\s+|en\s+)?"
+    r"(?i)^(?:(?:read|view|download|leer|lee|ver|descarga(?:r)?)\s+)?(?:it\s+|eso\s+)?(?:in\s+|en\s+)?"
     r"(?:(?:the\s+)?(?:version|versi[oó]n)\s+(?:in\s+|en\s+)?)?"
-    r"(english|spanish|french|ingl[eé]s|espa[nñ]ol|franc[eé]s|fran[cç]ais)"
-    r"(?:\s+(?:version|versi[oó]n|translation|traducci[oó]n|pdf))?[\s.!:]*$")
+    rf"({_LANG_NAME}(?:\s*(?:,|/|&|\band\b|\by\b|\bet\b|\bor\b|\bo\b)\s*{_LANG_NAME})*)"
+    r"(?:\s+(?:version|versi[oó]n|versions|versiones|translation|traducci[oó]n|pdf))?[\s.!:]*$")
 LANGUAGE_NAMES = {
     "en": {"en": "English", "es": "inglés", "fr": "anglais"},
     "es": {"en": "Spanish", "es": "español", "fr": "espagnol"},
@@ -144,12 +175,15 @@ LANG_TITLE_MARKERS = [
 ]
 
 # Document type rules — FIRST MATCH WINS. `where`:
-#   section  = heading the link sits under on the referring page ("Postcards", "Tarjetas postales")
-#   referrer = URL of a page that links the PDF (news / announcement pages)
+#   section  = heading the link sits under on the referring page ("Postcards", "Tarjetas postales");
+#              each heading is tested on its own
+#   referrer = path of a page that links the PDF (news / announcement pages); each path on its own
 #   text     = title + link texts + image alts + file name (lower-case, accents removed)
 DOC_TYPE_RULES: list[tuple[str, str, str]] = [
     ("postcard",   "section",  r"post ?cards?|tarjetas? postal"),
-    ("order-form", "section",  r"subscription|suscripcion"),
+    # only headings that are ABOUT subscriptions ("Subscription and product", "Suscripciones"), not a
+    # long page heading that merely mentions one ("Agreement for … Online Subscription & …")
+    ("order-form", "section",  r"^(?:subscriptions?|suscripci[oó]n(?:es)?)\b"),
     ("news",       "referrer", r"/(news-release|important-updates|actualizaciones-importantes|anncmnt|announcement|"
                                r"anuncio|comunicado)(/|$)"),
     ("postcard",   "text",     r"post ?card|tarjeta postal|(^|[_\- ])pc([_\- .]|\d|$)|marca ?libros?|bookmark"),
@@ -199,11 +233,21 @@ def is_drupal_host(host: str) -> bool:
     return _norm_host(host) in DRUPAL_HOSTS
 
 
+# An href without a scheme that starts with an e-mail address or a host name ("www.x.org",
+# "store.aagrapevine.org/…", "name@x.com") — a missing "https://" or "mailto:", never a page here.
+_SCHEMELESS_JUNK = re.compile(
+    r"(?i)^(?![a-z][a-z0-9+.-]*:|[/.#?])(?:[^/?#]*(?:@|%40)|(?:[\w-]+\.)+"
+    r"(?:com|org|net|edu|gov|info|biz|us|ca|mx|es|ar|co|uk|fr|de|io)(?:[/?#:]|$))")
+
+
 def normalize_page_url(url: str, base: str | None = None) -> str | None:
     """Canonical https URL of an HTML page on one of the two Drupal hosts, or None if the
     link is off-site, has a query string, points to a file, or is otherwise not crawlable."""
+    raw = (url or "").strip()
+    if base and _SCHEMELESS_JUNK.match(raw):
+        return None           # "registration@x.com", "www.aagrapevine.org" — not a relative path
     try:
-        url = urljoin(base, url.strip()) if base else url.strip()
+        url = urljoin(base, raw) if base else raw
         p = urlsplit(url)
     except ValueError:
         return None
@@ -218,6 +262,11 @@ def normalize_page_url(url: str, base: str | None = None) -> str | None:
     if len(path) > 1:
         path = path.rstrip("/")
     return urlunsplit(("https", host, path, "", ""))
+
+
+def is_junk_path(path: str) -> bool:
+    """True for a path made from an e-mail address or a bare host name (see JUNK_PATH_PATTERNS)."""
+    return bool(_JUNK_RE.search(path or ""))
 
 
 def should_crawl_path(path: str) -> bool:
@@ -351,7 +400,7 @@ def clean_title(t: str) -> str:
     t = re.sub(r"(?i)\.pdf$", "", t)
     t = re.sub(r"([!?])\1+", r"\1", t)
     t = re.sub(r"\s{2,}", " ", t)
-    t = t.strip(" \t-–—|:;,·•»›>_")
+    t = t.strip(" \t-–—|:;,·•»›>_/")
     # unbalanced trailing "(" or leading ")"
     if t.count("(") > t.count(")"):
         t = t.rstrip("( ")
@@ -379,6 +428,10 @@ def clean_link_text(t: str) -> str | None:
         return None
     t = TRAILING_HERE.sub("", t).strip()
     t = _LEARN_MORE_ABOUT.sub("", t).strip()
+    t = VERB_RUN.sub("", t).strip(" /")                 # "Read / Download letter" → "letter"
+    parts = [p for p in re.split(r"\s+/\s+|\s*\|\s*", t) if p.strip()]
+    if len(parts) > 1 and all(GENERIC_LINK_TEXT.match(p) or _weak(p) for p in parts):
+        return None                                     # "View | Download", "Open / Print PDF"
     if not t or GENERIC_LINK_TEXT.match(t) or GENERIC_PREFIX.match(t) or _weak(t):
         return None
     stripped = LEADING_VERB.sub("", t).strip()
@@ -394,10 +447,20 @@ def clean_link_text(t: str) -> str | None:
     return t[0].upper() + t[1:]
 
 
+MULTILINGUAL = "multi"
+
+
 def language_of_link(text: str) -> str | None:
-    """'Spanish' / 'READ Spanish version' / 'leer en Inglés' → 'es' / 'es' / 'en'; else None."""
-    m = LANGUAGE_ONLY.match(clean_text(text))
-    return _LANG_WORD.get(_fold(m.group(1))) if m else None
+    """'Spanish' / 'READ Spanish version' / 'Read it in Spanish here' / 'leer en Inglés' → 'es' / 'es' /
+    'es' / 'en'; a list of languages ('French and Spanish click here') → MULTILINGUAL; else None."""
+    t = TRAILING_HERE.sub("", clean_text(text)).strip()
+    m = LANGUAGE_ONLY.match(t)
+    if not m:
+        return None
+    langs = {_LANG_WORD.get(_fold(w)) for w in re.findall(_LANG_NAME, m.group(1), re.I)} - {None}
+    if len(langs) > 1:
+        return MULTILINGUAL
+    return next(iter(langs), None)
 
 
 def language_label(doc_lang: str, in_lang: str) -> str:
@@ -507,6 +570,9 @@ def title_from_filename(url: str) -> str:
     name = re.sub(r"(?i)[_\-\s]+v\d{3,}$", "", name)             # version stamps _v52424
     name = re.sub(r"(?i)[_\-\s]+rev[_\-\s]*\d[\d_\-\s]*$", "", name)  # _rev101024, _rev_02-_6_24
     name = re.sub(r"(?i)[_\-\s]+(final|edited|web|new|upd\w*|jw|print)$", "", name)
+    # a full date stamp at the end: "(2019-09-05)", "-09-05-2019", "_9.24.25_" (month-year names stay)
+    name = re.sub(r"[_\-\s]*\(?(?:(?:19|20)\d{2}[-_.]\d{1,2}[-_.]\d{1,2}|\d{1,2}[-_.]\d{1,2}[-_.](?:19|20)?\d{2})\)?[_\-\s]*$",
+                  "", name) or name
     name = re.sub(r"(?<=[a-z])(?=[A-Z][a-z])", " ", name)        # EditorialCalendar → Editorial Calendar
     if "_" not in name and " " not in name:                      # hyphens are the only separators
         name = name.replace("-", " ")
@@ -549,6 +615,7 @@ def choose_title(*, link_texts: list[str], img_alts: list[str], meta_title: str 
             return c, "alt"
     c = meta_title_ok(meta_title)
     if c:
+        c = strip_lang_tokens(c)       # "SP Letter to the Fellowship…" → the suffix says "(Spanish)"
         # metadata "GV News" vs file "GV News October 2026": the more specific file name wins
         f = strip_lang_tokens(title_from_filename(url))
         mw, fw = set(re.findall(r"\w+", _fold(c))), set(re.findall(r"\w+", _fold(f)))
@@ -557,13 +624,24 @@ def choose_title(*, link_texts: list[str], img_alts: list[str], meta_title: str 
         return c, "meta"
     if ev:                       # the event's name beats a guessed heading or a file name
         return ev, "event"
-    if page_title and clean_title(page_title):
-        return clean_title(page_title), "page"
     f = strip_lang_tokens(title_from_filename(url))
+    if page_title and clean_title(page_title):
+        # A page title names the PDF only when it is about the same thing: a descriptive file name
+        # sharing no word with it ("Formulario Pedido de Materiales Gratuitos" linked from a page
+        # titled "Calendario de Eventos") is the better title.
+        pw, fw = _content_words(page_title), _content_words(f)
+        if _poor_filename_title(f) or not fw or (pw & fw):
+            return clean_title(page_title), "page"
     # a heading guessed from page-1 text is noisy: only better than an uninformative file name
     if text_heading and _poor_filename_title(f):
         return text_heading, "text"
     return f, "file"
+
+
+def _content_words(t: str) -> set[str]:
+    """Words of 3+ letters minus WEAK_WORDS / brand names, accents folded ('Catálogo' = 'catalogo')."""
+    return {w for w in re.findall(r"[a-z]{3,}", _fold(_BRAND_NAMES.sub(" ", t or "")))
+            if w not in WEAK_WORDS}
 
 
 def _poor_filename_title(t: str) -> bool:
@@ -592,13 +670,74 @@ def lang_from_filename(url: str) -> str | None:
     return None
 
 
+_MULTI_SEP = re.compile(r"\s*[•·|/]\s*")
+
+
+def multilingual_heading(text: str | None) -> bool:
+    """'Catalog • Catálogo • Catalogue' — the same name printed in several languages."""
+    parts = [p for p in _MULTI_SEP.split(text or "") if p.strip()]
+    if len(parts) < 2:
+        return False
+    langs = {detect_lang(p) for p in parts} & {"en", "es", "fr"}
+    stems = {re.sub(r"[^a-z]", "", _fold(p))[:5] for p in parts}
+    return len(langs) >= 2 or (len(parts) >= 3 and len(stems) == 1)
+
+
+_ADDRESS = re.compile(r"(?i)\b\d{5}\b|\b(?:drive|street|avenue|ave|suite|ste|p\.?\s*o\.?\s*box|road|blvd)\b")
+
+
+def _confident_lang(text: str | None) -> str | None:
+    """en/es/fr only when the text is clearly in that language (no prior; brand names, postal
+    addresses and one-word texts say nothing)."""
+    t = _BRAND_NAMES.sub(" ", text or "")
+    if len(re.findall(r"[A-Za-zÀ-ÿ]{2,}", t)) < 2 or _ADDRESS.search(t):
+        return None
+    lang = detect_lang(t)
+    return lang if lang in ("en", "es", "fr") else None
+
+
+def brand_edition(url: str) -> str | None:
+    """'GV_catalog_postcard_2026.pdf' → 'en' (the Grapevine edition), 'LV_Instagram…' → 'es';
+    None for 'GV_LV_…' / 'LV_GV_…' (both) and other names. Only a hint (see doc_language)."""
+    words = [w.upper() for w in re.split(r"[_\-\s.]+", filename_of(url)) if w]
+    words = words[1:] if words and words[0] in ("REV", "NEW") else words
+    if not words or words[0] not in ("GV", "LV") or (len(words) > 1 and words[1] in ("GV", "LV")):
+        return None
+    return "en" if words[0] == "GV" else "es"
+
+
 def doc_language(*, url: str, texts: list[str], text_sample: str | None, text_lang: str | None,
-                 host_prior: str) -> str:
-    """Language of the DOCUMENT: explicit markers > file-name hints > page-1 text > host prior."""
-    return (lang_from_markers(texts) or lang_from_filename(url)
-            or (text_lang if text_lang in ("en", "es", "fr") else None)
-            or (detect_lang(text_sample) if text_sample and len(text_sample) > 200 else None)
+                 host_prior: str, multilingual: bool = False, heading: str | None = None,
+                 link_text: str | None = None) -> str:
+    """Language of the DOCUMENT: explicit markers > file-name hints > page-1 text > host prior.
+
+    A multilingual document (see is_multilingual) takes the host's language — no single-language
+    label fits it. The page-1/2 text language is overruled when page 1's heading and the link text
+    naming the PDF are clearly in the host's language (and neither says otherwise): that is a
+    bilingual sheet (English front, Spanish back — the 'Subscription Prices' and '80th Anniversary'
+    cards of the GVR kit), not a Spanish document. A "GV_"/"LV_" file name prefix (the Grapevine /
+    La Viña edition) counts as one more such hint."""
+    found = lang_from_markers(texts) or lang_from_filename(url)
+    if found:
+        return found
+    if multilingual:
+        return host_prior
+    tl = text_lang if text_lang in ("en", "es", "fr") else None
+    if tl and tl != host_prior:
+        votes = [v for v in (_confident_lang(heading), _confident_lang(link_text), brand_edition(url)) if v]
+        if votes and all(v == host_prior for v in votes):
+            return host_prior
+    return (tl or (detect_lang(text_sample) if text_sample and len(text_sample) > 200 else None)
             or host_prior)
+
+
+def is_multilingual(*, link_langs: set[str], heading: str | None, page_titles: list[str]) -> bool:
+    """One PDF holding several languages: language-only links for 2+ languages (or one link listing
+    them: 'French and Spanish'), or a page-1 heading / referring page title printed in several
+    languages ('Catalog • Catálogo • Catalogue')."""
+    if MULTILINGUAL in link_langs or len(set(link_langs) - {MULTILINGUAL}) >= 2:
+        return True
+    return multilingual_heading(heading) or any(multilingual_heading(t) for t in page_titles)
 
 
 _BRAND_NAMES = re.compile(r"(?i)\b(la\s+vi[ñn]a|la\s+vigne|grapevine|alcoholics\s+anonymous|"
@@ -618,13 +757,12 @@ def title_language(title: str, doc_lang: str) -> str:
 # =====================================================================================
 def doc_type(*, texts: list[str], sections: list[str], url: str, referrer_urls: list[str] | None = None) -> str | None:
     hay_for = {
-        "text": _fold(" | ".join([*texts, filename_of(url).replace("_", " ")])),
-        "section": _fold(" | ".join(sections)),
-        "referrer": " | ".join(urlsplit(u).path.lower() for u in referrer_urls or []),
+        "text": [_fold(" | ".join([*texts, filename_of(url).replace("_", " ")]))],
+        "section": [_fold(s).strip() for s in sections if s],
+        "referrer": [urlsplit(u).path.lower() for u in referrer_urls or []],
     }
     for cat, where, rx in _DOC_TYPE_RULES:
-        hay = hay_for.get(where, "")
-        if hay and rx.search(hay):
+        if any(h and rx.search(h) for h in hay_for.get(where, [])):
             return cat
     return None
 

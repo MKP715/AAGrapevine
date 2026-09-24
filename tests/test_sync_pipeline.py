@@ -417,6 +417,22 @@ class BuildData(TempRaw):
         self.assertEqual(rows[0]["updated"], "2026-09-01")
         common.write_json(self.tmp / "districts.json", {"items": rows})
 
+    def test_same_language_override_only_restores_accents_and_capitals(self):
+        from scripts.sync import build_data as B
+        from scripts.sync import translate as T
+
+        class TrStub:
+            overrides = T.Overrides({"UN DIA A LA VEZ": {"es": "Un día a la vez", "en": "One Day at a Time"},
+                                     "Sin temor": {"es": "Sin miedo"}})
+        i18n = B.I18n(TrStub())
+        i18n.done[("es", "en", False, "UN DIA A LA VEZ")] = ("One Day at a Time", False)
+        pair, machine = i18n.pair("UN DIA A LA VEZ", "es")
+        self.assertEqual(pair, {"es": "Un día a la vez", "en": "One Day at a Time"})
+        self.assertFalse(machine)
+        # a same-language entry that changes the WORDS is ignored: the original is never rewritten
+        self.assertEqual(i18n.pair("Sin temor", "es")[0]["es"], "Sin temor")
+        self.assertEqual(i18n.pair("Otro título", "es")[0], {"es": "Otro título", "en": "Otro título"})
+
     def test_bad_meeting_config_is_reported_not_fatal(self):
         from scripts.sync import build_data as B
         ctx = B.Ctx(offline=True)
@@ -442,6 +458,17 @@ class WeeklyOpen(unittest.TestCase):
 
 
 class CrawlMerge(unittest.TestCase):
+    def test_rebuild_without_network_leaves_the_state_file_alone(self):
+        # `crawl --minutes 0` only rebuilds pdfs.json; rewriting an unchanged 1.5 MB state file would
+        # only churn git (and clash with the daily bot's copy). A state recovered from pdfs.json is saved.
+        from scripts.sync import crawl as C
+        st = C.empty_state()
+        for loaded_ok, saved in ((True, False), (False, True)):
+            with mock.patch.object(C, "load_state", return_value=(st, loaded_ok)),                     mock.patch.object(C, "load_raw", return_value={"items": []}),                     mock.patch.object(C, "save_state") as save_state,                     mock.patch.object(C, "save_raw") as save_raw,                     mock.patch.object(C, "print_summary"):
+                C.main(["--minutes", "0"])
+            self.assertEqual(save_state.called, saved)
+            self.assertTrue(save_raw.called)
+
     def test_fresh_fields_win_and_last_seen_is_throttled(self):
         from scripts.sync import crawl as C
         now = datetime.now(timezone.utc)
@@ -530,6 +557,358 @@ class InstagramAvatar(unittest.TestCase):
             old = dict(prof, _avatar_checked=iso(datetime.now(timezone.utc) - timedelta(days=8)))
             I.ensure_avatar(None, "gv", old)                         # a week later → refresh
             self.assertEqual(len(calls), 2)
+
+
+# --------------------------------------------------------------------------- review 2026-09 fixes
+class Resp:
+    """A minimal requests.Response stand-in."""
+
+    def __init__(self, status=200, payload=None, headers=None, url="https://x.test/"):
+        self.status_code, self._payload, self.headers, self.url = status, payload, headers or {}, url
+        self.text = json.dumps(payload) if payload is not None else ""
+        self.is_redirect = "Location" in self.headers and status in (301, 302, 303, 307, 308)
+
+    def json(self):
+        if self._payload is None:
+            raise ValueError("no json")
+        return self._payload
+
+    def close(self):
+        pass
+
+
+class DriveSafety(TempRaw):
+    def test_api_empty_answer_for_a_hidden_folder_is_not_an_empty_folder(self):
+        from scripts.sync.drive_listing import ApiLister, FOLDER_MIME
+        lister = ApiLister("k")
+
+        def get(url, **kw):
+            if url.endswith("/files"):
+                return Resp(200, {"files": []})                  # files.list: 200 + nothing
+            return Resp(404, {"error": {"message": "File not found"}})
+        lister.http.get = get
+        res = lister.list("HIDDEN")
+        self.assertFalse(res.ok)
+        self.assertIn("404", res.error)
+        lister.http.get = lambda url, **kw: (Resp(200, {"files": []}) if url.endswith("/files")
+                                             else Resp(200, {"id": "F", "mimeType": FOLDER_MIME, "trashed": False}))
+        self.assertTrue(lister.list("F").ok, "a readable folder that is really empty")
+        lister.http.get = lambda url, **kw: Resp(200, {"id": "F", "mimeType": FOLDER_MIME, "trashed": True})
+        self.assertFalse(lister.list("F").ok)
+
+    def test_flyer_time_ranges(self):
+        from scripts.sync.drive import extract_time
+        cases = {
+            "Asamblea 7pm-9pm": ("19:00", "21:00"), "Workshop 9am-12pm": ("09:00", "12:00"),
+            "Workshop 9am to 3pm": ("09:00", "15:00"), "Taller 9:30am - 11:30am": ("09:30", "11:30"),
+            "Workshop 9 a.m. - 1 p.m.": ("09:00", "13:00"), "Booth 10am-2pm": ("10:00", "14:00"),
+            "Assembly 9-11am": ("09:00", "11:00"), "Booth 10-2pm": ("10:00", "14:00"), "Event 10-12pm": ("10:00", "12:00"),
+            "Taller 7 a 9 pm": ("19:00", "21:00"), "Meeting 10:00-12:00": ("10:00", "12:00"),
+            "Booth 9am": ("09:00", None), "Reunión 18:30": ("18:30", None),
+        }
+        for text, want in cases.items():
+            start, end, rest = extract_time(text)
+            self.assertEqual((start, end), want, text)
+            self.assertNotRegex(rest, r"\d", f"{text!r} left {rest!r}")
+        self.assertEqual(extract_time("Taller de 9 am a 1 pm")[2].strip(), "Taller")
+
+    def test_unresolved_shortcut_is_retried_and_has_no_thumbnail(self):
+        from scripts.sync.drive_listing import HtmlLister, SHORTCUT_MIME, Entry
+        heads = []
+
+        class Http:
+            requests_made = 0
+
+            def head(self, url, **kw):
+                heads.append(url)
+                return None                                      # Drive did not answer
+        sid = "S" * 33
+        lister = HtmlLister(session=Http(), shortcut_cache={sid: sid})   # as a run before the fix saved it
+        e = Entry(sid, "Flyer.pdf", SHORTCUT_MIME)
+        lister._resolve_shortcut(e)
+        self.assertEqual(len(heads), 1, "a failed lookup is not treated as resolved")
+        self.assertTrue(e.unresolved_shortcut)
+        self.assertNotIn(sid, lister.shortcut_cache)
+
+    def test_undecided_form_check_keeps_yesterdays_answer(self):
+        from scripts.sync import drive as D
+        prev = [{"id": "drive:f", "kind": "form", "first_seen": "2026-01-01T00:00:00Z", "last_seen": None,
+                 "extra": {"form_closed": True, "folder_chain": []}}]
+        new = [{"id": "drive:f", "kind": "form", "date": "2026-01-01", "extra": {"folder_chain": []}}]
+        merged, _ = D.merge(prev, new, set())
+        self.assertIs(merged[0]["extra"]["form_closed"], True)
+        new = [{"id": "drive:f", "kind": "form", "date": "2026-01-01", "extra": {"form_closed": False}}]
+        merged, _ = D.merge(prev, new, set())
+        self.assertIs(merged[0]["extra"]["form_closed"], False, "a decided check wins")
+
+
+class AnnouncementHeaders(TempRaw):
+    def setUp(self):
+        super().setUp()
+        from scripts.sync import announcements as A
+        self.A = A
+        self.ann, self.evs = self.tmp / "announcements", self.tmp / "events"
+        self.ann.mkdir()
+        self.evs.mkdir()
+        for name, val in (("ANN_DIR", self.ann), ("EVENTS_DIR", self.evs)):
+            p = mock.patch.object(A, name, val)
+            p.start()
+            self.addCleanup(p.stop)
+
+    def write(self, name, text, folder=None):
+        (folder or self.ann).joinpath(name).write_text(text, encoding="utf-8")
+
+    def test_header_mistakes_are_reported_or_read(self):
+        self.write("empty.md", "---\n---\nJust a body line.\n")
+        self.write("colon.md", "---\ntitle: Reminder: Assembly Saturday\nexpires: 2099-03-31  # a note\n---\nBody\n")
+        self.write("unclosed.md", "---\ntitle: never closed\nBody\n")
+        self.write("expires.md", "---\ntitle: Old\nexpires: March 31\n---\nx\n")
+        self.A.main([])
+        env = self.env("announcements")
+        by = {i["extra"]["file"].rsplit("/", 1)[-1]: i for i in env["items"]}
+        self.assertEqual(by["empty.md"]["extra"]["body_md"], "Just a body line.")
+        self.assertEqual(by["colon.md"]["title"], "Reminder: Assembly Saturday")
+        self.assertEqual(by["colon.md"]["extra"]["expires"], "2099-03-31")
+        errors = " ".join(env["stats"]["errors"])
+        self.assertIn("unclosed.md: the header has no closing ---", errors)
+        self.assertIn("expires.md: the expires date 'March 31' is not a date", errors)
+        self.assertEqual(set(by), {"empty.md", "colon.md"})
+
+    def test_a_mistake_keeps_the_last_good_version(self):
+        self.write("live.md", "---\ntitle: Assembly\n---\nSee you there.\n")
+        self.A.main([])
+        first = self.env("announcements")["items"][0]
+        self.write("live.md", "---\ntitle: \"Assembly\nsee: [unclosed\n---\nSee you there.\n")   # broken header
+        self.A.main([])
+        env = self.env("announcements")
+        self.assertEqual(env["stats"]["problems"], 1)
+        self.assertEqual([(i["id"], i["first_seen"], i["title"]) for i in env["items"]],
+                         [(first["id"], first["first_seen"], "Assembly")])
+        (self.ann / "live.md").unlink()                          # deleting the file still removes it
+        self.A.main([])
+        self.assertEqual(self.env("announcements")["items"], [])
+
+    def test_word_dates_without_a_time_are_all_day(self):
+        from zoneinfo import ZoneInfo
+        tz = ZoneInfo("America/Chicago")
+        for text in ("March 14, 2027", "03/14/2027", "Sat March 14 2027", "14 de marzo de 2027", "2027-03-14"):
+            self.assertEqual(self.A.as_when(text, tz), ("2027-03-14", True), text)
+        self.assertEqual(self.A.as_when("March 14, 2027 9 AM", tz), ("2027-03-14T14:00:00Z", False))
+
+
+class MediaFixes(unittest.TestCase):
+    def test_a_link_shared_by_another_show_is_not_an_episode_page(self):
+        from types import SimpleNamespace
+        from scripts.sync import podcasts as P
+        general = "https://www.aagrapevine.org/podcast"
+
+        def feed(key, n, link):
+            entries = [{"title": f"{key} {i}", "id": f"{key}-{i}", "link": link,
+                        "links": [{"rel": "enclosure", "href": f"https://podcasts.captivate.fm/media/"
+                                   f"0000000{i}-0000-0000-0000-00000000000{i}/x.mp3"}]} for i in range(n)]
+            return SimpleNamespace(feed={"title": key, "link": f"https://www.aagrapevine.org/{key}"}, entries=entries)
+        shows = [{"key": "gv", "feed": "https://feeds.example/gv", "web": general},
+                 {"key": "wo", "feed": "https://feeds.example/wo", "web": "https://www.aagrapevine.org/grapevine-weekly-open"}]
+        feeds = {"gv": feed("gv", 3, general), "wo": feed("wo", 1, general)}
+        counts, generic = P.shared_link_info(shows, feeds)
+        wo = P.build_items(shows[1], feeds["wo"], link_counts=counts, generic_pages=generic)
+        self.assertTrue(wo[0]["url"].startswith("https://player.captivate.fm/episode/"), wo[0]["url"])
+
+    def test_flat_listing_estimates_never_replace_exact_values(self):
+        from scripts.sync import youtube as Y
+        v = Y.Video("abcdefghijk")
+        v.duration, v.duration_approx, v.views, v.views_approx = 3304, True, 3800, True
+        self.assertEqual(Y.merged_duration_views(v, {"duration_sec": 3303, "views": 3875}), (3303, 3875))
+        v.views = 4100                                            # a higher estimate: views only go up
+        self.assertEqual(Y.merged_duration_views(v, {"duration_sec": 3303, "views": 3875})[1], 4100)
+        v.duration, v.duration_approx, v.views, v.views_approx = 3600, False, 3700, False   # exact details
+        self.assertEqual(Y.merged_duration_views(v, {"duration_sec": 3303, "views": 3875}), (3600, 3700))
+        col = Y.Collector()
+        col.add_flat({"id": "abcdefghijk", "title": "T", "duration": 61, "view_count": 3800}, "UC")
+        w = col.videos["abcdefghijk"]
+        self.assertTrue(w.duration_approx and w.views_approx)
+
+    def test_texas_city_without_a_state(self):
+        from scripts.sync import events_external as E
+        for loc in ("Iglesia San Juan Diego, Houston", "Hotel Adolphus, 1321 Commerce St, Dallas",
+                    "Centro Comunitario - Fort Worth"):
+            self.assertTrue(E.decide({"title": "Taller", "location_raw": loc, "lang": "es"}).get("texas"), loc)
+        for loc in ("Hotel X, Paris", "Centro, Lancaster", "Hotel, Houston, Mexico"):
+            self.assertFalse(E.decide({"title": "Taller", "location_raw": loc, "lang": "es"}).get("texas"), loc)
+
+
+class ArchiveDepartments(unittest.TestCase):
+    def test_every_issue_slugs(self):
+        from scripts.sync import articles as AR
+        for slug in ("alcoholism-large", "alcoholism-large-july-2026", "cartas-del-lector"):
+            self.assertTrue(AR.DEPARTMENT_SLUG_RE.match(slug), slug)
+
+
+class PdfTitles(unittest.TestCase):
+    def test_link_texts(self):
+        from scripts.sync import crawl_rules as R
+        for t in ("/ Download letter", "Read / Download Letter", "Leer / Descargar Carta", "Download letter",
+                  "Download the announcement PDF version here", "View | Download"):
+            self.assertIsNone(R.clean_link_text(t), t)
+        self.assertEqual(R.clean_link_text("Descarga el Poster de la App"), "Poster de la App")
+        self.assertEqual(R.clean_link_text("GV/LV Workshop"), "GV/LV Workshop")
+        self.assertEqual(R.language_of_link("Read it in Spanish here"), "es")
+        self.assertEqual(R.language_of_link("French and Spanish click here"), R.MULTILINGUAL)
+        self.assertEqual(R.language_of_link("Inglés y Español"), R.MULTILINGUAL)
+        self.assertEqual(R.language_of_link("leer en Inglés"), "en")
+        self.assertIsNone(R.language_of_link("Women in AA (Spanish-language)"))
+
+    def test_titles_categories_languages(self):
+        from scripts.sync import crawl_rules as R
+        form = "https://www.aalavina.org/sites/default/files/2020-08/Formulario%20Pedido%20de%20Materiales%20Gratuitos%20.pdf"
+        self.assertEqual(R.choose_title(link_texts=[], img_alts=[], meta_title=None, text_heading=None, url=form,
+                                        page_title="Calendario de Eventos"),
+                         ("Formulario Pedido de Materiales Gratuitos", "file"))
+        self.assertEqual(R.choose_title(link_texts=[], img_alts=[], meta_title=None, text_heading=None,
+                                        url="https://x/Announcement_GV-Podcast.pdf", page_title="Grapevine's New Podcast"),
+                         ("Grapevine's New Podcast", "page"))
+        self.assertEqual(R.choose_title(link_texts=[], img_alts=[], meta_title="SP Letter to the Fellowship",
+                                        text_heading=None, url="https://x/SP_Letter.pdf")[0], "Letter to the Fellowship")
+        news = R.classify(referrer_urls=["https://www.aagrapevine.org/anncmnt", "https://www.aalavina.org/anuncio-2021"],
+                          texts=["New Publisher (English)"], sections=[], url="https://x/y.pdf")
+        self.assertEqual(news[0], "news", "a news page that is not the last referrer counts too")
+        policy = R.classify(referrer_urls=["https://www.aagrapevine.org/agreement"], texts=["Privacy Policy"],
+                            sections=["Agreement for AAGrapevine.org Usage, Grapevine Online Subscription & Grapevine S"],
+                            url="https://x/Privacy-Policy.pdf")
+        self.assertEqual(policy[0], "guidelines")
+        self.assertTrue(R.multilingual_heading("Catalog • Catálogo • Catalogue"))
+        self.assertEqual(R.doc_language(url="https://x/LV_Catalogo_2026.pdf", texts=["Catálogo 2026"], text_sample=None,
+                                        text_lang="en", host_prior="es", multilingual=True), "es")
+        # an English front + Spanish back (text sample mostly Spanish) on an English kit page
+        self.assertEqual(R.doc_language(url="https://x/GV_LV_annual_Prices_2024.pdf", texts=["GV Annual Prices"],
+                                        text_sample=None, text_lang="es", host_prior="en",
+                                        heading="Subscription Prices", link_text="GV Annual Prices"), "en")
+        self.assertEqual(R.doc_language(url="https://x/GV_catalog_postcard_2026.pdf", texts=["2026 Catalog Postcard"],
+                                        text_sample=None, text_lang="es", host_prior="en",
+                                        heading="Aagrapevine /la Viña", link_text="2026 Catalog Postcard"), "en")
+        # a Spanish document linked from an English page keeps its language
+        self.assertEqual(R.doc_language(url="https://x/Libres.pdf", texts=["Libres por dentro"], text_sample=None,
+                                        text_lang="es", host_prior="en", heading="Muy Pronto – ¡dos Nuevos Libros!",
+                                        link_text="Libres por dentro: Historias de recuperación"), "es")
+
+    def test_title_overrides_for_unusable_names(self):
+        from scripts.sync import crawl_rules as R
+        for url, title in (
+                ("https://www.aagrapevine.org/sites/default/files/2023-01/GV__Survey_Letter.pdf",
+                 "Letter about the Grapevine and La Viña Apps Survey"),
+                ("https://www.aalavina.org/sites/default/files/2020-08/Formulario%20Pedido%20de%20Materiales%20Gratuitos%20.pdf",
+                 "Formulario de pedido de materiales gratuitos")):
+            self.assertEqual(R.TITLE_OVERRIDES.get(R.filename_of(url)), title)
+        for k, v in R.TITLE_OVERRIDES.items():
+            self.assertTrue(k.lower().endswith(".pdf") and "%" not in k and v.strip() == v and v, k)
+
+    def test_junk_links_are_not_pages(self):
+        from scripts.sync import crawl_rules as R
+        base = "https://www.aalavina.org/website-policy"
+        for href in ("registration@midwinterconference.com ", "www.aagrapevine.org", "store.aagrapevine.org/x",
+                     "lveditorial%40aagrapevine.org"):
+            self.assertIsNone(R.normalize_page_url(href, base), href)
+        self.assertEqual(R.normalize_page_url("servicio/rlv", base), "https://www.aalavina.org/servicio/rlv")
+        self.assertFalse(R.should_crawl_path("/www.aagrapevine.org"))
+        self.assertFalse(R.should_crawl_path("/get-involved/events/2013-01-17/registration%40x.com%20"))
+        self.assertNotIn("https://www.aagrapevine.org/home", R.hub_urls(), "a redirect is not a hub")
+
+
+class CrawlerRechecks(unittest.TestCase):
+    def crawler(self, pdfs):
+        from scripts.sync import crawl as C
+        st = {"pages": {}, "pdfs": pdfs, "sitemaps": {}, "runs": []}
+        with mock.patch.object(C, "shared_session", lambda: None):
+            return C, C.Crawler(st, minutes=1, details_cap=0, recheck_days=21, max_mb=1, max_pages=None,
+                                dry_run=True, only_urls=None, use_sitemap=False)
+
+    def test_stop_is_not_swallowed(self):
+        from scripts.sync import crawl as C
+        self.assertTrue(issubclass(C.Stop, BaseException) and not issubclass(C.Stop, Exception))
+
+    def test_gone_but_linked_pdf_is_checked_again(self):
+        old = iso(datetime.now(timezone.utc) - timedelta(days=400))
+        C, cr = self.crawler({"k": {"url": "https://x.test/a.pdf", "status": "gone", "external": True,
+                                    "refs": [{"url": "https://www.aagrapevine.org/gvr-resources"}],
+                                    "head": {"status": 404, "checked_at": old}}})
+        cr.push_pdf("k")
+        self.assertEqual([k for _p, k, _key in cr.pdf_q], ["periodic"])
+        C2, cr2 = self.crawler({"k": {"url": "https://x.test/a.pdf", "status": "gone", "refs": [],
+                                      "head": {"status": 404, "checked_at": old}}})
+        cr2.push_pdf("k")
+        self.assertEqual(cr2.pdf_q, [], "no page links it → no reason to look again")
+
+    def test_gone_needs_two_failing_checks_a_day_apart(self):
+        C, cr = self.crawler({})
+        rec = {"url": "https://x.test/a.pdf", "status": "ok", "refs": [{"url": "u"}]}
+        cr._apply_head(rec, {"status": 404, "checked_at": iso(datetime.now(timezone.utc))})
+        self.assertEqual(rec["status"], "ok")
+        self.assertIn("gone_strike_at", rec)
+        cr._apply_head(rec, {"status": 404})                      # the same day: still one strike
+        self.assertEqual(rec["status"], "ok")
+        rec["gone_strike_at"] = iso(datetime.now(timezone.utc) - timedelta(hours=30))
+        cr._apply_head(rec, {"status": 200, "type": "text/html"})   # an error page instead of the file
+        self.assertEqual(rec["status"], "gone")
+        cr._apply_head(rec, {"status": 200, "type": "application/pdf"})
+        self.assertEqual(rec["status"], "ok")
+        self.assertNotIn("gone_since", rec)
+
+    def test_dead_external_host_is_retired_after_a_month(self):
+        C, cr = self.crawler({})
+        rec = {"url": "http://www.aataiwan.com/x.pdf", "status": "ok", "external": True}
+        for _ in range(3):
+            cr._unreachable(rec)
+        self.assertEqual(rec["status"], "ok")
+        rec["head"]["unreachable_since"] = iso(datetime.now(timezone.utc) - timedelta(days=31))
+        cr._unreachable(rec)
+        self.assertEqual(rec["status"], "gone")
+        own = {"url": "https://www.aagrapevine.org/sites/default/files/x.pdf", "status": "ok", "external": False,
+               "head": {"fails": 9, "unreachable_since": "2020-01-01T00:00:00Z", "error": "unreachable"}}
+        cr._unreachable(own)
+        self.assertEqual(own["status"], "ok", "the magazine sites' own files are never retired this way")
+
+
+class RedirectsArePaced(unittest.TestCase):
+    def test_every_hop_waits_and_is_checked(self):
+        clock = FakeClock()
+        stamps = []
+        hops = {"https://www.aagrapevine.org/home": "https://www.aagrapevine.org/",
+                "https://www.aagrapevine.org/": None}
+
+        def fake_request(_self, method, url, **kw):
+            stamps.append((clock.t, url, kw.get("allow_redirects")))
+            nxt = hops.get(url)
+            return Resp(301, headers={"Location": nxt}, url=url) if nxt else Resp(200, url=url)
+
+        with mock.patch.object(common.time, "monotonic", clock.monotonic), \
+                mock.patch.object(common.time, "sleep", clock.sleep), \
+                mock.patch("requests.Session.request", fake_request):
+            s = common.PoliteSession(min_delay=5.0, respect_robots=False)
+            r = s.get("https://www.aagrapevine.org/home")
+        self.assertEqual(r.url, "https://www.aagrapevine.org/")
+        self.assertEqual([u for _t, u, _f in stamps], list(hops))
+        self.assertEqual(stamps[1][0] - stamps[0][0], 5.0, "the redirect hop waits the crawl delay")
+        self.assertTrue(all(f is False for _t, _u, f in stamps))
+
+
+class LaunchDayCutoff(TempRaw):
+    def test_first_harvest_does_not_move_when_old_items_are_dropped(self):
+        from scripts.sync import build_data as B
+        day1 = iso(datetime.now(timezone.utc) - timedelta(days=30))
+        common.save_raw("events_external", [{"id": "ev:1", "first_seen": day1, "date": "2026-01-01"}])
+        self.assertEqual(self.env("events_external")["first_harvest"], day1)
+        today = iso(datetime.now(timezone.utc) - timedelta(hours=1))
+        # the old event is past and dropped; a newly announced one arrives
+        new = {"id": "ev:2", "kind": "event", "source": "grapevine", "first_seen": today, "date": "2027-01-01",
+               "category": "gv", "extra": {}}
+        common.save_raw("events_external", [new])
+        self.assertEqual(self.env("events_external")["first_harvest"], day1)
+        c = B.Ctx(offline=True)
+        with mock.patch.object(B, "RAW_DIR", self.raw):
+            c.load_raw()
+        self.assertTrue(c.is_new(new, "events_external"), "a newly announced event is news")
+        common.save_raw("empty_source", [])
+        self.assertTrue(self.env("empty_source")["first_harvest"], "stamped even with 0 items")
 
 
 if __name__ == "__main__":

@@ -59,6 +59,12 @@ SITE_DIR = ROOT / "data" / "site"
 
 WEEKDAYS = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
 
+# Copies of three rules in scripts/sync/ (kept here so this script runs with the standard library
+# alone, without importing the sync pipeline) — keep them equal:
+NEW_DAYS = 14                                        # build_data.NEW_DAYS: the site's "New" badge
+SCOPE_ORDER = ("neta65", "texas", "other", "unknown")  # geo.SCOPES: Area 65 writers first, then Texas
+EVERY_ISSUE = re.compile(r"(?i)in every issue|en cada (?:edici[oó]n|n[uú]mero)")  # build_data._EVERY_ISSUE
+
 # Brand colors (same tokens as src/assets/css/main.css, light theme).
 C = {
     "paper": "#fbf8f2", "surface": "#ffffff", "surface2": "#f4efe6", "ink": "#1d1a26",
@@ -360,6 +366,60 @@ def effective_date(item: dict) -> datetime | None:
     return min(ds) if ds else None
 
 
+def still_news(item: dict, now: datetime) -> bool:
+    """Does the website still mark this item "New"? build_data's is_new flag decides (it already
+    leaves out everything the very first harvest found); data without the flag falls back to the
+    What's New date being less than NEW_DAYS old."""
+    if "is_new" in item:
+        return bool(item.get("is_new"))
+    wn = parse_dt(item.get("wn_date")) or effective_date(item)
+    return bool(wn and wn <= now and now - wn < timedelta(days=NEW_DAYS))
+
+
+def is_department(item: dict) -> bool:
+    """An "In Every Issue" page (AA News, Dear Grapevine, Discussion Topic …), not a member's story."""
+    ex = item.get("extra") or {}
+    return ex.get("department") is True or bool(EVERY_ISSUE.search(str(ex.get("section") or "")))
+
+
+def story_order(item: dict, now: datetime) -> tuple:
+    """Magazine stories: members' stories before "In Every Issue" pages, Area 65 writers first and
+    then the rest of Texas (like the site's published-writers spotlight), then newest first."""
+    scope = ((item.get("extra") or {}).get("geo") or {}).get("scope")
+    rank = SCOPE_ORDER.index(scope) if scope in SCOPE_ORDER else len(SCOPE_ORDER) - 1
+    return is_department(item), rank, -(effective_date(item) or now).timestamp()
+
+
+# build_data.committee_meetings writes the meeting's summary as "<this intro> <meeting.note>".
+MEETING_INTRO = {"en": re.compile(r"^Our monthly committee meeting on [^.]*\.\s*"),
+                 "es": re.compile(r"^Nuestra reunión mensual del comité por [^.]*\.\s*")}
+
+
+def _one_line(v: Any) -> str:
+    return re.sub(r"\s+", " ", str(v or "")).strip()
+
+
+def meeting_note(cfg: dict, meeting: dict, lang: str) -> str:
+    """The line under the next meeting's date: the chair's own note from config/site.yml
+    (meeting.note / note_es) — the same text the website shows for the meeting. Without note_es the
+    Spanish comes from the meeting event, where the site's daily build already translated the note.
+    An empty note shows nothing (like the site); unreadable settings → the standard sentence."""
+    mt = cfg.get("meeting")
+    if not isinstance(mt, dict):
+        return T[lang]["meeting_note"]
+    note = _one_line(mt.get("note"))
+    if lang == "en" or not note:
+        return note
+    es = _one_line(mt.get("note_es"))
+    if es:
+        return es
+    summary = (meeting.get("i18n") or {}).get("summary") or {}
+    built_en = MEETING_INTRO["en"].sub("", _one_line(summary.get("en")))
+    built_es = MEETING_INTRO["es"].sub("", _one_line(summary.get("es")))
+    # only when the site was built from the same note (an edit made today is not built yet)
+    return built_es if built_es and built_en == note else note
+
+
 class Links:
     def __init__(self, site_url: str):
         self.base = site_url.rstrip("/")
@@ -410,6 +470,13 @@ def localize_months(label: str, lang: str) -> str:
     return label
 
 
+def tx_extra(item: dict, field: str, lang: str) -> str:
+    """An `extra` field (issue_label, topic, section, album …) in the requested language: build_data's
+    i18n copy when it has that language, else the original value."""
+    val = ((item.get("i18n") or {}).get(field) or {}).get(lang) or (item.get("extra") or {}).get(field)
+    return str(val or "").strip()
+
+
 def item_meta(item: dict, lang: str) -> str:
     ex = item.get("extra") or {}
     kind = item.get("kind")
@@ -417,10 +484,11 @@ def item_meta(item: dict, lang: str) -> str:
     d = parse_dt(item.get("date"))
     if kind == "article":
         if ex.get("issue_label"):
-            parts.append(localize_months(str(ex["issue_label"]), lang))
-        topic = ex.get("topic") or ex.get("section")
-        if topic:
-            parts.append(str(topic))
+            label = ((item.get("i18n") or {}).get("issue_label") or {}).get(lang)
+            parts.append(str(label).strip() if label else localize_months(str(ex["issue_label"]), lang))
+        topic_field = "topic" if ex.get("topic") else "section" if ex.get("section") else None
+        if topic_field:
+            parts.append(tx_extra(item, topic_field, lang))
     elif kind == "episode":
         if ex.get("season") and ex.get("episode"):
             parts.append(T[lang]["episode"].format(s=ex["season"], e=ex["episode"]))
@@ -478,9 +546,21 @@ def collect(now: datetime, days: int, event_days: int, max_per: int) -> dict:
     data: dict[str, Any] = {"start": start, "end": now, "groups": {}, "announcements": [], "events": [],
                             "meeting": None, "machine": {"en": False, "es": False}}
 
+    hi = now + timedelta(hours=1)
+
     def in_window(it: dict) -> bool:
+        """New this week when EITHER
+        * it became news in the window (min(date, first_seen), see effective_date), OR
+        * we first found it in the window and the website still marks it "New" — something dated
+          before the previous digest but only found after it (a PDF dated last month, a La Viña
+          issue dated the 1st, an announcement whose name starts with an earlier date) would
+          otherwise miss every digest.
+        An item's first_seen falls in exactly one weekly window, so nothing is listed twice."""
         d = effective_date(it)
-        return bool(d and start <= d <= now + timedelta(hours=1))
+        if d and start <= d <= hi:
+            return True
+        fs = parse_dt(it.get("first_seen"))
+        return bool(fs and start <= fs <= hi and still_news(it, now))
 
     # ---- new content (whatsnew = newest items across every source)
     seen: set[str] = set()
@@ -505,7 +585,10 @@ def collect(now: datetime, days: int, event_days: int, max_per: int) -> dict:
             buckets["drive"].append(it)
         # announcements/events come from their own files below
     for g, items in buckets.items():
-        items.sort(key=lambda i: effective_date(i) or now, reverse=True)
+        if g == "articles":   # members' stories (Area 65, then Texas) before "In Every Issue" pages
+            items.sort(key=lambda i: story_order(i, now))
+        else:
+            items.sort(key=lambda i: effective_date(i) or now, reverse=True)
         data["groups"][g] = items
 
     # ---- announcements (new in the window, not expired)
@@ -560,6 +643,14 @@ def total_count(data: dict) -> int:
 
 
 # ---------------------------------------------------------------------------- rows (shared by HTML + text)
+def photo_count(item: dict) -> int:
+    """How many photos a What's New item stands for (a same-day album group has extra.count)."""
+    try:
+        return max(1, int((item.get("extra") or {}).get("count") or 1))
+    except (TypeError, ValueError):
+        return 1
+
+
 def build_rows(group: str, items: list[dict], lang: str, links: Links, page: str, max_per: int) -> tuple[list[dict], int]:
     """Turn items into display rows. Instagram collapses to one row per account and
     Drive photos to one row per album, so a big upload doesn't flood the e-mail."""
@@ -587,9 +678,14 @@ def build_rows(group: str, items: list[dict], lang: str, links: Links, page: str
         rows.append({"label": label, "fg": fg, "bg": bg, "title": tx(it, "title", lang) or it.get("title") or "",
                      "url": links.item(it, lang, page), "meta": item_meta(it, lang)})
     for album, its in photos.items():
-        n = len(its)
+        # What's New already merges one album's photos from one day into a single item
+        # ("5 new photos in …", extra.count = 5): count photos, not items.
+        n = sum(photo_count(it) for it in its)
+        # the album name in this language (a photo group carries i18n.album), else as written in Drive
+        names = [tx_extra(it, "album", lang) for it in its if (it.get("i18n") or {}).get("album")]
+        name = next((v for v in names if v), album)
         rows.append({"label": DRIVE_CATEGORIES["photos"][1 if lang == "es" else 0], "fg": C["vine"], "bg": C["vine_soft"],
-                     "title": t["album"].format(name=album), "url": links.page("/photos/", lang),
+                     "title": t["album"].format(name=name), "url": links.page("/photos/", lang),
                      "meta": t["new_photo"] if n == 1 else t["new_photos"].format(n=n)})
     extra = max(0, len(rows) - max_per)
     return rows[:max_per], extra
@@ -706,12 +802,18 @@ def render_lang_html(lang: str, data: dict, cfg: dict, links: Links, max_per: in
             details.append(f"{t['passcode']}: <strong>{_esc(meeting_cfg['passcode'])}</strong>")
         btn = (f'<a href="{_esc(zoom)}" style="display:inline-block;background:{C["gv"]};color:#ffffff;text-decoration:none;'
                f'font-weight:bold;font-size:14px;padding:10px 18px;border-radius:8px;">{_esc(t["join_zoom"])}</a>') if zoom else ""
+        info = " · ".join(details)
+        note = meeting_note(cfg, m, lang)
+        if note:
+            info = f"{info}<br>{_esc(note)}" if info else _esc(note)
+        info_html = f'<div style="font-size:13px;color:{C["muted"]};margin-bottom:12px;">{info}</div>' if info \
+            else '<div style="height:10px;line-height:10px;">&nbsp;</div>'
         parts.append(f"""<tr><td style="padding:16px 32px 4px;">
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:{C['gv_soft']};border-radius:10px;">
   <tr><td style="padding:16px 18px;">
     <div style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:{C['gv_strong']};font-weight:bold;">{_esc(t['next_meeting'])}</div>
     <div style="font-size:18px;font-weight:bold;margin:4px 0 2px;color:{C['ink']};">{_esc(when)}</div>
-    <div style="font-size:13px;color:{C['muted']};margin-bottom:12px;">{' · '.join(details)}{'<br>' if details else ''}{_esc(t['meeting_note'])}</div>
+    {info_html}
     {btn}
     <a href="{_esc(links.page('/meeting/', lang))}" style="font-size:13px;color:{C['gv']};margin-left:10px;">{_esc(t['details'])} →</a>
   </td></tr></table>
@@ -817,6 +919,9 @@ def render_text(data: dict, cfg: dict, links: Links, max_per: int) -> str:
                 out.append(f"  {t['join_zoom']}: {zoom}")
             if meeting_cfg.get("meeting_id"):
                 out.append(f"  {t['meeting_id']}: {meeting_cfg['meeting_id']}   {t['passcode']}: {meeting_cfg.get('passcode', '')}")
+            note = meeting_note(cfg, m, lang)
+            if note:
+                out.append(f"  {note}")
             out.append("")
         if data["announcements"]:
             out += [t["announcements"].upper(), "-" * len(t["announcements"])]

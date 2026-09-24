@@ -88,7 +88,17 @@ function fmtDate(v, lang = "en", style = "long") {
   // Spanish writes month names in lowercase ("octubre de 2026"). Only the "long" style, which
   // opens with the weekday and is used as a stand-alone line, gets a capital ("Miércoles, 21 …").
   if (lang === "es" && style === "long") s = s.charAt(0).toUpperCase() + s.slice(1);
+  if (lang === "es") s = esMeridiem(s);
   return s;
+}
+
+/** Intl's Spanish "7:00 p.m." → "7:00 p. m.", the one spelling the whole site uses (RAE style).
+    Both spaces are no-break spaces (U+00A0), so a narrow card never wraps "1:03 a." / "m.".
+    The browser twin is GV.esMeridiem in src/assets/js/app.js. */
+export function esMeridiem(s) {
+  return String(s)
+    .replace(/\b([ap])\.\s?m\./g, "$1.\u00a0m.")
+    .replace(/(\d) (?=[ap]\.\u00a0m\.)/g, "$1\u00a0");
 }
 
 /* ------------------------------------------------------------------ */
@@ -178,7 +188,9 @@ export default function (eleventyConfig) {
   for (const f of ["inter-latin-wght-normal", "inter-latin-ext-wght-normal", "inter-latin-wght-italic"]) {
     eleventyConfig.addPassthroughCopy({ [nm(`@fontsource-variable/inter/files/${f}.woff2`)]: `assets/fonts/${f}.woff2` });
   }
-  for (const f of ["fraunces-latin-full-normal", "fraunces-latin-ext-full-normal", "fraunces-latin-full-italic"]) {
+  // Fraunces "opsz" files (wght + opsz axes — all the CSS uses); the "full" files add the
+  // SOFT/WONK axes the site never sets and are ~45–70 KB bigger each.
+  for (const f of ["fraunces-latin-opsz-normal", "fraunces-latin-ext-opsz-normal", "fraunces-latin-opsz-italic"]) {
     eleventyConfig.addPassthroughCopy({ [nm(`@fontsource-variable/fraunces/files/${f}.woff2`)]: `assets/fonts/${f}.woff2` });
   }
 
@@ -206,6 +218,8 @@ export default function (eleventyConfig) {
 
   /* ---------- dates ---------- */
   eleventyConfig.addFilter("fmtDate", fmtDate);
+  // {{ label | meridiem(lang) }}: a time label built elsewhere gets the site's Spanish "p. m." spelling.
+  eleventyConfig.addFilter("meridiem", (s, lang) => (lang === "es" ? esMeridiem(s ?? "") : s));
   eleventyConfig.addFilter("toDate", toDate);
   eleventyConfig.addFilter("isoDate", (v) => { const d = toDate(v); return d ? d.toISOString() : ""; });
   eleventyConfig.addFilter("rfc822", (v) => { const d = toDate(v); return d ? d.toUTCString() : ""; });
@@ -323,7 +337,7 @@ export default function (eleventyConfig) {
     for (const f of fs.readdirSync(extraDir).filter((f) => f.endsWith(".js")).sort()) {
       eleventyConfig.addPlugin(async (cfg) => {
         const mod = await import("./eleventy/filters/" + f);
-        await mod.default(cfg, { translateKey, pickLang, fmtDate, toDate });
+        await mod.default(cfg, { translateKey, pickLang, fmtDate, toDate, esMeridiem });
       });
     }
   }

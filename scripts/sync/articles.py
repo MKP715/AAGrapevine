@@ -16,8 +16,13 @@ How it works (every day, politely — both sites ask for 5 s between requests):
        https://www.aagrapevine.org/archive?page=N      https://www.aalavina.org/archivo?page=N
    The FIRST run walks back until a page's oldest story is older than today − --backfill-days
    (default 120) or --archive-pages (default 20 per publication) is reached; an interrupted backfill
-   resumes where it stopped (envelope `archive_state`). After that a daily run stops at the first
-   page whose stories are all known — normally ONE request per publication. If the site's page links
+   resumes where it stopped (envelope `archive_state`). After that a daily run reads until it is past
+   the newest issue AND the one before it (a row of an older issue appears) and then stops at the first
+   page whose stories were all known before this run — about 4-7 requests per publication. The archive
+   is sorted by publish date and the next issue carries a future date (October stories are dated
+   Oct 1 but go online mid-September), so an Online Exclusive posted after the next issue went online
+   is listed BELOW that issue's whole block; stopping at the first known page would never reach it.
+   If the site's page links
    break (a page offering "Next" lists only stories already read earlier in the same run) the walk stops
    with an error instead of reading the same page 20 times, and a backfill that would have to resume
    deeper than backfill_page_limit() (6 pages per month of --backfill-days) is given up. This fills the 60/90-day
@@ -114,7 +119,7 @@ BYLINE_DETAILS = 60          # max article pages fetched per run only to learn a
 DEPARTMENT_SLUG_RE = re.compile(
     r"^(?:letter-editor|letter-from-the-editor|dear-grapevine|aa-news|discussion-topic|at-wits-end|wits-end|"
     r"carta-de-bienvenida|cartas-del-lector|noticias|tema-de-discusion(?:-para-reuniones)?|humor|"
-    r"acerca-del-alcoholismo)(?:-[a-z]+(?:-[a-z]+)?-20\d\d)?(?:-\d+)?$")
+    r"acerca-del-alcoholismo|alcoholism-(?:at-)?large)(?:-[a-z]+(?:-[a-z]+)?-20\d\d)?(?:-\d+)?$")
 EVERY_ISSUE_RE = re.compile(r"(?i)in every issue|en cada (?:edici[oó]n|n[uú]mero)")
 
 
@@ -463,15 +468,20 @@ def backfill_page_limit(args) -> int:
     return max(2 * int(args.archive_pages), math.ceil(int(args.backfill_days) / 30 * 6))
 
 
+ISSUE_MONTHS = {"gv": 1, "lv": 2}   # Grapevine is monthly, La Viña bimonthly
+
+
 def walk_archive(http, pub: str, recs: dict, url_to_id: dict, touched: set, listed: set, state: dict,
-                 args, t0: float, errors: list) -> dict:
+                 args, t0: float, errors: list, known: set | None = None) -> dict:
     """Read the archive of one publication (see module docstring §2). Mutates recs/url_to_id/touched/
     listed; returns the new archive_state entry for `pub`.
     Safety stops for a site whose pager stops working (it ignores ?page= and always shows the same
     stories with a "Next" link): a page whose stories were ALL listed on earlier pages of this same run
     ends the walk with an error (≈2 requests a day instead of the page cap), and a backfill that would
     have to resume deeper than backfill_page_limit() is given up (marked done, with an error) so it
-    stops costing requests; delete archive_state or raise --backfill-days to try again."""
+    stops costing requests; delete archive_state or raise --backfill-days to try again.
+    `known`: ids known BEFORE this run (before the hub step added today's stories). A daily walk
+    counts "new" against it, so the day a new issue appears its stories do not look already known."""
     st = dict(state or {})
     st.pop("error", None)
     today = datetime.now(timezone.utc).date()
@@ -485,6 +495,8 @@ def walk_archive(http, pub: str, recs: dict, url_to_id: dict, touched: set, list
     gave_up = False             # (backfill) resumed too deep — the pager is most likely broken
     oldest = None
     seen_run: set[str] = set()  # story URLs listed on the pages read in THIS run
+    known_ids = set(recs) if known is None else known
+    newest_key = None           # (daily) newest issue on page 0
     while True:
         if initial and page >= limit:
             gave_up = True
@@ -532,12 +544,13 @@ def walk_archive(http, pub: str, recs: dict, url_to_id: dict, touched: set, list
             log.warning("%s archive: %s — stopped", pub, st["error"])
             break
         seen_run |= page_urls
-        page_new = 0
+        page_new = 0                # records this page created
+        page_unknown = 0            # stories not known before this run (the hub may have added them today)
         for row in rows:
             day = f"{row['issue_key']}-01"
             oldest = min(oldest or day, day)
             iid = url_to_id.get(row["url"]) or f"{pub}:{row['issue_key']}:{row['slug']}"
-            is_new = iid not in recs
+            is_new = iid not in recs          # no record yet → the row fills every field
             if is_new and day < cutoff:
                 continue                # older than the backfill window
             rec = recs.setdefault(iid, {"id": iid, "url": row["url"], "publication": pub})
@@ -547,6 +560,8 @@ def walk_archive(http, pub: str, recs: dict, url_to_id: dict, touched: set, list
             if rec.get("status") == "gone":        # the archive lists it again → it exists
                 rec["status"] = "ok"
                 changed = True
+            if iid not in known_ids:
+                page_unknown += 1
             if is_new:
                 page_new += 1
             elif changed:
@@ -557,9 +572,12 @@ def walk_archive(http, pub: str, recs: dict, url_to_id: dict, touched: set, list
         if min(f"{r['issue_key']}-01" for r in rows) < cutoff or not has_next:
             done = True
             break
-        if not initial and page_new == 0:
-            done = True                 # daily run: everything on this page was already known
-            break
+        if not initial:
+            newest_key = newest_key or max(r["issue_key"] for r in rows)
+            floor = _add_months(newest_key, -ISSUE_MONTHS.get(pub, 1))   # the issue before the newest
+            if page_unknown == 0 and any(r["issue_key"] < floor for r in rows):
+                done = True             # daily run: past the two newest issues and nothing new here
+                break
         page += 1
     st.update({"last_run": now_iso(), "pages_last_run": fetched, "new_last_run": new})
     if oldest:
@@ -811,6 +829,9 @@ def _run(args) -> None:
         if rec.get("issue_label") and tidy_label(rec["issue_label"]) != rec["issue_label"]:
             rec["issue_label"] = tidy_label(rec["issue_label"])     # "june 2026" saved by an earlier run
             touched.add(it["id"])
+        if not rec.get("department") and EVERY_ISSUE_RE.search(str(rec.get("section") or "")):
+            rec["department"] = True                                # section read by an earlier run
+            touched.add(it["id"])
         recs[it["id"]] = rec
     on_hub: set[str] = set()        # listed on a magazine hub or the archive today → certainly not deleted
     url_to_id = {r["url"]: i for i, r in recs.items()}
@@ -875,7 +896,8 @@ def _run(args) -> None:
                 continue
             try:
                 archive_state[pub] = walk_archive(http, pub, recs, url_to_id, touched, on_hub,
-                                                  archive_state.get(pub) or {}, args, t0, errors)
+                                                  archive_state.get(pub) or {}, args, t0, errors,
+                                                  known=set(prev_by_id))
             except Exception as e:    # the archive is extra — never lose the hub results over it
                 log.exception("%s archive failed", pub)
                 archive_state[pub] = {**(archive_state.get(pub) or {}), "error": f"{type(e).__name__}: {e}"[:200]}
@@ -948,6 +970,8 @@ def _run(args) -> None:
                     r[k] = d[k]
             if d.get("teaser") and not r.get("teaser"):
                 r["teaser"] = d["teaser"]
+            if EVERY_ISSUE_RE.search(str(d.get("section") or "")):
+                r["department"] = True           # the page itself says "In Every Issue"
             if not r.get("image") and d.get("image") and _wants_thumb(r, issues):
                 thumb = local_thumb(http, d["image"], short_hash(r["id"], 16))
                 if thumb:

@@ -26,6 +26,33 @@ from scripts.sync.geo import classify_location, normalize_place  # noqa: E402
 
 PROBE = ROOT / ".tmp" / "probe2"        # pages saved from the live sites (optional, not in git)
 
+# The Area 65 county list the place rules are tested against. It is a copy on purpose: the chair may
+# change config/site.yml spotlight.neta65_counties (the file invites adding border counties), and that
+# must not turn these tests — and every Dependabot pull request — red.
+AREA65_TEST_COUNTIES = frozenset(geo.normalize_place(c) for c in (
+    "Hardeman", "Wilbarger", "Wichita", "Clay", "Montague", "Cooke", "Grayson", "Fannin", "Lamar", "Red River",
+    "Bowie", "Foard", "Knox", "Baylor", "Archer", "Young", "Jack", "Wise", "Denton", "Collin", "Hunt", "Rockwall",
+    "Dallas", "Tarrant", "Parker", "Palo Pinto", "Kaufman", "Ellis", "Johnson", "Hood", "Somervell", "Haskell",
+    "Throckmorton", "Fisher", "Jones", "Shackelford", "Stephens", "Nolan", "Taylor", "Callahan", "Eastland",
+    "Erath", "Comanche", "Hamilton", "Bosque", "Hill", "McLennan", "Limestone", "Navarro", "Freestone",
+    "Anderson", "Houston", "Delta", "Hopkins", "Rains", "Franklin", "Titus", "Camp", "Morris", "Cass", "Marion",
+    "Van Zandt", "Wood", "Upshur", "Gregg", "Harrison", "Smith", "Henderson", "Cherokee", "Rusk", "Panola",
+    "Nacogdoches", "Shelby", "San Augustine", "Sabine"))
+def _area65_counties() -> frozenset:
+    return AREA65_TEST_COUNTIES
+
+
+_area65_counties.cache_clear = lambda: None          # geo.reset_caches() calls it
+_county_patch = mock.patch.object(geo, "_neta65_cached", _area65_counties)
+
+
+def setUpModule():
+    _county_patch.start()
+
+
+def tearDownModule():
+    _county_patch.stop()
+
 
 def scope(text, lang=None):
     return classify_location(text, lang)["scope"]
@@ -68,10 +95,12 @@ class Gazetteer(unittest.TestCase):
             self.assertEqual(k, normalize_place(k), "keys are stored normalized")
 
     def test_every_area65_county_is_a_texas_county(self):
+        # checks the chair's real list for typos only — adding or removing a county is fine
         known = set(geo.texas_counties())
         area = geo.neta65_counties()
-        self.assertEqual(len(area), 75)
+        self.assertGreater(len(area), 0)
         self.assertEqual(area - known, set(), "a county in config spotlight.neta65_counties is misspelled")
+        self.assertEqual(AREA65_TEST_COUNTIES - known, set())
 
     def test_builder_parses_census_rows(self):
         from scripts.dev import build_texas_gazetteer as B
@@ -537,7 +566,7 @@ class ArchiveWalk(unittest.TestCase):
                                   time.monotonic(), errors)
         return st, touched, errors
 
-    def test_initial_backfill_stops_at_the_window_then_daily_costs_one_page(self):
+    def test_initial_backfill_stops_at_the_window_then_daily_reads_past_two_issues(self):
         recs: dict = {}
         st, touched, errors = self.walk(recs, {})
         cutoff = (datetime.now(timezone.utc).date() - timedelta(days=120)).isoformat()
@@ -553,10 +582,11 @@ class ArchiveWalk(unittest.TestCase):
         r = next(iter(recs.values()))
         self.assertEqual((r["author"], r["author_location"], r["publication"]), ("Ann", "Tyler, Texas", "gv"))
         self.assertTrue(r["issue_key"] and r["issue_label"] and r["topic"] == "Topic")
-        # next day: nothing new → one request
+        # next day: nothing new → the walk still reads past the two newest issues (next month's and
+        # this month's: 24 stories = pages 0-2, page 2 shows last month) and stops there
         self.calls.clear()
         st2, touched2, _ = self.walk(recs, st)
-        self.assertEqual(len(self.calls), 1)
+        self.assertEqual(len(self.calls), 3)
         self.assertEqual(touched2, set())
         self.assertEqual(st2["new_last_run"], 0)
         self.assertEqual(st2["backfilled"], st["backfilled"])
@@ -570,6 +600,31 @@ class ArchiveWalk(unittest.TestCase):
         self.assertEqual(st2["new_last_run"], 15)
         self.assertEqual(len(self.calls), 3, "page 0 + 1 have new stories, page 2 is all known → stop")
         self.assertEqual({recs[i]["slug"] for i in touched}, {s for _, s in newer})
+
+    def test_exclusive_listed_below_the_next_issue_is_found(self):
+        # Review 2026-09: the archive is sorted by publish date and the next issue is dated the 1st of
+        # next month, so an Online Exclusive posted after that issue went online sits BELOW its whole
+        # block. The hub adds the new issue's stories first (same run) — they must not make page 0
+        # look "already known".
+        recs: dict = {}
+        st, _, _ = self.walk(recs, {})
+        known_before = set(recs)
+        nxt = _months_back(-2)
+        issue = [(nxt, f"new-issue-{i}") for i in range(27)]
+        exclusive = [(_months_back(-1), "late-exclusive")]
+        for k, s in issue:                              # what the hub step added a moment ago
+            mon = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"][int(k[5:]) - 1]
+            iid = f"gv:{k}:{s}"
+            recs[iid] = {"id": iid, "url": f"https://www.aagrapevine.org/magazine/{k[:4]}/{mon}/{s}",
+                         "publication": "gv", "issue_key": k}
+        self.calls.clear()
+        url_to_id = {r["url"]: i for i, r in recs.items()}
+        args = Namespace(backfill_days=120, archive_pages=20, max_seconds=480)
+        st2 = self.AR.walk_archive(self.http(issue + exclusive + self.rows), "gv", recs, url_to_id, set(), set(),
+                                   st, args, time.monotonic(), [], known=known_before)
+        self.assertIn(f"gv:{_months_back(-1)}:late-exclusive", recs)
+        self.assertEqual(st2["new_last_run"], 1, "only the exclusive is a record the archive created")
+        self.assertLessEqual(len(self.calls), 7)
 
     def test_page_cap_resumes_next_run(self):
         recs: dict = {}
@@ -655,9 +710,9 @@ class ArchiveWalk(unittest.TestCase):
         self.assertNotIn("resume_page", st)
         self.assertIn("given up", st["error"])
         self.assertTrue(errors)
-        # from then on a daily run: one page, no error
+        # from then on a daily run: the pages of the two newest issues, no error
         st2, _, errors2 = self.walk(recs, st)
-        self.assertEqual((len(self.calls), errors2), (1, []))
+        self.assertEqual((len(self.calls), errors2), (3, []))
         self.assertNotIn("error", st2)
 
     def test_last_page_repeating_a_pushed_down_story_is_the_end_not_an_error(self):
@@ -860,6 +915,9 @@ class Spotlight(unittest.TestCase):
     def ctx(self, today: str = "2026-09-23", hub=("gv:2026-10", "lv:2026-09")):
         from scripts.sync import build_data as B
         c = B.Ctx(offline=True)
+        # fixed settings: the chair may change spotlight.home_days / list_days in config/site.yml
+        c.cfg = {**c.cfg, "spotlight": {**(c.cfg.get("spotlight") or {}), "home_days": 60, "list_days": [60, 90],
+                                        "default_scope": "neta65"}}
         c.today_local = date.fromisoformat(today)
         c.now = datetime.fromisoformat(today + "T17:00:00+00:00")
         c.now_ts = c.now.timestamp()

@@ -279,8 +279,17 @@ saved (nothing has to be fetched again), but the website is only republished by 
   when it last updated, how many items it has and any problem, plus how far the PDF search has got.
 - **The Actions tab** on GitHub — each run shows a green ✓ or a red ✗. Click a run to see two summary
   tables (every step of the update, and every source). A yellow ⚠ warning means one source had a
-  bad day; the site still published (with that source's previous items).
+  bad day; the site still published (with that source's previous items). Below the tables,
+  **Notes** lists small hiccups of sources that still updated (only worth a look if the same note
+  repeats for a week), and **New podcast feeds found** appears when the Grapevine or La Viña site
+  links a podcast the website does not show yet. Nothing is added by itself: to show it, add a
+  `- key:` / `name:` / `feed:` entry like the two already under `podcasts:` in `config/site.yml`
+  (or send the address to whoever helps with the website).
 - **The badge** at the top of this page is green when the last update succeeded.
+- **"Code check" runs:** when a settings, content or code file is saved, a **Code check** run also
+  appears next to **Update & Deploy**. It builds a test copy of the site and runs the automatic tests;
+  nothing is published. A red ✗ there means that change broke something: undo it from the file's
+  **History** (or send the run to whoever helps with the website). The live site keeps working either way.
 - **E-mail when a run fails:** GitHub → your picture → Settings → Notifications → *Actions* →
   "Only notify for failed workflows". **Good to know:** e-mails about the *daily* run go to the
   person who last switched the workflow on. To make sure they come to **you**: **Actions** →
@@ -389,8 +398,9 @@ without anyone lifting a finger.
    open the finished run → **Artifacts** → download **digest-preview** → open `digest.html`.
 5. To send one right away, run it again with *Preview only* **unticked**.
 
-The day and the number of days covered are set in `config/site.yml` → `digest:`. If nothing is new
-that week, no e-mail is sent. To stop the digest, delete the `SMTP_PASSWORD` secret.
+The day and the number of days covered are set in `config/site.yml` → `digest:`. The meeting box uses
+the same `meeting:` settings as the website, including your `note` (and `note_es`, if you add one). If
+nothing is new that week, no e-mail is sent. To stop the digest, delete the `SMTP_PASSWORD` secret.
 
 ---
 
@@ -489,7 +499,7 @@ the new **Events** page, in Spanish if they had chosen Spanish on the old site.
   ever does: **Actions → Update & Deploy → Enable workflow**.
 - **Dependabot pull requests.** Once a month GitHub may open a pull request titled
   `chore(actions)…` or `chore(deps)…` that updates the building blocks. A few minutes later the
-  **Pull request check** has built the website with the update: **merge only if the pull request
+  **Code check** has built the website with the update and run the tests: **merge only if the pull request
   shows a green ✓**. If it shows a red ✗, leave it open (or close it) — the live site is not
   affected. After merging, glance at the next **Update & Deploy** run; if it is red, open the merged
   pull request and click **Revert**.
@@ -515,7 +525,7 @@ the new **Events** page, in Spanish if they had chosen Spanish on the old site.
 | An announcement did not appear | Not in *announcements*, or its `(until …)` date passed | Move/rename it; it must be a Google Doc, .txt, .md or .docx. |
 | A translation is wrong | Machine translation | Add a fix to `data/translations/overrides.yml` ([section 5](#5-fixing-a-translation)). |
 | Instagram stopped updating | Instagram is refusing robots for a while (or `anonymous: false` without a token) | The last posts stay and it usually recovers. For a permanent fix add the [Instagram token](#b-instagram-token-the-official-way). |
-| The PDF library is small | The PDF search is still in progress (~3,200 pages at 5 seconds each) | Check the Status page; it grows daily. Optionally run once with `crawl_minutes = 300`. |
+| The PDF library looks small | Usually nothing is wrong: the PDF search has checked every page of both sites (about 3,450 pages) and found about 130 PDFs — that is all of them | Open the **Status** page → **PDF crawl coverage**. If it shows (nearly) 100 %, the library is complete and there is nothing to do. Only if it shows a low percentage (for example after the crawl's saved progress was deleted) run **Update & Deploy** once with `crawl_minutes = 300`. |
 | Site shows "404 — There isn't a GitHub Pages site here" | Pages not switched to GitHub Actions | **Settings → Pages → Source: GitHub Actions**, then run **Update & Deploy**. |
 | Run fails at "Read GitHub Pages settings" | Same as above | Same as above. |
 | Run fails at "Commit refreshed data" with *permission denied* / *403* / *protected branch* | A rule on `main` stops the bot from saving its data | If `main` has branch protection or a ruleset, add **GitHub Actions** to its bypass list (**Settings → Rules** or **Settings → Branches**). The workflow already asks for write access itself; *Workflow permissions* does not need changing. |

@@ -22,8 +22,9 @@ once and stored as a ≤480 px WebP in src/assets/cache/pod/; its site path is s
 Weekly "discovery": the podcast pages of aagrapevine.org (and the La Viña home
 page) are checked — politely, through the shared 5-second-delay bot session — for
 podcast feeds that are NOT in the config yet (e.g. a new Spanish show). Nothing is
-added automatically; findings are listed in stats.discovered_feeds (shown on the
-/status/ page) so a person can decide to add them to config/site.yml.
+added automatically; findings are listed in stats.discovered_feeds of data/raw/podcasts.json
+(copied to data/site/status.json) so a person can decide to add them to config/site.yml.
+A feed that has since been added to the config is dropped from that list on the next run.
 
 Run:  python -m scripts.sync.podcasts [--limit N] [--discover | --no-discover] [--dry-run]
 """
@@ -178,7 +179,35 @@ def _player_url(guid: str, audio_url: str | None) -> str | None:
     return None
 
 
-def build_items(show: dict, f: Any, limit: int | None = None) -> list[dict]:
+# Show-level pages of the magazine sites: an episode <link> to one of these is never an episode page.
+_GENERIC_PODCAST_PAGES = {"aagrapevine.org/podcast", "aagrapevine.org/podcasts",
+                          "aalavina.org/podcast", "aalavina.org/podcasts"}
+
+
+def shared_link_info(shows: list[dict], feeds: dict[str, Any]) -> tuple[dict[str, int], set[str]]:
+    """Episode <link> counts over EVERY fetched feed, and every show's own pages.
+
+    A link that many episodes share is a general page, even when it appears only once in the
+    feed of another show (e.g. one Weekly Open episode linking aagrapevine.org/podcast)."""
+    counts: dict[str, int] = {}
+    generic = set(_GENERIC_PODCAST_PAGES)
+    for show in shows:
+        generic.update(_norm_feed(u) for u in (show.get("web"), show.get("feed")) if u)
+    for f in feeds.values():
+        if f is None:
+            continue
+        if f.feed.get("link"):
+            generic.add(_norm_feed(f.feed["link"]))
+        for e in f.entries:
+            if e.get("link"):
+                counts[e["link"]] = counts.get(e["link"], 0) + 1
+    return counts, generic
+
+
+def build_items(show: dict, f: Any, limit: int | None = None, *,
+                link_counts: dict[str, int] | None = None, generic_pages: set[str] | None = None) -> list[dict]:
+    """Episodes of one show. `link_counts` / `generic_pages` (from shared_link_info) let links
+    be judged across all shows; without them only this feed is looked at."""
     key = str(show.get("key") or "gv")
     show_name = show.get("name") or clean_text(f.feed.get("title")) or key
     show_web = show.get("web") or f.feed.get("link") or show.get("feed")
@@ -188,11 +217,13 @@ def build_items(show: dict, f: Any, limit: int | None = None) -> list[dict]:
 
     # A per-episode <link> that is the same for many episodes (or is just the show
     # page) is not an episode page — prefer the host's episode page then.
-    link_counts: dict[str, int] = {}
-    for e in f.entries:
-        if e.get("link"):
-            link_counts[e["link"]] = link_counts.get(e["link"], 0) + 1
-    generic = {_norm_feed(u) for u in (show_web, f.feed.get("link"), show.get("feed")) if u}
+    if link_counts is None:
+        link_counts = {}
+        for e in f.entries:
+            if e.get("link"):
+                link_counts[e["link"]] = link_counts.get(e["link"], 0) + 1
+    generic = set(_GENERIC_PODCAST_PAGES) | set(generic_pages or ())
+    generic |= {_norm_feed(u) for u in (show_web, f.feed.get("link"), show.get("feed")) if u}
 
     items = []
     for e in f.entries[: limit or None]:
@@ -535,15 +566,22 @@ def main(argv: list[str] | None = None) -> None:
     show_info: list[dict] = []
     ok_keys: set[str] = set()
 
+    fetched: dict[str, Any] = {}
     for show in shows:
         key = str(show["key"])
         f, err = fetch_feed(http, show["feed"])
+        fetched[key] = f
         if f is None:
             errors.append(f"{key}: {err}")
             per_show[key] = {"ok": False, "error": err}
             log.warning("[%s] feed failed: %s (%s)", key, err, show["feed"])
+    link_counts, generic_pages = shared_link_info(shows, fetched)
+    for show in shows:
+        key = str(show["key"])
+        f = fetched.get(key)
+        if f is None:
             continue
-        items = build_items(show, f, args.limit or None)
+        items = build_items(show, f, args.limit or None, link_counts=link_counts, generic_pages=generic_pages)
         new_items += items
         ok_keys.add(key)
         latest = max((i["date"] or "" for i in items), default="") or None
@@ -580,6 +618,12 @@ def main(argv: list[str] | None = None) -> None:
         except Exception as e:  # noqa: BLE001
             log.warning("discovery failed: %s", e)
             discovery = {**(prev_discovery or {}), "error": f"{type(e).__name__}: {e}"[:200]}
+
+    # A feed found by an earlier discovery that has since been added to the config is not "new".
+    configured = {_norm_feed(s.get("feed") or "") for s in shows}
+    if discovery.get("feeds"):
+        discovery = {**discovery, "feeds": [d for d in discovery["feeds"]
+                                            if _norm_feed(d.get("feed") or "") not in configured]}
 
     active = [i for i in merged if i.get("status") != "gone"]
     stats: dict[str, Any] = {

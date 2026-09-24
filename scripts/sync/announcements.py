@@ -16,8 +16,9 @@ Each file is Markdown with a small YAML header ("front matter"), e.g.
 Events use `title, start, end, location, url` (+ optional `online_url`, `flyer`, `image`).
 Files whose name starts with "_" or "README" are ignored; other files that do not end in .md
 (any capitalization) are skipped and listed on /status/. The folder is the source of truth:
-deleting a file removes the item, and deleting a header line removes that value. A file with a formatting mistake is skipped and reported
-on the /status/ page instead of breaking the daily update.
+deleting a file removes the item, and deleting a header line removes that value. A file with a
+formatting mistake is reported on the /status/ page instead of breaking the daily update; if it
+was already on the site, its last good version stays there until the mistake is fixed.
 
     python -m scripts.sync.announcements [--dry-run]
 """
@@ -33,14 +34,19 @@ from zoneinfo import ZoneInfo
 import yaml
 
 from .common import (CONTENT_DIR, clean_text, date_from_text, get_logger, load_config, load_raw, make_item,
-                     merge_items, run_module, save_raw, slugify, to_iso, truncate)
+                     merge_items, run_module, save_raw, slugify, sort_items, to_iso, truncate)
 from .translate import detect_language
 
 log = get_logger("announcements")
 
 ANN_DIR = CONTENT_DIR / "announcements"
 EVENTS_DIR = CONTENT_DIR / "events"
-_FM = re.compile(r"\A﻿?---[ \t]*\r?\n(.*?)\r?\n---[ \t]*(?:\r?\n|\Z)(.*)\Z", re.S)
+# The header lines are optional ("---\n---\nbody" is a file with an empty header).
+_FM = re.compile(r"\A\ufeff?---[ \t]*\r?\n(?:(.*?)\r?\n)?---[ \t]*(?:\r?\n|\Z)(.*)\Z", re.S)
+_FM_OPEN = re.compile(r"\A\ufeff?---[ \t]*(?:\r?\n|\Z)")
+_KEY_LINE = re.compile(r"^([A-Za-z_][\w-]*)[ \t]*:(?:[ \t]+(.*?))?[ \t]*$")
+_QUOTE_HINT = ('if a value contains ": " (for example a title like "Reminder: Assembly"), '
+               'put the whole value in quotes: title: "Reminder: Assembly"')
 
 
 # --------------------------------------------------------------------------- parsing helpers
@@ -74,16 +80,50 @@ def read_front_matter(path: Path) -> tuple[dict, str]:
     text = path.read_text(encoding="utf-8-sig").replace("\r\n", "\n")
     m = _FM.match(text)
     if not m:
+        if _FM_OPEN.match(text):
+            raise ValueError("the header has no closing --- line (add a line with just --- below the header)")
         return {}, text.strip()
+    header = m.group(1) or ""
     try:
-        meta = yaml.safe_load(m.group(1)) or {}
+        meta = yaml.safe_load(header) or {}
     except yaml.YAMLError as e:
-        mark = getattr(e, "problem_mark", None)
-        where = f" (line {mark.line + 2})" if mark else ""
-        raise ValueError(f"the header between the --- lines is not valid{where}: {getattr(e, 'problem', e)}")
+        meta = lenient_header(header)
+        if meta is None:
+            mark = getattr(e, "problem_mark", None)
+            where = f" (line {mark.line + 2})" if mark else ""
+            raise ValueError(f"the header between the --- lines is not valid{where}: "
+                             f"{getattr(e, 'problem', e)} — {_QUOTE_HINT}")
+        log.info("%s: header read line by line (a value contains ': ')", path.name)
     if not isinstance(meta, dict):
         raise ValueError("the header between the --- lines must be 'name: value' lines")
     return meta, m.group(2).strip()
+
+
+def lenient_header(header: str) -> dict | None:
+    """Read a header that is not valid YAML only because a value contains ': '
+    ('title: Reminder: Assembly Saturday'). Every line must be 'name: value' (or a comment),
+    otherwise None. A value is read like YAML when that gives a plain value (a date,
+    true/false, a number, a [list]); anything else is kept exactly as written."""
+    meta: dict = {}
+    for line in header.split("\n"):
+        if not line.strip() or line.lstrip().startswith("#"):
+            continue
+        km = _KEY_LINE.match(line)
+        if not km:
+            return None
+        key, raw = km.group(1), (km.group(2) or "")
+        if raw[:1] in ("\"", "'"):
+            if len(raw) < 2 or raw[-1] != raw[0]:
+                return None                          # an opening quote that is never closed
+            meta[key] = raw[1:-1]
+            continue
+        raw = re.sub(r"\s+#.*$", "", raw).strip()   # a trailing '# comment', as in YAML
+        try:
+            val = yaml.safe_load(raw) if raw else None
+        except yaml.YAMLError:
+            val = raw
+        meta[key] = raw if isinstance(val, dict) else val
+    return meta
 
 
 def markdown_to_text(md: str) -> str:
@@ -133,9 +173,12 @@ def as_when(v, tz: ZoneInfo) -> tuple[str | None, bool]:
         return to_iso(dt if dt.tzinfo else dt.replace(tzinfo=tz)), False
     except ValueError:
         pass
-    try:  # "March 14, 2027 9:00 AM"
+    try:  # "March 14, 2027 9:00 AM" — or only a date: "March 14, 2027", "03/14/2027"
         from dateutil import parser as dparser
-        dt = dparser.parse(s)
+        base = datetime.now(tz).replace(hour=0, minute=0, second=0, microsecond=0, tzinfo=None)
+        dt = dparser.parse(s, default=base)
+        if dparser.parse(s, default=base.replace(hour=13)).hour != dt.hour:
+            return dt.date().isoformat(), True   # no time was written → an all-day event
         return to_iso(dt if dt.tzinfo else dt.replace(tzinfo=tz)), False
     except Exception:
         d = as_date(s)
@@ -186,6 +229,8 @@ def parse_announcement(path: Path) -> dict:
     if meta.get("date") and not as_date(meta.get("date")):
         raise ValueError(f"the date '{meta.get('date')}' is not a date (use YYYY-MM-DD)")
     expires = as_date(meta.get("expires"))
+    if meta.get("expires") and not expires:
+        raise ValueError(f"the expires date '{meta.get('expires')}' is not a date (use YYYY-MM-DD)")
     slug = slugify(stem)
     text = markdown_to_text(body)
     summary = clean_text(meta.get("summary")) or text
@@ -230,8 +275,11 @@ def parse_event(path: Path, tz: ZoneInfo) -> dict:
     )
 
 
-def collect(folder: Path, parser, label: str) -> tuple[list[dict], list[str]]:
+def collect(folder: Path, parser, label: str) -> tuple[list[dict], list[str], set[str]]:
+    """(items, problems, files that could not be read). The last are 'content/<folder>/<name>'
+    paths, so finalize() can keep the version that was already on the site."""
     items, errors = [], []
+    failed: set[str] = set()
     seen: set[str] = set()
     for path in content_files(folder):
         try:
@@ -239,7 +287,8 @@ def collect(folder: Path, parser, label: str) -> tuple[list[dict], list[str]]:
         except Exception as e:  # one bad file never blocks the others
             msg = f"{folder.name}/{path.name}: {e}"
             log.warning("skipped %s", msg)
-            errors.append(msg[:240])
+            errors.append(msg[:400])
+            failed.add(f"content/{folder.name}/{path.name}")
             continue
         if it["id"] in seen:
             errors.append(f"{folder.name}/{path.name}: duplicate name")
@@ -251,14 +300,24 @@ def collect(folder: Path, parser, label: str) -> tuple[list[dict], list[str]]:
         log.warning("%s", msg)
         errors.append(msg[:240])
     log.info("%s: %d file(s), %d problem(s)", label, len(items), len(errors))
-    return items, errors
+    return items, errors, failed
 
 
-def finalize(prev: list[dict], new: list[dict]) -> tuple[list[dict], int]:
+def finalize(prev: list[dict], new: list[dict], failed_files: set[str] | frozenset = frozenset()
+             ) -> tuple[list[dict], int]:
     """The folder is the source of truth → drop items whose file was deleted, and take every field
     from today's file (a line removed from the header really disappears — authoritative merge; only
-    first_seen is remembered). Items without a date get the day they first appeared on the site."""
+    first_seen is remembered). Items without a date get the day they first appeared on the site.
+
+    A file that is still there but has a formatting mistake today keeps its last good version
+    (and its first_seen) until it is fixed — a typo never makes a live announcement vanish."""
     merged, added = merge_items(prev, new, drop_missing=True, authoritative=True)
+    have = {i["id"] for i in merged}
+    for p in prev:
+        if p.get("id") and p["id"] not in have and (p.get("extra") or {}).get("file") in failed_files:
+            merged.append(p)
+            have.add(p["id"])
+    merged = sort_items(merged)
     for it in merged:
         if not it.get("date") and it.get("first_seen"):
             it["date"] = it["first_seen"][:10]
@@ -272,8 +331,8 @@ def main(argv: list[str] | None = None) -> None:
     a = ap.parse_args(argv)
     tz = ZoneInfo(load_config().get("site", {}).get("timezone", "America/Chicago"))
 
-    anns, ann_err = collect(ANN_DIR, parse_announcement, "announcements")
-    events, ev_err = collect(EVENTS_DIR, lambda p: parse_event(p, tz), "events")
+    anns, ann_err, ann_failed = collect(ANN_DIR, parse_announcement, "announcements")
+    events, ev_err, ev_failed = collect(EVENTS_DIR, lambda p: parse_event(p, tz), "events")
 
     if a.dry_run:
         print(json.dumps({"announcements": anns, "events": events, "errors": ann_err + ev_err},
@@ -281,12 +340,12 @@ def main(argv: list[str] | None = None) -> None:
         return
 
     today = datetime.now(timezone.utc).date().isoformat()
-    ann_items, ann_new = finalize(load_raw("announcements").get("items", []), anns)
+    ann_items, ann_new = finalize(load_raw("announcements").get("items", []), anns, ann_failed)
     save_raw("announcements", ann_items, ok=True, stats={
         "files": len(anns), "new": ann_new, "problems": len(ann_err), "errors": ann_err,
         "active": sum(1 for i in ann_items if not (i["extra"].get("expires") and i["extra"]["expires"] < today)),
     })
-    ev_items, ev_new = finalize(load_raw("manual_events").get("items", []), events)
+    ev_items, ev_new = finalize(load_raw("manual_events").get("items", []), events, ev_failed)
     save_raw("manual_events", ev_items, ok=True, stats={
         "files": len(events), "new": ev_new, "problems": len(ev_err), "errors": ev_err,
     })

@@ -22,11 +22,14 @@
     <nav class="ml-auto hidden items-center gap-0.5 xl:flex" aria-label="{{ 'nav.primary_aria' | t(L) }}">
       {%- for item in nav.primary %}
         {%- if item.children %}
-        <div class="relative" x-data="{ open: false }" @keydown.escape.window="open = false" @click.outside="open = false">
-          <button type="button" @click="open = !open" :aria-expanded="open" aria-haspopup="true"
-                  class="inline-flex min-h-10 items-center gap-1 rounded-full px-3 text-sm font-semibold opacity-90 transition hover:opacity-100 hover:bg-white/10"
+        {#- navMenu (app.js): Escape puts focus back on the button, tabbing out closes it.
+            The section holding the current page is underlined like an active flat link. -#}
+        {%- set here = pageKey in item.pages %}
+        <div class="relative" x-data="navMenu" @keydown.escape.window="onEscape()" @click.outside="open = false" @focusout="onFocusOut($event)">
+          <button type="button" x-ref="btn" @click="open = !open" :aria-expanded="open" aria-haspopup="true"
+                  class="inline-flex min-h-10 items-center gap-1 rounded-full px-3 text-sm font-semibold transition hover:bg-white/10 {{ 'opacity-100 underline decoration-2 underline-offset-8' if here else 'opacity-90 hover:opacity-100' }}"
                   :class="solid && 'hover:bg-surface-2'">
-            {{ item.key | t(L) }} {% icon "chevron-down", "size-4 transition" %}
+            {{ item.key | t(L) }}{% if here %}<span class="sr-only"> {{ "nav.current_section" | t(L) }}</span>{% endif %} {% icon "chevron-down", "size-4 transition" %}
           </button>
           <div x-show="open" x-cloak x-transition.origin.top
                class="absolute right-0 top-full mt-2 w-80 rounded-2xl border border-line bg-surface p-2 text-ink shadow-[var(--shadow-lift)]">
@@ -58,13 +61,18 @@
         <span x-show="theme === 'dark'" x-cloak>{% icon "sun", "size-5" %}</span>
         <span x-show="theme !== 'dark'">{% icon "moon", "size-5" %}</span>
       </button>
-      <button type="button" @click="drawer = true" class="grid size-10 place-items-center rounded-full transition hover:bg-white/10 xl:hidden" :class="solid && 'hover:bg-surface-2'" aria-label="{{ 'nav.menu' | t(L) }}" :aria-expanded="drawer" aria-controls="mobile-drawer">
+      <button type="button" x-ref="menuBtn" @click="drawer = true" class="grid size-10 place-items-center rounded-full transition hover:bg-white/10 xl:hidden" :class="solid && 'hover:bg-surface-2'" aria-label="{{ 'nav.menu' | t(L) }}" :aria-expanded="drawer" aria-controls="mobile-drawer">
         {% icon "menu", "size-6" %}
       </button>
     </div>
   </div>
 
-  {#- Mobile drawer -#}
+  {#- Mobile drawer (below xl). Teleported to <body>: once the page is scrolled the header gets
+      backdrop-filter, which would make it the containing block of this position:fixed layer and
+      squeeze the drawer into the 64px header. Teleported content keeps this x-data scope.
+      It is a modal dialog: app.js siteHeader moves focus into it, makes the page behind it
+      inert while it is open, and puts focus back on the Menu button when it closes. -#}
+  <template x-teleport="body">
   <div x-show="drawer" x-cloak class="fixed inset-0 z-[60] xl:hidden" role="dialog" aria-modal="true" aria-label="{{ 'nav.menu' | t(L) }}" id="mobile-drawer" @keydown.escape.window="drawer = false">
     <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" @click="drawer = false" x-show="drawer" x-transition.opacity></div>
     <div class="absolute inset-y-0 right-0 flex w-[min(24rem,88vw)] flex-col overflow-y-auto bg-surface text-ink shadow-2xl"
@@ -72,23 +80,23 @@
          style="padding-bottom: env(safe-area-inset-bottom)">
       <div class="flex items-center justify-between border-b border-line px-5 py-4">
         <span class="font-display text-lg font-semibold">{{ "nav.menu" | t(L) }}</span>
-        <button type="button" @click="drawer = false" class="grid size-11 place-items-center rounded-full hover:bg-surface-2" aria-label="{{ 'common.close' | t(L) }}">{% icon "x", "size-6" %}</button>
+        <button type="button" x-ref="drawerClose" @click="drawer = false" class="grid size-11 place-items-center rounded-full hover:bg-surface-2" aria-label="{{ 'common.close' | t(L) }}">{% icon "x", "size-6" %}</button>
       </div>
-      <nav class="flex-1 px-3 py-3" aria-label="{{ 'nav.primary_aria' | t(L) }}">
-        <a href="{{ '/' | lurl(L) }}" class="flex min-h-11 items-center gap-3 rounded-xl px-3 font-semibold no-underline hover:bg-surface-2 {{ 'bg-gv-soft text-gv' if pageKey == 'home' }}">{% icon "house", "size-5" %} {{ "nav.home" | t(L) }}</a>
+      <nav class="flex-1 px-3 py-3" aria-label="{{ 'nav.drawer_aria' | t(L) }}">
+        <a href="{{ '/' | lurl(L) }}" class="flex min-h-11 items-center gap-3 rounded-xl px-3 font-semibold no-underline hover:bg-surface-2 {{ 'bg-gv-soft text-gv' if pageKey == 'home' }}"{% if pageKey == 'home' %} aria-current="page"{% endif %}>{% icon "house", "size-5" %} {{ "nav.home" | t(L) }}</a>
         {%- for item in nav.primary %}
           {%- if item.children %}
           <p class="eyebrow mt-4 mb-1 px-3">{{ item.key | t(L) }}</p>
             {%- for c in item.children %}
-            <a href="{{ c.url | lurl(L) }}" class="flex min-h-11 items-center gap-3 rounded-xl px-3 font-medium no-underline hover:bg-surface-2 {{ 'bg-gv-soft text-gv' if pageKey == c.page }}">{% icon c.icon, "size-5 text-muted" %} {{ c.key | t(L) }}</a>
+            <a href="{{ c.url | lurl(L) }}" class="flex min-h-11 items-center gap-3 rounded-xl px-3 font-medium no-underline hover:bg-surface-2 {{ 'bg-gv-soft text-gv' if pageKey == c.page }}"{% if pageKey == c.page %} aria-current="page"{% endif %}>{% icon c.icon, "size-5 text-muted" %} {{ c.key | t(L) }}</a>
             {%- endfor %}
           {%- else %}
-          <a href="{{ item.url | lurl(L) }}" class="flex min-h-11 items-center gap-3 rounded-xl px-3 font-semibold no-underline hover:bg-surface-2 {{ 'bg-gv-soft text-gv' if pageKey == item.page }}">{% icon item.icon, "size-5 text-muted" %} {{ item.key | t(L) }}</a>
+          <a href="{{ item.url | lurl(L) }}" class="flex min-h-11 items-center gap-3 rounded-xl px-3 font-semibold no-underline hover:bg-surface-2 {{ 'bg-gv-soft text-gv' if pageKey == item.page }}"{% if pageKey == item.page %} aria-current="page"{% endif %}>{% icon item.icon, "size-5 text-muted" %} {{ item.key | t(L) }}</a>
           {%- endif %}
         {%- endfor %}
         <p class="eyebrow mt-4 mb-1 px-3">{{ "nav.more" | t(L) }}</p>
         {%- for f in nav.footer %}
-        <a href="{{ f.url | lurl(L) }}" class="flex min-h-11 items-center rounded-xl px-3 font-medium no-underline hover:bg-surface-2">{{ f.key | t(L) }}</a>
+        <a href="{{ f.url | lurl(L) }}" class="flex min-h-11 items-center rounded-xl px-3 font-medium no-underline hover:bg-surface-2 {{ 'bg-gv-soft text-gv' if pageKey == f.page }}"{% if pageKey == f.page %} aria-current="page"{% endif %}>{{ f.key | t(L) }}</a>
         {%- endfor %}
       </nav>
       <div class="grid gap-2 border-t border-line p-4">
@@ -101,4 +109,5 @@
       </div>
     </div>
   </div>
+  </template>
 </header>

@@ -11,7 +11,7 @@ descKey: read.subs.meta_desc
     resources, customer service, and catalogs pulled automatically from db.pdfs. -#}
 {% import "macros/ui.njk" as ui with context %}
 {%- set L = site.links -%}
-{%- set catalogs = db.pdfs | readCatalogs -%}
+{%- set catalogs = db.pdfs | readCatalogs(lang) -%}
 {%- set ctmPdfs = db.pdfs | readPdfsMatching("\\bctm\\b|carry the message|lleva el mensaje", 3) -%}
 {%- set forms = db.pdfs | readForms -%}
 {%- set weekly = (db.weekly_open.items | readItems)[0] -%}
@@ -53,7 +53,8 @@ descKey: read.subs.meta_desc
   </div>
   <div class="flex flex-1 flex-col gap-1 p-4">
     <h3 class="h-card text-base group-hover:text-gv" lang="{{ info.lang or p.lang }}">{{ info.title }}</h3>
-    {% if info.gloss %}<p class="flex items-center gap-1 text-xs text-muted" title="{{ 'common.auto_translated' | t(lang) }}">{% icon "languages", "size-3 shrink-0" %}<span class="sr-only">{{ "common.auto_translated" | t(lang) }}:</span><span lang="{{ info.glossLang }}">{{ info.gloss }}</span></p>{% endif %}
+    {% if info.gloss %}{%- set glossNote = ("common.auto_translated" if info.machine else "read.title_translation") | t(lang) -%}
+    <p class="flex items-center gap-1 text-xs text-muted" title="{{ glossNote }}">{% if info.machine %}{% icon "languages", "size-3 shrink-0" %}{% endif %}<span class="sr-only">{{ glossNote }}:</span><span lang="{{ info.glossLang }}">{{ info.gloss }}</span></p>{% endif %}
     <p class="flex flex-wrap items-center gap-1.5 text-xs text-muted">{{ docPill(p, lang) }}
       {%- set ex = p.extra or {} -%}
       {%- set meta = [
@@ -76,7 +77,8 @@ descKey: read.subs.meta_desc
     <span class="grid size-9 shrink-0 place-items-center rounded-lg {{ 'bg-lv-soft text-lv' if (p | readPub) == 'lv' else 'bg-gv-soft text-gv' }}">{% icon "file-text", "size-4" %}</span>
     <span class="min-w-0 flex-1">
       <span class="block text-sm font-medium text-ink group-hover:text-gv" lang="{{ info.lang or p.lang }}">{{ info.title }}</span>
-      {% if info.gloss %}<span class="flex min-w-0 items-center gap-1 text-xs text-muted" title="{{ 'common.auto_translated' | t(lang) }}">{% icon "languages", "size-3 shrink-0" %}<span class="sr-only">{{ "common.auto_translated" | t(lang) }}:</span><span class="min-w-0 truncate" lang="{{ info.glossLang }}">{{ info.gloss }}</span></span>{% endif %}
+      {% if info.gloss %}{%- set glossNote = ("common.auto_translated" if info.machine else "read.title_translation") | t(lang) -%}
+      <span class="flex min-w-0 items-center gap-1 text-xs text-muted" title="{{ glossNote }}">{% if info.machine %}{% icon "languages", "size-3 shrink-0" %}{% endif %}<span class="sr-only">{{ glossNote }}:</span><span class="min-w-0 truncate" lang="{{ info.glossLang }}">{{ info.gloss }}</span></span>{% endif %}
     </span>
     {{ docPill(p, lang) }}
     {% icon "arrow-up-right", "size-4 shrink-0 text-faint" %}
@@ -107,6 +109,8 @@ descKey: read.subs.meta_desc
     {%- set isLv = p == "lv" -%}
     <article class="card flex flex-col overflow-hidden" aria-labelledby="mag-{{ p }}">
       {%- set ci = curIssue[p] -%}
+      {#- the issue name inside a sentence: "octubre de 2026" on /es/ (as on the home page) -#}
+      {%- set ciInSentence = (ci.label | readInSentence(lang, p)) if ci else "" -%}
       <header class="read-cover {{ 'read-cover--lv' if isLv else 'read-cover--gv' }} relative isolate overflow-hidden p-6 text-white sm:p-7">
         <svg class="read-cover-art" viewBox="0 0 200 240" fill="none" aria-hidden="true"><g fill="currentColor"><circle cx="82" cy="96" r="17"/><circle cx="116" cy="96" r="17"/><circle cx="150" cy="100" r="15"/><circle cx="66" cy="126" r="17"/><circle cx="100" cy="126" r="17"/><circle cx="134" cy="128" r="17"/><circle cx="82" cy="156" r="17"/><circle cx="116" cy="156" r="17"/><circle cx="100" cy="186" r="17"/></g></svg>
         <div class="flex items-start gap-5">
@@ -116,8 +120,8 @@ descKey: read.subs.meta_desc
             <p class="mt-2 max-w-md text-white/85">{{ ("read.subs.lv_desc" if isLv else "read.subs.gv_desc") | t(lang) }}</p>
           </div>
           {% if ci and ci.cover %}
-          <a class="read-cover-frame mt-1 block w-[5.25rem] shrink-0 rotate-2 sm:w-24" href="{{ '/read/' | lurl(lang) }}#{{ p }}-current" title="{{ 'read.subs.see_issue' | t(lang, {issue: ci.label}) }}">
-            <img src="{{ ci.cover }}" width="480" height="686" alt="{{ 'read.cover_alt' | t(lang, {pub: ('La Viña' if isLv else 'Grapevine'), issue: ci.label}) }}" class="block aspect-[7/10] w-full rounded-[0.3rem] object-cover">
+          <a class="read-cover-frame mt-1 block w-[5.25rem] shrink-0 rotate-2 sm:w-24" href="{{ '/read/' | lurl(lang) }}#{{ p }}-current" title="{{ 'read.subs.see_issue' | t(lang, {issue: ciInSentence}) }}">
+            <img src="{{ ci.cover }}" width="480" height="686" alt="{{ 'read.cover_alt' | t(lang, {pub: ('La Viña' if isLv else 'Grapevine'), issue: ciInSentence}) }}" class="block aspect-[7/10] w-full rounded-[0.3rem] object-cover">
           </a>
           {% endif %}
         </div>
@@ -294,7 +298,7 @@ descKey: read.subs.meta_desc
     </div>
     {% if catalogs.length > 8 %}
     <details class="read-faq group/cat mt-5">
-      <summary class="btn-secondary btn-sm cursor-pointer">{{ "read.subs.older_catalogs" | t(lang, {n: catalogs.length - 8}) }} {% icon "chevron-down", "size-4 transition group-open/cat:rotate-180" %}</summary>
+      <summary class="btn-secondary btn-sm cursor-pointer">{{ ("read.subs.older_catalogs_one" if catalogs.length == 9 else "read.subs.older_catalogs") | t(lang, {n: catalogs.length - 8}) }} {% icon "chevron-down", "size-4 transition group-open/cat:rotate-180" %}</summary>
       <ul class="card mt-3 p-2">{% for p in catalogs | offset(8) %}{{ pdfRow(p, lang) }}{% endfor %}</ul>
     </details>
     {% endif %}
@@ -316,11 +320,15 @@ descKey: read.subs.meta_desc
         <p class="mt-2 leading-relaxed text-muted">{{ "read.subs.help_text" | t(lang) }}</p>
       </div>
       <ul class="grid grid-cols-1 divide-y divide-line border-t border-line sm:grid-cols-3 sm:divide-x sm:divide-y-0 lg:border-l lg:border-t-0">
+        {#- pick(): the page language's number when config/site.yml has one (support_phone_intl_es:
+            the Spanish international desk on /es/), else the plain key. support_phone_es is the
+            Spanish toll-free line and is shown on both pages. -#}
         {% for ph in [["support_phone_us", "help_us"], ["support_phone_es", "help_es"], ["support_phone_intl", "help_intl"]] %}
-        {% if L[ph[0]] %}
+        {%- set num = L | pick(lang, ph[0]) -%}
+        {% if num %}
         <li class="flex flex-col justify-center p-6">
           <p class="text-xs font-semibold uppercase tracking-wider text-muted">{{ ("read.subs." + ph[1]) | t(lang) }}</p>
-          <a class="mt-1 font-display text-xl font-semibold whitespace-nowrap text-ink no-underline hover:text-gv" href="{{ L[ph[0]] | readTel }}">{{ L[ph[0]] }}</a>
+          <a class="mt-1 font-display text-xl font-semibold whitespace-nowrap text-ink no-underline hover:text-gv" href="{{ num | readTel }}">{{ num }}</a>
         </li>
         {% endif %}
         {% endfor %}

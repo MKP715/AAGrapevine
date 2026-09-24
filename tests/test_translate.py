@@ -341,50 +341,140 @@ class QualityRules(unittest.TestCase):
 
 
 class RealGlossary(unittest.TestCase):
-    """The committee's glossary.yml / overrides.yml themselves."""
+    """The committee's glossary.yml / overrides.yml: only their STRUCTURE is checked here. The chair edits
+    the wording on github.com, and a better translation must never turn a test (and with it every
+    Dependabot pull request) red. How terms are applied is tested with the small glossary below."""
+
+    def load(self, name):
+        import yaml
+        with open(ROOT / "data" / "translations" / name, encoding="utf-8") as f:
+            return yaml.safe_load(f)
+
+    def test_glossary_is_well_formed(self):
+        data = self.load("glossary.yml")
+        self.assertIsInstance(data, dict)
+        keep, terms = data.get("keep") or [], data.get("terms") or []
+        self.assertTrue(keep and terms)
+        for k in keep:
+            self.assertTrue(isinstance(k, str) and k.strip(), f"keep: {k!r}")
+        for t in terms:
+            self.assertIsInstance(t, dict, t)
+            for lang in ("en", "es"):
+                self.assertTrue(isinstance(t.get(lang), str) and t[lang].strip(), f"term without {lang}: {t}")
+            self.assertIn(t.get("only"), (None, "en", "es"), t)
+            self.assertIn(t.get("exact", False), (True, False), t)
+            self.assertLessEqual(set(t), {"en", "es", "only", "exact"}, t)
+        self.assertTrue(T.Glossary.load().entries("en", "es"))
+
+    def test_overrides_are_well_formed(self):
+        data = self.load("overrides.yml")
+        self.assertIsInstance(data, dict)
+        seen: dict[str, dict] = {}
+        for k, v in data.items():
+            self.assertTrue(isinstance(k, str) and k.strip(), k)
+            self.assertIsInstance(v, dict, k)
+            self.assertTrue(v and set(v) <= {"en", "es"}, k)
+            for lang, text in v.items():
+                self.assertTrue(isinstance(text, str) and text.strip(), f"{k!r} → {lang}")
+            folded = T.fold(T._norm_key(k)).lower()
+            self.assertEqual(seen.setdefault(folded, v), v, f"two different fixes for {k!r}")
+        self.assertEqual(len(T.Overrides(data).exact), len({T._norm_key(k) for k in data}), "an unusable entry")
+
+
+class GlossaryRules(unittest.TestCase):
+    """How glossary terms and overrides are applied (a small glossary written here)."""
 
     @classmethod
     def setUpClass(cls):
-        cls.g = T.Glossary.load()
-        cls.o = T.Overrides.load()
+        cls.g = T.Glossary({
+            "keep": ["Grapevine", "La Viña", "AA"],
+            "terms": [
+                {"en": "Publisher", "es": "editor", "only": "es"},
+                {"en": "Grapevine Publisher", "es": "editor de Grapevine", "only": "es"},
+                {"en": "American Sign Language (ASL)", "es": "Lengua de señas americana (ASL)"},
+                {"en": "American Sign Language", "es": "Lengua de señas americana (ASL)", "only": "es"},
+                {"en": "Sober Holidays", "es": "fiestas sobrias", "only": "es"},
+                {"en": "Carry the Message Project", "es": "Proyecto Lleva el Mensaje"},
+                {"en": "Carry the Message Project", "es": "Proyecto Lleve el Mensaje", "only": "en"},
+                {"en": "reach out", "es": "tender la mano", "only": "en"},
+                {"en": "by reaching out", "es": "al tender la mano", "only": "en"},
+                {"en": "We're not a glum lot", "es": "No somos un grupo sombrío", "only": "es"},
+            ]})
+        cls.o = T.Overrides({"Tocaron Fondo": {"en": "Hitting Bottom"}, "Coming in": {"es": "Llegando a AA"},
+                             "Cómo rezo": {"en": "How I Pray"}})
 
     def slots(self, text, src="en", tgt="es"):
         return T.Protector(self.g).mask(text, src, tgt).slots
 
-    def test_en_es_terms(self):
-        cases = {
-            "Annual Prison Issue": "edición anual sobre las prisiones", "Sober Holidays!": "fiestas sobrias",
-            "Spiritual Awakenings": "despertares espirituales", "Making Amends": "hacer enmiendas",
-            "Letter from our Publisher": "editor", "New Grapevine Publisher": "editor de Grapevine",
-            "GV Plays: Man In The Bed": "Obras de GV", "Record Your Story Guidelines": "pautas para grabar tu historia",
-            "App Poster (8.5 x 11)": "póster de la app", "Spirituality and God-Talk": "La espiritualidad y el hablar de Dios",
-            "We’re not a glum lot.": "No somos un grupo sombrío", "American Sign Language": "Lengua de señas americana (ASL)",
-            "God Cookies": "galletas de Dios", "Don't Should on Yourself": "No te exijas tanto",
-            "willing to go to any length": "llegar hasta donde sea necesario",
-        }
-        for text, want in cases.items():
-            self.assertIn(want, self.slots(text), text)
-        self.assertNotIn("editor", " ".join(self.slots("the publisher", "es", "en")))  # EN→ES only
+    def test_longest_phrase_direction_and_accents(self):
+        self.assertIn("editor de Grapevine", self.slots("New Grapevine Publisher"))     # longest phrase wins
+        self.assertIn("editor", self.slots("Letter from our Publisher"))
+        self.assertNotIn("editor", " ".join(self.slots("the publisher", "es", "en")))  # `only: es`
+        self.assertIn("fiestas sobrias", self.slots("Sober Holidays!"))                  # any capitalization
+        self.assertIn("No somos un grupo sombrío", self.slots("We’re not a glum lot."))  # ’ matches '
         self.assertEqual(self.slots("American Sign Language (ASL)").count("Lengua de señas americana (ASL)"), 1)
-
-    def test_es_en_terms(self):
-        cases = {
-            "Porque al tender la mano": "by reaching out", "tender la mano": "reach out",
-            "PROYECTO LLEVE EL MENSAJE": "Carry the Message Project", 'Proyecto "Lleva el mensaje"': "Carry the Message Project",
-            "(elige uno)": "choose one", "El vacío detrás de la fiesta": "the emptiness", "Una Comunidad única": "unique Fellowship",
-            "hasta tocar fondo": "until hitting bottom",
-        }
-        for text, want in cases.items():
-            self.assertIn(want, self.slots(text, "es", "en"), text)
+        self.assertIn("Carry the Message Project", self.slots("PROYECTO LLEVE EL MENSAJE", "es", "en"))
+        self.assertIn("by reaching out", self.slots("Porque al tender la mano", "es", "en"))
+        self.assertIn("La Viña", self.slots("Lea La Vina", "es", "en"))                   # accent-insensitive
 
     def test_overrides(self):
-        for text, lang, want in [("Tocaron Fondo", "en", "Hitting Bottom"), ("Coming in", "es", "Llegando a AA"),
-                                 ("Atados por la misma enfermedad", "en", "Bound by the Same Illness"),
-                                 ("Retrofit Completion Return to Office", "es",
-                                  "Finalización de la remodelación: regreso a la oficina"),
-                                 ("Laughing Our way to Jail", "es", "Riéndonos camino a la cárcel"),
-                                 ("Cómo rezo", "en", "How I Pray"), ("Como rezo", "en", "How I Pray")]:
-            self.assertEqual(self.o.get(text, lang), want, text)
+        self.assertEqual(self.o.get("Tocaron Fondo", "en"), "Hitting Bottom")
+        self.assertEqual(self.o.get("Coming in", "es"), "Llegando a AA")
+        self.assertEqual(self.o.get("Como rezo", "en"), "How I Pray")                     # accent-insensitive
+        self.assertIsNone(self.o.get("Coming in", "en"))
+
+    def test_whole_title_override_wins_over_the_dash_split(self):
+        # a short title is cut at " — " before translation; an override for the WHOLE title (with or
+        # without a "[Season …]" tail) must still win, and the tail is still translated on its own
+        with tempfile.TemporaryDirectory() as d:
+            ov = Path(d) / "o.yml"
+            ov.write_text('"Widening the Doorway — The Plain Language Big Book": { es: "Ampliar la puerta" }\n'
+                          '"(English)": { es: "(inglés)" }\n', encoding="utf-8")
+            tr = T.Translator(cache=False, use_model=False, glossary_path=Path(d) / "none.yml", overrides_path=ov)
+            title = "Widening the Doorway — The Plain Language Big Book"
+            for text in (title, title + " [Season 10, Episode 20]"):
+                plan = tr._units(T.fix_season_episode(text, "en"), "es")
+                self.assertEqual("".join(p for _, p in plan), T.fix_season_episode(text, "en"))
+                self.assertIn((True, title), plan)
+            # (no model here: _translate_new is what translate() calls for a text not in the cache)
+            self.assertEqual(tr._translate_new([title + " (English)"], "en", "es"), ["Ampliar la puerta (inglés)"])
+            self.assertEqual(tr._units("New Publisher (English)", "es")[-1], (True, "(English)"))
+            # without an override the title is still cut at the dash
+            self.assertEqual([p for f, p in tr._units("Eloy E. - De la oscuridad", "en") if f], ["De la oscuridad"])
+
+    def test_override_fixes_a_cached_longer_text(self):
+        # An override for a title must also fix the cached translation of a text that contains it
+        # ("Bottle to Throttle [Season 5, Episode 8]"): the cache entry is dropped so it is redone.
+        with tempfile.TemporaryDirectory() as d:
+            c = T.TranslationCache(Path(d) / "c.json")
+            c.put("en", "es", "Bottle to Throttle [Season 5, Episode 8]", "Botella para hervidor [Temporada 5, Episodio 8]")
+            c.put("en", "es", "Something else", "Otra cosa")
+            c.put("es", "en", "Bottle to Throttle", "unchanged direction")
+            self.assertEqual(c.sync_overrides(T.Overrides({"Bottle to Throttle": {"es": "De la botella al volante"}})), 1)
+            self.assertIsNone(c.get("en", "es", "Bottle to Throttle [Season 5, Episode 8]"))
+            self.assertEqual(c.get("en", "es", "Something else"), "Otra cosa")
+            self.assertEqual(c.get("es", "en", "Bottle to Throttle"), "unchanged direction")
+            c.put("en", "es", "Bottle to Throttle [Season 5, Episode 8]", "De la botella al volante [Temporada 5, Episodio 8]")
+            # unchanged overrides next time → nothing is redone
+            self.assertEqual(c.sync_overrides(T.Overrides({"Bottle to Throttle": {"es": "De la botella al volante"}})), 0)
+            self.assertIsNotNone(c.get("en", "es", "Bottle to Throttle [Season 5, Episode 8]"))
+
+
+# A small glossary for the end-to-end tests, so they do not depend on the chair's wording.
+E2E_GLOSSARY = """
+keep: [AA Grapevine, A.A. Grapevine, Grapevine, La Viña, Dear Grapevine, Grapevine Weekly Open AA Meeting,
+       Grapevine Weekly Open, AA Grapevine Podcast, AA, A.A., NETA 65, GVR, RLV, Zoom, YouTube]
+terms:
+  - { en: "Big Book", es: "Libro Grande" }
+  - { en: "home group", es: "grupo base" }
+  - { en: "sponsor", es: "padrino" }
+  - { en: "sponsor", es: "madrina", only: en }
+  - { en: "Twelve Steps", es: "Doce Pasos" }
+  - { en: "DCM", es: "MCD" }
+  - { en: "Season", es: "Temporada", exact: true }
+  - { en: "Episode", es: "Episodio", exact: true }
+  - { en: "Noon Eastern", es: "mediodía (hora del Este)", only: es }
+"""
 
 
 @unittest.skipUnless(MODELS, "translation models not installed")
@@ -392,7 +482,11 @@ class EndToEnd(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.tmp = tempfile.TemporaryDirectory()
-        cls.tr = T.Translator(cache_path=Path(cls.tmp.name) / "c.json", download=False)
+        tmp = Path(cls.tmp.name)
+        (tmp / "glossary.yml").write_text(E2E_GLOSSARY, encoding="utf-8")
+        (tmp / "overrides.yml").write_text("{}\n", encoding="utf-8")
+        cls.tr = T.Translator(cache_path=tmp / "c.json", glossary_path=tmp / "glossary.yml",
+                              overrides_path=tmp / "overrides.yml", download=False)
 
     @classmethod
     def tearDownClass(cls):

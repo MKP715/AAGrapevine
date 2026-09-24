@@ -13,9 +13,32 @@
   GV.url = function (p) { return GV.base.replace(/\/$/, "") + (p.charAt(0) === "/" ? p : "/" + p); };
   GV.t = function (en, es) { return LANG === "es" ? es : en; };
 
+  /* One shared, visually hidden live region: status messages (e.g. "Copied") are read out by
+     screen readers even when a button's own label does not change (WCAG 4.1.3). */
+  var liveEl = null, liveTimer = 0;
+  function liveRegion() {
+    if (liveEl || !document.body) return liveEl;
+    liveEl = document.createElement("div");
+    liveEl.className = "sr-only";
+    liveEl.setAttribute("role", "status");
+    liveEl.setAttribute("aria-live", "polite");
+    liveEl.setAttribute("data-gv-live", "");
+    document.body.appendChild(liveEl);
+    return liveEl;
+  }
+  GV.announce = function (msg) {
+    var el = liveRegion(); if (!el) return;
+    el.textContent = "";                       // clear first so the same message is read again
+    clearTimeout(liveTimer);
+    liveTimer = setTimeout(function () { el.textContent = msg; }, 60);
+  };
+
+  // With a button: it shows "Copied!" for a moment and screen readers hear the same through the
+  // live region. Without one, the caller gives its own feedback (library.js announces itself).
   GV.copy = function (text, btn) {
     var done = function () {
       if (!btn) return;
+      GV.announce(GV.t("Copied to clipboard", "Copiado al portapapeles"));
       var prev = btn.getAttribute("data-label") || btn.innerHTML;
       btn.setAttribute("data-label", prev);
       btn.innerHTML = GV.t("Copied!", "¡Copiado!");
@@ -25,11 +48,13 @@
     if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text).then(done, fallback);
     fallback();
     function fallback() {
+      var back = document.activeElement; // select() moves focus to the helper; give it back after
       var ta = document.createElement("textarea");
       ta.value = text; ta.setAttribute("readonly", ""); ta.style.position = "fixed"; ta.style.opacity = "0";
       document.body.appendChild(ta); ta.select();
-      try { document.execCommand("copy"); done(); } catch (e) {}
+      try { if (document.execCommand("copy") !== false) done(); } catch (e) {}
       document.body.removeChild(ta);
+      if (back && back !== document.body && back.focus) back.focus({ preventScroll: true });
     }
   };
 
@@ -38,8 +63,16 @@
     GV.copy((data.title ? data.title + "\n" : "") + (data.text ? data.text + "\n" : "") + (data.url || location.href), btn);
   };
 
+  /* Intl's Spanish "7:00 p.m." → "7:00 p. m.", the one spelling the whole site uses (the build
+     twin is esMeridiem in eleventy.config.js). Both spaces are no-break spaces, so a narrow card
+     never wraps "1:03 a." / "m.". No-op on English pages. */
+  GV.esMeridiem = function (s) {
+    s = s == null ? "" : String(s);
+    return LANG === "es" ? s.replace(/\b([ap])\.\s?m\./g, "$1.\u00a0m.").replace(/(\d) (?=[ap]\.\u00a0m\.)/g, "$1\u00a0") : s;
+  };
+
   GV.fmtDate = function (d, opts) {
-    try { return new Intl.DateTimeFormat(LOCALE, Object.assign({ timeZone: TZ }, opts || {})).format(new Date(d)); } catch (e) { return ""; }
+    try { return GV.esMeridiem(new Intl.DateTimeFormat(LOCALE, Object.assign({ timeZone: TZ }, opts || {})).format(new Date(d))); } catch (e) { return ""; }
   };
 
   GV.relative = function (d) {
@@ -95,9 +128,12 @@
     document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 800);
   };
 
-  /* Next occurrence of an "nth weekday of month" meeting, in America/Chicago. */
+  /* Next occurrence of an "nth weekday of month" meeting, in America/Chicago.
+     Same rule as the build (src/_data/meeting.js): a month without a 5th <weekday> is skipped,
+     and the search starts one month back so an evening meeting on the last day of a month
+     (already the next month in UTC) is still found while it is in progress. */
   GV.nextMeeting = function (rule) {
-    // rule: {weekday:3, n:3, start:"19:00", end:"20:00", skip:["2026-12-16"]}
+    // rule: {weekday:3, n:3, start:"19:00", end:"20:00", skip:["2026-12-16"]}  (n: 1-5, or -1 = last)
     function chicagoOffset(d) {
       try {
         var p = new Intl.DateTimeFormat("en-US", { timeZone: "America/Chicago", timeZoneName: "shortOffset" }).formatToParts(d);
@@ -110,14 +146,16 @@
       var g = new Date(Date.UTC(y, mo, day, Number(hm[0]), Number(hm[1] || 0)));
       return new Date(g.getTime() - chicagoOffset(g) * 60000);
     }
-    var now = new Date(), skip = rule.skip || [];
-    for (var i = 0; i < 15; i++) {
+    var now = new Date(), skip = rule.skip || [], n = Number(rule.n);
+    for (var i = -1; i < 15; i++) {
       var base = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + i, 1));
       var y = base.getUTCFullYear(), mo = base.getUTCMonth();
       var first = new Date(Date.UTC(y, mo, 1)).getUTCDay();
+      var last = new Date(Date.UTC(y, mo + 1, 0));
       var day;
-      if (rule.n === -1) { var last = new Date(Date.UTC(y, mo + 1, 0)); day = last.getUTCDate() - ((last.getUTCDay() - rule.weekday + 7) % 7); }
-      else day = 1 + ((rule.weekday - first + 7) % 7) + (rule.n - 1) * 7;
+      if (n === -1) day = last.getUTCDate() - ((last.getUTCDay() - rule.weekday + 7) % 7);
+      else day = 1 + ((rule.weekday - first + 7) % 7) + (n - 1) * 7;
+      if (day > last.getUTCDate()) continue; // no 5th <weekday> this month
       var ymd = y + "-" + String(mo + 1).padStart(2, "0") + "-" + String(day).padStart(2, "0");
       if (skip.indexOf(ymd) !== -1) continue;
       var end = at(y, mo, day, rule.end || rule.start);
@@ -142,12 +180,63 @@
           var onScroll = function () { self.solid = self.force || window.scrollY > 24; };
           onScroll();
           window.addEventListener("scroll", onScroll, { passive: true });
-          this.$watch("drawer", function (v) { document.documentElement.style.overflow = v ? "hidden" : ""; });
+          /* The phone/tablet menu is a modal dialog (it is teleported to <body>, see header.njk):
+             while it is open the page can't scroll, everything behind it is inert (no Tab, no
+             screen-reader browsing), and focus starts on its Close button. On close, focus goes
+             back to the Menu button. */
+          var inerted = [];
+          var setInert = function (on) {
+            if (!on) { inerted.forEach(function (el) { el.inert = false; }); inerted = []; return; }
+            var dlg = document.getElementById("mobile-drawer");
+            Array.prototype.forEach.call(document.body.children, function (el) {
+              if (el === dlg || (dlg && el.contains(dlg)) || el.tagName === "SCRIPT" || el.tagName === "TEMPLATE" || el.hasAttribute("data-gv-live") || el.inert) return;
+              el.inert = true; inerted.push(el);
+            });
+          };
+          this.$watch("drawer", function (v) {
+            document.documentElement.style.overflow = v ? "hidden" : "";
+            setInert(v);
+            if (v) {
+              self.$nextTick(function () { var c = self.$refs.drawerClose; if (c) c.focus({ preventScroll: true }); });
+            } else {
+              var b = self.$refs.menuBtn, a = document.activeElement;
+              // Only when focus would otherwise be lost (it was in the drawer, now hidden) and the
+              // Menu button is still shown (below xl).
+              if (b && b.offsetParent !== null && (!a || a === document.body || a.closest("#mobile-drawer"))) b.focus({ preventScroll: true });
+            }
+          });
+          /* The drawer is hidden by CSS from xl (1280px) up. If the window grows past that while
+             it is open (tablet rotation, a widened window), close it so the page isn't left
+             scroll-locked and inert behind a menu nobody can see. */
+          if (window.matchMedia) {
+            var mq = window.matchMedia("(min-width: 80rem)");
+            var onMq = function () { if (mq.matches) self.drawer = false; };
+            if (mq.addEventListener) mq.addEventListener("change", onMq); else if (mq.addListener) mq.addListener(onMq);
+          }
         },
         toggleTheme: function () {
           this.theme = this.theme === "dark" ? "light" : "dark";
           document.documentElement.setAttribute("data-theme", this.theme);
           try { localStorage.setItem("theme", this.theme); } catch (e) {}
+        },
+      };
+    });
+
+    /* Desktop Committee / Service dropdowns (header.njk). Escape closes the menu and, when focus
+       was inside it, puts focus back on its button; tabbing out of it closes it. A focus loss
+       with no new target (a click on a blank spot, or Safari not focusing a clicked link) is
+       left to @click.outside, so a mouse click on a menu link is never swallowed. */
+    Alpine.data("navMenu", function () {
+      return {
+        open: false,
+        onEscape: function () {
+          if (!this.open) return;
+          var inside = this.$root.contains(document.activeElement);
+          this.open = false;
+          if (inside && this.$refs.btn) this.$refs.btn.focus();
+        },
+        onFocusOut: function (e) {
+          if (this.open && e.relatedTarget && !this.$root.contains(e.relatedTarget)) this.open = false;
         },
       };
     });
@@ -186,6 +275,8 @@
 
   /* ---------------- progressive enhancements ---------------- */
   function enhance() {
+    // The status live region exists from page load, so its first message is announced.
+    liveRegion();
     // Show build/update times in the visitor's local time
     document.querySelectorAll("time[data-local-time]").forEach(function (el) {
       var d = el.getAttribute("datetime"); if (!d) return;

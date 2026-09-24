@@ -12,8 +12,7 @@
     "build": "eleventy",
     "start": "eleventy --serve --quiet",
     "clean": "node -e \"require('fs').rmSync('_site',{recursive:true,force:true})\"",
-    "sync": "python -m scripts.sync.run_all",
-    "fixtures": "python -m scripts.dev.make_fixtures"
+    "sync": "python -m scripts.sync.run_all"
   },
   "devDependencies": {
     "@11ty/eleventy": "^3.1.6",

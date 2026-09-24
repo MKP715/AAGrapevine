@@ -114,6 +114,12 @@ terms:
   - { en: "sponsee", es: "ahijada", only: en }
   - { en: "newcomer", es: "recién llegado" }
   - { en: "newcomers", es: "recién llegados" }
+  - { en: "experience, strength and hope", es: "experiencia, fortaleza y esperanza" }
+  - { en: "experience, strength, and hope", es: "experiencia, fortaleza y esperanza", only: es }
+  - { en: "longtimers", es: "veteranos", only: es }             # the model left it in English
+  - { en: "longtimer", es: "veterano", only: es }
+  # ("reuniones AA" → "reuniones de AA", "reunión de negocios" → "reunión de trabajo", "altavoces" →
+  #  "oradores" and "las habitaciones" → "las reuniones" are fixed by built-in rules in translate.py)
   - { en: "self-support", es: "automantenimiento" }
   - { en: "Seventh Tradition", es: "Séptima Tradición" }
   # ("Tradition Ten" / "Tenth Tradition" → "Décima Tradición" is done by a built-in rule)
@@ -260,7 +266,11 @@ terms:
   - { en: "App Poster", es: "póster de la app", only: es }
   - { en: "poster", es: "póster", only: es }
   - { en: "posters", es: "pósteres", only: es }
-  - { en: "Spirituality and God-Talk", es: "La espiritualidad y el hablar de Dios" }   # Grapevine book
+  - { en: "Spirituality and God-Talk", es: "La Espiritualidad y la Mención de Dios" }   # Grapevine book (La Viña's title)
+  - { en: "Traditions Checklist", es: "Lista de Chequeo de las Tradiciones", only: en }   # La Viña's title
+  - { en: "Free on the Inside", es: "Libres por dentro" }                 # Grapevine book on AA in prison
+  - { en: "International Journal of Alcoholics Anonymous", es: "revista internacional de Alcohólicos Anónimos" }
+  - { en: "Price Increase Release", es: "comunicado de aumento de precios", only: es }
   - { en: "God-Talk", es: "el hablar de Dios", only: es }
   - { en: "God Cookies", es: "galletas de Dios", only: es }          # podcast episode
   - { en: "Don't Should on Yourself", es: "No te exijas tanto", only: es }
@@ -282,6 +292,12 @@ terms:
   - { en: "West Central Regional Forum", es: "Foro Regional del Centro Oeste", only: es }
 
   # --- Meetings, podcasts, social media ------------------------------------
+  - { en: "While we provide the podcast at no charge, it is not free to produce",
+      es: "Aunque ofrecemos el podcast sin costo, producirlo sí cuesta", only: es }   # not "libre" (= free as in liberty)
+  - { en: "Hot Topic", es: "Tema candente", only: es }          # "caliente" can read as "horny"
+  - { en: "Twelve-Step calls", es: "visitas de Paso Doce", only: es }
+  - { en: "Twelve-Step call", es: "visita de Paso Doce", only: es }
+  - { en: "Date with higher power", es: "Una cita con el Poder Superior", only: es }   # "fecha" is a calendar date
   - { en: "Season", es: "Temporada", exact: true }
   - { en: "Episode", es: "Episodio", exact: true }
   - { en: "at Noon Eastern", es: "al mediodía (hora del Este)", only: es }   # not "en mediodía"

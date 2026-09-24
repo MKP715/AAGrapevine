@@ -86,7 +86,17 @@
     return monthOnly && LANG === "es" ? s.charAt(0).toUpperCase() + s.slice(1) : s;
   }
   function safeUrl(u) { u = String(u || ""); return /^(https?:\/\/|\/(?!\/))/i.test(u) ? u : ""; }
-  function assetUrl(u) { u = safeUrl(u); return u && u.charAt(0) === "/" && GV.url ? GV.url(u) : u; }
+  /* Site-relative asset path → URL under the site base (/AAGrapevine/ on GitHub Pages).
+     Idempotent: a path that already carries the base (the player's cur.art, or a
+     "Continue listening" entry saved by an older version with the base added two or
+     more times) is stripped back to the bare path first, so the base is added once. */
+  function assetUrl(u) {
+    u = safeUrl(u);
+    if (!u || u.charAt(0) !== "/" || !GV.url) return u;
+    var b = String(GV.base || "/").replace(/\/+$/, "");
+    if (b) while (u.indexOf(b + "/") === 0) u = u.slice(b.length);
+    return GV.url(u);
+  }
   function artFor(ep) {
     if (!ep) return "";
     var s = SHOWS[ep.sh];
@@ -644,6 +654,10 @@
           var verb = s.isPlaying(ep.id) ? T.pause : s.resumeAt(ep) > 0 ? T.resume : T.play;
           return verb + ": " + (ep.t || "");
         },
+        /* show card button: the visible words ("Play the latest" / "Pause") start the
+           accessible name, then the episode title (WCAG 2.5.3 Label in Name) */
+        latestText: function (ep) { return this.isOn(ep) ? T.pause : T.play_latest; },
+        latestLabel: function (ep) { return this.latestText(ep) + (ep && ep.t ? ": " + ep.t : ""); },
         pillText: function (ep) {
           var s = this.$store.audio;
           if (!ep) return "";

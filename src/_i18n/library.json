@@ -1,7 +1,7 @@
 {
   "library.meta_desc": {
-    "en": "Every PDF from AA Grapevine and La Viña plus NETA 65 committee documents — GVR and RLV kits, catalogs, flyers, order forms and reports. Searchable in English and Spanish, updated automatically every day.",
-    "es": "Todos los PDF de La Viña y AA Grapevine, más los documentos del comité de NETA 65: kits para RLV y GVR, catálogos, volantes, formularios de pedido e informes. Búsqueda en español e inglés, actualizada automáticamente cada día."
+    "en": "Every PDF from AA Grapevine and La Viña plus NETA 65 committee documents — GVR and RLV kits, catalogs, flyers and order forms. Searchable, updated daily.",
+    "es": "Todos los PDF de La Viña y AA Grapevine y del comité de NETA 65: kits para RLV y GVR, catálogos, volantes y formularios. Se actualiza cada día."
   },
   "library.eyebrow": {
     "en": "Grapevine · La Viña · NETA 65",
@@ -460,8 +460,8 @@
     "es": "Todos los documentos"
   },
   "search.meta_desc": {
-    "en": "Search everything on the NETA 65 Grapevine / La Viña site — articles, PDFs, podcasts, videos, Instagram posts, committee documents and pages — in English and Spanish.",
-    "es": "Busca todo en el sitio de La Viña / Grapevine de NETA 65 — artículos, PDF, podcasts, videos, publicaciones de Instagram, documentos del comité y páginas — en español e inglés."
+    "en": "Search the NETA 65 Grapevine / La Viña site — articles, PDFs, podcasts, videos, Instagram posts and committee documents — in English and Spanish.",
+    "es": "Busca en el sitio de La Viña / Grapevine de NETA 65: artículos, PDF, podcasts, videos, Instagram y documentos del comité, en español e inglés."
   },
   "search.eyebrow": {
     "en": "Everything on this site",

@@ -18,6 +18,8 @@ pageScripts: ["/assets/js/read.js"]
 {%- set lvCalendar = site.sources.lavina.base + site.sources.lavina.contribute -%}
 {%- set gvAudio = L.gv_audio_project or (L.gv_home + "/audioproject") -%}
 {%- set gvPhoto = L.gv_photo_contest or (L.gv_home + "/photocontest") -%}
+{#- La Viña's own page for recorded stories (a phone call) — not the general "Comparte" form -#}
+{%- set lvRecord = L.lv_record_story or (site.sources.lavina.base + "/graba-tu-historia") -%}
 {%- set writerPdfs = db.pdfs | readWriterKit(4) -%}
 {%- set lvTopicsPdf = (db.pdfs | readPdfsMatching("temas de lv|temas sugeridos", 1))[0] -%}
 {%- set pubOrder = ["lv", "gv"] if lang == "es" else ["gv", "lv"] -%}
@@ -201,37 +203,46 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
     Same card as on /read/ (read.njk); lays itself out by its own width: here it spans the page,
     so from ~900px wide it runs as a row (text · numbers · newest writers). -#}
 {% macro spotCard(sp, lang, variant="read") %}
-{%- set hasArea = sp and sp.area.writers > 0 -%}
-{%- set list = ((sp.area.list if hasArea else sp.texas.list) if sp else []) -%}
-<article class="read-spot card card-link group @container relative flex h-full flex-col overflow-hidden" aria-labelledby="spot-title">
+{#- The page is built once a day: read.js (recountSpot) recounts the "last N days" window with
+    the visitor's own date — the same rule as the home page and /published/ — using the dates
+    below (data-dates: one per writer counted; data-date: a writer's newest story), and swaps
+    the text / numbers / list that no longer apply. Writers can only leave the window. -#}
+{%- set hasTexas = sp and sp.texas.writers > 0 -%}
+{%- set hasArea = hasTexas and sp.area.writers > 0 -%}
+<article class="read-spot card card-link group @container relative flex h-full flex-col overflow-hidden" aria-labelledby="spot-title"{% if hasTexas %} data-spot-days="{{ sp.days }}"{% endif %}>
   <div class="grid flex-1 content-start gap-5 p-6 sm:p-7 @4xl:grid-cols-[minmax(0,1.2fr)_auto] @4xl:items-center @4xl:gap-x-10 @6xl:grid-cols-[minmax(0,1.2fr)_auto_minmax(0,1fr)]">
     <div class="min-w-0">
       <p class="eyebrow flex items-center gap-2.5 text-vine"><span class="grid size-9 shrink-0 place-items-center rounded-xl bg-vine-soft">{% icon "award", "size-5" %}</span>{{ "read.spot.eyebrow" | t(lang) }}</p>
       <h2 id="spot-title" class="mt-3 font-display text-2xl font-semibold leading-tight text-ink"><a href="{{ '/published/' | lurl(lang) }}" class="no-underline after:absolute after:inset-0 after:content-[''] group-hover:text-gv">{{ "read.spot.title" | t(lang) }}</a></h2>
       <p class="mt-2 text-sm leading-relaxed text-muted">
-        {%- if not sp or not sp.texas.writers %}{{ "read.spot.nodata" | t(lang) }}
-        {%- elif not hasArea %}{{ "read.spot.none_area" | t(lang, {days: sp.days}) }}
-        {%- elif variant == "contrib" %}{{ "read.spot.text_contrib" | t(lang) }}
-        {%- else %}{{ "read.spot.text" | t(lang, {days: sp.days}) }}{% endif -%}
+        {%- if not hasTexas %}{{ "read.spot.nodata" | t(lang) }}
+        {%- else -%}
+        <span data-spot-text="main"{% if not hasArea %} hidden{% endif %}>{{ ("read.spot.text_contrib" if variant == "contrib" else "read.spot.text") | t(lang, {days: sp.days}) }}</span>
+        <span data-spot-text="none_area"{% if hasArea %} hidden{% endif %}>{{ "read.spot.none_area" | t(lang, {days: sp.days}) }}</span>
+        <span data-spot-text="nodata" hidden>{{ "read.spot.nodata" | t(lang) }}</span>
+        {%- endif -%}
       </p>
     </div>
-    {% if sp and sp.texas.writers %}
-    <div>
+    {% if hasTexas %}
+    <div data-spot-nums>
       <p class="text-xs font-semibold uppercase tracking-wider text-muted">{{ "read.spot.window" | t(lang, {days: sp.days}) }}</p>
       <dl class="mt-2 flex flex-wrap gap-x-8 gap-y-3">
-        {% if hasArea %}<div class="flex flex-col-reverse gap-1"><dt class="text-sm text-muted">{{ ("read.spot.area_one" if sp.area.writers == 1 else "read.spot.area") | t(lang) }}</dt><dd class="read-num font-display text-4xl font-semibold leading-none text-vine">{{ sp.area.writers }}</dd></div>{% endif %}
-        <div class="flex flex-col-reverse gap-1"><dt class="text-sm text-muted">{{ ("read.spot.texas_one" if sp.texas.writers == 1 else "read.spot.texas") | t(lang) }}</dt><dd class="read-num font-display text-4xl font-semibold leading-none text-ink">{{ sp.texas.writers }}</dd></div>
+        <div class="flex flex-col-reverse gap-1"{% if not hasArea %} hidden{% endif %}><dt class="text-sm text-muted" data-one="{{ 'read.spot.area_one' | t(lang) }}" data-many="{{ 'read.spot.area' | t(lang) }}">{{ ("read.spot.area_one" if sp.area.writers == 1 else "read.spot.area") | t(lang) }}</dt><dd class="read-num font-display text-4xl font-semibold leading-none text-vine" data-spot-n="area" data-dates="{{ sp.area.dates | join(' ') }}">{{ sp.area.writers }}</dd></div>
+        <div class="flex flex-col-reverse gap-1"><dt class="text-sm text-muted" data-one="{{ 'read.spot.texas_one' | t(lang) }}" data-many="{{ 'read.spot.texas' | t(lang) }}">{{ ("read.spot.texas_one" if sp.texas.writers == 1 else "read.spot.texas") | t(lang) }}</dt><dd class="read-num font-display text-4xl font-semibold leading-none text-ink" data-spot-n="texas" data-dates="{{ sp.texas.dates | join(' ') }}">{{ sp.texas.writers }}</dd></div>
       </dl>
     </div>
     {% endif %}
     <div class="flex min-w-0 flex-col gap-4 @4xl:col-span-2 @6xl:col-span-1">
-      {% if list.length %}
-      <div>
-        <p class="text-xs font-semibold text-muted">{{ ("read.spot.newest_area" if hasArea else "read.spot.newest_texas") | t(lang) }}</p>
+      {% if hasTexas %}
+      {#- Newest writers from our Area; the Texas list stands in when no Area 65 writer is in the window -#}
+      {% for scope in ["area", "texas"] %}{% if sp[scope].list.length %}
+      <div data-spot-list="{{ scope }}"{% if (scope == "area") != hasArea %} hidden{% endif %}>
+        <p class="text-xs font-semibold text-muted">{{ ("read.spot.newest_area" if scope == "area" else "read.spot.newest_texas") | t(lang) }}</p>
         <ul class="mt-1.5 flex flex-wrap gap-1.5">
-          {% for w in list %}<li class="inline-flex max-w-full items-center gap-1.5 rounded-full border border-line bg-surface px-2.5 py-1 text-xs"><span class="size-2 shrink-0 rounded-full {{ 'bg-lv' if w.pub == 'lv' else 'bg-gv' }}" aria-hidden="true"></span><span class="font-semibold text-ink">{{ w.name }}</span>{% if w.place[lang] %}<span class="min-w-0 truncate text-muted">· {{ w.place[lang] }}</span>{% endif %}<span class="sr-only"> ({{ "La Viña" if w.pub == "lv" else "Grapevine" }})</span></li>{% endfor %}
+          {% for w in sp[scope].list %}<li class="inline-flex max-w-full items-center gap-1.5 rounded-full border border-line bg-surface px-2.5 py-1 text-xs" data-date="{{ w.date }}"><span class="size-2 shrink-0 rounded-full {{ 'bg-lv' if w.pub == 'lv' else 'bg-gv' }}" aria-hidden="true"></span><span class="font-semibold text-ink">{{ w.name }}</span>{% if w.place[lang] %}<span class="min-w-0 truncate text-muted">· {{ w.place[lang] }}</span>{% endif %}<span class="sr-only"> ({{ "La Viña" if w.pub == "lv" else "Grapevine" }})</span></li>{% endfor %}
         </ul>
       </div>
+      {% endif %}{% endfor %}
       {% endif %}
       <span class="mt-auto inline-flex items-center gap-1 text-sm font-semibold text-gv" aria-hidden="true">{{ "read.spot.cta" | t(lang) }} {% icon "arrow-right", "size-4 transition group-hover:translate-x-0.5" %}</span>
     </div>
@@ -308,7 +319,7 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
       <div class="flex items-start gap-4">
         <span class="grid size-11 shrink-0 place-items-center rounded-xl bg-gv-soft text-gv">{% icon "mic", "size-5" %}</span>
         <div><h3 class="h-card">{{ "read.contrib.k_audio_t" | t(lang) }}</h3><p class="mt-1 text-sm leading-relaxed text-muted">{{ "read.contrib.k_audio" | t(lang) }}</p>
-          <p class="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm"><a class="link" href="{{ gvAudio }}" target="_blank" rel="noopener">{{ "read.contrib.audio_project" | t(lang) }}</a><a class="link" href="{{ L.lv_share_story }}" target="_blank" rel="noopener" lang="es">Graba tu historia</a></p></div>
+          <p class="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm"><a class="link" href="{{ gvAudio }}" target="_blank" rel="noopener">{{ "read.contrib.audio_project" | t(lang) }}</a><a class="link" href="{{ lvRecord }}" target="_blank" rel="noopener" lang="es">Graba tu historia</a></p></div>
       </div>
     </div>
   </div>
@@ -406,7 +417,7 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
             <span class="grid size-8 shrink-0 place-items-center rounded-lg bg-white/15">{% icon "file-text", "size-4" %}</span>
             <span class="min-w-0 flex-1">
               <span class="block text-sm font-medium" lang="{{ info.lang }}">{{ info.title }}</span>
-              {% if info.gloss %}<span class="block text-xs text-white/70" lang="{{ info.glossLang }}">{{ info.gloss }}</span>{% endif %}
+              {% if info.gloss %}<span class="block text-xs text-white/70"><span class="sr-only">{{ ("common.auto_translated" if info.machine else "read.title_translation") | t(lang) }}:</span><span lang="{{ info.glossLang }}">{{ info.gloss }}</span></span>{% endif %}
             </span>
             <span class="rounded-md bg-white/15 px-1.5 py-0.5 text-[0.65rem] font-bold uppercase text-white/85"{% if dl %} title="{{ ('lang.' + dl) | t(lang) }}"{% endif %}>{{ dl or "PDF" }}</span>
             <span class="sr-only">(PDF, {{ "common.external" | t(lang) }})</span>

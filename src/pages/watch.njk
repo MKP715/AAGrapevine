@@ -169,9 +169,11 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
     </div>
 
     {#- Two helpful paths: the live Weekly Open meeting and the podcast.
-        The call to action sits at the right of the card (640px+); in the narrow ≥1440px
-        column it moves under the text. Only one of the two copies is displayed at a time,
-        so the link's accessible name always contains the visible words. -#}
+        The call to action sits at the right of the card while the cards are full width
+        (640–767px); once they share a row (768px+, and the narrow ≥1440px column) it
+        moves under the text, so the text keeps a readable width. Only one of the two
+        copies is displayed at a time, so the link's accessible name always contains
+        the visible words. -#}
     <div class="watch-paths">
       <a class="card group flex items-center gap-4 p-4 no-underline transition hover:-translate-y-0.5 hover:shadow-[var(--shadow-lift)] sm:p-5 min-[90rem]:p-6" href="{{ '/meeting/#weekly-open' | lurl(lang) }}">
         <span class="grid size-12 shrink-0 place-items-center rounded-2xl bg-grape-soft text-grape">{% icon "users", "size-6" %}</span>
@@ -179,18 +181,18 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
           <span class="block font-display text-lg font-semibold text-ink">{{ "media.weekly_title" | t(lang) }}</span>
           <span class="block text-sm text-muted">{{ "media.weekly_text" | t(lang) }}</span>
           {% if woWhen %}<span class="mt-1 block text-xs font-semibold text-grape">{{ "media.wo_live" | t(lang, { when: woWhen }) }}</span>{% endif %}
-          <span class="mt-2.5 hidden items-center gap-1 text-sm font-semibold text-gv min-[90rem]:inline-flex">{{ "media.wo_join" | t(lang) }} {% icon "arrow-right", "size-4" %}</span>
+          <span class="mt-2.5 hidden items-center gap-1 text-sm font-semibold text-gv md:inline-flex">{{ "media.wo_join" | t(lang) }} {% icon "arrow-right", "size-4" %}</span>
         </span>
-        <span class="hidden shrink-0 items-center gap-1 text-sm font-semibold text-gv sm:inline-flex min-[90rem]:hidden">{{ "media.wo_join" | t(lang) }} {% icon "arrow-right", "size-4" %}</span>
+        <span class="hidden shrink-0 items-center gap-1 text-sm font-semibold text-gv sm:inline-flex md:hidden">{{ "media.wo_join" | t(lang) }} {% icon "arrow-right", "size-4" %}</span>
       </a>
       <a class="card group flex items-center gap-4 p-4 no-underline transition hover:-translate-y-0.5 hover:shadow-[var(--shadow-lift)] sm:p-5 min-[90rem]:p-6" href="{{ '/listen/' | lurl(lang) }}">
         <span class="grid size-12 shrink-0 place-items-center rounded-2xl bg-lv-soft text-lv">{% icon "headphones", "size-6" %}</span>
         <span class="min-w-0 flex-1">
           <span class="block font-display text-lg font-semibold text-ink">{{ "media.podcast_title" | t(lang) }}</span>
           <span class="block text-sm text-muted">{{ "media.podcast_text" | t(lang) }}</span>
-          <span class="mt-2.5 hidden items-center gap-1 text-sm font-semibold text-gv min-[90rem]:inline-flex">{{ "media.podcast_cta" | t(lang) }} {% icon "arrow-right", "size-4" %}</span>
+          <span class="mt-2.5 hidden items-center gap-1 text-sm font-semibold text-gv md:inline-flex">{{ "media.podcast_cta" | t(lang) }} {% icon "arrow-right", "size-4" %}</span>
         </span>
-        <span class="hidden shrink-0 items-center gap-1 text-sm font-semibold text-gv sm:inline-flex min-[90rem]:hidden">{{ "media.podcast_cta" | t(lang) }} {% icon "arrow-right", "size-4" %}</span>
+        <span class="hidden shrink-0 items-center gap-1 text-sm font-semibold text-gv sm:inline-flex md:hidden">{{ "media.podcast_cta" | t(lang) }} {% icon "arrow-right", "size-4" %}</span>
       </a>
     </div>
   </section>

@@ -11,6 +11,10 @@ descKey: read.about.meta_desc
     anonymity, contact, open-source credits. -#}
 {% import "macros/ui.njk" as ui with context %}
 {%- set st = db.status -%}
+{#- The committee's Drive as the last sync saw it: link straight to the CURRENT Panel folder
+    (the only one the site reads), never the shared root, which also holds older, unpublished
+    folders and files the sync deliberately skips. -#}
+{%- set di = st | cmDriveInfo(site) -%}
 {%- set districts = db.districts.items | readItems -%}
 {%- set esDistricts = districts | where("language", "es") -%}
 {%- set counts = [
@@ -236,7 +240,7 @@ descKey: read.about.meta_desc
     <div class="rounded-[var(--radius-card)] border border-line bg-surface p-5">
       <p class="flex items-center gap-2 font-semibold text-ink">{% icon "folder-up", "size-5 text-vine" %} {{ "read.about.drive_title" | t(lang) }}</p>
       <p class="mt-1.5 text-sm leading-relaxed text-muted">{{ "read.about.drive_text" | t(lang) }}</p>
-      {% if site.driveRootUrl %}<a class="link mt-2 inline-block text-sm" href="{{ site.driveRootUrl }}" target="_blank" rel="noopener">{{ "read.about.drive_link" | t(lang) }}</a>{% endif %}
+      {% if di.panel and di.panel.url %}<a class="link mt-2 inline-block text-sm" href="{{ di.panel.url }}" target="_blank" rel="noopener">{{ "read.about.drive_link" | t(lang, {panel: di.panel.label}) }}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a>{% endif %}
     </div>
     <div class="rounded-[var(--radius-card)] border border-line bg-surface p-5">
       <p class="flex items-center gap-2 font-semibold text-ink">{% icon "shield-check", "size-5 text-gv" %} {{ "read.about.polite_title" | t(lang) }}</p>

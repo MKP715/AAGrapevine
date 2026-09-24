@@ -2,7 +2,7 @@
 # at most one grouped pull request per month for each kind of update.
 #
 # What to do with these pull requests (see README → "Housekeeping"):
-#   The "Pull request check" workflow (.github/workflows/check.yml) builds
+#   The "Code check" workflow (.github/workflows/check.yml) builds
 #   the website with the update and runs the tests. Merge only when the
 #   pull request shows a green ✓; a red ✗ means leave it (the live site is
 #   not affected).

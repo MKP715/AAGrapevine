@@ -56,7 +56,8 @@ scripts and the templates see [DATA_SCHEMA.md](DATA_SCHEMA.md); for first-time s
 
    weekly-digest.yml  (daily 14:05 UTC, sends on config digest.weekday) → scripts/notify/send_digest.py → SMTP
    link-check.yml     (Sundays) → build → lychee on _site + polite check of config links → one GitHub issue
-   check.yml          (every pull request) → npm ci → eleventy build + checks; offline Python tests
+   check.yml          (every pull request + every code/settings push to main) → strict eleventy build + checks;
+                      offline Python tests; digest dry-run
 ```
 
 The repository *is* the database: every run's results are committed, so the git history is also
@@ -73,7 +74,7 @@ the backup, and any past day can be inspected or restored.
 | `data/state/*.json` | Resumable state (e.g. `crawl-state.json`) | sync modules |
 | `data/translations/cache.json` | Translation memory (one entry per line) | `translate.py` |
 | `data/site/*.json` | What templates read | `build_data.py` only |
-| `src/assets/cache/{pdf,ig,articles}/` | Small WebP thumbnails (≤ 480 px) | sync modules |
+| `src/assets/cache/{pdf,ig,articles,pod}/` | Small WebP thumbnails (≤ 480 px): PDF covers, Instagram posts, story images, podcast covers | sync modules |
 | `src/` | Eleventy templates, CSS, JS, images | people |
 | `scripts/sync/` | The sync pipeline | — |
 | `scripts/notify/send_digest.py` | Weekly e-mail | — |
@@ -95,11 +96,11 @@ the backup, and any past day can be inspected or restored.
 | Sync env | Secrets `GOOGLE_API_KEY`, `IG_ACCESS_TOKEN`, `IG_BUSINESS_ID` (empty when unset = harmless); `GV_MT_THREADS=4` (runner vCPUs); `GV_TRANSLATE_MINUTES` (see Timeouts); `GV_MODELS_DIR=$GITHUB_WORKSPACE/.cache/models`; `PYTHONIOENCODING=utf-8`. |
 | Timeouts | Job 360 min (GitHub's maximum). The *Decide what to sync* step computes: translation budget `T = clamp(345 − crawl − 35, 10, 40)` min and sync-step timeout `min(crawl + 30 + T + 20, 345)` — e.g. 130 min for a 40-min crawl, 345 for 300 (then T = 10). Setup takes ~5 min, so the step limit leaves ~10 min for the data commit even when the sync overruns (a step timeout is a failure, not a cancellation, so the commit and deploy still run). Build job: 30 min. |
 | Model cache | `actions/cache/restore` + `actions/cache/save`, path `.cache/models` (= `GV_MODELS_DIR`), key `translation-models-v1-<OS>-urls-<sha256 of MODEL_URLS in translate.py>` — computed from the source with `ast`, so only a change of the model URLs forces a new ~175 MB download; any other edit of `translate.py` keeps the cache. Saved only after a fresh download and only when both `<pair>/model/model.bin` (> 1 MB) and `<pair>/sentencepiece.model` exist (same test as `model_ready()`), so a failed download is never cached. If fewer than 2 models are present after a successful sync step, the check step raises a `::warning` "Translation models missing" (the only download source is argos-net.com; translation then keeps new titles in their original language). Daily restores keep it from being evicted (7-day rule). Also: pip cache (setup-python), npm cache (setup-node). |
-| Commit | `git add -A -- data/raw data/site data/state data/translations/cache.json src/assets/cache` (added, changed **and deleted** files; human-edited files such as `overrides.yml`, `glossary.yml`, `content/`, `config/` are never committed by the bot; `*.tmp` leftovers are git-ignored). Commit only if something changed; message `chore(data): daily content sync YYYY-MM-DD [skip ci]` (Central date). Push with up to 5 retries, `git pull --rebase --autostash -X theirs` between attempts (the bot's fresh generated files win a conflict; human edits to other files are kept). Runs even if the sync step failed, timed out **or the run was cancelled** (`always()`; GitHub gives `always()` steps about 5 minutes after a cancel, and the crawler saves its state on SIGTERM), so a cancelled 300-minute crawl keeps its progress. Deploy still skips cancelled runs. Simulated locally (shallow clone, concurrent human push, conflict in a generated file). |
-| Summary | `run_all` writes a per-module table; a second step (`always()`) writes a per-source table from `data/site/status.json` (skipped while it is fixture data), turns each failing source into a yellow `::warning` (with the days since its last success), warns "Translation is not working" when texts are pending but none were translated, and passes the sources that are `ok: false` with no success for **7+ days** (or never) to the `report` job as the job output `health` (one line of JSON). |
+| Commit | `git add -A -- data/raw data/site data/state data/translations/cache.json src/assets/cache` (added, changed **and deleted** files; human-edited files such as `overrides.yml`, `glossary.yml`, `content/`, `config/` are never committed by the bot; `*.tmp` / `*.part` leftovers of a stopped run are git-ignored). Commit only if something changed; message `chore(data): daily content sync YYYY-MM-DD [skip ci]` (Central date). Push with up to 5 retries, `git pull --rebase --autostash -X theirs` between attempts (the bot's fresh generated files win a conflict; human edits to other files are kept). Runs even if the sync step failed, timed out **or the run was cancelled** (`always()`; GitHub gives `always()` steps about 5 minutes after a cancel, and the crawler saves its state on SIGTERM), so a cancelled 300-minute crawl keeps its progress. Deploy still skips cancelled runs. Simulated locally (shallow clone, concurrent human push, conflict in a generated file). **Token scope:** the sync job checks out with `persist-credentials: false`, so the write-access `GITHUB_TOKEN` is *not* in `.git/config` while `pip install` (floating versions) and the sync modules run; this step alone sets `http.https://github.com/.extraheader` from `GH_TOKEN` (covers `push` and `pull --rebase`) and unsets it on exit (`trap … EXIT`). |
+| Summary | `run_all` writes a per-module table; a second step (`always()`) writes a per-source table from `data/site/status.json` (skipped while it is fixture data), turns each failing source into a yellow `::warning` (with the days since its last success), warns "Translation is not working" when texts are pending but none were translated, lists **Notes** (up to 2 `stats.warnings` per source that still updated, e.g. one YouTube feed answering 404) and **New podcast feeds found** (`stats.discovered_feeds` of the podcasts source, plus a `::notice`), and passes the sources that are `ok: false` with no success for **7+ days** (or never) to the `report` job as the job output `health` (one line of JSON). |
 | Report | Job `report` (needs `sync`, `!cancelled()`, only on `main`, `permissions: issues: write`, no checkout): keeps **one** issue *"A content source has stopped updating"* — opened when the first source crosses 7 days (GitHub e-mails the repository's watchers), body silently edited after every run, a comment only when a *new* source joins (hidden marker `<!-- failing-sources: … -->`), closed automatically when all recover. Error texts are put in code spans so `@handles` in them never notify GitHub users. `continue-on-error`: never fails the run (e.g. Issues disabled). |
-| Deploy | Needs `sync`; runs when sync succeeded, **failed or timed out** (`!cancelled()`: not when a person cancels the run) and only on `main`, so the site always redeploys the last good committed data. Checks out `main` fresh (to include the data commit) → `npm ci` → `actions/configure-pages` → `PATH_PREFIX` = `base_path` with exactly one leading and trailing slash (`/AAGrapevine/` for a project site, `/` for a custom domain or a `user.github.io` repo) and `SITE_URL` = `base_url` without trailing slash → `npx @11ty/eleventy` (Tailwind runs inside the build). A sanity step fails the deploy if `index.html`, `es/index.html` or the CSS is missing, and warns above 900 MB. |
-| Permissions | Workflow default `contents: read`; `sync` gets `contents: write`; `build-deploy` gets `pages: write` + `id-token: write`; `report` gets `issues: write`. These job-level `permissions` work with the repository's default read-only *Workflow permissions* setting — it does not need to be changed. |
+| Deploy | Needs `sync`; runs when sync succeeded, **failed or timed out** (`!cancelled()`: not when a person cancels the run) and only on `main`, so the site always redeploys the last good committed data. Checks out `main` fresh (to include the data commit) → `npm ci` → `actions/configure-pages` → `PATH_PREFIX` = `base_path` with exactly one leading and trailing slash (`/AAGrapevine/` for a project site, `/` for a custom domain or a `user.github.io` repo) and `SITE_URL` = `base_url` without trailing slash → `I18N_STRICT=1 npx @11ty/eleventy` (Tailwind runs inside the build; a UI string missing from `src/_i18n/` fails the build, so Pages keeps the previous site instead of showing a raw key such as `home.spotlight.title`). A sanity step fails the deploy if `index.html`, `es/index.html` or the CSS is missing, and warns above 900 MB. |
+| Permissions | Workflow default `contents: read`; `sync` gets `contents: write`; `build-deploy` gets `pages: write` + `id-token: write`; `report` gets `issues: write`. These job-level `permissions` work with the repository's default read-only *Workflow permissions* setting — it does not need to be changed. Every `actions/checkout` in every workflow uses `persist-credentials: false` (zizmor's `artipacked` audit is clean); only the data-commit step logs in, see *Commit*. |
 | Pinned actions | `actions/checkout@v7`, `setup-python@v7`, `setup-node@v7`, `cache@v6` (restore/save), `configure-pages@v6`, `upload-pages-artifact@v5`, `deploy-pages@v5` (Dependabot keeps them current). |
 | Linting | `actionlint` (with shellcheck) passes on all four workflows: `pip install actionlint-py shellcheck-py`, then `actionlint -shellcheck <path to shellcheck> .github/workflows/*.yml`. |
 
@@ -120,15 +121,26 @@ to `site.url`.
 
 `scripts/notify/send_digest.py` (standard library only, PyYAML optional):
 
-- window = last `digest.days` days; an item counts as new when `min(date, first_seen)` falls in the
-  window — so next month's magazine issue counts the week it is first seen, and old PDFs found by
-  the first big crawl never flood the e-mail;
-- sections: next committee meeting (up to 45 days ahead, with Zoom ID/passcode), announcements
-  (unexpired), events (next 30 days; an all-day event stays listed until 23:59 Central on its last
-  day, like `build_data.event_end_ts`), then articles, episodes (Weekly Open episodes get their own
-  "Weekly Open" pill), videos, Instagram (one line per account), PDFs, Drive (photos collapsed to
-  one line per album); max 6 per section + "and N more";
-- English half then Spanish half, from the `i18n` fields that build_data already produced;
+- window = last `digest.days` days; an item (What's New entry or announcement) is in the digest when
+  **either** `min(date, first_seen)` falls in the window — so next month's magazine issue counts the
+  week it is first seen — **or** its `first_seen` falls in the window *and* the site still marks it
+  new (`is_new`; data without the flag: `wn_date` less than `NEW_DAYS` = 14 days old). The second
+  test catches things dated before the previous digest but found after it (a PDF dated last month,
+  a La Viña issue dated the 1st and found on the 4th, an announcement named `2027-01-10 …` and
+  uploaded on the 12th), which would otherwise miss every digest. `is_new` keeps the first-harvest
+  protection: old PDFs found by the first big crawl are not "new" on the site, so they never flood
+  the e-mail. An item's `first_seen` falls in exactly one weekly window, so nothing is listed twice;
+- sections: next committee meeting (up to 45 days ahead, with Zoom ID/passcode and the chair's
+  `meeting.note` / `note_es` from the config — without `note_es` the Spanish comes from the meeting
+  event build_data translated; an empty note shows no line), announcements (unexpired), events
+  (next 30 days; an all-day event stays listed until 23:59 Central on its last day, like
+  `build_data.event_end_ts`), then articles (members' stories first — Area 65 writers, then the
+  rest of Texas, like the site's spotlight — and "In Every Issue" pages last), episodes (Weekly
+  Open episodes get their own "Weekly Open" pill), videos, Instagram (one line per account), PDFs,
+  Drive (photos collapsed to one line per album, counting the photos inside What's New's same-day
+  album groups); max 6 per section + "and N more";
+- English half then Spanish half, from the `i18n` fields that build_data already produced (titles,
+  issue labels, topics/sections, album names);
 - multipart HTML + plain text, RFC 2047 headers, `List-Unsubscribe`, several recipients → Bcc;
 - nothing new → nothing sent (exit 0). Exit 1 = SMTP failure, 2 = not configured.
 
@@ -153,14 +165,22 @@ flag used; `lychee --offline --root-dir <abs path>/_site '_site/**/*.html'` on a
 build resolved all internal links (0 errors), and a page with a deliberately broken link was flagged.
 To reproduce on Windows, pass the root dir as `C:/…` (Git Bash: also `MSYS_NO_PATHCONV=1`).
 
-### `check.yml` — Pull request check
+### `check.yml` — Code check
 
-On every `pull_request` (and `workflow_dispatch`), `permissions: contents: read`, nothing published.
-Job `build`: `npm ci` → `PATH_PREFIX=/<repository name>/ npx @11ty/eleventy` → the same sanity checks as
+On every `pull_request`, on every **push to `main`** that touches `scripts/**`, `tests/**`, `src/**`
+(not `src/assets/cache/**`), `eleventy/**`, `eleventy.config.js`, `config/**`, `content/**`,
+`data/translations/{overrides,glossary}.yml`, `package*.json`, `requirements.txt` or the workflow
+itself (most work here is pushed straight to `main`, so without this the tests would never run), and
+on `workflow_dispatch`. `permissions: contents: read`, nothing published; the bot's data commits
+never trigger it (pushed with `GITHUB_TOKEN`). Job `build`: `npm ci` →
+`PATH_PREFIX=/<repository name>/ I18N_STRICT=1 npx @11ty/eleventy` → the same sanity checks as
 *Update & Deploy* (`index.html`, `es/index.html`, `assets/css/main.css`). Job `tests`: Python 3.12,
 `pip install -r requirements.txt`, `python -m unittest discover -s tests -v` (no translation models
-are downloaded, so model tests are skipped; the rest runs offline in about a second). Dependabot PRs
-therefore show a ✓/✗ before merging; the chair merges only on green.
+are downloaded, so model tests are skipped; the rest runs offline in a few seconds), then
+`send_digest --dry-run` into the runner's temp folder (a smoke test of the optional e-mail). Dependabot
+PRs therefore show a ✓/✗ before merging (the chair merges only on green), and a push that breaks the
+tests shows a red ✗ on its commit. A push runs this alongside *Update & Deploy*, which still deploys:
+a red ✗ here means "fix or revert that change", not "the site is down".
 
 ### `dependabot.yml`
 
@@ -179,8 +199,8 @@ All modules follow the same conventions (see [DATA_SCHEMA.md](DATA_SCHEMA.md)): 
 | Module | Source → output | Normal path | Fallbacks / safety | Useful flags |
 |---|---|---|---|---|
 | `articles.py` | aagrapevine.org `/magazine`, aalavina.org `/la-revista` → `articles.json` | Issue hub pages (titles, bylines, public teasers, card images); each article page fetched once for issue/topic/section/paywall flag | Home page / `/revista-2` if a hub fails; missing fields retried ≤ 3× a week apart. **Never stores article bodies.** | `--max-details 40`, `--max-seconds`, `--no-details`, `--only gv\|lv` |
-| `crawl.py` (+ `crawl_rules.py`, `crawl_pdf.py`) | both sites → `pdfs.json`, `data/state/crawl-state.json`, `src/assets/cache/pdf/` | Sitemaps → priority queue (hubs daily, new pages, changed `<lastmod>`, events, re-checks every `recheck_days`); conditional GETs; ~30 % of time on PDF work (download ≤ `pdf_details_per_run` new PDFs ≤ `pdf_max_mb` for page count/title/thumbnail; HEAD others) | Resumes daily from state; vanished PDFs re-checked → `gone` only on 404/410; skip rules for login/cart/paywalled paths; PDF author metadata deliberately not read (anonymity) | `--minutes N` (0 = rebuild from state, no network), `--details`, `--url`, `--max-pages` |
-| `podcasts.py` | shows in `sources.podcasts` (`gv` AA Grapevine's Podcast, `wo` Grapevine Weekly Open AA Meeting) → `podcasts.json` (category = show key) | RSS via requests + feedparser | Previous episodes kept on a bad feed; an episode that leaves the feed is `gone` only when its audio 404/410s; weekly discovery of new show feeds (reported, never auto-added) | `--limit`, `--discover`, `--no-discover` |
+| `crawl.py` (+ `crawl_rules.py`, `crawl_pdf.py`) | both sites → `pdfs.json`, `data/state/crawl-state.json`, `src/assets/cache/pdf/` | Sitemaps → priority queue (hubs daily, new pages, changed `<lastmod>`, events, re-checks every `recheck_days`); conditional GETs; ~30 % of time on PDF work (download ≤ `pdf_details_per_run` new PDFs ≤ `pdf_max_mb` for page count/title/thumbnail; HEAD others) | Resumes daily from state; a PDF becomes `gone` only after **two** failing checks at least 24 h apart (404/410, or an HTML page where the file was — `gone_strike_at` marks the first); a gone PDF that a page still links is re-checked after a week, later monthly, and comes back when it answers; a PDF on **another** site whose host has not answered at all for 30+ days (4+ tries, `head.unreachable_since`) is gone too — the magazine sites' own files are never retired that way; skip rules for login/cart/paywalled paths; PDF author metadata deliberately not read (anonymity) | `--minutes N` (0 = rebuild from state, no network), `--details`, `--url`, `--max-pages` |
+| `podcasts.py` | shows in `sources.podcasts` (`gv` AA Grapevine's Podcast, `wo` Grapevine Weekly Open AA Meeting) → `podcasts.json` (category = show key) | RSS via requests + feedparser | Previous episodes kept on a bad feed; an episode that leaves the feed is `gone` only when its audio 404/410s; weekly discovery of new show feeds, never auto-added: listed under *New podcast feeds found* in the *Update & Deploy* run summary (with a `::notice`), and in `stats.discovered_feeds` of `podcasts.json` / `status.json` (the `/status/` page does not show them) | `--limit`, `--discover`, `--no-discover` |
 | `youtube.py` | channel `UCI9uFLJ__aXT3-At0PlPWUQ` → `youtube.json` | Channel + uploads + playlist RSS every run | yt-dlp full listing weekly and a few dozen per-video detail fetches per run; if yt-dlp is blocked on CI IPs, RSS alone keeps the site current; deletions confirmed via oEmbed only after a complete listing | `--backfill`, `--no-backfill`, `--details`, `--backfill-minutes` |
 | `instagram.py` | two accounts → `instagram.json`, `src/assets/cache/ig/` | Graph API Business Discovery if `IG_ACCESS_TOKEN`+`IG_BUSINESS_ID`; else the public profile **embed** page (a few requests/day) | web_profile_info JSON → profile HTML → optional RSSHub mirrors → post embeds; keeps last posts when all fail. `sources.instagram.anonymous: false` (or env `IG_ANONYMOUS=0`) disables every non-API request: only the API + `content/instagram.yml` | `--strategies`, `--account`, `--keep`, `--no-enrich`, `-v` |
 | `drive.py` (+ `drive_listing.py`) | public Drive tree under `drive.root_folder_id` → `drive.json` (documents, photos, flyer events, announcements) | Public "embedded folder view" HTML (no key) | Drive API v3 when `GOOGLE_API_KEY` is set (falls back per folder); a folder only counts as read when Drive returned a real folder page, so a network error never deletes items; spreadsheets and `PRIVATE`/`(Responses)` names never published | `--no-api`, `--max-depth`, `--max-minutes`, `--include-loose` |
@@ -196,7 +216,7 @@ All modules follow the same conventions (see [DATA_SCHEMA.md](DATA_SCHEMA.md)): 
 
 | Host | Rule we follow | Numbers |
 |---|---|---|
-| www.aagrapevine.org + www.aalavina.org | robots.txt obeyed; `Crawl-delay: 5` applied **across both hosts and all modules together** (one `shared_session()`); honest User-Agent with a contact URL; conditional GETs; skip login/cart/search/paywalled paths | 5 s between requests → 720 requests/hour max. Default 40 min/day ≈ 450 pages/day. ~3,100 pages known from the sitemaps → full first coverage ≈ 7 daily runs, or one 300-minute manual run (≈ 3,600 requests). Pages are re-checked every `recheck_days` (21) unless the sitemap says they changed; hub pages daily. PDFs: ≤ `pdf_details_per_run` (40) downloads/run, ≤ `pdf_max_mb` (60 MB) each. |
+| www.aagrapevine.org + www.aalavina.org | robots.txt obeyed; `Crawl-delay: 5` applied **across both hosts and all modules together** (one `shared_session()`); honest User-Agent with a contact URL; conditional GETs; skip login/cart/search/paywalled paths | 5 s between requests → 720 requests/hour max. Default 40 min/day ≈ 450 pages/day. **First coverage is complete** (Sept 2026): 3,445 pages known, 3,441 crawled, queue empty (the other 4 links return errors and are retried now and then), 130 PDFs. From now on the daily run only re-checks pages and picks up new ones — a 300-minute catch-up run is only needed after `crawl-state.json` is deleted. Pages are re-checked every `recheck_days` (21) unless the sitemap says they changed; hub pages daily. PDFs: ≤ `pdf_details_per_run` (40) downloads/run, ≤ `pdf_max_mb` (60 MB) each. |
 | YouTube | Fixed set of feed URLs, ~1 s apart, short timeouts; yt-dlp time-boxed (6 min/run) | ~10–90 requests/day |
 | Instagram | Public embed pages only (unless the official API token is set), ≤ a few requests per account per day, post-embed look-ups capped by `enrich_per_run`; no hammering on HTTP 429. Instagram's terms discourage automated collection — `anonymous: false` turns all of it off | ~2–30 requests/day |
 | Google Drive | One request per folder per run (≤ 800 folders, 15 min budget) | tens of requests/day |
@@ -207,10 +227,16 @@ All modules follow the same conventions (see [DATA_SCHEMA.md](DATA_SCHEMA.md)): 
 
 1. **Nothing disappears on a bad day.** `merge_items()` keeps every known item; a module that fails
    writes `ok=false` + `error` and keeps its previous items. Items are only marked `gone` after an
-   explicit confirmation (404/410, oEmbed, a successful folder listing without the file).
+   explicit confirmation (404/410, oEmbed, a successful folder listing without the file). A PDF needs
+   **two** failing checks at least 24 hours apart (404/410, or an HTML page where the file was), so one
+   bad answer during a site update never hides it; a gone PDF that a page still links is checked again
+   after a week, then monthly, and returns when it answers. A PDF on another website whose server has
+   not answered at all for 30+ days (after 4+ tries) is gone too; files on aagrapevine.org /
+   aalavina.org are never retired just because the site is down.
 2. **One broken source never stops the others** (`run_module()` catches everything and records it).
 3. **Atomic writes**: `write_json()` writes a temp file then `os.replace()`, so a killed run never
-   leaves half a JSON file (`*.tmp` leftovers are git-ignored).
+   leaves half a JSON file (`*.tmp` and half-downloaded `*.part` thumbnails are git-ignored, so the
+   data commit never picks them up).
 4. **Partial progress is kept**: the commit step runs even when the sync step failed, hit its
    time budget or the run was cancelled, so e.g. 35 minutes of crawling are not lost.
 5. **The site always deploys** the latest committed data, even if today's sync failed.
@@ -225,15 +251,16 @@ All modules follow the same conventions (see [DATA_SCHEMA.md](DATA_SCHEMA.md)): 
 ## Repository size
 
 Measured per item (JSON, indented one field per line): ~1.1–1.8 KB in `data/raw`, a bit more in
-`data/site` (translations added). Thumbnails: WebP ≤ 480 px, ~16–23 KB each.
+`data/site` (translations added). Thumbnails: WebP ≤ 480 px, ~16–23 KB each. The first full PDF
+crawl is done, so these are real numbers, not estimates:
 
-| Part | Expected at full size |
-|---|---|
-| `data/raw` + `data/site` (≈ 3,000 PDFs, ≈ 1,500 videos, 262+ episodes, articles, posts) | ~15–20 MB |
-| `data/state/crawl-state.json` | ~3–5 MB |
-| `data/translations/cache.json` | ~1–3 MB |
-| `src/assets/cache/` thumbnails (mostly PDFs) | ~50–70 MB |
-| Git history growth (daily commits are small line-level changes, delta-compressed) | roughly 50–150 MB per year |
+| Part | Measured (Sept 2026) | Growth |
+|---|---|---|
+| `data/raw` + `data/site` (130 PDFs, 528 videos, 295 episodes, 224 magazine stories, Instagram, events) | ~5 MB (1.6 + 3.3 MB) | a few MB a year (mostly new stories, episodes and videos) |
+| `data/state/crawl-state.json` (3,445 pages) | ~1.4 MB | only when the two sites add pages |
+| `data/translations/cache.json` | ~0.7 MB | grows with new titles |
+| `src/assets/cache/` thumbnails (`pdf` 129 · `ig` 26 · `articles` 22 · `pod` 3) | ~3.5 MB | ~20 KB per new thumbnail |
+| Git history growth (daily commits are small line-level changes, delta-compressed) | — | roughly 50–150 MB per year |
 
 GitHub recommends repositories stay under 1 GB (hard warnings start around 5 GB); GitHub Pages
 sites must stay under 1 GB (the deploy step warns at 900 MB). CI clones are shallow (depth 1), so
@@ -299,9 +326,6 @@ MSYS_NO_PATHCONV=1 PATH_PREFIX=/AAGrapevine/ npx @11ty/eleventy   # Git Bash on 
 (Git Bash rewrites values that look like paths — `/AAGrapevine/` becomes
 `C:/Program Files/Git/AAGrapevine/` — unless `MSYS_NO_PATHCONV=1` is set.)
 
-`npm run fixtures` (dev only) regenerates **fixture** data in `data/site/` from `.tmp/probe/`; do not
-commit fixture data over real data — the next pipeline run overwrites it anyway.
-
 Please keep local test runs short (`--crawl-minutes 5`, `--dry-run`): the magazine sites ask for
 5 seconds between requests and the daily job already visits them.
 
@@ -351,4 +375,4 @@ Please keep local test runs short (`--crawl-minutes 5`, `--dry-run`): the magazi
 | `IG_GRAPH_VERSION` | sync | Graph API version (default from config, `v21.0`) |
 | `GV_LOG_LEVEL` | sync | `DEBUG` for verbose logs |
 | `ONLY` | build (local) | Build only some `src/pages/*` files |
-| `I18N_STRICT` | build | Fail on missing UI strings |
+| `I18N_STRICT` | build | Fail on missing UI strings (always on in `update.yml` and `check.yml`; unset locally = the raw key is shown instead) |

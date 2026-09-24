@@ -691,7 +691,7 @@ export function searchIndex(db, nav, lang, helpers, site) {
 
   /* ---- editorial themes (calls for stories) — only the ones still open, like /contribute/ ---- */
   safely("editorial", () => {
-    const today = new Date().toISOString().slice(0, 10);
+    const today = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Chicago" }).format(new Date()); // YYYY-MM-DD in Central time
     for (const it of db.editorial?.items || []) {
       if (!ok(it)) continue;
       const ex = it.extra || {};
@@ -817,7 +817,7 @@ export function searchIndex(db, nav, lang, helpers, site) {
 
   /* ---- Committee: announcements (expired ones are hidden on the page, so skip them) ---- */
   safely("announcements", () => {
-    const today = new Date().toISOString().slice(0, 10);
+    const today = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Chicago" }).format(new Date()); // YYYY-MM-DD in Central time
     const list = typeof committee.announcementList === "function"
       ? committee.announcementList(db.announcements?.items || [])
       : (db.announcements?.items || []).filter((it) => ok(it) && !(it.extra?.expires && String(it.extra.expires).slice(0, 10) < today));

@@ -224,9 +224,13 @@ class Ctx:
                     self.raw_problems[name] = f"unreadable: {type(e).__name__}: {e}"[:200]
                     log.error("raw file %s is unreadable (%s) — building without it", p.name, e)
             self.raw[name] = env
+            # The source's first harvest: the stable `first_harvest` stamp (common.save_raw); older
+            # envelopes without it fall back to the oldest first_seen.
             firsts = [t for t in (ts(i.get("first_seen")) for i in env["items"]) if t]
-            if firsts:
-                self.births[name] = min(firsts)
+            fh = ts(env.get("first_harvest"))
+            cands = ([fh] if fh else []) + firsts
+            if cands:
+                self.births[name] = min(cands)
         iss = (self.raw.get("articles") or {}).get("issues")
         rows = iss.values() if isinstance(iss, dict) else iss if isinstance(iss, list) else []
         self.hub_issues = {f"{r.get('publication')}:{r.get('key')}" for r in rows
@@ -667,6 +671,11 @@ def source_lang(it: dict) -> str | None:
     return None
 
 
+def _letters_key(s: str) -> str:
+    """'UN DIA A LA VEZ' and 'Un día a la vez' → the same key (accents, case and spacing ignored)."""
+    return re.sub(r"\s+", " ", T.fold(unicodedata.normalize("NFC", str(s)))).strip().lower()
+
+
 class I18n:
     """Collects every text to translate, runs the translator in priority order (so a time-boxed
     first run translates the newest/most visible things first), then fills i18n/machine."""
@@ -712,13 +721,25 @@ class I18n:
     def get(self, text: str, src: str, md: bool = False) -> tuple[str | None, bool]:
         return self.done.get((src, other(src), md, text), (None, False))
 
+    def respell(self, text: str, src: str) -> str:
+        """The text as shown in its OWN language. overrides.yml may give an entry in the text's own
+        language to restore what the source lost — accents and capitals only ("UN DIA A LA VEZ":
+        { es: "Un día a la vez" }). Any other same-language change is ignored: the original wording
+        is never rewritten."""
+        overrides = getattr(self.tr, "overrides", None)
+        ov = overrides.get(text, src) if overrides is not None else None
+        if ov and _letters_key(ov) == _letters_key(text) and ov != text:
+            return ov
+        return text
+
     def pair(self, text: str, src: str | None, md: bool = False) -> tuple[dict, bool]:
         """→ ({'en': …, 'es': …}, machine_translated?)"""
         if src not in LANGS or not text:
             return {"en": text, "es": text}, False
         out, machine = self.get(text, src, md)
         tgt = other(src)
-        val = {src: text, tgt: out if out is not None else text}
+        shown = text if md else self.respell(text, src)
+        val = {src: shown, tgt: out if out is not None else shown}
         return {"en": val["en"], "es": val["es"]}, bool(out is not None and machine and out != text)
 
     def apply(self, it: dict) -> None:
@@ -1015,6 +1036,8 @@ def enrich_articles(ctx: Ctx, items: list[dict]) -> None:
     """extra.geo (where the writer is from — scripts/sync/geo.py) and extra.pub_date on every story."""
     for it in items:
         ex = it.setdefault("extra", {})
+        if ex.get("department") is not True and _EVERY_ISSUE.search(str(ex.get("section") or "")):
+            ex["department"] = True     # the page prints "In Every Issue" / "En cada edición"
         try:
             ex["geo"] = classify_location(ex.get("author_location"), byline_lang(it))
             ex["pub_date"] = article_pub_date(ctx, it)

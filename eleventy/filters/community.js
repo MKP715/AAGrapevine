@@ -63,10 +63,15 @@ function fmt(v, lang, opts) {
   const d = toDate(v);
   if (!d) return "";
   let s = new Intl.DateTimeFormat(LOCALES[lang] || "en-US", { timeZone: TZ, ...opts }).format(d);
-  if (lang === "es") s = s.charAt(0).toUpperCase() + s.slice(1);
+  if (lang === "es") s = esMeridiem(s.charAt(0).toUpperCase() + s.slice(1));
   return s;
 }
+/** Intl's Spanish "7:00 p.m." → "7:00 p. m.", the style the rest of the site uses
+ *  (build_data's Weekly Open time, committee.js). */
+export const esMeridiem = (s) => String(s).replace(/\b([ap])\.\s?m\./g, "$1. m.").replace(/(\d) (?=[ap]\. m\.)/g, "$1 ");
 const fmtShortDay = (v, lang) => fmt(v, lang, { weekday: "short", month: "short", day: "numeric" });
+// Inside a sentence ("fecha límite: jue, 1 de oct"): Spanish keeps the weekday lower-case.
+const fmtShortDayMid = (v, lang) => { const s = fmtShortDay(v, lang); return lang === "es" ? s.charAt(0).toLowerCase() + s.slice(1) : s; };
 const fmtDay = (v, lang) => fmt(v, lang, { month: "short", day: "numeric", year: "numeric" });
 const fmtTime = (v, lang) => fmt(v, lang, { hour: "numeric", minute: "2-digit", timeZoneName: "short" });
 
@@ -191,6 +196,24 @@ export function teaser(summary, title) {
   const rest = s.slice(t.length).replace(/^[\s,;:]+/, "");
   if (!rest) return "";
   return truncated ? "…" + rest : rest;
+}
+
+/**
+ * Image for a SMALL list thumbnail (What's New: 48–128 px wide boxes).
+ *  - YouTube's 480×360 "hqdefault" (4:3 with black bars) → the 320×180 "mqdefault" (16:9).
+ *  - A cached image "/assets/cache/<dir>/<name>.webp" → "<name>.sm.webp" next to it when the
+ *    daily sync wrote one (a ~160 px wide copy); otherwise the 480 px original, unchanged.
+ */
+const smallThumbSeen = new Map();
+export function listThumb(src) {
+  const u = String(src || "");
+  if (!u) return "";
+  const yt = u.match(/^(https:\/\/i\d?\.ytimg\.com\/vi(?:_webp)?\/[\w-]+\/)(?:hq|sd|maxres)default(\.jpg|\.webp)$/);
+  if (yt) return `${yt[1]}mqdefault${yt[2]}`;
+  const m = u.match(/^\/assets\/cache\/([\w-]+\/[\w-]+)\.webp$/);
+  if (!m) return u;
+  if (!smallThumbSeen.has(m[1])) smallThumbSeen.set(m[1], fs.existsSync(path.join("src", "assets", "cache", `${m[1]}.sm.webp`)));
+  return smallThumbSeen.get(m[1]) ? `/assets/cache/${m[1]}.sm.webp` : u;
 }
 
 /** Link target for an item (internal paths get the language prefix). */
@@ -581,7 +604,7 @@ export function digestText(dg, langs, style, site, t, media = {}) {
       for (const item of list.slice(0, perGroup)) {
         const [first, ...others] = titleLines(item);
         const place = writerPlace(item, main);
-        out.push(`${bullet} "${first}" — ${writerName(item, main, t)}${place ? `, ${place}` : ""} (${pubName(item)}, ${issueLabelOf(item, main)})`);
+        out.push(`${bullet} "${first}" — ${writerName(item, main, t)}${place ? `, ${place}` : ""} (${pubName(item)}, ${issueInSentence(issueLabelOf(item, main), main)})`);
         for (const r of others) out.push(`  "${r}"`);
         out.push(`  ${absUrl(item.url, site)}`);
       }
@@ -658,7 +681,7 @@ export function digestText(dg, langs, style, site, t, media = {}) {
     for (const d of dg.deadlines.slice(0, 6)) {
       const pub = d.extra?.publication === "lv" ? "La Viña" : "Grapevine";
       const theme = L.map((l) => clean(pickLang(d, "title", l))).filter((v, i, a) => v && a.indexOf(v) === i).join(" / ");
-      out.push(`${bullet} ${fmtShortDay(d.extra.deadline, main)} — "${theme}" (${pub}, ${issueLabelOf(d, main)})`);
+      out.push(`${bullet} ${fmtShortDay(d.extra.deadline, main)} — "${theme}" (${pub}, ${issueInSentence(issueLabelOf(d, main), main)})`);
     }
     if (dg.lvThemes?.length) {
       const themes = dg.lvThemes.map((d) => `"${clean(pickLang(d, "title", main))}"`).join(", ");
@@ -765,7 +788,7 @@ export function reportText(rd, lang, site, t) {
     if (W.neta65.length) {
       for (const it of W.neta65.slice(0, 6)) {
         const place = writerPlace(it, lang);
-        out.push(`   • ${writerName(it, lang, t)}${place ? `, ${place}` : ""} — "${clean(pickLang(it, "title", lang)) || clean(it.title)}" (${pubName(it)}, ${issueLabelOf(it, lang)})`);
+        out.push(`   • ${writerName(it, lang, t)}${place ? `, ${place}` : ""} — "${clean(pickLang(it, "title", lang)) || clean(it.title)}" (${pubName(it)}, ${issueInSentence(issueLabelOf(it, lang), lang)})`);
       }
       if (W.neta65.length > 6) out.push(`   • ${T("t_writers_more", { n: W.neta65.length - 6 })}`);
     } else {
@@ -783,7 +806,7 @@ export function reportText(rd, lang, site, t) {
   if (rd.deadlines.length) {
     for (const d of rd.deadlines) {
       const pub = d.extra?.publication === "lv" ? "La Viña" : "Grapevine";
-      out.push(`   • "${clean(pickLang(d, "title", lang))}" — ${pub} ${issueLabelOf(d, lang)} — ${T("t_due", { date: fmtShortDay(d.extra.deadline, lang) })}`);
+      out.push(`   • "${clean(pickLang(d, "title", lang))}" — ${pub}, ${issueInSentence(issueLabelOf(d, lang), lang)} — ${T("t_due", { date: fmtShortDayMid(d.extra.deadline, lang) })}`);
     }
   } else out.push(`   • ${T("t_no_deadlines")}`);
   if (rd.lvThemes?.length) {
@@ -801,7 +824,7 @@ export function reportText(rd, lang, site, t) {
   out.push(`   ${url("/events/")}`);
 
   if (rd.next) {
-    out.push(`${num()} ${T("t_meeting", { date: fmtShortDay(rd.next.start, lang), time: fmtTime(rd.next.start, lang) })}`);
+    out.push(`${num()} ${T("t_meeting", { date: fmtShortDayMid(rd.next.start, lang), time: fmtTime(rd.next.start, lang) })}`);
     out.push(`   ${url("/meeting/")}`);
   }
   out.push(`${num()} ${T("t_ask")}`);
@@ -844,20 +867,34 @@ export function statusView(status, now = Date.now()) {
   const known = num(c.known_pages) || 0;
   const crawled = Math.min(num(c.crawled_pages) || 0, known || Infinity);
   const perRun = num(c.last_run_pages) || 0;
-  const remaining = num(c.queue_remaining) ?? num(c.never_crawled) ?? Math.max(0, known - crawled);
+  // Pages never read successfully. Some of them are not "left to check" but links that answer
+  // with an error (e.g. an e-mail address written as a link → HTTP 400): the robot retries those
+  // with a growing pause, so they are NOT in the queue (queue_remaining). Counting them as "left
+  // to check" would show "4 left · about 1 day" for ever. `never_crawled_failing` is used when the
+  // pipeline provides it; otherwise the never-read pages that are not queued are the failing ones.
+  const never = num(c.never_crawled) ?? Math.max(0, known - crawled);
+  const queued = num(c.queue_remaining);
+  const failing = Math.min(never, num(c.never_crawled_failing) ?? (queued !== null ? Math.max(0, never - queued) : 0));
+  const remaining = Math.max(0, never - failing);
   const est = num(c.est_days_to_full);
   let daysLeft = null;
   if (known > 0 && remaining === 0) daysLeft = 0;
   else if (est !== null && est > 0) daysLeft = Math.max(1, Math.ceil(est));
   else if (perRun > 0) daysLeft = Math.ceil(remaining / perRun);
   const tr = status?.translations || {};
+  const totalItems = sources.reduce((a, s) => a + s.count, 0);
+  const found7d = sources.reduce((a, s) => a + (Number(s.new_7d) || 0), 0);
   return {
     generated: status?.generated || null,
     sources,
     okCount: sources.filter((s) => s.state === "ok").length,
     failedCount: sources.filter((s) => s.state === "failed").length,
-    totalItems: sources.reduce((a, s) => a + s.count, 0),
-    found7d: sources.reduce((a, s) => a + (Number(s.new_7d) || 0), 0),
+    totalItems,
+    found7d,
+    // Everything tracked was first found in the last 7 days (the site's first week): the page
+    // says so, so the big number is not read as "1,240 new things this week". From the second
+    // week on this is false by itself — no date to update by hand.
+    allFound7d: totalItems > 0 && found7d >= totalItems,
     crawl: {
       known,
       crawled: known ? crawled : num(c.crawled_pages) || 0,
@@ -866,6 +903,7 @@ export function statusView(status, now = Date.now()) {
       thumbs: num(c.pdfs_with_thumbs) || 0,
       perRun,
       remaining,
+      failing,
       daysLeft,
       errors: num(c.page_errors) || 0,
       updated: c.updated || null,
@@ -878,6 +916,19 @@ export function statusView(status, now = Date.now()) {
       glossary: num(tr.glossary_entries) || 0,
     },
   };
+}
+
+/**
+ * 0–100 → "1.6%" / "42%" / "99.9%" (es: "1,6 %"). Whole numbers from 10 up, but a value
+ * short of 100 never rounds up to "100%" (it keeps one decimal, at most 99.9: 99.88 and
+ * 99.97 both read "99.9%"), and a tiny non-zero value never shows as "0%".
+ */
+export function cmPct(n, lang) {
+  let v = Number(n) || 0;
+  if (v > 0 && v < 0.1) v = 0.1;
+  let digits = v >= 10 ? 0 : 1;
+  if (v < 100 && v >= 99.5) { digits = 1; v = Math.min(99.9, Math.round(v * 10) / 10); }
+  return new Intl.NumberFormat(LOCALES[lang] || "en-US", { style: "percent", maximumFractionDigits: digits }).format(v / 100);
 }
 
 /* ------------------------------------------------------------------ */
@@ -935,7 +986,7 @@ export const WN_ICONS = [
 export default function (eleventyConfig, helpers) {
   const t = (key, lang, vars) => helpers.translateKey(key, lang, vars);
   // spotlight.json is read at most once per build (only while db.js does not provide it)
-  eleventyConfig.on("eleventy.before", () => { spotlightFile = undefined; });
+  eleventyConfig.on("eleventy.before", () => { spotlightFile = undefined; smallThumbSeen.clear(); });
 
   // Filters are prefixed "cm" (community) so they can never clash with another
   // area's filters; qrSvg keeps its plain name. QR code as inline SVG:
@@ -951,6 +1002,7 @@ export default function (eleventyConfig, helpers) {
   eleventyConfig.addFilter("cmWnCountRecent", (prepared, days = 7) => countRecent(prepared, days));
   eleventyConfig.addFilter("cmHref", (item, lang) => hrefOf(item, lang));
   eleventyConfig.addFilter("cmTeaser", (summary, title) => teaser(summary, title));
+  eleventyConfig.addFilter("cmListThumb", (src) => listThumb(src));
   eleventyConfig.addFilter("cmEventWhen", (ev, lang) => eventWhen(ev, lang));
   eleventyConfig.addFilter("cmDateRange", (a, b, lang) => fmtRange(a, b, lang));
   eleventyConfig.addFilter("cmIssueLabel", (label, lang) => issueLabel(label, lang));
@@ -1004,12 +1056,9 @@ export default function (eleventyConfig, helpers) {
   // `cmWebcal` (https:// → webcal://) used by the community pages is registered in
   // committee.js; both files are auto-loaded, so it is available here too.
   eleventyConfig.addFilter("cmNum", (n, lang) => new Intl.NumberFormat(LOCALES[lang] || "en-US").format(Number(n) || 0));
-  // 0–100 → "1.6%" / "1,6 %" (≥ 10 without decimals; a tiny non-zero value never shows as 0)
-  eleventyConfig.addFilter("cmPct", (n, lang) => {
-    const v = Number(n) || 0;
-    const shown = v > 0 && v < 0.1 ? 0.1 : v;
-    return new Intl.NumberFormat(LOCALES[lang] || "en-US", { style: "percent", maximumFractionDigits: shown >= 10 ? 0 : 1 }).format(shown / 100);
-  });
+  // 0–100 → "1.6%" / "1,6 %" (≥ 10 without decimals; a tiny non-zero value never shows as 0,
+  // and anything short of 100 never rounds up to "100%": 99.9 → "99.9%", 99.97 → "99.9%")
+  eleventyConfig.addFilter("cmPct", (n, lang) => cmPct(n, lang));
 
   // UI string with a fallback when the key does not exist (safe with I18N_STRICT=1):
   //   {{ ("community.status.src." + s.source) | cmTOr(lang, s.label) }}

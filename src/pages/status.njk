@@ -51,7 +51,7 @@ pageScripts: ["/assets/js/community.js"]
     <div class="card card-pad">
       <dt class="text-sm text-muted">{{ "community.status.kpi_new" | t(lang) }}</dt>
       <dd class="mt-1 text-2xl font-semibold text-ink">{{ sv.found7d | cmNum(lang) }}</dd>
-      <dd class="mt-0.5 text-xs leading-snug text-muted">{{ "community.status.found_help" | t(lang) }}</dd>
+      <dd class="mt-0.5 text-xs leading-snug text-muted">{{ ("community.status.found_help_all" if sv.allFound7d else "community.status.found_help") | t(lang) }}</dd>
     </div>
   </dl>
 </section>
@@ -156,7 +156,7 @@ pageScripts: ["/assets/js/community.js"]
         <p class="mt-3 flex items-center gap-2 text-sm font-semibold text-ink">
           {% icon "hourglass", "size-4 shrink-0 text-gv" %}
           <span>
-          {%- if sv.crawl.daysLeft === 0 %}{{ "community.status.crawl_eta_done" | t(lang, { n: crawler.recheck_days or 21 }) }}
+          {%- if sv.crawl.daysLeft === 0 %}{{ ("community.status.crawl_eta_done_open" if sv.crawl.failing else "community.status.crawl_eta_done") | t(lang, { n: crawler.recheck_days or 21 }) }}
           {%- elif sv.crawl.daysLeft == 1 %}{{ "community.status.crawl_eta_one" | t(lang) }}
           {%- elif sv.crawl.daysLeft %}{{ "community.status.crawl_eta" | t(lang, { n: sv.crawl.daysLeft | cmNum(lang) }) }}
           {%- else %}{{ "community.status.crawl_eta_unknown" | t(lang) }}{% endif -%}
@@ -168,6 +168,8 @@ pageScripts: ["/assets/js/community.js"]
           <div class="flex flex-col"><dt class="flex-1 text-xs text-muted">{{ "community.status.crawl_left" | t(lang) }}</dt><dd class="text-xl font-semibold tabular-nums text-ink">{{ sv.crawl.remaining | cmNum(lang) }}</dd></div>
           <div class="flex flex-col"><dt class="flex-1 text-xs text-muted">{{ "community.status.crawl_perrun" | t(lang) }}</dt><dd class="text-xl font-semibold tabular-nums text-ink">{{ sv.crawl.perRun | cmNum(lang) }}</dd></div>
         </dl>
+        {#- Links that answer with an error (e.g. an e-mail address written as a link): not "left to check" — the robot retries them now and then. -#}
+        {% if sv.crawl.failing %}<p class="mt-4 flex gap-2 text-xs leading-relaxed text-muted">{% icon "link-2-off", "size-4 shrink-0" %} {{ ("community.status.crawl_failing_one" if sv.crawl.failing == 1 else "community.status.crawl_failing") | t(lang, { n: sv.crawl.failing | cmNum(lang) }) }}</p>{% endif %}
         {% if sv.crawl.errors %}<p class="mt-4 flex gap-2 text-xs leading-relaxed text-muted">{% icon "info", "size-4 shrink-0" %} {{ ("community.status.crawl_errors_one" if sv.crawl.errors == 1 else "community.status.crawl_errors") | t(lang, { n: sv.crawl.errors | cmNum(lang) }) }}</p>{% endif %}
         <p class="mt-4 text-xs leading-relaxed text-muted">{{ "community.status.crawl_note" | t(lang) }}{% if sv.crawl.updated %} · {{ "community.status.crawl_last" | t(lang) }}: <time datetime="{{ sv.crawl.updated | isoDate }}" data-local-time>{{ sv.crawl.updated | fmtDate(lang, "datetime") }}</time>{% endif %}</p>
       </div>

@@ -1,6 +1,6 @@
 // Site navigation. `key` = i18n key (src/_i18n/common.json), `url` is
 // language-neutral (templates prefix /es/ via the lurl filter).
-export default {
+const nav = {
   primary: [
     { key: "nav.whats_new", url: "/whats-new/", icon: "sparkles", page: "whats-new" },
     { key: "nav.read", url: "/read/", icon: "book-open", page: "read" },
@@ -28,10 +28,16 @@ export default {
     },
   ],
   footer: [
-    { key: "nav.about", url: "/about/" },
-    { key: "nav.digest", url: "/digest/" },
-    { key: "nav.share", url: "/share/" },
-    { key: "nav.search", url: "/search/" },
-    { key: "nav.status", url: "/status/" },
+    { key: "nav.about", url: "/about/", page: "about" },
+    { key: "nav.digest", url: "/digest/", page: "digest" },
+    { key: "nav.share", url: "/share/", page: "share" },
+    { key: "nav.search", url: "/search/", page: "search" },
+    { key: "nav.status", url: "/status/", page: "status" },
   ],
 };
+
+// A dropdown group lists the pageKeys it holds, so the header can mark the
+// section of the current page ("you are here") on the closed Committee/Service button.
+for (const item of nav.primary) if (item.children) item.pages = item.children.map((c) => c.page);
+
+export default nav;

@@ -2,8 +2,9 @@
 
   * head_from_response() – status / size / type / Last-Modified from any HTTP response
   * download_pdf()       – streaming GET with a size cap and a time cap
-  * analyze_pdf()        – pypdfium2: metadata title, page count, text of pages 1-2, and a small
-                           WebP thumbnail of page 1 (Pillow)
+  * analyze_pdf()        – pypdfium2: metadata title, page count, text of pages 1-2 (also page by
+                           page, so a bilingual sheet can be told from a one-language document),
+                           and a small WebP thumbnail of page 1 (Pillow)
 
 Nothing here raises for a bad file: every function returns an error string instead.
 Personal metadata (Author, Creator…) is deliberately NOT read — AA anonymity.
@@ -100,9 +101,11 @@ def download_pdf(session, url: str, *, max_bytes: int, max_seconds: float = 90.0
 
 def analyze_pdf(data: bytes, thumb_file: Path | None) -> dict:
     """Read a PDF in memory. Returns details dict:
-        {title, pages, text, error, final, thumb_written}
-    `text` is the (not stored) text sample of the first pages; callers keep only derived values."""
-    out: dict = {"title": None, "pages": None, "text": "", "error": None, "final": False, "thumb_written": False}
+        {title, pages, text, page_texts, error, final, thumb_written}
+    `text` / `page_texts` are the (not stored) text sample of the first pages, joined / one per page;
+    callers keep only derived values."""
+    out: dict = {"title": None, "pages": None, "text": "", "page_texts": [], "error": None, "final": False,
+                 "thumb_written": False}
     try:
         import pypdfium2 as pdfium
     except Exception as e:  # pragma: no cover - dependency missing
@@ -142,6 +145,7 @@ def analyze_pdf(data: bytes, thumb_file: Path | None) -> dict:
                     except Exception:
                         pass
         out["text"] = "\n".join(parts).replace("\r\n", "\n").replace("\r", "\n")[:TEXT_MAX_CHARS]
+        out["page_texts"] = [p[:TEXT_MAX_CHARS] for p in parts]
         # --- thumbnail of page 1 ---------------------------------------------------------
         if thumb_file is not None:
             page = bitmap = None

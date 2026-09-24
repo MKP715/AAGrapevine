@@ -167,7 +167,7 @@ class Video:
     """Everything learned about one video during this run (merged with the stored item later)."""
 
     __slots__ = ("vid", "channel_id", "title", "desc", "date", "approx_ts", "duration", "views",
-                 "is_short", "live", "playlists", "yt_lang", "details_ok")
+                 "is_short", "live", "playlists", "yt_lang", "details_ok", "duration_approx", "views_approx")
 
     def __init__(self, vid: str):
         self.vid = vid
@@ -183,6 +183,10 @@ class Video:
         self.playlists: set[str] = set()      # playlist ids
         self.yt_lang: str | None = None
         self.details_ok = False
+        # Flat yt-dlp listings round: durations can be 1 s off and views come from labels like
+        # "3.8K views". Such values never replace an exact stored one (see build_item).
+        self.duration_approx = False
+        self.views_approx = False
 
 
 class Collector:
@@ -215,7 +219,7 @@ class Collector:
         stats = e.get("media_statistics") or {}
         views = _int(stats.get("views")) if isinstance(stats, dict) else None
         if views is not None:
-            v.views = views
+            v.views, v.views_approx = views, False
         if is_short is not None:
             v.is_short = is_short
         if live:
@@ -242,10 +246,10 @@ class Collector:
             v.title = v.title or title
         if e.get("timestamp") and not v.approx_ts:
             v.approx_ts = _int(e.get("timestamp"))
-        if e.get("duration"):
-            v.duration = _int(e.get("duration"))
+        if e.get("duration") and (v.duration is None or v.duration_approx):
+            v.duration, v.duration_approx = _int(e.get("duration")), True
         if e.get("view_count") is not None and v.views is None:
-            v.views = _int(e.get("view_count"))
+            v.views, v.views_approx = _int(e.get("view_count")), True
         if is_short is not None:
             v.is_short = is_short
         elif "/shorts/" in str(e.get("url") or ""):
@@ -275,9 +279,9 @@ class Collector:
         if exact and not v.date:   # an RSS date (same value) wins if we already have one
             v.date = exact
         if info.get("duration"):
-            v.duration = _int(info.get("duration"))
+            v.duration, v.duration_approx = _int(info.get("duration")), False
         if info.get("view_count") is not None:
-            v.views = _int(info.get("view_count"))
+            v.views, v.views_approx = _int(info.get("view_count")), False
         if info.get("was_live") or info.get("live_status") in ("was_live", "post_live", "is_live"):
             v.live = True
         lang = str(info.get("language") or "").lower()[:2]
@@ -485,6 +489,23 @@ def probe_is_short(http: PoliteSession, vid: str) -> bool | None:
 
 
 # --------------------------------------------------------------------------- item building
+def merged_duration_views(v: Video, pe: dict) -> tuple[int | None, int | None]:
+    """This run's duration/views, except that a rounded value from a flat listing never replaces
+    an exact stored one: a duration within 2 s keeps the stored value, and an estimated view
+    count only replaces a stored count that is lower (views never go down)."""
+    old_dur, old_views = _int(pe.get("duration_sec")), _int(pe.get("views"))
+    duration = v.duration or old_dur
+    if v.duration_approx and old_dur and v.duration and abs(v.duration - old_dur) <= 2:
+        duration = old_dur
+    if v.views is None:
+        views = old_views
+    elif v.views_approx and old_views is not None:
+        views = max(old_views, v.views)
+    else:
+        views = v.views
+    return duration, views
+
+
 def build_item(v: Video, prev: dict | None, pl_by_id: dict[str, dict], membership_complete: bool,
                default_channel: str | None) -> dict | None:
     pe = (prev or {}).get("extra") or {}
@@ -537,8 +558,7 @@ def build_item(v: Video, prev: dict | None, pl_by_id: dict[str, dict], membershi
     is_short = bool(is_short)
     live = bool(v.live or pe.get("is_live_recording") or _LIVE_RE.search(title)
                 or re.search(r"(?i)\blive recording\b|\bgrabaci[oó]n en vivo\b", desc[:300]))
-    duration = v.duration or _int(pe.get("duration_sec"))
-    views = v.views if v.views is not None else _int(pe.get("views"))
+    duration, views = merged_duration_views(v, pe)
 
     tags: list[str] = []
     m = _SEASON_RE.search(title)
@@ -620,7 +640,7 @@ def main(argv: list[str] | None = None) -> None:
     http = PoliteSession(min_delay=1.0, respect_robots=False, timeout=20, retries=2)
     col = Collector()
     errors: list[str] = []
-    stats: dict[str, Any] = {"channels": len(channels), "rss_feeds": 0, "rss_failed": 0}
+    stats: dict[str, Any] = {"channels": len(channels), "rss_feeds": 0, "rss_failed": 0, "rss_404": 0}
     rss_ok = False
     yt_dlp = None if args.no_backfill and args.details <= 0 else _ytdlp()
     ytdlp_deadline: float | None = None
@@ -665,12 +685,19 @@ def main(argv: list[str] | None = None) -> None:
         for i, (url, kw) in enumerate(feeds):
             entries, status = fetch_feed(http, url)
             stats["rss_feeds"] += 1
+            if status == 404:
+                stats["rss_404"] += 1
             if status == 200:
                 for e in entries:
                     col.add_rss(e, cid, **kw)
                 rss_ok = True
-            elif status == 404 and i > 0:
-                pass  # e.g. no live streams → UULV feed does not exist
+            elif status == 404 and i > 1:
+                pass  # e.g. no Shorts or no live streams → that UUSH / UULV feed does not exist
+            elif status == 404 and i == 1:
+                # Every channel with videos has an uploads (UULF) feed: a 404 here means
+                # YouTube's feeds are down, not that the channel has no videos.
+                stats["rss_failed"] += 1
+                log.warning("uploads RSS feed of %s answered 404", cid)
             else:
                 stats["rss_failed"] += 1
                 if i == 0:
@@ -737,7 +764,7 @@ def main(argv: list[str] | None = None) -> None:
     pl_by_id = {p["id"]: p for p in playlists}
 
     # ---- 3. playlist RSS feeds (daily: newest 15 of each playlist) ----------
-    feeds_done = fails_in_row = 0
+    feeds_done = fails_in_row = playlist_404 = 0
     rss_deadline = time.monotonic() + RSS_PLAYLIST_BUDGET_S
     for p in playlists[: max(0, args.max_playlist_feeds)]:
         if fails_in_row >= 5 or time.monotonic() > rss_deadline:
@@ -754,10 +781,20 @@ def main(argv: list[str] | None = None) -> None:
             fails_in_row = 0
         elif status == 404:
             fails_in_row = 0  # playlist deleted/private since the last listing
+            playlist_404 += 1
+            stats["rss_404"] += 1
         else:
             stats["rss_failed"] += 1
             fails_in_row += 1
     stats["playlist_feeds"] = feeds_done
+    if feeds_done >= 4 and playlist_404 * 2 > feeds_done:
+        # One deleted playlist is normal; most of them "deleted" at once means YouTube's RSS is down.
+        stats["rss_failed"] += playlist_404
+    if stats["rss_404"] * 2 > stats["rss_feeds"] and stats["rss_feeds"] >= 4:
+        msg = (f"YouTube RSS unavailable ({stats['rss_404']}/{stats['rss_feeds']} feeds answered 404)"
+               f" — {'using the yt-dlp listing' if listed else 'no fresh listing this run'}")
+        errors.insert(0, msg)
+        log.warning(msg)
     log.info("RSS: %d videos after %d playlist feeds", len(col.videos), feeds_done)
 
     # ---- 4. is it a Short? (cheap HEAD probe for new videos of unknown type) --

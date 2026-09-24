@@ -166,7 +166,7 @@ that says what to check; it closes itself when the source works again.
 | Your own address, e.g. grapevine.neta65.org | README → *Using your own address* |
 | Send visitors of the old site to the new one | README → *Replacing the old site* |
 | Weekly broken-link report | Nothing to do — the **Weekly link check** workflow runs on Sundays and opens an issue only if it finds a problem |
-| Safe monthly updates (Dependabot) | Nothing to do — the **Pull request check** workflow builds the site for every pull request; merge one only when it shows a green ✓ |
+| Safe monthly updates (Dependabot) | Nothing to do — the **Code check** workflow builds the site and runs the tests for every pull request; merge one only when it shows a green ✓ |
 
 ### Where to add secrets
 

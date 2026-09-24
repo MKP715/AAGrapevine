@@ -44,6 +44,13 @@
 .home-meet-actions > * { flex: 1 1 auto; }
 .home-meet-actions > .home-meet-join { flex-basis: 100%; }
 .home-meet-actions > .btn-sm { padding-inline: 0.75rem; }
+/* Narrow cards (phones, and the 19rem hero column at 1024–1279px): no decorative arrow on
+   "Details" and a little less padding, so "Add to calendar" / "Agregar al calendario" and
+   "Details" stay on one row — in the hero that keeps the standard 30rem hero height. */
+@media (width < 30rem), (64rem <= width < 80rem) {
+  .home-meet-actions > .btn-sm { padding-inline: 0.625rem; }
+  .home-meet-more > .icon { display: none; }
+}
 
 /* --hero: dark glass, so contrast holds over the bright string lights. Sized to fit the
    hero's 30rem with room to spare (e.g. a two-line Spanish date: "Miércoles, 16 de septiembre"). */

@@ -16,7 +16,7 @@ export default function () {
     digest: cfg.digest || {},
     // Build timestamp (UTC ISO) — shown as "Last updated" in the footer.
     built: new Date().toISOString(),
-    // Drive folder link for the committee upload area
-    driveRootUrl: cfg.drive?.root_folder_id ? `https://drive.google.com/drive/folders/${cfg.drive.root_folder_id}` : null,
+    // No link to the Drive ROOT on purpose: it can hold private files (e.g. sign-up response sheets).
+    // Pages link the current Panel folder instead (eleventy/filters/committee.js → driveInfo).
   };
 }

@@ -22,12 +22,19 @@
 {
   "source": "youtube",
   "updated": "2026-09-23T10:17:00Z",   // last successful run of this module
+  "attempted": "2026-09-23T10:17:00Z", // last run, successful or not
+  "first_harvest": "2026-09-01T10:17:00Z", // first successful read of this source; never moves
   "ok": true,                          // false if this run failed (items kept from before)
   "error": null,                       // short message when ok=false
   "stats": { "fetched": 15, "new": 2 },// free-form counters shown on /status/
   "items": [ Item, ... ]
 }
 ```
+
+`first_harvest` is written by `common.save_raw()` (seeded from the oldest `first_seen` when an older
+file has none). `build_data.py` uses it to tell the launch-day back catalog from real news (see
+*is_new / What's New* in §3); the oldest `first_seen` cannot do that because it moves forward when a
+source drops old items.
 
 Source file names: `drive.json`, `youtube.json`, `podcasts.json`, `instagram.json`,
 `articles.json`, `pdfs.json`, `events_external.json`, `editorial.json`,
@@ -243,7 +250,7 @@ it is read once.
 | video (`videos`) | `video_id`, `channel_id`, `duration_sec`, `playlists` [names], `is_short`, `views`, `is_live_recording`, `date_approx`, `season`, `episode` (podcast videos only) | — |
 | post (`instagram`) | `shortcode`, `account`, `username`, `media_type`, `thumb`, `embed_url`, `permalink`, `is_reel`, `manual`, `strategy`, `caption_known`, `embed_checked` | — |
 | article (`articles`, `spotlight`) | `publication`, `issue_key`, `issue_label`, `issue_date` (cover date), `issue_theme`, `issue_url`, `topic`, `section`, `author`, `author_location`, `subtitle`, `teaser`, `free`, `online_exclusive`, `department` (bool); written by build_data: `geo`, `pub_date` (below) | `section`, `topic`, `issue_theme` (machine); `issue_label`, `author_location` (rules — from `geo.label_en/label_es`, only when a place is known) |
-| pdf (`pdfs`) | `host`, `file_url`, `filename`, `size_bytes`, `pages`, `thumb`, `referrers` [{url, title}], `upload_month`, `link_texts`, `event_date`, `doc_lang`, `section` (heading on the referring page), `external`, `orphan` | — |
+| pdf (`pdfs`) | `host`, `file_url`, `filename`, `size_bytes`, `pages`, `thumb`, `referrers` [{url, title}], `upload_month`, `link_texts`, `event_date`, `doc_lang`, `multilingual` (`true` when one file holds several languages — two or more page languages, language-only links for 2+ languages, or a heading such as "Catalog • Catálogo • Catalogue"; otherwise `null`: such a file takes the host site's language and gets no "(Spanish)" title suffix), `section` (heading on the referring page), `external`, `orphan` | — |
 | topic (`editorial`) | `publication`, `theme`, `evergreen`, and for dated GV themes `issue_key`, `issue_label`, `deadline`, `due_text`, `pdf_url`, `submit_url`, `guidelines_url` | `issue_label` (rules); `theme` when it differs from the title |
 | meeting (`weekly_open`) | `zoom_id`, `zoom_url`, `passcode`, `day`, `time`, `time_central`, `sentence`, `weekday`, `start_local`, `timezone`, `next_start`, `url`, `player_url` | written by rules from weekday/start_local/timezone: `day` ("Wednesdays"/"Miércoles"), `time` ("Noon Eastern"/"mediodía (hora del Este)"), `time_central` ("11:00 AM Central"/"11:00 a. m. (hora del Centro)"), `when` ("Wednesdays at 11:00 AM Central"/"Miércoles a las 11:00 a. m. (hora del Centro)"), `sentence` (join line with Zoom ID + passcode). Machine-translated only if those fields are missing |
 | event (`events`) | common: `start`, `end`, `all_day`, `location`, `online_url`, `flyer_url`, `flyer_thumb`, `city`, `state`, `past`. Committee: `meeting_id`, `passcode`, `recurring`. External calendar: `platform`, `online`, `scope`, `site`, `country`, `website`, `organizer`, `date_text`. Drive flyer: `drive_id`, `is_pdf`, `is_image`. Manual: `body_md`, `slug`, `file` | committee meetings: fixed human `title`/`summary` in both languages; manual: `body_md` |
@@ -292,6 +299,23 @@ the day the story was first seen online (`first_seen`, in America/Chicago) — n
 does not move: an October issue seen online on September 16 counts from September 16, also after
 October 1 (so the digest lists it once); a back-catalog story found by the archive backfill counts
 from its issue's first day (its `first_seen` is the later backfill day).
+
+### Crawler state — `data/state/crawl-state.json`
+Written only by `scripts/sync/crawl.py` (never edit it by hand; deleting it starts the crawl over).
+Top level: `version`, `updated`, `sitemaps` {url: {`fetched`, `status`}}, `runs` (last runs' counters),
+`pages` {url: page record}, `pdfs` {normalized url: PDF record}. `data/raw/pdfs.json` is rebuilt from it
+on every run. A PDF record:
+
+| field | meaning |
+|---|---|
+| `url`, `first_seen`, `last_seen_on_page`, `refs` [{`url`, `title`, `section`, `texts`, `alts`, `seen`}], `external` | where the file is and which pages link it |
+| `status` | `ok` · `gone` (left out of the site files) · `not-pdf` (the link turned out to be a web page) |
+| `gone_strike_at` | the FIRST failing check (404/410, or an HTML page where the file was). The PDF only becomes `gone` when a second check at least 24 h later fails too (`GONE_CONFIRM_H`); a good answer clears it |
+| `gone_since` | when it became `gone`. A gone PDF that a page still links is checked again every 7 days during its first 60 days as gone, then every 30 days (`GONE_RECHECK_DAYS`); a good answer brings it back (`status: ok`, both fields removed) |
+| `vanished_at` / `recheck` | no page links it any more (→ one check: deleted?) / a gone PDF is linked again (→ check: back?) |
+| `hint`, `fresh` | the link is not a `*.pdf` address (the check must confirm it is a PDF) / it appeared on a page crawled before, so `first_seen` ≈ its publish date |
+| `head` | last check: `status`, `size`, `type`, `last_modified`, `final_url`, `checked_at`; after no answer at all also `error: "unreachable"`, `fails`, `next_try` (2, 4, 8 … ≤ 60 days) and `unreachable_since` (first of those failures). A PDF on another site (`external`) whose host has not answered for 30+ days after 4+ tries becomes `gone` (`UNREACHABLE_GONE`); files on the two magazine sites never do |
+| `details` | from the one-time download: `checked_at`, `title` (PDF metadata; the author is never read), `pages`, `chars`, `text_lang`, `page_langs` (language of each of the first 2 pages: `en`/`es`/`fr`, or `null` when a page has < 200 characters of text or no clear language — two different languages make the file `multilingual`), `heading` (a title-like line from the top of page 1), `thumb`; on failure `error`, `final` (do not retry), `attempts`, `next_try` |
 
 ### Translation rules that affect what you see
 * Brand names are never translated (glossary `keep`: Grapevine, La Viña, Dear Grapevine, AA Grapevine,

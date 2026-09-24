@@ -1,27 +1,27 @@
 {
  "source": "pdfs",
- "updated": "2026-09-24T03:25:24Z",
- "attempted": "2026-09-24T03:25:24Z",
+ "updated": "2026-09-24T06:35:22Z",
+ "attempted": "2026-09-24T06:35:22Z",
  "ok": true,
  "error": null,
  "stats": {
-  "known_pages": 3445,
-  "crawled_pages": 3441,
-  "never_crawled": 4,
-  "never_crawled_events": 4,
+  "known_pages": 3429,
+  "crawled_pages": 3429,
+  "never_crawled": 0,
+  "never_crawled_events": 0,
   "pdfs": 130,
   "pdfs_gone": 12,
   "pdfs_with_details": 129,
   "pdfs_with_thumbs": 129,
-  "last_run_pages": 97,
-  "fetched": 97,
+  "last_run_pages": 0,
+  "fetched": 0,
   "new": 0,
   "not_modified": 0,
   "page_errors": 0,
   "discovered": 0,
   "details": 0,
   "heads": 0,
-  "requests": 100,
+  "requests": 0,
   "queue_remaining": 0,
   "est_days_to_full": 0.0
  },
@@ -745,7 +745,7 @@
    "source": "crawl",
    "kind": "pdf",
    "url": "https://www.aagrapevine.org/sites/default/files/2026-08/La-Vin%CC%83a-Subscription-Form%5B30%5D.pdf",
-   "title": "La Viña Subscription Form (Spanish)",
+   "title": "La Viña Subscription Form",
    "summary": "",
    "lang": "en",
    "date": "2026-08-21",
@@ -775,7 +775,7 @@
      "La Viña Subscription Form"
     ],
     "event_date": null,
-    "doc_lang": "es",
+    "doc_lang": "en",
     "section": "SUBSCRIPTION and product",
     "external": false,
     "orphan": false
@@ -907,7 +907,7 @@
    "source": "crawl",
    "kind": "pdf",
    "url": "https://www.aa.org/sites/default/files/literature/SP_Retrofit_Completion_Return_to_Office.pdf",
-   "title": "SP Letter to the Fellowahip Retrofit Completion and Return to Office (Spanish)",
+   "title": "Letter to the Fellowship: Retrofit Completion and Return to Office (Spanish)",
    "summary": "",
    "lang": "en",
    "date": "2026-03-31",
@@ -944,7 +944,7 @@
    "source": "crawl",
    "kind": "pdf",
    "url": "https://www.aa.org/sites/default/files/literature/Retrofit_Completion_Return_to_Office.pdf",
-   "title": "Letter to the Fellowahip Retrofit Completion and Return to Office",
+   "title": "Letter to the Fellowship: Retrofit Completion and Return to Office",
    "summary": "",
    "lang": "en",
    "date": "2026-03-31",
@@ -1269,7 +1269,8 @@
     "doc_lang": "en",
     "section": "tool and resources",
     "external": false,
-    "orphan": false
+    "orphan": false,
+    "multilingual": true
    }
   },
   {
@@ -1277,7 +1278,7 @@
    "source": "crawl",
    "kind": "pdf",
    "url": "https://www.aalavina.org/sites/default/files/2026-02/LV_Catalogo_2026.pdf",
-   "title": "Catálogo 2026 (inglés)",
+   "title": "Catálogo 2026",
    "summary": "",
    "lang": "es",
    "date": "2026-02-02",
@@ -1312,10 +1313,11 @@
      "SÓLO DISPONIBLE PARA DESCARGAR (ARCHIVO PDF)"
     ],
     "event_date": null,
-    "doc_lang": "en",
+    "doc_lang": "es",
     "section": "recursos y herramientas",
     "external": false,
-    "orphan": false
+    "orphan": false,
+    "multilingual": true
    }
   },
   {
@@ -1571,7 +1573,7 @@
    "url": "https://www.aagrapevine.org/sites/default/files/2026-01/GV_catalog_postcard_2026.pdf",
    "title": "2026 Catalog Postcard",
    "summary": "",
-   "lang": "es",
+   "lang": "en",
    "date": "2026-01-08",
    "first_seen": "2026-09-23T16:31:53Z",
    "last_seen": "2026-09-23T16:46:31Z",
@@ -1599,7 +1601,7 @@
      "2026 Catalog Postcard"
     ],
     "event_date": null,
-    "doc_lang": "es",
+    "doc_lang": "en",
     "section": "Postcards",
     "external": false,
     "orphan": false
@@ -2615,7 +2617,7 @@
    "source": "crawl",
    "kind": "pdf",
    "url": "https://www.aagrapevine.org/sites/default/files/2024-07/ASL_Videos_Announcement_ENG-v71224.pdf",
-   "title": "Announcement PDF version",
+   "title": "ASL Videos Announcement",
    "summary": "",
    "lang": "en",
    "date": "2024-07-15",
@@ -2639,9 +2641,7 @@
      }
     ],
     "upload_month": "2024-07",
-    "link_texts": [
-     "Announcement PDF version"
-    ],
+    "link_texts": [],
     "event_date": null,
     "doc_lang": "en",
     "section": "Announcement: ASL Videos",
@@ -2820,7 +2820,7 @@
    "url": "https://www.aagrapevine.org/sites/default/files/2024-05/Postcard_80th_anniversary.pdf",
    "title": "80th Anniversary",
    "summary": "",
-   "lang": "es",
+   "lang": "en",
    "date": "2024-05-15",
    "first_seen": "2026-09-23T16:31:53Z",
    "last_seen": "2026-09-23T16:46:31Z",
@@ -2848,7 +2848,7 @@
      "80th Anniversary"
     ],
     "event_date": null,
-    "doc_lang": "es",
+    "doc_lang": "en",
     "section": "Postcards",
     "external": false,
     "orphan": false
@@ -2861,7 +2861,7 @@
    "url": "https://www.aagrapevine.org/sites/default/files/2024-05/GV_LV_annual_Prices_2024.pdf",
    "title": "GV Annual Prices",
    "summary": "",
-   "lang": "es",
+   "lang": "en",
    "date": "2024-05-02",
    "first_seen": "2026-09-23T16:31:53Z",
    "last_seen": "2026-09-23T16:46:31Z",
@@ -2889,7 +2889,7 @@
      "GV Annual Prices"
     ],
     "event_date": null,
-    "doc_lang": "es",
+    "doc_lang": "en",
     "section": "Postcards",
     "external": false,
     "orphan": false
@@ -3306,7 +3306,7 @@
    "source": "crawl",
    "kind": "pdf",
    "url": "https://www.aagrapevine.org/sites/default/files/2023-03/2023_HG_Heartbeat_of_AA_AVAILABLE-NOW.pdf",
-   "title": "The 30th Anniversary Edition! (Spanish)",
+   "title": "The Home Group: Heartbeat of AA (30th Anniversary Edition)",
    "summary": "",
    "lang": "en",
    "date": "2023-03-15",
@@ -3330,15 +3330,13 @@
      }
     ],
     "upload_month": "2023-03",
-    "link_texts": [
-     "The 30th Anniversary Edition! (Spanish)",
-     "The 30th Anniversary Edition! (French)"
-    ],
+    "link_texts": [],
     "event_date": null,
-    "doc_lang": "es",
+    "doc_lang": "en",
     "section": "The 30th Anniversary Edition!",
     "external": false,
-    "orphan": false
+    "orphan": false,
+    "multilingual": true
    }
   },
   {
@@ -3428,7 +3426,7 @@
    "source": "crawl",
    "kind": "pdf",
    "url": "https://www.aalavina.org/sites/default/files/2023-01/LV__Encuesta_Carta.pdf",
-   "title": "Leer / Descargar Carta",
+   "title": "Carta sobre la encuesta de la aplicación de Grapevine y La Viña",
    "summary": "",
    "lang": "es",
    "date": "2023-01-19",
@@ -3452,9 +3450,7 @@
      }
     ],
     "upload_month": "2023-01",
-    "link_texts": [
-     "Leer / Descargar Carta"
-    ],
+    "link_texts": [],
     "event_date": null,
     "doc_lang": "es",
     "section": "Encuesta \"Aplicación del Grapevine y La Viña\"",
@@ -3467,7 +3463,7 @@
    "source": "crawl",
    "kind": "pdf",
    "url": "https://www.aagrapevine.org/sites/default/files/2023-01/GV__Survey_Letter.pdf",
-   "title": "/ Download letter",
+   "title": "Letter about the Grapevine and La Viña Apps Survey",
    "summary": "",
    "lang": "en",
    "date": "2023-01-19",
@@ -3491,9 +3487,7 @@
      }
     ],
     "upload_month": "2023-01",
-    "link_texts": [
-     "/ Download letter"
-    ],
+    "link_texts": [],
     "event_date": null,
     "doc_lang": "en",
     "section": "Survey \"Grapevine and La Viña Apps\"",
@@ -4228,7 +4222,7 @@
    "source": "crawl",
    "kind": "pdf",
    "url": "https://www.aagrapevine.org/sites/default/files/2021-10/Announcement_GV-Podcast.pdf",
-   "title": "French and Spanish (Spanish)",
+   "title": "Grapevine's New Podcast",
    "summary": "",
    "lang": "en",
    "date": "2021-10-04",
@@ -4252,14 +4246,13 @@
      }
     ],
     "upload_month": "2021-10",
-    "link_texts": [
-     "French and Spanish"
-    ],
+    "link_texts": [],
     "event_date": null,
-    "doc_lang": "es",
+    "doc_lang": "en",
     "section": "Grapevine's New Podcast",
     "external": false,
-    "orphan": false
+    "orphan": false,
+    "multilingual": true
    }
   },
   {
@@ -4275,7 +4268,7 @@
    "last_seen": "2026-09-23T17:12:47Z",
    "image": "/assets/cache/pdf/e6269ba5c7e98311.webp",
    "tags": [],
-   "category": "other",
+   "category": "news",
    "status": "ok",
    "extra": {
     "host": "www.aagrapevine.org",
@@ -4319,7 +4312,7 @@
    "last_seen": "2026-09-23T17:12:47Z",
    "image": "/assets/cache/pdf/9a31506105fb5aae.webp",
    "tags": [],
-   "category": "other",
+   "category": "news",
    "status": "ok",
    "extra": {
     "host": "www.aagrapevine.org",
@@ -4363,7 +4356,7 @@
    "last_seen": "2026-09-23T17:12:47Z",
    "image": "/assets/cache/pdf/bc77b83a78872b55.webp",
    "tags": [],
-   "category": "other",
+   "category": "news",
    "status": "ok",
    "extra": {
     "host": "www.aagrapevine.org",
@@ -5011,7 +5004,7 @@
    "source": "crawl",
    "kind": "pdf",
    "url": "https://www.aalavina.org/sites/default/files/2020-08/Formulario%20Pedido%20de%20Materiales%20Gratuitos%20.pdf",
-   "title": "Calendario de Eventos",
+   "title": "Formulario de pedido de materiales gratuitos",
    "summary": "",
    "lang": "es",
    "date": "2020-08-26",
@@ -5294,9 +5287,9 @@
    "source": "crawl",
    "kind": "pdf",
    "url": "https://www.aalavina.org/sites/default/files/2020-02/Grapevine-Politica-de-Prvacidad%282019-09-05%29.pdf",
-   "title": "It in Spanish (Spanish)",
+   "title": "Política de privacidad de Grapevine",
    "summary": "",
-   "lang": "en",
+   "lang": "es",
    "date": "2020-02-01",
    "first_seen": "2026-09-23T17:06:02Z",
    "last_seen": "2026-09-23T17:06:02Z",
@@ -5319,7 +5312,7 @@
     ],
     "upload_month": "2020-02",
     "link_texts": [
-     "It in Spanish"
+     "Grapevine Politica de Prvacidad (español)"
     ],
     "event_date": null,
     "doc_lang": "es",
@@ -5679,7 +5672,7 @@
    "last_seen": "2026-09-23T17:27:31Z",
    "image": "/assets/cache/pdf/198e2db9044472c9.webp",
    "tags": [],
-   "category": "order-form",
+   "category": "guidelines",
    "status": "ok",
    "extra": {
     "host": "www.aagrapevine.org",
@@ -5727,7 +5720,7 @@
    "last_seen": "2026-09-23T17:06:56Z",
    "image": "/assets/cache/pdf/eb89376deeee60ac.webp",
    "tags": [],
-   "category": "order-form",
+   "category": "guidelines",
    "status": "ok",
    "extra": {
     "host": "www.aalavina.org",
@@ -5798,10 +5791,11 @@
    }
   }
  ],
+ "first_harvest": "2026-09-23T16:31:37Z",
  "crawl": {
-  "known_pages": 3445,
-  "crawled_pages": 3441,
+  "known_pages": 3429,
+  "crawled_pages": 3429,
   "pdfs": 130,
-  "last_run_pages": 97
+  "last_run_pages": 0
  }
 }

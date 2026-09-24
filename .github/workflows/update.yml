@@ -96,10 +96,14 @@ jobs:
       # The branch's LATEST commit, not the one that started this run: a run that waited
       # its turn (see "concurrency" above) must start from the data the previous run just
       # committed, or it would crawl the same pages again and push older data.
+      # persist-credentials: false — the write-access token is NOT left in .git/config while
+      # the third-party Python packages below are installed and run; only the "Commit refreshed
+      # data" step uses it, and removes it again when it is done.
       - name: Check out the repository (latest commit on the branch, including the previous run's data)
         uses: actions/checkout@v7
         with:
           ref: ${{ github.ref }}
+          persist-credentials: false
 
       - name: Set up Python
         uses: actions/setup-python@v7
@@ -274,10 +278,16 @@ jobs:
         env:
           EVENT: ${{ github.event_name }}
           BRANCH: ${{ github.ref_name }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # The checkout keeps no token (persist-credentials: false), so log in for this step
+          # only — covers both the push and the "git pull --rebase" retry — and log out on exit.
+          auth_key="http.https://github.com/.extraheader"
+          trap 'git config --local --unset-all "$auth_key" || true' EXIT
+          git config --local "$auth_key" "AUTHORIZATION: basic $(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
 
           # Everything the sync writes (new, changed AND deleted files).
           # People's files (settings, content/, overrides.yml, glossary.yml)
@@ -384,6 +394,32 @@ jobs:
                   print(f"::warning title=Translation is not working::{t['pending']} texts are waiting but none could be translated "
                         "this run. The translation models are probably missing (see 'Check the translation models are "
                         "complete' and the 'Sync all sources' log). New titles stay in their original language until then.")
+          # Smaller problems of a source that still updated (e.g. one of several feeds did not answer).
+          # Nothing to do unless the same note shows up here day after day.
+          notes = []
+          for src in s.get("sources", []):
+              warns = (src.get("stats") or {}).get("warnings") if isinstance(src.get("stats"), dict) else None
+              if src.get("ok") and isinstance(warns, list) and warns:
+                  label = src.get("label") or src.get("source")
+                  notes += [f"- {label}: " + str(w).replace("\n", " ")[:200] for w in warns[:2]]
+          if notes:
+              lines += ["", "**Notes** (these sources still updated; only look into a note that repeats for a week):", *notes]
+          # Weekly podcast discovery (scripts/sync/podcasts.py): feeds found on the magazine sites that
+          # are not in config/site.yml yet. They are never added automatically.
+          pod = next((x for x in s.get("sources", []) if x.get("source") == "podcasts"), None) or {}
+          pstats = pod.get("stats") if isinstance(pod.get("stats"), dict) else {}
+          feeds = [f for f in (pstats.get("discovered_feeds") or []) if isinstance(f, dict) and f.get("feed")]
+          if feeds:
+              lines += ["", "**New podcast feeds found** (not on the website yet; to show one, add it under "
+                            "`sources.podcasts` in `config/site.yml`):"]
+              for f in feeds[:6]:
+                  bits = [str(f.get("title") or "(no title)"),
+                          f"{f['episodes']} episodes" if f.get("episodes") else "",
+                          "Spanish" if f.get("spanish") else "",
+                          f"latest {str(f['latest'])[:10]}" if f.get("latest") else ""]
+                  lines.append("- " + " · ".join(b for b in bits if b) + f" — {f['feed']}")
+              print(f"::notice title=New podcast feed found::{len(feeds)} podcast feed(s) on the magazine sites "
+                    "are not on the website yet. See the run summary.")
           if stale:
               lines += ["", f"**Not updating for {STALE_DAYS}+ days:** " + ", ".join(x["label"] for x in stale)
                         + " — reported in the issue *\"A content source has stopped updating\"*."]
@@ -424,6 +460,7 @@ jobs:
         uses: actions/checkout@v7
         with:
           ref: main
+          persist-credentials: false
 
       - name: Set up Node.js
         uses: actions/setup-node@v7
@@ -461,6 +498,9 @@ jobs:
           # Public address for feeds, share links and QR codes; it overrides
           # site.url in config/site.yml, so a custom domain is picked up automatically.
           SITE_URL: ${{ steps.addr.outputs.site_url }}
+          # A button or heading whose text is missing from src/_i18n/ stops the build here
+          # (GitHub Pages keeps the previous site) instead of showing its raw key on the live site.
+          I18N_STRICT: "1"
         run: npx @11ty/eleventy
 
       - name: Check the build

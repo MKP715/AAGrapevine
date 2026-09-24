@@ -37,18 +37,18 @@ pageScripts: ["/assets/js/read.js"]
     {% if showSection and a.section %}<span class="text-[0.68rem] font-semibold uppercase tracking-[0.12em] {{ 'text-lv' if a.pub == 'lv' else 'text-gv' }}" lang="{{ a.sectionLang }}">{{ a.section }}</span>{% endif %}
     <span class="flex items-start justify-between gap-2">
       <span class="font-display {{ 'text-[0.98rem]' if compact else 'text-[1.05rem]' }} font-semibold leading-snug text-ink transition {{ 'group-hover:text-lv' if a.pub == 'lv' else 'group-hover:text-gv' }}" lang="{{ a.titleLang }}">{{ a.title }}</span>
-      {% icon "arrow-up-right", "mt-1 size-4 shrink-0 text-faint transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5" %}
+      {% ricon "arrow-up-right", "mt-1 size-4 shrink-0 text-faint transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5" %}
     </span>
-    {% if a.original %}<span class="flex items-center gap-1 text-xs text-muted"{% if a.machine %} title="{{ 'common.auto_translated' | t(lang) }} — {{ 'common.auto_translated_help' | t(lang) }}"{% endif %}>{% if a.machine %}{% icon "languages", "size-3 shrink-0" %}<span class="sr-only">{{ "common.auto_translated" | t(lang) }}:</span>{% endif %}<span class="italic" lang="{{ a.origLang }}">{{ a.original }}</span></span>{% endif %}
+    {% if a.original %}<span class="flex items-center gap-1 text-xs text-muted"{% if a.machine %} title="{{ 'common.auto_translated' | t(lang) }} — {{ 'common.auto_translated_help' | t(lang) }}"{% endif %}>{% if a.machine %}{% ricon "languages", "size-3 shrink-0" %}<span class="sr-only">{{ "common.auto_translated" | t(lang) }}:</span>{% endif %}<span class="italic" lang="{{ a.origLang }}">{{ a.original }}</span></span>{% endif %}
     {% if a.summary and not compact %}<span class="line-clamp-2 text-sm leading-relaxed text-muted" lang="{{ a.summaryLang }}">{{ a.summary }}</span>{% endif %}
     {%- set mtInMeta = a.machine and not a.original -%}
     {% if a.author or (a.isNew and showNew) or a.free != null or mtInMeta %}
     <span class="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted">
       {% if a.isNew and showNew %}<span class="badge-new">{{ "common.new" | t(lang) }}</span>{% endif %}
       {% if a.author %}<span>{{ "common.by" | t(lang, {name: a.author}) }}{% if a.authorLocation and not compact %}<span class="text-faint"> · {{ a.authorLocation }}</span>{% endif %}</span>{% endif %}
-      {% if a.free == true %}<span class="badge-vine">{% icon "lock-open", "size-3" %} {{ "read.free_story" | t(lang) }}</span>
-      {% elif a.free == false %}<span class="read-sub-badge" title="{{ 'read.subscriber_help' | t(lang) }}">{% icon "key-round", "size-3" %} {{ "read.subscriber_story" | t(lang) }}</span>{% endif %}
-      {% if mtInMeta %}<span class="auto-note" title="{{ 'common.auto_translated' | t(lang) }} — {{ 'common.auto_translated_help' | t(lang) }}">{% icon "languages", "size-3" %}<span class="sr-only">{{ "common.auto_translated" | t(lang) }}</span></span>{% endif %}
+      {% if a.free == true %}<span class="badge-vine">{% ricon "lock-open", "size-3" %} {{ "read.free_story" | t(lang) }}</span>
+      {% elif a.free == false %}<span class="read-sub-badge" title="{{ 'read.subscriber_help' | t(lang) }}">{% ricon "key-round", "size-3" %} {{ "read.subscriber_story" | t(lang) }}</span>{% endif %}
+      {% if mtInMeta %}<span class="auto-note" title="{{ 'common.auto_translated' | t(lang) }} — {{ 'common.auto_translated_help' | t(lang) }}">{% ricon "languages", "size-3" %}<span class="sr-only">{{ "common.auto_translated" | t(lang) }}</span></span>{% endif %}
     </span>
     {% endif %}
     <span class="sr-only">({{ "common.external" | t(lang) }})</span>
@@ -82,7 +82,7 @@ pageScripts: ["/assets/js/read.js"]
       <div class="mt-6 flex items-start gap-5 @lg:gap-6 @4xl:flex-col @4xl:items-stretch @4xl:gap-0">
         {% if v.cover %}
         <a class="read-cover-frame block w-[7.25rem] shrink-0 @lg:w-40 @4xl:mx-auto @4xl:w-full @4xl:max-w-[14rem]" href="{{ issueUrl }}" target="_blank" rel="noopener">
-          <img src="{{ v.cover }}" width="480" height="686" alt="{{ 'read.cover_alt' | t(lang, {pub: pubName, issue: v.label}) }}" class="block aspect-[7/10] w-full rounded-[0.35rem] object-cover">
+          <img src="{{ v.cover }}" width="480" height="686" alt="{{ 'read.cover_alt' | t(lang, {pub: pubName, issue: (v.label | readInSentence(lang, v.pub))}) }}" class="block aspect-[7/10] w-full rounded-[0.35rem] object-cover">
           <span class="sr-only">({{ "common.external" | t(lang) }})</span>
         </a>
         {% endif %}
@@ -113,7 +113,7 @@ pageScripts: ["/assets/js/read.js"]
       {% if v.description %}
       <div class="read-blurb mx-3 mt-2 mb-4 {{ 'read-accent-lv' if isLv else 'read-accent-gv' }}">
         <p class="line-clamp-4 leading-relaxed text-ink" lang="{{ v.descriptionLang }}">{{ v.description }}</p>
-        {% if v.descriptionMachine %}<p class="auto-note mt-1.5" title="{{ 'common.auto_translated_help' | t(lang) }}">{% icon "languages", "size-3" %} {{ "common.auto_translated" | t(lang) }}</p>{% endif %}
+        {% if v.descriptionMachine %}<p class="auto-note mt-1.5" title="{{ 'common.auto_translated_help' | t(lang) }}">{% ricon "languages", "size-3" %} {{ "common.auto_translated" | t(lang) }}</p>{% endif %}
       </div>
       {% endif %}
       {% if v.count %}
@@ -124,7 +124,7 @@ pageScripts: ["/assets/js/read.js"]
       {%- if nOthers < 2 %}{% set nOthers = 2 %}{% endif -%}
       {%- set showNew = not v.isNewIssue -%}
       <div class="read-toc">
-        {% if v.machineCount %}<p class="auto-note px-3 pt-1">{% icon "languages", "size-3" %} {{ ("read.mt_note_es" if isLv else "read.mt_note_en") | t(lang) }}</p>{% endif %}
+        {% if v.machineCount %}<p class="auto-note px-3 pt-1">{% ricon "languages", "size-3" %} {{ ("read.mt_note_es" if isLv else "read.mt_note_en") | t(lang) }}</p>{% endif %}
         {% if v.featured.length %}
         <h4 class="read-toc-head {{ 'text-lv' if isLv else 'text-gv' }}">{% icon "sparkles", "size-3.5" %} <span lang="{{ v.featuredSectionLang }}">{{ v.featuredSection or ("read.special_section" | t(lang)) }}</span>{% if v.topic %}<span class="text-muted"> · <span lang="{{ v.topicLang }}">{{ v.topic }}</span></span>{% endif %}</h4>
         <ul class="grid grid-cols-1 gap-x-3 @lg:grid-cols-2">
@@ -172,7 +172,7 @@ pageScripts: ["/assets/js/read.js"]
     <p class="font-display text-lg font-semibold">{{ ("read.missing_lv" if pub == "lv" else "read.missing_gv") | t(lang) }}</p>
     <p class="text-sm text-muted">{{ "read.missing_text" | t(lang) }}</p>
   </div>
-  <a class="btn-secondary btn-sm" href="{{ hub }}" target="_blank" rel="noopener">{{ "read.read_on" | t(lang, {site: hub | hostname}) }} {% icon "arrow-up-right", "size-4" %}</a>
+  <a class="btn-secondary btn-sm" href="{{ hub }}" target="_blank" rel="noopener">{{ "read.read_on" | t(lang, {site: hub | hostname}) }} {% ricon "arrow-up-right", "size-4" %}</a>
 </div>
 {% endmacro %}
 
@@ -207,37 +207,46 @@ pageScripts: ["/assets/js/read.js"]
 {#- Link card to the /published/ page — writers from our Area (and all of Texas) in the magazines.
     Lays itself out by its own width: stacked in a column, in a row when it spans the page. -#}
 {% macro spotCard(sp, lang, variant="read") %}
-{%- set hasArea = sp and sp.area.writers > 0 -%}
-{%- set list = ((sp.area.list if hasArea else sp.texas.list) if sp else []) -%}
-<article class="read-spot card card-link group @container relative flex h-full flex-col overflow-hidden" aria-labelledby="spot-title">
+{#- The page is built once a day: read.js (recountSpot) recounts the "last N days" window with
+    the visitor's own date — the same rule as the home page and /published/ — using the dates
+    below (data-dates: one per writer counted; data-date: a writer's newest story), and swaps
+    the text / numbers / list that no longer apply. Writers can only leave the window. -#}
+{%- set hasTexas = sp and sp.texas.writers > 0 -%}
+{%- set hasArea = hasTexas and sp.area.writers > 0 -%}
+<article class="read-spot card card-link group @container relative flex h-full flex-col overflow-hidden" aria-labelledby="spot-title"{% if hasTexas %} data-spot-days="{{ sp.days }}"{% endif %}>
   <div class="grid flex-1 content-start gap-5 p-6 sm:p-7 @4xl:grid-cols-[minmax(0,1.2fr)_auto] @4xl:items-center @4xl:gap-x-10 @6xl:grid-cols-[minmax(0,1.2fr)_auto_minmax(0,1fr)]">
     <div class="min-w-0">
       <p class="eyebrow flex items-center gap-2.5 text-vine"><span class="grid size-9 shrink-0 place-items-center rounded-xl bg-vine-soft">{% icon "award", "size-5" %}</span>{{ "read.spot.eyebrow" | t(lang) }}</p>
       <h2 id="spot-title" class="mt-3 font-display text-2xl font-semibold leading-tight text-ink"><a href="{{ '/published/' | lurl(lang) }}" class="no-underline after:absolute after:inset-0 after:content-[''] group-hover:text-gv">{{ "read.spot.title" | t(lang) }}</a></h2>
       <p class="mt-2 text-sm leading-relaxed text-muted">
-        {%- if not sp or not sp.texas.writers %}{{ "read.spot.nodata" | t(lang) }}
-        {%- elif not hasArea %}{{ "read.spot.none_area" | t(lang, {days: sp.days}) }}
-        {%- elif variant == "contrib" %}{{ "read.spot.text_contrib" | t(lang) }}
-        {%- else %}{{ "read.spot.text" | t(lang, {days: sp.days}) }}{% endif -%}
+        {%- if not hasTexas %}{{ "read.spot.nodata" | t(lang) }}
+        {%- else -%}
+        <span data-spot-text="main"{% if not hasArea %} hidden{% endif %}>{{ ("read.spot.text_contrib" if variant == "contrib" else "read.spot.text") | t(lang, {days: sp.days}) }}</span>
+        <span data-spot-text="none_area"{% if hasArea %} hidden{% endif %}>{{ "read.spot.none_area" | t(lang, {days: sp.days}) }}</span>
+        <span data-spot-text="nodata" hidden>{{ "read.spot.nodata" | t(lang) }}</span>
+        {%- endif -%}
       </p>
     </div>
-    {% if sp and sp.texas.writers %}
-    <div>
+    {% if hasTexas %}
+    <div data-spot-nums>
       <p class="text-xs font-semibold uppercase tracking-wider text-muted">{{ "read.spot.window" | t(lang, {days: sp.days}) }}</p>
       <dl class="mt-2 flex flex-wrap gap-x-8 gap-y-3">
-        {% if hasArea %}<div class="flex flex-col-reverse gap-1"><dt class="text-sm text-muted">{{ ("read.spot.area_one" if sp.area.writers == 1 else "read.spot.area") | t(lang) }}</dt><dd class="read-num font-display text-4xl font-semibold leading-none text-vine">{{ sp.area.writers }}</dd></div>{% endif %}
-        <div class="flex flex-col-reverse gap-1"><dt class="text-sm text-muted">{{ ("read.spot.texas_one" if sp.texas.writers == 1 else "read.spot.texas") | t(lang) }}</dt><dd class="read-num font-display text-4xl font-semibold leading-none text-ink">{{ sp.texas.writers }}</dd></div>
+        <div class="flex flex-col-reverse gap-1"{% if not hasArea %} hidden{% endif %}><dt class="text-sm text-muted" data-one="{{ 'read.spot.area_one' | t(lang) }}" data-many="{{ 'read.spot.area' | t(lang) }}">{{ ("read.spot.area_one" if sp.area.writers == 1 else "read.spot.area") | t(lang) }}</dt><dd class="read-num font-display text-4xl font-semibold leading-none text-vine" data-spot-n="area" data-dates="{{ sp.area.dates | join(' ') }}">{{ sp.area.writers }}</dd></div>
+        <div class="flex flex-col-reverse gap-1"><dt class="text-sm text-muted" data-one="{{ 'read.spot.texas_one' | t(lang) }}" data-many="{{ 'read.spot.texas' | t(lang) }}">{{ ("read.spot.texas_one" if sp.texas.writers == 1 else "read.spot.texas") | t(lang) }}</dt><dd class="read-num font-display text-4xl font-semibold leading-none text-ink" data-spot-n="texas" data-dates="{{ sp.texas.dates | join(' ') }}">{{ sp.texas.writers }}</dd></div>
       </dl>
     </div>
     {% endif %}
     <div class="flex min-w-0 flex-col gap-4 @4xl:col-span-2 @6xl:col-span-1">
-      {% if list.length %}
-      <div>
-        <p class="text-xs font-semibold text-muted">{{ ("read.spot.newest_area" if hasArea else "read.spot.newest_texas") | t(lang) }}</p>
+      {% if hasTexas %}
+      {#- Newest writers from our Area; the Texas list stands in when no Area 65 writer is in the window -#}
+      {% for scope in ["area", "texas"] %}{% if sp[scope].list.length %}
+      <div data-spot-list="{{ scope }}"{% if (scope == "area") != hasArea %} hidden{% endif %}>
+        <p class="text-xs font-semibold text-muted">{{ ("read.spot.newest_area" if scope == "area" else "read.spot.newest_texas") | t(lang) }}</p>
         <ul class="mt-1.5 flex flex-wrap gap-1.5">
-          {% for w in list %}<li class="inline-flex max-w-full items-center gap-1.5 rounded-full border border-line bg-surface px-2.5 py-1 text-xs"><span class="size-2 shrink-0 rounded-full {{ 'bg-lv' if w.pub == 'lv' else 'bg-gv' }}" aria-hidden="true"></span><span class="font-semibold text-ink">{{ w.name }}</span>{% if w.place[lang] %}<span class="min-w-0 truncate text-muted">· {{ w.place[lang] }}</span>{% endif %}<span class="sr-only"> ({{ "La Viña" if w.pub == "lv" else "Grapevine" }})</span></li>{% endfor %}
+          {% for w in sp[scope].list %}<li class="inline-flex max-w-full items-center gap-1.5 rounded-full border border-line bg-surface px-2.5 py-1 text-xs" data-date="{{ w.date }}"><span class="size-2 shrink-0 rounded-full {{ 'bg-lv' if w.pub == 'lv' else 'bg-gv' }}" aria-hidden="true"></span><span class="font-semibold text-ink">{{ w.name }}</span>{% if w.place[lang] %}<span class="min-w-0 truncate text-muted">· {{ w.place[lang] }}</span>{% endif %}<span class="sr-only"> ({{ "La Viña" if w.pub == "lv" else "Grapevine" }})</span></li>{% endfor %}
         </ul>
       </div>
+      {% endif %}{% endfor %}
       {% endif %}
       <span class="mt-auto inline-flex items-center gap-1 text-sm font-semibold text-gv" aria-hidden="true">{{ "read.spot.cta" | t(lang) }} {% icon "arrow-right", "size-4 transition group-hover:translate-x-0.5" %}</span>
     </div>
@@ -245,7 +254,9 @@ pageScripts: ["/assets/js/read.js"]
 </article>
 {% endmacro %}
 
-<div x-data="readPage({ json: '{{ '/read-archive.json' | lurl(lang) }}', remaining: {{ remaining }}, chips: {{ 'true' if (gvCur and lvCur) else 'false' }}, counts: {{ archive | limit(SSR_ARCHIVE) | pluck('pub') | json }} })">
+{#- The small icons repeated on every story ({% ricon %}), drawn once for the whole page -#}
+{% readSprite %}
+<div x-data="readPage({ json:'{{ '/read-archive.json' | lurl(lang) }}', remaining: {{ remaining }}, chips: {{ 'true' if (gvCur and lvCur) else 'false' }}, counts: {{ archive | limit(SSR_ARCHIVE) | pluck('pub') | json }} })">
 
   {#- ---------- Our meeting in print + who from our Area got published ---------- -#}
   <section class="container-page page-overlap" aria-labelledby="print-title">
@@ -301,7 +312,7 @@ pageScripts: ["/assets/js/read.js"]
 
     {#- Paywall note — kind and clear -#}
     <aside class="mt-8 flex flex-col gap-4 rounded-[var(--radius-card)] border border-line bg-surface-2 p-5 sm:flex-row sm:items-center sm:p-6" aria-label="{{ 'read.paywall_title' | t(lang) }}">
-      <span class="grid size-11 shrink-0 place-items-center rounded-full bg-surface text-grape ring-1 ring-line">{% icon "key-round", "size-5" %}</span>
+      <span class="grid size-11 shrink-0 place-items-center rounded-full bg-surface text-grape ring-1 ring-line">{% ricon "key-round", "size-5" %}</span>
       <div class="flex-1">
         <p class="font-semibold text-ink">{{ "read.paywall_title" | t(lang) }}</p>
         <p class="measure mt-1 text-sm leading-relaxed text-muted">{{ "read.paywall_text" | t(lang) }}</p>
@@ -317,7 +328,7 @@ pageScripts: ["/assets/js/read.js"]
       <p class="mt-1.5 max-w-2xl text-muted">{{ "read.archive_sub" | t(lang) }}</p>
     </div>
     {% if archive.length %}
-    <p class="sr-only" aria-live="polite" data-t="{{ 'read.archive_count' | t(lang) }}" x-text="$el.dataset.t.replace('{n}', visibleCount())"></p>
+    <p class="sr-only" aria-live="polite" data-t1="{{ 'read.archive_count_one' | t(lang) }}" data-t="{{ 'read.archive_count' | t(lang) }}" x-text="visibleCount() === 1 ? $el.dataset.t1 : $el.dataset.t.replace('{n}', visibleCount())"></p>
     <div class="read-archive-list">
       {% for is in archive | limit(SSR_ARCHIVE) %}{% set v = is | readIssueView(lang) %}
       <details class="read-past card @container group/past" data-pub="{{ v.pub }}" x-show="show('{{ v.pub }}')">
@@ -356,13 +367,13 @@ pageScripts: ["/assets/js/read.js"]
                   <a :href="a.u" target="_blank" rel="noopener" class="group flex h-full flex-col gap-1 rounded-xl px-3 py-3 no-underline transition hover:bg-surface-2">
                     <span class="flex items-start justify-between gap-2">
                       <span class="font-display text-[0.98rem] font-semibold leading-snug text-ink" :lang="a.tl" x-text="a.t"></span>
-                      {% icon "arrow-up-right", "mt-1 size-4 shrink-0 text-faint" %}
+                      {% ricon "arrow-up-right", "mt-1 size-4 shrink-0 text-faint" %}
                     </span>
-                    <span class="flex items-center gap-1 text-xs text-muted" x-show="a.o" title="{{ 'common.auto_translated' | t(lang) }}"><span x-show="a.m">{% icon "languages", "size-3 shrink-0" %}</span><span class="italic" :lang="a.ol" x-text="a.o"></span></span>
+                    <span class="flex items-center gap-1 text-xs text-muted" x-show="a.o" title="{{ 'common.auto_translated' | t(lang) }}"><span x-show="a.m">{% ricon "languages", "size-3 shrink-0" %}</span><span class="italic" :lang="a.ol" x-text="a.o"></span></span>
                     <span class="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted" x-show="a.a || a.f !== undefined">
                       <span x-show="a.a" data-t="{{ 'common.by' | t(lang) }}" x-text="$el.dataset.t.replace('{name}', a.a || '')"></span>
-                      <span class="badge-vine" x-show="a.f === 1">{% icon "lock-open", "size-3" %} {{ "read.free_story" | t(lang) }}</span>
-                      <span class="read-sub-badge" x-show="a.f === 0" title="{{ 'read.subscriber_help' | t(lang) }}">{% icon "key-round", "size-3" %} {{ "read.subscriber_story" | t(lang) }}</span>
+                      <span class="badge-vine" x-show="a.f === 1">{% ricon "lock-open", "size-3" %} {{ "read.free_story" | t(lang) }}</span>
+                      <span class="read-sub-badge" x-show="a.f === 0" title="{{ 'read.subscriber_help' | t(lang) }}">{% ricon "key-round", "size-3" %} {{ "read.subscriber_story" | t(lang) }}</span>
                     </span>
                   </a>
                 </li>
@@ -377,7 +388,7 @@ pageScripts: ["/assets/js/read.js"]
     {% if archive.length > SSR_ARCHIVE %}
     <div class="mt-6 text-center" x-show="remaining > 0">
       <button type="button" class="btn-secondary" @click="loadOlder()" :aria-busy="loading.toString()">
-        <span x-show="!loading">{% icon "history", "size-4" %} {{ "read.load_older" | t(lang, {n: archive.length - SSR_ARCHIVE}) }}</span>
+        <span x-show="!loading">{% icon "history", "size-4" %} {{ ("read.load_older_one" if remaining == 1 else "read.load_older") | t(lang, {n: remaining}) }}</span>
         <span x-show="loading" x-cloak>{{ "common.loading" | t(lang) }}</span>
       </button>
       <p class="mt-2 text-sm text-danger" x-show="failed" x-cloak role="alert">{{ "read.load_failed" | t(lang) }}</p>
@@ -400,7 +411,7 @@ pageScripts: ["/assets/js/read.js"]
         <a class="card card-link group flex items-center gap-3 p-3.5 no-underline" href="{{ hub }}" target="_blank" rel="noopener">
           <span class="grid size-10 shrink-0 place-items-center rounded-xl {{ 'bg-lv-soft text-lv' if p == 'lv' else 'bg-gv-soft text-gv' }}">{% icon "grapes", "size-5" %}</span>
           <span class="min-w-0 flex-1"><span class="block text-sm font-semibold text-ink">{{ ("read.back_issues_lv" if p == "lv" else "read.back_issues_gv") | t(lang) }}</span><span class="block text-xs text-muted">{{ hub | hostname }}</span></span>
-          {% icon "arrow-up-right", "size-4 shrink-0 text-faint transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5" %}
+          {% ricon "arrow-up-right", "size-4 shrink-0 text-faint transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5" %}
           <span class="sr-only">({{ "common.external" | t(lang) }})</span>
         </a>
         {% endfor %}

@@ -314,7 +314,12 @@ def read_json(path: Path, default: Any = None) -> Any:
 
 def save_raw(source: str, items: list[dict], ok: bool = True, error: str | None = None,
              stats: dict | None = None, extra: dict | None = None) -> None:
-    """Write data/raw/<source>.json. If ok=False and items is empty, previous items are kept."""
+    """Write data/raw/<source>.json. If ok=False and items is empty, previous items are kept.
+
+    `first_harvest` records when the source was first read successfully (even with 0 items) and
+    never moves afterwards: build_data uses it to tell the launch-day back catalog from real news.
+    (The oldest first_seen cannot be used for that — it moves forward whenever a source drops old
+    items, e.g. past events.) When first written it is seeded from the oldest first_seen known."""
     prev = load_raw(source)
     note = _CORRUPT_NOTES.pop(source, None)
     if note:   # the previous file was unreadable (see load_raw): make it visible on /status/ once
@@ -322,6 +327,11 @@ def save_raw(source: str, items: list[dict], ok: bool = True, error: str | None 
     if not ok and not items:
         items = prev.get("items", [])
     items = sort_items(items)
+    first = prev.get("first_harvest")
+    if not first and ok:
+        seen = sorted(str(i["first_seen"]) for i in [*(prev.get("items") or []), *items]
+                      if isinstance(i, dict) and i.get("first_seen"))
+        first = seen[0] if seen else now_iso()
     env = {
         "source": source,
         "updated": now_iso() if ok else prev.get("updated"),
@@ -331,6 +341,8 @@ def save_raw(source: str, items: list[dict], ok: bool = True, error: str | None 
         "stats": stats or {},
         "items": items,
     }
+    if first:
+        env["first_harvest"] = first
     if extra:
         env.update(extra)
     write_json(raw_path(source), env)
@@ -504,7 +516,34 @@ class PoliteSession:
         self._pause(self.pace_key(url), d)
 
     # requests -------------------------------------------------------------
+    MAX_REDIRECTS = 5
+
     def request(self, method: str, url: str, **kw) -> requests.Response | None:
+        """One polite request. Redirects of the magazine server (SAME_SERVER_HOSTS) are followed
+        by hand, so every hop also waits the Crawl-delay and is checked against robots.txt (requests
+        itself would follow them at once, inside the same call)."""
+        follow = kw.pop("allow_redirects", True)
+        if not follow or (urlparse(url).hostname or "").lower() not in SAME_SERVER_HOSTS:
+            return self._send(method, url, allow_redirects=follow, **kw)
+        r = None
+        for _hop in range(self.MAX_REDIRECTS + 1):
+            r = self._send(method, url, allow_redirects=False, **kw)
+            loc = r.headers.get("Location") if r is not None and getattr(r, "is_redirect", False) else None
+            if not loc:
+                return r
+            nxt = urljoin(url, loc)
+            try:
+                r.close()
+            except Exception:  # noqa: BLE001 — closing a finished redirect response never matters
+                pass
+            if not self.allowed(nxt):
+                self.log.info("robots.txt disallows %s (redirected from %s)", nxt, url)
+                return None
+            url = nxt
+        self.log.warning("%s %s: too many redirects", method, url)
+        return None
+
+    def _send(self, method: str, url: str, **kw) -> requests.Response | None:
         if not self.allowed(url):
             self.log.info("robots.txt disallows %s", url)
             return None

@@ -336,7 +336,7 @@
    "i18n": {
     "title": {
      "en": "Watch What We Say",
-     "es": "Mira lo que decimos"
+     "es": "Cuidado con lo que decimos"
     },
     "summary": {
      "en": "He thought it was OK to share his politics because he assumed everyone agreed. Luckily, Chimney Dave didn’t",
@@ -417,7 +417,7 @@
     },
     "summary": {
      "en": "I walked with trepidation into our second business meeting of the year at one of my home groups, a speaker/discussion topic meeting. I didn’t want to be there.",
-     "es": "Caminé con temblor en nuestra segunda reunión de negocios del año en uno de mi grupos base, una reunión de altavoces/discusión. No quería estar allí."
+     "es": "Caminé con temblor en nuestra segunda reunión de trabajo del año en uno de mi grupos base, una reunión de oradores/discusión. No quería estar allí."
     },
     "section": {
      "en": "Step Ten",
@@ -571,7 +571,7 @@
     },
     "summary": {
      "en": "He looked to fill the ache of loneliness through people and things. Now he turns to his Higher Power",
-     "es": "Buscaba llenar el dolor de soledad a través de la gente y las cosas. Ahora se convierte en su Poder Superior"
+     "es": "Buscaba llenar el dolor de la soledad con personas y cosas. Ahora recurre a su Poder Superior"
     },
     "section": {
      "en": "Featured Section",
@@ -725,7 +725,7 @@
     },
     "summary": {
      "en": "A retired teacher in Australia shares about the peace and contentment many years of AA has given him",
-     "es": "Un profesor jubilado en Australia comparte la paz y el contenido de muchos años de AA le ha dado"
+     "es": "Un maestro jubilado en Australia habla de la paz y la satisfacción que le han dado muchos años en AA"
     },
     "section": {
      "en": "Gratitude",
@@ -798,7 +798,7 @@
    "i18n": {
     "title": {
      "en": "Purrrfect Solution",
-     "es": "Solución de purrfect"
+     "es": "Una solución purrrfecta"
     },
     "summary": {
      "en": "A newcomer, lonely for her old bar friends, finds a furry little friend to help her",
@@ -1033,7 +1033,7 @@
     },
     "summary": {
      "en": "A longtimer shares about the loneliness of finding his place in AA after a move across the country",
-     "es": "Un longtimer comparte la soledad de encontrar su lugar en AA después de un movimiento a través del país"
+     "es": "Un veterano comparte la soledad de encontrar su lugar en AA después de un movimiento a través del país"
     },
     "section": {
      "en": "Featured Section",
@@ -1187,7 +1187,7 @@
     },
     "summary": {
      "en": "Becoming his wife’s caretaker left this longtimer alone and without meetings. Good thing his sponsor had a plan",
-     "es": "Convertirse en el cuidador de su esposa dejó este longtimer solo y sin reuniones. Menos mal que su padrino tenía un plan"
+     "es": "Convertirse en el cuidador de su esposa dejó este veterano solo y sin reuniones. Menos mal que su padrino tenía un plan"
     },
     "section": {
      "en": "Featured Section",
@@ -1264,7 +1264,7 @@
     },
     "summary": {
      "en": "Loneliness is a topic that is rarely talked about in our AA meetings. The L in our well-known H.A.L.T. slogan stands for lonely. And yet, it’s difficult to admit it.",
-     "es": "La soledad es un tema que rara vez se habla en nuestras reuniones AA. El L en nuestro conocido H.A.L.T. lema significa solitario. Y sin embargo, es difícil admitirlo."
+     "es": "La soledad es un tema que rara vez se habla en nuestras reuniones de AA. El L en nuestro conocido H.A.L.T. lema significa solitario. Y sin embargo, es difícil admitirlo."
     },
     "section": {
      "en": "In Every Issue",
@@ -1337,7 +1337,7 @@
     },
     "summary": {
      "en": "For about five years, I helped take AA meetings into the jails of Menominee, Michigan. There were always two of us who brought the meeting in every Monday evening.",
-     "es": "Durante unos cinco años, ayudé a llevar reuniones AA a las cárceles de Menominee, Michigan. Siempre había dos de nosotros que trajimos la reunión todos los lunes por la noche."
+     "es": "Durante unos cinco años, ayudé a llevar reuniones de AA a las cárceles de Menominee, Michigan. Siempre había dos de nosotros que trajimos la reunión todos los lunes por la noche."
     },
     "section": {
      "en": "Into Action",
@@ -1721,7 +1721,7 @@
     },
     "summary": {
      "en": "I was sitting in an AA meeting surrounded by laughter and hugs. People were shaking hands, pouring coffee and chatting about their week.",
-     "es": "Estaba sentado en una reunión AA rodeada de risas y abrazos. La gente temblaba las manos, derramaba café y charlaba sobre su semana."
+     "es": "Estaba sentado en una reunión de AA rodeada de risas y abrazos. La gente temblaba las manos, derramaba café y charlaba sobre su semana."
     },
     "section": {
      "en": "Featured Section",
@@ -2021,7 +2021,7 @@
     },
     "summary": {
      "en": "A gay longtimer looks back at his life, his sobriety and the tough relationship he had with his dad",
-     "es": "Un gay longtimer mira su vida, su sobriedad y la relación dura que tenía con su padre"
+     "es": "Un gay veterano mira su vida, su sobriedad y la relación dura que tenía con su padre"
     },
     "section": {
      "en": "Oldtimers",
@@ -2170,7 +2170,7 @@
      "es": "Una Comunidad única"
     },
     "summary": {
-     "en": "“You will find friends for life. They will join them new and excellent ties, because they will have escaped together from the disaster.” Big Book, p. 140",
+     "en": "“Among them you will make lifelong friends. You will be bound to them with new and wonderful ties, for you will escape disaster together.” Big Book, p. 152",
      "es": "“Encontrarás amigos para toda la vida. Te unirán a ellos nuevos y excelentes lazos, porque habrán escapado juntos del desastre”. Libro Grande, pág. 140"
     },
     "section": {
@@ -3999,7 +3999,7 @@
     "teaser": "Enfermedad espiritual Fort Worth, Texas",
     "free": false,
     "online_exclusive": false,
-    "department": false,
+    "department": true,
     "geo": {
      "scope": "unknown",
      "city": null,
@@ -4535,7 +4535,7 @@
    "i18n": {
     "title": {
      "en": "A Well-Worn Path",
-     "es": "Un camino bien dorado"
+     "es": "Un camino muy transitado"
     },
     "summary": {
      "en": "Her mother weathered the first storm and found the road to a better life that four generations could follow",
@@ -4746,11 +4746,11 @@
    "i18n": {
     "title": {
      "en": "Ready Set Go!",
-     "es": "¡Listos, listos!"
+     "es": "¡Preparados, listos, ya!"
     },
     "summary": {
      "en": "Sober bikers peddle across Iowa on an annual trip of fellowship, pulled pork, pizza and fun!",
-     "es": "¡Los ciclistas sobrios se pasean por Iowa en un viaje anual de compañerismo, tirado de cerdo, pizza y diversión!"
+     "es": "¡Ciclistas sobrios pedalean por Iowa en un viaje anual de compañerismo, cerdo deshebrado, pizza y diversión!"
     },
     "section": {
      "en": "Fun in Sobriety",
@@ -4819,11 +4819,11 @@
    "i18n": {
     "title": {
      "en": "Now Hiring",
-     "es": "Ahora contratando"
+     "es": "Se busca personal"
     },
     "summary": {
      "en": "I didn’t know you were allowed to fire a sponsor. I thought once you picked one, you were locked in; that resistance meant ego, and ego meant danger.",
-     "es": "No sabía que se le permitía disparar un padrino. Pensé que una vez que escogiste uno, estabas encerrado; esa resistencia significaba ego, y el ego significaba peligro."
+     "es": "No sabía que uno podía despedir a su padrino. Creía que, una vez que elegías uno, ya no había vuelta atrás; que resistirse era ego, y el ego era peligro."
     },
     "section": {
      "en": "Featured Section",
@@ -4892,7 +4892,7 @@
    "i18n": {
     "title": {
      "en": "Nothing Short of a Miracle",
-     "es": "Nada corto de un milagro"
+     "es": "Nada menos que un milagro"
     },
     "summary": {
      "en": "Her life isn’t perfect—but it’s a sober one",
@@ -5099,7 +5099,7 @@
    "i18n": {
     "title": {
      "en": "My Wild Card Sponsor",
-     "es": "Mi tarjeta salvaje padrino"
+     "es": "Mi padrino comodín"
     },
     "summary": {
      "en": "What started as an emergency fix for a five-alarm situation became an incredible 28-year relationship",
@@ -5598,11 +5598,11 @@
    "i18n": {
     "title": {
      "en": "A Hole in One",
-     "es": "Un agujero en uno"
+     "es": "Un hoyo en uno"
     },
     "summary": {
      "en": "A rocky business meeting at the golf course bar turned into an unexpected wonderful 35-year relationship",
-     "es": "Una reunión de negocios rocosa en el bar del campo de golf se convirtió en una relación maravillosa inesperada de 35 años"
+     "es": "Una reunión de trabajo rocosa en el bar del campo de golf se convirtió en una relación maravillosa inesperada de 35 años"
     },
     "section": {
      "en": "Featured Section",
@@ -6158,7 +6158,7 @@
    "i18n": {
     "title": {
      "en": "Chipping Away",
-     "es": "# Golpeando #"
+     "es": "Poco a poco"
     },
     "summary": {
      "en": "She finally got Step One set in stone. Now she’s using the tools to carve out the person she’s meant to be",
@@ -6353,7 +6353,7 @@
     "teaser": "A new meta-analysis found that connecting with spiritual practices, whether religious or secular, reduced the odds of dangerous alcohol or drug use by 13 percent.",
     "free": false,
     "online_exclusive": false,
-    "department": false,
+    "department": true,
     "geo": {
      "scope": "unknown",
      "city": null,
@@ -6869,7 +6869,7 @@
     },
     "summary": {
      "en": "She saw a sober life was possible from the older members. But when she joined the young AAs, her life took off",
-     "es": "Vio una vida sobria posible de los miembros mayores. Pero cuando se unió a los AA jóvenes, su vida se quitó"
+     "es": "Los miembros mayores le mostraron que una vida sobria era posible. Pero cuando se unió a los AA jóvenes, su vida despegó"
     },
     "section": {
      "en": "Young & Sober",
@@ -6938,7 +6938,7 @@
    "i18n": {
     "title": {
      "en": "Safe at 30,000 Feet",
-     "es": "Caja fuerte a 30.000 pies"
+     "es": "A salvo a 30.000 pies"
     },
     "summary": {
      "en": "Newly sober, he was high in the air and the drinks were looking good. The thing that really saved him may surprise you",
@@ -7646,7 +7646,7 @@
    "i18n": {
     "title": {
      "en": "Mother Earth, Father Sky, God & me",
-     "es": "Madre Tierra, Padre Sky, Dios y yo"
+     "es": "Madre Tierra, Padre Cielo, Dios y yo"
     },
     "summary": {
      "en": "At 70, with 11 years sober, a member in Alabama hits the road on his dirt bike to cross the country on a wonderful spiritual adventure",
@@ -8277,7 +8277,7 @@
    "i18n": {
     "title": {
      "en": "Getting Honest",
-     "es": "Consiguiendo honestidad"
+     "es": "Volverse honesto"
     },
     "summary": {
      "en": "Staying drunk was his life’s singular goal",
@@ -8415,11 +8415,11 @@
    "i18n": {
     "title": {
      "en": "Embracing the The Long Haul",
-     "es": "Abrazando el largo casco"
+     "es": "Aceptar el largo camino"
     },
     "summary": {
      "en": "With 40 years of sobriety, a member gives a big shout-out to the longtimers who lit the way for his whole family",
-     "es": "Con 40 años de sobriedad, un miembro le da un gran grito a los longtimers que encendieron el camino para toda su familia"
+     "es": "Con 40 años de sobriedad, un miembro da un gran grito a los veteranos que encendió el camino para toda su familia"
     },
     "section": {
      "en": "Our Personal Stories",
@@ -8772,7 +8772,7 @@
    "i18n": {
     "title": {
      "en": "Bridesmaid to the rescue",
-     "es": "Bridesmaid al rescate"
+     "es": "Una dama de honor al rescate"
     },
     "summary": {
      "en": "It was the summer of my second year of sobriety, and we were traveling to Driggs, Idaho for my daughter’s best friend’s wedding.",
@@ -9288,7 +9288,7 @@
      "es": "Sin temor"
     },
     "summary": {
-     "en": "“We are faced with those serious defects of character that originally turned us into problem drinkers, defects that we have to try to remedy...” -Twelve Steps and Twelve Traditions, p. 71",
+     "en": "“…we reluctantly come to grips with those serious character flaws that made problem drinkers of us in the first place, flaws which must be dealt with…” -Twelve Steps and Twelve Traditions, p. 73",
      "es": "“Nos enfrentamos con aquellos graves defectos de carácter que originalmente nos convirtieron en bebedores problema, defectos que tenemos que intentar remediar...” -Doce Pasos y Doce Tradiciones, pág. 71"
     },
     "section": {
@@ -10675,7 +10675,7 @@
    },
    "i18n": {
     "title": {
-     "en": "Savings Accounts",
+     "en": "Unsettled Accounts",
      "es": "Cuentas por saldar"
     },
     "summary": {
@@ -10886,7 +10886,7 @@
      "es": "Asumiendo responsabilidades"
     },
     "summary": {
-     "en": "“These were some of the ways in which fear conspired with pride to prevent us from making a list...” -Twelve Steps and Twelve Traditions, p. 78",
+     "en": "“These were some of the ways in which fear conspired with pride to hinder our making a list…” -Twelve Steps and Twelve Traditions, p. 79",
      "es": "“Estas eran algunas de las formas en las que el temor conspiraba con el orgullo para impedir que hiciéramos una lista...” -Doce Pasos y Doce Tradiciones, pág. 78"
     },
     "section": {
@@ -11037,7 +11037,7 @@
      "es": "Aguafiestas"
     },
     "summary": {
-     "en": "“If hundreds of experiences have shown you that a drink means another disaster... why is that first drink taken?” Big Book, p. 22",
+     "en": "“If hundreds of experiences have shown him that one drink means another debacle… why is it he takes that one drink?” Big Book",
      "es": "“Si cientos de experiencias le han demostrado que una copa significa otro desastre..., ¿por qué se toma esa primera copa?” Libro Grande, pág. 22"
     },
     "section": {
@@ -11314,7 +11314,7 @@
    "i18n": {
     "title": {
      "en": "When Growth & Joy Mix",
-     "es": "Cuando el crecimiento y la mezcla de alegría"
+     "es": "Cuando se mezclan el crecimiento y la alegría"
     },
     "summary": {
      "en": "Sometimes hard, always worth it, general service has become the most rewarding journey of her life",
@@ -11739,7 +11739,7 @@
     },
     "summary": {
      "en": "In 1968 a drunken college student passed out in a big house in San Francisco. Years later she discovered how important that building was",
-     "es": "En 1968 un estudiante universitario borracho falleció en una gran casa en San Francisco. Años más tarde descubrió lo importante que era ese edificio"
+     "es": "En 1968, una estudiante universitaria borracha perdió el conocimiento en una casa grande de San Francisco. Años después descubrió lo importante que era ese edificio"
     },
     "topic": {
      "en": "Annual Prison Issue",
@@ -11877,11 +11877,11 @@
    "i18n": {
     "title": {
      "en": "Peace Of Mind",
-     "es": "Paz de la mente"
+     "es": "Paz mental"
     },
     "summary": {
      "en": "Drunk, homeless and helpless, she came to AA and found love and support that lasted 40 years",
-     "es": "Borracho, sin hogar e indefenso, llegó a AA y encontró amor y apoyo que duró 40 años"
+     "es": "Borracha, sin hogar e indefensa, llegó a AA y encontró un amor y un apoyo que duraron 40 años"
     },
     "issue_label": {
      "en": "July 2026",
@@ -11892,9 +11892,7 @@
      "es": "Branford, Ontario"
     }
    },
-   "machine": [
-    "es"
-   ],
+   "machine": [],
    "is_new": false
   },
   {
@@ -12559,7 +12557,7 @@
    "i18n": {
     "title": {
      "en": "Inside Job",
-     "es": "Dentro del trabajo"
+     "es": "Un trabajo interior"
     },
     "summary": {
      "en": "How on earth could he get sober in a jail where everyone was getting wasted? It was tough, but he made a solitary decision",
@@ -12701,7 +12699,7 @@
     },
     "summary": {
      "en": "Members at an AA meeting in a Kentucky correctional facility discover a brand-new tool to help them get sober",
-     "es": "Los miembros de una reunión AA en una instalación correccional de Kentucky descubren una herramienta nueva para ayudarles a ponerse sobrio"
+     "es": "Los miembros de una reunión de AA en una instalación correccional de Kentucky descubren una herramienta nueva para ayudarles a ponerse sobrio"
     },
     "section": {
      "en": "Featured Section",
@@ -12843,7 +12841,7 @@
    "i18n": {
     "title": {
      "en": "Good Times on Snag Lake",
-     "es": "Buenos tiempos en el lago de calabaza"
+     "es": "Buenos tiempos en Snag Lake"
     },
     "summary": {
      "en": "Five AA women head out for fun, fresh air, s’mores and fellowship. And they even caught a few fish",
@@ -12916,7 +12914,7 @@
    "i18n": {
     "title": {
      "en": "God Bless Mashed Potatoes",
-     "es": "Dios bendice las papas fritas"
+     "es": "Bendito sea el puré de papas"
     },
     "summary": {
      "en": "It was her first social event sober, and she was freaking out at all the booze. Luckily, a desperate prayer saved her",
@@ -13480,7 +13478,7 @@
    "i18n": {
     "title": {
      "en": "Bad Girls Club",
-     "es": "Club de chicas malos"
+     "es": "El club de las chicas malas"
     },
     "summary": {
      "en": "After tragic losses and a 20 year sentence, she took what she learned in rehab and got to work helping the women inside",
@@ -13553,7 +13551,7 @@
    "i18n": {
     "title": {
      "en": "All of Me",
-     "es": "Todos yo"
+     "es": "Todo mi ser"
     },
     "summary": {
      "en": "A perfect mom, perfect homemaker, perfect at work— so why was she so unhappy? Step Seven had an answer",
@@ -13610,7 +13608,7 @@
     "teaser": "Recent research has shown that 21.9% of college students engaged in binge drinking in 2023. This was significantly lower than the 27.7% binge-drinking rate in 2022, a year earlier.",
     "free": false,
     "online_exclusive": false,
-    "department": false,
+    "department": true,
     "geo": {
      "scope": "unknown",
      "city": null,
@@ -13695,7 +13693,7 @@
    "i18n": {
     "title": {
      "en": "Action In Practice",
-     "es": "Medidas adoptadas en la práctica"
+     "es": "La acción en la práctica"
     },
     "summary": {
      "en": "For sober living, write three things down each night",
@@ -13898,7 +13896,7 @@
    "i18n": {
     "title": {
      "en": "Yets & Agains",
-     "es": "Yets and Agains"
+     "es": "Los «todavía» y los «otra vez»"
     },
     "summary": {
      "en": "",
@@ -14101,7 +14099,7 @@
    "i18n": {
     "title": {
      "en": "Truly Life-Changing",
-     "es": "Verdaderamente cambiante de la vida"
+     "es": "De verdad me cambió la vida"
     },
     "summary": {
      "en": "",
@@ -14442,7 +14440,7 @@
    "i18n": {
     "title": {
      "en": "Sober in Iran",
-     "es": "Sober en Irán"
+     "es": "Sobria en Irán"
     },
     "summary": {
      "en": "She drank where blackouts weren’t the worst things to fear. Now she dedicates her life to helping others back home",
@@ -14576,7 +14574,7 @@
    "i18n": {
     "title": {
      "en": "Red Light Blue Light",
-     "es": "Rojo luz azul"
+     "es": "Luz roja, luz azul"
     },
     "summary": {
      "en": "His morning sober routine didn’t usually include a visit with a police officer, but this morning was special",
@@ -15319,7 +15317,7 @@
    "i18n": {
     "title": {
      "en": "A Happy Father’s Day",
-     "es": "Un día feliz de padre"
+     "es": "Un feliz Día del Padre"
     },
     "summary": {
      "en": "He was separated from his family, his dad had just died, he had two months sober and was living alone. Happy what?",
@@ -15855,11 +15853,11 @@
    "i18n": {
     "title": {
      "en": "Borrowing Faith",
-     "es": "La fe aburrida"
+     "es": "Fe prestada"
     },
     "summary": {
      "en": "He came in at 16 and struggled with the idea of a Higher Power. Thanks to the love in the rooms, he now has two years",
-     "es": "Llegó a los 16 años y luchó con la idea de un Poder Superior. Gracias al amor en las habitaciones, ahora tiene dos años"
+     "es": "Llegó a los 16 años y luchó con la idea de un Poder Superior. Gracias al amor en las reuniones, ahora tiene dos años"
     },
     "topic": {
      "en": "Young & Sober",
@@ -16006,7 +16004,7 @@
     },
     "summary": {
      "en": "A longtimer recalls the time he had four months sober and was rescued by AA on a Caribbean cruise",
-     "es": "Un longtimer recuerda el tiempo que tenía cuatro meses sobrio y fue rescatado por AA en un crucero Caribe"
+     "es": "Un veterano recuerda el tiempo que tenía cuatro meses sobrio y fue rescatado por AA en un crucero caribeño"
     },
     "topic": {
      "en": "Young & Sober",

@@ -192,7 +192,7 @@ pageScripts: ["/assets/vendor/minisearch.js", "/assets/js/search.js", "/assets/j
         <button type="button" id="lib-retry" class="btn-secondary btn-sm">{% icon "refresh-cw", "size-4" %} {{ "library.retry" | t(lang) }}</button>
       </div>
 
-      <div id="lib-results" class="lib-results mt-5" data-view="grid" aria-labelledby="lib-results-h">
+      <div id="lib-results" class="lib-results mt-5" data-view="grid">
         {#- Pick the saved / URL / phone-default layout before the cards paint (no flash). Removed by library.js on re-render. -#}
         <script>(function(e){try{var v=new URLSearchParams(location.search).get("view");try{v=v||localStorage.getItem("lib-view")}catch(x){}v=v||(innerWidth<640?"list":"grid");e.parentNode.setAttribute("data-view",v==="list"?"list":"grid")}catch(x){}})(document.currentScript)</script>
         {%- for d in docs | limit(SSR_COUNT) %}

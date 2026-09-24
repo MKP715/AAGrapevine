@@ -100,6 +100,7 @@
 .cm-preview > summary::-webkit-details-marker { display: none; }
 .cm-preview > summary::after { content: "+"; margin-left: auto; font-weight: 700; color: var(--c-faint); }
 .cm-preview[open] > summary::after { content: "–"; }
+.cm-pre:focus-visible { outline-offset: -3px; }
 .cm-report {
   white-space: pre-wrap; overflow-wrap: anywhere; font-size: 0.92rem; line-height: 1.7; color: var(--c-ink);
   background-image: repeating-linear-gradient(to bottom, transparent 0 calc(1.7em - 1px), color-mix(in srgb, var(--c-gv) 10%, transparent) calc(1.7em - 1px) 1.7em);
@@ -225,7 +226,7 @@
 .cm-t-half { flex: 1; display: flex; align-items: center; gap: 5cqw; padding: 5cqw 7cqw; border-bottom: 1.4cqw solid var(--pk-navy); }
 .cm-t-flip { transform: rotate(180deg); }
 .cm-t-fold { position: relative; height: 0; border-top: 0.35cqw dashed #97a0ae; }
-.cm-t-fold span { position: absolute; left: 50%; top: 0; transform: translate(-50%, -50%); padding: 0 2cqw; background: #fff; font-size: 1.9cqw; letter-spacing: 0.12em; text-transform: uppercase; color: #6b7280; white-space: nowrap; }
+.cm-t-fold > span { position: absolute; left: 50%; top: 0; transform: translate(-50%, -50%); padding: 0 2cqw; background: #fff; font-size: 1.9cqw; letter-spacing: 0.12em; text-transform: uppercase; color: #6b7280; white-space: nowrap; }
 .cm-t-qr { flex-shrink: 0; padding: 1.4cqw; border: 0.4cqw solid var(--pk-line); border-radius: 2.4cqw; background: #fff; }
 .cm-t-qr svg { display: block; width: 29cqw; height: 29cqw; }
 .cm-t-text { display: flex; min-width: 0; flex-direction: column; gap: 1.4cqw; }

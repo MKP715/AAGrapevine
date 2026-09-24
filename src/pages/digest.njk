@@ -59,13 +59,13 @@ pageScripts: ["/assets/js/community.js"]
         </ol>
         <details class="cm-preview mt-6 rounded-xl border border-line">
           <summary class="flex min-h-11 cursor-pointer items-center gap-2 px-4 text-sm font-semibold text-ink">{% icon "message-circle", "size-4 text-vine" %} {{ "community.digest.preview" | t(lang) }}</summary>
-          <pre id="digest-wa-one" class="cm-pre" x-show="!bi" aria-label="{{ 'community.digest.wa_label' | t(lang) }}">{{ dg | cmDigestText([lang], "whatsapp", site) }}</pre>
-          <pre id="digest-wa-bi" class="cm-pre" x-show="bi" x-cloak aria-label="{{ 'community.digest.wa_label' | t(lang) }}">{{ dg | cmDigestText(biLangs, "whatsapp", site) }}</pre>
+          <pre id="digest-wa-one" class="cm-pre" x-show="!bi" role="region" tabindex="0" aria-label="{{ 'community.digest.wa_label' | t(lang) }} ({{ 'community.digest.lang_only' | t(lang) }})">{{ dg | cmDigestText([lang], "whatsapp", site) }}</pre>
+          <pre id="digest-wa-bi" class="cm-pre" x-show="bi" x-cloak role="region" tabindex="0" aria-label="{{ 'community.digest.wa_label' | t(lang) }} ({{ 'community.digest.lang_bi' | t(lang) }})">{{ dg | cmDigestText(biLangs, "whatsapp", site) }}</pre>
         </details>
         <details class="cm-preview mt-2 rounded-xl border border-line">
           <summary class="flex min-h-11 cursor-pointer items-center gap-2 px-4 text-sm font-semibold text-ink">{% icon "mail", "size-4 text-gv" %} {{ "community.digest.preview_email" | t(lang) }}</summary>
-          <pre id="digest-email-one" class="cm-pre" x-show="!bi" aria-label="{{ 'community.digest.email_label' | t(lang) }}">{{ dg | cmDigestText([lang], "email", site) }}</pre>
-          <pre id="digest-email-bi" class="cm-pre" x-show="bi" x-cloak aria-label="{{ 'community.digest.email_label' | t(lang) }}">{{ dg | cmDigestText(biLangs, "email", site) }}</pre>
+          <pre id="digest-email-one" class="cm-pre" x-show="!bi" role="region" tabindex="0" aria-label="{{ 'community.digest.email_label' | t(lang) }} ({{ 'community.digest.lang_only' | t(lang) }})">{{ dg | cmDigestText([lang], "email", site) }}</pre>
+          <pre id="digest-email-bi" class="cm-pre" x-show="bi" x-cloak role="region" tabindex="0" aria-label="{{ 'community.digest.email_label' | t(lang) }} ({{ 'community.digest.lang_bi' | t(lang) }})">{{ dg | cmDigestText(biLangs, "email", site) }}</pre>
         </details>
       </div>
     </aside>

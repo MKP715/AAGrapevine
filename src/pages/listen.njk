@@ -125,7 +125,7 @@ pageScripts: ["/assets/js/media.js"]
 
 {% if eps.length %}
 <script type="application/json" id="media-initial">{{ ssr | mediaInitialJson("episodes", lang, shows) | safe }}</script>
-<script type="application/json" id="media-i18n">{{ ["media.play", "media.pause", "media.resume", "media.played", "media.playing", "media.showing", "media.se_short", "media.ep_short", "media.left", "media.time_of", "media.speed", "common.show_more", "common.show_less", "common.loading", "lang.en", "lang.es"] | mediaI18n(lang) | safe }}</script>
+<script type="application/json" id="media-i18n">{{ ["media.play", "media.play_latest", "media.pause", "media.resume", "media.played", "media.playing", "media.showing", "media.se_short", "media.ep_short", "media.left", "media.time_of", "media.speed", "common.show_more", "common.show_less", "common.loading", "lang.en", "lang.es"] | mediaI18n(lang) | safe }}</script>
 
 <div x-data="podcastPage" data-index="{{ '/episodes-index.json' | lurl(lang) }}" data-total="{{ eps.length }}" data-mixed="{{ 'true' if mixedLangs else 'false' }}">
 
@@ -253,9 +253,9 @@ pageScripts: ["/assets/js/media.js"]
         {% endif %}
         <div class="flex flex-wrap gap-2 px-5 pt-4 sm:px-6">
           <a class="btn-primary btn-sm" href="{{ latestPage or s.web or '#episodes' }}"{% if latestPage or s.web %} target="_blank" rel="noopener"{% endif %}
-             @click="playLatest(ep, $event)" :aria-label="playLabel(ep)">
+             @click="playLatest(ep, $event)" :aria-label="latestLabel(ep)">
             <span x-show="!isOn(ep)">{% micon "play", "size-4 translate-x-px" %}</span><span x-show="isOn(ep)" x-cloak>{% micon "pause", "size-4" %}</span>
-            {{ "media.play_latest" | t(lang) }}
+            <span x-text="latestText(ep)">{{ "media.play_latest" | t(lang) }}</span>
           </a>
           <a class="btn-secondary btn-sm" href="#episodes" @click.prevent="pickShow('{{ s.key }}')">{% icon "list-music", "size-4" %} {{ "media.see_episodes" | t(lang) }}</a>
           {% if s.weekly %}<a class="btn-ghost btn-sm" href="{{ '/meeting/#weekly-open' | lurl(lang) }}">{% icon "video", "size-4" %} {{ "media.wo_join" | t(lang) }}</a>{% endif %}
@@ -289,7 +289,7 @@ pageScripts: ["/assets/js/media.js"]
 
     {#- Continue listening (from this device's history) -#}
     <div class="card mb-5 flex items-center gap-4 border-lv/40 bg-lv-soft/50 p-3 sm:p-4" x-show="resumeEp && !$store.audio.cur" x-cloak>
-      <img :src="resumeEp && art(resumeEp)" alt="" width="56" height="56" class="size-14 shrink-0 rounded-xl object-cover" x-show="resumeEp && art(resumeEp)" referrerpolicy="no-referrer">
+      <img :src="resumeEp && art(resumeEp)" alt="" width="56" height="56" class="size-14 shrink-0 rounded-xl object-cover" x-show="resumeEp && art(resumeEp)" referrerpolicy="no-referrer" @load="$el.style.visibility = ''" @error="$el.style.visibility = 'hidden'">
       <div class="min-w-0 flex-1">
         <p class="eyebrow text-lv">{{ "media.continue_listening" | t(lang) }}</p>
         <p class="truncate font-display font-semibold" x-text="resumeEp && resumeEp.t"></p>
@@ -402,7 +402,7 @@ pageScripts: ["/assets/js/media.js"]
              @input="$store.audio.scrub(ep, $event.target.value)" @change="$store.audio.seekTo(ep, $event.target.value)"
              aria-label="{{ 'media.seek' | t(lang) }}" :aria-valuetext="valueText(ep)">
       <div class="flex items-center gap-2 px-2.5 pt-1 pb-2.5 sm:gap-3 sm:px-3.5">
-        <img :src="art(ep)" alt="" width="48" height="48" class="size-11 shrink-0 rounded-lg object-cover sm:size-12" x-show="art(ep)" referrerpolicy="no-referrer">
+        <img :src="art(ep)" alt="" width="48" height="48" class="size-11 shrink-0 rounded-lg object-cover sm:size-12" x-show="art(ep)" referrerpolicy="no-referrer" @load="$el.style.visibility = ''" @error="$el.style.visibility = 'hidden'">
         <div class="min-w-0 flex-1">
           <p class="truncate text-sm font-semibold text-ink" x-text="ep.t"></p>
           <p class="truncate text-xs tabular-nums text-muted">

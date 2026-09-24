@@ -6,8 +6,8 @@
     "es": "Miembros de AA compartiendo experiencia, fortaleza y esperanza — episodios nuevos cada semana. Escúchalos aquí; el reproductor recuerda dónde te quedaste."
   },
   "media.listen_meta": {
-    "en": "Listen to AA Grapevine's podcasts — AA Grapevine's Podcast and the Grapevine Weekly Open AA Meeting — with a built-in player that remembers where you left off. Updated automatically every day.",
-    "es": "Escucha los podcasts de AA Grapevine — AA Grapevine's Podcast y la Grapevine Weekly Open AA Meeting — con un reproductor que recuerda dónde te quedaste. Se actualiza automáticamente cada día."
+    "en": "Listen to AA Grapevine's Podcast and the Grapevine Weekly Open AA Meeting with a built-in player that remembers where you left off. Updated every day.",
+    "es": "Escucha el podcast de AA Grapevine y las grabaciones de la Reunión Abierta Semanal de Grapevine, con un reproductor que recuerda dónde te quedaste."
   },
   "media.stat_episodes": { "en": "episodes", "es": "episodios" },
   "media.stat_shows": { "en": "shows", "es": "programas" },
@@ -20,7 +20,7 @@
   "media.se_short": { "en": "S{s} · E{e}", "es": "T{s} · E{e}" },
   "media.ep_short": { "en": "Episode {e}", "es": "Episodio {e}" },
   "media.season_n": { "en": "Season {n}", "es": "Temporada {n}" },
-  "media.show_short_weekly": { "en": "Weekly Open", "es": "Reunión abierta" },
+  "media.show_short_weekly": { "en": "Weekly Open", "es": "Reunión Abierta Semanal" },
   "media.meeting_of": { "en": "Meeting of {date}", "es": "Reunión del {date}" },
   "media.player_label": { "en": "Audio player", "es": "Reproductor de audio" },
   "media.play": { "en": "Play", "es": "Reproducir" },
@@ -133,7 +133,7 @@
   },
   "media.watch_meta": {
     "en": "Watch the latest AA Grapevine and La Viña videos: Weekly Open meeting recordings, podcast episodes, ASL shares and more. Updated automatically every day.",
-    "es": "Mira los videos más recientes de La Viña y AA Grapevine: grabaciones de la Reunión Abierta Semanal, episodios del podcast, historias en lenguaje de señas y más. Se actualiza automáticamente cada día."
+    "es": "Mira los videos más recientes de La Viña y AA Grapevine: la Reunión Abierta Semanal, episodios del podcast, historias en lenguaje de señas y más."
   },
   "media.subscribe_yt": { "en": "Subscribe on YouTube", "es": "Suscríbete en YouTube" },
   "media.browse_videos": { "en": "Browse videos", "es": "Explorar videos" },

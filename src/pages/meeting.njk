@@ -257,7 +257,7 @@ pageScripts: ["/assets/js/committee.js"]
         </div>
         {% endif %}
         {% if wk.next %}
-        <p class="mt-4 flex items-start gap-2.5 text-sm text-muted" data-cm-weekly="{{ wk.next.iso }}">
+        <p class="mt-4 flex items-start gap-2.5 text-sm text-muted" data-cm-weekly="{{ wk.next.iso }}" data-cm-weekly-tz="{{ wk.next.tz }}"{% if wk.next.at %} data-cm-weekly-at="{{ wk.next.at }}"{% endif %}>
           <span class="mt-0.5 text-grape">{% icon "arrow-right", "size-4" %}</span>
           <span>
             <span class="font-semibold text-ink" data-cm-weekly-label data-live="{{ 'committee.meeting.live_now' | t(lang) }}">{{ "committee.weekly.next" | t(lang) }}</span>

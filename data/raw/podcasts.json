@@ -1,7 +1,7 @@
 {
  "source": "podcasts",
- "updated": "2026-09-24T03:11:21Z",
- "attempted": "2026-09-24T03:11:21Z",
+ "updated": "2026-09-24T05:07:27Z",
+ "attempted": "2026-09-24T05:07:27Z",
  "ok": true,
  "error": null,
  "stats": {
@@ -26,19 +26,8 @@
   "missing_from_feed": 0,
   "gone_checks": 0,
   "discovery_checked": "2026-09-23T16:27:25Z",
-  "discovered_feeds": [
-   {
-    "feed": "https://feeds.captivate.fm/grapevine-weekly-open/",
-    "title": "Grapevine Weekly Open AA Meeting",
-    "language": "en",
-    "episodes": 33,
-    "latest": "2026-09-18T04:15:00Z",
-    "spanish": false,
-    "apple": "https://podcasts.apple.com/us/podcast/grapevine-weekly-open-aa-meeting/id1874809908",
-    "spotify": "https://open.spotify.com/show/2jk469TmDC31spPqf8L0SF"
-   }
-  ],
-  "seconds": 2.2,
+  "discovered_feeds": [],
+  "seconds": 3.0,
   "artwork": 3,
   "artwork_missing": 0,
   "artwork_removed": 0
@@ -2316,7 +2305,7 @@
    "id": "pod:wo:99c1603c9c40",
    "source": "podcast",
    "kind": "episode",
-   "url": "https://www.aagrapevine.org/podcast",
+   "url": "https://player.captivate.fm/episode/8c30f283-7eb8-4fc9-b157-7abe05763f6b",
    "title": "Grapevine Weekly Open AA Meeting, February 11, 2026 [Season 1, Episode 2]",
    "summary": "In this podcast from the AA Grapevine, you'll hear a recording of Grapevine's open AA meeting, held on February 11, 2026. We meet every Wednesday at Noon Eastern and hope that you will join us. The code on Zoom is 871 2036 8287 and the password is 238047. Each meeting will be recorded and distributed as a podcast. This week Kelley and Jon share their experience, strength and hope as they describe…",
    "lang": "en",
@@ -10665,6 +10654,7 @@
    }
   }
  ],
+ "first_harvest": "2026-09-23T16:27:02Z",
  "shows": [
   {
    "key": "gv",
@@ -10700,21 +10690,6 @@
  "discovery": {
   "checked_at": "2026-09-23T16:27:25Z",
   "pages_checked": 5,
-  "feeds": [
-   {
-    "feed": "https://feeds.captivate.fm/grapevine-weekly-open/",
-    "title": "Grapevine Weekly Open AA Meeting",
-    "language": "en",
-    "episodes": 33,
-    "latest": "2026-09-18T04:15:00Z",
-    "web": "https://www.aagrapevine.org/grapevine-weekly-open",
-    "found_on": "https://www.aagrapevine.org/grapevine-weekly-open",
-    "player": "https://player.captivate.fm/show/ba06341c-a708-43df-a334-1cc9f7266f63",
-    "apple": "https://podcasts.apple.com/us/podcast/grapevine-weekly-open-aa-meeting/id1874809908",
-    "spotify": "https://open.spotify.com/show/2jk469TmDC31spPqf8L0SF",
-    "amazon": "https://music.amazon.com/podcasts/8dfb5269-8733-42f3-b075-2d9e596bf4c5/grapevine-weekly-open-aa-meeting",
-    "spanish": false
-   }
-  ]
+  "feeds": []
  }
 }

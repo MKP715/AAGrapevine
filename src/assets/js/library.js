@@ -7,6 +7,7 @@
      - facets with live counts (source / language / category / year, multi-select)
      - quick collections, sort, card/list view, "Load more" paging
      - shareable URLs: ?q=&src=&lang=&cat=&year=&col=&sort=&view=
+       (view= is only written when it differs from the screen's default)
        (?cat=gvr / ?cat=rlv - the crawler's kit categories, used by links on
        other pages - open the GVR / RLV kit collections)
      - copy / share buttons and the Google Drive preview dialog
@@ -143,16 +144,20 @@
     state.sort = ["new", "old", "az", "rel"].indexOf(s) !== -1 ? s : "";
     var v = p.get("view");
     if (!v) { try { v = localStorage.getItem("lib-view"); } catch (e) {} }
-    if (!v) v = window.innerWidth < 640 ? "list" : "grid"; // phones default to the compact list
+    if (!v) v = deviceView();
     state.view = v === "list" ? "list" : "grid";
   }
+  // Phones default to the compact list, larger screens to the card grid.
+  function deviceView() { return window.innerWidth < 640 ? "list" : "grid"; }
   function writeUrl() {
     var p = new URLSearchParams();
     if (state.q.trim()) p.set("q", state.q.trim());
     FACETS.forEach(function (f) { if (state[f].size) p.set(f, Array.from(state[f]).join(",")); });
     if (state.col) p.set("col", state.col);
     if (state.sort) p.set("sort", state.sort);
-    if (state.view === "list") p.set("view", "list");
+    // Only a view that differs from this screen's default goes in the URL, so a
+    // link shared from a phone does not force list view on a desktop (and back).
+    if (state.view !== deviceView()) p.set("view", state.view);
     var qs = p.toString();
     try { history.replaceState(null, "", location.pathname + (qs ? "?" + qs : "") + location.hash); } catch (e) {}
     if (siteSearch) siteSearch.href = kit.href(CFG.search) + (state.q.trim() ? "?q=" + encodeURIComponent(state.q.trim()) : "");

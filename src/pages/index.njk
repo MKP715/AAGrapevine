@@ -79,7 +79,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
   <div class="home-meet-actions">
     <a class="{{ 'btn-light' if dark else 'btn-primary' }} home-meet-join" href="{{ mt.zoom_url }}" target="_blank" rel="noopener">{% icon "video", "size-4" %} {{ "home.meeting_join" | t(L) }}<span class="sr-only"> {{ "home.opens_new_tab" | t(L) }}</span></a>
     <button type="button" class="{{ 'btn-on-dark' if dark else 'btn-secondary' }} btn-sm" x-show="ready" x-cloak @click="addToCalendar()" title="{{ 'common.add_to_calendar' | t(L) }}">{% icon "calendar-plus", "size-4" %} {{ "home.meeting_add_cal" | t(L) }}</button>
-    <a class="{{ 'btn-on-dark' if dark else 'btn-secondary' }} btn-sm" href="{{ '/meeting/' | lurl(L) }}">{{ "home.meeting_details_short" | t(L) }} {% icon "arrow-right", "size-3.5" %}<span class="sr-only"> — {{ "home.meeting_eyebrow" | t(L) }}</span></a>
+    <a class="{{ 'btn-on-dark' if dark else 'btn-secondary' }} btn-sm home-meet-more" href="{{ '/meeting/' | lurl(L) }}">{{ "home.meeting_details_short" | t(L) }} {% icon "arrow-right", "size-3.5" %}<span class="sr-only"> — {{ "home.meeting_eyebrow" | t(L) }}</span></a>
   </div>
 </div>
 {% endmacro %}
@@ -727,8 +727,8 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
             </h3>
             <p class="sr-only">{{ st | fmtDate(L, "long") }}</p>
             <ul class="mt-2 space-y-1 text-sm text-muted">
-              {#- An outside calendar that only gives a date: the time is on the event page, not "all day". -#}
-              <li class="flex items-center gap-1.5">{% icon "clock", "size-4 shrink-0 text-faint" %}{{ (("home.time_on_page" if e.source == "calendar" else "home.all_day") | t(L)) if dateOnly else (st | homeTimeRange(x.end, L)) }}</li>
+              {#- An outside calendar that only gives a date: the time isn't listed (same wording as /events/), not "all day". -#}
+              <li class="flex items-start gap-1.5">{% icon "clock", "mt-0.5 size-4 shrink-0 text-faint" %}{{ (("home.time_not_listed" if e.source == "calendar" else "home.all_day") | t(L)) if dateOnly else (st | homeTimeRange(x.end, L)) }}</li>
               {% if x.location or x.city %}{% set locIcon = "video" if (x.online_url and not x.city) else "map-pin" %}<li class="flex items-center gap-1.5">{% icon locIcon, "size-4 shrink-0 text-faint" %}<span class="truncate">{{ x.location or x.city }}</span></li>{% endif %}
             </ul>
           </div>
@@ -911,7 +911,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
           <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-white/12 text-white ring-1 ring-white/20">{% icon s.icon, "size-5" %}</span>
           <span class="min-w-0 flex-1">
             <span class="block font-semibold leading-snug">{{ s.key | t(L) }}</span>
-            <span class="mt-0.5 block text-sm leading-snug text-white/85">{{ s.desc | t(L) }}</span>
+            <span class="mt-0.5 block text-sm leading-snug text-pretty text-white/85">{{ s.desc | t(L) }}</span>
           </span>
           <span class="mt-0.5 text-white/70 transition group-hover:translate-x-0.5 group-hover:text-white">{% icon "arrow-right", "size-4" %}</span>
         </a>

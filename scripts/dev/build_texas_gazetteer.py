@@ -1,7 +1,7 @@
 """(Re)build data/geo/texas_places.json — every Texas place → its county/counties.
 
     python -m scripts.dev.build_texas_gazetteer            # download the Census table, build, clean up
-    python -m scripts.dev.build_texas_gazetteer --keep     # keep the downloaded table next to the JSON
+    python -m scripts.dev.build_texas_gazetteer --keep     # keep the downloaded table (in .tmp/, git-ignored)
 
 Source: U.S. Census Bureau, 2020 "place by county" reference table for Texas (public domain):
     https://www2.census.gov/geo/docs/reference/codes2020/place_by_cou/st48_tx_place_by_county2020.txt
@@ -17,7 +17,8 @@ names without " County", sorted A–Z. Two different places with the same name s
 counties are merged) — e.g. "St. Paul" (Collin) and "St. Paul" (San Patricio).
 
 The Census table only changes after a decennial census; re-run this script then (or if the file is
-lost). The downloaded table is deleted afterwards unless --keep is given.
+lost). The table is downloaded into .tmp/ (git-ignored, never published) and deleted afterwards —
+also when the build fails — unless --keep is given.
 """
 from __future__ import annotations
 
@@ -35,7 +36,7 @@ from scripts.sync.geo import GAZETTEER_PATH, normalize_place  # noqa: E402
 
 CENSUS_URL = ("https://www2.census.gov/geo/docs/reference/codes2020/place_by_cou/"
               "st48_tx_place_by_county2020.txt")
-STAGED = GAZETTEER_PATH.parent / ".census_tx_place_by_county2020.txt"
+STAGED = ROOT / ".tmp" / "census_tx_place_by_county2020.txt"   # .tmp/ is git-ignored
 TYPE_WORDS = ("city", "town", "village", "CDP")
 EXPECTED_HEADER = ["STATE", "STATEFP", "COUNTYFP", "COUNTYNAME", "PLACEFP", "PLACENS", "PLACENAME", "TYPE",
                    "CLASSFP", "FUNCSTAT"]
@@ -90,20 +91,22 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--source", help="use this local copy of the Census table instead of downloading")
     a = ap.parse_args(argv)
     src = Path(a.source) if a.source else STAGED
-    if not src.exists():
-        print(f"downloading {CENSUS_URL}")
-        download(src)
-    places = parse(src.read_text(encoding="utf-8"))
-    size = write(places, GAZETTEER_PATH)
-    counties = {c for v in places.values() for c in v}
-    multi = sum(1 for v in places.values() if len(v) > 1)
-    print(f"wrote {GAZETTEER_PATH.relative_to(ROOT)}: {len(places)} places, {len(counties)} counties, "
-          f"{multi} places in 2+ counties, {size / 1024:.1f} KB")
-    if len(counties) != 254:
-        print(f"WARNING: expected 254 Texas counties, found {len(counties)}")
-    if not a.keep and src == STAGED:
-        src.unlink(missing_ok=True)
-        print(f"removed {src.relative_to(ROOT)}")
+    try:
+        if not src.exists():
+            print(f"downloading {CENSUS_URL}")
+            download(src)
+        places = parse(src.read_text(encoding="utf-8"))
+        size = write(places, GAZETTEER_PATH)
+        counties = {c for v in places.values() for c in v}
+        multi = sum(1 for v in places.values() if len(v) > 1)
+        print(f"wrote {GAZETTEER_PATH.relative_to(ROOT)}: {len(places)} places, {len(counties)} counties, "
+              f"{multi} places in 2+ counties, {size / 1024:.1f} KB")
+        if len(counties) != 254:
+            print(f"WARNING: expected 254 Texas counties, found {len(counties)}")
+    finally:
+        if not a.keep and src == STAGED and src.exists():
+            src.unlink(missing_ok=True)
+            print(f"removed {src.relative_to(ROOT)}")
     return 0
 
 

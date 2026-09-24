@@ -17,13 +17,14 @@ const require = createRequire(import.meta.url);
 export const TZ = "America/Chicago";
 const LOCALES = { en: "en-US", es: "es-US" };
 const EMPTY = !!process.env.COMMITTEE_EMPTY;
-const DAY = 864e5;
 
 // Helpers handed over by eleventy.config.js (translateKey, pickLang, fmtDate, toDate).
 // They are set when the plugin loads; the fallbacks keep this module usable
 // from a plain `node` script too.
 let H = {
   translateKey: (k) => k,
+  // Intl's Spanish "7:00 p.m." → "7:00 p. m." (no-break spaces); replaced by eleventy.config.js's esMeridiem.
+  esMeridiem: (s) => String(s).replace(/\b([ap])\.\s?m\./g, "$1.\u00a0m.").replace(/(\d) (?=[ap]\.\u00a0m\.)/g, "$1\u00a0"),
   pickLang: (item, field, lang) => {
     if (!item) return "";
     const i = item.i18n && item.i18n[field];
@@ -83,6 +84,58 @@ function chicagoMidnight(ymd) {
   return atChicago(y, m - 1, d, "00:00");
 }
 
+// Any IANA time zone (the Grapevine Weekly Open is hosted in Eastern time).
+const zoneFmts = new Map();
+function zoneFmt(tz) {
+  if (!zoneFmts.has(tz)) {
+    let f = null;
+    try {
+      if (tz) f = new Intl.DateTimeFormat("en-US", { timeZone: tz, hourCycle: "h23", year: "numeric", month: "numeric", day: "numeric", hour: "numeric", minute: "numeric", second: "numeric" });
+    } catch {
+      f = null; // unknown zone name
+    }
+    zoneFmts.set(tz, f);
+  }
+  return zoneFmts.get(tz);
+}
+// The zone itself when it is a real IANA name, else Central.
+const validZone = (tz) => (tz && zoneFmt(String(tz)) ? String(tz) : TZ);
+// Wall-clock parts of an instant (ms) in a zone.
+function zoneParts(ms, tz) {
+  const p = {};
+  for (const x of zoneFmt(tz).formatToParts(new Date(ms))) if (x.type !== "literal") p[x.type] = Number(x.value);
+  return { y: p.year, mo: p.month - 1, d: p.day, h: p.hour % 24, mi: p.minute, s: p.second };
+}
+// A wall-clock date + time in a zone → the real instant (ms). Month/day may overflow (Date.UTC rolls them).
+function zoneInstant(y, mo, d, h, mi, tz) {
+  const guess = Date.UTC(y, mo, d, h, mi);
+  const offsetAt = (ms) => {
+    const p = zoneParts(ms, tz);
+    return Date.UTC(p.y, p.mo, p.d, p.h, p.mi, p.s) - Math.floor(ms / 1000) * 1000;
+  };
+  return guess - offsetAt(guess - offsetAt(guess)); // 2nd pass: right even on a DST-change day
+}
+
+/**
+ * A weekly meeting at a fixed local time (e.g. Noon Eastern): its first start at or after
+ * `firstMs` that is not over yet (`liveMs` after it starts). Steps one calendar week at a
+ * time in the host's own time zone, so a daylight-saving change never moves it by an hour.
+ * `hhmm` = the local start time ("12:00"); default: the local time of `firstMs`.
+ * (src/assets/js/committee.js does the same in the browser.)
+ */
+export function nextWeeklyStart(firstMs, nowMs, tz = TZ, hhmm = "", liveMs = 75 * 60000) {
+  if (validZone(tz) !== tz) {
+    tz = TZ;
+    hhmm = ""; // a local time in an unknown zone means nothing in Central: keep firstMs's clock time
+  }
+  const p = zoneParts(firstMs, tz);
+  const m = /^(\d{1,2}):(\d{2})$/.exec(String(hhmm || "").trim());
+  const h = m ? Number(m[1]) : p.h, mi = m ? Number(m[2]) : p.mi;
+  let ms = firstMs;
+  for (let w = 1; ms + liveMs < nowMs && w < 5000; w++) ms = zoneInstant(p.y, p.mo, p.d + 7 * w, h, mi, tz);
+  return ms;
+}
+
 function parseInstant(v) {
   if (!v) return null;
   if (v instanceof Date) return isNaN(v) ? null : v;
@@ -93,7 +146,8 @@ function parseInstant(v) {
 
 function fmt(date, lang, opts) {
   try {
-    return new Intl.DateTimeFormat(LOCALES[lang] || "en-US", { timeZone: TZ, ...opts }).format(date);
+    const s = new Intl.DateTimeFormat(LOCALES[lang] || "en-US", { timeZone: TZ, ...opts }).format(date);
+    return lang === "es" ? H.esMeridiem(s) : s;
   } catch {
     return "";
   }
@@ -102,7 +156,8 @@ function fmt(date, lang, opts) {
 function fmtRange(a, b, lang, opts) {
   try {
     const f = new Intl.DateTimeFormat(LOCALES[lang] || "en-US", { timeZone: TZ, ...opts });
-    return typeof f.formatRange === "function" ? f.formatRange(a, b) : `${f.format(a)} – ${f.format(b)}`;
+    const s = typeof f.formatRange === "function" ? f.formatRange(a, b) : `${f.format(a)} – ${f.format(b)}`;
+    return lang === "es" ? H.esMeridiem(s) : s;
   } catch {
     return "";
   }
@@ -166,6 +221,26 @@ function nthWeekday(year, month, weekday, n) {
   return day <= dim ? day : null;
 }
 
+// Start / end ("HH:MM", Central) of the committee meeting from config/site.yml `meeting`.
+// A missing end (or one that is not after the start) means a 1-hour meeting — the same
+// rule as src/_data/meeting.js and scripts/sync/meeting.py, so the hero, the event
+// cards, the calendar files and the live countdown always agree.
+const hhmmMinutes = (s) => {
+  const [h, m] = String(s || "").split(":").map(Number);
+  return (h || 0) * 60 + (m || 0);
+};
+function plusHour(hhmm) {
+  const [h, m] = String(hhmm || "19:00").split(":").map(Number);
+  return `${String(((h || 0) + 1) % 24).padStart(2, "0")}:${String(m || 0).padStart(2, "0")}`;
+}
+const meetingStart = (cfg = {}) => String(cfg.start || "19:00");
+function meetingEnd(cfg = {}) {
+  const start = meetingStart(cfg);
+  return cfg.end && hhmmMinutes(cfg.end) > hhmmMinutes(start) ? String(cfg.end) : plusHour(start);
+}
+// Unquoted YAML dates (skip_dates: [2026-12-16]) arrive as Date objects → "YYYY-MM-DD".
+const skipDates = (cfg = {}) => (cfg.skip_dates || []).map((d) => (d instanceof Date ? d.toISOString().slice(0, 10) : String(d)));
+
 /**
  * Committee meeting dates between `monthsBack` months ago and `monthsAhead`
  * months ahead, from config/site.yml `meeting` (same rule as src/_data/meeting.js).
@@ -173,7 +248,7 @@ function nthWeekday(year, month, weekday, n) {
 export function meetingDates(cfg = {}, monthsBack = 3, monthsAhead = 12) {
   const weekday = WD[String(cfg.weekday || "wednesday").toLowerCase()] ?? 3;
   const n = Number(cfg.week_of_month || 3);
-  const skip = new Set((cfg.skip_dates || []).map(String));
+  const skip = new Set(skipDates(cfg));
   const now = new Date();
   const out = [];
   for (let i = -monthsBack; i <= monthsAhead; i++) {
@@ -183,8 +258,8 @@ export function meetingDates(cfg = {}, monthsBack = 3, monthsAhead = 12) {
     if (!d) continue;
     const ymd = `${y}-${String(mo + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
     if (skip.has(ymd)) continue;
-    const start = atChicago(y, mo, d, cfg.start || "19:00");
-    const end = atChicago(y, mo, d, cfg.end || cfg.start || "20:00");
+    const start = atChicago(y, mo, d, meetingStart(cfg));
+    const end = atChicago(y, mo, d, meetingEnd(cfg));
     out.push({ ymd, start: start.toISOString(), end: (end > start ? end : new Date(start.getTime() + 3600e3)).toISOString() });
   }
   return out;
@@ -202,8 +277,9 @@ function meetingRuleText(cfg = {}, lang = "en") {
 
 // "7:00 – 8:00 PM" (Central wall clock), from HH:MM strings.
 function meetingTimeRange(cfg = {}, lang = "en") {
-  const a = atChicago(2026, 0, 21, cfg.start || "19:00");
-  const b = atChicago(2026, 0, 21, cfg.end || cfg.start || "20:00");
+  const a = atChicago(2026, 0, 21, meetingStart(cfg));
+  let b = atChicago(2026, 0, 21, meetingEnd(cfg));
+  if (b <= a) b = new Date(a.getTime() + 3600e3); // e.g. 23:30 → 00:30 (next day)
   return fmtRange(a, b, lang, { hour: "numeric", minute: "2-digit" });
 }
 
@@ -366,11 +442,12 @@ function shapeEvent(it, site, lang, now, descOverride) {
   const startNoon = new Date(startYmd + "T12:00:00Z");
   const group = eventGroup(it);
   const committee = it.category === "committee";
-  // An outside calendar (GV/LV websites, .ics feeds) that gives only a date usually has
-  // the start time on its own event page (e.g. a 3 PM workshop), so we say "Time on the
-  // event page" there, like the home page does. Only Drive flyers and hand-written
-  // events are really "All day".
-  const timeOnPage = allDay && it.source === "calendar" && /^https?:\/\//.test(it.url || "");
+  // An outside calendar (GV/LV websites, .ics feeds) that gives only a date did not list
+  // a start time — and its own event page may not either (La Viña's "Taller Mensual"
+  // page shows just the date and the Zoom link). So those say "Time not listed — see
+  // event details", never "All day". Only Drive flyers and hand-written events are
+  // really "All day".
+  const timeNotListed = allDay && it.source === "calendar" && /^https?:\/\//.test(it.url || "");
   const title = it._i18nTitle ? it.title : (H.pickLang(it, "title", lang) || it.title || "");
   const summary = it._i18nTitle ? it.summary : (H.pickLang(it, "summary", lang) || "");
   const past = x.past === true || endMs <= now;
@@ -389,7 +466,7 @@ function shapeEvent(it, site, lang, now, descOverride) {
     dateLabel = startYmd === endYmd
       ? cap(fmt(a, lang, { weekday: "long", month: "long", day: "numeric", year: "numeric", timeZone: "UTC" }))
       : cap(fmtRange(a, b, lang, { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" }));
-    timeLabel = t(timeOnPage ? "committee.events.time_on_page" : "committee.events.all_day", lang);
+    timeLabel = t(timeNotListed ? "committee.events.time_not_listed" : "committee.events.all_day", lang);
   } else {
     dateLabel = cap(fmt(start, lang, { weekday: "long", month: "long", day: "numeric", year: "numeric" }));
     timeLabel = fmtRange(start, end, lang, { hour: "numeric", minute: "2-digit", timeZoneName: "short" });
@@ -427,8 +504,8 @@ function shapeEvent(it, site, lang, now, descOverride) {
     if (summary) descLines.push(summary);
     if (online) descLines.push("", `${platform ? t("committee.events.online_on", lang, { platform }) : t("committee.events.online", lang)}: ${online}`);
     if (flyerView) descLines.push(`${t("committee.events.flyer", lang)}: ${flyerView}`);
-    // Date-only outside event: the calendar shows it as all-day, so the note says where the time is.
-    if (detailsUrl !== flyerView) descLines.push("", `${t(timeOnPage ? "committee.events.time_on_page" : "committee.cal.details", lang)}: ${detailsUrl}`);
+    // Date-only outside event: the calendar shows it as all-day, so the note says the time was not listed.
+    if (detailsUrl !== flyerView) descLines.push("", `${t(timeNotListed ? "committee.events.time_not_listed" : "committee.cal.details", lang)}: ${detailsUrl}`);
   }
   const calDescription = descLines.join("\n").trim();
   const calLocation = committee ? (online || location) : [location, !location && online ? online : ""].filter(Boolean).join("");
@@ -756,8 +833,8 @@ export function whenText(s, lang = "en") {
     return plural ? `los ${es === "sábado" || es === "domingo" ? es + "s" : es}` : es;
   });
   out = out
-    .replace(/\b(\d{1,2}(?::\d{2})?)\s*a\.?\s?m\b\.?/gi, "$1 a. m.")
-    .replace(/\b(\d{1,2}(?::\d{2})?)\s*p\.?\s?m\b\.?/gi, "$1 p. m.")
+    .replace(/\b(\d{1,2}(?::\d{2})?)\s*a\.?\s?m\b\.?/gi, "$1\u00a0a.\u00a0m.")
+    .replace(/\b(\d{1,2}(?::\d{2})?)\s*p\.?\s?m\b\.?/gi, "$1\u00a0p.\u00a0m.")
     .replace(/\bnoon\b/gi, "mediodía")
     .replace(/\b(?:central(?: time)?|CT|CST|CDT)\b/gi, "(hora del Centro)")
     .replace(/\b(?:eastern(?: time)?|ET|EST|EDT)\b/gi, "(hora del Este)")
@@ -775,7 +852,9 @@ export function whenText(s, lang = "en") {
  * Times are shown in Central time (NETA 65's time zone); the host's own time
  * ("Noon Eastern") is kept as a secondary line. `next` is rolled forward week
  * by week from extra.next_start so it is right even if the data is a few days old
- * (committee.js rolls it forward again in the browser).
+ * (committee.js rolls it forward again in the browser). The weeks are counted in the
+ * host's time zone (extra.timezone, extra.start_local): Noon Eastern stays 11 AM Central
+ * across daylight-saving changes.
  */
 export function weeklyOpen(wo, lang = "en", now = new Date()) {
   if (!wo) return null;
@@ -790,12 +869,14 @@ export function weeklyOpen(wo, lang = "en", now = new Date()) {
   let next = null;
   const n0 = parseInstant(x.next_start);
   if (n0) {
-    let ms = n0.getTime();
-    const LIVE_MS = 75 * 60000; // "live" for ~an hour and a quarter after it starts
-    while (ms + LIVE_MS < now.getTime()) ms += 7 * DAY;
-    const d = new Date(ms);
+    const tz = validZone(x.timezone);
+    // start_local is the host's clock time, so it only counts together with its own zone.
+    const at = tz === x.timezone && /^\d{1,2}:\d{2}$/.test(String(x.start_local || "").trim()) ? String(x.start_local).trim() : "";
+    // "live" for ~an hour and a quarter after it starts
+    const d = new Date(nextWeeklyStart(n0.getTime(), now.getTime(), tz, at, 75 * 60000));
     next = {
       iso: d.toISOString(),
+      tz, at, // for the browser's own roll-forward (committee.js)
       date: cap(fmt(d, lang, { weekday: "long", month: "long", day: "numeric" })),
       time: fmt(d, lang, { hour: "numeric", minute: "2-digit", timeZoneName: "short" }),
     };
@@ -817,6 +898,11 @@ export function weeklyOpen(wo, lang = "en", now = new Date()) {
  * The committee's Google Drive, as the last sync saw it (data/site/status.json):
  * root + newest Panel folder (with a direct link), when it was last checked.
  * Used by the empty states so they can say exactly where a file goes.
+ *
+ * Only the current Panel folder is ever linked. The shared ROOT folder is never
+ * linked from the site (it also holds old panels and loose files, such as event
+ * sign-up sheets), so when the sync did not find a Panel folder, `url` is null
+ * and every "Open Drive folder" button is hidden.
  */
 export function driveInfo(status, site) {
   const src = (status?.sources || []).find((s) => s && s.source === "drive") || null;
@@ -827,13 +913,11 @@ export function driveInfo(status, site) {
   const panel = p
     ? { number: Number(p.panel) || null, label: p.label || `Panel ${p.panel}`, name: p.name || p.label || `Panel ${p.panel}`, url: `https://drive.google.com/drive/folders/${p.id}` }
     : minPanel ? { number: minPanel, label: `Panel ${minPanel}`, name: `Panel ${minPanel}`, url: null } : null;
-  const rootUrl = site?.driveRootUrl || null;
   return {
     rootName: st.root || "A65_GV",
-    rootUrl,
     panel,
-    // Where "Open Drive folder" goes: straight into the current Panel folder when known.
-    url: (panel && panel.url) || rootUrl,
+    // Where "Open Drive folder" goes: the current Panel folder, or nowhere (never the root).
+    url: (panel && panel.url) || null,
     checked: src && src.ok !== null ? src.updated || null : null,
     ok: src ? src.ok : null,
     files: Number(st.files ?? src?.count ?? 0) || 0,
@@ -877,11 +961,13 @@ export default function (eleventyConfig, helpers) {
     const segs = [d.rootName || "A65_GV"];
     if (d.panel) segs.push(d.panel.name || d.panel.label);
     const target = String(folder || "").split("/").map((s) => s.trim()).filter(Boolean);
-    const sep = `<span class="cm-path-sep" aria-hidden="true">${icon("chevron-right", "size-3.5")}</span>`;
+    // A <p> cannot carry an aria-label (screen readers ignore it), so the label is
+    // visually hidden text at the start, and each chevron reads as "/".
+    const sep = `<span class="cm-path-sep">${icon("chevron-right", "size-3.5")}<span class="sr-only"> / </span></span>`;
     const parts = segs.map((s) => `<span class="cm-path-seg">${icon("folder", "size-3.5")}<span>${esc(s)}</span></span>`);
     target.forEach((s, i) => parts.push(`<span class="cm-path-seg is-target">${icon(i === target.length - 1 && !file ? "folder-open" : "folder", "size-3.5")}<span>${esc(s)}</span></span>`));
     if (file) parts.push(`<span class="cm-path-file">${icon(/\.(jpe?g|png|heic|webp)$/i.test(file) ? "file-image" : "file-text", "size-3.5")}<span>${esc(file)}</span></span>`);
-    return `<p class="cm-path" aria-label="${esc(t("committee.drive.path_aria", L))}">${parts.join(sep)}</p>`;
+    return `<p class="cm-path"><span class="sr-only">${esc(t("committee.drive.path_aria", L))}: </span>${parts.join(sep)}</p>`;
   });
 
   // "Drive checked Sep 23, 2026 — nothing uploaded yet" (empty states only)
@@ -901,14 +987,15 @@ export default function (eleventyConfig, helpers) {
   });
 
   // Rule for the client-side countdown (same shape as GV.nextMeeting expects)
+  // (a missing end = a 1-hour meeting, like everywhere else — see meetingEnd)
   eleventyConfig.addFilter("cmRuleObj", (cfg) => {
     cfg = cfg || {};
     return {
       weekday: WD[String(cfg.weekday || "wednesday").toLowerCase()] ?? 3,
       n: Number(cfg.week_of_month || 3),
-      start: cfg.start || "19:00",
-      end: cfg.end || cfg.start || "20:00",
-      skip: (cfg.skip_dates || []).map(String),
+      start: meetingStart(cfg),
+      end: meetingEnd(cfg),
+      skip: skipDates(cfg),
     };
   });
 

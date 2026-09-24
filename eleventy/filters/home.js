@@ -420,7 +420,7 @@ export default function (eleventyConfig, helpers) {
 
   /* Announcements: not expired, pinned first, then newest. */
   eleventyConfig.addFilter("homeAnnouncements", (items) => {
-    const today = new Date().toISOString().slice(0, 10);
+    const today = ymdCentral(Date.now()); // Central-time day, like /announcements/
     return arr(items).filter((a) => {
       if (!alive(a)) return false;
       const exp = a.extra && a.extra.expires;
@@ -435,7 +435,7 @@ export default function (eleventyConfig, helpers) {
      + La Viña's evergreen topics (no deadline; a different pair each week).
      Half and half when both exist, so both magazines are always invited. */
   eleventyConfig.addFilter("homeThemes", (items, n = 4) => {
-    const today = new Date().toISOString().slice(0, 10);
+    const today = ymdCentral(Date.now()); // Central-time day, like /contribute/
     const live = arr(items).filter((t) => alive(t) && t.extra && goodTitle(t));
     const dated = live.filter((t) => t.extra.deadline && String(t.extra.deadline).slice(0, 10) >= today)
       .sort((a, b) => String(a.extra.deadline).localeCompare(String(b.extra.deadline)));
@@ -602,7 +602,9 @@ export default function (eleventyConfig, helpers) {
     const s = toDate(start), e = toDate(end);
     if (!s) return "";
     const f = new Intl.DateTimeFormat(LOCALES[lang] || "en-US", { hour: "numeric", minute: "2-digit", timeZone: TZ, timeZoneName: "short" });
-    try { return e && e > s ? f.formatRange(s, e) : f.format(s); } catch { return f.format(s); }
+    let out;
+    try { out = e && e > s ? f.formatRange(s, e) : f.format(s); } catch { out = f.format(s); }
+    return lang === "es" && helpers && helpers.esMeridiem ? helpers.esMeridiem(out) : out; // "p. m." like the rest of the site
   });
 
   /* Weekday name (0 = Sunday) in the page language: "Wednesday" / "miércoles". */
@@ -631,6 +633,7 @@ export default function (eleventyConfig, helpers) {
     if (m) {
       let h = Number(m[1]) % 12; if (m[3].toLowerCase() === "p") h += 12;
       timeEs = new Intl.DateTimeFormat("es-US", { hour: "numeric", minute: "2-digit", timeZone: "UTC" }).format(new Date(Date.UTC(2023, 0, 1, h, Number(m[2] || 0))));
+      if (helpers && helpers.esMeridiem) timeEs = helpers.esMeridiem(timeEs);
       if (/central|ct\b|cst|cdt/i.test(tm)) timeEs += " (hora del Centro)";
     }
     return [dayEs, timeEs].filter(Boolean).join(" · ");

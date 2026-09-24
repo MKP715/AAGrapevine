@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-24T03:25:24Z",
+ "updated": "2026-09-24T06:35:22Z",
  "fixture": false,
  "items": [
   {
@@ -256,7 +256,7 @@
    "i18n": {
     "title": {
      "en": "Back Issue 30 Packs Form",
-     "es": "Back Issue 30 Packs Form"
+     "es": "Formulario de paquetes de 30 ediciones anteriores"
     },
     "summary": {
      "en": "",
@@ -308,16 +308,14 @@
    "i18n": {
     "title": {
      "en": "By-The-Month Order Form",
-     "es": "Formulario de pedido del mes"
+     "es": "Formulario de pedido mensual"
     },
     "summary": {
      "en": "",
      "es": ""
     }
    },
-   "machine": [
-    "es"
-   ],
+   "machine": [],
    "is_new": false
   },
   {
@@ -415,7 +413,7 @@
    },
    "i18n": {
     "title": {
-     "en": "30 Past Editions LV",
+     "en": "30 LV Back Issues",
      "es": "30 ediciones pasadas LV"
     },
     "summary": {
@@ -423,9 +421,7 @@
      "es": ""
     }
    },
-   "machine": [
-    "en"
-   ],
+   "machine": [],
    "is_new": false
   },
   {
@@ -433,7 +429,7 @@
    "source": "crawl",
    "kind": "pdf",
    "url": "https://www.aagrapevine.org/sites/default/files/2026-08/La-Vin%CC%83a-Subscription-Form%5B30%5D.pdf",
-   "title": "La Viña Subscription Form (Spanish)",
+   "title": "La Viña Subscription Form",
    "summary": "",
    "lang": "en",
    "date": "2026-08-21",
@@ -462,24 +458,22 @@
      "La Viña Subscription Form"
     ],
     "event_date": null,
-    "doc_lang": "es",
+    "doc_lang": "en",
     "section": "SUBSCRIPTION and product",
     "external": false,
     "orphan": false
    },
    "i18n": {
     "title": {
-     "en": "La Viña Subscription Form (Spanish)",
-     "es": "La Viña formulario de suscripción (Español)"
+     "en": "La Viña Subscription Form",
+     "es": "Formulario de suscripción a La Viña"
     },
     "summary": {
      "en": "",
      "es": ""
     }
    },
-   "machine": [
-    "es"
-   ],
+   "machine": [],
    "is_new": false
   },
   {
@@ -537,7 +531,7 @@
    "source": "crawl",
    "kind": "pdf",
    "url": "https://www.aa.org/sites/default/files/literature/SP_Retrofit_Completion_Return_to_Office.pdf",
-   "title": "SP Letter to the Fellowahip Retrofit Completion and Return to Office (Spanish)",
+   "title": "Letter to the Fellowship: Retrofit Completion and Return to Office (Spanish)",
    "summary": "",
    "lang": "en",
    "date": "2026-03-31",
@@ -569,8 +563,8 @@
    },
    "i18n": {
     "title": {
-     "en": "SP Letter to the Fellowahip Retrofit Completion and Return to Office (Spanish)",
-     "es": "SP Letter to the Fellowahip Retrofit Completion and Return to Office (Español)"
+     "en": "Letter to the Fellowship: Retrofit Completion and Return to Office (Spanish)",
+     "es": "Carta a la Comunidad: fin de la remodelación y regreso a la oficina (español)"
     },
     "summary": {
      "en": "",
@@ -587,7 +581,7 @@
    "source": "crawl",
    "kind": "pdf",
    "url": "https://www.aa.org/sites/default/files/literature/Retrofit_Completion_Return_to_Office.pdf",
-   "title": "Letter to the Fellowahip Retrofit Completion and Return to Office",
+   "title": "Letter to the Fellowship: Retrofit Completion and Return to Office",
    "summary": "",
    "lang": "en",
    "date": "2026-03-31",
@@ -619,17 +613,15 @@
    },
    "i18n": {
     "title": {
-     "en": "Letter to the Fellowahip Retrofit Completion and Return to Office",
-     "es": "Carta a la finalización de la readaptación de los becarios y volver a la oficina"
+     "en": "Letter to the Fellowship: Retrofit Completion and Return to Office",
+     "es": "Carta a la Comunidad: fin de la remodelación y regreso a la oficina"
     },
     "summary": {
      "en": "",
      "es": ""
     }
    },
-   "machine": [
-    "es"
-   ],
+   "machine": [],
    "is_new": false
   },
   {
@@ -728,16 +720,14 @@
    "i18n": {
     "title": {
      "en": "La Viña 30 Anniversary",
-     "es": "La Viña 30 aniversario"
+     "es": "30 aniversario de La Viña"
     },
     "summary": {
      "en": "",
      "es": ""
     }
    },
-   "machine": [
-    "es"
-   ],
+   "machine": [],
    "is_new": false
   },
   {
@@ -840,16 +830,14 @@
    "i18n": {
     "title": {
      "en": "Grapevine Open Meeting",
-     "es": "Grapevine sesión abierta"
+     "es": "Reunión abierta de Grapevine"
     },
     "summary": {
      "en": "",
      "es": ""
     }
    },
-   "machine": [
-    "es"
-   ],
+   "machine": [],
    "is_new": false
   },
   {
@@ -965,7 +953,7 @@
    "source": "crawl",
    "kind": "pdf",
    "url": "https://www.aalavina.org/sites/default/files/2026-02/LV_Catalogo_2026.pdf",
-   "title": "Catálogo 2026 (inglés)",
+   "title": "Catálogo 2026",
    "summary": "",
    "lang": "es",
    "date": "2026-02-02",
@@ -999,24 +987,23 @@
      "SÓLO DISPONIBLE PARA DESCARGAR (ARCHIVO PDF)"
     ],
     "event_date": null,
-    "doc_lang": "en",
+    "doc_lang": "es",
     "section": "recursos y herramientas",
     "external": false,
-    "orphan": false
+    "orphan": false,
+    "multilingual": true
    },
    "i18n": {
     "title": {
-     "en": "Catalogue 2026 (English)",
-     "es": "Catálogo 2026 (inglés)"
+     "en": "2026 Catalog",
+     "es": "Catálogo 2026"
     },
     "summary": {
      "en": "",
      "es": ""
     }
    },
-   "machine": [
-    "en"
-   ],
+   "machine": [],
    "is_new": false
   },
   {
@@ -1061,7 +1048,8 @@
     "doc_lang": "en",
     "section": "tool and resources",
     "external": false,
-    "orphan": false
+    "orphan": false,
+    "multilingual": true
    },
    "i18n": {
     "title": {
@@ -1119,7 +1107,7 @@
    },
    "i18n": {
     "title": {
-     "en": "Books of La Viña",
+     "en": "La Viña Books",
      "es": "Libros de La Viña"
     },
     "summary": {
@@ -1127,9 +1115,7 @@
      "es": ""
     }
    },
-   "machine": [
-    "en"
-   ],
+   "machine": [],
    "is_new": false
   },
   {
@@ -1227,7 +1213,7 @@
    },
    "i18n": {
     "title": {
-     "en": "Bookmark LV",
+     "en": "LV Bookmark",
      "es": "Marca Libro de LV"
     },
     "summary": {
@@ -1235,9 +1221,7 @@
      "es": ""
     }
    },
-   "machine": [
-    "en"
-   ],
+   "machine": [],
    "is_new": false
   },
   {
@@ -1355,7 +1339,7 @@
    "url": "https://www.aagrapevine.org/sites/default/files/2026-01/GV_catalog_postcard_2026.pdf",
    "title": "2026 Catalog Postcard",
    "summary": "",
-   "lang": "es",
+   "lang": "en",
    "date": "2026-01-08",
    "first_seen": "2026-09-23T16:31:53Z",
    "image": "/assets/cache/pdf/87268e522aca4eab.webp",
@@ -1382,7 +1366,7 @@
      "2026 Catalog Postcard"
     ],
     "event_date": null,
-    "doc_lang": "es",
+    "doc_lang": "en",
     "section": "Postcards",
     "external": false,
     "orphan": false
@@ -1390,7 +1374,7 @@
    "i18n": {
     "title": {
      "en": "2026 Catalog Postcard",
-     "es": "2026 Catalog Postcard"
+     "es": "Postal del catálogo 2026"
     },
     "summary": {
      "en": "",
@@ -1441,7 +1425,7 @@
    },
    "i18n": {
     "title": {
-     "en": "La Viña in Instagram",
+     "en": "La Viña on Instagram",
      "es": "La Viña en Instagram"
     },
     "summary": {
@@ -1449,9 +1433,7 @@
      "es": ""
     }
    },
-   "machine": [
-    "en"
-   ],
+   "machine": [],
    "is_new": false
   },
   {
@@ -1712,7 +1694,7 @@
    "i18n": {
     "title": {
      "en": "Bookmark",
-     "es": "Bookmark"
+     "es": "Separador de libros"
     },
     "summary": {
      "en": "",
@@ -1763,7 +1745,7 @@
    },
    "i18n": {
     "title": {
-     "en": "Catalogue 2026 (Postcard)",
+     "en": "2026 Catalog (Postcard)",
      "es": "Catálogo 2026 (Postcard)"
     },
     "summary": {
@@ -1979,7 +1961,7 @@
    },
    "i18n": {
     "title": {
-     "en": "Audio Download",
+     "en": "Audio Downloads",
      "es": "Descarga de Audios"
     },
     "summary": {
@@ -1987,9 +1969,7 @@
      "es": ""
     }
    },
-   "machine": [
-    "en"
-   ],
+   "machine": [],
    "is_new": false
   },
   {
@@ -2037,7 +2017,7 @@
    },
    "i18n": {
     "title": {
-     "en": "Topics of LV 2026 and 2027",
+     "en": "LV Themes for 2026 and 2027",
      "es": "Temas de LV 2026 y 2027"
     },
     "summary": {
@@ -2045,9 +2025,7 @@
      "es": ""
     }
    },
-   "machine": [
-    "en"
-   ],
+   "machine": [],
    "is_new": false
   },
   {
@@ -2139,7 +2117,7 @@
    },
    "i18n": {
     "title": {
-     "en": "Grapevine Letter for Members AA",
+     "en": "Grapevine Letter to AA Members",
      "es": "Carta de Grapevine para miembros AA"
     },
     "summary": {
@@ -2147,9 +2125,7 @@
      "es": ""
     }
    },
-   "machine": [
-    "en"
-   ],
+   "machine": [],
    "is_new": false
   },
   {
@@ -2243,7 +2219,7 @@
    },
    "i18n": {
     "title": {
-     "en": "Manual of Representative LV",
+     "en": "LV Representative Handbook",
      "es": "Manual del Representante LV"
     },
     "summary": {
@@ -2251,9 +2227,7 @@
      "es": ""
     }
    },
-   "machine": [
-    "en"
-   ],
+   "machine": [],
    "is_new": false
   },
   {
@@ -2509,7 +2483,7 @@
    },
    "i18n": {
     "title": {
-     "en": "Take the Message 2025",
+     "en": "Carry the Message 2025",
      "es": "Lleva el mensaje 2025"
     },
     "summary": {
@@ -2517,9 +2491,7 @@
      "es": ""
     }
    },
-   "machine": [
-    "en"
-   ],
+   "machine": [],
    "is_new": false
   },
   {
@@ -2663,7 +2635,7 @@
    },
    "i18n": {
     "title": {
-     "en": "LV Increase-Price enero2025",
+     "en": "LV Price Increase, January 2025",
      "es": "LV Aumento-Precios enero2025"
     },
     "summary": {
@@ -2671,9 +2643,7 @@
      "es": ""
     }
    },
-   "machine": [
-    "en"
-   ],
+   "machine": [],
    "is_new": false
   },
   {
@@ -2785,7 +2755,7 @@
    "source": "crawl",
    "kind": "pdf",
    "url": "https://www.aagrapevine.org/sites/default/files/2024-07/ASL_Videos_Announcement_ENG-v71224.pdf",
-   "title": "Announcement PDF version",
+   "title": "ASL Videos Announcement",
    "summary": "",
    "lang": "en",
    "date": "2024-07-15",
@@ -2808,9 +2778,7 @@
      }
     ],
     "upload_month": "2024-07",
-    "link_texts": [
-     "Announcement PDF version"
-    ],
+    "link_texts": [],
     "event_date": null,
     "doc_lang": "en",
     "section": "Announcement: ASL Videos",
@@ -2819,17 +2787,15 @@
    },
    "i18n": {
     "title": {
-     "en": "Announcement PDF version",
-     "es": "Anuncio Versión PDF"
+     "en": "ASL Videos Announcement",
+     "es": "Anuncio: videos en lengua de señas americana (ASL)"
     },
     "summary": {
      "en": "",
      "es": ""
     }
    },
-   "machine": [
-    "es"
-   ],
+   "machine": [],
    "is_new": false
   },
   {
@@ -3055,7 +3021,7 @@
    "url": "https://www.aagrapevine.org/sites/default/files/2024-05/Postcard_80th_anniversary.pdf",
    "title": "80th Anniversary",
    "summary": "",
-   "lang": "es",
+   "lang": "en",
    "date": "2024-05-15",
    "first_seen": "2026-09-23T16:31:53Z",
    "image": "/assets/cache/pdf/ed3575afc692fc24.webp",
@@ -3082,7 +3048,7 @@
      "80th Anniversary"
     ],
     "event_date": null,
-    "doc_lang": "es",
+    "doc_lang": "en",
     "section": "Postcards",
     "external": false,
     "orphan": false
@@ -3090,14 +3056,16 @@
    "i18n": {
     "title": {
      "en": "80th Anniversary",
-     "es": "80th Anniversary"
+     "es": "80.º Aniversario"
     },
     "summary": {
      "en": "",
      "es": ""
     }
    },
-   "machine": [],
+   "machine": [
+    "es"
+   ],
    "is_new": false
   },
   {
@@ -3161,7 +3129,7 @@
    "url": "https://www.aagrapevine.org/sites/default/files/2024-05/GV_LV_annual_Prices_2024.pdf",
    "title": "GV Annual Prices",
    "summary": "",
-   "lang": "es",
+   "lang": "en",
    "date": "2024-05-02",
    "first_seen": "2026-09-23T16:31:53Z",
    "image": "/assets/cache/pdf/aadedeffd40e0a09.webp",
@@ -3188,7 +3156,7 @@
      "GV Annual Prices"
     ],
     "event_date": null,
-    "doc_lang": "es",
+    "doc_lang": "en",
     "section": "Postcards",
     "external": false,
     "orphan": false
@@ -3196,7 +3164,7 @@
    "i18n": {
     "title": {
      "en": "GV Annual Prices",
-     "es": "GV Annual Prices"
+     "es": "Precios anuales de GV"
     },
     "summary": {
      "en": "",
@@ -3298,16 +3266,14 @@
    "i18n": {
     "title": {
      "en": "AAGV 2024 Pricing",
-     "es": "AAGV 2024 Precio"
+     "es": "Precios de AAGV 2024"
     },
     "summary": {
      "en": "",
      "es": ""
     }
    },
-   "machine": [
-    "es"
-   ],
+   "machine": [],
    "is_new": false
   },
   {
@@ -3405,7 +3371,7 @@
    },
    "i18n": {
     "title": {
-     "en": "Poster of the App (8.5 x 11)",
+     "en": "App Poster (8.5 x 11)",
      "es": "Poster de la App (8.5 x 11)"
     },
     "summary": {
@@ -3413,9 +3379,7 @@
      "es": ""
     }
    },
-   "machine": [
-    "en"
-   ],
+   "machine": [],
    "is_new": false
   },
   {
@@ -3513,7 +3477,7 @@
    },
    "i18n": {
     "title": {
-     "en": "La Viña and Grapevine Applications",
+     "en": "La Viña and Grapevine Apps",
      "es": "Aplicaciones de La Viña y Grapevine"
     },
     "summary": {
@@ -3521,9 +3485,7 @@
      "es": ""
     }
    },
-   "machine": [
-    "en"
-   ],
+   "machine": [],
    "is_new": false
   },
   {
@@ -3621,7 +3583,7 @@
    },
    "i18n": {
     "title": {
-     "en": "Workbook of La Viña",
+     "en": "La Viña Workbook",
      "es": "Libro de trabajo de La Viña"
     },
     "summary": {
@@ -3629,9 +3591,7 @@
      "es": ""
     }
    },
-   "machine": [
-    "en"
-   ],
+   "machine": [],
    "is_new": false
   },
   {
@@ -3676,16 +3636,14 @@
    "i18n": {
     "title": {
      "en": "The Home Group: Heartbeat of AA",
-     "es": "El grupo base: latido del corazón de AA"
+     "es": "El Grupo Base: Corazón de AA"
     },
     "summary": {
      "en": "",
      "es": ""
     }
    },
-   "machine": [
-    "es"
-   ],
+   "machine": [],
    "is_new": false
   },
   {
@@ -3693,7 +3651,7 @@
    "source": "crawl",
    "kind": "pdf",
    "url": "https://www.aagrapevine.org/sites/default/files/2023-03/2023_HG_Heartbeat_of_AA_AVAILABLE-NOW.pdf",
-   "title": "The 30th Anniversary Edition! (Spanish)",
+   "title": "The Home Group: Heartbeat of AA (30th Anniversary Edition)",
    "summary": "",
    "lang": "en",
    "date": "2023-03-15",
@@ -3716,29 +3674,25 @@
      }
     ],
     "upload_month": "2023-03",
-    "link_texts": [
-     "The 30th Anniversary Edition! (Spanish)",
-     "The 30th Anniversary Edition! (French)"
-    ],
+    "link_texts": [],
     "event_date": null,
-    "doc_lang": "es",
+    "doc_lang": "en",
     "section": "The 30th Anniversary Edition!",
     "external": false,
-    "orphan": false
+    "orphan": false,
+    "multilingual": true
    },
    "i18n": {
     "title": {
-     "en": "The 30th Anniversary Edition! (Spanish)",
-     "es": "¡La edición del aniversario 30.º! (Español)"
+     "en": "The Home Group: Heartbeat of AA (30th Anniversary Edition)",
+     "es": "El Grupo Base: Corazón de AA (edición del 30.º aniversario)"
     },
     "summary": {
      "en": "",
      "es": ""
     }
    },
-   "machine": [
-    "es"
-   ],
+   "machine": [],
    "is_new": false
   },
   {
@@ -3854,7 +3808,7 @@
    "source": "crawl",
    "kind": "pdf",
    "url": "https://www.aagrapevine.org/sites/default/files/2023-01/GV__Survey_Letter.pdf",
-   "title": "/ Download letter",
+   "title": "Letter about the Grapevine and La Viña Apps Survey",
    "summary": "",
    "lang": "en",
    "date": "2023-01-19",
@@ -3877,9 +3831,7 @@
      }
     ],
     "upload_month": "2023-01",
-    "link_texts": [
-     "/ Download letter"
-    ],
+    "link_texts": [],
     "event_date": null,
     "doc_lang": "en",
     "section": "Survey \"Grapevine and La Viña Apps\"",
@@ -3888,17 +3840,15 @@
    },
    "i18n": {
     "title": {
-     "en": "/ Download letter",
-     "es": "/ Descargar carta"
+     "en": "Letter about the Grapevine and La Viña Apps Survey",
+     "es": "Carta sobre la encuesta de la aplicación de Grapevine y La Viña"
     },
     "summary": {
      "en": "",
      "es": ""
     }
    },
-   "machine": [
-    "es"
-   ],
+   "machine": [],
    "is_new": false
   },
   {
@@ -3906,7 +3856,7 @@
    "source": "crawl",
    "kind": "pdf",
    "url": "https://www.aalavina.org/sites/default/files/2023-01/LV__Encuesta_Carta.pdf",
-   "title": "Leer / Descargar Carta",
+   "title": "Carta sobre la encuesta de la aplicación de Grapevine y La Viña",
    "summary": "",
    "lang": "es",
    "date": "2023-01-19",
@@ -3929,9 +3879,7 @@
      }
     ],
     "upload_month": "2023-01",
-    "link_texts": [
-     "Leer / Descargar Carta"
-    ],
+    "link_texts": [],
     "event_date": null,
     "doc_lang": "es",
     "section": "Encuesta \"Aplicación del Grapevine y La Viña\"",
@@ -3940,17 +3888,15 @@
    },
    "i18n": {
     "title": {
-     "en": "Read / Download Letter",
-     "es": "Leer / Descargar Carta"
+     "en": "Letter about the Grapevine and La Viña Apps Survey",
+     "es": "Carta sobre la encuesta de la aplicación de Grapevine y La Viña"
     },
     "summary": {
      "en": "",
      "es": ""
     }
    },
-   "machine": [
-    "en"
-   ],
+   "machine": [],
    "is_new": false
   },
   {
@@ -4157,16 +4103,14 @@
    "i18n": {
     "title": {
      "en": "12 Ways Grapevine Helps",
-     "es": "12 Maneras Grapevine ayuda"
+     "es": "12 maneras en que Grapevine ayuda"
     },
     "summary": {
      "en": "",
      "es": ""
     }
    },
-   "machine": [
-    "es"
-   ],
+   "machine": [],
    "is_new": false
   },
   {
@@ -4209,16 +4153,14 @@
    "i18n": {
     "title": {
      "en": "Park County Intergroup Campout",
-     "es": "Parque condado Intergrupo Campout"
+     "es": "Campamento del Intergrupo del Condado de Park"
     },
     "summary": {
      "en": "",
      "es": ""
     }
    },
-   "machine": [
-    "es"
-   ],
+   "machine": [],
    "is_new": false
   },
   {
@@ -4259,7 +4201,7 @@
    "i18n": {
     "title": {
      "en": "2023 AAGV Price Increase Release EE",
-     "es": "2023 AAGV precio aumento liberación EE"
+     "es": "2023 AAGV comunicado de aumento de precios EE"
     },
     "summary": {
      "en": "",
@@ -4316,7 +4258,7 @@
    "i18n": {
     "title": {
      "en": "2023 AAGV Price Increase Release (French)",
-     "es": "2023 AAGV precio aumento de la liberación (Francés)"
+     "es": "2023 AAGV comunicado de aumento de precios (francés)"
     },
     "summary": {
      "en": "",
@@ -4371,7 +4313,7 @@
    },
    "i18n": {
     "title": {
-     "en": "2023 AAGV Reported Increase Prices (Spanish)",
+     "en": "2023 AAGV Price Increase Release (Spanish)",
      "es": "2023 AAGV Comunicado Aumento Precios (español)"
     },
     "summary": {
@@ -4529,7 +4471,7 @@
    "i18n": {
     "title": {
      "en": "2023 AAGV Price Increase Release (English)",
-     "es": "2023 AAGV precio aumento de la liberación (En inglés)"
+     "es": "2023 AAGV comunicado de aumento de precios (inglés)"
     },
     "summary": {
      "en": "",
@@ -4635,16 +4577,14 @@
    "i18n": {
     "title": {
      "en": "SETA (Southeast Texas Are 67) Correctional Facilities Conference",
-     "es": "SETA (Southeast Texas are 67) Correctional Facilities Conference"
+     "es": "Conferencia de Instituciones Correccionales de SETA (Área 67, Sureste de Texas)"
     },
     "summary": {
      "en": "",
      "es": ""
     }
    },
-   "machine": [
-    "es"
-   ],
+   "machine": [],
    "is_new": false
   },
   {
@@ -4793,7 +4733,7 @@
    "i18n": {
     "title": {
      "en": "Free On the Inside",
-     "es": "Libre en el interior"
+     "es": "Libres por dentro"
     },
     "summary": {
      "en": "",
@@ -4914,7 +4854,7 @@
    "source": "crawl",
    "kind": "pdf",
    "url": "https://www.aagrapevine.org/sites/default/files/2021-10/Announcement_GV-Podcast.pdf",
-   "title": "French and Spanish (Spanish)",
+   "title": "Grapevine's New Podcast",
    "summary": "",
    "lang": "en",
    "date": "2021-10-04",
@@ -4937,28 +4877,25 @@
      }
     ],
     "upload_month": "2021-10",
-    "link_texts": [
-     "French and Spanish"
-    ],
+    "link_texts": [],
     "event_date": null,
-    "doc_lang": "es",
+    "doc_lang": "en",
     "section": "Grapevine's New Podcast",
     "external": false,
-    "orphan": false
+    "orphan": false,
+    "multilingual": true
    },
    "i18n": {
     "title": {
-     "en": "French and Spanish (Spanish)",
-     "es": "Francés y español (Español)"
+     "en": "Grapevine's New Podcast",
+     "es": "El nuevo podcast de Grapevine"
     },
     "summary": {
      "en": "",
      "es": ""
     }
    },
-   "machine": [
-    "es"
-   ],
+   "machine": [],
    "is_new": false
   },
   {
@@ -4973,7 +4910,7 @@
    "first_seen": "2026-09-23T16:32:40Z",
    "image": "/assets/cache/pdf/e6269ba5c7e98311.webp",
    "tags": [],
-   "category": "other",
+   "category": "news",
    "status": "ok",
    "extra": {
     "host": "www.aagrapevine.org",
@@ -5006,7 +4943,7 @@
    "i18n": {
     "title": {
      "en": "New Grapevine Publisher (English)",
-     "es": "Nuevo editor de Grapevine (En inglés)"
+     "es": "Nuevo editor de Grapevine (inglés)"
     },
     "summary": {
      "en": "",
@@ -5030,7 +4967,7 @@
    "first_seen": "2026-09-23T16:32:40Z",
    "image": "/assets/cache/pdf/bc77b83a78872b55.webp",
    "tags": [],
-   "category": "other",
+   "category": "news",
    "status": "ok",
    "extra": {
     "host": "www.aagrapevine.org",
@@ -5063,7 +5000,7 @@
    "i18n": {
     "title": {
      "en": "New Grapevine Publisher (Spanish)",
-     "es": "Nuevo editor de Grapevine (Español)"
+     "es": "Nuevo editor de Grapevine (español)"
     },
     "summary": {
      "en": "",
@@ -5087,7 +5024,7 @@
    "first_seen": "2026-09-23T16:32:40Z",
    "image": "/assets/cache/pdf/9a31506105fb5aae.webp",
    "tags": [],
-   "category": "other",
+   "category": "news",
    "status": "ok",
    "extra": {
     "host": "www.aagrapevine.org",
@@ -5120,7 +5057,7 @@
    "i18n": {
     "title": {
      "en": "New Grapevine Publisher (French)",
-     "es": "Nuevo editor de Grapevine (Francés)"
+     "es": "Nuevo editor de Grapevine (francés)"
     },
     "summary": {
      "en": "",
@@ -5177,7 +5114,7 @@
    "i18n": {
     "title": {
      "en": "Sold-out book is Back in stock! (English)",
-     "es": "¡El libro agotado está en stock! (En inglés)"
+     "es": "¡El libro agotado está en stock! (inglés)"
     },
     "summary": {
      "en": "",
@@ -5234,7 +5171,7 @@
    "i18n": {
     "title": {
      "en": "Sold-out book is Back in stock! (Spanish)",
-     "es": "¡El libro agotado está en stock! (Español)"
+     "es": "¡El libro agotado está en stock! (español)"
     },
     "summary": {
      "en": "",
@@ -5291,7 +5228,7 @@
    "i18n": {
     "title": {
      "en": "Sold-out book is Back in stock! (French)",
-     "es": "¡El libro agotado está en stock! (Francés)"
+     "es": "¡El libro agotado está en stock! (francés)"
     },
     "summary": {
      "en": "",
@@ -5451,7 +5388,7 @@
    },
    "i18n": {
     "title": {
-     "en": "Free Inside: Stories of Recovery in AA in Prison",
+     "en": "Free on the Inside: AA Recovery Stories in Prison",
      "es": "Libres por dentro: Historias de recuperación en AA en prisión"
     },
     "summary": {
@@ -5505,7 +5442,7 @@
    "i18n": {
     "title": {
      "en": "Free on the Inside: Stories of AA Recovery in Prison",
-     "es": "Libre en el interior: Historias de la recuperación AA en prisión"
+     "es": "Libres por dentro: Historias de la recuperación de AA en prisión"
     },
     "summary": {
      "en": "",
@@ -5608,7 +5545,7 @@
    },
    "i18n": {
     "title": {
-     "en": "Spirituality and the Mention of God",
+     "en": "Spirituality and God-Talk",
      "es": "La Espiritualidad y la Mención de Dios"
     },
     "summary": {
@@ -5661,7 +5598,7 @@
    "i18n": {
     "title": {
      "en": "Spirituality and God-Talk (Spa.)",
-     "es": "La espiritualidad y el hablar de Dios (Spa.)"
+     "es": "La Espiritualidad y la Mención de Dios (Spa.)"
     },
     "summary": {
      "en": "",
@@ -5712,7 +5649,7 @@
    },
    "i18n": {
     "title": {
-     "en": "Spirituality and the Mention of God (English)",
+     "en": "Spirituality and God-Talk (English)",
      "es": "La Espiritualidad y la Mención de Dios (Inglés)"
     },
     "summary": {
@@ -5765,7 +5702,7 @@
    "i18n": {
     "title": {
      "en": "Spirituality and God-Talk (Fre.)",
-     "es": "La espiritualidad y el hablar de Dios (Fre.)"
+     "es": "La Espiritualidad y la Mención de Dios (Fre.)"
     },
     "summary": {
      "en": "",
@@ -5816,7 +5753,7 @@
    },
    "i18n": {
     "title": {
-     "en": "Spirituality and the Mention of God (French)",
+     "en": "Spirituality and God-Talk (French)",
      "es": "La Espiritualidad y la Mención de Dios (Francés)"
     },
     "summary": {
@@ -6030,7 +5967,7 @@
    },
    "i18n": {
     "title": {
-     "en": "Book Under the Same Roof",
+     "en": "Book: Under the Same Roof",
      "es": "Libro Bajo el Mismo Techo"
     },
     "summary": {
@@ -6038,9 +5975,7 @@
      "es": ""
     }
    },
-   "machine": [
-    "en"
-   ],
+   "machine": [],
    "is_new": false
   },
   {
@@ -6084,7 +6019,7 @@
    },
    "i18n": {
     "title": {
-     "en": "List of Tradition Checks",
+     "en": "Traditions Checklist",
      "es": "Lista de Chequeo de las Tradiciones"
     },
     "summary": {
@@ -6102,7 +6037,7 @@
    "source": "crawl",
    "kind": "pdf",
    "url": "https://www.aalavina.org/sites/default/files/2020-08/Formulario%20Pedido%20de%20Materiales%20Gratuitos%20.pdf",
-   "title": "Calendario de Eventos",
+   "title": "Formulario de pedido de materiales gratuitos",
    "summary": "",
    "lang": "es",
    "date": "2020-08-26",
@@ -6134,17 +6069,15 @@
    },
    "i18n": {
     "title": {
-     "en": "Calendar of Events",
-     "es": "Calendario de Eventos"
+     "en": "Free Materials Order Form",
+     "es": "Formulario de pedido de materiales gratuitos"
     },
     "summary": {
      "en": "",
      "es": ""
     }
    },
-   "machine": [
-    "en"
-   ],
+   "machine": [],
    "is_new": false
   },
   {
@@ -6316,9 +6249,9 @@
    "source": "crawl",
    "kind": "pdf",
    "url": "https://www.aalavina.org/sites/default/files/2020-02/Grapevine-Politica-de-Prvacidad%282019-09-05%29.pdf",
-   "title": "It in Spanish (Spanish)",
+   "title": "Política de privacidad de Grapevine",
    "summary": "",
-   "lang": "en",
+   "lang": "es",
    "date": "2020-02-01",
    "first_seen": "2026-09-23T17:06:02Z",
    "image": "/assets/cache/pdf/a75d743e55c84c71.webp",
@@ -6340,7 +6273,7 @@
     ],
     "upload_month": "2020-02",
     "link_texts": [
-     "It in Spanish"
+     "Grapevine Politica de Prvacidad (español)"
     ],
     "event_date": null,
     "doc_lang": "es",
@@ -6350,17 +6283,15 @@
    },
    "i18n": {
     "title": {
-     "en": "It in Spanish (Spanish)",
-     "es": "En español (Español)"
+     "en": "Grapevine Privacy Policy",
+     "es": "Política de privacidad de Grapevine"
     },
     "summary": {
      "en": "",
      "es": ""
     }
    },
-   "machine": [
-    "es"
-   ],
+   "machine": [],
    "is_new": false
   },
   {
@@ -6405,16 +6336,14 @@
    "i18n": {
     "title": {
      "en": "Cartoon Book",
-     "es": "Libro de dibujos animados"
+     "es": "Libro de caricaturas"
     },
     "summary": {
      "en": "",
      "es": ""
     }
    },
-   "machine": [
-    "es"
-   ],
+   "machine": [],
    "is_new": false
   },
   {
@@ -6489,7 +6418,7 @@
    "first_seen": "2026-09-23T17:06:02Z",
    "image": "/assets/cache/pdf/eb89376deeee60ac.webp",
    "tags": [],
-   "category": "order-form",
+   "category": "guidelines",
    "status": "ok",
    "extra": {
     "host": "www.aalavina.org",
@@ -6574,7 +6503,7 @@
    "i18n": {
     "title": {
      "en": "Spirituality and God-Talk (English)",
-     "es": "La espiritualidad y el hablar de Dios (En inglés)"
+     "es": "La Espiritualidad y la Mención de Dios (inglés)"
     },
     "summary": {
      "en": "",
@@ -6628,16 +6557,14 @@
    "i18n": {
     "title": {
      "en": "Audiobook The Language of the Heart",
-     "es": "Audiolibros El lenguaje del corazón"
+     "es": "Audiolibro: El lenguaje del corazón"
     },
     "summary": {
      "en": "",
      "es": ""
     }
    },
-   "machine": [
-    "es"
-   ],
+   "machine": [],
    "is_new": false
   },
   {
@@ -6816,7 +6743,7 @@
    "first_seen": "2026-09-23T17:05:57Z",
    "image": "/assets/cache/pdf/198e2db9044472c9.webp",
    "tags": [],
-   "category": "order-form",
+   "category": "guidelines",
    "status": "ok",
    "extra": {
     "host": "www.aagrapevine.org",
@@ -6911,16 +6838,14 @@
    "i18n": {
     "title": {
      "en": "Guidelines for Contributing to GV",
-     "es": "Directrices para la contribución a GV"
+     "es": "Pautas para colaborar con GV"
     },
     "summary": {
      "en": "",
      "es": ""
     }
    },
-   "machine": [
-    "es"
-   ],
+   "machine": [],
    "is_new": false
   },
   {
@@ -6963,16 +6888,14 @@
    "i18n": {
     "title": {
      "en": "Area 29 Fall Convention",
-     "es": "Área 29 convención de otoño"
+     "es": "Convención de otoño del Área 29"
     },
     "summary": {
      "en": "",
      "es": ""
     }
    },
-   "machine": [
-    "es"
-   ],
+   "machine": [],
    "is_new": false
   }
  ]

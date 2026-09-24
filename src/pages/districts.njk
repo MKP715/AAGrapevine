@@ -192,7 +192,7 @@ pageScripts: ["/assets/js/community.js"]
           <button type="button" class="btn-primary btn-sm" data-copy-from="#report-{{ lang }}" :data-copy-from="'#report-' + rl">{% icon "copy", "size-4" %} {{ "community.districts.report_copy" | t(lang) }}</button>
         </div>
         {% for l in [lang, other] %}
-        <pre id="report-{{ l }}" lang="{{ l }}" class="cm-report m-0 px-4 py-4 font-sans sm:px-6 sm:py-5" x-show="rl === '{{ l }}'"{% if l != lang %} x-cloak{% endif %} aria-label="{{ 'community.districts.report_label' | t(lang) }} ({{ ('community.lang_name_' + l) | t(lang) }})">{{ rd | cmReportText(l, site) }}</pre>
+        <pre id="report-{{ l }}" class="cm-report m-0 px-4 py-4 font-sans sm:px-6 sm:py-5" x-show="rl === '{{ l }}'"{% if l != lang %} x-cloak{% endif %} role="region" aria-label="{{ 'community.districts.report_label' | t(lang) }} ({{ ('community.lang_name_' + l) | t(lang) }})"><span lang="{{ l }}">{{ rd | cmReportText(l, site) }}</span></pre>
         {% endfor %}
         <p class="flex items-center gap-2 border-t border-line px-4 py-3 text-xs text-muted sm:px-6">{% icon "info", "size-4" %} {{ "community.districts.report_note" | t(lang) }}</p>
       </div>

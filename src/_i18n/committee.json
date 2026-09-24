@@ -96,8 +96,8 @@
     "es": "Reuniones del comité, talleres, mesas y eventos de Grapevine / La Viña del Área 65 del Noreste de Texas. Se actualiza automáticamente."
   },
   "committee.meeting.meta_desc": {
-    "en": "The NETA 65 Grapevine / La Viña Committee meets every month on Zoom. Live countdown, Zoom link, meeting ID, calendar and what to expect — all AA members are welcome.",
-    "es": "El Comité de Grapevine / La Viña de NETA 65 se reúne cada mes por Zoom. Cuenta regresiva, enlace de Zoom, ID de reunión, calendario y qué esperar — todos los miembros de AA son bienvenidos."
+    "en": "The NETA 65 Grapevine / La Viña Committee meets every month on Zoom. Countdown, Zoom link, meeting ID and what to expect — all AA members are welcome.",
+    "es": "El Comité de Grapevine / La Viña de NETA 65 se reúne cada mes por Zoom: enlace, ID de reunión y qué esperar. Todos los miembros de AA son bienvenidos."
   },
   "committee.meeting.eyebrow": {
     "en": "NETA 65 · Monthly on Zoom",
@@ -400,8 +400,8 @@
     "es": "En Outlook en la web: Agregar calendario → Suscribirse desde la web → pega la dirección → Importar. En Outlook para Windows: Agregar calendario → Desde Internet."
   },
   "committee.events.meta_desc": {
-    "en": "Upcoming NETA 65 Grapevine / La Viña events — monthly committee meetings, workshops, assembly booths and Texas Grapevine & La Viña calendar events. Subscribe to the calendar.",
-    "es": "Próximos eventos de Grapevine / La Viña de NETA 65 — reuniones mensuales del comité, talleres, mesas en asambleas y eventos de Grapevine y La Viña en Texas. Suscríbete al calendario."
+    "en": "Upcoming NETA 65 Grapevine / La Viña events — committee meetings, workshops, assembly booths and other events in Texas. Subscribe to the calendar.",
+    "es": "Próximos eventos de Grapevine / La Viña de NETA 65: reuniones del comité, talleres, mesas en asambleas y eventos en Texas. Suscríbete al calendario."
   },
   "committee.events.eyebrow": {
     "en": "Calendar · Central time",
@@ -483,9 +483,9 @@
     "en": "All day",
     "es": "Todo el día"
   },
-  "committee.events.time_on_page": {
-    "en": "Time on the event page",
-    "es": "Horario en la página del evento"
+  "committee.events.time_not_listed": {
+    "en": "Time not listed — see event details",
+    "es": "Hora no indicada — ver detalles del evento"
   },
   "committee.events.online": {
     "en": "Online",
@@ -624,8 +624,8 @@
     "es": "Sobre este calendario"
   },
   "committee.docs.meta_desc": {
-    "en": "Reports, meeting notes, slides, workshop materials, flyers and sign-up forms from the NETA 65 Grapevine / La Viña Committee — updated automatically from our Google Drive.",
-    "es": "Informes, notas de reuniones, presentaciones, materiales de talleres, volantes y formularios del Comité de Grapevine / La Viña de NETA 65 — actualizados automáticamente desde nuestro Google Drive."
+    "en": "Reports, meeting notes, slides, workshop materials and flyers from the NETA 65 Grapevine / La Viña Committee — updated automatically from our Google Drive.",
+    "es": "Informes, notas de reuniones, presentaciones, materiales de talleres y volantes del Comité de Grapevine / La Viña de NETA 65, desde nuestro Google Drive."
   },
   "committee.docs.eyebrow": {
     "en": "From our Google Drive",

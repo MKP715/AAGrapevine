@@ -70,6 +70,8 @@ jobs:
       - name: Check out the repository
         if: steps.check.outputs.mode != 'off'
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Set up Python
         if: steps.check.outputs.mode != 'off'

@@ -12,7 +12,9 @@
 
 import fs from "node:fs";
 import path from "node:path";
+import { createRequire } from "node:module";
 
+const require = createRequire(import.meta.url);
 const EMPTY = !!process.env.READ_EMPTY;
 const TZ = "America/Chicago";
 const LOCALES = { en: "en-US", es: "es-US" };
@@ -182,7 +184,8 @@ export function articleView(item, lang, helpers) {
     sectionLang: sec.lang,
     rank: dept ? 2 : FEATURED_SECTION.test(sectionOrig) ? 0 : 1,
     author: EMPTY_AUTHOR.test(author) ? "" : author,
-    authorLocation: EMPTY_AUTHOR.test(author) ? "" : String(e.author_location || "").trim(),
+    // The byline's place in the page language ("Nueva York, Nueva York" on /es/), as on /published/.
+    authorLocation: EMPTY_AUTHOR.test(author) ? "" : (pick(item, "author_location", lang, helpers) || String(e.author_location || "")).trim(),
     free: e.free === true ? true : e.free === false ? false : null,
     isNew: !!item.is_new,
     date: item.date || null,
@@ -267,10 +270,11 @@ export function issueLabel(issue, lang) {
   return y2 === y ? `${a}–${b} ${y}` : `${a} ${y}–${b} ${y2}`;
 }
 
-/** Issue name for use inside a sentence ("For the {issue} issue"): lower-case months in Spanish. */
+/** Issue name for use inside a sentence ("For the {issue} issue"). Spanish: lower-case months and
+ *  "de" before the year — "octubre de 2026", "septiembre–octubre de 2026" (as on the home page). */
 function issueInSentence(key, pub, rawLabel, lang) {
   const s = issueLabel({ key, pub, label: rawLabel || (pub === "lv" ? "a-b" : "single") }, lang);
-  return lang === "es" ? s.toLowerCase() : s;
+  return lang === "es" ? s.toLowerCase().replace(/(?<!\bde)\s+(\d{4})\b/g, " de $1") : s;
 }
 
 /* Month names (EN + ES, with common abbreviations) → month number. */
@@ -295,6 +299,16 @@ export function localizeIssueLabel(label, lang, pub) {
   const p = parseIssueLabel(label);
   if (!p) return String(label || "").trim();
   return issueLabel({ key: p.key, pub: pub || (p.two ? "lv" : "gv"), label: p.two ? "a-b" : "single" }, lang);
+}
+/** A displayed issue label ("Septiembre / Octubre 2026") for use inside a Spanish sentence or alt
+ *  text → "septiembre–octubre de 2026" (same wording as the home page). English, and labels that
+ *  are not a month + year, are returned unchanged. */
+export function labelInSentence(label, lang, pub) {
+  const s = String(label || "").trim();
+  if (lang !== "es") return s;
+  const p = parseIssueLabel(s);
+  if (!p) return s;
+  return issueInSentence(p.key, pub || (p.two ? "lv" : "gv"), p.two ? "a-b" : "single", lang);
 }
 
 /** Full view model of one issue for a language (cover, theme, description, sorted table of contents). */
@@ -368,8 +382,10 @@ const hasTag = (item, t) => tagsOf(item).includes(t);
 
 /** Clean, human title for a PDF.
  *  The title stays in its ORIGINAL language (it is the document's real name, and
- *  the document itself is in that language). When a machine translation exists
- *  for the page language it is returned separately as a small `gloss`. */
+ *  the document itself is in that language). When a translation exists for the
+ *  page language it is returned separately as a small `gloss`; `machine` says
+ *  whether that translation is automatic (hand-written ones from
+ *  data/translations/overrides.yml are shown too, without the "Auto-translated" mark). */
 export function pdfTitleInfo(item, lang, helpers) {
   const e = item.extra || {};
   const orig = String(item.title || "").trim();
@@ -380,11 +396,11 @@ export function pdfTitleInfo(item, lang, helpers) {
   const title = bad ? fileTitle || orig : tidy(orig) || orig;
   const tLang = (item.lang && item.lang !== "und" ? item.lang : "") || docLang(item);
   let gloss = "";
-  if (!bad && tLang && tLang !== lang && hasMachine(item, lang)) {
+  if (!bad && tLang && tLang !== lang) {
     const t = tidy(pick(item, "title", lang, helpers).trim());
     if (t && squash(t) !== squash(title) && !degenerate(t) && t.length <= title.length * 2.5 + 12) gloss = t;
   }
-  return { title, lang: tLang, gloss, glossLang: lang, machine: !!gloss };
+  return { title, lang: tLang, gloss, glossLang: lang, machine: !!gloss && hasMachine(item, lang) };
 }
 export function pdfTitle(item, lang, helpers) { return pdfTitleInfo(item, lang, helpers).title; }
 
@@ -437,18 +453,35 @@ export function kitGroups(items) {
   return KIT_GROUPS.map((key) => ({ key, items: m.get(key) })).filter((g) => g.items.length);
 }
 
-/** Magazine catalogs (tag/category "catalog"; or "catalog" in the name — but never postcards or forms). */
-export function catalogItems(pdfs) {
+/** Magazine catalogs (tag/category "catalog"; or "catalog" in the name — but never postcards or forms).
+ *  The same file posted on both sites (GV_Catalog_2026.pdf = LV_Catalogo_2026.pdf: same size and
+ *  page count) is shown once — the copy whose title is in the page language (else the page
+ *  language's magazine) wins. */
+export function catalogItems(pdfs, lang) {
   const seen = new Set();
-  const out = [];
+  const found = [];
   for (const p of itemsOf(pdfs)) {
     if (hasTag(p, "postcard") || hasTag(p, "order-form") || hasTag(p, "flyer")) continue;
     const t = pdfText(p);
     const isCat = hasTag(p, "catalog") || (/cat[aá]logo?s?\b|catalogue/i.test(t) && !/\b(postcard|postal|pc|order|pedido)\b/i.test(t));
     if (!isCat || seen.has(p.url)) continue;
     seen.add(p.url);
-    out.push(p);
+    found.push(p);
   }
+  const homePub = lang === "es" ? "lv" : "gv";
+  const rank = (p) => (lang && p.lang === lang ? 0 : 2) + (pubOf(p) === homePub ? 0 : 1);
+  const sameFile = (p) => {
+    const e = p.extra || {};
+    return Number(e.size_bytes) > 0 ? `${Number(e.size_bytes)}|${Number(e.pages) || 0}` : "";
+  };
+  const best = new Map();
+  for (const p of found) {
+    const k = sameFile(p);
+    if (!k) continue;
+    const cur = best.get(k);
+    if (!cur || rank(p) < rank(cur) || (rank(p) === rank(cur) && byDateDesc(p, cur) < 0)) best.set(k, p);
+  }
+  const out = found.filter((p) => { const k = sameFile(p); return !k || best.get(k) === p; });
   return out.sort(byDateDesc);
 }
 
@@ -600,8 +633,9 @@ function spotDate(i) {
  *  date) >= today − days, inclusive and open-ended at the top; articles with a link only, each
  *  story once. So a rebuild after a failed data sync, or for a code change, still agrees with
  *  the home page on the same day.
- *  → null without data, else { days, area: {stories, writers, list}, texas: {…}, all }
- *  list = newest distinct named writers [{ name, place: {en, es}, pub }] (max 4). */
+ *  → null without data, else { days, area: {stories, writers, list, dates}, texas: {…}, all }
+ *  list = newest distinct named writers [{ name, place: {en, es}, pub, date }] (max 4);
+ *  dates = "YYYY-MM-DD" per writer counted (writers === dates.length) for the in-browser recount. */
 export function spotlightSummary(file, days) {
   const f = spotlightFile(file);
   if (!f) return null;
@@ -620,23 +654,27 @@ export function spotlightSummary(file, days) {
     })
     .sort((a, b) => spotDate(b).localeCompare(spotDate(a)) || String(a.title || "").localeCompare(String(b.title || "")));
   const scopeOf = (i) => (i.extra && i.extra.geo && i.extra.geo.scope) || "unknown";
+  // `dates` = one entry per writer counted (the day of their NEWEST story in the window; an
+  // unnamed byline counts once per story), so the browser can recount the window with the
+  // visitor's own date (read.js recountSpot) — writers can only leave it, newest-last first.
   const tally = (items) => {
-    const seen = new Set(), list = [];
-    let anon = 0;
+    const seen = new Set(), list = [], dates = [];
     for (const i of items) {
       const e = i.extra || {}, g = e.geo || {};
       const name = EMPTY_AUTHOR.test(String(e.author || "")) ? "" : String(e.author).trim();
       const where = g.city || g.label_en || e.author_location || "";
-      if (!name) { anon++; continue; }                     // unnamed bylines: one writer per story
+      const d = spotDate(i);
+      if (!name) { dates.push(d); continue; }              // unnamed bylines: one writer per story
       const key = squash(name) + "|" + squash(where);
-      if (seen.has(key)) continue;
+      if (seen.has(key)) continue;                         // items are newest first: first = newest
       seen.add(key);
+      dates.push(d);
       if (list.length < 4) {
         const city = String(g.city || "").trim();
-        list.push({ name, pub: pubOf(i), place: { en: city || g.label_en || "", es: city || g.label_es || g.label_en || "" } });
+        list.push({ name, pub: pubOf(i), date: d, place: { en: city || g.label_en || "", es: city || g.label_es || g.label_en || "" } });
       }
     }
-    return { stories: items.length, writers: seen.size + anon, list };
+    return { stories: items.length, writers: dates.length, list, dates };
   };
   return {
     days: n,
@@ -647,8 +685,44 @@ export function spotlightSummary(file, days) {
 }
 
 /* ------------------------------------------------------------------ */
+/*  Icon sprite for the Read page                                      */
+/* ------------------------------------------------------------------ */
+/* The Read page repeats a few small icons on every story (hundreds of them): each is drawn
+   once as a <symbol> ({% readSprite %}, emitted once per page) and referenced with
+   {% ricon "name", "classes" %} → <svg class="icon …"><use href="#ri-name"/></svg>
+   (~110 bytes instead of ~400–480 of inline SVG). Same idea as {% micon %} in media.js;
+   other icons keep using the shared {% icon %} shortcode. */
+const READ_SPRITE = ["arrow-up-right", "key-round", "lock-open", "languages"];
+let readSpriteCache = null;
+function iconFile(name) {
+  const local = path.join("src/_includes/icons", `${name}.svg`);
+  if (fs.existsSync(local)) return local;
+  try { return path.join(path.dirname(require.resolve("lucide-static/package.json")), "icons", `${name}.svg`); } catch { return ""; }
+}
+export function readSprite() {
+  if (readSpriteCache) return readSpriteCache;
+  const parts = [];
+  for (const name of READ_SPRITE) {
+    const file = iconFile(name);
+    if (!file || !fs.existsSync(file)) { console.warn(`[read] sprite: missing icon ${name}`); continue; }
+    const svg = fs.readFileSync(file, "utf8").replace(/<!--.*?-->/gs, "");
+    const inner = (svg.match(/<svg[^>]*>([\s\S]*)<\/svg>/) || [])[1] || "";
+    const sw = (svg.match(/stroke-width="([\d.]+)"/) || [])[1] || "2";
+    parts.push(`<symbol id="ri-${name}" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round">${inner.trim()}</g></symbol>`);
+  }
+  readSpriteCache = `<svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true" focusable="false">${parts.join("")}</svg>`;
+  return readSpriteCache;
+}
+export function ricon(name, cls = "size-5") {
+  if (!READ_SPRITE.includes(name)) console.warn(`[read] ricon: "${name}" is not in READ_SPRITE`);
+  return `<svg class="icon ${cls}" aria-hidden="true" focusable="false"><use href="#ri-${name}"/></svg>`;
+}
+
+/* ------------------------------------------------------------------ */
 export default function (eleventyConfig, helpers) {
   const h = helpers || {};
+  eleventyConfig.addShortcode("readSprite", () => readSprite());
+  eleventyConfig.addShortcode("ricon", (name, cls) => ricon(name, cls || "size-5"));
   eleventyConfig.on("eleventy.before", () => { spotlightDisk = undefined; }); // re-read on every (watch) build
   eleventyConfig.addFilter("readSpotlight", (file, days) => spotlightSummary(file, days));
   eleventyConfig.addFilter("readPub", (item) => pubOf(item));
@@ -663,7 +737,8 @@ export default function (eleventyConfig, helpers) {
   eleventyConfig.addFilter("readPdfTitleInfo", (item, lang) => pdfTitleInfo(item, lang, h));
   eleventyConfig.addFilter("readKit", (pdfs, which) => kitItems(pdfs, which));
   eleventyConfig.addFilter("readKitGroups", (items) => kitGroups(items));
-  eleventyConfig.addFilter("readCatalogs", (pdfs) => catalogItems(pdfs));
+  eleventyConfig.addFilter("readCatalogs", (pdfs, lang) => catalogItems(pdfs, lang));
+  eleventyConfig.addFilter("readInSentence", (label, lang, pub) => labelInSentence(label, lang, pub));
   eleventyConfig.addFilter("readForms", (pdfs) => formItems(pdfs));
   eleventyConfig.addFilter("readWriterKit", (pdfs, n) => writerKit(pdfs, n || 4));
   eleventyConfig.addFilter("readPdfsMatching", (pdfs, pattern, n) => pdfsMatching(pdfs, pattern, n));

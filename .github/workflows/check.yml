@@ -1,25 +1,49 @@
 # =====================================================================
-#  Pull request check — nothing is published.
+#  Code check — runs the tests and a test build. Nothing is published.
 #
-#  For every pull request (for example Dependabot's monthly "chore(deps)"
-#  and "chore(actions)" updates) this builds the website exactly like the
-#  daily "Update & Deploy" does, and runs the offline Python tests.
-#  A broken update then shows a red ✗ on the pull request BEFORE it is
-#  merged, instead of stopping the daily site update afterwards.
+#  Runs for every pull request (for example Dependabot's monthly
+#  "chore(deps)" and "chore(actions)" updates) AND for every push to
+#  main that changes code, templates, settings or content. It builds the
+#  website exactly like the daily "Update & Deploy" does (strict about
+#  missing button/heading texts) and runs the offline Python tests.
+#
+#  On a pull request, a broken update shows a red ✗ BEFORE it is merged.
+#  On a push, a red ✗ here means "something in that change is broken" —
+#  undo or fix the change (the live site keeps working either way).
 #
 #  Rule of thumb (README → Housekeeping): merge a pull request only when
 #  it shows a green ✓.
 # =====================================================================
-name: Pull request check
+name: Code check
 
 on:
   pull_request:
+  push:
+    branches: [main]
+    # Only changes that can break the build or the sync scripts. The bot's
+    # daily data commits never start this (they are pushed with the built-in
+    # token, which cannot start workflows).
+    paths:
+      - "scripts/**"
+      - "tests/**"
+      - "src/**"
+      - "!src/assets/cache/**"
+      - "eleventy/**"
+      - "eleventy.config.js"
+      - "config/**"
+      - "content/**"
+      - "data/translations/overrides.yml"
+      - "data/translations/glossary.yml"
+      - "package.json"
+      - "package-lock.json"
+      - "requirements.txt"
+      - ".github/workflows/check.yml"
   workflow_dispatch:
 
 permissions:
   contents: read
 
-# A newer push to the same pull request replaces the check that is running.
+# A newer push to the same pull request (or branch) replaces the check that is running.
 concurrency:
   group: check-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
@@ -33,8 +57,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - name: Check out the pull request
+      - name: Check out the code
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Set up Node.js
         uses: actions/setup-node@v7
@@ -49,6 +75,8 @@ jobs:
         env:
           # A project site lives in a folder named after the repository.
           PATH_PREFIX: /${{ github.event.repository.name }}/
+          # Same as "Update & Deploy": a button or heading text missing from src/_i18n/ fails the build.
+          I18N_STRICT: "1"
         run: npx @11ty/eleventy
 
       - name: Check the build
@@ -68,8 +96,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - name: Check out the pull request
+      - name: Check out the code
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Set up Python
         uses: actions/setup-python@v7
@@ -87,3 +117,8 @@ jobs:
         # The translation models are not downloaded here, so the tests that need them
         # are skipped; everything else (text handling, content parsing, build rules) runs.
         run: python -m unittest discover -s tests -v
+
+      - name: Check the e-mail digest still builds
+        # Standard library only; writes a preview into the runner's temp folder, sends nothing
+        # (and adds nothing to this run's summary).
+        run: GITHUB_STEP_SUMMARY="" python -m scripts.notify.send_digest --dry-run --out-dir "$RUNNER_TEMP/digest-preview"

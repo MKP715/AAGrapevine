@@ -299,6 +299,14 @@ def parse_location(loc: str, title: str = "", website: str | None = None) -> dic
     elif len(parts) == 1 and not re.search(r"\d", parts[0]) and len(parts[0].split()) <= 4 \
             and not out["country"] and not ONLINE_WORD_RE.search(parts[0]):
         out["city"] = parts[0]
+    elif len(parts) > 1 and not out["country"]:
+        # "Iglesia San Juan Diego, Houston" / "Hotel Adolphus, 1321 Commerce St, Dallas": no state
+        # written, but one part is exactly a well-known Texas city (ambiguous names such as Paris
+        # or Athens are not in TX_CITIES, so they never match here).
+        for cand in reversed(parts):
+            if _fold(cand) in TX_CITIES:
+                out["city"] = cand
+                break
     return out
 
 

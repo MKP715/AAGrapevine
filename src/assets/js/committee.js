@@ -388,14 +388,47 @@
      The page is built daily, but the meeting is weekly: roll the date forward
      in the browser, say "Live now" during the meeting, and add the visitor's
      own time when they are outside Central time.
-     <p data-cm-weekly="ISO">…<span data-cm-weekly-label data-live="…">…
+     <p data-cm-weekly="ISO" data-cm-weekly-tz="America/New_York" data-cm-weekly-at="12:00">…
+     <span data-cm-weekly-label data-live="…">…
      <span data-cm-weekly-date>…<span data-cm-weekly-local data-tpl="Your time: {time}" hidden> */
+
+  // Wall-clock parts of an instant (ms) in a time zone; null for an unknown zone.
+  function zoneParts(ms, tz) {
+    try {
+      var p = {};
+      new Intl.DateTimeFormat("en-US", { timeZone: tz, hourCycle: "h23", year: "numeric", month: "numeric", day: "numeric", hour: "numeric", minute: "numeric", second: "numeric" })
+        .formatToParts(new Date(ms)).forEach(function (x) { if (x.type !== "literal") p[x.type] = Number(x.value); });
+      return isNaN(p.year) ? null : { y: p.year, mo: p.month - 1, d: p.day, h: p.hour % 24, mi: p.minute, s: p.second };
+    } catch (e) { return null; }
+  }
+  // A wall-clock date + time in a zone → the real instant (ms).
+  function zoneInstant(y, mo, d, h, mi, tz) {
+    var guess = Date.UTC(y, mo, d, h, mi);
+    function offsetAt(ms) {
+      var p = zoneParts(ms, tz);
+      return Date.UTC(p.y, p.mo, p.d, p.h, p.mi, p.s) - Math.floor(ms / 1000) * 1000;
+    }
+    return guess - offsetAt(guess - offsetAt(guess)); // 2nd pass: right even on a DST-change day
+  }
+  // Next start of a weekly meeting at a fixed local time, stepping calendar weeks in the
+  // host's zone: Noon Eastern stays 11 AM Central across daylight-saving changes
+  // (same as nextWeeklyStart in eleventy/filters/committee.js).
+  function nextWeekly(t, now, tz, at, live) {
+    var p = zoneParts(t, tz);
+    if (!p) { tz = TZ; at = ""; p = zoneParts(t, tz); } // unknown zone name → Central, keeping t's clock time
+    if (!p) { while (t + live < now) t += 7 * 864e5; return t; } // no Intl time zones at all
+    var m = /^(\d{1,2}):(\d{2})$/.exec(String(at || "").trim());
+    var h = m ? Number(m[1]) : p.h, mi = m ? Number(m[2]) : p.mi;
+    for (var w = 1; t + live < now && w < 5000; w++) t = zoneInstant(p.y, p.mo, p.d + 7 * w, h, mi, tz);
+    return t;
+  }
+
   function weekly() {
     document.querySelectorAll("[data-cm-weekly]").forEach(function (box) {
       var t = Date.parse(box.getAttribute("data-cm-weekly"));
       if (!t) return;
-      var now = Date.now(), LIVE = 75 * 60000, WEEK = 7 * 864e5;
-      while (t + LIVE < now) t += WEEK;
+      var now = Date.now(), LIVE = 75 * 60000;
+      t = nextWeekly(t, now, box.getAttribute("data-cm-weekly-tz") || TZ, box.getAttribute("data-cm-weekly-at") || "", LIVE);
       var d = new Date(t), live = now >= t;
       var lab = box.querySelector("[data-cm-weekly-label]");
       if (lab) {

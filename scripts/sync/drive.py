@@ -202,9 +202,16 @@ def _drop_repeated_year(title: str) -> str:
 
 
 # --------------------------------------------------------------------------- flyer events
+# "9-11am", "9am-12pm", "7pm-9pm", "9 am to 3 pm", "9:30am - 11:30am", "9 a.m. - 1 p.m.", "7 a 9 pm".
+# Groups: 1 h1, 2 m1, 3 am/pm of the start (optional), 4 h2, 5 m2, 6 am/pm of the end.
 _TIME_RANGE = re.compile(
-    r"(?i)(?<![\d:.])(\d{1,2})(?:[:.](\d{2}))?\s*(?:[-–]|to|a)\s*(\d{1,2})(?:[:.](\d{2}))?\s*([ap])\.?\s*m\.?(?![a-z])")
+    r"(?i)(?<![\d:.])(\d{1,2})(?:[:.](\d{2}))?\s*(?:([ap])\.?\s*m\.?(?![a-z]))?\s*(?:[-–—]|(?<![a-z])(?:to|a|hasta)(?![a-z]))\s*"
+    r"(\d{1,2})(?:[:.](\d{2}))?\s*([ap])\.?\s*m\.?(?![a-z])")
 _TIME_12 = re.compile(r"(?i)(?<![\d:.])(\d{1,2})(?:[:.](\d{2}))?\s*([ap])\.?\s*m\.?(?![a-z])")
+# "10:00-12:00", "18h00 a 20h00" (24-hour clock).
+_TIME_24_RANGE = re.compile(
+    r"(?i)(?<![\d:.])([01]?\d|2[0-3])[:h]([0-5]\d)\s*(?:hrs?\b|h\b)?\s*(?:[-–—]|(?<![a-z])(?:to|a|hasta)(?![a-z]))\s*"
+    r"([01]?\d|2[0-3])[:h]([0-5]\d)(?!\d)(?:\s*(?:hrs?|h)\b)?")
 _TIME_24 = re.compile(r"(?<![\d:.])([01]?\d|2[0-3])[:h]([0-5]\d)(?!\d)(?:\s*(?:hrs?|h)\b)?")
 _PLACE = re.compile(
     r"(?i)\b(tx|texas|church|iglesia|hall|cent(?:er|re)|centro|club|clubhouse|room|hotel|inn|library|biblioteca|"
@@ -223,27 +230,43 @@ def _hhmm(h: int, m: int, ap: str | None) -> str | None:
     return f"{h:02d}:{m:02d}"
 
 
+_TIME_LEAD = re.compile(r"(?i)\s*(?<![\w])(?:from|at|de|desde|a\s+las?)\s*$")
+
+
+def _cut(text: str, m: re.Match) -> str:
+    """Text with the matched time removed, and a dangling 'from' / 'de' / 'a las' before it."""
+    return _TIME_LEAD.sub("", text[: m.start()]) + " " + text[m.end():]
+
+
 def extract_time(text: str) -> tuple[str | None, str | None, str]:
-    """'Assembly 9-11am' → ('09:00', '11:00', 'Assembly'). Returns (start, end, text_without_time)."""
+    """'Assembly 9-11am' → ('09:00', '11:00', 'Assembly'). Returns (start, end, text_without_time).
+
+    Each side of a range may carry its own am/pm ('9am-12pm'); without one the start takes
+    the end's ('9-11am'), and '10-2pm' starts in the morning."""
     m = _TIME_RANGE.search(text)
     if m:
-        ap = m[5]
-        start, end = _hhmm(int(m[1]), int(m[2] or 0), ap), _hhmm(int(m[3]), int(m[4] or 0), ap)
-        # "10-2pm": the start is in the morning
-        if start and end and start > end:
+        ap_start, ap_end = m[3], m[6]
+        start = _hhmm(int(m[1]), int(m[2] or 0), ap_start or ap_end)
+        end = _hhmm(int(m[4]), int(m[5] or 0), ap_end)
+        if not ap_start and start and end and start > end:
             start = _hhmm(int(m[1]), int(m[2] or 0), "a")
         if start:
-            return start, end, text[: m.start()] + " " + text[m.end():]
+            return start, end, _cut(text, m)
+    m = _TIME_24_RANGE.search(text)
+    if m:
+        start, end = _hhmm(int(m[1]), int(m[2]), None), _hhmm(int(m[3]), int(m[4]), None)
+        if start:
+            return start, end, _cut(text, m)
     m = _TIME_12.search(text)
     if m:
         start = _hhmm(int(m[1]), int(m[2] or 0), m[3])
         if start:
-            return start, None, text[: m.start()] + " " + text[m.end():]
+            return start, None, _cut(text, m)
     m = _TIME_24.search(text)
     if m:
         start = _hhmm(int(m[1]), int(m[2]), None)
         if start:
-            return start, None, text[: m.start()] + " " + text[m.end():]
+            return start, None, _cut(text, m)
     return None, None, text
 
 
@@ -701,6 +724,12 @@ def merge(prev_items: list[dict], new_items: list[dict], uncertain: set[str]) ->
             for k in ("size_bytes", "duration_sec"):     # exact values known from an API run
                 if ne.get(k) is None and pe.get(k) is not None:
                     ne[k] = pe[k]
+            # A form whose check could not decide today (network hiccup) keeps yesterday's answer,
+            # so a closed sign-up is not advertised again for a day.
+            if it.get("kind") == "form" and "form_closed" not in ne and "form_closed" in pe:
+                for k in ("form_closed", "form_signin_required"):
+                    if k in pe:
+                        ne[k] = pe[k]
         else:
             it["first_seen"] = now
             it["date"] = it.get("date") or today
@@ -749,9 +778,14 @@ def main(argv: list[str] | None = None) -> None:
                  stats=prev.get("stats"))
         return
 
-    # Shortcut ids already resolved last time → no extra request needed.
-    sc_cache = {(i.get("extra") or {}).get("shortcut_id"): (i.get("extra") or {}).get("file_id")
-                for i in prev_items if (i.get("extra") or {}).get("shortcut_id")}
+    # Shortcut ids really resolved last time → no extra request needed. A shortcut that could not
+    # be resolved is stored with file_id == shortcut_id; it is NOT cached, so it is retried.
+    sc_cache = {}
+    for i in prev_items:
+        ex = i.get("extra") or {}
+        sid, fid = ex.get("shortcut_id"), ex.get("file_id")
+        if sid and fid and fid != sid:
+            sc_cache[sid] = fid
     lister = DriveLister(use_api=not args.no_api, shortcut_cache=sc_cache)
     log.info("listing Drive folder %s via %s (include_loose=%s)", root_id, lister.mode, include_loose)
 

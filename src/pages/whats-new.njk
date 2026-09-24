@@ -81,7 +81,8 @@ pageScripts: ["/assets/js/community.js"]
     <div class="cm-wn-main min-w-0"
          x-data="whatsNew({ cap: {{ CAP }}, days: {{ DAYS_INITIAL }} })"
          data-today="{{ 'common.today' | t(lang) }}" data-yesterday="{{ 'community.yesterday' | t(lang) }}"
-         data-showing="{{ 'community.wn.showing' | t(lang) }}" data-more="{{ 'community.wn.more_in_day' | t(lang) }}">
+         data-showing="{{ 'community.wn.showing' | t(lang) }}" data-more="{{ 'community.wn.more_in_day' | t(lang) }}"
+         data-day-one="{{ 'community.wn.day_items_one' | t(lang) }}" data-day-many="{{ 'community.wn.day_items' | t(lang) }}">
 
       {#- The hero's numbers, for screens where the hero shows none (< 1024px) -#}
       <dl class="cm-wn-strip mb-3 flex flex-wrap gap-x-5 gap-y-1 text-sm text-muted lg:hidden">
@@ -119,7 +120,8 @@ pageScripts: ["/assets/js/community.js"]
             <span class="font-display text-xl font-semibold text-ink sm:text-2xl">
               <span class="cm-rel text-gv" data-rel-day="{{ day.ymd }}"></span>{{ day.label or ("community.wn.undated" | t(lang)) }}
             </span>
-            <span class="text-sm text-muted">{{ ("community.wn.day_items_one" if day.itemTotal == 1 else "community.wn.day_items") | t(lang, { n: day.itemTotal }) }}</span>
+            {#- follows the type filter (e.g. "1 update" when only podcasts are shown); the build-time text is the unfiltered count -#}
+            <span class="text-sm text-muted" x-text="dayLabel('{{ day.ymd }}')">{{ ("community.wn.day_items_one" if day.itemTotal == 1 else "community.wn.day_items") | t(lang, { n: day.itemTotal }) }}</span>
           </h2>
           <ul class="cm-timeline" role="list">
             {% for it in day.items %}
@@ -154,7 +156,7 @@ pageScripts: ["/assets/js/community.js"]
                 </p>
               </div>
               {% if issue and issue.cover %}
-              <span class="cm-thumb aspect-[7/10] w-14 sm:w-16"><img src="{{ issue.cover }}" alt="" loading="lazy" decoding="async" onerror="this.parentNode.remove()"></span>
+              <span class="cm-thumb aspect-[7/10] w-14 sm:w-16"><img src="{{ issue.cover | cmListThumb }}" alt="" loading="lazy" decoding="async" onerror="this.parentNode.remove()"></span>
               {% endif %}
             </li>
             {% else %}
@@ -199,7 +201,7 @@ pageScripts: ["/assets/js/community.js"]
                   {%- if it.kind == "article" and ex.issue_label %}<span>{{ it | cmItemIssue(lang) }}</span>{% if ex.free === false %}<span class="inline-flex gap-x-2"><span aria-hidden="true">·</span>{{ lockNote(lang) }}</span>{% endif %}
                   {%- elif it.kind == "episode" and ex.duration_sec %}<span>{{ ex.duration_sec | duration }}</span>
                   {%- elif it.kind == "video" and (ex.duration_sec or it._approx) %}<span>{% if ex.duration_sec %}{{ ex.duration_sec | duration }}{% endif %}{% if ex.duration_sec and it._approx %} ·&nbsp;{% endif %}{% if it._approx %}{%- set mo = it.date | fmtDate(lang, "month") -%}{{ "community.wn.approx" | t(lang, { date: (mo | lower) if lang == "es" else mo }) }}{% endif %}</span>
-                  {%- elif it.kind == "pdf" %}<span>{% if ex.pages %}{{ "common.pages" | t(lang, { n: ex.pages }) }} ·&nbsp;{% endif %}{% if ex.size_bytes %}{{ ex.size_bytes | fileSize }} ·&nbsp;{% endif %}{% if ex.referrers and ex.referrers[0] %}{{ "community.wn.found_on" | t(lang, { title: ex.referrers[0].title or (ex.referrers[0].url | hostname) }) }}{% else %}{{ ex.host | hostname }}{% endif %}</span>
+                  {%- elif it.kind == "pdf" %}<span>{% if ex.pages %}{{ ("library.page_one" | t(lang)) if ex.pages == 1 else ("common.pages" | t(lang, { n: ex.pages })) }} ·&nbsp;{% endif %}{% if ex.size_bytes %}{{ ex.size_bytes | fileSize }} ·&nbsp;{% endif %}{% if ex.referrers and ex.referrers[0] %}{{ "community.wn.found_on" | t(lang, { title: ex.referrers[0].title or (ex.referrers[0].url | hostname) }) }}{% else %}{{ ex.host | hostname }}{% endif %}</span>
                   {%- elif it.kind == "event" %}<span class="font-medium text-vine">{{ "community.wn.event_on" | t(lang, { date: it | cmEventWhen(lang) }) }}{% if ex.location %} ·&nbsp;{{ ex.location }}{% endif %}</span>
                   {%- elif it.kind == "topic" and ex.deadline %}<span>{{ "community.wn.deadline" | t(lang, { date: ex.deadline | fmtDate(lang, "short") }) }}</span>
                   {%- elif it._isGroup %}<span>{{ "community.wn.photos_n" | t(lang, { n: ex.count }) }}{% if ex.panel_label %} ·&nbsp;{{ ex.panel_label }}{% endif %}</span>
@@ -211,11 +213,11 @@ pageScripts: ["/assets/js/community.js"]
               </div>
               {% if thumb == "group" and ex.thumbs and ex.thumbs | length %}
               <span class="cm-thumb cm-wn-mosaic aspect-square w-16 sm:w-20" data-n="{{ 4 if (ex.thumbs | length) > 4 else (ex.thumbs | length) }}">
-                {%- for src in ex.thumbs | limit(4) %}<img src="{{ src }}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.remove()">{% endfor -%}
+                {%- for src in ex.thumbs | limit(4) %}<img src="{{ src | cmListThumb }}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.remove()">{% endfor -%}
               </span>
               {% elif thumb and thumb != "group" %}
               <span class="cm-thumb {{ 'aspect-video w-24 sm:w-32' if it._group == 'video' or it._group == 'article' else ('aspect-[3/4] w-12 sm:w-14' if it.kind == 'pdf' else 'aspect-square w-16 sm:w-20') }}">
-                <img src="{{ thumb }}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.parentNode.remove()">
+                <img src="{{ thumb | cmListThumb }}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.parentNode.remove()">
               </span>
               {% endif %}
             </li>

@@ -35,7 +35,9 @@ meeting:
   start: "19:00"          # 24h, Central time
   end: "20:00"
   platform: "Zoom"
-  zoom_url: "https://zoom.us/j/9494767497?pwd=neta65"
+  # The official "ZOOM Link" from the committee page (neta65.org/trusted-servants/grapevine-la-vina/).
+  # Zoom's pwd= is an encoded token, not the passcode itself — copy the whole link from Zoom.
+  zoom_url: "https://us02web.zoom.us/j/9494767497?pwd=ZnlwNkxaRysxd3BJNUNRcWZsV3RNdz09"
   meeting_id: "949 476 7497"
   passcode: "neta65"
   chair_title: "Grapevine / La Viña Chair"
@@ -287,13 +289,17 @@ links:
   instagram_lv: "https://www.instagram.com/alcoholicosanonimos_lv/"
   aa_org: "https://www.aa.org"
   aa_org_es: "https://www.aa.org/es"
-  gv_email_editorial: "editorial@aagrapevine.org"
-  lv_email_editorial: "lavina@aagrapevine.org"
-  gv_mail: "Grapevine Editorial, 475 Riverside Drive, New York, NY 10115"
-  lv_mail: "La Viña Editorial, 475 Riverside Drive, New York, NY 10115"
+  # Story submissions, as given on the official guideline pages (gv_guidelines / lv_guidelines).
+  gv_email_editorial: "gveditorial@aagrapevine.org"
+  lv_email_editorial: "manuscritoslv@aagrapevine.org"
+  gv_mail: "Grapevine, Editorial Dept., 475 Riverside Drive, New York, NY 10115"
+  lv_mail: "La Viña, 475 Riverside Drive, New York, NY 10115"
   support_phone_us: "(800) 631-6025"
   support_phone_es: "(800) 640-8781"
-  support_phone_intl: "+1 (570) 567-0437"
+  # Calling from outside the U.S. (aagrapevine.org/apps): English desk, then the Spanish desk.
+  # The English page shows support_phone_intl, the Spanish page support_phone_intl_es.
+  support_phone_intl: "+1 (570) 567-0431"
+  support_phone_intl_es: "+1 (570) 567-0437"
 
 # ---------------------------------------------------------------------
 #  Optional weekly e-mail digest (off unless these GitHub secrets exist):

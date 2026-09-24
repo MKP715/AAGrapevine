@@ -4,8 +4,8 @@
     "es": "Comité de Grapevine y La Viña de NETA 65"
   },
   "site.description": {
-    "en": "Northeast Texas Area 65 Grapevine and La Viña Committee — the newest stories, podcasts, videos, PDFs and service resources for GVRs, RLVs, districts and groups. Updated automatically every day, in English and Spanish.",
-    "es": "Comité de Grapevine y La Viña del Área 65 del Noreste de Texas — las historias, podcasts, videos, PDF y recursos de servicio más recientes para RLV, GVR, distritos y grupos. Se actualiza automáticamente cada día, en inglés y español."
+    "en": "Northeast Texas Area 65 Grapevine and La Viña Committee — new stories, podcasts, videos and service resources for GVRs, RLVs, districts and groups.",
+    "es": "Comité de Grapevine y La Viña del Área 65 del Noreste de Texas: historias, podcasts, videos y recursos de servicio para RLV, GVR, distritos y grupos."
   },
   "site.committee_short": {
     "en": "NETA 65 Committee",
@@ -20,13 +20,14 @@
     "es": "Inicio"
   },
   "nav.home_aria": {
-    "en": "Grapevine / La Viña — NETA 65 home",
-    "es": "Grapevine / La Viña — inicio de NETA 65"
+    "en": "Grapevine / La Viña — NETA 65 Committee — home",
+    "es": "Grapevine / La Viña — Comité de NETA 65 — inicio"
   },
   "nav.primary_aria": {
     "en": "Main navigation",
     "es": "Navegación principal"
   },
+  "nav.drawer_aria": { "en": "Site menu", "es": "Menú del sitio" },
   "nav.whats_new": {
     "en": "What's New",
     "es": "Novedades"
@@ -53,7 +54,7 @@
   },
   "nav.meeting": {
     "en": "Committee Meeting",
-    "es": "Reunión del Comité"
+    "es": "Reunión del comité"
   },
   "nav.meeting_desc": {
     "en": "Monthly Zoom meeting, countdown & details",
@@ -69,7 +70,7 @@
   },
   "nav.documents": {
     "en": "Committee Documents",
-    "es": "Documentos del Comité"
+    "es": "Documentos del comité"
   },
   "nav.documents_desc": {
     "en": "Reports, notes, slides & workshop files",
@@ -113,7 +114,7 @@
   },
   "nav.contribute": {
     "en": "Share Your Story",
-    "es": "Comparte tu Historia"
+    "es": "Comparte tu historia"
   },
   "nav.contribute_desc": {
     "en": "Write for Grapevine or La Viña",
@@ -141,11 +142,11 @@
   },
   "nav.digest": {
     "en": "Weekly Digest",
-    "es": "Resumen Semanal"
+    "es": "Resumen semanal"
   },
   "nav.share": {
     "en": "Share Kit & QR",
-    "es": "Kit para Compartir y QR"
+    "es": "Kit para compartir y QR"
   },
   "nav.search": {
     "en": "Search",
@@ -153,7 +154,11 @@
   },
   "nav.status": {
     "en": "Update Status",
-    "es": "Estado de Actualización"
+    "es": "Estado de la actualización"
+  },
+  "nav.current_section": {
+    "en": "(current section)",
+    "es": "(sección actual)"
   },
   "nav.more": {
     "en": "More",
@@ -485,7 +490,7 @@
   },
   "nav.published": {
     "en": "Published Writers",
-    "es": "Escritores Publicados"
+    "es": "Escritores publicados"
   },
   "nav.published_desc": {
     "en": "Stories by writers from our Area & Texas",

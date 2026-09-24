@@ -27,6 +27,7 @@
       if (loc === "es-US") out.date = out.date.charAt(0).toUpperCase() + out.date.slice(1);
       var tf = new Intl.DateTimeFormat(loc, { hour: "numeric", minute: "2-digit", timeZone: TZ, timeZoneName: "short" });
       out.time = end && end > start && tf.formatRange ? tf.formatRange(start, end) : tf.format(start);
+      if (window.GV && GV.esMeridiem) out.time = GV.esMeridiem(out.time); // "p. m." like the rest of the site (no-op in English)
     } catch (e) { /* very old browser: keep the server text */ }
     return out;
   }

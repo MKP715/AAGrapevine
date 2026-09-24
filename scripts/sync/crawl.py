@@ -16,7 +16,10 @@ HOW (one daily run, time-boxed; default 40 min, see config sources.crawler):
      internal pages (never login/cart/search/paywalled articles – see crawl_rules.SKIP_PATH_PATTERNS).
   4. ~30 % of the time goes to PDF work: download new PDFs (capped per run) for page count, metadata
      title, language and a WebP thumbnail of page 1; HEAD the rest; re-check PDFs that vanished from
-     every page (404/410 → status "gone") and, slowly, every PDF about once a month.
+     every page and, slowly, every PDF about once a month. A PDF becomes "gone" only after TWO failing
+     checks at least a day apart (404/410, or an HTML page where the file was); a gone PDF that a page
+     still links is checked again after a week, then monthly, and comes back when it answers again. A
+     PDF on another site whose host has not answered at all for a month (4+ tries) is gone too.
   5. Everything is remembered in data/state/crawl-state.json, so tomorrow's run resumes where today's
      stopped. data/raw/pdfs.json is rebuilt from that state at the end of every run.
 
@@ -25,7 +28,7 @@ together (they are one server), through the pipeline's shared_session().
 
     python -m scripts.sync.crawl                      # normal daily run (config minutes)
     python -m scripts.sync.crawl --minutes 240        # long seed crawl
-    python -m scripts.sync.crawl --minutes 0          # no network: rebuild pdfs.json from state
+    python -m scripts.sync.crawl --minutes 0          # no network: rebuild pdfs.json from state (state untouched)
     python -m scripts.sync.crawl --url https://www.aagrapevine.org/gvr-resources --details 5
 """
 from __future__ import annotations
@@ -61,7 +64,11 @@ STOP_MARGIN_S = 30           # stop starting new requests when fewer seconds tha
 HUB_REFRESH_H = 20           # hub pages are re-fetched when older than this (≈ daily)
 PAST_EVENT_AFTER_DAYS = 60   # an event page this long past its date is "archived" …
 PAST_EVENT_RECHECK_DAYS = 365  # … and only re-checked yearly (or when its sitemap lastmod changes)
-ERROR_RECHECK_DAYS = {"404": 60, "410": 60, "not-html": 120, "robots": 30, "login": 30, "offsite": 60, "pdf": 120}
+ERROR_RECHECK_DAYS = {"404": 60, "410": 60, "400": 120, "not-html": 120, "robots": 30, "login": 30, "offsite": 60,
+                      "pdf": 120}
+GONE_RECHECK_DAYS = (7, 30)  # a "gone" PDF that a page still links is re-checked after 7 days, later monthly
+GONE_CONFIRM_H = 24          # a PDF is "gone" only after two failing checks at least this many hours apart
+UNREACHABLE_GONE = (4, 30)   # an external PDF whose host never answers: gone after 4 tries over 30+ days
 PERIODIC_HEAD_DAYS = 30      # re-HEAD every PDF about once a month (to notice deletions) …
 MIN_PERIODIC_CHECKS = 20     # … at least this many per run (more when the library is large: n/30);
                              # they are the lowest-priority PDF work, so they only use spare time
@@ -115,8 +122,10 @@ class Budget:
         return self.remaining() > need
 
 
-class Stop(Exception):
-    """Raised by the SIGTERM handler so a cancelled GitHub job still saves its progress."""
+class Stop(BaseException):
+    """Raised by the SIGTERM handler so a cancelled GitHub job still saves its progress. A
+    BaseException (like KeyboardInterrupt), so the broad `except Exception` blocks around one page
+    or one PDF never swallow it."""
 
 
 # ==================================================================================================
@@ -504,9 +513,21 @@ class Crawler:
         if self.needs_details(rec, now) and self.details_cap:
             tasks.append(((0, cls, newest, key), "details"))
         vanished = _dt(rec.get("vanished_at"))
+        strike = _dt(rec.get("gone_strike_at"))
         if rec.get("recheck") or (vanished and (checked is None or checked < vanished)):
             # no page links it any more (→ is it deleted?) or a "gone" PDF is linked again (→ back?)
             tasks.append(((1, cls, 0, key), "vanished"))
+        elif strike and now - strike >= timedelta(hours=GONE_CONFIRM_H) and rec.get("status") != "gone":
+            # one 404 / error page so far: check once more before calling it gone
+            tasks.append(((1, cls, 0, key), "vanished"))
+        elif rec.get("status") == "gone" and rec.get("refs"):
+            # a page still links it: a short outage or a re-upload at the same address must not hide
+            # it for good — re-check after a week, later monthly
+            since = _dt(rec.get("gone_since")) or checked
+            days = GONE_RECHECK_DAYS[0] if since and now - since < timedelta(days=60) else GONE_RECHECK_DAYS[1]
+            nt = _dt(head.get("next_try"))
+            if (checked is None or now - checked >= timedelta(days=days)) and (nt is None or nt <= now):
+                tasks.append(((3, 0, int(checked.timestamp()) if checked else 0, key), "periodic"))
         elif not head.get("status") and not (self.needs_details(rec, now) and self.details_cap):
             nt = _dt(head.get("next_try"))
             if nt is None or nt <= now:
@@ -622,6 +643,9 @@ class Crawler:
                 pg.update(status=str(code), crawled_at=now, fails=0, next_try=None)
                 self.set_page_pdfs(url, pg, [])
                 self.c["pages_gone"] += 1
+                return
+            if code == 400:            # a malformed address — asking again soon will not help
+                pg.update(status="400", crawled_at=now, fails=0, next_try=None)
                 return
             if code != 200:
                 self._fail(pg, code)
@@ -795,23 +819,63 @@ class Crawler:
         except Exception as e:
             log.warning("PDF %s (%s) failed: %s: %s", rec.get("url"), kind, type(e).__name__, e)
 
+    def _mark_gone(self, rec: dict) -> None:
+        """A failing check (404/410, or an HTML page instead of the file). The first one is only a
+        strike: the PDF is called gone when a second check at least GONE_CONFIRM_H later fails too
+        (one bad answer during a site deploy must not hide a linked PDF)."""
+        if rec.get("status") == "gone":
+            rec.setdefault("gone_since", now_iso())     # records marked gone before this rule existed
+            return
+        strike = _dt(rec.get("gone_strike_at"))
+        if strike is None:
+            rec["gone_strike_at"] = now_iso()
+            return
+        if _now() - strike < timedelta(hours=GONE_CONFIRM_H):
+            return
+        self.c["pdfs_gone_now"] += 1
+        rec["status"] = "gone"
+        rec["gone_since"] = now_iso()
+        rec.pop("gone_strike_at", None)
+
     def _apply_head(self, rec: dict, head: dict) -> None:
         rec["head"] = {k: v for k, v in head.items() if v is not None}
         code = head.get("status")
         ctype = head.get("type") or ""
         if code in (404, 410):
-            if rec.get("status") != "gone":
-                self.c["pdfs_gone_now"] += 1
-            rec["status"] = "gone"
+            self._mark_gone(rec)
         elif code == 200:
-            if "html" in ctype:
-                rec["status"] = "not-pdf" if rec.get("hint") else "gone"
+            if "html" in ctype and rec.get("hint"):
+                rec["status"] = "not-pdf"
+            elif "html" in ctype:
+                self._mark_gone(rec)       # an error / sign-in page where the file used to be
             elif rec.get("hint") and ctype and "pdf" not in ctype and "octet-stream" not in ctype:
                 rec["status"] = "not-pdf"
             else:
                 rec["status"] = "ok"
-                rec.pop("hint", None)
+                for k in ("hint", "gone_strike_at", "gone_since"):
+                    rec.pop(k, None)
         rec.pop("recheck", None)
+
+    def _unreachable(self, rec: dict) -> None:
+        """No answer at all (DNS failure, connection refused). A PDF on another site whose host has
+        stopped answering for good (4+ tries over 30+ days) is gone — a dead link helps no one. The
+        magazine sites' own files are never retired this way (their outage is not the file's)."""
+        head = dict(rec.get("head") or {})
+        if head.get("error") == "unreachable":       # records from before this bookkeeping existed
+            head.setdefault("unreachable_since", head.get("checked_at"))
+        fails = int(head.get("fails") or 0) + 1
+        head.update(fails=fails, error="unreachable", checked_at=now_iso(),
+                    next_try=to_iso(_now() + timedelta(days=min(60, 2 ** fails))))
+        head.setdefault("unreachable_since", head.get("checked_at"))
+        rec["head"] = head
+        if rec.get("status") == "gone":
+            rec.setdefault("gone_since", now_iso())
+        since = _dt(head.get("unreachable_since"))
+        if (rec.get("external") and rec.get("status") != "gone" and fails >= UNREACHABLE_GONE[0]
+                and since and _now() - since >= timedelta(days=UNREACHABLE_GONE[1])):
+            self.c["pdfs_gone_now"] += 1
+            rec["status"] = "gone"
+            rec["gone_since"] = now_iso()
 
     def fetch_head(self, key: str, rec: dict) -> None:
         url = rec["url"]
@@ -823,11 +887,7 @@ class Crawler:
             if r is not None:
                 r.close()
         if r is None:
-            head = dict(rec.get("head") or {})
-            fails = int(head.get("fails") or 0) + 1
-            head.update(fails=fails, error="unreachable", checked_at=now_iso(),
-                        next_try=to_iso(_now() + timedelta(days=min(60, 2 ** fails))))
-            rec["head"] = head
+            self._unreachable(rec)
             return
         self._apply_head(rec, head_from_response(r))
 
@@ -844,14 +904,19 @@ class Crawler:
             self._apply_head(rec, head)
         elif rec.get("external"):
             self.dead_hosts.add(_host(url))
+            if err == "unreachable":
+                self._unreachable(rec)
         d = dict(rec.get("details") or {})
         d["checked_at"] = now_iso()
         if data is not None:
             thumb_name = short_hash(key, 16) + ".webp"
             a = analyze_pdf(data, None if self.dry_run else THUMB_DIR / thumb_name)
             text = clean_text(a.get("text") or "")
+            page_langs = [detect_lang(clean_text(t)[:3000]) if len(clean_text(t)) >= 200 else None
+                          for t in a.get("page_texts") or []]
             d.update(title=a.get("title"), pages=a.get("pages"), chars=len(text),
                      text_lang=(detect_lang(text[:3000]) if len(text) >= 200 else None),
+                     page_langs=[x if x in ("en", "es", "fr") else None for x in page_langs] or None,
                      heading=R.heading_from_text(a.get("text") or ""))
             if a.get("thumb_written"):
                 d["thumb"] = THUMB_URL + thumb_name
@@ -925,7 +990,8 @@ def build_items(st: dict) -> list[dict]:
 
 
 def build_item(key: str, rec: dict, pages: dict, hub_set: set[str]) -> dict:
-    refs = sorted(rec.get("refs") or [], key=lambda r: _ref_rank(r, hub_set))
+    refs = sorted((r for r in rec.get("refs") or [] if not R.is_junk_path(urlsplit(r.get("url") or "").path)),
+                  key=lambda r: _ref_rank(r, hub_set))
     ref_urls = [r["url"] for r in refs if r.get("url")]
     # Shared Drupal files are served by both hosts: link them on the host of their best referrer
     # (a La Viña flyer found on aalavina.org keeps its aalavina.org address).
@@ -935,12 +1001,28 @@ def build_item(key: str, rec: dict, pages: dict, hub_set: set[str]) -> dict:
     if p.hostname in R.DRUPAL_HOSTS and p.path.startswith("/sites/"):
         host = best_host if best_host in R.DRUPAL_HOSTS else _host(url)
         url = urlunsplit(("https", host, p.path, "", ""))
-    specific = [r for r in refs if r.get("title") and not R.page_title_is_generic(r["title"], r["url"])]
+    # A listing page's title ("Calendario de Eventos" on /calendario-de-eventos) says nothing about a
+    # PDF — also when the same page is reached through an alias that redirects to it.
+    generic_titles = {r["title"] for r in refs if r.get("title") and (
+        R.page_title_is_generic(r["title"], r["url"])
+        or R.page_title_is_generic(r["title"], (pages.get(r["url"]) or {}).get("final") or r["url"]))}
+    specific = [r for r in refs if r.get("title") and r["title"] not in generic_titles]
+    det = rec.get("details") or {}
+    link_langs = {lk for r in refs for t in (r.get("texts") or []) for lk in [R.language_of_link(t)] if lk}
+    page_langs = {x for x in (det.get("page_langs") or []) if x}
+    multilingual = len(page_langs) >= 2 or R.is_multilingual(
+        link_langs=link_langs, heading=det.get("heading"),
+        page_titles=[r.get("title") or "" for r in refs] + [r.get("section") or "" for r in refs])
     texts: list[str] = []
+    made_lang: dict[str, str] = {}      # "<name> (Spanish)" built below → the language of <name>
     for r in refs:
         page_lang = "es" if _host(r.get("url") or "") in R.SPANISH_HOSTS else "en"
         for t in r.get("texts") or []:
             lk = R.language_of_link(t)
+            if lk and multilingual:
+                # "Spanish" / "French and Spanish" links to ONE file holding several languages: the
+                # link names no single language, so it adds nothing to the title
+                continue
             if lk:
                 # a link named just "Spanish" / "leer en Inglés": the page (or file) names the document
                 if r in specific:      # page title, written in the page's language
@@ -948,29 +1030,41 @@ def build_item(key: str, rec: dict, pages: dict, hub_set: set[str]) -> dict:
                 else:                  # file name, most likely written in the document's language
                     base = R.strip_lang_tokens(R.title_from_filename(url))
                     base_lang = R.title_language(base, lk if lk in ("en", "es") else page_lang)
-                texts.append(f"{base} ({R.language_label(lk, base_lang)})")
+                made = f"{base} ({R.language_label(lk, base_lang)})"
+                made_lang.setdefault(R.clean_link_text(made) or made, base_lang)
+                texts.append(made)
             else:
                 texts.append(t)
     alts = [t for r in refs for t in (r.get("alts") or [])]
     sections = [r.get("section") or "" for r in refs if r.get("section")]
-    det = rec.get("details") or {}
     head = rec.get("head") or {}
     event_refs = [r for r in refs if R.is_event_path(r.get("url") or "")]
     only_events = bool(refs) and len(event_refs) == len(refs)
     # a specific (non-listing) page that links only this PDF usually names it well
     single = next((r for r in specific if not R.is_event_path(r["url"])
                    and len((pages.get(r["url"]) or {}).get("pdfs") or []) == 1), None)
-    title, _src = R.choose_title(link_texts=texts, img_alts=alts, meta_title=det.get("title"),
-                                 text_heading=det.get("heading"), url=url,
-                                 event_title=(event_refs[0].get("title") if only_events else None),
-                                 page_title=single["title"] if single else None)
+    title, src = R.choose_title(link_texts=texts, img_alts=alts, meta_title=det.get("title"),
+                                text_heading=det.get("heading"), url=url,
+                                event_title=(event_refs[0].get("title") if only_events else None),
+                                page_title=single["title"] if single else None)
     host_prior = "es" if best_host in R.SPANISH_HOSTS else "en"
+    link_text = next((c for t in [*texts, *alts] for c in [R.clean_link_text(t)] if c), None)
     doc_lang = R.doc_language(url=url, texts=[*texts, *alts, title], text_sample=None,
-                              text_lang=det.get("text_lang"), host_prior=host_prior)
-    # Titles are translated EN⇄ES, so a French document's (usually English/Spanish) title is judged
-    # with the page language as prior; real French words still win.
-    lang = R.title_language(title, doc_lang if doc_lang in ("en", "es") else host_prior)
-    if doc_lang != lang and doc_lang in ("en", "es", "fr") and not R.lang_from_markers([title]):
+                              text_lang=det.get("text_lang"), host_prior=host_prior,
+                              multilingual=multilingual, heading=det.get("heading"), link_text=link_text)
+    # The title's language (what the translator translates from): a link text, image alt or page /
+    # event title is written in the REFERRING PAGE's language; metadata, a page-1 heading or the file
+    # name in the document's. (French documents: their titles are judged with the page language as
+    # prior; real French words still win.)
+    title_prior = host_prior if src in ("link", "alt", "page", "event") else (
+        doc_lang if doc_lang in ("en", "es") else host_prior)
+    title_prior = made_lang.get(title, title_prior)
+    override = R.TITLE_OVERRIDES.get(R.filename_of(url))
+    if override:
+        title, title_prior = override, (doc_lang if doc_lang in ("en", "es") else host_prior)
+    lang = R.title_language(title, title_prior)
+    if doc_lang != lang and doc_lang in ("en", "es", "fr") and not multilingual \
+            and not R.lang_from_markers([title]):
         # e.g. an English title for the Spanish edition → "… (Spanish)", so readers know
         title = f"{title} ({R.language_label(doc_lang, lang)})"
     category, tags = R.classify(referrer_urls=ref_urls, texts=[title, *texts, *alts], sections=sections, url=url)
@@ -1007,6 +1101,7 @@ def build_item(key: str, rec: dict, pages: dict, hub_set: set[str]) -> dict:
         "link_texts": link_texts[:3],
         "event_date": event_dates[-1] if event_dates else None,
         "doc_lang": doc_lang,
+        "multilingual": multilingual or None,
         "section": sections[0] if sections else None,
         "external": bool(rec.get("external")),
         "orphan": not refs,
@@ -1159,7 +1254,11 @@ def main(argv=None) -> None:
         for it in merged[:8]:
             log.info("  %s | %s | %s | %s | %s", it["category"], it["lang"], it["date"], it["title"], it["url"])
     else:
-        save_state(st)
+        if crawler is not None or not loaded_ok:
+            # `--minutes 0` only rebuilds pdfs.json: the state it read is unchanged, so it is not
+            # rewritten (no git churn, no clash with the daily bot's copy) — unless it was just
+            # recovered from pdfs.json, which must be kept.
+            save_state(st)
         save_raw(SOURCE, merged, ok=ok, error=error, stats=stats,
                  extra={"crawl": {k: stats[k] for k in ("known_pages", "crawled_pages", "pdfs", "last_run_pages")}})
     print_summary(stats, crawler, len(merged))

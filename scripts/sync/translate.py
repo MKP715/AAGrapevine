@@ -450,6 +450,53 @@ class TranslationCache:
                 log.info("glossary changed → %d cached translations will be redone", dropped)
         return dropped
 
+    def sync_overrides(self, overrides: "Overrides") -> int:
+        """Drop cached translations of texts that CONTAIN an override that was added or changed
+        since the cache was written. An override for a title must also fix the cached whole text
+        it is part of ("Bottle to Throttle [Season 3, Episode 7]", a summary sentence): an exact
+        override wins before the cache, but a longer cached text would otherwise never be redone.
+        The first time (no snapshot yet) every override counts as new. Returns the number dropped."""
+        snap = {k: dict(sorted(v.items())) for k, v in sorted(overrides.exact.items())}
+        old = self.meta.get("overrides")
+        self.meta["overrides"] = snap
+        prev = old if isinstance(old, dict) else {}
+        dropped = 0
+        for s, t in PAIRS:
+            changed = [k for k in set(snap) | set(prev)
+                       if (snap.get(k) or {}).get(t) != (prev.get(k) or {}).get(t)]
+            if not changed:
+                continue
+            rx = re.compile(r"(?<!\w)(?:" + "|".join(re.escape(fold(k).lower()) for k in
+                                                      sorted(changed, key=len, reverse=True)) + r")(?!\w)")
+            direction = f"{s}>{t}"
+            for k in [k for k, e in self.entries.items() if e.get("d") == direction]:
+                src_text = fold(_norm_key(self.entries[k].get("s", ""))).lower()
+                if rx.search(src_text):
+                    del self.entries[k]
+                    dropped += 1
+        if dropped or old != snap:
+            self.dirty = True
+            if dropped:
+                log.info("overrides changed → %d cached translations will be redone", dropped)
+        return dropped
+
+    def reapply(self, direction: str, fix) -> int:
+        """Run a text fix-up (`fix(source, cached_translation) → translation`) over the cached
+        translations of one direction, so a new built-in word rule also corrects texts translated
+        before it existed — without re-running the model. Returns the number of entries changed."""
+        changed = 0
+        for e in self.entries.values():
+            if e.get("d") != direction:
+                continue
+            new = fix(e.get("s", ""), e["t"])
+            if new != e["t"]:
+                e["t"] = new
+                changed += 1
+        if changed:
+            self.dirty = True
+            log.info("word rules corrected %d cached %s translations", changed, direction)
+        return changed
+
     def save(self, prune_unused: bool = False) -> None:
         """Write one entry per line (sorted) so the daily git diff only shows real changes."""
         if not self.enabled:
@@ -1420,13 +1467,33 @@ _CATCH_EN = re.compile(r"(?i)\b(?:catch\w*|caught|grab\w*|take|takes|took|taking
 _POST_EDITS_ES: list[tuple[re.Pattern, re.Pattern, re.Pattern | None, str]] = [
     # "the holidays" (Thanksgiving → New Year) are "las fiestas", not "las vacaciones"
     (re.compile(r"(?i)\bholidays?\b"), re.compile(r"\b([Vv])acaciones\b"), re.compile(r"(?i)\bvacation"), "fiestas"),
+    # a group's "business meeting" is a "reunión de trabajo" (the words the site's own pages use)
+    (re.compile(r"(?i)\bbusiness meetings?\b"), re.compile(r"\breunión de negocios\b", re.I), None,
+     "reunión de trabajo"),
+    (re.compile(r"(?i)\bbusiness meetings?\b"), re.compile(r"\breuniones de negocios\b", re.I), None,
+     "reuniones de trabajo"),
+    # a "speaker meeting" has speakers ("oradores"), not loudspeakers ("altavoces")
+    (re.compile(r"(?i)\bspeakers?\b"), re.compile(r"\baltavoces\b", re.I), re.compile(r"(?i)\bloud ?speakers?\b"),
+     "oradores"),
+    # "in / out of / back to the rooms" (of AA) = the meetings, not bedrooms
+    (re.compile(r"(?i)\bthe rooms\b"), re.compile(r"\blas habitaciones\b", re.I),
+     re.compile(r"(?i)\b(?:hotel|bed|guest|hospital|motel|hallway|living)\s*rooms?\b"), "las reuniones"),
+    # "experience, strength and hope": AA Spanish says "fortaleza" (also the site's own pages)
+    (re.compile(r"(?i)\bstrength,? and hope\b"), re.compile(r"\bfuerza y esperanza\b", re.I), None,
+     "fortaleza y esperanza"),
 ]
+# "reuniones AA" / "miembro AA" → "reuniones de AA" / "miembro de AA" (done here, not with glossary
+# terms: a masked term hides its gender from the model — "nuestro reuniones de AA")
+_DE_AA = re.compile(r"\b((?:[Rr]euni(?:ón|ones))|(?:[Mm]iembros?))\s+(AA|A\.A\.)(?=$|[\s.,;:!?)»”’\"'])")
+_DE_AA_SRC = re.compile(r"(?i)\b(?:AA|A\.A\.)\s+(?:meetings?|members?)\b")
 
 
 def post_edit_es(text: str, src: str) -> str:
     for need, pat, veto, repl in _POST_EDITS_ES:
         if need.search(src or "") and not (veto and veto.search(src or "")):
             text = pat.sub(lambda m: _same_case(repl, m.group(0)), text)
+    if _DE_AA_SRC.search(src or ""):
+        text = _DE_AA.sub(r"\1 de \2", text)
     # "De el Foro …" → "Del Foro …", "a el grupo" → "al grupo" (not "de El Paso": a name)
     return re.sub(r"\b([Dd]e|[Aa]) el\b", lambda m: ("D" if m.group(1)[0] == "D" else "d") + "el"
                   if m.group(1).lower() == "de" else m.group(1) + "l", text)
@@ -1731,6 +1798,8 @@ class Translator:
         self.overrides = Overrides.load(overrides_path)
         self.cache = TranslationCache(cache_path, enabled=cache)
         self.cache.sync_glossary(self.glossary)
+        self.cache.sync_overrides(self.overrides)
+        self.cache.reapply("en>es", lambda s, t: post_edit_es(t, s))
         self.engine = Engine(models_dir, threads, download)
         self.protector = Protector(self.glossary)
         self.deadline = (time.monotonic() + budget_seconds) if budget_seconds else None
@@ -1903,7 +1972,7 @@ class Translator:
 
     def _translate_new(self, texts: Sequence[str], src: str, tgt: str) -> list[str | None]:
         # canonical "[Season 5, Episode 10]" first, so "[Season 5. Episode 10]" is not cut in two
-        plans = [units(fix_season_episode(t, src)) for t in texts]
+        plans = [self._units(fix_season_episode(t, src), tgt) for t in texts]
         segs = list(dict.fromkeys(p for plan in plans for flag, p in plan if flag))
         seg_out = self._translate_segments(segs, src, tgt)
         out: list[str | None] = []
@@ -1920,6 +1989,18 @@ class Translator:
                 parts.append(o)
             out.append("".join(parts) if parts is not None else None)
         return out
+
+    def _units(self, text: str, tgt: str) -> list[tuple[bool, str]]:
+        """units(), except that a one-line title with an override is kept in one piece (before its
+        " [Season …]" / " (Spanish)" tail): otherwise it is cut at " — " / " | " first and the
+        override for the whole title ("Widening the Doorway — The Plain Language Big Book") never
+        matches."""
+        if "\n" not in text:
+            tb = _TRAILING_BRACKET.match(text)
+            head, gap, tail = (tb.group(1), tb.group(2), tb.group(3)) if tb else (text, "", "")
+            if head == head.strip() and head + gap + tail == text and self.overrides.get(head, tgt) is not None:
+                return [(True, head)] + ([(False, gap)] if gap else []) + (units(tail) if tail else [])
+        return units(text)
 
     def _plan(self, seg: str, src: str, tgt: str, style: int, names: bool = True) -> _Job:
         m = self.protector.mask(defilename(seg), src, tgt, style, names=names)

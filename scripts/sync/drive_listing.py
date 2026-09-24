@@ -13,8 +13,9 @@ Two interchangeable listers return the same `Listing` of `Entry` objects:
 * ApiLister (only when the GOOGLE_API_KEY env var is set) uses the Drive API v3
   `files.list` for exact created/modified dates, sizes and shortcut targets. The key is
   sent in the X-Goog-Api-Key header (never in the URL, so it cannot leak into logs).
-  Any API error falls back to HtmlLister for that folder; after a few failures the
-  API is switched off for the rest of the run.
+  Each folder is first confirmed with files.get (files.list answers "200, no files" for a
+  folder the key cannot see). Any API error falls back to HtmlLister for that folder;
+  after a few failures the API is switched off for the rest of the run.
 
 A listing is only `ok` when Drive returned a real folder page. This matters because
 drive.py deletes files that disappeared from a folder — it must never do that because
@@ -251,16 +252,19 @@ class HtmlLister:
         sid = e.id
         e.shortcut_id = sid
         target, is_folder = self.shortcut_cache.get(sid), False
+        if target == sid:
+            self.shortcut_cache.pop(sid, None)
+            target = None  # an old "could not resolve" entry — look it up again
         if not target:
             r = self.http.head(f"https://drive.google.com/file/d/{sid}/view", allow_redirects=False)
             loc = (r.headers.get("Location") or "") if r is not None else ""
             m = re.search(rf"/file/d/({_ID})", loc) or re.search(rf"/folders/({_ID})", loc)
-            if m:
+            if m and m.group(1) != sid:
                 target, is_folder = m.group(1), "/folders/" in loc
                 self.shortcuts_resolved += 1
-            elif r is not None and r.status_code == 200:
-                target = sid  # Drive served the shortcut id directly — it works as a link
         if not target:
+            # The view link by shortcut id still opens the file, but its thumbnail and direct
+            # download do not — mark it so no broken picture is published; retried next run.
             e.unresolved_shortcut = True
             log.info("could not resolve shortcut %r (%s)", e.name, sid)
         else:
@@ -289,7 +293,34 @@ class ApiLister:
         self.http = PoliteSession(browser_ua=True, min_delay=0.1, respect_robots=False, timeout=30)
         self.http.s.headers["X-Goog-Api-Key"] = key
 
+    def check_folder(self, folder_id: str) -> str | None:
+        """None when `folder_id` is a readable, non-trashed folder; otherwise the reason.
+
+        Needed because files.list answers a query about a folder the key cannot see (made
+        private, or a mistyped id) with HTTP 200 and an EMPTY list — which must never be read
+        as "every file was deleted"."""
+        r = self.http.get(f"{API_URL}/{folder_id}",
+                          params={"fields": "id,mimeType,trashed", "supportsAllDrives": "true"})
+        if r is None:
+            return "API network error"
+        if r.status_code in (401, 403, 404):
+            return f"not found or not shared publicly (API HTTP {r.status_code})"
+        if r.status_code != 200:
+            return f"API HTTP {r.status_code}: {_api_message(r)}"
+        try:
+            meta = r.json()
+        except ValueError:
+            return "API returned non-JSON"
+        if not isinstance(meta, dict) or meta.get("mimeType") != FOLDER_MIME:
+            return "not a folder"
+        if meta.get("trashed"):
+            return "the folder is in the trash"
+        return None
+
     def list(self, folder_id: str) -> Listing:
+        problem = self.check_folder(folder_id)
+        if problem:
+            return Listing(False, error=problem, via="api")
         entries: list[Entry] = []
         token = None
         for _page in range(50):  # 50 × 1000 files is far beyond any committee folder

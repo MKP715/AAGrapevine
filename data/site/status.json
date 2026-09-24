@@ -1,6 +1,6 @@
 {
- "generated": "2026-09-24T03:25:31Z",
- "updated": "2026-09-24T03:25:31Z",
+ "generated": "2026-09-24T06:35:31Z",
+ "updated": "2026-09-24T06:35:31Z",
  "fixture": false,
  "sources": [
   {
@@ -153,29 +153,29 @@
    "label": "PDF library (crawl of both sites)",
    "label_es": "Biblioteca de PDF (rastreo de ambos sitios)",
    "ok": true,
-   "updated": "2026-09-24T03:25:24Z",
-   "attempted": "2026-09-24T03:25:24Z",
+   "updated": "2026-09-24T06:35:22Z",
+   "attempted": "2026-09-24T06:35:22Z",
    "count": 130,
    "new_7d": 130,
    "error": null,
    "stats": {
-    "known_pages": 3445,
-    "crawled_pages": 3441,
-    "never_crawled": 4,
-    "never_crawled_events": 4,
+    "known_pages": 3429,
+    "crawled_pages": 3429,
+    "never_crawled": 0,
+    "never_crawled_events": 0,
     "pdfs": 130,
     "pdfs_gone": 12,
     "pdfs_with_details": 129,
     "pdfs_with_thumbs": 129,
-    "last_run_pages": 97,
-    "fetched": 97,
+    "last_run_pages": 0,
+    "fetched": 0,
     "new": 0,
     "not_modified": 0,
     "page_errors": 0,
     "discovered": 0,
     "details": 0,
     "heads": 0,
-    "requests": 100,
+    "requests": 0,
     "queue_remaining": 0,
     "est_days_to_full": 0.0
    }
@@ -225,8 +225,8 @@
    "label": "Podcasts",
    "label_es": "Pódcasts",
    "ok": true,
-   "updated": "2026-09-24T03:11:21Z",
-   "attempted": "2026-09-24T03:11:21Z",
+   "updated": "2026-09-24T05:07:27Z",
+   "attempted": "2026-09-24T05:07:27Z",
    "count": 295,
    "new_7d": 295,
    "error": null,
@@ -252,19 +252,8 @@
     "missing_from_feed": 0,
     "gone_checks": 0,
     "discovery_checked": "2026-09-23T16:27:25Z",
-    "discovered_feeds": [
-     {
-      "feed": "https://feeds.captivate.fm/grapevine-weekly-open/",
-      "title": "Grapevine Weekly Open AA Meeting",
-      "language": "en",
-      "episodes": 33,
-      "latest": "2026-09-18T04:15:00Z",
-      "spanish": false,
-      "apple": "https://podcasts.apple.com/us/podcast/grapevine-weekly-open-aa-meeting/id1874809908",
-      "spotify": "https://open.spotify.com/show/2jk469TmDC31spPqf8L0SF"
-     }
-    ],
-    "seconds": 2.2,
+    "discovered_feeds": [],
+    "seconds": 3.0,
     "artwork": 3,
     "artwork_missing": 0,
     "artwork_removed": 0
@@ -359,13 +348,13 @@
   }
  ],
  "crawl": {
-  "attempted": "2026-09-24T03:25:24Z",
-  "crawled_pages": 3441,
+  "attempted": "2026-09-24T06:35:22Z",
+  "crawled_pages": 3429,
   "est_days_to_full": 0.0,
-  "known_pages": 3445,
-  "last_run_pages": 97,
-  "never_crawled": 4,
-  "never_crawled_events": 4,
+  "known_pages": 3429,
+  "last_run_pages": 0,
+  "never_crawled": 0,
+  "never_crawled_events": 0,
   "new": 0,
   "page_errors": 0,
   "pdfs": 130,
@@ -373,20 +362,20 @@
   "pdfs_with_details": 129,
   "pdfs_with_thumbs": 129,
   "queue_remaining": 0,
-  "updated": "2026-09-24T03:25:24Z"
+  "updated": "2026-09-24T06:35:22Z"
  },
  "translations": {
-  "cached": 1934,
+  "cached": 1854,
   "engine": "argos1.0-ct2/v5",
   "model_enabled": true,
-  "translated_this_run": 19,
-  "from_cache": 1915,
+  "translated_this_run": 2,
+  "from_cache": 1839,
   "pending": 0,
   "rejected_by_guard": 0,
-  "seconds": 6.4,
-  "model_seconds": 2.0,
-  "texts_per_second": 3.0,
-  "glossary_entries": 231
+  "seconds": 0.3,
+  "model_seconds": 0.0,
+  "texts_per_second": 7.2,
+  "glossary_entries": 244
  },
  "counts": {
   "videos": 528,
@@ -405,7 +394,7 @@
  "problems": {},
  "items": [],
  "spotlight": {
-  "today": "2026-09-23",
+  "today": "2026-09-24",
   "home_days": 60,
   "list_days": [
    60,
