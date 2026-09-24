@@ -1,6 +1,6 @@
 {
- "generated": "2026-09-24T03:05:17Z",
- "updated": "2026-09-24T03:05:17Z",
+ "generated": "2026-09-24T03:10:23Z",
+ "updated": "2026-09-24T03:10:23Z",
  "fixture": false,
  "sources": [
   {
@@ -8,8 +8,8 @@
    "label": "Google Drive (committee uploads)",
    "label_es": "Google Drive (archivos del comité)",
    "ok": true,
-   "updated": "2026-09-23T22:19:43Z",
-   "attempted": "2026-09-23T22:19:43Z",
+   "updated": "2026-09-24T03:10:20Z",
+   "attempted": "2026-09-24T03:10:20Z",
    "count": 0,
    "new_7d": 0,
    "error": null,
@@ -67,8 +67,8 @@
    "label": "Announcements (content/announcements)",
    "label_es": "Anuncios (content/announcements)",
    "ok": true,
-   "updated": "2026-09-23T22:19:43Z",
-   "attempted": "2026-09-23T22:19:43Z",
+   "updated": "2026-09-24T03:10:20Z",
+   "attempted": "2026-09-24T03:10:20Z",
    "count": 0,
    "new_7d": 0,
    "error": null,
@@ -85,8 +85,8 @@
    "label": "Events (content/events)",
    "label_es": "Eventos (content/events)",
    "ok": true,
-   "updated": "2026-09-23T22:19:43Z",
-   "attempted": "2026-09-23T22:19:43Z",
+   "updated": "2026-09-24T03:10:20Z",
+   "attempted": "2026-09-24T03:10:20Z",
    "count": 0,
    "new_7d": 0,
    "error": null,
@@ -219,8 +219,8 @@
    "label": "Podcasts",
    "label_es": "Pódcasts",
    "ok": true,
-   "updated": "2026-09-23T22:19:46Z",
-   "attempted": "2026-09-23T22:19:46Z",
+   "updated": "2026-09-24T03:10:23Z",
+   "attempted": "2026-09-24T03:10:23Z",
    "count": 295,
    "new_7d": 295,
    "error": null,
@@ -258,7 +258,7 @@
       "spotify": "https://open.spotify.com/show/2jk469TmDC31spPqf8L0SF"
      }
     ],
-    "seconds": 3.0,
+    "seconds": 2.1,
     "artwork": 3,
     "artwork_missing": 0,
     "artwork_removed": 0
