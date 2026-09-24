@@ -699,10 +699,11 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
       </div>
     </div>
     {% if evs.length %}
-    {#- Fewer than 4 events: a "calendar on your phone" card fills the row (and the grid narrows). -#}
+    {#- Fewer than 4 events: a "calendar on your phone" card fills the row (and the grid narrows).
+        grid-cols-1 on phones: a long place name (one truncated line) must not widen the column. -#}
     {%- set withCta = evs.length < 4 -%}
     {%- set cols = evs.length + (1 if withCta else 0) -%}
-    <ul class="grid gap-4 sm:grid-cols-2 {{ 'lg:grid-cols-4' if cols >= 4 else ('lg:grid-cols-3' if cols == 3 else '') }}" role="list">
+    <ul class="grid grid-cols-1 gap-4 sm:grid-cols-2 {{ 'lg:grid-cols-4' if cols >= 4 else ('lg:grid-cols-3' if cols == 3 else '') }}" role="list">
       {% for e in evs %}
       {%- set x = e.extra or {} -%}
       {%- set st = x.start or e.date -%}
