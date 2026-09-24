@@ -1,14 +1,18 @@
 ---
 pagination: { data: languages, size: 1, alias: lang }
-permalink: "{{ '/' if lang == 'en' else '/es/' }}subscribe/index.html"
+permalink: "{{ '/' if lang == 'en' else '/es/' }}shop/index.html"
 layout: layouts/base.njk
-pageKey: subscribe
+pageKey: shop
 titleKey: read.subs.title
 descKey: read.subs.meta_desc
 ---
-{#- SUBSCRIBE — ways to get Grapevine & La Viña (no prices: they change; we link
-    to the official stores), Carry the Message, home-group subscriptions, free
-    resources, customer service, and catalogs pulled automatically from db.pdfs. -#}
+{#- SHOP — the ONE page for buying and subscribing: ways to get Grapevine & La Viña,
+    Carry the Message, home-group subscriptions and order forms, free resources,
+    catalogs pulled automatically from db.pdfs, and customer service. Every purchase
+    links to the official stores (aagrapevine.org / aalavina.org); prices and dates only
+    ever come from synced data, never typed here. Other pages show at most a one-line
+    link here (keep it that way). The old /subscribe/ address is a redirect stub
+    (subscribe-redirect.njk) that keeps its #anchors (#carry, #forms-title, #cat-title). -#}
 {% import "macros/ui.njk" as ui with context %}
 {%- set L = site.links -%}
 {%- set catalogs = db.pdfs | readCatalogs(lang) -%}
@@ -92,7 +96,7 @@ descKey: read.subs.meta_desc
     24–28rem (below ~414px the two buttons stack, so the subtitle is kept to three phone lines).
     The in-page "Gift a subscription" jump shows from 768px, so the row does not wrap on small
     tablets. -#}
-{% call ui.pageHero(lang, "read.subs.title" | t(lang), "read.subs.subtitle" | t(lang), "mail-open", "read.subs.eyebrow" | t(lang), { class: "read-hero" }) %}
+{% call ui.pageHero(lang, "read.subs.title" | t(lang), "read.subs.subtitle" | t(lang), "shopping-bag", "read.subs.eyebrow" | t(lang), { class: "read-hero" }) %}
   <div class="hero-actions">
     {% for p in pubOrder %}
     <a class="{{ 'btn-light' if loop.first else 'btn-on-dark' }}" href="{{ L.lv_subscribe if p == 'lv' else L.gv_subscribe }}" target="_blank" rel="noopener">{% icon "grapes", "size-4" %} {{ ("read.subs.sub_lv" if p == "lv" else "read.subs.sub_gv") | t(lang) }}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a>
@@ -100,6 +104,11 @@ descKey: read.subs.meta_desc
     <a class="btn-on-dark max-md:hidden" href="#carry">{% icon "gift", "size-4" %} {{ "read.subs.ctm_short" | t(lang) }}</a>
   </div>
 {% endcall %}
+
+{#- ---------- Top of the page (right after the hero) ----------
+    Reserved for Book of the Month and the subscription prices (synced data). A section
+    added here takes the "page-start" spacing class from the magazines section below
+    (which then becomes a plain "section container-page pt-0"). -#}
 
 {#- ---------- The two magazines ---------- -#}
 <section class="container-page page-start" aria-label="{{ 'read.subs.mags_title' | t(lang) }}">
@@ -131,12 +140,8 @@ descKey: read.subs.meta_desc
           {% endfor %}
         </ul>
       </header>
+      {#- The formats (print, online, app, audio) are described once, in the section below. -#}
       <div class="flex flex-1 flex-col gap-5 p-6 sm:p-7">
-        <ul class="grid grid-cols-2 gap-3 text-sm">
-          {% for f in [["printer", "fmt_print_t"], ["monitor", "fmt_online_t"], ["smartphone", "fmt_app_t"], ["headphones", "fmt_audio_t"]] %}
-          <li class="flex items-center gap-2 text-ink"><span class="{{ 'text-lv' if isLv else 'text-gv' }}">{% icon f[0], "size-4" %}</span>{{ ("read.subs." + f[1]) | t(lang) }}</li>
-          {% endfor %}
-        </ul>
         <div class="mt-auto flex flex-wrap gap-2">
           <a class="{{ 'btn-lv' if isLv else 'btn-primary' }}" href="{{ L.lv_subscribe if isLv else L.gv_subscribe }}" target="_blank" rel="noopener">{{ "read.subs.subscribe_btn" | t(lang) }} {% icon "arrow-up-right", "size-4" %}</a>
           <a class="btn-secondary" href="{{ L.lv_store if isLv else L.gv_store }}" target="_blank" rel="noopener">{% icon "store", "size-4" %} {{ "read.subs.store_btn" | t(lang) }}</a>
@@ -161,7 +166,6 @@ descKey: read.subs.meta_desc
     </div>
     {% endfor %}
   </div>
-  <p class="measure mt-5 flex items-start gap-2 text-sm text-muted">{% icon "info", "mt-0.5 size-4 text-gv" %} <span>{{ "read.subs.no_prices" | t(lang) }}</span></p>
 </section>
 
 {#- ---------- Carry the Message ---------- -#}
@@ -232,7 +236,8 @@ descKey: read.subs.meta_desc
   </div>
 </section>
 
-{#- ---------- Free resources ---------- -#}
+{#- ---------- Free resources ----------
+    Short pointers only: the Weekly Open Meeting's Zoom details live on /meeting/#weekly-open. -#}
 <section class="section container-page pt-0" aria-label="{{ 'read.subs.free_title' | t(lang) }}">
   {{ ui.sectionHead("read.subs.free_title" | t(lang), "read.subs.free_sub" | t(lang), "", "", "heart") }}
   {#- six cards → at most three per row: two even rows on wide screens, no lone card -#}
@@ -242,7 +247,7 @@ descKey: read.subs.meta_desc
       { href: "/watch/" | lurl(lang), ext: false, icon: "youtube", c: "bg-grape-soft text-grape", k: "youtube" },
       { href: "/instagram/" | lurl(lang), ext: false, icon: "instagram", c: "bg-grape-soft text-grape", k: "instagram" },
       { href: L.gv_home, ext: true, icon: "quote", c: "bg-gv-soft text-gv", k: "quote" },
-      { href: (weekly.url if weekly else L.weekly_open), ext: true, icon: "video", c: "bg-vine-soft text-vine", k: "weekly" },
+      { href: ("/meeting/" | lurl(lang)) + "#weekly-open", ext: false, icon: "video", c: "bg-vine-soft text-vine", k: "weekly" },
       { href: L.sobriety_calculator, ext: true, icon: "calculator", c: "bg-lv-soft text-lv", k: "calc" }
     ] %}
     {% for f in free %}

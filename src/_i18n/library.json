@@ -763,9 +763,9 @@
     "en": "share your story write submit contribute editorial themes deadlines guidelines record",
     "es": "comparte tu historia escribir enviar contribuir temas editoriales fechas límite pautas grabar"
   },
-  "search.kw.subscribe": {
-    "en": "subscribe subscription magazine app gift carry the message store buy order",
-    "es": "suscribirse suscripción revista app regalo lleva el mensaje tienda comprar pedido"
+  "search.kw.shop": {
+    "en": "shop store buy order subscribe subscription price prices book of the month books catalog order form magazine app gift carry the message",
+    "es": "tienda comprar pedido suscribirse suscripción precio precios libro del mes libros catálogo formulario de pedido revista app regalo lleva el mensaje"
   },
   "search.kw.instagram": {
     "en": "instagram posts social media photos",

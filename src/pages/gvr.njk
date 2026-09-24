@@ -198,13 +198,13 @@ pageScripts: ["/assets/js/read.js"]
               {% elif s.id == "meeting" %}
                 <a class="link" href="{{ '/meeting/' | lurl(lang) }}">{% if meeting.next %}{{ "read.gvr.next_meeting" | t(lang, {date: meeting.next.start | fmtDate(lang, "medium")}) }}{% else %}{{ "nav.meeting" | t(lang) }}{% endif %}</a>
               {% elif s.id == "table" %}
-                <a class="link" href="{{ '/subscribe/' | lurl(lang) }}#cat-title">{{ "read.subs.cat_title" | t(lang) }}</a>
+                <a class="link" href="{{ '/shop/' | lurl(lang) }}#cat-title">{{ "read.subs.cat_title" | t(lang) }}</a>
                 <a class="link" href="#kit-{{ 'rlv' if lang == 'es' else 'gvr' }}">{{ "read.gvr.g_flyers" | t(lang) }}</a>
               {% elif s.id == "announce" %}
                 <a class="link" href="{{ '/read/' | lurl(lang) }}">{{ "read.gvr.current_issues" | t(lang) }}</a>
                 <a class="link" href="{{ '/contribute/' | lurl(lang) }}#deadlines">{{ "read.contrib.deadlines_title" | t(lang) }}</a>
               {% elif s.id == "subscribe" %}
-                <a class="link" href="{{ '/subscribe/' | lurl(lang) }}#carry">{{ "read.subs.ctm_eyebrow" | t(lang) }}</a>
+                <a class="link" href="{{ '/shop/' | lurl(lang) }}#carry">{{ "read.subs.ctm_eyebrow" | t(lang) }}</a>
               {% elif s.id == "updates" %}
                 <a class="link" href="{{ '/digest/' | lurl(lang) }}">{{ "nav.digest" | t(lang) }}</a>
                 <a class="link" href="{{ '/feed.xml' | lurl(lang) }}">{{ "feeds.rss" | t(lang) }}</a>
@@ -287,7 +287,7 @@ pageScripts: ["/assets/js/read.js"]
   {{ ui.sectionHead("read.gvr.ideas_title" | t(lang), "read.gvr.ideas_sub" | t(lang), "", "", "lightbulb") }}
   <div class="grid-cards-fit [--cards-min:15rem] [--cards-max:3] min-[1800px]:[--cards-max:6]">
     {#- [icon, colors, page, anchor on that page]: each idea opens the section it talks about -#}
-    {% for i in [["library", "bg-gv-soft text-gv", "/subscribe/", "#cat-title"], ["clipboard-list", "bg-lv-soft text-lv", "/subscribe/", "#forms-title"], ["gift", "bg-vine-soft text-vine", "/subscribe/", "#carry"], ["pen-line", "bg-grape-soft text-grape", "/contribute/", ""], ["headphones", "bg-grape-soft text-grape", "/listen/", ""], ["book-open", "bg-gv-soft text-gv", "/read/", ""]] %}
+    {% for i in [["library", "bg-gv-soft text-gv", "/shop/", "#cat-title"], ["clipboard-list", "bg-lv-soft text-lv", "/shop/", "#forms-title"], ["gift", "bg-vine-soft text-vine", "/shop/", "#carry"], ["pen-line", "bg-grape-soft text-grape", "/contribute/", ""], ["headphones", "bg-grape-soft text-grape", "/listen/", ""], ["book-open", "bg-gv-soft text-gv", "/read/", ""]] %}
     <a href="{{ i[2] | lurl(lang) }}{{ i[3] }}" class="card card-link card-pad group flex flex-col no-underline">
       <span class="grid size-11 place-items-center rounded-xl {{ i[1] }}">{% icon i[0], "size-5" %}</span>
       <h3 class="h-card mt-3">{{ ("read.gvr.i" + loop.index + "_t") | t(lang) }}</h3>

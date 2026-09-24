@@ -120,13 +120,25 @@
     "en": "Write for Grapevine or La Viña",
     "es": "Escribe para La Viña o Grapevine"
   },
-  "nav.subscribe": {
-    "en": "Subscribe",
-    "es": "Suscríbete"
+  "nav.shop": {
+    "en": "Shop",
+    "es": "Tienda"
   },
-  "nav.subscribe_desc": {
-    "en": "Magazines, apps, gifts & Carry the Message",
-    "es": "Revistas, apps, regalos y Lleva el Mensaje"
+  "nav.shop_desc": {
+    "en": "Book of the Month, subscriptions and prices, catalogs and order forms — from the official stores",
+    "es": "Libro del mes, suscripciones y precios, catálogos y formularios de pedido, de las tiendas oficiales"
+  },
+  "nav.get_involved": {
+    "en": "Get Involved",
+    "es": "Participa"
+  },
+  "nav.monthly": {
+    "en": "Monthly toolkit & posters",
+    "es": "Kit del mes y carteles"
+  },
+  "nav.monthly_desc": {
+    "en": "This month's issue, how to put it to work, printable posters",
+    "es": "La revista del mes, cómo usarla y carteles para imprimir"
   },
   "nav.instagram": {
     "en": "Instagram",
@@ -189,8 +201,8 @@
     "es": "Explorar"
   },
   "footer.committee": {
-    "en": "Committee & Service",
-    "es": "Comité y Servicio"
+    "en": "Get Involved & Committee",
+    "es": "Participa y Comité"
   },
   "footer.stay_updated": {
     "en": "Stay updated",

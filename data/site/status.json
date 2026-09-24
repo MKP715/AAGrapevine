@@ -1,6 +1,6 @@
 {
- "generated": "2026-09-24T13:21:10Z",
- "updated": "2026-09-24T13:21:10Z",
+ "generated": "2026-09-24T15:46:52Z",
+ "updated": "2026-09-24T15:46:52Z",
  "fixture": false,
  "sources": [
   {
@@ -304,10 +304,10 @@
    "label": "Grapevine Weekly Open meeting",
    "label_es": "Reunión Grapevine Weekly Open",
    "ok": true,
-   "updated": "2026-09-24T03:16:51Z",
-   "attempted": "2026-09-24T03:16:51Z",
-   "count": 1,
-   "new_7d": 1,
+   "updated": "2026-09-24T15:46:38Z",
+   "attempted": "2026-09-24T15:46:38Z",
+   "count": 2,
+   "new_7d": 2,
    "error": null,
    "stats": {
     "found": [
@@ -345,6 +345,24 @@
     "new": 0,
     "requests": 48
    }
+  },
+  {
+   "source": "shop",
+   "label": "Book of the Month & subscription prices",
+   "label_es": "Libro del mes y precios de suscripción",
+   "ok": true,
+   "updated": "2026-09-24T15:44:02Z",
+   "attempted": "2026-09-24T15:44:02Z",
+   "count": 54,
+   "new_7d": 54,
+   "error": null,
+   "stats": {
+    "botm": 2,
+    "plans": 52,
+    "types_refreshed": true,
+    "requests": 0,
+    "images_downloaded": 0
+   }
   }
  ],
  "crawl": {
@@ -365,16 +383,16 @@
   "updated": "2026-09-24T06:35:22Z"
  },
  "translations": {
-  "cached": 1841,
+  "cached": 1851,
   "engine": "argos1.0-ct2/v5",
   "model_enabled": true,
-  "translated_this_run": 0,
+  "translated_this_run": 10,
   "from_cache": 1841,
   "pending": 0,
   "rejected_by_guard": 0,
-  "seconds": 0.1,
-  "model_seconds": 0.0,
-  "texts_per_second": null,
+  "seconds": 1.1,
+  "model_seconds": 0.4,
+  "texts_per_second": 8.8,
   "glossary_entries": 257
  },
  "counts": {
@@ -385,11 +403,12 @@
   "pdfs": 130,
   "drive": 0,
   "editorial": 37,
-  "weekly_open": 1,
+  "weekly_open": 2,
   "announcements": 0,
   "events": 31,
   "whatsnew": 150,
-  "districts": 2
+  "districts": 2,
+  "shop": 54
  },
  "problems": {},
  "feeds": [

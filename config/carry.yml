@@ -1,0 +1,428 @@
+# =====================================================================
+#  "Put this issue to work" — Grapevine & La Viña as a Twelfth Step tool
+#  Bilingual guide read by src/_data/carry.js (templates see it as carry.*).
+#
+#  Format
+#  - Every text is a pair:  { en: "English", es: "Español" }  — both are
+#    required (the site build stops if one is missing).
+#  - ways:  the 10 ways to use an issue. `id` is what tips refer to; `icon`
+#    is a Lucide icon name (https://lucide.dev/icons).
+#  - tips:  keyed by the Grapevine ISSUE month "YYYY-MM" (quote the key).
+#    Each tip is { way: <a ways id>, text: {en, es} }. Theme names are NOT
+#    stored here: the pages take them from the synced editorial calendar
+#    (the "# Theme" comment after each key is only a reminder for editors).
+#  - New editorial year? Just append the new "YYYY-MM" blocks at the end of
+#    `tips` (past months can stay or be removed — pages only show the
+#    current/upcoming issues).
+# =====================================================================
+
+intro:
+  en: >-
+    Grapevine and La Viña are a Twelfth Step tool — “Our Meeting in Print” — for
+    carrying the message to alcoholics who need it. Each month, let the issue’s theme
+    guide where and how you place it. The editorial calendar is your roadmap: every
+    month brings a new theme and a new chance to match the right copy to the right
+    place, person and moment.
+  es: >-
+    Grapevine y La Viña son una herramienta del Paso Doce — “nuestra reunión impresa” —
+    para llevar el mensaje al alcohólico que lo necesita. Cada mes, deja que el tema de
+    la edición te guíe sobre dónde y cómo colocarla. El calendario editorial es tu hoja
+    de ruta: cada mes trae un tema nuevo y una nueva oportunidad de hacer llegar el
+    ejemplar indicado al lugar, a la persona y al momento indicados.
+
+source:
+  en: >-
+    Based on the Grapevine Board’s presentation “Grapevine as a Twelfth Step Tool: Put
+    Them to Work” at the AA Grapevine Area Chair meeting of May 12, 2026, and aligned
+    with the 2026–27 editorial calendar.
+  es: >-
+    Basado en la presentación de la Junta de AA Grapevine “Grapevine como herramienta
+    del Paso Doce: pónganlas a trabajar” en la reunión de coordinadores de área de AA
+    Grapevine del 12 de mayo de 2026, y alineado con el calendario editorial 2026–27.
+
+ways:
+  - id: newcomer
+    icon: hand-heart
+    title:
+      en: "Give it to a newcomer"
+      es: "Dale un ejemplar a un recién llegado"
+    text:
+      en: "Each issue is an invitation into the fellowship. The stories inside meet newcomers where they are — sometimes before they’re ready to speak."
+      es: "Cada edición es una invitación a la Comunidad. Sus historias encuentran al recién llegado donde está — a veces antes de que esté listo para hablar."
+
+  - id: lending-library
+    icon: book-copy
+    title:
+      en: "Build a lending library at your group"
+      es: "Arma una biblioteca de préstamo en tu grupo"
+    text:
+      en: "A rotating display of themed issues creates ongoing conversation at the meeting level. Label issues by theme so members can find what resonates."
+      es: "Una exhibición rotativa de ediciones temáticas mantiene viva la conversación en la reunión. Etiqueta las revistas por tema para que los miembros encuentren lo que les llega."
+
+  - id: group-topic
+    icon: messages-square
+    title:
+      en: "Bring it to your group and talk about the new issue"
+      es: "Llévala a tu grupo y conversen sobre la nueva edición"
+    text:
+      en: "Use the monthly theme as a meeting topic or discussion starter. The GVR can read a line or two aloud — then let the room do the rest."
+      es: "Usa el tema del mes como tema de la reunión o para iniciar la conversación. El RLV/GVR puede leer en voz alta una o dos líneas — y luego dejar que el grupo haga el resto."
+
+  - id: show-and-tell
+    icon: presentation
+    title:
+      en: "Bring it to your district or area meeting for show & tell"
+      es: "Llévala a la reunión de tu distrito o de área para mostrarla"
+    text:
+      en: "Help other GVRs and representatives see how the current issue can be used in the field. Hold it up and say: “Here’s how I’m using this one.”"
+      es: "Ayuda a otros RLV, GVR y servidores a ver cómo se puede usar la edición actual en el trabajo de servicio. Levántala y di: “Así es como estoy usando esta”."
+
+  - id: public-library
+    icon: library-big
+    title:
+      en: "Put it on the magazine rack at your local library"
+      es: "Ponla en el revistero de tu biblioteca pública"
+    text:
+      en: "Public libraries serve everyone — including people who may not yet know they have a drinking problem. A well-placed issue can be a first point of contact."
+      es: "Las bibliotecas públicas atienden a todos — incluso a personas que quizás todavía no saben que tienen un problema con la bebida. Una revista bien colocada puede ser un primer contacto."
+
+  - id: waiting-room
+    icon: stethoscope
+    title:
+      en: "Leave it in a doctor’s or dentist’s office"
+      es: "Déjala en el consultorio de un médico o dentista"
+    text:
+      en: "Waiting rooms are where people sit with their thoughts. The right issue in the right place at the right moment can change a life."
+      es: "En las salas de espera la gente se queda a solas con sus pensamientos. La edición indicada, en el lugar y el momento indicados, puede cambiar una vida."
+
+  - id: cpc
+    icon: briefcase
+    title:
+      en: "Use it in Cooperation with the Professional Community (CPC)"
+      es: "Úsala en Cooperación con la Comunidad Profesional (CCP)"
+    text:
+      en: "Help professionals — counselors, social workers, clergy, healthcare providers — understand AA through members’ own words. Leave copies. Follow up."
+      es: "Ayuda a los profesionales — consejeros, trabajadores sociales, clérigos, personal de salud — a entender AA a través de las propias palabras de los miembros. Deja ejemplares. Haz seguimiento."
+
+  - id: pi
+    icon: megaphone
+    title:
+      en: "Use it in Public Information (PI)"
+      es: "Úsala en Información Pública (IP)"
+    text:
+      en: "At health fairs, community events, school tables and information booths — the right issue opens a door that a pamphlet alone cannot."
+      es: "En ferias de salud, eventos comunitarios, mesas en escuelas y puestos de información — la edición indicada abre una puerta que un folleto por sí solo no puede abrir."
+
+  - id: hi
+    icon: hospital
+    title:
+      en: "Use it in Hospitals & Institutions (H&I)"
+      es: "Úsala en Hospitales e Instituciones (H&I)"
+    text:
+      en: "When you bring a meeting in, leave copies behind. When you can’t get in, the magazine goes where you can’t. These issues may be the only AA a patient sees."
+      es: "Cuando lleves una reunión, deja ejemplares. Cuando no puedas entrar, la revista llega adonde tú no puedes. Estas ediciones pueden ser el único contacto con AA que tenga un paciente."
+
+  - id: corrections
+    icon: key-round
+    title:
+      en: "Use it in Corrections"
+      es: "Úsala en Correccionales"
+    text:
+      en: "Grapevine may be the only AA contact an incarcerated person has. Every copy placed in a facility is a hand extended to someone who cannot reach out."
+      es: "La revista puede ser el único contacto con AA que tenga una persona encarcelada. Cada ejemplar que se deja en un centro correccional es una mano tendida a alguien que no puede buscar ayuda por sí mismo."
+
+story_note:
+  en: >-
+    Every issue has an upcoming story deadline. If placing an issue sparks a
+    conversation — or a member says “I lived that” — encourage them to write their
+    story and submit it. That is the full circle of the Twelfth Step in print.
+  es: >-
+    Cada edición tiene una fecha límite para recibir historias. Si dejar una revista
+    inicia una conversación — o un miembro dice “yo viví eso” — anímalo a escribir su
+    historia y enviarla. Así se completa el círculo del Paso Doce en letra impresa.
+
+# The quotation itself (en/es) plus its attribution (cite).
+quote:
+  en: "Grapevine is a wonderful service tool for groups to use in Twelfth Step work."
+  es: "Grapevine es una maravillosa herramienta de servicio que los grupos pueden usar en el trabajo del Paso Doce."
+  cite:
+    en: "GVR Workbook"
+    es: "Manual de trabajo del GVR"
+
+# Tips per Grapevine issue ("YYYY-MM"). Themes come from the editorial calendar.
+tips:
+  "2026-09":   # Sponsorship
+    - way: lending-library
+      text:
+        en: "Leave it out during open-share meetings — members looking for a sponsor often pick these up quietly."
+        es: "Déjala a la vista durante las reuniones de participación abierta — los miembros que buscan padrino o madrina suelen tomarla discretamente."
+    - way: group-topic
+      text:
+        en: "Ask: “What did your sponsor teach you that you now pass on?”"
+        es: "Pregunta: “¿Qué te enseñó tu padrino o madrina que ahora les transmites a otros?”"
+    - way: cpc
+      text:
+        en: "Helps professionals understand AA’s peer-support structure — often misunderstood or underestimated."
+        es: "Ayuda a los profesionales a entender cómo funciona en AA el apoyo entre compañeros — algo que a menudo se malinterpreta o se subestima."
+
+  "2026-10":   # Dealing with Loneliness
+    - way: newcomer
+      text:
+        en: "So many newcomers feel profoundly isolated. This issue speaks directly to that."
+        es: "Muchísimos recién llegados se sienten profundamente aislados. Esta edición les habla directamente de eso."
+    - way: group-topic
+      text:
+        en: "Members rarely raise this topic themselves. The issue gives them permission to share."
+        es: "Los miembros rara vez sacan este tema por su cuenta. La revista les da permiso para compartirlo."
+    - way: public-library
+      text:
+        en: "Universal resonance. Reaches anyone sitting quietly with a struggle they haven’t named."
+        es: "Un tema universal. Llega a cualquiera que carga en silencio con una lucha a la que todavía no le ha puesto nombre."
+    - way: waiting-room
+      text:
+        en: "Doctors and mental-health providers see patients struggling with isolation every day."
+        es: "Los médicos y los profesionales de salud mental ven todos los días a pacientes que luchan con el aislamiento."
+    - way: hi
+      text:
+        en: "Hospital and rehab patients often feel profoundly alone. This issue acknowledges that."
+        es: "Los pacientes de hospitales y centros de rehabilitación a menudo se sienten profundamente solos. Esta edición lo reconoce."
+
+  "2026-11":   # Classic Grapevine
+    - way: lending-library
+      text:
+        en: "Timeless stories from the archive — a perennial lending-library addition."
+        es: "Historias atemporales del archivo — siempre valiosas en una biblioteca de préstamo."
+    - way: show-and-tell
+      text:
+        en: "Share archive favorites — a great conversation starter about Grapevine’s history."
+        es: "Comparte tus favoritas del archivo — una excelente manera de empezar a conversar sobre la historia de Grapevine."
+    - way: public-library
+      text:
+        en: "Timeless stories — approachable for a first-time reader who knows nothing about AA."
+        es: "Historias atemporales — fáciles de leer para quien la abre por primera vez y no sabe nada de AA."
+
+  "2026-12":   # Remote Communities / Sober Holidays!
+    - way: show-and-tell
+      text:
+        en: "Show how December’s dual theme works as both an outreach and a PI tool."
+        es: "Muestra cómo el doble tema de diciembre sirve a la vez como herramienta de alcance y de Información Pública."
+    - way: pi
+      text:
+        en: "A great seasonal piece for community bulletins and PI tables in November/December."
+        es: "Una excelente pieza de temporada para boletines comunitarios y mesas de IP en noviembre y diciembre."
+    - way: corrections
+      text:
+        en: "Members in long-term custody are isolated from the broader fellowship. This issue acknowledges that experience."
+        es: "Los miembros que cumplen condenas largas están aislados del resto de la Comunidad. Esta edición reconoce esa experiencia."
+
+  "2027-01":   # Spiritual Awakenings
+    - way: newcomer
+      text:
+        en: "A beautiful first introduction — stories about finding a Higher Power can open a door for the newcomer who isn’t sure they believe."
+        es: "Una hermosa primera presentación — las historias sobre encontrar un Poder Superior pueden abrirle una puerta al recién llegado que no está seguro de creer."
+    - way: group-topic
+      text:
+        en: "“How did you find your Higher Power?” — one of AA’s most personal and connecting conversations."
+        es: "“¿Cómo encontraste tu Poder Superior?” — una de las conversaciones más personales de AA y de las que más nos unen."
+    - way: waiting-room
+      text:
+        en: "Quietly hopeful — suitable for patients facing diagnosis, loss or fear."
+        es: "Serenamente esperanzadora — adecuada para pacientes que enfrentan un diagnóstico, una pérdida o el miedo."
+    - way: cpc
+      text:
+        en: "Clergy and faith-based counselors often respond deeply to Step Two stories."
+        es: "El clero y los consejeros de organizaciones religiosas suelen conmoverse profundamente con las historias del Segundo Paso."
+    - way: hi
+      text:
+        en: "Patients in crisis are often open to spiritual experience — these stories meet that moment."
+        es: "Los pacientes en crisis a menudo están abiertos a la experiencia espiritual — estas historias llegan justo en ese momento."
+
+  "2027-02":   # Longtime Members!
+    - way: newcomer
+      text:
+        en: "Show the newcomer what long-term sobriety looks like. Hope in print."
+        es: "Muéstrale al recién llegado cómo es la sobriedad a largo plazo. Esperanza impresa."
+    - way: group-topic
+      text:
+        en: "Invite old-timers to share. What has changed? What has stayed the same? Priceless for the group."
+        es: "Invita a los veteranos a compartir. ¿Qué ha cambiado? ¿Qué sigue igual? No tiene precio para el grupo."
+    - way: public-library
+      text:
+        en: "Demonstrates what a life in AA looks like over time — reassuring and inspiring."
+        es: "Muestra cómo es una vida en AA con el paso de los años — tranquilizadora e inspiradora."
+    - way: pi
+      text:
+        en: "Shows the public that AA works long-term — not just for crisis management."
+        es: "Le muestra al público que AA funciona a largo plazo — no solo para salir de una crisis."
+
+  "2027-03":   # What's on Your Mind?
+    - way: lending-library
+      text:
+        en: "Grapevine’s most popular column — great for a general lending library; something for everyone."
+        es: "La columna más popular de Grapevine — ideal para una biblioteca de préstamo general; hay algo para todos."
+    - way: cpc
+      text:
+        en: "A candid look inside AA’s thinking — opens honest conversation with professionals."
+        es: "Una mirada franca a cómo pensamos en AA — abre una conversación honesta con los profesionales."
+    - way: pi
+      text:
+        en: "Broad appeal — every reader can find a reflection of themselves in this issue."
+        es: "De interés general — cualquier lector puede verse reflejado en esta edición."
+
+  "2027-04":   # Making Amends
+    - way: newcomer
+      text:
+        en: "For the newcomer dreading Step Nine — these stories show it can be done and life gets better."
+        es: "Para el recién llegado que le teme al Noveno Paso — estas historias muestran que sí se puede y que la vida mejora."
+    - way: group-topic
+      text:
+        en: "Ask: “Was there an amends you were most afraid to make? What happened?”"
+        es: "Pregunta: “¿Hubo alguna reparación que te daba más miedo hacer? ¿Qué pasó?”"
+    - way: waiting-room
+      text:
+        en: "For patients carrying guilt and shame — shows that healing is possible."
+        es: "Para pacientes que cargan con culpa y vergüenza — muestra que sanar es posible."
+    - way: hi
+      text:
+        en: "Treatment patients frequently carry crushing guilt — Step Nine stories offer real hope."
+        es: "Los pacientes en tratamiento con frecuencia cargan una culpa abrumadora — las historias del Noveno Paso ofrecen una esperanza real."
+    - way: corrections
+      text:
+        en: "Powerful for those serving time and thinking about the harm they’ve caused. Step Nine gives hope."
+        es: "Muy poderosa para quienes cumplen una condena y piensan en el daño que han causado. El Noveno Paso da esperanza."
+
+  "2027-05":   # Fun in Sobriety
+    - way: lending-library
+      text:
+        en: "Light, approachable and affirming — a welcome counterpoint to heavier literature."
+        es: "Ligera, accesible y alentadora — un buen contrapeso a la literatura más densa."
+    - way: group-topic
+      text:
+        en: "“What’s the most fun you’ve had sober that you couldn’t have imagined when drinking?” Laughter is medicine."
+        es: "“¿Qué es lo más divertido que has vivido en sobriedad y que no te habrías imaginado cuando bebías?” La risa es medicina."
+    - way: public-library
+      text:
+        en: "Light and inviting — changes the perception that sobriety means giving things up."
+        es: "Ligera y atractiva — cambia la idea de que la sobriedad significa renunciar a todo."
+    - way: pi
+      text:
+        en: "Combats the biggest misconception about AA — that sobriety means giving up joy."
+        es: "Desmiente el mayor malentendido sobre AA — que la sobriedad significa renunciar a la alegría."
+
+  "2027-06":   # Emotional Sobriety
+    - way: lending-library
+      text:
+        en: "Pairs beautifully with literature on Steps Six, Seven and Eleven."
+        es: "Combina muy bien con la literatura sobre el Sexto, el Séptimo y el Undécimo Paso."
+    - way: group-topic
+      text:
+        en: "“How has serenity shown up differently at five years than at one year?” — rich for every length of sobriety."
+        es: "“¿En qué se diferencia la serenidad a los cinco años de la del primer año?” — una conversación valiosa para todos, tengan el tiempo que tengan."
+    - way: public-library
+      text:
+        en: "Mental-health themes resonate widely — a quietly powerful placement."
+        es: "Los temas de salud mental tocan a mucha gente — un lugar discreto pero poderoso para dejarla."
+    - way: waiting-room
+      text:
+        en: "Mental-health providers welcome reading that shows patients tools for managing emotions."
+        es: "Los profesionales de salud mental agradecen lecturas que les muestran a los pacientes herramientas para manejar sus emociones."
+    - way: cpc
+      text:
+        en: "Mental-health professionals appreciate this issue — it bridges AA and emotional wellness."
+        es: "Los profesionales de salud mental valoran esta edición — tiende un puente entre AA y el bienestar emocional."
+    - way: hi
+      text:
+        en: "Directly relevant for patients in mental-health or dual-diagnosis treatment."
+        es: "Muy pertinente para pacientes en tratamiento de salud mental o de diagnóstico dual."
+
+  "2027-07":   # Annual Prison Issue
+    - way: show-and-tell
+      text:
+        en: "Coordinate with your area’s Corrections Committee. Show the issue and invite participation."
+        es: "Coordina con el comité de Correccionales de tu área. Muestra la edición e invita a participar."
+    - way: corrections
+      text:
+        en: "Essential annual placement. Bring multiples, leave every copy behind, and coordinate a donation drive with your area’s Corrections Committee — consider donating a subscription to a facility."
+        es: "Una entrega anual imprescindible. Lleva varios ejemplares, déjalos todos y organiza con el comité de Correccionales de tu área una campaña de donación — considera regalar una suscripción a un centro correccional."
+
+  "2027-08":   # Sober Seniors
+    - way: newcomer
+      text:
+        en: "For the older newcomer who thinks they are too far gone — these stories say otherwise."
+        es: "Para el recién llegado de más edad que cree que ya es demasiado tarde — estas historias dicen lo contrario."
+    - way: public-library
+      text:
+        en: "Relevant to library patrons of all ages, including family members of older alcoholics."
+        es: "Interesa a usuarios de la biblioteca de todas las edades, incluidos los familiares de alcohólicos mayores."
+    - way: waiting-room
+      text:
+        en: "Older patients and their families may recognize the stories. A gentle nudge."
+        es: "Los pacientes mayores y sus familias pueden reconocerse en estas historias. Un empujoncito amable."
+    - way: cpc
+      text:
+        en: "Geriatric counselors and senior-care providers are often unprepared for alcoholism in older adults."
+        es: "Los consejeros geriátricos y quienes cuidan a personas mayores a menudo no están preparados para el alcoholismo en adultos mayores."
+    - way: hi
+      text:
+        en: "Elder-care facilities and VA hospitals benefit from issues that speak to older patients."
+        es: "Las residencias para adultos mayores y los hospitales para veteranos (VA) se benefician de ediciones que les hablan a los pacientes mayores."
+
+  "2027-09":   # Young & Sober
+    - way: newcomer
+      text:
+        en: "Hand it directly to a young person new to the program."
+        es: "Entrégasela directamente a una persona joven que recién llega al programa."
+    - way: show-and-tell
+      text:
+        en: "Connect with your area’s YPAA contacts — share the issue and discuss outreach to young people."
+        es: "Ponte en contacto con los enlaces de YPAA de tu área — comparte la edición y conversen sobre cómo llegar a los jóvenes."
+    - way: pi
+      text:
+        en: "Perfect for school- and youth-focused PI events."
+        es: "Perfecta para eventos de IP en escuelas y dirigidos a jóvenes."
+    - way: corrections
+      text:
+        en: "Critically relevant in juvenile facilities and for young adults in early incarceration."
+        es: "De vital importancia en centros de detención juvenil y para adultos jóvenes en sus primeros tiempos de encarcelamiento."
+
+  "2027-10":   # AA in the Military
+    - way: lending-library
+      text:
+        en: "Rotating in specialized issues honors the diversity of the fellowship."
+        es: "Incluir ediciones especializadas en la rotación honra la diversidad de la Comunidad."
+    - way: show-and-tell
+      text:
+        en: "Bring it to identify members with military service who may want to help with H&I visits to VA facilities."
+        es: "Llévala para identificar a miembros con servicio militar que quieran ayudar con visitas de H&I a centros para veteranos (VA)."
+    - way: cpc
+      text:
+        en: "Critical for VA counselors, military social workers and veterans’ organizations."
+        es: "Clave para consejeros del VA, trabajadores sociales militares y organizaciones de veteranos."
+    - way: corrections
+      text:
+        en: "Veterans in corrections respond deeply to stories of military members finding AA."
+        es: "Los veteranos encarcelados se identifican profundamente con las historias de militares que encontraron AA."
+
+  "2027-11":   # Classic Grapevine
+    - way: lending-library
+      text:
+        en: "Archive favorites — permanently valuable in any lending library."
+        es: "Favoritas del archivo — siempre valiosas en cualquier biblioteca de préstamo."
+    - way: public-library
+      text:
+        en: "Always appropriate — the archive stories need no introduction."
+        es: "Siempre apropiada — las historias del archivo no necesitan presentación."
+
+  "2027-12":   # Remote Communities / Sober Holidays!
+    - way: show-and-tell
+      text:
+        en: "The same powerful dual-use theme — great for end-of-year show and tell."
+        es: "El mismo tema doble y poderoso — ideal para mostrarlo en las reuniones de fin de año."
+    - way: pi
+      text:
+        en: "Seasonal, relatable and ideal for community outreach in November/December."
+        es: "De temporada, cercana e ideal para el alcance comunitario en noviembre y diciembre."
+    - way: corrections
+      text:
+        en: "Speaks to long-term isolation — validates the experience of incarcerated members."
+        es: "Habla del aislamiento prolongado — valida la experiencia de los miembros encarcelados."

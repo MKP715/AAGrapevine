@@ -87,7 +87,7 @@ It also runs within a few minutes whenever someone saves a change to the setting
 |---|---|---|
 | **AA Grapevine** magazine (aagrapevine.org) | Each new issue's stories: title, author's first name + initial, the publisher's public teaser, link to read it | **Read** |
 | **La Viña** magazine (aalavina.org) | Same, for each bimonthly issue | **Read** |
-| **Both websites, searched page by page** | Every PDF: flyers, catalogs, GVR / RLV kits, order forms, newsletters… with page count and a preview picture | **Library** |
+| **Both websites, searched page by page** | Every PDF: flyers, catalogs, GVR / RLV kits, order forms, newsletters… with page count and a preview picture | **Library** (catalogs and order forms also on **Shop**) |
 | **AA Grapevine's Podcast** | Every episode, playable on the site | **Listen** |
 | **Grapevine Weekly Open AA Meeting** (podcast) | Every recorded meeting, playable on the site | **Listen** |
 | **YouTube** (@AAGrapevine — Grapevine *and* La Viña videos) | Every video, playable on the site | **Watch** |
@@ -102,7 +102,14 @@ It also runs within a few minutes whenever someone saves a change to the setting
 
 The site also offers, automatically: a **What's New** page (the newest items from every source),
 an **RSS feed**, a **calendar file** your phone can subscribe to, a **share kit** for districts,
-a **search** page, and a **status** page that shows the health of every source.
+a **search** page, and a **status** page that shows the health of every source. **Shop** is the one
+page for subscribing and buying (every purchase links to the official Grapevine / La Viña stores;
+the old `/subscribe/` address redirects there, #anchors included).
+
+**Menus** (`src/_data/nav.js`): What's New · Read · Listen · Watch · Library · Shop ·
+**Get Involved** (monthly toolkit, share your story, published writers, GVR / RLV corner,
+districts, Instagram) · **Committee** (meeting, events, documents, photos, announcements).
+Each piece of information has one home page; other pages only link to it.
 
 **Respecting AA Grapevine, Inc.:** the site shows titles and the publishers' own public teasers and
 links back to the official pages. It never copies magazine articles. **Respecting anonymity:** it

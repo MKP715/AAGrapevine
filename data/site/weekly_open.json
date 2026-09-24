@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-24T03:16:51Z",
+ "updated": "2026-09-24T15:46:38Z",
  "fixture": false,
  "items": [
   {
@@ -64,6 +64,77 @@
    "machine": [
     "es"
    ],
+   "is_new": false
+  },
+  {
+   "id": "weekly_open_lv",
+   "source": "lavina",
+   "kind": "meeting",
+   "url": "",
+   "title": "Nueva Reunión Abierta de La Viña",
+   "summary": "Una reunión abierta virtual de AA en español, cada semana: dos miembros comparten su experiencia, fortaleza y esperanza. La reunión se graba para publicarse como pódcast. ¡Sigamos extendiendo juntos esta poderosa cuerda salvavidas!",
+   "lang": "es",
+   "date": null,
+   "first_seen": "2026-09-24T15:46:38Z",
+   "image": null,
+   "tags": [],
+   "category": null,
+   "status": "ok",
+   "extra": {
+    "zoom_id": "871 2036 8287",
+    "passcode": "238047",
+    "day": "Jueves",
+    "time": "12 p. m. (hora del Este)",
+    "weekday": "thursday",
+    "start_local": "12:00",
+    "timezone": "America/New_York",
+    "time_central": "11 AM Central",
+    "next_start": "2026-11-05T17:00:00Z",
+    "zoom_url": "https://zoom.us/j/87120368287",
+    "starts": "2026-11-05",
+    "source_note": "Official La Viña flyer (November 2026), shared with the committee",
+    "own_i18n": {
+     "title": {
+      "es": "Nueva Reunión Abierta de La Viña",
+      "en": "La Viña's New Open Meeting"
+     },
+     "summary": {
+      "es": "Una reunión abierta virtual de AA en español, cada semana: dos miembros comparten su experiencia, fortaleza y esperanza. La reunión se graba para publicarse como pódcast. ¡Sigamos extendiendo juntos esta poderosa cuerda salvavidas!",
+      "en": "A weekly virtual open AA meeting in Spanish where two members share their experience, strength and hope. It is recorded to be published as a podcast. Let's keep extending this powerful lifeline together!"
+     }
+    }
+   },
+   "i18n": {
+    "title": {
+     "en": "La Viña's New Open Meeting",
+     "es": "Nueva Reunión Abierta de La Viña"
+    },
+    "summary": {
+     "en": "A weekly virtual open AA meeting in Spanish where two members share their experience, strength and hope. It is recorded to be published as a podcast. Let's keep extending this powerful lifeline together!",
+     "es": "Una reunión abierta virtual de AA en español, cada semana: dos miembros comparten su experiencia, fortaleza y esperanza. La reunión se graba para publicarse como pódcast. ¡Sigamos extendiendo juntos esta poderosa cuerda salvavidas!"
+    },
+    "day": {
+     "en": "Thursdays",
+     "es": "Jueves"
+    },
+    "time": {
+     "en": "Noon Eastern",
+     "es": "mediodía (hora del Este)"
+    },
+    "time_central": {
+     "en": "11:00 AM Central",
+     "es": "11:00 a. m. (hora del Centro)"
+    },
+    "when": {
+     "en": "Thursdays at 11:00 AM Central",
+     "es": "Jueves a las 11:00 a. m. (hora del Centro)"
+    },
+    "sentence": {
+     "en": "Join live on Thursdays at 11:00 AM Central (Noon Eastern) on Zoom — meeting ID 871 2036 8287, passcode 238047.",
+     "es": "Únete en vivo los jueves a las 11:00 a. m., hora del Centro (mediodía, hora del Este), por Zoom: ID de reunión 871 2036 8287, código de acceso 238047."
+    }
+   },
+   "machine": [],
    "is_new": false
   }
  ]
