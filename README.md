@@ -32,7 +32,8 @@ Sitio web del **Comité de Grapevine y La Viña del Área 65 del Noreste de Texa
   región, leídos cada día de las tiendas oficiales (toda compra se hace allí). **Kit del mes y carteles**
   (`/es/monthly/`): un cartel para cada mes (descargar en PNG, compartir, imprimir) y las 10 maneras de poner
   una edición a trabajar. La **reunión abierta semanal de La Viña** (jueves, en español) está en
-  `/es/meeting/#weekly-open`.
+  `/es/meetings/#weekly-open`. La página **Reuniones** (`/es/meetings/`) también reúne las **reuniones de
+  Grapevine** de los grupos de AA de nuestra Área y de las áreas cercanas.
 - **Ajustes** (reunión del comité, Zoom, correo, eventos de cada mes como la mesa en CityWide Dallas):
   archivo `config/site.yml`.
   **Corregir una traducción:** `data/translations/overrides.yml`.
@@ -99,11 +100,12 @@ It also runs within a few minutes whenever someone saves a change to the setting
 | **Instagram** (@alcoholicsanonymous_gv, @alcoholicosanonimos_lv) | Newest posts — see [section 9](#9-instagram-how-the-site-reads-it-please-read) | **Instagram** |
 | **Committee Google Drive** | Reports, notes, slides, workshops, forms, photo albums; dated flyers → events; docs in *announcements* → announcements | **Documents · Photos · Events · Announcements** |
 | **Editorial calendar** (Grapevine) and suggested topics (La Viña) | Upcoming themes and story deadlines | **Contribute** |
-| **Grapevine Weekly Open meeting** (web page) | Current day, time and Zoom details | **Meeting** |
-| **La Viña's weekly open meeting** (from the settings, `lavina_weekly_open:` — an official La Viña flyer) | Thursdays in Spanish, first date, Zoom details | **Meeting** (one line on Home · Listen · Watch · monthly posters) |
+| **Grapevine Weekly Open meeting** (web page) | Current day, time and Zoom details | **Meetings** |
+| **La Viña's weekly open meeting** (from the settings, `lavina_weekly_open:` — an official La Viña flyer) | Thursdays in Spanish, first date, Zoom details | **Meetings** (one line on Home · Listen · Watch · monthly posters) |
 | **Official stores** (aagrapevine.org / aalavina.org store pages) | **Book of the Month** (title, cover, percent, sale price, dates) and **subscription prices** per region (U.S. · Canada · International; print / digital / complete) | **Shop** (a short teaser on Home, the monthly posters and the weekly e-mail) |
-| **Committee meeting** (from the settings) | Next dates, countdown, "add to calendar" | **Meeting · Events** |
-| **Monthly events** (from the settings, e.g. our booth at CityWide Dallas) | The next dates, "add to calendar" | **Events · Home · Meeting · calendar feed · weekly e-mail** |
+| **Committee meeting** (from the settings) | Next dates, countdown, "add to calendar" | **Meetings · Events** |
+| **Local meeting lists** (the 8 intergroup / central office lists the Rowlett Group's meeting page uses: our Area and nearby areas) | Every meeting with the Grapevine ("GR") type: day, time, place, directions, link to the office's page | **Meetings** (one line on Home; each meeting is in the site search) |
+| **Monthly events** (from the settings, e.g. our booth at CityWide Dallas) | The next dates, "add to calendar" | **Events · Home · Meetings · calendar feed · weekly e-mail** |
 | **Other calendars** (optional, e.g. the NETA 65 workshop calendar on neta65.org) | Their events, each shown **once** even when it is also in `content/events` (yours wins). *neta65.org currently blocks robots — see [the NETA 65 workshop calendar](#the-neta-65-workshop-calendar)* | **Events** |
 | **Translation** | Every title, teaser and announcement in both languages | Everywhere |
 
@@ -128,13 +130,17 @@ What the newer pages do:
   Its QR code opens that month's page; the three previous months' addresses forward to `/monthly/`.
   The same page holds the **GV/LV report** for district meetings (`/monthly/#report`, see section 4); the old
   `/districts/` address forwards there.
-- **La Viña's weekly open meeting**: `/meeting/#weekly-open` shows both public weekly meetings (Grapevine on
+- **Meetings** (`/meetings/`; the old `/meeting/` address forwards there, `#weekly-open` included): the
+  committee meeting, the **Grapevine meetings** of local groups (our Area first, then nearby areas — with
+  filters), and the weekly open meetings.
+- **La Viña's weekly open meeting**: `/meetings/#weekly-open` shows both public weekly meetings (Grapevine on
   Wednesdays in English, La Viña on Thursdays in Spanish) with day, time and Zoom details — the one place
   with those details; other pages link there.
 
 **Menus** (`src/_data/nav.js`): What's New · Read · Listen · Watch · Library · Shop ·
 **Get Involved** (monthly toolkit & GV/LV report, share your story, published writers, GVR / RLV
-corner) · **Committee** (meeting & weekly open meetings, events, documents, photos, announcements).
+corner) · **Committee** (Meetings — committee meeting, Grapevine meetings & weekly open meetings —, events,
+documents, photos, announcements).
 Instagram, the weekly digest, the share kit, search and status are in the footer and the phone menu.
 Each piece of information has one home page; other pages only link to it.
 

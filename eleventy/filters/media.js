@@ -617,7 +617,7 @@ export default function (eleventyConfig, helpers) {
   });
 
   /** The weekly open meetings as ONE short line for /listen/ and /watch/, which only point to their
-      canonical home (/meeting/#weekly-open — Zoom details live there only):
+      canonical home (/meetings/#weekly-open — Zoom details live there only):
       db.weekly_open.items → "Wednesdays (English) and Thursdays (Spanish, from November 5)" /
       "miércoles (inglés) y jueves (español, desde el 5 de noviembre)". Weekday order; a meeting
       that has not started yet (extra.starts after today, Central time) says from when.

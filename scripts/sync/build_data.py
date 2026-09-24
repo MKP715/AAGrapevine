@@ -369,7 +369,7 @@ def committee_meetings(ctx: Ctx, count: int = 12) -> list[dict]:
     out = []
     for m in upcoming_meetings(count):
         out.append({
-            "id": f"ev:committee:{m['ymd']}", "source": "committee", "kind": "event", "url": "/meeting/",
+            "id": f"ev:committee:{m['ymd']}", "source": "committee", "kind": "event", "url": "/meetings/",
             "title": title["en"], "summary": summary["en"], "lang": "en", "date": m["start"],
             "first_seen": None, "image": None, "tags": ["committee"],
             "category": "committee", "status": "ok",

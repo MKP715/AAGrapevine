@@ -49,7 +49,7 @@ pageScripts: ["/assets/js/committee.js"]
 {% call ui.pageHero(lang, "nav.events" | t(lang), "committee.events.hero_sub" | t(lang), "calendar-days", "committee.events.eyebrow" | t(lang)) %}
   <div class="hero-actions">
     <a class="btn-light" href="#subscribe">{% icon "calendar-sync", "size-4" %} {{ "committee.events.subscribe_btn" | t(lang) }}</a>
-    <a class="btn-on-dark" href="{{ '/meeting/' | lurl(lang) }}">{% icon "video", "size-4" %} {{ "nav.meeting" | t(lang) }}</a>
+    <a class="btn-on-dark" href="{{ '/meetings/' | lurl(lang) }}">{% icon "video", "size-4" %} {{ "nav.meeting" | t(lang) }}</a>
   </div>
   {#- The same numbers are on the filter chips below, so phones skip them (shorter hero) -#}
   {% if nOther or next %}
@@ -87,7 +87,7 @@ pageScripts: ["/assets/js/committee.js"]
 
   {#- ---------- Pinned: next committee meeting ---------- -#}
   {% if next %}
-  {%- set cfg = { rule: m | cmRuleObj, start: next.startIso, end: next.endIso, title: next.title, description: next.calDescription, location: next.calLocation, url: ('/meeting/' | lurl(lang) | siteUrl(site)), i18n: { join: "committee.meeting.join" | t(lang), soon: "committee.meeting.join_soon" | t(lang), live: "committee.meeting.join_live" | t(lang), yourTime: "committee.meeting.your_time" | t(lang) } } -%}
+  {%- set cfg = { rule: m | cmRuleObj, start: next.startIso, end: next.endIso, title: next.title, description: next.calDescription, location: next.calLocation, url: ('/meetings/' | lurl(lang) | siteUrl(site)), i18n: { join: "committee.meeting.join" | t(lang), soon: "committee.meeting.join_soon" | t(lang), live: "committee.meeting.join_live" | t(lang), yourTime: "committee.meeting.your_time" | t(lang) } } -%}
   <article class="cm-pinned @container mb-10" x-show="filter === 'all' && !showAll" x-data="cmMeeting({{ cfg | json }})" aria-labelledby="ev-next-title">
     <div class="cm-pinned-grid">
       <div class="cm-date-tile cm-tone-light" aria-hidden="true">
@@ -119,7 +119,7 @@ pageScripts: ["/assets/js/committee.js"]
             <button type="button" @click="downloadIcs()" data-cm-js>{% icon "download", "size-4" %} {{ "committee.cal.ics_file" | t(lang) }}</button>
           </div>
         </details>
-        <a href="{{ '/meeting/' | lurl(lang) }}" class="btn-on-dark btn-sm">{% icon "info", "size-4" %} {{ "committee.events.meeting_details" | t(lang) }}</a>
+        <a href="{{ '/meetings/' | lurl(lang) }}" class="btn-on-dark btn-sm">{% icon "info", "size-4" %} {{ "committee.events.meeting_details" | t(lang) }}</a>
       </div>
     </div>
   </article>

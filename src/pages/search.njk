@@ -123,7 +123,7 @@ pageScripts: ["/assets/vendor/minisearch.js", "/assets/js/search.js"]
           ["/watch/", "nav.watch", "circle-play", "grape", counts.video or 0],
           ["/instagram/", "nav.instagram", "instagram", "grape", counts.post or 0],
           ["/events/", "nav.events", "calendar-days", "vine", nEvents],
-          ["/meeting/", "nav.meeting", "video", "gv", 0],
+          ["/meetings/", "nav.meetings", "calendar-clock", "gv", 0],
           ["/whats-new/", "nav.whats_new", "sparkles", "vine", 0],
           ["/published/", "nav.published", "award", "lv", spot.n, "search.browse_pw." + spot.scope, spot.days, spot.query]
         ] -%}
@@ -148,7 +148,7 @@ pageScripts: ["/assets/vendor/minisearch.js", "/assets/js/search.js"]
 
 {#- icons + strings for search.js -#}
 <template id="ss-icons">
-  {%- for name in ["file-text", "book-open", "pen-line", "presentation", "file-pen-line", "headphones", "circle-play", "instagram", "images", "megaphone", "calendar-days", "video", "languages", "arrow-up-right", "house", "sparkles", "library", "users", "folder-open", "badge-check", "map", "mail-open", "info", "mail", "qr-code", "search", "activity", "hand-heart", "award", "calendar-clock"] %}
+  {%- for name in ["file-text", "book-open", "pen-line", "presentation", "file-pen-line", "headphones", "circle-play", "instagram", "images", "megaphone", "calendar-days", "video", "languages", "arrow-up-right", "house", "sparkles", "library", "users", "folder-open", "badge-check", "map", "mail-open", "info", "mail", "qr-code", "search", "activity", "hand-heart", "award", "calendar-clock", "map-pin"] %}
   <i data-icon="{{ name }}">{% icon name, "size-4" %}</i>
   {%- endfor %}
 </template>

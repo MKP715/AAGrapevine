@@ -403,7 +403,7 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
         <p class="mt-3 max-w-xl text-lg leading-relaxed text-white/85">{{ "read.contrib.ws_text" | t(lang) }}</p>
         <div class="mt-6 flex flex-wrap gap-2.5">
           <a class="btn-light" href="{{ '/events/' | lurl(lang) }}">{% icon "calendar-days", "size-4" %} {{ "read.contrib.ws_events" | t(lang) }}</a>
-          <a class="btn-on-dark" href="{{ '/meeting/' | lurl(lang) }}">{% icon "video", "size-4" %} {{ "read.contrib.ws_meeting" | t(lang) }}</a>
+          <a class="btn-on-dark" href="{{ '/meetings/' | lurl(lang) }}">{% icon "video", "size-4" %} {{ "read.contrib.ws_meeting" | t(lang) }}</a>
         </div>
       </div>
       <div class="rounded-2xl bg-white/10 p-5 ring-1 ring-white/15 backdrop-blur">

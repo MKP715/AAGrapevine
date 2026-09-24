@@ -293,7 +293,7 @@ function meetingTimeRange(cfg = {}, lang = "en") {
 // rule into extra.rule in the shape of `meeting:`): "Every second Saturday of the month · 5:00 – 8:00 PM" /
 // "Cada segundo sábado del mes · 5:00–8:00 p. m." — the same words and clock format as the committee
 // meeting's own line ("Every third Wednesday of the month · 7:00 – 8:00 PM"), which sits right above it
-// on /meeting/. Empty when the rule cannot be read (the caller then uses the data's recurrence_label).
+// on /meetings/. Empty when the rule cannot be read (the caller then uses the data's recurrence_label).
 export function recurrenceText(rule, lang = "en") {
   if (!rule || typeof rule !== "object") return "";
   const n = Number(rule.week_of_month);
@@ -420,7 +420,7 @@ export function normalizeEvents(items, site, lang = "en", opt = {}) {
   const m = site?.meeting || {};
   const out = [];
   const seen = new Set();
-  const meetingPage = siteAbs(site, localPath("/meeting/", lang));
+  const meetingPage = siteAbs(site, localPath("/meetings/", lang));
 
   // 1) Committee meetings — always computed from config/site.yml, so the
   //    calendar is right even if the daily data sync failed.
@@ -431,7 +431,7 @@ export function normalizeEvents(items, site, lang = "en", opt = {}) {
     seen.add(id);
     out.push(shapeEvent({
       id, source: "committee", kind: "event", category: "committee", lang: "en",
-      url: "/meeting/", title: mTitle, summary: t("committee.meeting.cal_desc", lang),
+      url: "/meetings/", title: mTitle, summary: t("committee.meeting.cal_desc", lang),
       date: d.start, is_new: false, _i18nTitle: true,
       extra: { start: d.start, end: d.end, all_day: false, location: m.platform || "Zoom", online_url: m.zoom_url || null },
     }, site, lang, now, meetingDescription(site, lang, meetingPage)));
@@ -593,7 +593,7 @@ function shapeEvent(it, site, lang, now, descOverride) {
     anchor,
     uid: slugify(String(it.id).replace(/:/g, "-"), 90),
     group, committee, category: it.category || "", source: it.source || "",
-    // recurrence: "Every second Saturday of the month · 5:00 – 8:00 PM" (/meeting/, calendars, search);
+    // recurrence: "Every second Saturday of the month · 5:00 – 8:00 PM" (/meetings/, calendars, search);
     // the card, which already shows the time, uses only the day part: "Every second Saturday of the month".
     recurring, series: recurring ? String(x.series || "") : "", recurrence, recurrenceDay: recurrence.split(" · ")[0], ownWords,
     title, summary, body, item: it,
@@ -607,7 +607,7 @@ function shapeEvent(it, site, lang, now, descOverride) {
     shareWhen: [dateLabel, timeLabel].filter(Boolean).join(" · "),
     tentative, locationTba,
     shortLabel: cap(fmt(tileSrc, lang, { month: "short", day: "numeric", ...tileOpts })).replace(/\.(?=\s|$)/, ""),
-    // One line for the /meeting/ hero: "Wednesday, October 21 · 7:00 PM CDT" (committee.js keeps it current)
+    // One line for the next meeting: "Wednesday, October 21 · 7:00 PM CDT" (committee.js keeps it current)
     whenLabel: allDay ? dateLabel : cap(fmt(start, lang, { weekday: "long", month: "long", day: "numeric" })) + " · " + fmt(start, lang, { hour: "numeric", minute: "2-digit", timeZoneName: "short" }),
     location, online, link, linkExternal: /^https?:/.test(link || ""),
     detailsUrl,
@@ -1136,6 +1136,146 @@ export function driveInfo(status, site) {
 }
 
 /* ------------------------------------------------------------------ */
+/*  Grapevine meetings (data/site/meetings.json → /meetings/#grapevine-meetings) */
+/* ------------------------------------------------------------------ */
+// "20:00" → "8:00 PM" / "8:00 p. m." (the site's Spanish spelling, no-break spaces). The feeds give
+// local Central time as a wall-clock string, so no time zone math is needed (or wanted) here.
+export function clock12(hhmm, lang = "en") {
+  const m = /^(\d{1,2}):(\d{2})/.exec(String(hhmm || ""));
+  if (!m) return "";
+  const h = Number(m[1]) % 24;
+  const h12 = h % 12 || 12;
+  if (lang === "es") return `${h12}:${m[2]} ${h < 12 ? "a. m." : "p. m."}`;
+  return `${h12}:${m[2]} ${h < 12 ? "AM" : "PM"}`;
+}
+
+// Weekday names, 0 = Sunday ("Sunday" / "Domingo" — capitalised: they are headings and options)
+export function weekdayName(d, lang = "en") {
+  try {
+    return cap(new Intl.DateTimeFormat(LOCALES[lang] || "en-US", { weekday: "long", timeZone: "UTC" }).format(new Date(Date.UTC(2023, 0, 1 + Number(d)))));
+  } catch {
+    return ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][Number(d)] || "";
+  }
+}
+
+// Lower-case, accents removed: the same folding committee.js uses for the "City, county or group" box.
+const foldText = (s) => String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/\s+/g, " ").trim();
+const hostOf = (u) => { try { return new URL(u).hostname.replace(/^www\./, ""); } catch { return ""; } };
+const pickL = (o, lang) => (o && typeof o === "object" ? o[lang] || o.en || "" : String(o || ""));
+// Type codes shown another way on the card (attendance line, language badge) or that repeat the section
+const GVM_SKIP_TYPES = new Set(["ONL", "TC", "S", "EN", "INACTIVE"]);
+const GVM_ACCESS_TYPES = new Set(["X", "XB"]);
+
+/**
+ * The Grapevine meetings of data/site/meetings.json, ready for /meetings/:
+ * our Area first (grouped by weekday), then one group per nearby region, each by weekday.
+ * Nothing here decides WHICH meetings exist — the data does; this only shapes and labels them.
+ */
+export function gvMeetings(data, lang = "en", site = {}) {
+  const d = data || {};
+  const L = lang === "es" ? "es" : "en";
+  const labels = d.type_labels || {};
+  const sources = Array.isArray(d.sources) ? d.sources : [];
+  const srcById = new Map(sources.map((s) => [s.id, s]));
+  const items = (EMPTY ? [] : Array.isArray(d.items) ? d.items : []).filter((it) => it && it.attendance !== "inactive" && Number.isInteger(Number(it.day)));
+  const countyWord = (c) => (L === "es" ? `condado de ${c}` : `${c} County`);
+
+  const card = (it) => {
+    const types = (it.types || []).map(String);
+    const shown = types.filter((c) => !GVM_SKIP_TYPES.has(c) && !GVM_ACCESS_TYPES.has(c) && labels[c]);
+    // "Grapevine" first (the reason the meeting is here), then the office's other types
+    const badges = shown.sort((a, b) => (a === "GR" ? -1 : b === "GR" ? 1 : 0))
+      .map((c) => ({ code: c, label: pickL(labels[c], L), gv: c === "GR" }));
+    const access = types.some((c) => GVM_ACCESS_TYPES.has(c));
+    const srcs = (it.sources || []).map((id) => srcById.get(id)).filter(Boolean);
+    // The details link goes to the office whose site the meeting's url is on
+    const host = hostOf(it.url);
+    const own = srcs.find((s) => hostOf(s.url) === host) || srcs[0] || null;
+    const texas = !it.state || it.state === "TX";
+    const place = [it.city, texas ? "" : it.state].filter(Boolean).join(", ");
+    const placeLine = [place, it.county ? countyWord(it.county) : ""].filter(Boolean).join(" · ");
+    const att = ["in_person", "online", "hybrid"].includes(it.attendance) ? it.attendance : "in_person";
+    const groupLabel = it.in_area ? "" : pickL(it.nearby?.label, L);
+    return {
+      id: it.id,
+      anchor: "mtg-" + String(it.id || "").replace(/^mtg:/, "").replace(/[^a-z0-9-]/gi, ""),
+      name: it.name || "",
+      day: Number(it.day),
+      time: clock12(it.time, L),
+      end: it.end_time ? clock12(it.end_time, L) : "",
+      location: it.location || "",
+      address: it.address || "",
+      placeLine,
+      approximate: !!it.approximate,
+      attendance: att,
+      spanish: it.lang === "es" || types.includes("S"),
+      textLang: it.lang === "es" ? "es" : "en", // the office's own words (place notes)
+      badges,
+      access,
+      directions: it.directions_url || "",
+      url: it.url || "",
+      siteHost: host,
+      siteName: own ? own.name : "",
+      listedBy: srcs.map((s) => s.name),
+      inArea: !!it.in_area,
+      // what the "City, county or group" box searches (accent- and case-insensitive)
+      search: foldText([it.name, it.city, it.county, it.county ? countyWord(it.county) : "", it.region, it.district, it.state, it.address, it.location, groupLabel].filter(Boolean).join(" ")),
+    };
+  };
+
+  const byDay = (cards) => {
+    const days = [];
+    for (let dd = 0; dd < 7; dd++) {
+      const list = cards.filter((c) => c.day === dd);
+      if (list.length) days.push({ day: dd, name: weekdayName(dd, L), count: list.length, items: list });
+    }
+    return days;
+  };
+
+  const all = items.map(card);
+  const ours = all.filter((c) => c.inArea);
+  const groups = [];
+  const groupList = Array.isArray(d.groups) ? d.groups : [];
+  const areaGroup = groupList.find((g) => g && g.in_area);
+  groups.push({ id: areaGroup?.id || "neta65", inArea: true, label: pickL(areaGroup?.label, L) || pickL(site?.meetings?.area_label, L), count: ours.length, days: byDay(ours) });
+  const nearbyCards = all.filter((c) => !c.inArea);
+  const placed = new Set();
+  for (const g of groupList) {
+    if (!g || g.in_area) continue;
+    const list = nearbyCards.filter((c) => items.find((it) => it.id === c.id)?.nearby?.id === g.id);
+    if (!list.length) continue;
+    list.forEach((c) => placed.add(c.id));
+    groups.push({ id: g.id, inArea: false, label: pickL(g.label, L), count: list.length, days: byDay(list) });
+  }
+  // A nearby meeting whose group is missing from `groups` still shows (under its own label)
+  const rest = nearbyCards.filter((c) => !placed.has(c.id));
+  if (rest.length) {
+    const lbl = pickL(items.find((it) => it.id === rest[0].id)?.nearby?.label, L) || t("committee.gvm.nearby_title", L);
+    groups.push({ id: "nearby-other", inArea: false, label: lbl, count: rest.length, days: byDay(rest) });
+  }
+
+  const okSources = sources.filter((s) => s && s.ok === true).map((s) => ({ name: s.name, url: s.url, host: hostOf(s.url) }));
+  const failed = sources.filter((s) => s && s.ok === false).map((s) => s.name);
+  // Where to look without our list: the offices' own sites (never a feed address)
+  const offices = (sources.length ? sources : (site?.meetings?.feeds || []).map((f) => ({ name: f.name, url: f.site })))
+    .filter((s) => s && s.name && /^https:\/\//.test(s.url || "")).map((s) => ({ name: s.name, url: s.url, host: hostOf(s.url) }));
+  const dayCounts = [0, 1, 2, 3, 4, 5, 6].map((dd) => ({ day: dd, name: weekdayName(dd, L), count: all.filter((c) => c.day === dd).length }));
+
+  return {
+    total: all.length,
+    inArea: ours.length,
+    nearby: nearbyCards.length,
+    areaGroup: groups[0],
+    nearbyGroups: groups.slice(1),
+    updated: d.updated || null,
+    okSources,
+    failed,
+    offices,
+    dayCounts,
+  };
+}
+
+/* ------------------------------------------------------------------ */
 /*  Eleventy registration                                              */
 /* ------------------------------------------------------------------ */
 export default function (eleventyConfig, helpers) {
@@ -1156,8 +1296,10 @@ export default function (eleventyConfig, helpers) {
   eleventyConfig.addFilter("cmPreview", (u) => drivePreviewUrl(u));
   eleventyConfig.addFilter("cmWebcal", (u) => String(u || "").replace(/^https?:\/\//, "webcal://"));
   eleventyConfig.addFilter("cmWeekly", (wo, lang) => weeklyOpen(wo, lang));
-  // Both weekly open meetings (Grapevine Weekly Open + La Viña), the page language's first — /meeting/#weekly-open
+  // Both weekly open meetings (Grapevine Weekly Open + La Viña), the page language's first — /meetings/#weekly-open
   eleventyConfig.addFilter("cmWeeklyAll", (items, lang) => weeklyOpenAll(EMPTY ? [] : items, lang));
+  // Grapevine meetings in our Area and nearby (db.meetings) — /meetings/#grapevine-meetings
+  eleventyConfig.addFilter("cmGvMeetings", (data, lang, site) => gvMeetings(data, lang, site));
   // Weekly digest (/digest/): Book of the Month teaser + this month's toolkit link, and the same in the copy text
   eleventyConfig.addFilter("cmDigestShop", (shop, lang) => digestShop(shop, lang));
   eleventyConfig.addFilter("cmDigestShopText", (text, shop, langs, style, site) => digestShopText(text, shop, langs, style, site));
@@ -1197,7 +1339,7 @@ export default function (eleventyConfig, helpers) {
   });
 
   // The next date of each monthly recurring event (config/site.yml `recurring_events:`), soonest
-  // first — the "Also every month" box on /meeting/.
+  // first — the "Also every month" box on /meetings/.
   eleventyConfig.addFilter("cmRecurringNext", (items, site, lang) => {
     const seen = new Set();
     return normalizeEvents(EMPTY ? [] : items, site, lang, { monthsBack: 0, monthsAhead: 0 })
@@ -1247,7 +1389,7 @@ export default function (eleventyConfig, helpers) {
 </dialog>`;
   });
 
-  // "Subscribe to the calendar" card (used on /meeting/ and /events/):
+  // "Subscribe to the calendar" card (used on /meetings/ and /events/):
   // {% cmSubscribe lang, site, compact %}
   // The card lays itself out by its OWN width (container queries), not the screen's: two
   // columns (buttons | feed address) when it is at least 48rem wide, stacked in a narrow
@@ -1307,7 +1449,7 @@ export default function (eleventyConfig, helpers) {
       announcements: announcementList(EMPTY ? [] : db?.announcements?.items).length,
     };
     const pages = [
-      { key: "meeting", url: "/meeting/", icon: "video" },
+      { key: "meetings", url: "/meetings/", icon: "calendar-clock" },
       { key: "events", url: "/events/", icon: "calendar-days" },
       { key: "documents", url: "/documents/", icon: "folder-open" },
       { key: "photos", url: "/photos/", icon: "images" },

@@ -56,9 +56,13 @@
     "en": "Committee Meeting",
     "es": "Reunión del comité"
   },
-  "nav.meeting_desc": {
-    "en": "Monthly committee meeting + weekly open meetings on Zoom",
-    "es": "Reunión mensual del comité y reuniones abiertas semanales por Zoom"
+  "nav.meetings": {
+    "en": "Meetings",
+    "es": "Reuniones"
+  },
+  "nav.meetings_desc": {
+    "en": "Committee meeting, Grapevine meetings near you and weekly open meetings",
+    "es": "Reunión del comité, reuniones de Grapevine cerca de ti y reuniones abiertas semanales"
   },
   "nav.events": {
     "en": "Events",

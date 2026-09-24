@@ -1,4 +1,4 @@
-/* Committee pages (Meeting, Events, Documents, Photos, Announcements).
+/* Committee pages (Meetings, Events, Documents, Photos, Announcements).
    Loaded with `defer` after app.js and BEFORE Alpine, so the Alpine
    components below are registered in time (alpine:init).
    No build step, no dependencies besides window.GV (app.js), Alpine and —
@@ -16,7 +16,7 @@
 
   /* ---------------- formatting helpers ---------------- */
   // Spanish "7:00 p.m." → "7:00 p. m." (no-break spaces), the site's one spelling — the same as the
-  // build's text, so a label redrawn here (the meeting's time line on /es/meeting/, the Weekly Open
+  // build's text, so a label redrawn here (the meeting's time line on /es/meetings/, the Weekly Open
   // date, "Your time: …") never changes style. GV.esMeridiem (app.js) is a no-op on English pages.
   var meridiem = typeof GV.esMeridiem === "function" ? GV.esMeridiem : function (s) {
     return LANG === "es" ? String(s).replace(/\b([ap])\.\s?m\./g, "$1.\u00a0m.").replace(/(\d) (?=[ap]\.\u00a0m\.)/g, "$1\u00a0") : s;
@@ -221,6 +221,75 @@
           return Array.prototype.filter.call(this.$root.querySelectorAll("li[data-group]"), function (li) { return self.show(li); }).length;
         },
         countText: function () { return countText(this.labels, this.visibleCount); },
+      };
+    });
+
+    /* /meetings/#grapevine-meetings: filters for the Grapevine meetings list (day, city / county /
+       group, in person / online, nearby areas on or off) and today's weekday (Central time).
+       Cards carry data-day / data-area / data-att / data-q (folded text); empty weekday blocks,
+       region groups and the whole "Nearby areas" block hide with their cards. Without JavaScript
+       the filters stay hidden (x-cloak) and every meeting shows. */
+    Alpine.data("cmGvMeetings", function () {
+      function fold(s) {
+        return String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/\s+/g, " ").trim();
+      }
+      return {
+        day: "", q: "", how: "", nearby: true, today: -1, shown: 0, total: 0, labels: { many: "{n}", one: "{n}" },
+        init: function () {
+          this.labels = countLabels(this.$root);
+          this.total = Number(this.$root.getAttribute("data-total")) || 0;
+          this.shown = this.total;
+          try {
+            var wd = new Intl.DateTimeFormat("en-US", { timeZone: TZ, weekday: "short" }).format(new Date());
+            this.today = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].indexOf(wd);
+          } catch (e) { this.today = new Date().getDay(); }
+          var self = this;
+          this.$watch("day", function () { self.apply(); });
+          this.$watch("q", function () { self.apply(); });
+          this.$watch("how", function () { self.apply(); });
+          this.$watch("nearby", function () { self.apply(); });
+          // A link to one meeting (#mtg-…, e.g. from the site search): make sure it is visible
+          var id = "";
+          try { id = location.hash ? decodeURIComponent(location.hash.slice(1)) : ""; } catch (e) {}
+          var el = id && id.indexOf("mtg-") === 0 && document.getElementById(id);
+          if (el && this.$root.contains(el)) this.$nextTick(function () { el.scrollIntoView({ block: "center" }); });
+        },
+        get filtered() { return this.day !== "" || this.q.trim() !== "" || this.how !== "" || !this.nearby; },
+        get statusText() { return countText(this.labels, this.shown); },
+        reset: function () { this.day = ""; this.q = ""; this.how = ""; this.nearby = true; },
+        match: function (li, terms) {
+          if (this.day !== "" && li.getAttribute("data-day") !== String(this.day)) return false;
+          if (!this.nearby && li.getAttribute("data-area") !== "ours") return false;
+          var att = li.getAttribute("data-att");
+          if (this.how === "in_person" && att === "online") return false;
+          if (this.how === "online" && att === "in_person") return false;
+          var text = li.getAttribute("data-q") || "";
+          for (var i = 0; i < terms.length; i++) if (text.indexOf(terms[i]) === -1) return false;
+          return true;
+        },
+        apply: function () {
+          var root = this.$root, self = this, n = 0;
+          var terms = fold(this.q).split(" ").filter(Boolean);
+          var cards = root.querySelectorAll("li[data-day]");
+          for (var i = 0; i < cards.length; i++) {
+            var ok = self.match(cards[i], terms);
+            cards[i].hidden = !ok;
+            if (ok) n++;
+          }
+          function hideEmpty(sel) {
+            var els = root.querySelectorAll(sel);
+            for (var j = 0; j < els.length; j++) {
+              var v = els[j].querySelectorAll("li[data-day]:not([hidden])").length;
+              els[j].hidden = !v;
+              var c = els[j].querySelector(":scope > .cm-gvm-group-head [data-gvm-count]");
+              if (c) c.textContent = (v === 1 ? c.getAttribute("data-one") : c.getAttribute("data-many")).replace("{n}", v);
+            }
+          }
+          hideEmpty("[data-gvm-dayg]");
+          hideEmpty("[data-gvm-group]");
+          hideEmpty("[data-gvm-nearby]");
+          this.shown = n;
+        },
       };
     });
 

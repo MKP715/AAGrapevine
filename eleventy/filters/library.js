@@ -945,7 +945,7 @@ export function searchIndex(db, nav, lang, helpers, site) {
       // A recurring event (and a content/events file with title_es / summary_es) is written by the
       // committee in both languages: no "EN" badge on the Spanish page (search.js shows one when `l`
       // differs), and "every month" / "cada mes" finds a recurring one too. Its repeat line is the one
-      // its card and /meeting/ show (committee.js recurrenceText).
+      // its card and /meetings/ show (committee.js recurrenceText).
       const own = typeof committee.ownLangs === "function"
         ? committee.ownLangs(it).includes(lang)
         : (recurring || it.category === "manual") && !(it.machine || []).includes(lang) && fold(P(it, "title")) !== fold(it.title);
@@ -980,7 +980,33 @@ export function searchIndex(db, nav, lang, helpers, site) {
         id: "weekly-open:" + it.id, k: "meeting", t: P(it, "title"), o: it.title,
         s: [when, ex.zoom_id ? "Zoom " + ex.zoom_id : ""].filter(Boolean).join(" · "),
         x: ["zoom", both(lv ? "search.kw.weekly_open_lv" : "search.kw.weekly_open"), it.i18n?.when?.[lang === "es" ? "en" : "es"]].filter(Boolean).join(" "),
-        u: "/meeting/#weekly-open", l: it.lang, src: lv ? "lv" : "gv",
+        u: "/meetings/#weekly-open", l: it.lang, src: lv ? "lv" : "gv",
+      });
+    }
+  });
+
+  /* ---- Grapevine meetings (db.meetings) → their card on /meetings/ (#mtg-…). ONE entry per group
+     and place: a group that meets several times a week (e.g. every morning) is one result, not six.
+     Found by its name, city, county, region and "Grapevine meeting" / "reunión de Grapevine". ---- */
+  safely("meetings", () => {
+    if (typeof committee.gvMeetings !== "function") return;
+    const gv = committee.gvMeetings(db.meetings, lang, site || {});
+    const cards = [gv.areaGroup, ...gv.nearbyGroups].filter(Boolean).flatMap((g) => g.days.flatMap((d) => d.items.map((c) => ({ c, dayName: d.name, group: g }))));
+    const byPlace = new Map();
+    for (const e of cards) {
+      const k = fold(e.c.name) + "|" + fold(e.c.address || e.c.placeLine);
+      if (!byPlace.has(k)) byPlace.set(k, []);
+      byPlace.get(k).push(e);
+    }
+    for (const list of byPlace.values()) {
+      const { c, group } = list[0];
+      const when = list.length <= 2 ? list.map((e) => `${e.dayName} ${e.c.time}`).join(" · ") : "";
+      push({
+        id: "meeting:" + c.id, k: "meeting", t: c.name, tl: lang,
+        s: when ? [when, c.placeLine].filter(Boolean).join(" · ") : T("committee.gvm.search_many", { place: c.placeLine, n: list.length }),
+        x: uniq([both("committee.gvm.search_kw"), both("committee.gvm.title"), group.inArea ? "NETA 65 Area 65" : group.label,
+          c.search, ...c.badges.map((b) => b.label), c.spanish ? both("committee.weekly.lang_es") : ""].map(squish), " "),
+        u: "/meetings/#" + c.anchor, ic: "map-pin",
       });
     }
   });

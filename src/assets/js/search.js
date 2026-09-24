@@ -266,7 +266,7 @@
       var t = tone(e);
       var img = e.yt ? "https://i.ytimg.com/vi/" + encodeURIComponent(e.yt) + "/mqdefault.jpg" : e.im ? kit.href(e.im) : "";
       var kindLabel = CFG.kinds[e.k] || e.k;
-      var ic = e.k === "page" && e.ic ? e.ic : KIND_ICON[e.k] || "file-text";
+      var ic = (e.k === "page" || e.k === "meeting") && e.ic ? e.ic : KIND_ICON[e.k] || "file-text";
       var meta = '<span class="ss-kind">' + icon(ic, "size-3.5") + esc(kindLabel) + "</span>";
       if (e.src && e.src !== "site" && CFG.src[e.src] && CFG.src[e.src] !== kindLabel) meta += "<span>" + esc(CFG.src[e.src]) + "</span>";
       if (e.d && e.k !== "page") meta += '<time datetime="' + esc(e.d) + '">' + esc(kit.fmtYmd(e.d, e.dp === "m" ? "month" : "medium")) + "</time>";

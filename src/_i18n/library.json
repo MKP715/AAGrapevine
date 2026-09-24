@@ -735,9 +735,9 @@
     "en": "library pdf pdfs documents files download flyers catalog forms kit",
     "es": "biblioteca pdf documentos archivos descargar volantes catálogo formularios kit"
   },
-  "search.kw.meeting": {
-    "en": "meeting zoom monthly committee meeting id passcode password link join countdown third wednesday weekly open meetings la viña thursday spanish",
-    "es": "reunión zoom mensual comité id contraseña clave enlace unirse cuenta regresiva tercer miércoles reuniones abiertas semanales la viña jueves español"
+  "search.kw.meetings": {
+    "en": "meeting zoom monthly committee meeting id passcode password link join countdown third wednesday weekly open meetings la viña thursday spanish meetings grapevine meetings gr near me in person local groups directions oklahoma arkansas nearby areas",
+    "es": "reunión zoom mensual comité id contraseña clave enlace unirse cuenta regresiva tercer miércoles reuniones abiertas semanales la viña jueves español reuniones reuniones de grapevine gr cerca de mí en persona grupos locales cómo llegar oklahoma arkansas áreas cercanas"
   },
   "search.kw.events": {
     "en": "events calendar workshop booth assembly conference ics",

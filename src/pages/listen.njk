@@ -30,7 +30,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
 {%- set hours = ((eps | mediaSumDuration) / 3600) | round(0, "floor") -%}
 {%- set ssr = eps | limit(24) -%}
 {#- The weekly open meetings in one short line ("Wednesdays (English) and Thursdays (Spanish)"), linking
-    to their one home, /meeting/#weekly-open, where the times and Zoom details are -#}
+    to their one home, /meetings/#weekly-open, where the times and Zoom details are -#}
 {#- (the Grapevine Weekly Open show card names only the Grapevine meeting it records) -#}
 {%- set woWhen = (db.weekly_open.items | mediaWeeklyDays(lang, "grapevine")) if db.weekly_open else "" -%}
 
@@ -296,7 +296,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
             <span x-text="latestText(ep)">{{ "media.play_latest" | t(lang) }}</span>
           </a>
           <a class="btn-secondary btn-sm" href="#episodes" @click.prevent="pickShow('{{ s.key }}')">{% icon "list-music", "size-4" %} {{ "media.see_episodes" | t(lang) }}</a>
-          {% if s.weekly %}<a class="btn-ghost btn-sm" href="{{ '/meeting/#weekly-open' | lurl(lang) }}">{% icon "video", "size-4" %} {{ "media.wo_join" | t(lang) }}</a>{% endif %}
+          {% if s.weekly %}<a class="btn-ghost btn-sm" href="{{ '/meetings/#weekly-open' | lurl(lang) }}">{% icon "video", "size-4" %} {{ "media.wo_join" | t(lang) }}</a>{% endif %}
         </div>
         <div class="mt-auto px-5 pt-5 pb-5 sm:px-6">
           <div class="border-t border-line pt-4">

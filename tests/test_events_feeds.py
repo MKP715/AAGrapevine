@@ -559,7 +559,7 @@ class FeedDuplicates(TempState):
         self.assertEqual((booth["url"], booth["extra"]["flyer_url"]), ("https://citywidedallasaa.org", None))  # untouched
         self.assertEqual(booth["extra"]["feed_match"], "title")
         m = next(e for e in evs if e["id"] == meeting["id"])
-        self.assertEqual((m["url"], m["extra"]["feed_match"]), ("/meeting/", "title"))
+        self.assertEqual((m["url"], m["extra"]["feed_match"]), ("/meetings/", "title"))
         self.assertEqual(ctx.feeds[0]["notes"], [])
 
     def test_the_same_page_for_every_date_of_a_series(self):

@@ -930,7 +930,7 @@ def render_lang_html(lang: str, data: dict, cfg: dict, links: Links, max_per: in
     <div style="font-size:18px;font-weight:bold;margin:4px 0 2px;color:{C['ink']};">{_esc(when)}</div>
     {info_html}
     {btn}
-    <a href="{_esc(links.page('/meeting/', lang))}" style="font-size:13px;color:{C['gv']};margin-left:10px;">{_esc(t['details'])} →</a>
+    <a href="{_esc(links.page('/meetings/', lang))}" style="font-size:13px;color:{C['gv']};margin-left:10px;">{_esc(t['details'])} →</a>
   </td></tr></table>
 </td></tr>""")
 

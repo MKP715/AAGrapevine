@@ -21,7 +21,9 @@ const nav = {
     },
     {
       key: "nav.committee", icon: "users", children: [
-        { key: "nav.meeting", url: "/meeting/", icon: "video", page: "meeting", descKey: "nav.meeting_desc" },
+        // Meetings: the committee's monthly meeting, Grapevine meetings in and near our Area, and the
+        // weekly open meetings. It stays under Committee: it is the first tab of the committee sub-nav.
+        { key: "nav.meetings", url: "/meetings/", icon: "calendar-clock", page: "meetings", descKey: "nav.meetings_desc" },
         { key: "nav.events", url: "/events/", icon: "calendar-days", page: "events", descKey: "nav.events_desc" },
         { key: "nav.documents", url: "/documents/", icon: "folder-open", page: "documents", descKey: "nav.documents_desc" },
         { key: "nav.photos", url: "/photos/", icon: "images", page: "photos", descKey: "nav.photos_desc" },

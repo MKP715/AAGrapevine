@@ -317,7 +317,7 @@ export function monthModel(key, db = {}, carry = {}, site = {}, lang = "en", now
   if (meetingEv) committee = evView(meetingEv, { kind: "committee" });
   else {
     const r = meetingByRule(key, site.meeting || {});
-    if (r) committee = evView({ id: `ev:committee:${r.ymd}`, kind: "event", url: "/meeting/", title: "", extra: { start: r.start, end: r.end, location: "Zoom", online: true } }, { kind: "committee" });
+    if (r) committee = evView({ id: `ev:committee:${r.ymd}`, kind: "event", url: "/meetings/", title: "", extra: { start: r.start, end: r.end, location: "Zoom", online: true } }, { kind: "committee" });
   }
   if (committee) {
     committee.title = "";

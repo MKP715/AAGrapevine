@@ -109,7 +109,7 @@ descKey: read.about.meta_desc
       <p class="lead mt-4">{{ "read.about.com_p1" | t(lang) }}</p>
       <p class="mt-3 leading-relaxed text-muted">{{ "read.about.com_p2" | t(lang) }}</p>
       <div class="mt-6 flex flex-wrap gap-2.5">
-        <a class="btn-primary" href="{{ '/meeting/' | lurl(lang) }}">{% icon "video", "size-4" %} {{ "read.about.com_meeting" | t(lang) }}</a>
+        <a class="btn-primary" href="{{ '/meetings/' | lurl(lang) }}">{% icon "video", "size-4" %} {{ "read.about.com_meeting" | t(lang) }}</a>
         {% if site.committee_page %}<a class="btn-secondary" href="{{ site.committee_page }}" target="_blank" rel="noopener">{{ "read.about.com_area_page" | t(lang) }} {% icon "arrow-up-right", "size-4" %}</a>{% endif %}
       </div>
       {% if meeting.next %}<p class="mt-4 text-sm text-muted">{% icon "calendar-days", "size-4 inline -mt-0.5 text-gv" %} {{ "read.about.com_next" | t(lang, {date: meeting.next.start | fmtDate(lang, "long"), time: meeting.next.start | fmtDate(lang, "time")}) }}</p>{% endif %}
@@ -263,7 +263,7 @@ descKey: read.about.meta_desc
         <button type="button" class="btn-ghost btn-sm" data-copy="{{ site.contact_email }}">{% icon "copy", "size-4" %} {{ "common.copy" | t(lang) }}</button>
       </div>
       <ul class="mt-5 space-y-2 border-t border-line pt-4 text-sm">
-        <li><a class="link" href="{{ '/meeting/' | lurl(lang) }}">{{ "nav.meeting" | t(lang) }}</a></li>
+        <li><a class="link" href="{{ '/meetings/' | lurl(lang) }}">{{ "nav.meeting" | t(lang) }}</a></li>
         {% if site.area_website %}<li><a class="link" href="{{ site.area_website }}" target="_blank" rel="noopener">{{ site | pick(lang, "area") }} — {{ site.area_website | hostname }}</a></li>{% endif %}
         <li><a class="link" href="{{ site.links.aa_org_es if lang == 'es' else site.links.aa_org }}" target="_blank" rel="noopener">{{ "read.about.find_meeting" | t(lang) }}</a></li>
       </ul>

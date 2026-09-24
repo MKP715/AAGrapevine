@@ -348,6 +348,10 @@ the joining details (Zoom links, phones and contacts are never copied).
   summary); the source fails on /status/ only when no list at all could be read.
 * Without data the file is `{updated: null, fixture: false, type: "GR", sources: [], groups: [], items: [],
   type_labels: {}}` — the page must show a graceful "see the intergroup websites" state.
+* Where it shows: `/meetings/#grapevine-meetings` (`cmGvMeetings` → `gvMeetings()` in
+  `eleventy/filters/committee.js`; each meeting's anchor is `#mtg-<hash>`). Elsewhere only pointers: one line
+  on the home page (counts) and the site search — one `meeting` entry per group and place (`meeting:<id>`,
+  a group that meets several times a week is one result), linking to its row.
 
 ### status.json
 ```json

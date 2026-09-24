@@ -39,9 +39,9 @@
     "en": "Committee pages",
     "es": "Páginas del comité"
   },
-  "committee.subnav.meeting": {
-    "en": "Meeting",
-    "es": "Reunión"
+  "committee.subnav.meetings": {
+    "en": "Meetings",
+    "es": "Reuniones"
   },
   "committee.subnav.events": {
     "en": "Events",
@@ -102,14 +102,6 @@
   "committee.meeting.also_next": {
     "en": "Next date: {date}",
     "es": "Próxima fecha: {date}"
-  },
-  "committee.meeting.meta_desc": {
-    "en": "The NETA 65 Grapevine / La Viña Committee meets every month on Zoom. Countdown, Zoom link, meeting ID and what to expect — all AA members are welcome.",
-    "es": "El Comité de Grapevine / La Viña de NETA 65 se reúne cada mes por Zoom: enlace, ID de reunión y qué esperar. Todos los miembros de AA son bienvenidos."
-  },
-  "committee.meeting.eyebrow": {
-    "en": "NETA 65 · Monthly on Zoom",
-    "es": "NETA 65 · Cada mes por Zoom"
   },
   "committee.meeting.hero_sub": {
     "en": "{rule} · {time} Central time, on Zoom — every AA member is welcome.",
@@ -1214,5 +1206,253 @@
   "committee.ann.stay_title": {
     "en": "Never miss an update",
     "es": "No te pierdas ninguna novedad"
+  },
+  "committee.meetings.meta_desc": {
+    "en": "All the meetings in one place: the NETA 65 Grapevine / La Viña Committee's monthly Zoom meeting, AA groups in and near our Area that read Grapevine or La Viña in their meetings, and the weekly open meetings of AA Grapevine and La Viña.",
+    "es": "Todas las reuniones en un solo lugar: la reunión mensual por Zoom del Comité de Grapevine / La Viña de NETA 65, los grupos de AA de nuestra Área y de áreas cercanas que leen Grapevine o La Viña en sus reuniones, y las reuniones abiertas semanales de AA Grapevine y La Viña."
+  },
+  "committee.meetings.eyebrow": {
+    "en": "NETA 65 · Grapevine & La Viña",
+    "es": "NETA 65 · Grapevine y La Viña"
+  },
+  "committee.meetings.hero_sub": {
+    "en": "Our monthly committee meeting on Zoom, the AA groups near you that read Grapevine or La Viña in their meetings, and the weekly open meetings of AA Grapevine and La Viña.",
+    "es": "Nuestra reunión mensual del comité por Zoom, los grupos de AA cerca de ti que leen Grapevine o La Viña en sus reuniones, y las reuniones abiertas semanales de AA Grapevine y La Viña."
+  },
+  "committee.meetings.jump_aria": {
+    "en": "On this page",
+    "es": "En esta página"
+  },
+  "committee.meetings.jump_committee": {
+    "en": "Committee meeting",
+    "es": "Reunión del comité"
+  },
+  "committee.meetings.jump_gv": {
+    "en": "Grapevine meetings",
+    "es": "Reuniones de Grapevine"
+  },
+  "committee.meetings.jump_weekly": {
+    "en": "Weekly open meetings",
+    "es": "Reuniones abiertas semanales"
+  },
+  "committee.meetings.committee_eyebrow": {
+    "en": "The committee · Monthly on Zoom",
+    "es": "El comité · Cada mes por Zoom"
+  },
+  "committee.meetings.committee_title": {
+    "en": "Our committee meeting",
+    "es": "Nuestra reunión del comité"
+  },
+  "committee.meetings.moved_text": {
+    "en": "The committee meeting, the Grapevine meetings near you and the weekly open meetings are now on our Meetings page:",
+    "es": "La reunión del comité, las reuniones de Grapevine cerca de ti y las reuniones abiertas semanales ahora están en nuestra página Reuniones:"
+  },
+  "committee.gvm.eyebrow": {
+    "en": "AA groups in and near our Area",
+    "es": "Grupos de AA en nuestra Área y cerca"
+  },
+  "committee.gvm.title": {
+    "en": "Grapevine meetings",
+    "es": "Reuniones de Grapevine"
+  },
+  "committee.gvm.what": {
+    "en": "A Grapevine meeting is an AA group that uses Grapevine or La Viña in its meeting — the “Grapevine” (GR) type in the local meeting lists.",
+    "es": "Una reunión de Grapevine es un grupo de AA que usa Grapevine o La Viña en su reunión: en las listas de reuniones locales tiene el tipo “Grapevine” (GR)."
+  },
+  "committee.gvm.summary": {
+    "en": "{total} meetings every week: {ours} in our Area and {nearby} in nearby areas.",
+    "es": "{total} reuniones cada semana: {ours} en nuestra Área y {nearby} en áreas cercanas."
+  },
+  "committee.gvm.summary_area": {
+    "en": "{total} meetings every week in our Area.",
+    "es": "{total} reuniones cada semana en nuestra Área."
+  },
+  "committee.gvm.summary_one": {
+    "en": "1 meeting every week.",
+    "es": "1 reunión cada semana."
+  },
+  "committee.gvm.times_note": {
+    "en": "Times are Central time. Meetings can change, so check the details on the office's site before you go.",
+    "es": "Las horas son del Centro. Las reuniones pueden cambiar: revisa los detalles en el sitio de la oficina antes de ir."
+  },
+  "committee.gvm.area_title": {
+    "en": "In our Area (NETA 65)",
+    "es": "En nuestra Área (NETA 65)"
+  },
+  "committee.gvm.area_none": {
+    "en": "No Grapevine meetings in our Area are listed right now.",
+    "es": "Por ahora no hay reuniones de Grapevine en la lista de nuestra Área."
+  },
+  "committee.gvm.nearby_title": {
+    "en": "Nearby areas",
+    "es": "Áreas cercanas"
+  },
+  "committee.gvm.nearby_sub": {
+    "en": "Outside Northeast Texas Area 65, but close by — for when you travel or live near the edge of our Area.",
+    "es": "Fuera del Área 65 del Noreste de Texas, pero cerca: por si viajas o vives cerca del límite de nuestra Área."
+  },
+  "committee.gvm.outside": {
+    "en": "Outside our Area",
+    "es": "Fuera de nuestra Área"
+  },
+  "committee.gvm.count": {
+    "en": "{n} meetings",
+    "es": "{n} reuniones"
+  },
+  "committee.gvm.count_one": {
+    "en": "1 meeting",
+    "es": "1 reunión"
+  },
+  "committee.gvm.today": {
+    "en": "Today",
+    "es": "Hoy"
+  },
+  "committee.gvm.filters_aria": {
+    "en": "Filter the Grapevine meetings",
+    "es": "Filtrar las reuniones de Grapevine"
+  },
+  "committee.gvm.f_day": {
+    "en": "Day",
+    "es": "Día"
+  },
+  "committee.gvm.f_any_day": {
+    "en": "Any day",
+    "es": "Cualquier día"
+  },
+  "committee.gvm.f_where": {
+    "en": "City, county or group",
+    "es": "Ciudad, condado o grupo"
+  },
+  "committee.gvm.f_where_ph": {
+    "en": "e.g. Tyler, Tarrant, Richardson",
+    "es": "p. ej., Tyler, Tarrant, Richardson"
+  },
+  "committee.gvm.f_how": {
+    "en": "In person or online",
+    "es": "En persona o en línea"
+  },
+  "committee.gvm.f_how_any": {
+    "en": "Any",
+    "es": "Todas"
+  },
+  "committee.gvm.f_nearby": {
+    "en": "Include nearby areas",
+    "es": "Incluir áreas cercanas"
+  },
+  "committee.gvm.f_reset": {
+    "en": "Clear filters",
+    "es": "Borrar filtros"
+  },
+  "committee.gvm.showing": {
+    "en": "Showing {n} of {total} meetings",
+    "es": "Se muestran {n} de {total} reuniones"
+  },
+  "committee.gvm.showing_one": {
+    "en": "Showing 1 of {total} meetings",
+    "es": "Se muestra 1 de {total} reuniones"
+  },
+  "committee.gvm.none": {
+    "en": "No meetings match these filters.",
+    "es": "Ninguna reunión coincide con estos filtros."
+  },
+  "committee.gvm.att_in_person": {
+    "en": "In person",
+    "es": "En persona"
+  },
+  "committee.gvm.att_online": {
+    "en": "Online",
+    "es": "En línea"
+  },
+  "committee.gvm.att_hybrid": {
+    "en": "In person and online",
+    "es": "En persona y en línea"
+  },
+  "committee.gvm.access": {
+    "en": "Wheelchair access",
+    "es": "Acceso para silla de ruedas"
+  },
+  "committee.gvm.central": {
+    "en": "Central time",
+    "es": "hora del Centro"
+  },
+  "committee.gvm.directions": {
+    "en": "Directions",
+    "es": "Cómo llegar"
+  },
+  "committee.gvm.directions_aria": {
+    "en": "Directions to {name} (opens in a new tab)",
+    "es": "Cómo llegar a {name} (se abre en una pestaña nueva)"
+  },
+  "committee.gvm.details": {
+    "en": "Details on {site}",
+    "es": "Detalles en {site}"
+  },
+  "committee.gvm.details_aria": {
+    "en": "Details on {site}: {name} (opens in a new tab)",
+    "es": "Detalles en {site}: {name} (se abre en una pestaña nueva)"
+  },
+  "committee.gvm.listed_by": {
+    "en": "Listed by {names}",
+    "es": "En la lista de {names}"
+  },
+  "committee.gvm.approx": {
+    "en": "Only the city is listed — see the details for the place.",
+    "es": "Solo aparece la ciudad: consulta los detalles para ver el lugar."
+  },
+  "committee.gvm.updated": {
+    "en": "Updated {date} from the meeting lists of",
+    "es": "Actualizado el {date} con las listas de reuniones de"
+  },
+  "committee.gvm.regular": {
+    "en": "We keep this list updated regularly.",
+    "es": "Lo mantenemos actualizado con regularidad."
+  },
+  "committee.gvm.failed": {
+    "en": "We couldn't check {names} this time — their meetings are shown as of the last update.",
+    "es": "Esta vez no pudimos revisar {names}; sus reuniones aparecen como estaban en la última actualización."
+  },
+  "committee.gvm.cta_title": {
+    "en": "Does your group read Grapevine or La Viña in its meetings?",
+    "es": "¿Tu grupo lee Grapevine o La Viña en sus reuniones?"
+  },
+  "committee.gvm.cta_text": {
+    "en": "Ask your intergroup or central office to add the Grapevine type to your meeting's listing — then it will show up here too.",
+    "es": "Pide a tu intergrupo u oficina central que agregue el tipo Grapevine a la información de tu reunión; así también aparecerá aquí."
+  },
+  "committee.gvm.cta_btn": {
+    "en": "Questions? Write to the committee",
+    "es": "¿Preguntas? Escribe al comité"
+  },
+  "committee.gvm.cta_subject": {
+    "en": "Grapevine meetings list",
+    "es": "Lista de reuniones de Grapevine"
+  },
+  "committee.gvm.empty_title": {
+    "en": "The Grapevine meetings list isn't available right now",
+    "es": "La lista de reuniones de Grapevine no está disponible por ahora"
+  },
+  "committee.gvm.empty_text": {
+    "en": "You can look for meetings with the Grapevine type on the websites of the intergroups and central offices:",
+    "es": "Puedes buscar reuniones con el tipo Grapevine en los sitios de los intergrupos y oficinas centrales:"
+  },
+  "committee.gvm.home_title": {
+    "en": "Grapevine meetings near you",
+    "es": "Reuniones de Grapevine cerca de ti"
+  },
+  "committee.gvm.home_text": {
+    "en": "{ours} every week in our Area, plus {nearby} in nearby areas",
+    "es": "{ours} cada semana en nuestra Área, y {nearby} en áreas cercanas"
+  },
+  "committee.gvm.home_text_area": {
+    "en": "{ours} every week in our Area",
+    "es": "{ours} cada semana en nuestra Área"
+  },
+  "committee.gvm.search_many": {
+    "en": "{place} · {n} meetings a week",
+    "es": "{place} · {n} reuniones por semana"
+  },
+  "committee.gvm.search_kw": {
+    "en": "grapevine meeting meetings group gr type in person near me local aa meeting where to find",
+    "es": "reunión reuniones de grapevine grupo tipo gr en persona cerca de mí reunión local de aa dónde encontrar"
   }
 }

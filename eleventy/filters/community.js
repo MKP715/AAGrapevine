@@ -767,7 +767,7 @@ export function digestText(dg, langs, style, site, t, media = {}) {
     out.push(wa ? `🗓️ ${head(label)}` : head(label));
     out.push(`${when} — Zoom`);
     out.push(both("community.digest.text_all_welcome"));
-    out.push(absUrl(langPath("/meeting/", main), site));
+    out.push(absUrl(langPath("/meetings/", main), site));
     out.push("");
   }
 
@@ -924,7 +924,7 @@ export function reportText(rd, lang, site, t) {
 
   if (rd.next) {
     out.push(`${num()} ${T("t_meeting", { date: fmtShortDayMid(rd.next.start, lang), time: fmtTime(rd.next.start, lang) })}`);
-    out.push(`   ${url("/meeting/")}`);
+    out.push(`   ${url("/meetings/")}`);
   }
   out.push(`${num()} ${T("t_ask")}`);
   out.push("");
