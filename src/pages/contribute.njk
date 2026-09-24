@@ -419,8 +419,8 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
               <span class="block text-sm font-medium" lang="{{ info.lang }}">{{ info.title }}</span>
               {% if info.gloss %}<span class="block text-xs text-white/70"><span class="sr-only">{{ ("common.auto_translated" if info.machine else "read.title_translation") | t(lang) }}:</span><span lang="{{ info.glossLang }}">{{ info.gloss }}</span></span>{% endif %}
             </span>
-            <span class="rounded-md bg-white/15 px-1.5 py-0.5 text-[0.65rem] font-bold uppercase text-white/85"{% if dl %} title="{{ ('lang.' + dl) | t(lang) }}"{% endif %}>{{ dl or "PDF" }}</span>
-            <span class="sr-only">(PDF, {{ "common.external" | t(lang) }})</span>
+            <span class="rounded-md bg-white/15 px-1.5 py-0.5 text-[0.65rem] font-bold uppercase text-white/85"{% if dl %} title="{{ ('lang.' + dl) | t(lang) }}"{% endif %}>{% if dl %}{{ dl }}{% else %}{% icon "file-down", "block size-3.5" %}{% endif %}</span>
+            <span class="sr-only">({{ "kind.pdf" | t(lang) | lower }}, {{ "common.external" | t(lang) }})</span>
           </a></li>
           {% endfor %}
         </ul>

@@ -7,8 +7,10 @@ titleKey: nav.library
 descKey: library.meta_desc
 pageScripts: ["/assets/vendor/minisearch.js", "/assets/js/search.js", "/assets/js/library.js"]
 ---
-{#- LIBRARY — every PDF crawled from aagrapevine.org + aalavina.org and every
-    committee Drive document. The newest SSR_COUNT are rendered here (no-JS / SEO);
+{#- LIBRARY — every official document found on aagrapevine.org + aalavina.org (files on official AA
+    hosts only: config/site.yml library.official_hosts; each document once, its language editions on
+    one card — scripts/sync/pdf_curate.py) and every committee Drive document.
+    The newest SSR_COUNT are rendered here (no-JS / SEO);
     /assets/js/library.js then loads /library-index.json (see library-index.11ty.js)
     and takes over search, facets, collections, sorting and paging.
     Card markup below is mirrored in library.js → renderCard(); keep them in sync. -#}
@@ -34,7 +36,7 @@ pageScripts: ["/assets/vendor/minisearch.js", "/assets/js/search.js", "/assets/j
 <article class="lib-card{{ ' is-orphan' if d.or }}" id="doc-{{ d.id | replace(':', '-') }}">
   <div class="lib-media">
     <div class="lib-tile" data-tone="{{ d.s }}" aria-hidden="true">
-      <span class="lib-sheet"><span class="lib-sheet-icon">{% icon catIcon, "size-6" %}</span><span class="lib-sheet-lines"></span><span class="lib-sheet-ft">{{ ("library.ft." + d.ft) | t(lang) }}</span></span>
+      <span class="lib-sheet"><span class="lib-sheet-icon">{% icon catIcon, "size-6" %}</span><span class="lib-sheet-lines"></span>{% if d.ft != "pdf" %}<span class="lib-sheet-ft">{{ ("library.ft." + d.ft) | t(lang) }}</span>{% endif %}</span>
     </div>
     {%- if d.th %}{% if d.tf %}<img class="lib-th-blur" src="{{ d.th }}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.remove()">{% endif %}<img{% if d.tf %} class="lib-th-fit"{% endif %} src="{{ d.th }}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.remove()">{% endif %}
     {%- if d.n and not d.or %}<span class="badge-new lib-new">{{ "common.new" | t(lang) }}</span>{% endif %}
@@ -47,6 +49,10 @@ pageScripts: ["/assets/vendor/minisearch.js", "/assets/js/search.js", "/assets/j
     {%- if d.ev %}<p class="lib-event">{% icon "calendar-days", "size-3.5" %}<time datetime="{{ d.ev }}">{{ "library.event_on" | t(lang, {date: d.ev | fmtDate(lang, "medium")}) }}</time></p>{% endif %}
     {%- if d.d or d.pg or d.sz or d.hx %}
     <p class="lib-meta">{% if d.d %}<time datetime="{{ d.d }}">{{ d.d | fmtDate(lang, dateStyle) }}</time>{% endif %}{% if d.pg %}<span>{{ ("library.page_one" | t(lang)) if d.pg == 1 else ("common.pages" | t(lang, {n: d.pg | libNum(lang)})) }}</span>{% endif %}{% if d.sz %}<span>{{ d.sz | fileSize }}</span>{% endif %}{% if d.hx %}<span>{{ "library.opens_on" | t(lang, {host: d.hx}) }}</span>{% endif %}</p>
+    {%- endif %}
+    {%- if d.vs and d.vs.length > 1 %}
+    <p class="lib-versions">{% icon "languages", "size-3.5" %}<span>{{ "library.versions" | t(lang) }}</span>
+      {%- for v in d.vs %}<a href="{{ v.u }}" hreflang="{{ v.l }}" target="_blank" rel="noopener"><span lang="{{ v.l }}">{{ v.name }}</span>{% if v.l != lang %}<span class="sr-only"> ({{ ('library.lang.' + v.l) | t(lang) }})</span>{% endif %}</a>{% endfor %}</p>
     {%- endif %}
     {%- if d.r %}<p class="lib-ref">{{ "library.found_on" | t(lang) }} <a href="{{ d.r.url }}" target="_blank" rel="noopener">{{ d.r.title }}</a></p>{% endif %}
     {%- if d.or %}<p class="lib-orphan">{% icon "unlink", "size-3.5" %}<span>{{ "library.orphan" | t(lang) }}</span></p>{% endif %}
@@ -228,12 +234,9 @@ pageScripts: ["/assets/vendor/minisearch.js", "/assets/js/search.js", "/assets/j
     <h2 id="lib-how-h" class="lib-how-head h-section text-2xl">{{ "library.how_title" | t(lang) }}</h2>
     <div class="lib-how-items">
       <div class="lib-how-item">
-        <span class="lib-how-icon" data-tone="gv">{% icon "bot", "size-5" %}</span>
-        <h3 class="h-card">{{ "library.how_crawl_title" | t(lang) }}</h3>
-        <p>{{ "library.how_crawl" | t(lang) }}</p>
-        {% if db.status.crawl and db.status.crawl.known_pages %}
-        <p class="lib-how-note">{% icon "activity", "size-3.5" %}<span>{{ "library.how_crawl_progress" | t(lang, {crawled: (db.status.crawl.crawled_pages or 0) | libNum(lang), known: db.status.crawl.known_pages | libNum(lang)}) }}</span></p>
-        {% endif %}
+        <span class="lib-how-icon" data-tone="gv">{% icon "badge-check", "size-5" %}</span>
+        <h3 class="h-card">{{ "library.how_official_title" | t(lang) }}</h3>
+        <p>{{ "library.how_official" | t(lang) }}</p>
       </div>
       <div class="lib-how-item">
         <span class="lib-how-icon" data-tone="neta">{% icon "folder-open", "size-5" %}</span>
@@ -309,7 +312,7 @@ pageScripts: ["/assets/vendor/minisearch.js", "/assets/js/search.js", "/assets/j
     countShown: "library.count_shown" | t(lang), pages: "common.pages" | t(lang), pageOne: "library.page_one" | t(lang),
     orphan: "library.orphan" | t(lang), eventOn: "library.event_on" | t(lang), opensOn: "library.opens_on" | t(lang),
     isNew: "common.new" | t(lang), auto: "common.auto_translated" | t(lang), autoHelp: "common.auto_translated_help" | t(lang),
-    foundOn: "library.found_on" | t(lang), original: "library.original_title" | t(lang),
+    foundOn: "library.found_on" | t(lang), original: "library.original_title" | t(lang), versions: "library.versions" | t(lang),
     open: "common.open" | t(lang), download: "common.download" | t(lang), preview: "common.preview" | t(lang),
     copyLink: "common.copy_link" | t(lang), share: "common.share" | t(lang), copied: "common.copied" | t(lang),
     openAria: "library.open_aria" | t(lang), downloadAria: "library.download_aria" | t(lang), copyAria: "library.copy_aria" | t(lang),

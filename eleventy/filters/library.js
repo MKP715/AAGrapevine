@@ -24,7 +24,12 @@
 //              (a document keeps both: `l` = document language, `tl` = title language,
 //              so an untranslated title gets the right lang="" for screen readers);
 //   date     = upload month ("2026-02-01", day unknown) or the exact day; may be null;
-//   extra.orphan = no page links to the file any more (kept, but de-emphasized here).
+//   extra.orphan = no page links to the file any more (kept, but de-emphasized here);
+//   extra.versions = the language editions of ONE document (scripts/sync/pdf_curate.py merges an
+//              English and a Spanish/French edition into one entry): each page shows the edition in
+//              its own language (else the entry's), with links to every edition (`vs`), and the
+//              language facet counts every edition's language (`ls`). extra.kits = every rep kit
+//              (gvr / rlv) the document is in, when that is more than its own category says.
 //
 // Dev/test switch: LIB_EMPTY=1 npx @11ty/eleventy …  builds the library and the
 // search index as if no content had been synced yet (to check empty states).
@@ -135,7 +140,8 @@ function dehyphen(s) {
 function cleanTitle(raw, fileTitle) {
   let t = squish(safeDecode(String(raw || "")).normalize("NFC")).replace(/\.pdf$/i, "").trim();
   // A title that is really a file name ("Manual-RLV-2025", "GV_Catalog_2026") reads better de-hyphenated.
-  if (t && fileTitle && fold(t) === fold(fileTitle)) t = fileTitle;
+  // (only when it LOOKS like one: "Oración y Meditación" keeps its accents over "Oracion_y_meditacion.pdf")
+  if (t && fileTitle && fold(t) === fold(fileTitle) && (!/\s/.test(t) || /_/.test(t))) t = fileTitle;
   else if (t && !/\s/.test(t) && /[_-]/.test(t)) t = dehyphen(t);
   // Title-cased ordinals from machine translation: "30Th" → "30th".
   return t.replace(/(\d)(St|Nd|Rd|Th)\b/g, (m, d, s) => d + s.toLowerCase());
@@ -255,8 +261,9 @@ export function docKitType(item) {
 
 function collectionsFor(doc) {
   let co = "";
-  if (doc.kit === "gvr") co += "g";
-  if (doc.kit === "rlv") co += "r";
+  const kits = new Set([doc.kit, ...(doc.ks || [])]);
+  if (kits.has("gvr")) co += "g";
+  if (kits.has("rlv")) co += "r";
   if (doc.c === "catalog") co += "c";
   if (doc.c === "flyer" || doc.c === "postcard") co += "f";
   if (doc.c === "news") co += "n";
@@ -286,7 +293,7 @@ function normalizeDoc(item, lang, helpers) {
     t = cleanTitle(helpers.pickLang(item, "title", lang), fileTitle) || orig;
     if (isGeneric(t) || looksBroken(t, orig)) { t = orig; machine = false; }
   }
-  if (!t) { t = orig = fileTitle || hostOf(openUrl) || "PDF"; fromFile = true; } // never an empty heading
+  if (!t) { t = orig = fileTitle || hostOf(openUrl) || tryKey(helpers, "library.untitled", lang) || "…"; fromFile = true; } // never an empty heading
   if (fold(t) === fold(orig)) machine = false; // "translation" identical to original → not worth a note
 
   // --- source: where the file was published --------------------------------
@@ -352,6 +359,7 @@ function normalizeDoc(item, lang, helpers) {
     or: !isDrive && ex.orphan === true, // no page links to it any more
     n: !!item.is_new,
     fname: fileTitle,
+    ks: Array.isArray(ex.kits) ? ex.kits.filter((k) => KITS.has(k)) : [],
     panel: ex.panel_label || "",
     // Undated crawled PDFs sort last ("first found today" says nothing about their age).
     ts: date ? date.getTime() : isDrive ? fs : 0,
@@ -360,6 +368,35 @@ function normalizeDoc(item, lang, helpers) {
   doc.co = collectionsFor(doc);
   return doc;
 }
+
+/* ---- language editions (extra.versions, see scripts/sync/pdf_curate.py) ---- */
+const VERSION_FIELDS = ["host", "file_url", "filename", "size_bytes", "pages", "thumb", "upload_month", "referrers", "event_date", "orphan"];
+/** The editions of a merged document (2+ with a language and a web link), else null. */
+function versionsOf(item) {
+  const vs = Array.isArray(item?.extra?.versions) ? item.extra.versions.filter((v) => v && okLang(v.lang) && SAFE_URL.test(v.url || "")) : [];
+  return vs.length > 1 ? vs : null;
+}
+/** The entry as seen through one of its editions (the fields normalizeDoc reads). */
+function editionItem(item, v) {
+  const ex = { ...(item.extra || {}), doc_lang: v.lang, file_url: v.file_url || v.url };
+  for (const k of VERSION_FIELDS) if (k !== "file_url") ex[k] = v[k] ?? null;
+  delete ex.versions;
+  return {
+    ...item,
+    url: v.url,
+    title: v.title || item.title,
+    lang: okLang(v.title_lang) || v.lang,
+    i18n: { ...(item.i18n || {}), title: v.i18n_title || {} },
+    machine: Array.isArray(v.machine) ? v.machine : [],
+    date: v.date ?? item.date,
+    first_seen: v.first_seen || item.first_seen,
+    category: v.category || item.category,
+    tags: Array.isArray(v.tags) ? v.tags : item.tags,
+    extra: ex,
+  };
+}
+// Language names in their own language, for the edition links ("English · Español").
+const ENDONYMS = { en: "English", es: "Español", fr: "Français" };
 
 const cache = new Map(); // key: lang + items identity → docs (rebuilt every build)
 let cacheGen = null;
@@ -376,7 +413,24 @@ export function libraryDocs(db, lang, helpers) {
   const seen = new Set();
   const add = (it) => {
     let d = null;
-    try { d = normalizeDoc(it, lang, helpers); } catch (e) { console.warn(`[library] skipped ${it && it.id}: ${e.message}`); }
+    try {
+      const vs = it.source !== "drive" && it.source !== "committee" ? versionsOf(it) : null;
+      if (vs) {
+        // One card per document: the edition in the page language (else the entry's own), with
+        // links to every edition — this page's language first.
+        const cur = vs.find((v) => v.lang === lang) || vs.find((v) => v.id === it.id) || vs[0];
+        d = normalizeDoc(editionItem(it, cur), lang, helpers);
+        if (d) {
+          d.id = it.id; // the same anchor (#doc-…) in both languages
+          const ordered = [cur, ...vs.filter((v) => v !== cur)];
+          d.ls = [...new Set(ordered.map((v) => v.lang))];
+          // One bilingual file filed under each site's language: no edition links (it is the same file).
+          d.vs = it.extra.same_file ? [] : ordered.map((v) => ({ l: v.lang, u: v.url, name: ENDONYMS[v.lang] || v.lang.toUpperCase() }));
+          // Other editions' titles are search words too ("Descarga de audios" finds "Audio Downloads").
+          d.alt = [...new Set(ordered.slice(1).map((v) => cleanTitle(v.title || "", "")).filter((t) => t && fold(t) !== fold(d.t) && fold(t) !== fold(d.o)))].join(" · ");
+        }
+      } else d = normalizeDoc(it, lang, helpers);
+    } catch (e) { console.warn(`[library] skipped ${it && it.id}: ${e.message}`); }
     if (d && d.id && !seen.has(d.id)) { seen.add(d.id); out.push(d); }
   };
   for (const it of pdfs) {
@@ -398,7 +452,10 @@ export function libraryDocs(db, lang, helpers) {
 
 export function libraryFacets(docs, lang, helpers) {
   const count = (key) => { const m = new Map(); for (const d of docs) { const v = d[key]; if (v === null || v === "" || v === undefined) continue; m.set(v, (m.get(v) || 0) + 1); } return m; };
-  const src = count("s"), lng = count("l"), cat = count("c"), yr = count("y");
+  const src = count("s"), cat = count("c"), yr = count("y");
+  // A document with editions in several languages counts once in each of them.
+  const lng = new Map();
+  for (const d of docs) for (const l of d.ls && d.ls.length ? d.ls : [d.l]) if (l) lng.set(l, (lng.get(l) || 0) + 1);
   const langLabel = (k) => tryKey(helpers, "library.lang." + k, lang) || k.toUpperCase();
   return {
     src: SOURCES.filter((x) => src.get(x.key)).map((x) => ({ key: x.key, label: helpers.translateKey("library.src." + x.key, lang), count: src.get(x.key), tone: x.tone })),
@@ -461,8 +518,11 @@ export function libraryIndex(db, lang, helpers) {
     if (d.k !== "pdf") o.k = d.k;
     if (d.ft !== "pdf") o.ft = d.ft;
     if (d.co) o.co = d.co;
-    // Extra search words: the file name, when it adds words the titles don't have.
-    if (d.fname && !fold(d.t + d.o).includes(fold(d.fname))) o.x = d.fname;
+    if (d.ls && d.ls.length > 1) o.ls = d.ls; // languages of all its editions (language facet)
+    if (d.vs && d.vs.length > 1) o.vs = d.vs.map((v) => [v.l, v.u]); // edition links, this page's language first
+    // Extra search words: the file name, when it adds words the titles don't have; other editions' titles.
+    const xw = [d.fname && !fold(d.t + d.o).includes(fold(d.fname)) ? d.fname : "", d.alt || ""].filter(Boolean).join(" · ");
+    if (xw) o.x = xw;
     if (d.r) {
       const key = d.r.url;
       if (!refIdx.has(key)) { refIdx.set(key, refs.length); refs.push([d.r.url, d.r.title]); }
@@ -717,7 +777,7 @@ export function searchIndex(db, nav, lang, helpers, site) {
         // d.o is empty when d.t is the original title (language d.tl); d.l is the document's language.
         id: d.id, k: d.k === "pdf" ? "pdf" : d.k, t: d.t, o: d.o, ol: d.tl, tl: d.o ? lang : d.tl,
         s: uniq([d.ev ? T("library.event_on", { date: helpers.fmtDate(d.ev, lang, "medium") }) : "", catLabel(helpers, d.c, lang), d.r && d.r.title]),
-        x: [d.fname && !fold(d.t + d.o).includes(fold(d.fname)) ? d.fname : "", kitWords].filter(Boolean).join(" "),
+        x: [d.fname && !fold(d.t + d.o).includes(fold(d.fname)) ? d.fname : "", d.alt || "", kitWords].filter(Boolean).join(" "),
         u: d.u, d: d.d, dp: d.dp, l: d.l, src: d.s, im: d.th && (d.s === "neta" || d.th.startsWith("/")) ? d.th : "", m: d.m, n: d.n && !d.or, z: d.or,
       });
     }

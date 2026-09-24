@@ -632,8 +632,8 @@
     "es": "{date} · 9–11 a. m. · Centro Cívico de Tyler"
   },
   "committee.events.naming_tip": {
-    "en": "The date comes first, as year-month-day. A time (“9am”, “9-11am”) and a place after “@” are optional. PDF and image flyers (JPG, PNG) both work.",
-    "es": "La fecha va primero, como año-mes-día. La hora (“9am”, “9-11am”) y el lugar después de “@” son opcionales. Sirven volantes en PDF o en imagen (JPG, PNG)."
+    "en": "The date comes first, as year-month-day. A time (“9am”, “9-11am”) and a place after “@” are optional. Document and image flyers (JPG, PNG) both work.",
+    "es": "La fecha va primero, como año-mes-día. La hora (“9am”, “9-11am”) y el lugar después de “@” son opcionales. Sirven volantes en documento o en imagen (JPG, PNG)."
   },
   "committee.events.mail_subject": {
     "en": "Event flyer for the website",
@@ -820,8 +820,8 @@
     "es": "Pon el archivo en la carpeta correcta."
   },
   "committee.docs.how_2": {
-    "en": "PDFs, Word files, slides, photos or Google Forms all work. Tip: start the name with a date like “2027-01-15” to set its date.",
-    "es": "Sirven PDF, archivos de Word, presentaciones, fotos o formularios de Google. Consejo: empieza el nombre con una fecha como “2027-01-15” para fijar su fecha."
+    "en": "Documents, Word files, slides, photos or Google Forms all work. Tip: start the name with a date like “2027-01-15” to set its date.",
+    "es": "Sirven documentos, archivos de Word, presentaciones, fotos o formularios de Google. Consejo: empieza el nombre con una fecha como “2027-01-15” para fijar su fecha."
   },
   "committee.docs.how_3_title": {
     "en": "That's it.",
@@ -932,8 +932,8 @@
     "es": "Otros"
   },
   "committee.type.pdf": {
-    "en": "PDF",
-    "es": "PDF"
+    "en": "Document",
+    "es": "Documento"
   },
   "committee.type.slides": {
     "en": "Slides",

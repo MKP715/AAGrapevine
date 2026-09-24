@@ -17,7 +17,7 @@ pageScripts: ["/assets/js/community.js"]
 {%- set actionsUrl = "https://github.com/MKP715/AAGrapevine/actions" -%}
 {#- how the committee adds an event by hand (content/events/README.md) — linked from a blocked calendar feed -#}
 {%- set eventsHowtoUrl = "https://github.com/MKP715/AAGrapevine/blob/main/content/events/README.md" -%}
-{%- set srcIcons = { drive: "folder-open", articles: "newspaper", pdfs: "file-text", youtube: "youtube", podcasts: "headphones", instagram: "instagram", editorial: "pen-line", events_external: "calendar-days", announcements: "megaphone", manual_events: "calendar-plus", weekly_open: "video", shop: "shopping-bag", translations: "languages" } -%}
+{%- set srcIcons = { drive: "folder-open", articles: "newspaper", pdfs: "file-text", youtube: "youtube", podcasts: "headphones", instagram: "instagram", editorial: "pen-line", events_external: "calendar-days", announcements: "megaphone", manual_events: "calendar-plus", weekly_open: "video", shop: "shopping-bag", meetings: "map-pin", translations: "languages" } -%}
 
 {% call ui.pageHero(lang, "nav.status" | t(lang), "community.status.hero_sub" | t(lang), "activity", "community.status.eyebrow" | t(lang)) %}
 <div class="hero-actions cm-hero-tight">

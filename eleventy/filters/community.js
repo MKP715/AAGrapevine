@@ -1,5 +1,5 @@
-// Filters for the "community" pages: What's New, Weekly Digest, Districts,
-// Share Kit (QR), Status, RSS feeds and sitemap.
+// Filters for the "community" pages: What's New, Weekly Digest, the GV/LV report (on the
+// Monthly toolkit, /monthly/#report), Share Kit (QR), Status, RSS feeds and sitemap.
 //
 // Everything here is pure data shaping (no network), so the pages keep
 // working with empty data and the build never fails because a source was
@@ -803,7 +803,7 @@ function uniqByTitle(items, lang) {
 }
 
 /* ------------------------------------------------------------------ */
-/*  District report template                                           */
+/*  GV/LV report template (/monthly/#report)                           */
 /* ------------------------------------------------------------------ */
 /**
  * Newest issue of a publication: articles.json `issues` (newest first, with
@@ -855,7 +855,7 @@ export function reportText(rd, lang, site, t) {
   let n = 0;
   const num = () => `${++n}.`;
 
-  // "56 articles, 8 podcast episodes, 10 videos and 1 service PDF" — zero counts are left out.
+  // "56 articles, 8 podcast episodes, 10 videos and 1 service document" — zero counts are left out.
   const counts = [["article", rd.articles], ["episode", rd.episodes], ["video", rd.videos], ["pdf", rd.pdfs]]
     .filter(([, n]) => n > 0)
     .map(([k, n]) => T(n === 1 ? `n_${k}_one` : `n_${k}`, { n }));
@@ -1160,11 +1160,6 @@ export default function (eleventyConfig, helpers) {
     }
     return [...m.entries()].map(([key, list]) => ({ key, items: list }));
   });
-
-  // Districts sorted by number; entries without a number are dropped.
-  eleventyConfig.addFilter("cmDistricts", (items) =>
-    (items || []).filter((d) => d && d.number !== undefined && d.number !== null && d.number !== "")
-      .sort((a, b) => (Number(a.number) || 0) - (Number(b.number) || 0) || String(a.number).localeCompare(String(b.number))));
 
   // mailto: with subject AND body (the shared `mailto` filter only takes a subject)
   eleventyConfig.addFilter("cmMailto", (email, subject = "", body = "") => {

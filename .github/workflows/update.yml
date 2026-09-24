@@ -221,6 +221,10 @@ jobs:
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
           IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
           IG_BUSINESS_ID: ${{ secrets.IG_BUSINESS_ID }}
+          # Meeting-list keys of Dallas Intergroup / Fort Worth Central Office (scripts/sync/meetings.py);
+          # without them the key stored in config/site.yml (feed_obf) is used.
+          TSML_KEY_AADALLAS: ${{ secrets.TSML_KEY_AADALLAS }}
+          TSML_KEY_FORTWORTHAA: ${{ secrets.TSML_KEY_FORTWORTHAA }}
           GV_TRANSLATE_MINUTES: ${{ steps.plan.outputs.translate }}
           MODE: ${{ steps.plan.outputs.mode }}
           MINUTES: ${{ steps.plan.outputs.minutes }}
@@ -438,13 +442,13 @@ jobs:
                             "the site's webmaster can let calendar requests through (see the comment above "
                             "ics_feeds in config/site.yml).")
           # Settings build_data could not use (config/site.yml `meeting:` / `recurring_events:` /
-          # `sources.ics_feeds:`, content/districts.yml, a slip in a content/events file such as a
+          # `sources.ics_feeds:`, a slip in a content/events file such as a
           # location_es left saying "Lugar por anunciarse"): that part was skipped or corrected, the
           # rest of the site still updated.
           probs = s.get("problems") if isinstance(s.get("problems"), dict) else {}
           settings = [(k, " ".join(str(v).split()).replace("|", "/")[:1000])
                       for k, v in probs.items()
-                      if k in ("meeting", "recurring_events", "ics_feeds", "content_events", "districts")]
+                      if k in ("meeting", "recurring_events", "ics_feeds", "content_events")]
           if settings:
               lines += ["", "**Settings problems** (the rest of the site still updated — fix the file and save it again):",
                         *[f"- {msg}" for _k, msg in settings]]

@@ -1,0 +1,51 @@
+[
+ {
+  "id": 186,
+  "name": "Sunshine",
+  "slug": "sunshine-4",
+  "updated": "2026-07-02 15:00:24",
+  "location_id": 411,
+  "url": "https://district71.org/?tsml_meeting=sunshine-4",
+  "day": 4,
+  "time": "12:15",
+  "end_time": "13:15",
+  "time_formatted": "12:15 pm",
+  "types": [
+   "C",
+   "GR",
+   "ONL"
+  ],
+  "location": "Alexander Building",
+  "location_url": "https://district71.org/?tsml_location=alexander-building",
+  "formatted_address": "104 Pine St #102, Abilene, TX 79601, USA",
+  "approximate": "no",
+  "latitude": 32.4497575,
+  "longitude": -99.733156,
+  "timezone": "America/Chicago",
+  "group_id": 409,
+  "group": "Sunshine Group",
+  "attendance_option": "hybrid",
+  "entity": "District 71 AA",
+  "entity_url": "https://district71.org",
+  "author": "7",
+  "edit_url": "https://example.org/wp-admin/post.php?post=1&action=edit",
+  "email": "someone@example.org",
+  "entity_email": "office@example.org",
+  "entity_phone": "(555) 010-0000",
+  "phone": "(555) 010-0001",
+  "conference_url": "https://zoom.us/j/0000000000?pwd=FAKE",
+  "conference_phone": "+15550100002,,0000000000#",
+  "conference_url_notes": "Passcode: FAKE",
+  "feedback_emails": [
+   "feedback@example.org"
+  ],
+  "contact_1_name": "Pat X.",
+  "contact_1_phone": "(555) 010-0003",
+  "mailing_address": "PO Box 0, Nowhere, TX 00000",
+  "venmo": "@fake",
+  "square": "$fake",
+  "notes": "Call (555) 010-0004 for directions",
+  "group_notes": "Contact pat@example.org",
+  "location_notes": "Park in back"
+ }
+]

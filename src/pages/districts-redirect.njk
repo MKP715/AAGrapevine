@@ -1,0 +1,45 @@
+---
+# The old /districts/ address (and /es/districts/) → the GV/LV report on the Monthly toolkit
+# (/monthly/#report), its one home now. A tiny stand-alone page like subscribe-redirect.njk:
+# JavaScript keeps an anchor that still exists on /monthly/ (#report, #ways …) and any ?query,
+# and sends every other old anchor (#kit, #dir-title …) to #report; without JavaScript the meta
+# refresh goes to /monthly/#report. noindex + canonical point search engines at /monthly/, and
+# the stub is kept out of the sitemap, the search index and page lists.
+pagination: { data: languages, size: 1, alias: lang }
+permalink: "{{ '/' if lang == 'en' else '/es/' }}districts/index.html"
+layout: false
+sitemap: false
+eleventyExcludeFromCollections: true
+---
+{%- set target = "/monthly/" | lurl(lang) -%}
+<!doctype html>
+<html lang="{{ lang }}">
+<head>
+<meta charset="utf-8">
+{#- the base plugin does not rewrite script text, so the url filter adds the path prefix -#}
+<script>var h = /^#(report|ways|mp-)/.test(location.hash) ? location.hash : "#report"; location.replace({{ (target | url) | dump | safe }} + location.search + h);</script>
+<meta http-equiv="refresh" content="0; url={{ target }}#report">{#- the HTML base plugin adds the path prefix here -#}
+<meta name="robots" content="noindex">
+<link rel="canonical" href="{{ target | siteUrl(site) }}">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<title>{{ "community.report.title" | t(lang) }} · {{ site | pick(lang, "title") }}</title>
+<style>
+  :root { color-scheme: light dark; --paper: #fbf8f2; --ink: #1d1a26; --muted: #57526a; --link: #0a5fa8; }
+  @media (prefers-color-scheme: dark) { :root { --paper: #121019; --ink: #eeeaf6; --muted: #b3adc4; --link: #8cc2f2; } }
+  body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 16px; box-sizing: border-box;
+         font: 17px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background: var(--paper); color: var(--ink); }
+  main { max-width: 34rem; text-align: center; overflow-wrap: anywhere; }
+  h1 { font-family: Georgia, "Times New Roman", serif; font-size: 1.6rem; margin: 0 0 .5rem; }
+  p { margin: .5rem 0; color: var(--muted); }
+  a { color: var(--link); font-weight: 600; }
+</style>
+</head>
+<body>
+<main>
+  <h1>{{ "community.report.moved_title" | t(lang) }}</h1>
+  <p>{{ "community.report.moved_text" | t(lang) }}</p>
+  <p><a href="{{ target }}#report">{{ "community.report.title" | t(lang) }} →</a></p>
+</main>
+</body>
+</html>

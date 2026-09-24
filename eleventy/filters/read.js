@@ -370,6 +370,30 @@ export function archiveSince(file) {
 /* ------------------------------------------------------------------ */
 /*  PDFs: kits, catalogs, forms, related links                         */
 /* ------------------------------------------------------------------ */
+/* A document with language editions (extra.versions: scripts/sync/pdf_curate.py merges e.g. an English
+   and a Spanish edition into ONE entry for the Library, search and What's New) counts here as each of
+   its editions again: the GVR kit lists the English one, the RLV kit the Spanish one, and the Shop's
+   catalog picks the copy in the page language. */
+const EDITION_FIELDS = ["host", "filename", "size_bytes", "pages", "thumb", "upload_month", "referrers", "event_date", "orphan"];
+function pdfEditions(v) {
+  const out = [];
+  for (const p of itemsOf(v)) {
+    const vs = Array.isArray(p.extra && p.extra.versions) ? p.extra.versions.filter((e) => e && e.url) : [];
+    if (vs.length < 2) { out.push(p); continue; }
+    for (const e of vs) {
+      const ex = { ...p.extra, doc_lang: e.lang, file_url: e.file_url || e.url };
+      for (const k of EDITION_FIELDS) ex[k] = e[k] ?? null;
+      delete ex.versions;
+      out.push({
+        ...p, id: e.id || p.id, url: e.url, title: e.title || p.title, lang: e.title_lang || e.lang,
+        i18n: { ...(p.i18n || {}), title: e.i18n_title || {} }, machine: e.machine || [], date: e.date ?? p.date,
+        category: e.category || p.category, tags: Array.isArray(e.tags) ? e.tags : p.tags, extra: ex,
+      });
+    }
+  }
+  return out;
+}
+
 function pdfText(item) {
   const e = item.extra || {};
   const bits = [item.title, basename(e.file_url || item.url), ...(e.link_texts || []), item.category, ...(item.tags || [])];
@@ -415,7 +439,7 @@ export function kitItems(pdfs, which) {
   const re = which === "rlv" ? /\/recursos(\/|$|[?#])/i : /\/gvr-resources(\/|$|[?#])/i;
   const seen = new Set();
   const out = [];
-  for (const p of itemsOf(pdfs)) {
+  for (const p of pdfEditions(pdfs)) {
     if (!(p.category === which || refMatches(p, re))) continue;
     const key = p.url || p.id;
     if (seen.has(key)) continue;
@@ -460,7 +484,7 @@ export function kitGroups(items) {
 export function catalogItems(pdfs, lang) {
   const seen = new Set();
   const found = [];
-  for (const p of itemsOf(pdfs)) {
+  for (const p of pdfEditions(pdfs)) {
     if (hasTag(p, "postcard") || hasTag(p, "order-form") || hasTag(p, "flyer")) continue;
     const t = pdfText(p);
     const isCat = hasTag(p, "catalog") || (/cat[aá]logo?s?\b|catalogue/i.test(t) && !/\b(postcard|postal|pc|order|pedido)\b/i.test(t));
@@ -489,7 +513,7 @@ export function catalogItems(pdfs, lang) {
 export function formItems(pdfs) {
   const out = { gv: [], lv: [] };
   const seen = new Set();
-  for (const p of itemsOf(pdfs).slice().sort(byDateDesc)) {
+  for (const p of pdfEditions(pdfs).slice().sort(byDateDesc)) {
     if (!(hasTag(p, "order-form") || (kitGroup(p) === "forms" && (p.category === "gvr" || p.category === "rlv")))) continue;
     const k = squash(cleanFileTitle(p.title || basename(p.url)));
     if (seen.has(p.url) || seen.has(k)) continue;
@@ -505,7 +529,7 @@ export function pdfsMatching(pdfs, pattern, n = 4) {
   try { re = new RegExp(pattern, "i"); } catch { return []; }
   const seen = new Set();
   const out = [];
-  const sorted = itemsOf(pdfs).slice().sort(byDateDesc);
+  const sorted = pdfEditions(pdfs).slice().sort(byDateDesc);
   for (const p of sorted) {
     if (!re.test(pdfText(p))) continue;
     const k = squash(cleanFileTitle(p.title || basename(p.url)));
@@ -525,7 +549,7 @@ const WRITER_KIT = [
   /pautas para colaborar|gu[ií]a para (las )?contribuciones/i,
 ];
 export function writerKit(pdfs, n = 4) {
-  const all = itemsOf(pdfs).slice().sort(byDateDesc);
+  const all = pdfEditions(pdfs).slice().sort(byDateDesc);
   const out = [];
   const seen = new Set();
   for (const re of WRITER_KIT) {

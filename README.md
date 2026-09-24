@@ -51,7 +51,7 @@ Las instrucciones detalladas están abajo (en inglés); puede usar el traductor 
 |---|---|
 | picks up new **Grapevine** and **La Viña** magazine stories | **upload files** to the committee's Google Drive folders (flyers, reports, notes, slides, photos) |
 | searches **aagrapevine.org** and **aalavina.org** for every **PDF** (flyers, catalogs, GVR/RLV kits, order forms…) | *(optional)* change a setting in **`config/site.yml`** |
-| adds new episodes of **both podcasts**, new **YouTube** videos and **Instagram** posts | *(optional)* add your **districts** in **`content/districts.yml`** |
+| adds new episodes of **both podcasts**, new **YouTube** videos and **Instagram** posts | |
 | turns dated **flyers** into **events** and Drive docs into **announcements** | *(rarely)* fix a translation in **`data/translations/overrides.yml`** |
 | **translates everything** English ⇄ Spanish (free, open-source, no account needed) | |
 | rebuilds and publishes the website — and keeps the last good version if a source is down | |
@@ -66,7 +66,7 @@ No paid services, no passwords or API keys required.
 1. [What updates automatically](#1-what-updates-automatically)
 2. [Your part: uploading to Google Drive](#2-your-part-uploading-to-google-drive)
 3. [Changing settings (`config/site.yml`)](#3-changing-settings-configsiteyml)
-4. [Adding districts](#4-adding-districts)
+4. [The monthly GV/LV report](#4-the-monthly-gvlv-report)
 5. [Fixing a translation](#5-fixing-a-translation)
 6. [Announcements and events without Drive (optional)](#6-announcements-and-events-without-drive-optional)
 7. [Running the update right now](#7-running-the-update-right-now)
@@ -126,13 +126,15 @@ What the newer pages do:
   deadlines, dates (committee meeting, the CityWide booth, workshops) and a **poster** in its own seasonal
   design to download as a PNG for WhatsApp / Instagram (1080 × 1350), share, or print on one letter page.
   Its QR code opens that month's page; the three previous months' addresses forward to `/monthly/`.
+  The same page holds the **GV/LV report** for district meetings (`/monthly/#report`, see section 4); the old
+  `/districts/` address forwards there.
 - **La Viña's weekly open meeting**: `/meeting/#weekly-open` shows both public weekly meetings (Grapevine on
   Wednesdays in English, La Viña on Thursdays in Spanish) with day, time and Zoom details — the one place
   with those details; other pages link there.
 
 **Menus** (`src/_data/nav.js`): What's New · Read · Listen · Watch · Library · Shop ·
-**Get Involved** (monthly toolkit, share your story, published writers, GVR / RLV corner,
-districts) · **Committee** (meeting & weekly open meetings, events, documents, photos, announcements).
+**Get Involved** (monthly toolkit & GV/LV report, share your story, published writers, GVR / RLV
+corner) · **Committee** (meeting & weekly open meetings, events, documents, photos, announcements).
 Instagram, the weekly digest, the share kit, search and status are in the footer and the phone menu.
 Each piece of information has one home page; other pages only link to it.
 
@@ -226,6 +228,7 @@ Common changes:
 | Zoom link, meeting ID, passcode | `meeting:` → `zoom_url`, `meeting_id`, `passcode` |
 | Contact e-mail | `site:` → `contact_email` and `meeting:` → `chair_email` |
 | Which Drive panels are shown | `drive:` → `min_panel` |
+| The offices whose Grapevine meetings are listed (our Area and nearby) | `meetings:` → `feeds` (each with `region_label`; `enabled: false` hides the list) |
 | How long the daily PDF search runs | `sources:` → `crawler:` → `minutes_per_run` (default 40; **`0` pauses the PDF search** — everything else keeps updating) |
 | Instagram: official method only | `sources:` → `instagram:` → `anonymous: false` (see [section 9](#9-instagram-how-the-site-reads-it-please-read)) |
 | Another website's calendar on the Events page | `sources:` → `ics_feeds:` (instructions in the comments there) |
@@ -286,23 +289,15 @@ Set `enabled: false` (or delete the block) to take it off the site.
 
 ---
 
-## 4. Adding districts
+## 4. The monthly GV/LV report
 
-Edit [`content/districts.yml`](content/districts.yml) the same way (pencil icon → commit). Only the number is required:
-
-```yaml
-districts:
-  - number: 54
-    name: "Garland – Mesquite"
-    language: en                 # en | es | both
-    website: "https://www.example-district54.org"
-    gvr_contact: "gvr@example-district54.org"
-    meets: "2nd Sunday, 3 PM"
-  - number: 89
-    language: es
-```
-
-Write names in English **or** Spanish — they are translated automatically.
+Nothing to edit: **Monthly toolkit → Your monthly report** (`/monthly/#report`) is a two-minute report a
+GVR / RLV can read aloud at the district meeting, in English or Spanish, with a copy button. It fills
+itself in on every update — what is new, the current issues, published writers from our Area, story
+deadlines, coming events and the next committee meeting (`eleventy/filters/community.js` → `reportText`).
+Tips for a good report and the Area's published writers sit beside it. (The old *Districts* page and its
+`content/districts.yml` list were retired; its news feed, calendar, digest and poster links live on
+`/events/`, `/digest/`, `/share/` and in the footer.)
 
 ---
 
@@ -519,6 +514,18 @@ The next run uses the API automatically. Full technical notes are at the top of
 `scripts/sync/instagram.py`. If the token ever stops working, the Status page shows an Instagram
 error; generate a new token and replace the secret.
 
+### Meeting-list keys (Dallas, Fort Worth) — usually nothing to do
+
+The Meetings page lists the Grapevine meetings of the intergroups' public meeting lists
+(`meetings:` in `config/site.yml`). Dallas Intergroup and the Fort Worth Central Office answer
+their full list only with a key. The key is already stored in the settings (`feed_obf`), hidden the
+same way the Rowlett Group's meetings page hides it (written backwards and base64-encoded — this
+only keeps it from casual reading, it is not encryption). If an office gives out a new key, either
+add it as the GitHub secret **`TSML_KEY_AADALLAS`** / **`TSML_KEY_FORTWORTHAA`** (the key alone), or run
+`python -m scripts.sync.meetings --obfuscate "<the full list address with the new key>"` and paste the
+result into that office's `feed_obf`. Without any working key, the office's public meeting page is read
+instead, so the meetings keep showing.
+
 ### c) Weekly e-mail digest: keep every district informed
 
 Once a week (Monday by default) the site can e-mail a clean **English + Spanish** summary: the next
@@ -683,7 +690,7 @@ the new **Events** page, in Spanish if they had chosen Spanish on the old site.
 | Yellow ⚠ "Translation models missing" or "Translation is not working" | The free translation models could not be downloaded (their website was down or moved) | New titles stay in their original language; nothing else is affected. If it lasts more than a few days, send the run's log to whoever helps with the website. |
 | Run fails at "Publish to GitHub Pages" with *environment protection* | The `github-pages` environment only allows certain branches | **Settings → Environments → github-pages** → allow the `main` branch. |
 | The weekly e-mail did not arrive | Secrets missing, wrong app password, not the configured weekday, or nothing new that week | Open the **Weekly e-mail digest** run: it says exactly which. Gmail needs an **app password**. |
-| An issue "Broken links found by the weekly check" appeared | A link in the settings or a district website moved | Open the issue; fix the address in `config/site.yml` or `content/districts.yml`. It closes itself when fixed. |
+| An issue "Broken links found by the weekly check" appeared | A link in the settings or in a `content/` file moved | Open the issue; fix the address in `config/site.yml` or the `content/` file. It closes itself when fixed. |
 
 Still stuck? Open the failed run, click the red step, copy the last 20 lines, and send them to
 whoever helps with the website (or open an **Issue** in this repository).

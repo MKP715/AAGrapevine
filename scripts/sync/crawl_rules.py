@@ -31,6 +31,12 @@ SPANISH_HOSTS = ("www.aalavina.org",)
 # Both hosts share ONE files directory (/sites/default/files/…): the same PDF is reachable on
 # either host. Identity (id / thumbnail name) is therefore computed on this host.
 CANON_FILES_HOST = "www.aagrapevine.org"
+# Documents are recorded ONLY when the file itself is on an official AA host (subdomains included):
+# the two magazine sites, AA World Services (aa.org) and AAWS's asset library (aaws.widen.net).
+# A flyer on a local AA website that a Grapevine event page links to is left out.
+# config/site.yml `library.official_hosts` replaces this list (build_data.py applies the same rule
+# to documents recorded before it existed).
+OFFICIAL_DOC_HOSTS = ("aagrapevine.org", "aalavina.org", "aa.org", "aaws.widen.net")
 
 # Pages fetched EVERY day (cheap: ~40 pages ≈ 3.5 min at the 5 s crawl-delay). Only pages that are
 # not redirects: "/home" is left out on purpose — both hosts redirect it to "/", already listed.
@@ -233,6 +239,35 @@ def is_drupal_host(host: str) -> bool:
     return _norm_host(host) in DRUPAL_HOSTS
 
 
+def official_doc_hosts(cfg: dict | None = None) -> tuple[str, ...]:
+    """The official document hosts: config/site.yml `library.official_hosts`, else OFFICIAL_DOC_HOSTS."""
+    if cfg is None:
+        try:
+            from .common import load_config
+            cfg = load_config()
+        except Exception:          # no/broken config: the built-in list
+            cfg = {}
+    lib = (cfg or {}).get("library") if isinstance(cfg, dict) else None
+    raw = lib.get("official_hosts") if isinstance(lib, dict) else None
+    hosts = [h.strip().lower().strip(".") for h in raw if isinstance(h, str) and h.strip()] \
+        if isinstance(raw, (list, tuple)) else []
+    return tuple(hosts) or OFFICIAL_DOC_HOSTS
+
+
+def is_official_doc_host(host: str | None, hosts: tuple[str, ...] | list[str] | None = None) -> bool:
+    """'www.aagrapevine.org', 'aa.org', 'aaws.widen.net' → True; 'www.aawv.org', 'aa-montana.org' → False.
+    A host matches an official host or any of its subdomains ('www.aa.org' ⊂ 'aa.org')."""
+    h = (host or "").lower().strip(".")
+    h = re.sub(r":\d+$", "", h)
+    if not h:
+        return False
+    for o in (hosts if hosts is not None else official_doc_hosts()):
+        o = str(o).lower().strip(".")
+        if o and (h == o or h.endswith("." + o)):
+            return True
+    return False
+
+
 # An href without a scheme that starts with an e-mail address or a host name ("www.x.org",
 # "store.aagrapevine.org/…", "name@x.com") — a missing "https://" or "mailto:", never a page here.
 _SCHEMELESS_JUNK = re.compile(
@@ -321,12 +356,22 @@ def pdf_identity(url: str) -> str:
 
 
 def pdf_url_from_href(href: str, page_url: str, *, type_attr: str = "", classes: str = "",
-                      text: str = "") -> str | None:
-    """If an <a href>/<iframe src> points to a PDF return its canonical URL, else None.
+                      text: str = "", hosts: tuple[str, ...] | list[str] | None = None) -> str | None:
+    """If an <a href>/<iframe src> points to a PDF on an OFFICIAL host (see OFFICIAL_DOC_HOSTS;
+    `hosts` overrides the configured list) return its canonical URL, else None.
 
     Recognises: *.pdf (any case, with ?query), PDF viewers (?file=/x.pdf, docs.google.com/viewer?url=),
     Drupal file links marked type="application/pdf" / class *application-pdf*, and
-    /media/<id>/download or /file/<id> links whose text is a *.pdf file name."""
+    /media/<id>/download or /file/<id> links whose text is a *.pdf file name.
+    A PDF on any other site (a local event flyer) is not recorded: None."""
+    url = _pdf_link(href, page_url, type_attr=type_attr, classes=classes, text=text)
+    if url and not is_official_doc_host(urlsplit(url).hostname, hosts):
+        return None
+    return url
+
+
+def _pdf_link(href: str, page_url: str, *, type_attr: str = "", classes: str = "", text: str = "") -> str | None:
+    """pdf_url_from_href without the official-host rule."""
     href = (href or "").strip()
     if not href or href.startswith(("#", "mailto:", "tel:", "javascript:", "data:")):
         return None

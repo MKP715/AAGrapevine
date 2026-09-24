@@ -118,7 +118,7 @@ pageScripts: ["/assets/js/community.js"]
     <div class="card card-pad">
       <h2 class="h-card flex items-center gap-2">{% icon "link", "size-5 text-gv" %} {{ "community.share.links_title" | t(lang) }}</h2>
       <ul class="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-1" role="list">
-      {% for k in [{ label: "community.share.link_home", path: "/" }, { label: "community.share.link_new", path: "/whats-new/" }, { label: "community.share.link_meeting", path: "/meeting/" }, { label: "community.share.link_gvr", path: "/gvr/" }, { label: "nav.published", path: "/published/" }, { label: "nav.digest", path: "/digest/" }, { label: "nav.districts", path: "/districts/" }] %}
+      {% for k in [{ label: "community.share.link_home", path: "/" }, { label: "community.share.link_new", path: "/whats-new/" }, { label: "community.share.link_meeting", path: "/meeting/" }, { label: "community.share.link_gvr", path: "/gvr/" }, { label: "nav.published", path: "/published/" }, { label: "nav.digest", path: "/digest/" }, { label: "nav.monthly", path: "/monthly/" }] %}
       {%- set abs = k.path | lurl(lang) | siteUrl(site) -%}
       <li class="flex items-center gap-2 rounded-xl border border-line bg-surface p-1.5 pl-4">
         <span class="min-w-0 flex-1">

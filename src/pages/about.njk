@@ -15,8 +15,6 @@ descKey: read.about.meta_desc
     (the only one the site reads), never the shared root, which also holds older, unpublished
     folders and files the sync deliberately skips. -#}
 {%- set di = st | cmDriveInfo(site) -%}
-{%- set districts = db.districts.items | readItems -%}
-{%- set esDistricts = districts | where("language", "es") -%}
 {%- set counts = [
   { k: "articles", icon: "book-open", n: st | readSourceCount("articles") },
   { k: "pdfs", icon: "file-text", n: st | readSourceCount("pdfs") },
@@ -123,12 +121,7 @@ descKey: read.about.meta_desc
         <li class="card card-pad">
           <div class="flex items-center gap-3">
             <span class="grid size-11 shrink-0 place-items-center rounded-xl {{ w[1] }}">{% icon w[0], "size-5" %}</span>
-            {#- The count sits inside the title (not pushed right with ml-auto) so the
-                title keeps the full row width and wraps like its siblings. -#}
-            <h4 class="h-card min-w-0 flex-1">{{ ("read.about." + w[2] + "_t") | t(lang) }}
-              {%- if w[2] == "w4" and esDistricts.length %}
-              {%- set esCount = "read.about.w4_count" | t(lang, {n: esDistricts.length}) %} <span class="badge-muted align-middle font-sans" title="{{ esCount }}"><span aria-hidden="true">{{ esDistricts.length }}</span><span class="sr-only">({{ esCount }})</span></span>
-              {%- endif %}</h4>
+            <h4 class="h-card min-w-0 flex-1">{{ ("read.about." + w[2] + "_t") | t(lang) }}</h4>
           </div>
           <p class="mt-2 text-sm leading-relaxed text-muted">{{ ("read.about." + w[2]) | t(lang) }}</p>
         </li>

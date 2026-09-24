@@ -400,23 +400,6 @@ class MeetingConfig(unittest.TestCase):
 
 
 class BuildData(TempRaw):
-    def test_district_extra_date_is_written_as_text(self):
-        from scripts.sync import build_data as B
-        content = self.tmp / "content"
-        content.mkdir()
-        (content / "districts.yml").write_text(
-            "districts:\n  - number: 7\n    name: Tyler\n    updated: 2026-09-01\n", encoding="utf-8")
-
-        class I18nStub:
-            def want(self, *a, **k):
-                pass
-
-        with mock.patch.object(B, "CONTENT_DIR", content):
-            ctx = B.Ctx(offline=True)
-            rows = B.build_districts(ctx, I18nStub())
-        self.assertEqual(rows[0]["updated"], "2026-09-01")
-        common.write_json(self.tmp / "districts.json", {"items": rows})
-
     def test_same_language_override_only_restores_accents_and_capitals(self):
         from scripts.sync import build_data as B
         from scripts.sync import translate as T

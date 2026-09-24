@@ -24,7 +24,8 @@
 
   /* ------------------------------------------------ LISTEN: page layout
      One container below the hero, three blocks (DOM order = reading order):
-     .listen-feature (latest-episode player, page-overlap), .listen-shows, .listen-episodes.
+     .listen-side (page-overlap: the latest-episode player .listen-feature + the YouTube Short
+     .listen-short), .listen-shows, .listen-episodes.
      < 1440px: stacked, full width.
      ≥ 1440px: shows + episodes in the growing left column; the player in a fixed-width
      right column, sticky under the header while the episode list scrolls by (it is
@@ -42,12 +43,33 @@
       grid-template-areas: "shows feature" "episodes feature";
       column-gap: 3rem;
     }
-    .listen-feature { grid-area: feature; align-self: start; }
+    /* The side column spans both rows so the player can stay in view (sticky) while the
+       episodes scroll by; the Short below it then slides under the player. */
+    .listen-side { grid-area: feature; }
+    .listen-feature { position: sticky; top: calc(var(--header-h) + 1.25rem); z-index: 1; }
     .listen-shows { grid-area: shows; padding-top: 3rem; }
     .listen-episodes { grid-area: episodes; padding-top: 3rem; }
   }
   @media (width >= 112.5rem) {
     .listen-layout { grid-template-columns: minmax(0, 1fr) 31rem; column-gap: 4rem; }
+  }
+
+  /* LISTEN sidebar: player + an official YouTube Short. The narrow vertical video sits beside
+     its text, the app links under the text; 768–1439px (full width under the player) the links
+     move to a third column at the right. From 1440px it is the side column under the player. */
+  .listen-side { display: grid; grid-template-columns: minmax(0, 1fr); align-content: start; gap: 1rem; }
+  .listen-short { display: grid; grid-template-columns: 6.5rem minmax(0, 1fr); column-gap: 1rem; row-gap: 0.75rem; padding: 0.875rem; }
+  .listen-short-video { grid-row: span 2; align-self: center; overflow: hidden; border-radius: 0.875rem; background: #000;
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.1), 0 8px 20px -10px rgb(0 0 0 / 0.45); }
+  .listen-short-body { align-self: end; }
+  .listen-short-links { display: flex; flex-wrap: wrap; align-self: start; gap: 0.5rem; }
+  @media (width >= 30rem) { .listen-short { grid-template-columns: 7.5rem minmax(0, 1fr); column-gap: 1.25rem; padding: 1rem; } }
+  @media (width >= 48rem) { .listen-side { gap: 1.25rem; } }
+  @media (width >= 48rem) and (width < 90rem) {
+    .listen-short { grid-template-columns: 7.5rem minmax(0, 34rem) 1fr; align-items: center; padding: 1rem 1.5rem 1rem 1rem; }
+    .listen-short-video { grid-row: auto; }
+    .listen-short-body { align-self: center; }
+    .listen-short-links { flex-direction: column; align-items: stretch; align-self: center; justify-self: end; }
   }
 
   /* "Tell your group" card (listen + instagram): icon · text, the announcement under the
@@ -299,6 +321,15 @@ lite-youtube.media-lyt { width: 100%; max-width: none; border-radius: inherit; }
 lite-youtube.media-lyt::before { display: none; } /* title overlay: the title is shown next to the player */
 lite-youtube.media-lyt > .lyt-playbtn { filter: none; }
 lite-youtube.media-lyt > .lyt-playbtn:focus-visible { outline: 3px solid #fff; outline-offset: -6px; }
+/* LISTEN: in tall windows the whole side column (player + Short) stays in view. Unlayered, so it
+   beats the page-overlap utility's position: relative on the same element. */
+@media (width >= 90rem) and (height >= 56rem) {
+  .listen-side { align-self: start; position: sticky; top: calc(var(--header-h) + 1.25rem); }
+  .listen-side > .listen-feature { position: static; }
+}
+/* LISTEN: the sidebar's YouTube Short is vertical (9:16). */
+lite-youtube.listen-lyt::after { padding-bottom: calc(100% * 16 / 9); }
+lite-youtube.listen-lyt > .lyt-playbtn { background-size: 52px 37px; }
 
 @keyframes media-eq { 0%, 100% { height: 30%; } 50% { height: 100%; } }
 @keyframes media-pop { from { opacity: 0; transform: translateY(8px) scale(0.98); } to { opacity: 1; transform: none; } }

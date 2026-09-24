@@ -96,7 +96,7 @@ pageScripts: ["/assets/js/shop.js"]
     </span>
     {{ docPill(p, lang) }}
     {% icon "arrow-up-right", "size-4 shrink-0 text-faint" %}
-    <span class="sr-only">(PDF, {{ "common.external" | t(lang) }})</span>
+    <span class="sr-only">({{ "kind.pdf" | t(lang) | lower }}, {{ "common.external" | t(lang) }})</span>
   </a>
 </li>
 {% endmacro %}

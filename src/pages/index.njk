@@ -37,7 +37,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
   <span class="font-display text-2xl font-semibold italic leading-none">{{ "La Viña" if tone == "lv" else "Grapevine" }}</span>
   {% if item.extra and item.extra.issue_label %}<span class="text-[0.7rem] font-semibold uppercase tracking-[0.14em] opacity-80">{{ item.extra.issue_label | homeIssueLabel(L) }}</span>{% endif %}
   {% elif item.kind == "pdf" %}
-  <span class="home-sheet"><span class="home-sheet-tag">PDF</span></span>
+  <span class="home-sheet"><span class="home-sheet-tag">{% icon "file-down", "my-0.5 block size-3" %}</span></span>
   {% else %}
   <span class="grid size-14 place-items-center rounded-2xl bg-surface/70 shadow-sm">{% icon item.kind | homeKindIcon, "size-7" %}</span>
   {% endif %}
@@ -955,13 +955,13 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
 </section>
 
 {#- =====================================================================
-    10. FOR GVRs, RLVs & DISTRICTS — call-to-action band
+    10. FOR GVRs, RLVs & DISTRICTS — call-to-action band (the monthly GV/LV report lives on /monthly/#report)
     ===================================================================== -#}
 {%- set svcLinks = [
   { url: "/gvr/", icon: "badge-check", key: "nav.gvr", desc: "home.svc_corner_desc" },
   { url: "/share/", icon: "qr-code", key: "nav.share", desc: "home.svc_share_desc" },
   { url: "/digest/", icon: "mail-open", key: "nav.digest", desc: "home.svc_digest_desc" },
-  { url: "/districts/", icon: "map", key: "nav.districts", desc: "home.svc_districts_desc" },
+  { url: "/monthly/#report", icon: "clipboard-list", key: "home.svc_report", desc: "home.svc_report_desc" },
   { url: "/feed.xml", icon: "rss", key: "feeds.rss", desc: "home.svc_rss_desc" },
   { url: "/events.ics", icon: "calendar-plus", key: "feeds.ics", desc: "home.svc_ics_desc" }
 ] %}

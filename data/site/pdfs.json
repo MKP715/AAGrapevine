@@ -3,58 +3,6 @@
  "fixture": false,
  "items": [
   {
-   "id": "pdf:8b55727f0314",
-   "source": "crawl",
-   "kind": "pdf",
-   "url": "http://www.aataiwan.com/lighthouse-group/wp-content/uploads/sites/2/2012/07/Roundup-flyer-final-2017.pdf",
-   "title": "2nd Taiwan Roundup",
-   "summary": "",
-   "lang": "en",
-   "date": null,
-   "first_seen": "2026-09-23T19:37:07Z",
-   "image": null,
-   "tags": [
-    "event"
-   ],
-   "category": "flyer",
-   "status": "ok",
-   "extra": {
-    "host": "www.aataiwan.com",
-    "file_url": "http://www.aataiwan.com/lighthouse-group/wp-content/uploads/sites/2/2012/07/Roundup-flyer-final-2017.pdf",
-    "filename": "Roundup-flyer-final-2017.pdf",
-    "size_bytes": null,
-    "pages": null,
-    "thumb": null,
-    "referrers": [
-     {
-      "url": "https://www.aagrapevine.org/get-involved/events/2017-06-09/2nd-taiwan-roundup",
-      "title": "2nd Taiwan Roundup"
-     }
-    ],
-    "upload_month": null,
-    "link_texts": [],
-    "event_date": "2017-06-09",
-    "doc_lang": "en",
-    "section": "2nd Taiwan Roundup",
-    "external": true,
-    "orphan": false
-   },
-   "i18n": {
-    "title": {
-     "en": "2nd Taiwan Roundup",
-     "es": "2.º Taiwan Roundup"
-    },
-    "summary": {
-     "en": "",
-     "es": ""
-    }
-   },
-   "machine": [
-    "es"
-   ],
-   "is_new": false
-  },
-  {
    "id": "pdf:3b4f20f9a3f0",
    "source": "crawl",
    "kind": "pdf",
@@ -527,56 +475,6 @@
    "is_new": false
   },
   {
-   "id": "pdf:783531d417d6",
-   "source": "crawl",
-   "kind": "pdf",
-   "url": "https://www.aa.org/sites/default/files/literature/SP_Retrofit_Completion_Return_to_Office.pdf",
-   "title": "Letter to the Fellowship: Retrofit Completion and Return to Office (Spanish)",
-   "summary": "",
-   "lang": "en",
-   "date": "2026-03-31",
-   "first_seen": "2026-09-23T16:35:10Z",
-   "image": "/assets/cache/pdf/783531d417d6ddc5.webp",
-   "tags": [],
-   "category": "news",
-   "status": "ok",
-   "extra": {
-    "host": "www.aa.org",
-    "file_url": "https://www.aa.org/sites/default/files/literature/SP_Retrofit_Completion_Return_to_Office.pdf",
-    "filename": "SP_Retrofit_Completion_Return_to_Office.pdf",
-    "size_bytes": 159174,
-    "pages": 1,
-    "thumb": "/assets/cache/pdf/783531d417d6ddc5.webp",
-    "referrers": [
-     {
-      "url": "https://www.aalavina.org/actualizaciones-importantes",
-      "title": "Actualizaciones Importantes"
-     }
-    ],
-    "upload_month": null,
-    "link_texts": [],
-    "event_date": null,
-    "doc_lang": "es",
-    "section": "ACTUALIZACIONES IMPORTANTES",
-    "external": true,
-    "orphan": false
-   },
-   "i18n": {
-    "title": {
-     "en": "Letter to the Fellowship: Retrofit Completion and Return to Office (Spanish)",
-     "es": "Carta a la Comunidad: fin de la remodelación y regreso a la oficina (español)"
-    },
-    "summary": {
-     "en": "",
-     "es": ""
-    }
-   },
-   "machine": [
-    "es"
-   ],
-   "is_new": false
-  },
-  {
    "id": "pdf:66ca3ec18987",
    "source": "crawl",
    "kind": "pdf",
@@ -609,7 +507,73 @@
     "doc_lang": "en",
     "section": "IMPORTANT UPDATES",
     "external": true,
-    "orphan": false
+    "orphan": false,
+    "versions": [
+     {
+      "lang": "en",
+      "id": "pdf:66ca3ec18987",
+      "url": "https://www.aa.org/sites/default/files/literature/Retrofit_Completion_Return_to_Office.pdf",
+      "title": "Letter to the Fellowship: Retrofit Completion and Return to Office",
+      "title_lang": "en",
+      "i18n_title": {
+       "en": "Letter to the Fellowship: Retrofit Completion and Return to Office",
+       "es": "Carta a la Comunidad: fin de la remodelación y regreso a la oficina"
+      },
+      "machine": [],
+      "source": "gv",
+      "date": "2026-03-31",
+      "first_seen": "2026-09-23T16:32:30Z",
+      "category": "news",
+      "tags": [],
+      "is_new": false,
+      "host": "www.aa.org",
+      "file_url": "https://www.aa.org/sites/default/files/literature/Retrofit_Completion_Return_to_Office.pdf",
+      "filename": "Retrofit_Completion_Return_to_Office.pdf",
+      "size_bytes": 185895,
+      "pages": 1,
+      "thumb": "/assets/cache/pdf/66ca3ec18987b396.webp",
+      "referrers": [
+       {
+        "url": "https://www.aagrapevine.org/important-updates",
+        "title": "Important Updates"
+       }
+      ],
+      "orphan": false
+     },
+     {
+      "lang": "es",
+      "id": "pdf:783531d417d6",
+      "url": "https://www.aa.org/sites/default/files/literature/SP_Retrofit_Completion_Return_to_Office.pdf",
+      "title": "Letter to the Fellowship: Retrofit Completion and Return to Office",
+      "title_lang": "en",
+      "i18n_title": {
+       "en": "Letter to the Fellowship: Retrofit Completion and Return to Office",
+       "es": "Carta a la Comunidad: fin de la remodelación y regreso a la oficina"
+      },
+      "machine": [
+       "es"
+      ],
+      "source": "lv",
+      "date": "2026-03-31",
+      "first_seen": "2026-09-23T16:35:10Z",
+      "category": "news",
+      "tags": [],
+      "is_new": false,
+      "host": "www.aa.org",
+      "file_url": "https://www.aa.org/sites/default/files/literature/SP_Retrofit_Completion_Return_to_Office.pdf",
+      "filename": "SP_Retrofit_Completion_Return_to_Office.pdf",
+      "size_bytes": 159174,
+      "pages": 1,
+      "thumb": "/assets/cache/pdf/783531d417d6ddc5.webp",
+      "referrers": [
+       {
+        "url": "https://www.aalavina.org/actualizaciones-importantes",
+        "title": "Actualizaciones Importantes"
+       }
+      ],
+      "orphan": false
+     }
+    ]
    },
    "i18n": {
     "title": {
@@ -621,7 +585,9 @@
      "es": ""
     }
    },
-   "machine": [],
+   "machine": [
+    "es"
+   ],
    "is_new": false
   },
   {
@@ -715,67 +681,91 @@
     "doc_lang": "en",
     "section": "Postcards",
     "external": false,
-    "orphan": false
+    "orphan": false,
+    "versions": [
+     {
+      "lang": "en",
+      "id": "pdf:52ad1c5c6736",
+      "url": "https://www.aagrapevine.org/sites/default/files/2026-02/LV-30-Anniversary.pdf",
+      "title": "La Viña 30 Anniversary",
+      "title_lang": "en",
+      "i18n_title": {
+       "en": "La Viña 30 Anniversary",
+       "es": "30 aniversario de La Viña"
+      },
+      "machine": [],
+      "source": "gv",
+      "date": "2026-02-27",
+      "first_seen": "2026-09-23T16:31:53Z",
+      "category": "gvr",
+      "tags": [
+       "postcard"
+      ],
+      "is_new": false,
+      "host": "www.aagrapevine.org",
+      "file_url": "https://www.aagrapevine.org/sites/default/files/2026-02/LV-30-Anniversary.pdf",
+      "filename": "LV-30-Anniversary.pdf",
+      "size_bytes": 2721691,
+      "pages": 1,
+      "thumb": "/assets/cache/pdf/52ad1c5c67364cb8.webp",
+      "upload_month": "2026-02",
+      "referrers": [
+       {
+        "url": "https://www.aagrapevine.org/gvr-resources",
+        "title": "GVR Resources"
+       }
+      ],
+      "orphan": false
+     },
+     {
+      "lang": "es",
+      "id": "pdf:36f8cbc11009",
+      "url": "https://www.aalavina.org/sites/default/files/2026-02/LV-30-Aniversario.pdf",
+      "title": "30 Aniversario de La Viña",
+      "title_lang": "es",
+      "i18n_title": {
+       "en": "30th Anniversary of La Viña",
+       "es": "30 Aniversario de La Viña"
+      },
+      "machine": [
+       "en"
+      ],
+      "source": "lv",
+      "date": "2026-02-27",
+      "first_seen": "2026-09-23T16:34:39Z",
+      "category": "rlv",
+      "tags": [
+       "postcard"
+      ],
+      "is_new": false,
+      "host": "www.aalavina.org",
+      "file_url": "https://www.aalavina.org/sites/default/files/2026-02/LV-30-Aniversario.pdf",
+      "filename": "LV-30-Aniversario.pdf",
+      "size_bytes": 2695020,
+      "pages": 1,
+      "thumb": "/assets/cache/pdf/36f8cbc11009653c.webp",
+      "upload_month": "2026-02",
+      "referrers": [
+       {
+        "url": "https://www.aalavina.org/recursos",
+        "title": "Recursos La Viña"
+       },
+       {
+        "url": "https://www.aalavina.org/estamos-aqui-para-ayudar",
+        "title": "La Viña y Grapevine están aquí para ayudar"
+       }
+      ],
+      "orphan": false
+     }
+    ],
+    "kits": [
+     "gvr",
+     "rlv"
+    ]
    },
    "i18n": {
     "title": {
      "en": "La Viña 30 Anniversary",
-     "es": "30 aniversario de La Viña"
-    },
-    "summary": {
-     "en": "",
-     "es": ""
-    }
-   },
-   "machine": [],
-   "is_new": false
-  },
-  {
-   "id": "pdf:36f8cbc11009",
-   "source": "crawl",
-   "kind": "pdf",
-   "url": "https://www.aalavina.org/sites/default/files/2026-02/LV-30-Aniversario.pdf",
-   "title": "30 Aniversario de La Viña",
-   "summary": "",
-   "lang": "es",
-   "date": "2026-02-27",
-   "first_seen": "2026-09-23T16:34:39Z",
-   "image": "/assets/cache/pdf/36f8cbc11009653c.webp",
-   "tags": [
-    "postcard"
-   ],
-   "category": "rlv",
-   "status": "ok",
-   "extra": {
-    "host": "www.aalavina.org",
-    "file_url": "https://www.aalavina.org/sites/default/files/2026-02/LV-30-Aniversario.pdf",
-    "filename": "LV-30-Aniversario.pdf",
-    "size_bytes": 2695020,
-    "pages": 1,
-    "thumb": "/assets/cache/pdf/36f8cbc11009653c.webp",
-    "referrers": [
-     {
-      "url": "https://www.aalavina.org/recursos",
-      "title": "Recursos La Viña"
-     },
-     {
-      "url": "https://www.aalavina.org/estamos-aqui-para-ayudar",
-      "title": "La Viña y Grapevine están aquí para ayudar"
-     }
-    ],
-    "upload_month": "2026-02",
-    "link_texts": [
-     "30 Aniversario de La Viña"
-    ],
-    "event_date": null,
-    "doc_lang": "es",
-    "section": "tarjetas postales",
-    "external": false,
-    "orphan": false
-   },
-   "i18n": {
-    "title": {
-     "en": "30th Anniversary of La Viña",
      "es": "30 Aniversario de La Viña"
     },
     "summary": {
@@ -783,9 +773,7 @@
      "es": ""
     }
    },
-   "machine": [
-    "en"
-   ],
+   "machine": [],
    "is_new": false
   },
   {
@@ -867,55 +855,7 @@
      {
       "url": "https://www.aagrapevine.org/gvr-resources",
       "title": "GVR Resources"
-     }
-    ],
-    "upload_month": "2026-02",
-    "link_texts": [
-     "Editorial Calendar"
-    ],
-    "event_date": null,
-    "doc_lang": "en",
-    "section": "tool and resources",
-    "external": false,
-    "orphan": false
-   },
-   "i18n": {
-    "title": {
-     "en": "Editorial Calendar",
-     "es": "Calendario editorial"
-    },
-    "summary": {
-     "en": "",
-     "es": ""
-    }
-   },
-   "machine": [
-    "es"
-   ],
-   "is_new": false
-  },
-  {
-   "id": "pdf:37b867242f16",
-   "source": "crawl",
-   "kind": "pdf",
-   "url": "https://www.aagrapevine.org/sites/default/files/2026-02/Editorial_Calendar_GV_2026_27.pdf",
-   "title": "Editorial Calendar",
-   "summary": "",
-   "lang": "en",
-   "date": "2026-02-18",
-   "first_seen": "2026-09-23T16:33:01Z",
-   "image": "/assets/cache/pdf/37b867242f163ec5.webp",
-   "tags": [],
-   "category": "guidelines",
-   "status": "ok",
-   "extra": {
-    "host": "www.aagrapevine.org",
-    "file_url": "https://www.aagrapevine.org/sites/default/files/2026-02/Editorial_Calendar_GV_2026_27.pdf",
-    "filename": "Editorial_Calendar_GV_2026_27.pdf",
-    "size_bytes": 63423,
-    "pages": 2,
-    "thumb": "/assets/cache/pdf/37b867242f163ec5.webp",
-    "referrers": [
+     },
      {
       "url": "https://www.aagrapevine.org/get-involved",
       "title": "Get Involved"
@@ -926,12 +866,17 @@
      }
     ],
     "upload_month": "2026-02",
-    "link_texts": [],
+    "link_texts": [
+     "Editorial Calendar"
+    ],
     "event_date": null,
     "doc_lang": "en",
-    "section": "Get Involved",
+    "section": "tool and resources",
     "external": false,
-    "orphan": false
+    "orphan": false,
+    "duplicates": [
+     "https://www.aagrapevine.org/sites/default/files/2026-02/Editorial_Calendar_GV_2026_27.pdf"
+    ]
    },
    "i18n": {
     "title": {
@@ -946,64 +891,6 @@
    "machine": [
     "es"
    ],
-   "is_new": false
-  },
-  {
-   "id": "pdf:deec20bb607c",
-   "source": "crawl",
-   "kind": "pdf",
-   "url": "https://www.aalavina.org/sites/default/files/2026-02/LV_Catalogo_2026.pdf",
-   "title": "Catálogo 2026",
-   "summary": "",
-   "lang": "es",
-   "date": "2026-02-02",
-   "first_seen": "2026-09-23T16:34:39Z",
-   "image": "/assets/cache/pdf/deec20bb607cdcaf.webp",
-   "tags": [
-    "catalog"
-   ],
-   "category": "rlv",
-   "status": "ok",
-   "extra": {
-    "host": "www.aalavina.org",
-    "file_url": "https://www.aalavina.org/sites/default/files/2026-02/LV_Catalogo_2026.pdf",
-    "filename": "LV_Catalogo_2026.pdf",
-    "size_bytes": 18082337,
-    "pages": 32,
-    "thumb": "/assets/cache/pdf/deec20bb607cdcaf.webp",
-    "referrers": [
-     {
-      "url": "https://www.aalavina.org/recursos",
-      "title": "Recursos La Viña"
-     },
-     {
-      "url": "https://www.aalavina.org/catalogo",
-      "title": "Catálogo • Catalog • Catalogue"
-     }
-    ],
-    "upload_month": "2026-02",
-    "link_texts": [
-     "Catálogo 2026",
-     "SÓLO DISPONIBLE PARA DESCARGAR (ARCHIVO PDF)"
-    ],
-    "event_date": null,
-    "doc_lang": "es",
-    "section": "recursos y herramientas",
-    "external": false,
-    "orphan": false,
-    "multilingual": true
-   },
-   "i18n": {
-    "title": {
-     "en": "2026 Catalog",
-     "es": "Catálogo 2026"
-    },
-    "summary": {
-     "en": "",
-     "es": ""
-    }
-   },
-   "machine": [],
    "is_new": false
   },
   {
@@ -1049,7 +936,92 @@
     "section": "tool and resources",
     "external": false,
     "orphan": false,
-    "multilingual": true
+    "multilingual": true,
+    "versions": [
+     {
+      "lang": "en",
+      "id": "pdf:43a3c9f07b21",
+      "url": "https://www.aagrapevine.org/sites/default/files/2026-02/GV_Catalog_2026.pdf",
+      "title": "Catalog 2026",
+      "title_lang": "en",
+      "i18n_title": {
+       "en": "Catalog 2026",
+       "es": "Catálogo 2026"
+      },
+      "machine": [
+       "es"
+      ],
+      "source": "gv",
+      "date": "2026-02-02",
+      "first_seen": "2026-09-23T16:31:53Z",
+      "category": "gvr",
+      "tags": [
+       "catalog"
+      ],
+      "is_new": false,
+      "host": "www.aagrapevine.org",
+      "file_url": "https://www.aagrapevine.org/sites/default/files/2026-02/GV_Catalog_2026.pdf",
+      "filename": "GV_Catalog_2026.pdf",
+      "size_bytes": 18082337,
+      "pages": 32,
+      "thumb": "/assets/cache/pdf/43a3c9f07b2123be.webp",
+      "upload_month": "2026-02",
+      "referrers": [
+       {
+        "url": "https://www.aagrapevine.org/gvr-resources",
+        "title": "GVR Resources"
+       },
+       {
+        "url": "https://www.aagrapevine.org/catalog",
+        "title": "Catalog • Catálogo • Catalogue"
+       }
+      ],
+      "orphan": false
+     },
+     {
+      "lang": "es",
+      "id": "pdf:deec20bb607c",
+      "url": "https://www.aalavina.org/sites/default/files/2026-02/LV_Catalogo_2026.pdf",
+      "title": "Catálogo 2026",
+      "title_lang": "es",
+      "i18n_title": {
+       "en": "2026 Catalog",
+       "es": "Catálogo 2026"
+      },
+      "machine": [],
+      "source": "lv",
+      "date": "2026-02-02",
+      "first_seen": "2026-09-23T16:34:39Z",
+      "category": "rlv",
+      "tags": [
+       "catalog"
+      ],
+      "is_new": false,
+      "host": "www.aalavina.org",
+      "file_url": "https://www.aalavina.org/sites/default/files/2026-02/LV_Catalogo_2026.pdf",
+      "filename": "LV_Catalogo_2026.pdf",
+      "size_bytes": 18082337,
+      "pages": 32,
+      "thumb": "/assets/cache/pdf/deec20bb607cdcaf.webp",
+      "upload_month": "2026-02",
+      "referrers": [
+       {
+        "url": "https://www.aalavina.org/recursos",
+        "title": "Recursos La Viña"
+       },
+       {
+        "url": "https://www.aalavina.org/catalogo",
+        "title": "Catálogo • Catalog • Catalogue"
+       }
+      ],
+      "orphan": false
+     }
+    ],
+    "kits": [
+     "gvr",
+     "rlv"
+    ],
+    "same_file": true
    },
    "i18n": {
     "title": {
@@ -1061,9 +1033,7 @@
      "es": ""
     }
    },
-   "machine": [
-    "es"
-   ],
+   "machine": [],
    "is_new": false
   },
   {
@@ -1155,21 +1125,97 @@
     "doc_lang": "en",
     "section": "Postcards",
     "external": false,
-    "orphan": false
+    "orphan": false,
+    "versions": [
+     {
+      "lang": "en",
+      "id": "pdf:b99b60bb2506",
+      "url": "https://www.aagrapevine.org/sites/default/files/2026-01/2026-CTM.pdf",
+      "title": "2026 Carry The Message Project",
+      "title_lang": "en",
+      "i18n_title": {
+       "en": "2026 Carry The Message Project",
+       "es": "2026 Proyecto Lleva el Mensaje"
+      },
+      "machine": [
+       "es"
+      ],
+      "source": "gv",
+      "date": "2026-01-08",
+      "first_seen": "2026-09-23T16:31:53Z",
+      "category": "gvr",
+      "tags": [
+       "postcard"
+      ],
+      "is_new": false,
+      "host": "www.aagrapevine.org",
+      "file_url": "https://www.aagrapevine.org/sites/default/files/2026-01/2026-CTM.pdf",
+      "filename": "2026-CTM.pdf",
+      "size_bytes": 192511,
+      "pages": 1,
+      "thumb": "/assets/cache/pdf/b99b60bb25069613.webp",
+      "upload_month": "2026-01",
+      "referrers": [
+       {
+        "url": "https://www.aagrapevine.org/gvr-resources",
+        "title": "GVR Resources"
+       }
+      ],
+      "orphan": false
+     },
+     {
+      "lang": "es",
+      "id": "pdf:6698f4ea422e",
+      "url": "https://www.aalavina.org/sites/default/files/2026-01/Lleva-el-Mensaje-2026.pdf",
+      "title": "Proyecto Lleva el Mensaje 2026",
+      "title_lang": "es",
+      "i18n_title": {
+       "en": "Carry the Message Project 2026",
+       "es": "Proyecto Lleva el Mensaje 2026"
+      },
+      "machine": [
+       "en"
+      ],
+      "source": "lv",
+      "date": "2026-01-08",
+      "first_seen": "2026-09-23T16:34:39Z",
+      "category": "rlv",
+      "tags": [
+       "postcard"
+      ],
+      "is_new": false,
+      "host": "www.aalavina.org",
+      "file_url": "https://www.aalavina.org/sites/default/files/2026-01/Lleva-el-Mensaje-2026.pdf",
+      "filename": "Lleva-el-Mensaje-2026.pdf",
+      "size_bytes": 193890,
+      "pages": 1,
+      "thumb": "/assets/cache/pdf/6698f4ea422e98b3.webp",
+      "upload_month": "2026-01",
+      "referrers": [
+       {
+        "url": "https://www.aalavina.org/recursos",
+        "title": "Recursos La Viña"
+       }
+      ],
+      "orphan": false
+     }
+    ],
+    "kits": [
+     "gvr",
+     "rlv"
+    ]
    },
    "i18n": {
     "title": {
      "en": "2026 Carry The Message Project",
-     "es": "2026 Proyecto Lleva el Mensaje"
+     "es": "Proyecto Lleva el Mensaje 2026"
     },
     "summary": {
      "en": "",
      "es": ""
     }
    },
-   "machine": [
-    "es"
-   ],
+   "machine": [],
    "is_new": false
   },
   {
@@ -1261,21 +1307,95 @@
     "doc_lang": "en",
     "section": "Postcards",
     "external": false,
-    "orphan": false
+    "orphan": false,
+    "versions": [
+     {
+      "lang": "en",
+      "id": "pdf:98c45b8072b5",
+      "url": "https://www.aagrapevine.org/sites/default/files/2026-01/Audio_download_GV_2026.pdf.pdf",
+      "title": "Audio Downloads",
+      "title_lang": "en",
+      "i18n_title": {
+       "en": "Audio Downloads",
+       "es": "Descargas de audio"
+      },
+      "machine": [
+       "es"
+      ],
+      "source": "gv",
+      "date": "2026-01-08",
+      "first_seen": "2026-09-23T16:31:53Z",
+      "category": "gvr",
+      "tags": [
+       "postcard"
+      ],
+      "is_new": false,
+      "host": "www.aagrapevine.org",
+      "file_url": "https://www.aagrapevine.org/sites/default/files/2026-01/Audio_download_GV_2026.pdf.pdf",
+      "filename": "Audio_download_GV_2026.pdf.pdf",
+      "size_bytes": 97595,
+      "pages": 1,
+      "thumb": "/assets/cache/pdf/98c45b8072b5ede0.webp",
+      "upload_month": "2026-01",
+      "referrers": [
+       {
+        "url": "https://www.aagrapevine.org/gvr-resources",
+        "title": "GVR Resources"
+       }
+      ],
+      "orphan": false
+     },
+     {
+      "lang": "es",
+      "id": "pdf:12db76ab9b4b",
+      "url": "https://www.aalavina.org/sites/default/files/2026-01/Descarga_de_audios_2026.pdf",
+      "title": "Descarga de Audios",
+      "title_lang": "es",
+      "i18n_title": {
+       "en": "Audio Downloads",
+       "es": "Descarga de Audios"
+      },
+      "machine": [],
+      "source": "lv",
+      "date": "2026-01-08",
+      "first_seen": "2026-09-23T16:34:39Z",
+      "category": "rlv",
+      "tags": [
+       "postcard"
+      ],
+      "is_new": false,
+      "host": "www.aalavina.org",
+      "file_url": "https://www.aalavina.org/sites/default/files/2026-01/Descarga_de_audios_2026.pdf",
+      "filename": "Descarga_de_audios_2026.pdf",
+      "size_bytes": 89988,
+      "pages": 1,
+      "thumb": "/assets/cache/pdf/12db76ab9b4b8251.webp",
+      "upload_month": "2026-01",
+      "referrers": [
+       {
+        "url": "https://www.aalavina.org/recursos",
+        "title": "Recursos La Viña"
+       }
+      ],
+      "orphan": false
+     }
+    ],
+    "kits": [
+     "gvr",
+     "rlv"
+    ]
    },
    "i18n": {
     "title": {
      "en": "Audio Downloads",
-     "es": "Descargas de audio"
+     "es": "Descarga de Audios"
     },
     "summary": {
      "en": "",
      "es": ""
     }
    },
-   "machine": [
-    "es"
-   ],
+   "machine": [],
    "is_new": false
   },
   {
@@ -1315,21 +1435,97 @@
     "doc_lang": "en",
     "section": "Postcards",
     "external": false,
-    "orphan": false
+    "orphan": false,
+    "versions": [
+     {
+      "lang": "en",
+      "id": "pdf:8b41cec5a510",
+      "url": "https://www.aagrapevine.org/sites/default/files/2026-01/YOUTUBE_PC_GV.pdf",
+      "title": "Youtube Channel",
+      "title_lang": "en",
+      "i18n_title": {
+       "en": "Youtube Channel",
+       "es": "Canal YouTube"
+      },
+      "machine": [
+       "es"
+      ],
+      "source": "gv",
+      "date": "2026-01-08",
+      "first_seen": "2026-09-23T16:31:53Z",
+      "category": "gvr",
+      "tags": [
+       "postcard"
+      ],
+      "is_new": false,
+      "host": "www.aagrapevine.org",
+      "file_url": "https://www.aagrapevine.org/sites/default/files/2026-01/YOUTUBE_PC_GV.pdf",
+      "filename": "YOUTUBE_PC_GV.pdf",
+      "size_bytes": 229162,
+      "pages": 1,
+      "thumb": "/assets/cache/pdf/8b41cec5a51021d0.webp",
+      "upload_month": "2026-01",
+      "referrers": [
+       {
+        "url": "https://www.aagrapevine.org/gvr-resources",
+        "title": "GVR Resources"
+       }
+      ],
+      "orphan": false
+     },
+     {
+      "lang": "es",
+      "id": "pdf:6204f8818b74",
+      "url": "https://www.aalavina.org/sites/default/files/2026-01/YOUTUBE_PC_LV.pdf",
+      "title": "Canal de Youtube",
+      "title_lang": "es",
+      "i18n_title": {
+       "en": "YouTube Channel",
+       "es": "Canal de Youtube"
+      },
+      "machine": [
+       "en"
+      ],
+      "source": "lv",
+      "date": "2026-01-08",
+      "first_seen": "2026-09-23T16:34:39Z",
+      "category": "rlv",
+      "tags": [
+       "postcard"
+      ],
+      "is_new": false,
+      "host": "www.aalavina.org",
+      "file_url": "https://www.aalavina.org/sites/default/files/2026-01/YOUTUBE_PC_LV.pdf",
+      "filename": "YOUTUBE_PC_LV.pdf",
+      "size_bytes": 249038,
+      "pages": 1,
+      "thumb": "/assets/cache/pdf/6204f8818b748ca1.webp",
+      "upload_month": "2026-01",
+      "referrers": [
+       {
+        "url": "https://www.aalavina.org/recursos",
+        "title": "Recursos La Viña"
+       }
+      ],
+      "orphan": false
+     }
+    ],
+    "kits": [
+     "gvr",
+     "rlv"
+    ]
    },
    "i18n": {
     "title": {
      "en": "Youtube Channel",
-     "es": "Canal YouTube"
+     "es": "Canal de Youtube"
     },
     "summary": {
      "en": "",
      "es": ""
     }
    },
-   "machine": [
-    "es"
-   ],
+   "machine": [],
    "is_new": false
   },
   {
@@ -1369,12 +1565,88 @@
     "doc_lang": "en",
     "section": "Postcards",
     "external": false,
-    "orphan": false
+    "orphan": false,
+    "versions": [
+     {
+      "lang": "en",
+      "id": "pdf:87268e522aca",
+      "url": "https://www.aagrapevine.org/sites/default/files/2026-01/GV_catalog_postcard_2026.pdf",
+      "title": "2026 Catalog Postcard",
+      "title_lang": "en",
+      "i18n_title": {
+       "en": "2026 Catalog Postcard",
+       "es": "Postal del catálogo 2026"
+      },
+      "machine": [],
+      "source": "gv",
+      "date": "2026-01-08",
+      "first_seen": "2026-09-23T16:31:53Z",
+      "category": "gvr",
+      "tags": [
+       "postcard"
+      ],
+      "is_new": false,
+      "host": "www.aagrapevine.org",
+      "file_url": "https://www.aagrapevine.org/sites/default/files/2026-01/GV_catalog_postcard_2026.pdf",
+      "filename": "GV_catalog_postcard_2026.pdf",
+      "size_bytes": 1284302,
+      "pages": 2,
+      "thumb": "/assets/cache/pdf/87268e522aca4eab.webp",
+      "upload_month": "2026-01",
+      "referrers": [
+       {
+        "url": "https://www.aagrapevine.org/gvr-resources",
+        "title": "GVR Resources"
+       }
+      ],
+      "orphan": false
+     },
+     {
+      "lang": "es",
+      "id": "pdf:452a10c9aa24",
+      "url": "https://www.aalavina.org/sites/default/files/2026-01/LV-catalogo_postcard_2026.pdf",
+      "title": "Catálogo 2026 (Postcard)",
+      "title_lang": "es",
+      "i18n_title": {
+       "en": "2026 Catalog (Postcard)",
+       "es": "Catálogo 2026 (Postcard)"
+      },
+      "machine": [
+       "en"
+      ],
+      "source": "lv",
+      "date": "2026-01-08",
+      "first_seen": "2026-09-23T16:34:39Z",
+      "category": "rlv",
+      "tags": [
+       "postcard"
+      ],
+      "is_new": false,
+      "host": "www.aalavina.org",
+      "file_url": "https://www.aalavina.org/sites/default/files/2026-01/LV-catalogo_postcard_2026.pdf",
+      "filename": "LV-catalogo_postcard_2026.pdf",
+      "size_bytes": 1275422,
+      "pages": 2,
+      "thumb": "/assets/cache/pdf/452a10c9aa242ac3.webp",
+      "upload_month": "2026-01",
+      "referrers": [
+       {
+        "url": "https://www.aalavina.org/recursos",
+        "title": "Recursos La Viña"
+       }
+      ],
+      "orphan": false
+     }
+    ],
+    "kits": [
+     "gvr",
+     "rlv"
+    ]
    },
    "i18n": {
     "title": {
      "en": "2026 Catalog Postcard",
-     "es": "Postal del catálogo 2026"
+     "es": "Catálogo 2026 (Postcard)"
     },
     "summary": {
      "en": "",
@@ -1491,60 +1763,6 @@
    "is_new": false
   },
   {
-   "id": "pdf:6698f4ea422e",
-   "source": "crawl",
-   "kind": "pdf",
-   "url": "https://www.aalavina.org/sites/default/files/2026-01/Lleva-el-Mensaje-2026.pdf",
-   "title": "Proyecto Lleva el Mensaje 2026",
-   "summary": "",
-   "lang": "es",
-   "date": "2026-01-08",
-   "first_seen": "2026-09-23T16:34:39Z",
-   "image": "/assets/cache/pdf/6698f4ea422e98b3.webp",
-   "tags": [
-    "postcard"
-   ],
-   "category": "rlv",
-   "status": "ok",
-   "extra": {
-    "host": "www.aalavina.org",
-    "file_url": "https://www.aalavina.org/sites/default/files/2026-01/Lleva-el-Mensaje-2026.pdf",
-    "filename": "Lleva-el-Mensaje-2026.pdf",
-    "size_bytes": 193890,
-    "pages": 1,
-    "thumb": "/assets/cache/pdf/6698f4ea422e98b3.webp",
-    "referrers": [
-     {
-      "url": "https://www.aalavina.org/recursos",
-      "title": "Recursos La Viña"
-     }
-    ],
-    "upload_month": "2026-01",
-    "link_texts": [
-     "Proyecto Lleva el Mensaje 2026"
-    ],
-    "event_date": null,
-    "doc_lang": "es",
-    "section": "tarjetas postales",
-    "external": false,
-    "orphan": false
-   },
-   "i18n": {
-    "title": {
-     "en": "Carry the Message Project 2026",
-     "es": "Proyecto Lleva el Mensaje 2026"
-    },
-    "summary": {
-     "en": "",
-     "es": ""
-    }
-   },
-   "machine": [
-    "en"
-   ],
-   "is_new": false
-  },
-  {
    "id": "pdf:629a8e1ad1b9",
    "source": "crawl",
    "kind": "pdf",
@@ -1587,60 +1805,6 @@
     "title": {
      "en": "Record Your Story",
      "es": "Graba tu historia"
-    },
-    "summary": {
-     "en": "",
-     "es": ""
-    }
-   },
-   "machine": [
-    "en"
-   ],
-   "is_new": false
-  },
-  {
-   "id": "pdf:6204f8818b74",
-   "source": "crawl",
-   "kind": "pdf",
-   "url": "https://www.aalavina.org/sites/default/files/2026-01/YOUTUBE_PC_LV.pdf",
-   "title": "Canal de Youtube",
-   "summary": "",
-   "lang": "es",
-   "date": "2026-01-08",
-   "first_seen": "2026-09-23T16:34:39Z",
-   "image": "/assets/cache/pdf/6204f8818b748ca1.webp",
-   "tags": [
-    "postcard"
-   ],
-   "category": "rlv",
-   "status": "ok",
-   "extra": {
-    "host": "www.aalavina.org",
-    "file_url": "https://www.aalavina.org/sites/default/files/2026-01/YOUTUBE_PC_LV.pdf",
-    "filename": "YOUTUBE_PC_LV.pdf",
-    "size_bytes": 249038,
-    "pages": 1,
-    "thumb": "/assets/cache/pdf/6204f8818b748ca1.webp",
-    "referrers": [
-     {
-      "url": "https://www.aalavina.org/recursos",
-      "title": "Recursos La Viña"
-     }
-    ],
-    "upload_month": "2026-01",
-    "link_texts": [
-     "Canal de Youtube"
-    ],
-    "event_date": null,
-    "doc_lang": "es",
-    "section": "tarjetas postales",
-    "external": false,
-    "orphan": false
-   },
-   "i18n": {
-    "title": {
-     "en": "YouTube Channel",
-     "es": "Canal de Youtube"
     },
     "summary": {
      "en": "",
@@ -1702,60 +1866,6 @@
     }
    },
    "machine": [],
-   "is_new": false
-  },
-  {
-   "id": "pdf:452a10c9aa24",
-   "source": "crawl",
-   "kind": "pdf",
-   "url": "https://www.aalavina.org/sites/default/files/2026-01/LV-catalogo_postcard_2026.pdf",
-   "title": "Catálogo 2026 (Postcard)",
-   "summary": "",
-   "lang": "es",
-   "date": "2026-01-08",
-   "first_seen": "2026-09-23T16:34:39Z",
-   "image": "/assets/cache/pdf/452a10c9aa242ac3.webp",
-   "tags": [
-    "postcard"
-   ],
-   "category": "rlv",
-   "status": "ok",
-   "extra": {
-    "host": "www.aalavina.org",
-    "file_url": "https://www.aalavina.org/sites/default/files/2026-01/LV-catalogo_postcard_2026.pdf",
-    "filename": "LV-catalogo_postcard_2026.pdf",
-    "size_bytes": 1275422,
-    "pages": 2,
-    "thumb": "/assets/cache/pdf/452a10c9aa242ac3.webp",
-    "referrers": [
-     {
-      "url": "https://www.aalavina.org/recursos",
-      "title": "Recursos La Viña"
-     }
-    ],
-    "upload_month": "2026-01",
-    "link_texts": [
-     "Catálogo 2026 (Postcard)"
-    ],
-    "event_date": null,
-    "doc_lang": "es",
-    "section": "tarjetas postales",
-    "external": false,
-    "orphan": false
-   },
-   "i18n": {
-    "title": {
-     "en": "2026 Catalog (Postcard)",
-     "es": "Catálogo 2026 (Postcard)"
-    },
-    "summary": {
-     "en": "",
-     "es": ""
-    }
-   },
-   "machine": [
-    "en"
-   ],
    "is_new": false
   },
   {
@@ -1918,58 +2028,6 @@
    "machine": [
     "es"
    ],
-   "is_new": false
-  },
-  {
-   "id": "pdf:12db76ab9b4b",
-   "source": "crawl",
-   "kind": "pdf",
-   "url": "https://www.aalavina.org/sites/default/files/2026-01/Descarga_de_audios_2026.pdf",
-   "title": "Descarga de Audios",
-   "summary": "",
-   "lang": "es",
-   "date": "2026-01-08",
-   "first_seen": "2026-09-23T16:34:39Z",
-   "image": "/assets/cache/pdf/12db76ab9b4b8251.webp",
-   "tags": [
-    "postcard"
-   ],
-   "category": "rlv",
-   "status": "ok",
-   "extra": {
-    "host": "www.aalavina.org",
-    "file_url": "https://www.aalavina.org/sites/default/files/2026-01/Descarga_de_audios_2026.pdf",
-    "filename": "Descarga_de_audios_2026.pdf",
-    "size_bytes": 89988,
-    "pages": 1,
-    "thumb": "/assets/cache/pdf/12db76ab9b4b8251.webp",
-    "referrers": [
-     {
-      "url": "https://www.aalavina.org/recursos",
-      "title": "Recursos La Viña"
-     }
-    ],
-    "upload_month": "2026-01",
-    "link_texts": [
-     "Descarga de Audios"
-    ],
-    "event_date": null,
-    "doc_lang": "es",
-    "section": "tarjetas postales",
-    "external": false,
-    "orphan": false
-   },
-   "i18n": {
-    "title": {
-     "en": "Audio Downloads",
-     "es": "Descarga de Audios"
-    },
-    "summary": {
-     "en": "",
-     "es": ""
-    }
-   },
-   "machine": [],
    "is_new": false
   },
   {
@@ -2492,58 +2550,6 @@
     }
    },
    "machine": [],
-   "is_new": false
-  },
-  {
-   "id": "pdf:9e92b7005b62",
-   "source": "crawl",
-   "kind": "pdf",
-   "url": "https://www.aawv.org/_files/ugd/69408f_7bfcfe5b6c544f82b825fb488b8f0bee.pdf",
-   "title": "Area 73 Convention",
-   "summary": "",
-   "lang": "en",
-   "date": "2025-01-01",
-   "first_seen": "2026-09-23T18:05:33Z",
-   "image": "/assets/cache/pdf/9e92b7005b62276f.webp",
-   "tags": [
-    "event"
-   ],
-   "category": "flyer",
-   "status": "ok",
-   "extra": {
-    "host": "www.aawv.org",
-    "file_url": "https://www.aawv.org/_files/ugd/69408f_7bfcfe5b6c544f82b825fb488b8f0bee.pdf",
-    "filename": "69408f_7bfcfe5b6c544f82b825fb488b8f0bee.pdf",
-    "size_bytes": 786597,
-    "pages": 1,
-    "thumb": "/assets/cache/pdf/9e92b7005b62276f.webp",
-    "referrers": [
-     {
-      "url": "https://www.aagrapevine.org/get-involved/events/2025-07-25/area-73-convention",
-      "title": "Area 73 Convention"
-     }
-    ],
-    "upload_month": null,
-    "link_texts": [],
-    "event_date": "2025-07-25",
-    "doc_lang": "en",
-    "section": "Area 73 Convention",
-    "external": true,
-    "orphan": false
-   },
-   "i18n": {
-    "title": {
-     "en": "Area 73 Convention",
-     "es": "Convención del Área 73"
-    },
-    "summary": {
-     "en": "",
-     "es": ""
-    }
-   },
-   "machine": [
-    "es"
-   ],
    "is_new": false
   },
   {
@@ -3313,61 +3319,83 @@
     "doc_lang": "en",
     "section": "Postcards",
     "external": false,
-    "orphan": false
-   },
-   "i18n": {
-    "title": {
-     "en": "App Poster (8.5 x 11)",
-     "es": "Póster de la app (8.5 x 11)"
-    },
-    "summary": {
-     "en": "",
-     "es": ""
-    }
-   },
-   "machine": [
-    "es"
-   ],
-   "is_new": false
-  },
-  {
-   "id": "pdf:86fd6990d74a",
-   "source": "crawl",
-   "kind": "pdf",
-   "url": "https://www.aalavina.org/sites/default/files/2023-09/Apps-Disponible-LV-Poster.pdf",
-   "title": "Poster de la App (8.5 x 11)",
-   "summary": "",
-   "lang": "es",
-   "date": "2023-09-19",
-   "first_seen": "2026-09-23T16:34:39Z",
-   "image": "/assets/cache/pdf/86fd6990d74af1fd.webp",
-   "tags": [
-    "postcard"
-   ],
-   "category": "rlv",
-   "status": "ok",
-   "extra": {
-    "host": "www.aalavina.org",
-    "file_url": "https://www.aalavina.org/sites/default/files/2023-09/Apps-Disponible-LV-Poster.pdf",
-    "filename": "Apps-Disponible-LV-Poster.pdf",
-    "size_bytes": 487253,
-    "pages": 1,
-    "thumb": "/assets/cache/pdf/86fd6990d74af1fd.webp",
-    "referrers": [
+    "orphan": false,
+    "versions": [
      {
-      "url": "https://www.aalavina.org/recursos",
-      "title": "Recursos La Viña"
+      "lang": "en",
+      "id": "pdf:958990011a8f",
+      "url": "https://www.aagrapevine.org/sites/default/files/2023-09/Apps-Available-GV-Poster.pdf",
+      "title": "App Poster (8.5 x 11)",
+      "title_lang": "en",
+      "i18n_title": {
+       "en": "App Poster (8.5 x 11)",
+       "es": "Póster de la app (8.5 x 11)"
+      },
+      "machine": [
+       "es"
+      ],
+      "source": "gv",
+      "date": "2023-09-19",
+      "first_seen": "2026-09-23T16:31:53Z",
+      "category": "gvr",
+      "tags": [
+       "postcard"
+      ],
+      "is_new": false,
+      "host": "www.aagrapevine.org",
+      "file_url": "https://www.aagrapevine.org/sites/default/files/2023-09/Apps-Available-GV-Poster.pdf",
+      "filename": "Apps-Available-GV-Poster.pdf",
+      "size_bytes": 1129076,
+      "pages": 1,
+      "thumb": "/assets/cache/pdf/958990011a8f5319.webp",
+      "upload_month": "2023-09",
+      "referrers": [
+       {
+        "url": "https://www.aagrapevine.org/gvr-resources",
+        "title": "GVR Resources"
+       }
+      ],
+      "orphan": false
+     },
+     {
+      "lang": "es",
+      "id": "pdf:86fd6990d74a",
+      "url": "https://www.aalavina.org/sites/default/files/2023-09/Apps-Disponible-LV-Poster.pdf",
+      "title": "Poster de la App (8.5 x 11)",
+      "title_lang": "es",
+      "i18n_title": {
+       "en": "App Poster (8.5 x 11)",
+       "es": "Poster de la App (8.5 x 11)"
+      },
+      "machine": [],
+      "source": "lv",
+      "date": "2023-09-19",
+      "first_seen": "2026-09-23T16:34:39Z",
+      "category": "rlv",
+      "tags": [
+       "postcard"
+      ],
+      "is_new": false,
+      "host": "www.aalavina.org",
+      "file_url": "https://www.aalavina.org/sites/default/files/2023-09/Apps-Disponible-LV-Poster.pdf",
+      "filename": "Apps-Disponible-LV-Poster.pdf",
+      "size_bytes": 487253,
+      "pages": 1,
+      "thumb": "/assets/cache/pdf/86fd6990d74af1fd.webp",
+      "upload_month": "2023-09",
+      "referrers": [
+       {
+        "url": "https://www.aalavina.org/recursos",
+        "title": "Recursos La Viña"
+       }
+      ],
+      "orphan": false
      }
     ],
-    "upload_month": "2023-09",
-    "link_texts": [
-     "Poster de la App (8.5 x 11)"
-    ],
-    "event_date": null,
-    "doc_lang": "es",
-    "section": "tarjetas postales",
-    "external": false,
-    "orphan": false
+    "kits": [
+     "gvr",
+     "rlv"
+    ]
    },
    "i18n": {
     "title": {
@@ -3419,65 +3447,87 @@
     "doc_lang": "en",
     "section": "Postcards",
     "external": false,
-    "orphan": false
+    "orphan": false,
+    "versions": [
+     {
+      "lang": "en",
+      "id": "pdf:6b1252c90bd4",
+      "url": "https://www.aagrapevine.org/sites/default/files/2023-09/GV_APP_PC_web.pdf",
+      "title": "Grapevine and La Viña Apps",
+      "title_lang": "en",
+      "i18n_title": {
+       "en": "Grapevine and La Viña Apps",
+       "es": "Aplicaciones Grapevine y La Viña"
+      },
+      "machine": [
+       "es"
+      ],
+      "source": "gv",
+      "date": "2023-09-14",
+      "first_seen": "2026-09-23T16:31:53Z",
+      "category": "gvr",
+      "tags": [
+       "postcard"
+      ],
+      "is_new": false,
+      "host": "www.aagrapevine.org",
+      "file_url": "https://www.aagrapevine.org/sites/default/files/2023-09/GV_APP_PC_web.pdf",
+      "filename": "GV_APP_PC_web.pdf",
+      "size_bytes": 397860,
+      "pages": 1,
+      "thumb": "/assets/cache/pdf/6b1252c90bd4e838.webp",
+      "upload_month": "2023-09",
+      "referrers": [
+       {
+        "url": "https://www.aagrapevine.org/gvr-resources",
+        "title": "GVR Resources"
+       }
+      ],
+      "orphan": false
+     },
+     {
+      "lang": "es",
+      "id": "pdf:00c278e47d5d",
+      "url": "https://www.aalavina.org/sites/default/files/2023-09/LV_APP_PC_web.pdf",
+      "title": "Aplicaciones de La Viña y Grapevine",
+      "title_lang": "es",
+      "i18n_title": {
+       "en": "La Viña and Grapevine Apps",
+       "es": "Aplicaciones de La Viña y Grapevine"
+      },
+      "machine": [],
+      "source": "lv",
+      "date": "2023-09-14",
+      "first_seen": "2026-09-23T16:34:39Z",
+      "category": "rlv",
+      "tags": [
+       "postcard"
+      ],
+      "is_new": false,
+      "host": "www.aalavina.org",
+      "file_url": "https://www.aalavina.org/sites/default/files/2023-09/LV_APP_PC_web.pdf",
+      "filename": "LV_APP_PC_web.pdf",
+      "size_bytes": 385842,
+      "pages": 1,
+      "thumb": "/assets/cache/pdf/00c278e47d5dae77.webp",
+      "upload_month": "2023-09",
+      "referrers": [
+       {
+        "url": "https://www.aalavina.org/recursos",
+        "title": "Recursos La Viña"
+       }
+      ],
+      "orphan": false
+     }
+    ],
+    "kits": [
+     "gvr",
+     "rlv"
+    ]
    },
    "i18n": {
     "title": {
      "en": "Grapevine and La Viña Apps",
-     "es": "Aplicaciones Grapevine y La Viña"
-    },
-    "summary": {
-     "en": "",
-     "es": ""
-    }
-   },
-   "machine": [
-    "es"
-   ],
-   "is_new": false
-  },
-  {
-   "id": "pdf:00c278e47d5d",
-   "source": "crawl",
-   "kind": "pdf",
-   "url": "https://www.aalavina.org/sites/default/files/2023-09/LV_APP_PC_web.pdf",
-   "title": "Aplicaciones de La Viña y Grapevine",
-   "summary": "",
-   "lang": "es",
-   "date": "2023-09-14",
-   "first_seen": "2026-09-23T16:34:39Z",
-   "image": "/assets/cache/pdf/00c278e47d5dae77.webp",
-   "tags": [
-    "postcard"
-   ],
-   "category": "rlv",
-   "status": "ok",
-   "extra": {
-    "host": "www.aalavina.org",
-    "file_url": "https://www.aalavina.org/sites/default/files/2023-09/LV_APP_PC_web.pdf",
-    "filename": "LV_APP_PC_web.pdf",
-    "size_bytes": 385842,
-    "pages": 1,
-    "thumb": "/assets/cache/pdf/00c278e47d5dae77.webp",
-    "referrers": [
-     {
-      "url": "https://www.aalavina.org/recursos",
-      "title": "Recursos La Viña"
-     }
-    ],
-    "upload_month": "2023-09",
-    "link_texts": [
-     "Aplicaciones de La Viña y Grapevine"
-    ],
-    "event_date": null,
-    "doc_lang": "es",
-    "section": "tarjetas postales",
-    "external": false,
-    "orphan": false
-   },
-   "i18n": {
-    "title": {
-     "en": "La Viña and Grapevine Apps",
      "es": "Aplicaciones de La Viña y Grapevine"
     },
     "summary": {
@@ -3486,60 +3536,6 @@
     }
    },
    "machine": [],
-   "is_new": false
-  },
-  {
-   "id": "pdf:9372f4b13305",
-   "source": "crawl",
-   "kind": "pdf",
-   "url": "https://www.aalavina.org/sites/default/files/2023-09/Oracion_y_meditacion.pdf",
-   "title": "Oración y Meditación",
-   "summary": "",
-   "lang": "es",
-   "date": "2023-09-05",
-   "first_seen": "2026-09-23T16:34:39Z",
-   "image": "/assets/cache/pdf/9372f4b133057e9a.webp",
-   "tags": [
-    "postcard"
-   ],
-   "category": "rlv",
-   "status": "ok",
-   "extra": {
-    "host": "www.aalavina.org",
-    "file_url": "https://www.aalavina.org/sites/default/files/2023-09/Oracion_y_meditacion.pdf",
-    "filename": "Oracion_y_meditacion.pdf",
-    "size_bytes": 1537013,
-    "pages": 2,
-    "thumb": "/assets/cache/pdf/9372f4b133057e9a.webp",
-    "referrers": [
-     {
-      "url": "https://www.aalavina.org/recursos",
-      "title": "Recursos La Viña"
-     }
-    ],
-    "upload_month": "2023-09",
-    "link_texts": [
-     "Oración y Meditación"
-    ],
-    "event_date": null,
-    "doc_lang": "es",
-    "section": "tarjetas postales",
-    "external": false,
-    "orphan": false
-   },
-   "i18n": {
-    "title": {
-     "en": "Prayer and Meditation",
-     "es": "Oración y Meditación"
-    },
-    "summary": {
-     "en": "",
-     "es": ""
-    }
-   },
-   "machine": [
-    "en"
-   ],
    "is_new": false
   },
   {
@@ -3836,7 +3832,73 @@
     "doc_lang": "en",
     "section": "Survey \"Grapevine and La Viña Apps\"",
     "external": false,
-    "orphan": false
+    "orphan": false,
+    "versions": [
+     {
+      "lang": "en",
+      "id": "pdf:39ef8f5c36b2",
+      "url": "https://www.aagrapevine.org/sites/default/files/2023-01/GV__Survey_Letter.pdf",
+      "title": "Letter about the Grapevine and La Viña Apps Survey",
+      "title_lang": "en",
+      "i18n_title": {
+       "en": "Letter about the Grapevine and La Viña Apps Survey",
+       "es": "Carta sobre la encuesta de la aplicación de Grapevine y La Viña"
+      },
+      "machine": [],
+      "source": "gv",
+      "date": "2023-01-19",
+      "first_seen": "2026-09-23T17:09:41Z",
+      "category": "news",
+      "tags": [],
+      "is_new": false,
+      "host": "www.aagrapevine.org",
+      "file_url": "https://www.aagrapevine.org/sites/default/files/2023-01/GV__Survey_Letter.pdf",
+      "filename": "GV__Survey_Letter.pdf",
+      "size_bytes": 156428,
+      "pages": 2,
+      "thumb": "/assets/cache/pdf/39ef8f5c36b223c6.webp",
+      "upload_month": "2023-01",
+      "referrers": [
+       {
+        "url": "https://www.aagrapevine.org/app-survey",
+        "title": "Survey \"Grapevine and La Viña Apps\""
+       }
+      ],
+      "orphan": false
+     },
+     {
+      "lang": "es",
+      "id": "pdf:1a78d39dc20f",
+      "url": "https://www.aalavina.org/sites/default/files/2023-01/LV__Encuesta_Carta.pdf",
+      "title": "Carta sobre la encuesta de la aplicación de Grapevine y La Viña",
+      "title_lang": "es",
+      "i18n_title": {
+       "en": "Letter about the Grapevine and La Viña Apps Survey",
+       "es": "Carta sobre la encuesta de la aplicación de Grapevine y La Viña"
+      },
+      "machine": [],
+      "source": "lv",
+      "date": "2023-01-19",
+      "first_seen": "2026-09-23T17:09:30Z",
+      "category": "news",
+      "tags": [],
+      "is_new": false,
+      "host": "www.aalavina.org",
+      "file_url": "https://www.aalavina.org/sites/default/files/2023-01/LV__Encuesta_Carta.pdf",
+      "filename": "LV__Encuesta_Carta.pdf",
+      "size_bytes": 163085,
+      "pages": 2,
+      "thumb": "/assets/cache/pdf/1a78d39dc20fef71.webp",
+      "upload_month": "2023-01",
+      "referrers": [
+       {
+        "url": "https://www.aalavina.org/encuesta-aplicacion",
+        "title": "Encuesta \"Aplicación del Grapevine y La Viña\""
+       }
+      ],
+      "orphan": false
+     }
+    ]
    },
    "i18n": {
     "title": {
@@ -3849,108 +3911,6 @@
     }
    },
    "machine": [],
-   "is_new": false
-  },
-  {
-   "id": "pdf:1a78d39dc20f",
-   "source": "crawl",
-   "kind": "pdf",
-   "url": "https://www.aalavina.org/sites/default/files/2023-01/LV__Encuesta_Carta.pdf",
-   "title": "Carta sobre la encuesta de la aplicación de Grapevine y La Viña",
-   "summary": "",
-   "lang": "es",
-   "date": "2023-01-19",
-   "first_seen": "2026-09-23T17:09:30Z",
-   "image": "/assets/cache/pdf/1a78d39dc20fef71.webp",
-   "tags": [],
-   "category": "news",
-   "status": "ok",
-   "extra": {
-    "host": "www.aalavina.org",
-    "file_url": "https://www.aalavina.org/sites/default/files/2023-01/LV__Encuesta_Carta.pdf",
-    "filename": "LV__Encuesta_Carta.pdf",
-    "size_bytes": 163085,
-    "pages": 2,
-    "thumb": "/assets/cache/pdf/1a78d39dc20fef71.webp",
-    "referrers": [
-     {
-      "url": "https://www.aalavina.org/encuesta-aplicacion",
-      "title": "Encuesta \"Aplicación del Grapevine y La Viña\""
-     }
-    ],
-    "upload_month": "2023-01",
-    "link_texts": [],
-    "event_date": null,
-    "doc_lang": "es",
-    "section": "Encuesta \"Aplicación del Grapevine y La Viña\"",
-    "external": false,
-    "orphan": false
-   },
-   "i18n": {
-    "title": {
-     "en": "Letter about the Grapevine and La Viña Apps Survey",
-     "es": "Carta sobre la encuesta de la aplicación de Grapevine y La Viña"
-    },
-    "summary": {
-     "en": "",
-     "es": ""
-    }
-   },
-   "machine": [],
-   "is_new": false
-  },
-  {
-   "id": "pdf:975d66351355",
-   "source": "crawl",
-   "kind": "pdf",
-   "url": "https://www.aalavina.org/sites/default/files/2022-11/LV_Nuevo%20Libros_Sobriedad.pdf",
-   "title": "Sobriedad Emocional",
-   "summary": "",
-   "lang": "es",
-   "date": "2022-11-02",
-   "first_seen": "2026-09-23T16:34:39Z",
-   "image": "/assets/cache/pdf/975d663513555e7c.webp",
-   "tags": [
-    "postcard"
-   ],
-   "category": "rlv",
-   "status": "ok",
-   "extra": {
-    "host": "www.aalavina.org",
-    "file_url": "https://www.aalavina.org/sites/default/files/2022-11/LV_Nuevo%20Libros_Sobriedad.pdf",
-    "filename": "LV_Nuevo Libros_Sobriedad.pdf",
-    "size_bytes": 148909,
-    "pages": 1,
-    "thumb": "/assets/cache/pdf/975d663513555e7c.webp",
-    "referrers": [
-     {
-      "url": "https://www.aalavina.org/recursos",
-      "title": "Recursos La Viña"
-     }
-    ],
-    "upload_month": "2022-11",
-    "link_texts": [
-     "Sobriedad Emocional"
-    ],
-    "event_date": null,
-    "doc_lang": "es",
-    "section": "tarjetas postales",
-    "external": false,
-    "orphan": false
-   },
-   "i18n": {
-    "title": {
-     "en": "Emotional Sobriety",
-     "es": "Sobriedad Emocional"
-    },
-    "summary": {
-     "en": "",
-     "es": ""
-    }
-   },
-   "machine": [
-    "en"
-   ],
    "is_new": false
   },
   {
@@ -4044,21 +4004,98 @@
     "doc_lang": "en",
     "section": "Postcards",
     "external": false,
-    "orphan": false
+    "orphan": false,
+    "versions": [
+     {
+      "lang": "en",
+      "id": "pdf:371d7cd3445f",
+      "url": "https://www.aagrapevine.org/sites/default/files/2022-11/New_LV_Book.pdf",
+      "title": "New La Viña Book",
+      "title_lang": "en",
+      "i18n_title": {
+       "en": "New La Viña Book",
+       "es": "Nuevo libro La Viña"
+      },
+      "machine": [
+       "es"
+      ],
+      "source": "gv",
+      "date": "2022-11-02",
+      "first_seen": "2026-09-23T16:31:53Z",
+      "category": "gvr",
+      "tags": [
+       "postcard"
+      ],
+      "is_new": false,
+      "host": "www.aagrapevine.org",
+      "file_url": "https://www.aagrapevine.org/sites/default/files/2022-11/New_LV_Book.pdf",
+      "filename": "New_LV_Book.pdf",
+      "size_bytes": 148909,
+      "pages": 1,
+      "thumb": "/assets/cache/pdf/371d7cd3445ff793.webp",
+      "upload_month": "2022-11",
+      "referrers": [
+       {
+        "url": "https://www.aagrapevine.org/gvr-resources",
+        "title": "GVR Resources"
+       }
+      ],
+      "orphan": false
+     },
+     {
+      "lang": "es",
+      "id": "pdf:975d66351355",
+      "url": "https://www.aalavina.org/sites/default/files/2022-11/LV_Nuevo%20Libros_Sobriedad.pdf",
+      "title": "Sobriedad Emocional",
+      "title_lang": "es",
+      "i18n_title": {
+       "en": "Emotional Sobriety",
+       "es": "Sobriedad Emocional"
+      },
+      "machine": [
+       "en"
+      ],
+      "source": "lv",
+      "date": "2022-11-02",
+      "first_seen": "2026-09-23T16:34:39Z",
+      "category": "rlv",
+      "tags": [
+       "postcard"
+      ],
+      "is_new": false,
+      "host": "www.aalavina.org",
+      "file_url": "https://www.aalavina.org/sites/default/files/2022-11/LV_Nuevo%20Libros_Sobriedad.pdf",
+      "filename": "LV_Nuevo Libros_Sobriedad.pdf",
+      "size_bytes": 148909,
+      "pages": 1,
+      "thumb": "/assets/cache/pdf/975d663513555e7c.webp",
+      "upload_month": "2022-11",
+      "referrers": [
+       {
+        "url": "https://www.aalavina.org/recursos",
+        "title": "Recursos La Viña"
+       }
+      ],
+      "orphan": false
+     }
+    ],
+    "kits": [
+     "gvr",
+     "rlv"
+    ],
+    "same_file": true
    },
    "i18n": {
     "title": {
      "en": "New La Viña Book",
-     "es": "Nuevo libro La Viña"
+     "es": "Sobriedad Emocional"
     },
     "summary": {
      "en": "",
      "es": ""
     }
    },
-   "machine": [
-    "es"
-   ],
+   "machine": [],
    "is_new": false
   },
   {
@@ -4104,56 +4141,6 @@
     "title": {
      "en": "12 Ways Grapevine Helps",
      "es": "12 maneras en que Grapevine ayuda"
-    },
-    "summary": {
-     "en": "",
-     "es": ""
-    }
-   },
-   "machine": [],
-   "is_new": false
-  },
-  {
-   "id": "pdf:be8d3404f73e",
-   "source": "crawl",
-   "kind": "pdf",
-   "url": "https://aa-montana.org/pdf/2016-08ParkCountyIGCampout.pdf",
-   "title": "Park County Intergroup Campout",
-   "summary": "",
-   "lang": "en",
-   "date": "2022-10-20",
-   "first_seen": "2026-09-23T19:57:01Z",
-   "image": "/assets/cache/pdf/be8d3404f73e4a37.webp",
-   "tags": [
-    "event"
-   ],
-   "category": "flyer",
-   "status": "ok",
-   "extra": {
-    "host": "aa-montana.org",
-    "file_url": "https://aa-montana.org/pdf/2016-08ParkCountyIGCampout.pdf",
-    "filename": "2016-08ParkCountyIGCampout.pdf",
-    "size_bytes": 524245,
-    "pages": 1,
-    "thumb": "/assets/cache/pdf/be8d3404f73e4a37.webp",
-    "referrers": [
-     {
-      "url": "https://www.aagrapevine.org/get-involved/events/2016-08-19/park-county-intergroup-campout",
-      "title": "Park County Intergroup Campout"
-     }
-    ],
-    "upload_month": null,
-    "link_texts": [],
-    "event_date": "2016-08-19",
-    "doc_lang": "en",
-    "section": "Park County Intergroup Campout",
-    "external": true,
-    "orphan": false
-   },
-   "i18n": {
-    "title": {
-     "en": "Park County Intergroup Campout",
-     "es": "Campamento del Intergrupo del Condado de Park"
     },
     "summary": {
      "en": "",
@@ -4214,172 +4201,6 @@
    "is_new": false
   },
   {
-   "id": "pdf:e988c419172a",
-   "source": "crawl",
-   "kind": "pdf",
-   "url": "https://www.aagrapevine.org/sites/default/files/2022-08/2023_AAGV_Price_Increase_Release_FRE.pdf",
-   "title": "2023 AAGV Price Increase Release (French)",
-   "summary": "",
-   "lang": "en",
-   "date": "2022-08-29",
-   "first_seen": "2026-09-23T16:32:24Z",
-   "image": "/assets/cache/pdf/e988c419172afc49.webp",
-   "tags": [],
-   "category": "news",
-   "status": "ok",
-   "extra": {
-    "host": "www.aagrapevine.org",
-    "file_url": "https://www.aagrapevine.org/sites/default/files/2022-08/2023_AAGV_Price_Increase_Release_FRE.pdf",
-    "filename": "2023_AAGV_Price_Increase_Release_FRE.pdf",
-    "size_bytes": 92445,
-    "pages": 2,
-    "thumb": "/assets/cache/pdf/e988c419172afc49.webp",
-    "referrers": [
-     {
-      "url": "https://www.aagrapevine.org/news-release",
-      "title": "News Release"
-     },
-     {
-      "url": "https://www.aalavina.org/comunicado",
-      "title": "Comunicado"
-     }
-    ],
-    "upload_month": "2022-08",
-    "link_texts": [
-     "2023 AAGV Price Increase Release (French)",
-     "2023 AAGV Price Increase Release (francés)"
-    ],
-    "event_date": null,
-    "doc_lang": "fr",
-    "section": "News Release",
-    "external": false,
-    "orphan": false
-   },
-   "i18n": {
-    "title": {
-     "en": "2023 AAGV Price Increase Release (French)",
-     "es": "2023 AAGV comunicado de aumento de precios (francés)"
-    },
-    "summary": {
-     "en": "",
-     "es": ""
-    }
-   },
-   "machine": [
-    "es"
-   ],
-   "is_new": false
-  },
-  {
-   "id": "pdf:dc164744bb1f",
-   "source": "crawl",
-   "kind": "pdf",
-   "url": "https://www.aagrapevine.org/sites/default/files/2022-08/2023_AAGV_Comunicado_Aumento_Precios_SPAN.pdf",
-   "title": "2023 AAGV Comunicado Aumento Precios (español)",
-   "summary": "",
-   "lang": "es",
-   "date": "2022-08-29",
-   "first_seen": "2026-09-23T16:32:24Z",
-   "image": "/assets/cache/pdf/dc164744bb1fd3ec.webp",
-   "tags": [],
-   "category": "news",
-   "status": "ok",
-   "extra": {
-    "host": "www.aagrapevine.org",
-    "file_url": "https://www.aagrapevine.org/sites/default/files/2022-08/2023_AAGV_Comunicado_Aumento_Precios_SPAN.pdf",
-    "filename": "2023_AAGV_Comunicado_Aumento_Precios_SPAN.pdf",
-    "size_bytes": 127156,
-    "pages": 2,
-    "thumb": "/assets/cache/pdf/dc164744bb1fd3ec.webp",
-    "referrers": [
-     {
-      "url": "https://www.aagrapevine.org/news-release",
-      "title": "News Release"
-     },
-     {
-      "url": "https://www.aalavina.org/comunicado",
-      "title": "Comunicado"
-     }
-    ],
-    "upload_month": "2022-08",
-    "link_texts": [
-     "2023 AAGV Comunicado Aumento Precios (español)"
-    ],
-    "event_date": null,
-    "doc_lang": "es",
-    "section": "News Release",
-    "external": false,
-    "orphan": false
-   },
-   "i18n": {
-    "title": {
-     "en": "2023 AAGV Price Increase Release (Spanish)",
-     "es": "2023 AAGV Comunicado Aumento Precios (español)"
-    },
-    "summary": {
-     "en": "",
-     "es": ""
-    }
-   },
-   "machine": [
-    "en"
-   ],
-   "is_new": false
-  },
-  {
-   "id": "pdf:8e96d73087d0",
-   "source": "crawl",
-   "kind": "pdf",
-   "url": "https://www.aalavina.org/sites/default/files/2022-08/Futuro_LV-App_Ideas.pdf.pdf",
-   "title": "Revistas en formato digital",
-   "summary": "",
-   "lang": "es",
-   "date": "2022-08-29",
-   "first_seen": "2026-09-23T17:09:30Z",
-   "image": "/assets/cache/pdf/8e96d73087d09d35.webp",
-   "tags": [],
-   "category": "other",
-   "status": "ok",
-   "extra": {
-    "host": "www.aalavina.org",
-    "file_url": "https://www.aalavina.org/sites/default/files/2022-08/Futuro_LV-App_Ideas.pdf.pdf",
-    "filename": "Futuro_LV-App_Ideas.pdf.pdf",
-    "size_bytes": 1048018,
-    "pages": 1,
-    "thumb": "/assets/cache/pdf/8e96d73087d09d35.webp",
-    "referrers": [
-     {
-      "url": "https://www.aalavina.org/encuesta-aplicacion",
-      "title": "Encuesta \"Aplicación del Grapevine y La Viña\""
-     }
-    ],
-    "upload_month": "2022-08",
-    "link_texts": [
-     "Revistas en formato digital",
-     "Aplicación"
-    ],
-    "event_date": null,
-    "doc_lang": "es",
-    "section": "Encuesta \"Aplicación del Grapevine y La Viña\"",
-    "external": false,
-    "orphan": false
-   },
-   "i18n": {
-    "title": {
-     "en": "Magazines in Digital Format",
-     "es": "Revistas en formato digital"
-    },
-    "summary": {
-     "en": "",
-     "es": ""
-    }
-   },
-   "machine": [
-    "en"
-   ],
-   "is_new": false
-  },
-  {
    "id": "pdf:2e4782693965",
    "source": "crawl",
    "kind": "pdf",
@@ -4414,7 +4235,77 @@
     "doc_lang": "en",
     "section": "Survey \"Grapevine and La Viña Apps\"",
     "external": false,
-    "orphan": false
+    "orphan": false,
+    "versions": [
+     {
+      "lang": "en",
+      "id": "pdf:2e4782693965",
+      "url": "https://www.aagrapevine.org/sites/default/files/2022-08/Future_GV-App_Ideas.pdf",
+      "title": "Magazines in digital format",
+      "title_lang": "en",
+      "i18n_title": {
+       "en": "Magazines in digital format",
+       "es": "Revistas en formato digital"
+      },
+      "machine": [
+       "es"
+      ],
+      "source": "gv",
+      "date": "2022-08-29",
+      "first_seen": "2026-09-23T17:09:41Z",
+      "category": "other",
+      "tags": [],
+      "is_new": false,
+      "host": "www.aagrapevine.org",
+      "file_url": "https://www.aagrapevine.org/sites/default/files/2022-08/Future_GV-App_Ideas.pdf",
+      "filename": "Future_GV-App_Ideas.pdf",
+      "size_bytes": 1047537,
+      "pages": 1,
+      "thumb": "/assets/cache/pdf/2e4782693965512b.webp",
+      "upload_month": "2022-08",
+      "referrers": [
+       {
+        "url": "https://www.aagrapevine.org/app-survey",
+        "title": "Survey \"Grapevine and La Viña Apps\""
+       }
+      ],
+      "orphan": false
+     },
+     {
+      "lang": "es",
+      "id": "pdf:8e96d73087d0",
+      "url": "https://www.aalavina.org/sites/default/files/2022-08/Futuro_LV-App_Ideas.pdf.pdf",
+      "title": "Revistas en formato digital",
+      "title_lang": "es",
+      "i18n_title": {
+       "en": "Magazines in Digital Format",
+       "es": "Revistas en formato digital"
+      },
+      "machine": [
+       "en"
+      ],
+      "source": "lv",
+      "date": "2022-08-29",
+      "first_seen": "2026-09-23T17:09:30Z",
+      "category": "other",
+      "tags": [],
+      "is_new": false,
+      "host": "www.aalavina.org",
+      "file_url": "https://www.aalavina.org/sites/default/files/2022-08/Futuro_LV-App_Ideas.pdf.pdf",
+      "filename": "Futuro_LV-App_Ideas.pdf.pdf",
+      "size_bytes": 1048018,
+      "pages": 1,
+      "thumb": "/assets/cache/pdf/8e96d73087d09d35.webp",
+      "upload_month": "2022-08",
+      "referrers": [
+       {
+        "url": "https://www.aalavina.org/encuesta-aplicacion",
+        "title": "Encuesta \"Aplicación del Grapevine y La Viña\""
+       }
+      ],
+      "orphan": false
+     }
+    ]
    },
    "i18n": {
     "title": {
@@ -4426,9 +4317,7 @@
      "es": ""
     }
    },
-   "machine": [
-    "es"
-   ],
+   "machine": [],
    "is_new": false
   },
   {
@@ -4436,7 +4325,7 @@
    "source": "crawl",
    "kind": "pdf",
    "url": "https://www.aalavina.org/sites/default/files/2022-08/2023_AAGV_Price_Increase_Release_ENG.pdf",
-   "title": "2023 AAGV Price Increase Release (English)",
+   "title": "2023 AAGV Price Increase Release",
    "summary": "",
    "lang": "en",
    "date": "2022-08-29",
@@ -4466,21 +4355,131 @@
     "doc_lang": "en",
     "section": "Comunicado",
     "external": false,
-    "orphan": false
+    "orphan": false,
+    "versions": [
+     {
+      "lang": "en",
+      "id": "pdf:068112ae483f",
+      "url": "https://www.aalavina.org/sites/default/files/2022-08/2023_AAGV_Price_Increase_Release_ENG.pdf",
+      "title": "2023 AAGV Price Increase Release",
+      "title_lang": "en",
+      "i18n_title": {
+       "en": "2023 AAGV Price Increase Release",
+       "es": "2023 AAGV comunicado de aumento de precios"
+      },
+      "machine": [
+       "es"
+      ],
+      "source": "lv",
+      "date": "2022-08-29",
+      "first_seen": "2026-09-23T16:35:27Z",
+      "category": "news",
+      "tags": [],
+      "is_new": false,
+      "host": "www.aalavina.org",
+      "file_url": "https://www.aalavina.org/sites/default/files/2022-08/2023_AAGV_Price_Increase_Release_ENG.pdf",
+      "filename": "2023_AAGV_Price_Increase_Release_ENG.pdf",
+      "size_bytes": 83972,
+      "pages": 2,
+      "thumb": "/assets/cache/pdf/068112ae483f537b.webp",
+      "upload_month": "2022-08",
+      "referrers": [
+       {
+        "url": "https://www.aalavina.org/comunicado",
+        "title": "Comunicado"
+       }
+      ],
+      "orphan": false
+     },
+     {
+      "lang": "es",
+      "id": "pdf:dc164744bb1f",
+      "url": "https://www.aagrapevine.org/sites/default/files/2022-08/2023_AAGV_Comunicado_Aumento_Precios_SPAN.pdf",
+      "title": "2023 AAGV Comunicado Aumento Precios",
+      "title_lang": "es",
+      "i18n_title": {
+       "en": "2023 AAGV Price Increase Release",
+       "es": "2023 AAGV Comunicado Aumento Precios"
+      },
+      "machine": [
+       "en"
+      ],
+      "source": "gv",
+      "date": "2022-08-29",
+      "first_seen": "2026-09-23T16:32:24Z",
+      "category": "news",
+      "tags": [],
+      "is_new": false,
+      "host": "www.aagrapevine.org",
+      "file_url": "https://www.aagrapevine.org/sites/default/files/2022-08/2023_AAGV_Comunicado_Aumento_Precios_SPAN.pdf",
+      "filename": "2023_AAGV_Comunicado_Aumento_Precios_SPAN.pdf",
+      "size_bytes": 127156,
+      "pages": 2,
+      "thumb": "/assets/cache/pdf/dc164744bb1fd3ec.webp",
+      "upload_month": "2022-08",
+      "referrers": [
+       {
+        "url": "https://www.aagrapevine.org/news-release",
+        "title": "News Release"
+       },
+       {
+        "url": "https://www.aalavina.org/comunicado",
+        "title": "Comunicado"
+       }
+      ],
+      "orphan": false
+     },
+     {
+      "lang": "fr",
+      "id": "pdf:e988c419172a",
+      "url": "https://www.aagrapevine.org/sites/default/files/2022-08/2023_AAGV_Price_Increase_Release_FRE.pdf",
+      "title": "2023 AAGV Price Increase Release",
+      "title_lang": "en",
+      "i18n_title": {
+       "en": "2023 AAGV Price Increase Release",
+       "es": "2023 AAGV comunicado de aumento de precios"
+      },
+      "machine": [
+       "es"
+      ],
+      "source": "gv",
+      "date": "2022-08-29",
+      "first_seen": "2026-09-23T16:32:24Z",
+      "category": "news",
+      "tags": [],
+      "is_new": false,
+      "host": "www.aagrapevine.org",
+      "file_url": "https://www.aagrapevine.org/sites/default/files/2022-08/2023_AAGV_Price_Increase_Release_FRE.pdf",
+      "filename": "2023_AAGV_Price_Increase_Release_FRE.pdf",
+      "size_bytes": 92445,
+      "pages": 2,
+      "thumb": "/assets/cache/pdf/e988c419172afc49.webp",
+      "upload_month": "2022-08",
+      "referrers": [
+       {
+        "url": "https://www.aagrapevine.org/news-release",
+        "title": "News Release"
+       },
+       {
+        "url": "https://www.aalavina.org/comunicado",
+        "title": "Comunicado"
+       }
+      ],
+      "orphan": false
+     }
+    ]
    },
    "i18n": {
     "title": {
-     "en": "2023 AAGV Price Increase Release (English)",
-     "es": "2023 AAGV comunicado de aumento de precios (inglés)"
+     "en": "2023 AAGV Price Increase Release",
+     "es": "2023 AAGV Comunicado Aumento Precios"
     },
     "summary": {
      "en": "",
      "es": ""
     }
    },
-   "machine": [
-    "es"
-   ],
+   "machine": [],
    "is_new": false
   },
   {
@@ -4535,56 +4534,6 @@
    "machine": [
     "es"
    ],
-   "is_new": false
-  },
-  {
-   "id": "pdf:144aa77391db",
-   "source": "crawl",
-   "kind": "pdf",
-   "url": "http://aa-seta.org/committees/cfc/cfcflyers/2022_SETA_CF_CONF_flyer_-English.pdf",
-   "title": "SETA (Southeast Texas Are 67) Correctional Facilities Conference",
-   "summary": "",
-   "lang": "en",
-   "date": "2022-06-08",
-   "first_seen": "2026-09-23T18:32:44Z",
-   "image": "/assets/cache/pdf/144aa77391db7e3c.webp",
-   "tags": [
-    "event"
-   ],
-   "category": "flyer",
-   "status": "ok",
-   "extra": {
-    "host": "aa-seta.org",
-    "file_url": "http://aa-seta.org/committees/cfc/cfcflyers/2022_SETA_CF_CONF_flyer_-English.pdf",
-    "filename": "2022_SETA_CF_CONF_flyer_-English.pdf",
-    "size_bytes": 191652,
-    "pages": 1,
-    "thumb": "/assets/cache/pdf/144aa77391db7e3c.webp",
-    "referrers": [
-     {
-      "url": "https://www.aagrapevine.org/get-involved/events/2022-09-09/seta-southeast-texas-are-67-correctional-facilities-conference",
-      "title": "SETA (Southeast Texas Are 67) Correctional Facilities Conference"
-     }
-    ],
-    "upload_month": null,
-    "link_texts": [],
-    "event_date": "2022-09-09",
-    "doc_lang": "en",
-    "section": "SETA (Southeast Texas Are 67) Correctional Facilities Conference",
-    "external": true,
-    "orphan": false
-   },
-   "i18n": {
-    "title": {
-     "en": "SETA (Southeast Texas Are 67) Correctional Facilities Conference",
-     "es": "Conferencia de Instituciones Correccionales de SETA (Área 67, Sureste de Texas)"
-    },
-    "summary": {
-     "en": "",
-     "es": ""
-    }
-   },
-   "machine": [],
    "is_new": false
   },
   {
@@ -4782,71 +4731,97 @@
     "doc_lang": "en",
     "section": "Postcards",
     "external": false,
-    "orphan": false
+    "orphan": false,
+    "versions": [
+     {
+      "lang": "en",
+      "id": "pdf:2eeff7852f12",
+      "url": "https://www.aagrapevine.org/sites/default/files/2021-12/GV%20NEW_PRAYER.pdf",
+      "title": "Prayer and Meditation",
+      "title_lang": "en",
+      "i18n_title": {
+       "en": "Prayer and Meditation",
+       "es": "Oración y meditación"
+      },
+      "machine": [
+       "es"
+      ],
+      "source": "gv",
+      "date": "2021-12-03",
+      "first_seen": "2026-09-23T16:31:53Z",
+      "category": "gvr",
+      "tags": [
+       "postcard"
+      ],
+      "is_new": false,
+      "host": "www.aagrapevine.org",
+      "file_url": "https://www.aagrapevine.org/sites/default/files/2021-12/GV%20NEW_PRAYER.pdf",
+      "filename": "GV NEW_PRAYER.pdf",
+      "size_bytes": 34603335,
+      "pages": 2,
+      "thumb": "/assets/cache/pdf/2eeff7852f12d30e.webp",
+      "upload_month": "2021-12",
+      "referrers": [
+       {
+        "url": "https://www.aagrapevine.org/gvr-resources",
+        "title": "GVR Resources"
+       }
+      ],
+      "orphan": false
+     },
+     {
+      "lang": "es",
+      "id": "pdf:9372f4b13305",
+      "url": "https://www.aalavina.org/sites/default/files/2023-09/Oracion_y_meditacion.pdf",
+      "title": "Oración y Meditación",
+      "title_lang": "es",
+      "i18n_title": {
+       "en": "Prayer and Meditation",
+       "es": "Oración y Meditación"
+      },
+      "machine": [
+       "en"
+      ],
+      "source": "lv",
+      "date": "2023-09-05",
+      "first_seen": "2026-09-23T16:34:39Z",
+      "category": "rlv",
+      "tags": [
+       "postcard"
+      ],
+      "is_new": false,
+      "host": "www.aalavina.org",
+      "file_url": "https://www.aalavina.org/sites/default/files/2023-09/Oracion_y_meditacion.pdf",
+      "filename": "Oracion_y_meditacion.pdf",
+      "size_bytes": 1537013,
+      "pages": 2,
+      "thumb": "/assets/cache/pdf/9372f4b133057e9a.webp",
+      "upload_month": "2023-09",
+      "referrers": [
+       {
+        "url": "https://www.aalavina.org/recursos",
+        "title": "Recursos La Viña"
+       }
+      ],
+      "orphan": false
+     }
+    ],
+    "kits": [
+     "gvr",
+     "rlv"
+    ]
    },
    "i18n": {
     "title": {
      "en": "Prayer and Meditation",
-     "es": "Oración y meditación"
+     "es": "Oración y Meditación"
     },
     "summary": {
      "en": "",
      "es": ""
     }
    },
-   "machine": [
-    "es"
-   ],
-   "is_new": false
-  },
-  {
-   "id": "pdf:baf62ecc064d",
-   "source": "crawl",
-   "kind": "pdf",
-   "url": "https://www.aalavina.org/sites/default/files/2021-10/Politica-Editorial-La_Vina.pdf",
-   "title": "Politica-Editorial-La Vina",
-   "summary": "",
-   "lang": "es",
-   "date": "2021-10-14",
-   "first_seen": "2026-09-23T17:12:36Z",
-   "image": "/assets/cache/pdf/baf62ecc064dd7bd.webp",
-   "tags": [],
-   "category": "guidelines",
-   "status": "ok",
-   "extra": {
-    "host": "www.aalavina.org",
-    "file_url": "https://www.aalavina.org/sites/default/files/2021-10/Politica-Editorial-La_Vina.pdf",
-    "filename": "Politica-Editorial-La_Vina.pdf",
-    "size_bytes": 111282,
-    "pages": 1,
-    "thumb": "/assets/cache/pdf/baf62ecc064dd7bd.webp",
-    "referrers": [
-     {
-      "url": "https://www.aalavina.org/politica-editorial",
-      "title": "Política Editorial"
-     }
-    ],
-    "upload_month": "2021-10",
-    "link_texts": [],
-    "event_date": null,
-    "doc_lang": "es",
-    "section": "Política Editorial",
-    "external": false,
-    "orphan": false
-   },
-   "i18n": {
-    "title": {
-     "en": "Politica-Editorial-La Viña",
-     "es": "Politica-Editorial-La Vina"
-    },
-    "summary": {
-     "en": "",
-     "es": ""
-    }
-   },
-   "machine": [
-    "en"
-   ],
+   "machine": [],
    "is_new": false
   },
   {
@@ -4903,7 +4878,7 @@
    "source": "crawl",
    "kind": "pdf",
    "url": "https://www.aagrapevine.org/sites/default/files/2021-08/New_Publisher-ENGLISH-Anncmnt-Aug2021.pdf",
-   "title": "New Grapevine Publisher (English)",
+   "title": "New Grapevine Publisher",
    "summary": "",
    "lang": "en",
    "date": "2021-08-04",
@@ -4938,126 +4913,128 @@
     "doc_lang": "en",
     "section": "New Grapevine Publisher",
     "external": false,
-    "orphan": false
-   },
-   "i18n": {
-    "title": {
-     "en": "New Grapevine Publisher (English)",
-     "es": "Nuevo editor de Grapevine (inglés)"
-    },
-    "summary": {
-     "en": "",
-     "es": ""
-    }
-   },
-   "machine": [
-    "es"
-   ],
-   "is_new": false
-  },
-  {
-   "id": "pdf:bc77b83a7887",
-   "source": "crawl",
-   "kind": "pdf",
-   "url": "https://www.aagrapevine.org/sites/default/files/2021-08/New_Publisher-SPANISH-Anncmnt-Aug2021.pdf",
-   "title": "New Grapevine Publisher (Spanish)",
-   "summary": "",
-   "lang": "en",
-   "date": "2021-08-04",
-   "first_seen": "2026-09-23T16:32:40Z",
-   "image": "/assets/cache/pdf/bc77b83a78872b55.webp",
-   "tags": [],
-   "category": "news",
-   "status": "ok",
-   "extra": {
-    "host": "www.aagrapevine.org",
-    "file_url": "https://www.aagrapevine.org/sites/default/files/2021-08/New_Publisher-SPANISH-Anncmnt-Aug2021.pdf",
-    "filename": "New_Publisher-SPANISH-Anncmnt-Aug2021.pdf",
-    "size_bytes": 86157,
-    "pages": 1,
-    "thumb": "/assets/cache/pdf/bc77b83a78872b55.webp",
-    "referrers": [
+    "orphan": false,
+    "versions": [
      {
-      "url": "https://www.aagrapevine.org/anncmnt",
-      "title": "New Grapevine Publisher"
+      "lang": "en",
+      "id": "pdf:e6269ba5c7e9",
+      "url": "https://www.aagrapevine.org/sites/default/files/2021-08/New_Publisher-ENGLISH-Anncmnt-Aug2021.pdf",
+      "title": "New Grapevine Publisher",
+      "title_lang": "en",
+      "i18n_title": {
+       "en": "New Grapevine Publisher",
+       "es": "Nuevo editor de Grapevine"
+      },
+      "machine": [
+       "es"
+      ],
+      "source": "gv",
+      "date": "2021-08-04",
+      "first_seen": "2026-09-23T16:32:40Z",
+      "category": "news",
+      "tags": [],
+      "is_new": false,
+      "host": "www.aagrapevine.org",
+      "file_url": "https://www.aagrapevine.org/sites/default/files/2021-08/New_Publisher-ENGLISH-Anncmnt-Aug2021.pdf",
+      "filename": "New_Publisher-ENGLISH-Anncmnt-Aug2021.pdf",
+      "size_bytes": 89669,
+      "pages": 1,
+      "thumb": "/assets/cache/pdf/e6269ba5c7e98311.webp",
+      "upload_month": "2021-08",
+      "referrers": [
+       {
+        "url": "https://www.aagrapevine.org/anncmnt",
+        "title": "New Grapevine Publisher"
+       },
+       {
+        "url": "https://www.aalavina.org/anuncio-agosto2021",
+        "title": "Nuevo responsable de publicación del Grapevine"
+       }
+      ],
+      "orphan": false
      },
      {
-      "url": "https://www.aalavina.org/anuncio-agosto2021",
-      "title": "Nuevo responsable de publicación del Grapevine"
-     }
-    ],
-    "upload_month": "2021-08",
-    "link_texts": [
-     "New Grapevine Publisher (Spanish)",
-     "Nuevo responsable de publicación del Grapevine (español)"
-    ],
-    "event_date": null,
-    "doc_lang": "es",
-    "section": "New Grapevine Publisher",
-    "external": false,
-    "orphan": false
-   },
-   "i18n": {
-    "title": {
-     "en": "New Grapevine Publisher (Spanish)",
-     "es": "Nuevo editor de Grapevine (español)"
-    },
-    "summary": {
-     "en": "",
-     "es": ""
-    }
-   },
-   "machine": [
-    "es"
-   ],
-   "is_new": false
-  },
-  {
-   "id": "pdf:9a31506105fb",
-   "source": "crawl",
-   "kind": "pdf",
-   "url": "https://www.aagrapevine.org/sites/default/files/2021-08/New_Publisher-FRENCH-Anncmnt-Aug2021.pdf",
-   "title": "New Grapevine Publisher (French)",
-   "summary": "",
-   "lang": "en",
-   "date": "2021-08-04",
-   "first_seen": "2026-09-23T16:32:40Z",
-   "image": "/assets/cache/pdf/9a31506105fb5aae.webp",
-   "tags": [],
-   "category": "news",
-   "status": "ok",
-   "extra": {
-    "host": "www.aagrapevine.org",
-    "file_url": "https://www.aagrapevine.org/sites/default/files/2021-08/New_Publisher-FRENCH-Anncmnt-Aug2021.pdf",
-    "filename": "New_Publisher-FRENCH-Anncmnt-Aug2021.pdf",
-    "size_bytes": 86625,
-    "pages": 1,
-    "thumb": "/assets/cache/pdf/9a31506105fb5aae.webp",
-    "referrers": [
-     {
-      "url": "https://www.aagrapevine.org/anncmnt",
-      "title": "New Grapevine Publisher"
+      "lang": "es",
+      "id": "pdf:bc77b83a7887",
+      "url": "https://www.aagrapevine.org/sites/default/files/2021-08/New_Publisher-SPANISH-Anncmnt-Aug2021.pdf",
+      "title": "New Grapevine Publisher",
+      "title_lang": "en",
+      "i18n_title": {
+       "en": "New Grapevine Publisher",
+       "es": "Nuevo editor de Grapevine"
+      },
+      "machine": [
+       "es"
+      ],
+      "source": "gv",
+      "date": "2021-08-04",
+      "first_seen": "2026-09-23T16:32:40Z",
+      "category": "news",
+      "tags": [],
+      "is_new": false,
+      "host": "www.aagrapevine.org",
+      "file_url": "https://www.aagrapevine.org/sites/default/files/2021-08/New_Publisher-SPANISH-Anncmnt-Aug2021.pdf",
+      "filename": "New_Publisher-SPANISH-Anncmnt-Aug2021.pdf",
+      "size_bytes": 86157,
+      "pages": 1,
+      "thumb": "/assets/cache/pdf/bc77b83a78872b55.webp",
+      "upload_month": "2021-08",
+      "referrers": [
+       {
+        "url": "https://www.aagrapevine.org/anncmnt",
+        "title": "New Grapevine Publisher"
+       },
+       {
+        "url": "https://www.aalavina.org/anuncio-agosto2021",
+        "title": "Nuevo responsable de publicación del Grapevine"
+       }
+      ],
+      "orphan": false
      },
      {
-      "url": "https://www.aalavina.org/anuncio-agosto2021",
-      "title": "Nuevo responsable de publicación del Grapevine"
+      "lang": "fr",
+      "id": "pdf:9a31506105fb",
+      "url": "https://www.aagrapevine.org/sites/default/files/2021-08/New_Publisher-FRENCH-Anncmnt-Aug2021.pdf",
+      "title": "New Grapevine Publisher",
+      "title_lang": "en",
+      "i18n_title": {
+       "en": "New Grapevine Publisher",
+       "es": "Nuevo editor de Grapevine"
+      },
+      "machine": [
+       "es"
+      ],
+      "source": "gv",
+      "date": "2021-08-04",
+      "first_seen": "2026-09-23T16:32:40Z",
+      "category": "news",
+      "tags": [],
+      "is_new": false,
+      "host": "www.aagrapevine.org",
+      "file_url": "https://www.aagrapevine.org/sites/default/files/2021-08/New_Publisher-FRENCH-Anncmnt-Aug2021.pdf",
+      "filename": "New_Publisher-FRENCH-Anncmnt-Aug2021.pdf",
+      "size_bytes": 86625,
+      "pages": 1,
+      "thumb": "/assets/cache/pdf/9a31506105fb5aae.webp",
+      "upload_month": "2021-08",
+      "referrers": [
+       {
+        "url": "https://www.aagrapevine.org/anncmnt",
+        "title": "New Grapevine Publisher"
+       },
+       {
+        "url": "https://www.aalavina.org/anuncio-agosto2021",
+        "title": "Nuevo responsable de publicación del Grapevine"
+       }
+      ],
+      "orphan": false
      }
-    ],
-    "upload_month": "2021-08",
-    "link_texts": [
-     "New Grapevine Publisher (French)",
-     "Nuevo responsable de publicación del Grapevine (francés)"
-    ],
-    "event_date": null,
-    "doc_lang": "fr",
-    "section": "New Grapevine Publisher",
-    "external": false,
-    "orphan": false
+    ]
    },
    "i18n": {
     "title": {
-     "en": "New Grapevine Publisher (French)",
-     "es": "Nuevo editor de Grapevine (francés)"
+     "en": "New Grapevine Publisher",
+     "es": "Nuevo editor de Grapevine"
     },
     "summary": {
      "en": "",
@@ -5074,7 +5051,7 @@
    "source": "crawl",
    "kind": "pdf",
    "url": "https://www.aagrapevine.org/sites/default/files/2021-07/Prayer_and_Meditation-New-Book-Sept2021.pdf",
-   "title": "Sold-out book is Back in stock! (English)",
+   "title": "Sold-out book is Back in stock!",
    "summary": "",
    "lang": "en",
    "date": "2021-07-22",
@@ -5109,126 +5086,128 @@
     "doc_lang": "en",
     "section": "Sold-out book is Back in stock!",
     "external": false,
-    "orphan": false
-   },
-   "i18n": {
-    "title": {
-     "en": "Sold-out book is Back in stock! (English)",
-     "es": "¡El libro agotado está en stock! (inglés)"
-    },
-    "summary": {
-     "en": "",
-     "es": ""
-    }
-   },
-   "machine": [
-    "es"
-   ],
-   "is_new": false
-  },
-  {
-   "id": "pdf:60781778c8cd",
-   "source": "crawl",
-   "kind": "pdf",
-   "url": "https://www.aagrapevine.org/sites/default/files/2021-07/Oracion_y_meditacion-Nuevo-libro-Sept2021.pdf",
-   "title": "Sold-out book is Back in stock! (Spanish)",
-   "summary": "",
-   "lang": "en",
-   "date": "2021-07-22",
-   "first_seen": "2026-09-23T17:09:46Z",
-   "image": "/assets/cache/pdf/60781778c8cd1c2a.webp",
-   "tags": [],
-   "category": "literature",
-   "status": "ok",
-   "extra": {
-    "host": "www.aagrapevine.org",
-    "file_url": "https://www.aagrapevine.org/sites/default/files/2021-07/Oracion_y_meditacion-Nuevo-libro-Sept2021.pdf",
-    "filename": "Oracion_y_meditacion-Nuevo-libro-Sept2021.pdf",
-    "size_bytes": 114593,
-    "pages": 3,
-    "thumb": "/assets/cache/pdf/60781778c8cd1c2a.webp",
-    "referrers": [
+    "orphan": false,
+    "versions": [
      {
-      "url": "https://www.aagrapevine.org/prayer-and-meditation-book",
-      "title": "Sold-out book is Back in stock!"
+      "lang": "en",
+      "id": "pdf:d1216f0b4c43",
+      "url": "https://www.aagrapevine.org/sites/default/files/2021-07/Prayer_and_Meditation-New-Book-Sept2021.pdf",
+      "title": "Sold-out book is Back in stock!",
+      "title_lang": "en",
+      "i18n_title": {
+       "en": "Sold-out book is Back in stock!",
+       "es": "¡El libro agotado está en stock!"
+      },
+      "machine": [
+       "es"
+      ],
+      "source": "gv",
+      "date": "2021-07-22",
+      "first_seen": "2026-09-23T17:09:46Z",
+      "category": "literature",
+      "tags": [],
+      "is_new": false,
+      "host": "www.aagrapevine.org",
+      "file_url": "https://www.aagrapevine.org/sites/default/files/2021-07/Prayer_and_Meditation-New-Book-Sept2021.pdf",
+      "filename": "Prayer_and_Meditation-New-Book-Sept2021.pdf",
+      "size_bytes": 229092,
+      "pages": 3,
+      "thumb": "/assets/cache/pdf/d1216f0b4c43ac1c.webp",
+      "upload_month": "2021-07",
+      "referrers": [
+       {
+        "url": "https://www.aagrapevine.org/prayer-and-meditation-book",
+        "title": "Sold-out book is Back in stock!"
+       },
+       {
+        "url": "https://www.aalavina.org/oracion-y-meditacion-libro",
+        "title": "¡Uno de los libros más vendidos!"
+       }
+      ],
+      "orphan": false
      },
      {
-      "url": "https://www.aalavina.org/oracion-y-meditacion-libro",
-      "title": "¡Uno de los libros más vendidos!"
-     }
-    ],
-    "upload_month": "2021-07",
-    "link_texts": [
-     "Sold-out book is Back in stock! (Spanish)",
-     "¡Uno de los libros más vendidos! (español)"
-    ],
-    "event_date": null,
-    "doc_lang": "es",
-    "section": "Sold-out book is Back in stock!",
-    "external": false,
-    "orphan": false
-   },
-   "i18n": {
-    "title": {
-     "en": "Sold-out book is Back in stock! (Spanish)",
-     "es": "¡El libro agotado está en stock! (español)"
-    },
-    "summary": {
-     "en": "",
-     "es": ""
-    }
-   },
-   "machine": [
-    "es"
-   ],
-   "is_new": false
-  },
-  {
-   "id": "pdf:20386f144c93",
-   "source": "crawl",
-   "kind": "pdf",
-   "url": "https://www.aagrapevine.org/sites/default/files/2021-07/Priere_Meditation-Nouveau-Livre-Sept2021.pdf",
-   "title": "Sold-out book is Back in stock! (French)",
-   "summary": "",
-   "lang": "en",
-   "date": "2021-07-22",
-   "first_seen": "2026-09-23T17:09:46Z",
-   "image": "/assets/cache/pdf/20386f144c930053.webp",
-   "tags": [],
-   "category": "literature",
-   "status": "ok",
-   "extra": {
-    "host": "www.aagrapevine.org",
-    "file_url": "https://www.aagrapevine.org/sites/default/files/2021-07/Priere_Meditation-Nouveau-Livre-Sept2021.pdf",
-    "filename": "Priere_Meditation-Nouveau-Livre-Sept2021.pdf",
-    "size_bytes": 166602,
-    "pages": 3,
-    "thumb": "/assets/cache/pdf/20386f144c930053.webp",
-    "referrers": [
-     {
-      "url": "https://www.aagrapevine.org/prayer-and-meditation-book",
-      "title": "Sold-out book is Back in stock!"
+      "lang": "es",
+      "id": "pdf:60781778c8cd",
+      "url": "https://www.aagrapevine.org/sites/default/files/2021-07/Oracion_y_meditacion-Nuevo-libro-Sept2021.pdf",
+      "title": "Sold-out book is Back in stock!",
+      "title_lang": "en",
+      "i18n_title": {
+       "en": "Sold-out book is Back in stock!",
+       "es": "¡El libro agotado está en stock!"
+      },
+      "machine": [
+       "es"
+      ],
+      "source": "gv",
+      "date": "2021-07-22",
+      "first_seen": "2026-09-23T17:09:46Z",
+      "category": "literature",
+      "tags": [],
+      "is_new": false,
+      "host": "www.aagrapevine.org",
+      "file_url": "https://www.aagrapevine.org/sites/default/files/2021-07/Oracion_y_meditacion-Nuevo-libro-Sept2021.pdf",
+      "filename": "Oracion_y_meditacion-Nuevo-libro-Sept2021.pdf",
+      "size_bytes": 114593,
+      "pages": 3,
+      "thumb": "/assets/cache/pdf/60781778c8cd1c2a.webp",
+      "upload_month": "2021-07",
+      "referrers": [
+       {
+        "url": "https://www.aagrapevine.org/prayer-and-meditation-book",
+        "title": "Sold-out book is Back in stock!"
+       },
+       {
+        "url": "https://www.aalavina.org/oracion-y-meditacion-libro",
+        "title": "¡Uno de los libros más vendidos!"
+       }
+      ],
+      "orphan": false
      },
      {
-      "url": "https://www.aalavina.org/oracion-y-meditacion-libro",
-      "title": "¡Uno de los libros más vendidos!"
+      "lang": "fr",
+      "id": "pdf:20386f144c93",
+      "url": "https://www.aagrapevine.org/sites/default/files/2021-07/Priere_Meditation-Nouveau-Livre-Sept2021.pdf",
+      "title": "Sold-out book is Back in stock!",
+      "title_lang": "en",
+      "i18n_title": {
+       "en": "Sold-out book is Back in stock!",
+       "es": "¡El libro agotado está en stock!"
+      },
+      "machine": [
+       "es"
+      ],
+      "source": "gv",
+      "date": "2021-07-22",
+      "first_seen": "2026-09-23T17:09:46Z",
+      "category": "literature",
+      "tags": [],
+      "is_new": false,
+      "host": "www.aagrapevine.org",
+      "file_url": "https://www.aagrapevine.org/sites/default/files/2021-07/Priere_Meditation-Nouveau-Livre-Sept2021.pdf",
+      "filename": "Priere_Meditation-Nouveau-Livre-Sept2021.pdf",
+      "size_bytes": 166602,
+      "pages": 3,
+      "thumb": "/assets/cache/pdf/20386f144c930053.webp",
+      "upload_month": "2021-07",
+      "referrers": [
+       {
+        "url": "https://www.aagrapevine.org/prayer-and-meditation-book",
+        "title": "Sold-out book is Back in stock!"
+       },
+       {
+        "url": "https://www.aalavina.org/oracion-y-meditacion-libro",
+        "title": "¡Uno de los libros más vendidos!"
+       }
+      ],
+      "orphan": false
      }
-    ],
-    "upload_month": "2021-07",
-    "link_texts": [
-     "Sold-out book is Back in stock! (French)",
-     "¡Uno de los libros más vendidos! (francés)"
-    ],
-    "event_date": null,
-    "doc_lang": "fr",
-    "section": "Sold-out book is Back in stock!",
-    "external": false,
-    "orphan": false
+    ]
    },
    "i18n": {
     "title": {
-     "en": "Sold-out book is Back in stock! (French)",
-     "es": "¡El libro agotado está en stock! (francés)"
+     "en": "Sold-out book is Back in stock!",
+     "es": "¡El libro agotado está en stock!"
     },
     "summary": {
      "en": "",
@@ -5349,59 +5328,6 @@
    "is_new": false
   },
   {
-   "id": "pdf:89867dc207f4",
-   "source": "crawl",
-   "kind": "pdf",
-   "url": "https://www.aagrapevine.org/sites/default/files/2021-03/2021-Coming-Soon-BOOKS-Spanish.pdf",
-   "title": "Libres por dentro: Historias de recuperación en AA en prisión",
-   "summary": "",
-   "lang": "es",
-   "date": "2021-03-02",
-   "first_seen": "2026-09-23T17:13:14Z",
-   "image": "/assets/cache/pdf/89867dc207f41224.webp",
-   "tags": [],
-   "category": "literature",
-   "status": "ok",
-   "extra": {
-    "host": "www.aagrapevine.org",
-    "file_url": "https://www.aagrapevine.org/sites/default/files/2021-03/2021-Coming-Soon-BOOKS-Spanish.pdf",
-    "filename": "2021-Coming-Soon-BOOKS-Spanish.pdf",
-    "size_bytes": 97143,
-    "pages": 1,
-    "thumb": "/assets/cache/pdf/89867dc207f41224.webp",
-    "referrers": [
-     {
-      "url": "https://www.aagrapevine.org/node/72225",
-      "title": "2 New Books!"
-     }
-    ],
-    "upload_month": "2021-03",
-    "link_texts": [
-     "Libres por dentro: Historias de recuperación en AA en prisión",
-     "Mujeres en AA"
-    ],
-    "event_date": null,
-    "doc_lang": "es",
-    "section": "2 New Books!",
-    "external": false,
-    "orphan": false
-   },
-   "i18n": {
-    "title": {
-     "en": "Free on the Inside: AA Recovery Stories in Prison",
-     "es": "Libres por dentro: Historias de recuperación en AA en prisión"
-    },
-    "summary": {
-     "en": "",
-     "es": ""
-    }
-   },
-   "machine": [
-    "en"
-   ],
-   "is_new": false
-  },
-  {
    "id": "pdf:7e9dfbe7fa9f",
    "source": "crawl",
    "kind": "pdf",
@@ -5437,21 +5363,89 @@
     "doc_lang": "en",
     "section": "2 New Books!",
     "external": false,
-    "orphan": false
+    "orphan": false,
+    "versions": [
+     {
+      "lang": "en",
+      "id": "pdf:7e9dfbe7fa9f",
+      "url": "https://www.aagrapevine.org/sites/default/files/2021-03/2021-Coming-Soon-NEW_BOOKS-Eng.pdf",
+      "title": "Free on the Inside: Stories of AA Recovery in Prison",
+      "title_lang": "en",
+      "i18n_title": {
+       "en": "Free on the Inside: Stories of AA Recovery in Prison",
+       "es": "Libres por dentro: Historias de la recuperación de AA en prisión"
+      },
+      "machine": [
+       "es"
+      ],
+      "source": "gv",
+      "date": "2021-03-02",
+      "first_seen": "2026-09-23T17:13:14Z",
+      "category": "literature",
+      "tags": [],
+      "is_new": false,
+      "host": "www.aagrapevine.org",
+      "file_url": "https://www.aagrapevine.org/sites/default/files/2021-03/2021-Coming-Soon-NEW_BOOKS-Eng.pdf",
+      "filename": "2021-Coming-Soon-NEW_BOOKS-Eng.pdf",
+      "size_bytes": 147758,
+      "pages": 1,
+      "thumb": "/assets/cache/pdf/7e9dfbe7fa9fb8ce.webp",
+      "upload_month": "2021-03",
+      "referrers": [
+       {
+        "url": "https://www.aagrapevine.org/node/72225",
+        "title": "2 New Books!"
+       }
+      ],
+      "orphan": false
+     },
+     {
+      "lang": "es",
+      "id": "pdf:89867dc207f4",
+      "url": "https://www.aagrapevine.org/sites/default/files/2021-03/2021-Coming-Soon-BOOKS-Spanish.pdf",
+      "title": "Libres por dentro: Historias de recuperación en AA en prisión",
+      "title_lang": "es",
+      "i18n_title": {
+       "en": "Free on the Inside: AA Recovery Stories in Prison",
+       "es": "Libres por dentro: Historias de recuperación en AA en prisión"
+      },
+      "machine": [
+       "en"
+      ],
+      "source": "gv",
+      "date": "2021-03-02",
+      "first_seen": "2026-09-23T17:13:14Z",
+      "category": "literature",
+      "tags": [],
+      "is_new": false,
+      "host": "www.aagrapevine.org",
+      "file_url": "https://www.aagrapevine.org/sites/default/files/2021-03/2021-Coming-Soon-BOOKS-Spanish.pdf",
+      "filename": "2021-Coming-Soon-BOOKS-Spanish.pdf",
+      "size_bytes": 97143,
+      "pages": 1,
+      "thumb": "/assets/cache/pdf/89867dc207f41224.webp",
+      "upload_month": "2021-03",
+      "referrers": [
+       {
+        "url": "https://www.aagrapevine.org/node/72225",
+        "title": "2 New Books!"
+       }
+      ],
+      "orphan": false
+     }
+    ]
    },
    "i18n": {
     "title": {
      "en": "Free on the Inside: Stories of AA Recovery in Prison",
-     "es": "Libres por dentro: Historias de la recuperación de AA en prisión"
+     "es": "Libres por dentro: Historias de recuperación en AA en prisión"
     },
     "summary": {
      "en": "",
      "es": ""
     }
    },
-   "machine": [
-    "es"
-   ],
+   "machine": [],
    "is_new": false
   },
   {
@@ -5504,266 +5498,6 @@
     }
    },
    "machine": [],
-   "is_new": false
-  },
-  {
-   "id": "pdf:ac1914fe80d6",
-   "source": "crawl",
-   "kind": "pdf",
-   "url": "https://www.aalavina.org/sites/default/files/2021-01/SF-202-Espiritualidad_y_La-Mencion-de-Dios_ESPANOL_0.PDF",
-   "title": "La Espiritualidad y la Mención de Dios",
-   "summary": "",
-   "lang": "es",
-   "date": "2021-01-21",
-   "first_seen": "2026-09-23T16:34:39Z",
-   "image": "/assets/cache/pdf/ac1914fe80d6cf42.webp",
-   "tags": [],
-   "category": "rlv",
-   "status": "ok",
-   "extra": {
-    "host": "www.aalavina.org",
-    "file_url": "https://www.aalavina.org/sites/default/files/2021-01/SF-202-Espiritualidad_y_La-Mencion-de-Dios_ESPANOL_0.PDF",
-    "filename": "SF-202-Espiritualidad_y_La-Mencion-de-Dios_ESPANOL_0.PDF",
-    "size_bytes": 163215,
-    "pages": 2,
-    "thumb": "/assets/cache/pdf/ac1914fe80d6cf42.webp",
-    "referrers": [
-     {
-      "url": "https://www.aalavina.org/recursos",
-      "title": "Recursos La Viña"
-     }
-    ],
-    "upload_month": "2021-01",
-    "link_texts": [
-     "La Espiritualidad y la Mención de Dios"
-    ],
-    "event_date": null,
-    "doc_lang": "es",
-    "section": "recursos y herramientas",
-    "external": false,
-    "orphan": false
-   },
-   "i18n": {
-    "title": {
-     "en": "Spirituality and God-Talk",
-     "es": "La Espiritualidad y la Mención de Dios"
-    },
-    "summary": {
-     "en": "",
-     "es": ""
-    }
-   },
-   "machine": [
-    "en"
-   ],
-   "is_new": false
-  },
-  {
-   "id": "pdf:7ce9ca1221d8",
-   "source": "crawl",
-   "kind": "pdf",
-   "url": "https://www.aagrapevine.org/sites/default/files/2021-01/SF-202-Espiritualidad_y_La-Mencion-de-Dios_ESPANOL.PDF",
-   "title": "Spirituality and God-Talk (Spa.)",
-   "summary": "",
-   "lang": "en",
-   "date": "2021-01-21",
-   "first_seen": "2026-09-23T16:31:53Z",
-   "image": "/assets/cache/pdf/7ce9ca1221d8d320.webp",
-   "tags": [],
-   "category": "gvr",
-   "status": "ok",
-   "extra": {
-    "host": "www.aagrapevine.org",
-    "file_url": "https://www.aagrapevine.org/sites/default/files/2021-01/SF-202-Espiritualidad_y_La-Mencion-de-Dios_ESPANOL.PDF",
-    "filename": "SF-202-Espiritualidad_y_La-Mencion-de-Dios_ESPANOL.PDF",
-    "size_bytes": 163215,
-    "pages": 2,
-    "thumb": "/assets/cache/pdf/7ce9ca1221d8d320.webp",
-    "referrers": [
-     {
-      "url": "https://www.aagrapevine.org/gvr-resources",
-      "title": "GVR Resources"
-     }
-    ],
-    "upload_month": "2021-01",
-    "link_texts": [
-     "Spirituality and God-Talk (Spa.)"
-    ],
-    "event_date": null,
-    "doc_lang": "es",
-    "section": "tool and resources",
-    "external": false,
-    "orphan": false
-   },
-   "i18n": {
-    "title": {
-     "en": "Spirituality and God-Talk (Spa.)",
-     "es": "La Espiritualidad y la Mención de Dios (Spa.)"
-    },
-    "summary": {
-     "en": "",
-     "es": ""
-    }
-   },
-   "machine": [
-    "es"
-   ],
-   "is_new": false
-  },
-  {
-   "id": "pdf:4ba168777b90",
-   "source": "crawl",
-   "kind": "pdf",
-   "url": "https://www.aalavina.org/sites/default/files/2021-01/F-202_GV_Spirituality%20_God-Talk-INGLES.pdf",
-   "title": "La Espiritualidad y la Mención de Dios (Inglés)",
-   "summary": "",
-   "lang": "es",
-   "date": "2021-01-21",
-   "first_seen": "2026-09-23T16:34:39Z",
-   "image": "/assets/cache/pdf/4ba168777b90fd13.webp",
-   "tags": [],
-   "category": "rlv",
-   "status": "ok",
-   "extra": {
-    "host": "www.aalavina.org",
-    "file_url": "https://www.aalavina.org/sites/default/files/2021-01/F-202_GV_Spirituality%20_God-Talk-INGLES.pdf",
-    "filename": "F-202_GV_Spirituality _God-Talk-INGLES.pdf",
-    "size_bytes": 613887,
-    "pages": 2,
-    "thumb": "/assets/cache/pdf/4ba168777b90fd13.webp",
-    "referrers": [
-     {
-      "url": "https://www.aalavina.org/recursos",
-      "title": "Recursos La Viña"
-     }
-    ],
-    "upload_month": "2021-01",
-    "link_texts": [
-     "La Espiritualidad y la Mención de Dios (Inglés)"
-    ],
-    "event_date": null,
-    "doc_lang": "en",
-    "section": "recursos y herramientas",
-    "external": false,
-    "orphan": false
-   },
-   "i18n": {
-    "title": {
-     "en": "Spirituality and God-Talk (English)",
-     "es": "La Espiritualidad y la Mención de Dios (Inglés)"
-    },
-    "summary": {
-     "en": "",
-     "es": ""
-    }
-   },
-   "machine": [
-    "en"
-   ],
-   "is_new": false
-  },
-  {
-   "id": "pdf:2f5e68ed2e67",
-   "source": "crawl",
-   "kind": "pdf",
-   "url": "https://www.aagrapevine.org/sites/default/files/2021-01/Spirittuality_God-Talk-FF-202_FRANCES.pdf",
-   "title": "Spirituality and God-Talk (Fre.)",
-   "summary": "",
-   "lang": "en",
-   "date": "2021-01-21",
-   "first_seen": "2026-09-23T16:31:53Z",
-   "image": "/assets/cache/pdf/2f5e68ed2e67f5dd.webp",
-   "tags": [],
-   "category": "gvr",
-   "status": "ok",
-   "extra": {
-    "host": "www.aagrapevine.org",
-    "file_url": "https://www.aagrapevine.org/sites/default/files/2021-01/Spirittuality_God-Talk-FF-202_FRANCES.pdf",
-    "filename": "Spirittuality_God-Talk-FF-202_FRANCES.pdf",
-    "size_bytes": 226781,
-    "pages": 2,
-    "thumb": "/assets/cache/pdf/2f5e68ed2e67f5dd.webp",
-    "referrers": [
-     {
-      "url": "https://www.aagrapevine.org/gvr-resources",
-      "title": "GVR Resources"
-     }
-    ],
-    "upload_month": "2021-01",
-    "link_texts": [
-     "Spirituality and God-Talk (Fre.)"
-    ],
-    "event_date": null,
-    "doc_lang": "fr",
-    "section": "tool and resources",
-    "external": false,
-    "orphan": false
-   },
-   "i18n": {
-    "title": {
-     "en": "Spirituality and God-Talk (Fre.)",
-     "es": "La Espiritualidad y la Mención de Dios (Fre.)"
-    },
-    "summary": {
-     "en": "",
-     "es": ""
-    }
-   },
-   "machine": [
-    "es"
-   ],
-   "is_new": false
-  },
-  {
-   "id": "pdf:13eb77d3afff",
-   "source": "crawl",
-   "kind": "pdf",
-   "url": "https://www.aalavina.org/sites/default/files/2021-01/Spirittuality_God-Talk-FF-202_FRANCES_0.pdf",
-   "title": "La Espiritualidad y la Mención de Dios (Francés)",
-   "summary": "",
-   "lang": "es",
-   "date": "2021-01-21",
-   "first_seen": "2026-09-23T16:34:39Z",
-   "image": "/assets/cache/pdf/13eb77d3afffc849.webp",
-   "tags": [],
-   "category": "rlv",
-   "status": "ok",
-   "extra": {
-    "host": "www.aalavina.org",
-    "file_url": "https://www.aalavina.org/sites/default/files/2021-01/Spirittuality_God-Talk-FF-202_FRANCES_0.pdf",
-    "filename": "Spirittuality_God-Talk-FF-202_FRANCES_0.pdf",
-    "size_bytes": 226781,
-    "pages": 2,
-    "thumb": "/assets/cache/pdf/13eb77d3afffc849.webp",
-    "referrers": [
-     {
-      "url": "https://www.aalavina.org/recursos",
-      "title": "Recursos La Viña"
-     }
-    ],
-    "upload_month": "2021-01",
-    "link_texts": [
-     "La Espiritualidad y la Mención de Dios (Francés)"
-    ],
-    "event_date": null,
-    "doc_lang": "fr",
-    "section": "recursos y herramientas",
-    "external": false,
-    "orphan": false
-   },
-   "i18n": {
-    "title": {
-     "en": "Spirituality and God-Talk (French)",
-     "es": "La Espiritualidad y la Mención de Dios (Francés)"
-    },
-    "summary": {
-     "en": "",
-     "es": ""
-    }
-   },
-   "machine": [
-    "en"
-   ],
    "is_new": false
   },
   {
@@ -5979,60 +5713,6 @@
    "is_new": false
   },
   {
-   "id": "pdf:4d7d701d0324",
-   "source": "crawl",
-   "kind": "pdf",
-   "url": "https://www.aalavina.org/sites/default/files/2020-08/un%20chequeo%20de%20las%20tradiciones_.pdf",
-   "title": "Lista de Chequeo de las Tradiciones",
-   "summary": "",
-   "lang": "es",
-   "date": "2020-08-26",
-   "first_seen": "2026-09-23T16:34:39Z",
-   "image": "/assets/cache/pdf/4d7d701d03240dc8.webp",
-   "tags": [
-    "guidelines"
-   ],
-   "category": "rlv",
-   "status": "ok",
-   "extra": {
-    "host": "www.aalavina.org",
-    "file_url": "https://www.aalavina.org/sites/default/files/2020-08/un%20chequeo%20de%20las%20tradiciones_.pdf",
-    "filename": "un chequeo de las tradiciones_.pdf",
-    "size_bytes": 6356814,
-    "pages": 4,
-    "thumb": "/assets/cache/pdf/4d7d701d03240dc8.webp",
-    "referrers": [
-     {
-      "url": "https://www.aalavina.org/recursos",
-      "title": "Recursos La Viña"
-     }
-    ],
-    "upload_month": "2020-08",
-    "link_texts": [
-     "Lista de Chequeo de las Tradiciones"
-    ],
-    "event_date": null,
-    "doc_lang": "es",
-    "section": "recursos y herramientas",
-    "external": false,
-    "orphan": false
-   },
-   "i18n": {
-    "title": {
-     "en": "Traditions Checklist",
-     "es": "Lista de Chequeo de las Tradiciones"
-    },
-    "summary": {
-     "en": "",
-     "es": ""
-    }
-   },
-   "machine": [
-    "en"
-   ],
-   "is_new": false
-  },
-  {
    "id": "pdf:22c088624056",
    "source": "crawl",
    "kind": "pdf",
@@ -6107,6 +5787,10 @@
      {
       "url": "https://www.aalavina.org/recursos",
       "title": "Recursos La Viña"
+     },
+     {
+      "url": "https://www.aalavina.org/politica-editorial",
+      "title": "Política Editorial"
      }
     ],
     "upload_month": "2020-08",
@@ -6117,7 +5801,10 @@
     "doc_lang": "es",
     "section": "recursos y herramientas",
     "external": false,
-    "orphan": false
+    "orphan": false,
+    "duplicates": [
+     "https://www.aalavina.org/sites/default/files/2021-10/Politica-Editorial-La_Vina.pdf"
+    ]
    },
    "i18n": {
     "title": {
@@ -6468,7 +6155,7 @@
    "source": "crawl",
    "kind": "pdf",
    "url": "https://www.aagrapevine.org/sites/default/files/2020-01/Spirituality-%27God-Talk%27.pdf",
-   "title": "Spirituality and God-Talk (English)",
+   "title": "Spirituality and God-Talk",
    "summary": "",
    "lang": "en",
    "date": "2020-01-01",
@@ -6488,6 +6175,10 @@
      {
       "url": "https://www.aagrapevine.org/gvr-resources",
       "title": "GVR Resources"
+     },
+     {
+      "url": "https://www.aalavina.org/recursos",
+      "title": "Recursos La Viña"
      }
     ],
     "upload_month": "2020-01",
@@ -6498,21 +6189,151 @@
     "doc_lang": "en",
     "section": "tool and resources",
     "external": false,
-    "orphan": false
+    "orphan": false,
+    "kits": [
+     "gvr",
+     "rlv"
+    ],
+    "duplicates": [
+     "https://www.aalavina.org/sites/default/files/2021-01/F-202_GV_Spirituality%20_God-Talk-INGLES.pdf"
+    ],
+    "versions": [
+     {
+      "lang": "en",
+      "id": "pdf:d8d096df517b",
+      "url": "https://www.aagrapevine.org/sites/default/files/2020-01/Spirituality-%27God-Talk%27.pdf",
+      "title": "Spirituality and God-Talk",
+      "title_lang": "en",
+      "i18n_title": {
+       "en": "Spirituality and God-Talk",
+       "es": "La Espiritualidad y la Mención de Dios"
+      },
+      "machine": [
+       "es"
+      ],
+      "source": "gv",
+      "date": "2020-01-01",
+      "first_seen": "2026-09-23T16:31:53Z",
+      "category": "gvr",
+      "tags": [],
+      "is_new": false,
+      "host": "www.aagrapevine.org",
+      "file_url": "https://www.aagrapevine.org/sites/default/files/2020-01/Spirituality-%27God-Talk%27.pdf",
+      "filename": "Spirituality-'God-Talk'.pdf",
+      "size_bytes": 613887,
+      "pages": 2,
+      "thumb": "/assets/cache/pdf/d8d096df517b9dfd.webp",
+      "upload_month": "2020-01",
+      "referrers": [
+       {
+        "url": "https://www.aagrapevine.org/gvr-resources",
+        "title": "GVR Resources"
+       },
+       {
+        "url": "https://www.aalavina.org/recursos",
+        "title": "Recursos La Viña"
+       }
+      ],
+      "orphan": false,
+      "duplicates": [
+       "https://www.aalavina.org/sites/default/files/2021-01/F-202_GV_Spirituality%20_God-Talk-INGLES.pdf"
+      ]
+     },
+     {
+      "lang": "es",
+      "id": "pdf:ac1914fe80d6",
+      "url": "https://www.aalavina.org/sites/default/files/2021-01/SF-202-Espiritualidad_y_La-Mencion-de-Dios_ESPANOL_0.PDF",
+      "title": "La Espiritualidad y la Mención de Dios",
+      "title_lang": "es",
+      "i18n_title": {
+       "en": "Spirituality and God-Talk",
+       "es": "La Espiritualidad y la Mención de Dios"
+      },
+      "machine": [
+       "en"
+      ],
+      "source": "lv",
+      "date": "2021-01-21",
+      "first_seen": "2026-09-23T16:34:39Z",
+      "category": "rlv",
+      "tags": [],
+      "is_new": false,
+      "host": "www.aalavina.org",
+      "file_url": "https://www.aalavina.org/sites/default/files/2021-01/SF-202-Espiritualidad_y_La-Mencion-de-Dios_ESPANOL_0.PDF",
+      "filename": "SF-202-Espiritualidad_y_La-Mencion-de-Dios_ESPANOL_0.PDF",
+      "size_bytes": 163215,
+      "pages": 2,
+      "thumb": "/assets/cache/pdf/ac1914fe80d6cf42.webp",
+      "upload_month": "2021-01",
+      "referrers": [
+       {
+        "url": "https://www.aalavina.org/recursos",
+        "title": "Recursos La Viña"
+       },
+       {
+        "url": "https://www.aagrapevine.org/gvr-resources",
+        "title": "GVR Resources"
+       }
+      ],
+      "orphan": false,
+      "duplicates": [
+       "https://www.aagrapevine.org/sites/default/files/2021-01/SF-202-Espiritualidad_y_La-Mencion-de-Dios_ESPANOL.PDF"
+      ]
+     },
+     {
+      "lang": "fr",
+      "id": "pdf:13eb77d3afff",
+      "url": "https://www.aalavina.org/sites/default/files/2021-01/Spirittuality_God-Talk-FF-202_FRANCES_0.pdf",
+      "title": "La Espiritualidad y la Mención de Dios",
+      "title_lang": "es",
+      "i18n_title": {
+       "en": "Spirituality and God-Talk",
+       "es": "La Espiritualidad y la Mención de Dios"
+      },
+      "machine": [
+       "en"
+      ],
+      "source": "lv",
+      "date": "2021-01-21",
+      "first_seen": "2026-09-23T16:34:39Z",
+      "category": "rlv",
+      "tags": [],
+      "is_new": false,
+      "host": "www.aalavina.org",
+      "file_url": "https://www.aalavina.org/sites/default/files/2021-01/Spirittuality_God-Talk-FF-202_FRANCES_0.pdf",
+      "filename": "Spirittuality_God-Talk-FF-202_FRANCES_0.pdf",
+      "size_bytes": 226781,
+      "pages": 2,
+      "thumb": "/assets/cache/pdf/13eb77d3afffc849.webp",
+      "upload_month": "2021-01",
+      "referrers": [
+       {
+        "url": "https://www.aalavina.org/recursos",
+        "title": "Recursos La Viña"
+       },
+       {
+        "url": "https://www.aagrapevine.org/gvr-resources",
+        "title": "GVR Resources"
+       }
+      ],
+      "orphan": false,
+      "duplicates": [
+       "https://www.aagrapevine.org/sites/default/files/2021-01/Spirittuality_God-Talk-FF-202_FRANCES.pdf"
+      ]
+     }
+    ]
    },
    "i18n": {
     "title": {
-     "en": "Spirituality and God-Talk (English)",
-     "es": "La Espiritualidad y la Mención de Dios (inglés)"
+     "en": "Spirituality and God-Talk",
+     "es": "La Espiritualidad y la Mención de Dios"
     },
     "summary": {
      "en": "",
      "es": ""
     }
    },
-   "machine": [
-    "es"
-   ],
+   "machine": [],
    "is_new": false
   },
   {
@@ -6622,58 +6443,6 @@
    "is_new": false
   },
   {
-   "id": "pdf:91f7799a1976",
-   "source": "crawl",
-   "kind": "pdf",
-   "url": "https://www.aagrapevine.org/sites/default/files/2020-01/Youtube%20LH_2019%20New.pdf",
-   "title": "YouTube Channel",
-   "summary": "",
-   "lang": "en",
-   "date": "2020-01-01",
-   "first_seen": "2026-09-23T16:31:53Z",
-   "image": "/assets/cache/pdf/91f7799a1976ce4a.webp",
-   "tags": [],
-   "category": "gvr",
-   "status": "ok",
-   "extra": {
-    "host": "www.aagrapevine.org",
-    "file_url": "https://www.aagrapevine.org/sites/default/files/2020-01/Youtube%20LH_2019%20New.pdf",
-    "filename": "Youtube LH_2019 New.pdf",
-    "size_bytes": 331012,
-    "pages": 1,
-    "thumb": "/assets/cache/pdf/91f7799a1976ce4a.webp",
-    "referrers": [
-     {
-      "url": "https://www.aagrapevine.org/gvr-resources",
-      "title": "GVR Resources"
-     }
-    ],
-    "upload_month": "2020-01",
-    "link_texts": [
-     "YouTube Channel"
-    ],
-    "event_date": null,
-    "doc_lang": "en",
-    "section": "tool and resources",
-    "external": false,
-    "orphan": false
-   },
-   "i18n": {
-    "title": {
-     "en": "YouTube Channel",
-     "es": "Canal YouTube"
-    },
-    "summary": {
-     "en": "",
-     "es": ""
-    }
-   },
-   "machine": [
-    "es"
-   ],
-   "is_new": false
-  },
-  {
    "id": "pdf:1f9a03e84f7a",
    "source": "crawl",
    "kind": "pdf",
@@ -6714,21 +6483,101 @@
     "doc_lang": "en",
     "section": "tool and resources",
     "external": false,
-    "orphan": false
+    "orphan": false,
+    "versions": [
+     {
+      "lang": "en",
+      "id": "pdf:1f9a03e84f7a",
+      "url": "https://www.aagrapevine.org/sites/default/files/2020-01/GV-Traditions-Checklist-2018.pdf",
+      "title": "Traditions Checklist",
+      "title_lang": "en",
+      "i18n_title": {
+       "en": "Traditions Checklist",
+       "es": "Lista de verificación de las Tradiciones"
+      },
+      "machine": [
+       "es"
+      ],
+      "source": "gv",
+      "date": "2020-01-01",
+      "first_seen": "2026-09-23T16:31:53Z",
+      "category": "gvr",
+      "tags": [
+       "guidelines"
+      ],
+      "is_new": false,
+      "host": "www.aagrapevine.org",
+      "file_url": "https://www.aagrapevine.org/sites/default/files/2020-01/GV-Traditions-Checklist-2018.pdf",
+      "filename": "GV-Traditions-Checklist-2018.pdf",
+      "size_bytes": 2233809,
+      "pages": 4,
+      "thumb": "/assets/cache/pdf/1f9a03e84f7a06fe.webp",
+      "upload_month": "2020-01",
+      "referrers": [
+       {
+        "url": "https://www.aagrapevine.org/gvr-resources",
+        "title": "GVR Resources"
+       },
+       {
+        "url": "https://www.aagrapevine.org/store/traditions-checklist-pack-50",
+        "title": "Traditions Checklist (pack of 50)"
+       }
+      ],
+      "orphan": false
+     },
+     {
+      "lang": "es",
+      "id": "pdf:4d7d701d0324",
+      "url": "https://www.aalavina.org/sites/default/files/2020-08/un%20chequeo%20de%20las%20tradiciones_.pdf",
+      "title": "Lista de Chequeo de las Tradiciones",
+      "title_lang": "es",
+      "i18n_title": {
+       "en": "Traditions Checklist",
+       "es": "Lista de Chequeo de las Tradiciones"
+      },
+      "machine": [
+       "en"
+      ],
+      "source": "lv",
+      "date": "2020-08-26",
+      "first_seen": "2026-09-23T16:34:39Z",
+      "category": "rlv",
+      "tags": [
+       "guidelines"
+      ],
+      "is_new": false,
+      "host": "www.aalavina.org",
+      "file_url": "https://www.aalavina.org/sites/default/files/2020-08/un%20chequeo%20de%20las%20tradiciones_.pdf",
+      "filename": "un chequeo de las tradiciones_.pdf",
+      "size_bytes": 6356814,
+      "pages": 4,
+      "thumb": "/assets/cache/pdf/4d7d701d03240dc8.webp",
+      "upload_month": "2020-08",
+      "referrers": [
+       {
+        "url": "https://www.aalavina.org/recursos",
+        "title": "Recursos La Viña"
+       }
+      ],
+      "orphan": false
+     }
+    ],
+    "kits": [
+     "gvr",
+     "rlv"
+    ]
    },
    "i18n": {
     "title": {
      "en": "Traditions Checklist",
-     "es": "Lista de verificación de las Tradiciones"
+     "es": "Lista de Chequeo de las Tradiciones"
     },
     "summary": {
      "en": "",
      "es": ""
     }
    },
-   "machine": [
-    "es"
-   ],
+   "machine": [],
    "is_new": false
   },
   {
@@ -6839,56 +6688,6 @@
     "title": {
      "en": "Guidelines for Contributing to GV",
      "es": "Pautas para colaborar con GV"
-    },
-    "summary": {
-     "en": "",
-     "es": ""
-    }
-   },
-   "machine": [],
-   "is_new": false
-  },
-  {
-   "id": "pdf:4ccbd3f79e2d",
-   "source": "crawl",
-   "kind": "pdf",
-   "url": "http://www.marylandaa.org/docs/fall_conf_2012%20_flyer_no_links.pdf",
-   "title": "Area 29 Fall Convention",
-   "summary": "",
-   "lang": "en",
-   "date": "2012-06-21",
-   "first_seen": "2026-09-23T21:40:46Z",
-   "image": "/assets/cache/pdf/4ccbd3f79e2d0d3c.webp",
-   "tags": [
-    "event"
-   ],
-   "category": "flyer",
-   "status": "ok",
-   "extra": {
-    "host": "www.marylandaa.org",
-    "file_url": "http://www.marylandaa.org/docs/fall_conf_2012%20_flyer_no_links.pdf",
-    "filename": "fall_conf_2012 _flyer_no_links.pdf",
-    "size_bytes": 249023,
-    "pages": 2,
-    "thumb": "/assets/cache/pdf/4ccbd3f79e2d0d3c.webp",
-    "referrers": [
-     {
-      "url": "https://www.aagrapevine.org/get-involved/events/2012-10-25/area-29-fall-convention",
-      "title": "Area 29 Fall Convention"
-     }
-    ],
-    "upload_month": null,
-    "link_texts": [],
-    "event_date": "2012-10-25",
-    "doc_lang": "en",
-    "section": "Area 29 Fall Convention",
-    "external": true,
-    "orphan": false
-   },
-   "i18n": {
-    "title": {
-     "en": "Area 29 Fall Convention",
-     "es": "Convención de otoño del Área 29"
     },
     "summary": {
      "en": "",

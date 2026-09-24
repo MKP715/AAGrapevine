@@ -24,6 +24,11 @@ site:
   contact_email: "grapevine@neta65.org"
   area_website: "https://neta65.org"
   committee_page: "https://neta65.org/trusted-servants/grapevine-la-vina/"
+  # /listen/ sidebar: an official AA Grapevine YouTube Short (the id is the last part of
+  # youtube.com/shorts/<id>), shown as a privacy-friendly vertical player. Delete these lines to hide it.
+  listen:
+    sidebar_short: "0uyVPlTcSeI"
+    sidebar_short_title: "Grapevine Get The App!"
 
 # ---------------------------------------------------------------------
 #  Committee meeting (next date + countdown are computed automatically)
@@ -264,6 +269,129 @@ lavina_weekly_open:
   source: "Official La Viña flyer (November 2026), shared with the committee"
 
 # ---------------------------------------------------------------------
+#  Grapevine meetings (Meetings page) — AA meetings whose meeting type
+#  includes "GR" (Grapevine), read once a day by scripts/sync/meetings.py
+#  from the public meeting lists of the offices below: the same eight
+#  lists the Rowlett Group's meetings page uses (github.com/NETA65/
+#  RowlettAA, meetings.html) — ours AND the ones next to our Area, so
+#  people can find every Grapevine meeting around them.
+#  Where a meeting shows: in "Our Area" when its city is in one of the
+#  Area 65 counties (spotlight.neta65_counties below; cities are matched
+#  with data/geo/texas_places.json); otherwise under its office's
+#  `region_label` (nearby). A Texas city that can't be matched counts as
+#  in our Area only when its office says `in_area: true`.
+#  The same meeting listed by two offices shows ONCE. Only public
+#  details are kept (name, day, time, place, meeting types, the link to
+#  the office's own meeting page) — never contacts, e-mails, phone
+#  numbers or online-meeting links (people follow the office's link).
+#  Each office is asked once a day; if one can't be read, its meetings
+#  from the last good day are kept and the Status page says so.
+#
+#  How each office is read (`methods`, tried in order):
+#    feed  its JSON meeting list (`feed`) — every meeting of the office;
+#    page  its public meeting-list page (`page`, default <site>/meetings/)
+#          filtered to Grapevine meetings. Used when the list can't be
+#          read, or instead of it: tyler-aa.org's robots.txt does not
+#          allow the /wp-admin/ address, so only its page is read.
+#
+#  Access keys: Dallas and Fort Worth answer the JSON list only with a
+#  key. The robot uses, in this order:
+#    1. a GitHub secret named like `key_env` (Settings → Secrets and
+#       variables → Actions), if the committee adds one;
+#    2. `feed_obf`: the full list address WITH its key, stored the same
+#       way the Rowlett Group's meetings.html stores it — written
+#       backwards, then base64. This only hides it from casual reading;
+#       it is NOT encryption. When an office gives out a new key, run
+#         python -m scripts.sync.meetings --obfuscate "<full address>"
+#       and paste the result here;
+#    3. the Rowlett Group's page itself (`key_source`, the JavaScript
+#       constant named `key_const`), if both of the above fail.
+#  A key is never written in plain text in this repository, the data
+#  files, the logs or on the website. Without any key, the office's
+#  public page is read instead (see `methods`).
+#  Per-office tweaks (as on the Rowlett page): `add_types` adds meeting
+#  types to every meeting of that office; `region_types` adds them to
+#  the meetings of one region ("S" = in Spanish).
+# ---------------------------------------------------------------------
+meetings:
+  enabled: true
+  type: "GR"                       # 12 Step Meeting List code for Grapevine meetings
+  area_label: { en: "Our Area (NETA 65)", es: "Nuestra Área (NETA 65)" }
+  key_source:
+    url: "https://raw.githubusercontent.com/NETA65/RowlettAA/main/meetings.html"
+    page: "https://github.com/NETA65/RowlettAA/blob/main/meetings.html"
+  # Order = order on the page: our Area's offices, then the nearby
+  # regions from the closest.
+  feeds:
+    - id: aadallas
+      name: "Dallas Intergroup"
+      site: "https://www.aadallas.org"
+      feed: "https://www.aadallas.org/wp-admin/admin-ajax.php?action=meetings"
+      methods: ["feed", "page"]
+      key_env: TSML_KEY_AADALLAS
+      feed_obf: "MThjOTJmNTg2YjZjNzkzZDdlYTZkZjVlMTk4ZDlmYTg9eWVrJnNnbml0ZWVtPW5vaXRjYT9waHAueGFqYS1uaW1kYS9uaW1kYS1wdy9ncm8uc2FsbGFkYWEud3d3Ly86c3B0dGg="
+      key_const: FEED_URL
+      lang: en
+      in_area: true
+      region_label: { en: "Dallas area", es: "Zona de Dallas" }
+    - id: fortworthaa
+      name: "Fort Worth AA Central Office"
+      site: "https://fortworthaa.org"
+      feed: "https://www.fortworthaa.org/wp-admin/admin-ajax.php?action=meetings"
+      methods: ["feed", "page"]
+      key_env: TSML_KEY_FORTWORTHAA
+      feed_obf: "ZmQ4ZWE4NTQxZjFkZjI4OGY3ZTdkZTUwNDYzMTA1OGE9eWVrJnNnbml0ZWVtPW5vaXRjYT9waHAueGFqYS1uaW1kYS9uaW1kYS1wdy9ncm8uYWFodHJvd3Ryb2Yud3d3Ly86c3B0dGg="
+      key_const: FEED_URL_FW
+      lang: en
+      in_area: true
+      region_label: { en: "Fort Worth area", es: "Zona de Fort Worth" }
+    - id: tyleraa
+      name: "AA Central Service Office, Tyler"
+      site: "https://www.tyler-aa.org"
+      page: "https://www.tyler-aa.org/meetings/"
+      methods: ["page"]              # its robots.txt does not allow /wp-admin/ (the JSON list)
+      lang: en
+      in_area: true
+      region_label: { en: "East Texas (Tyler)", es: "Este de Texas (Tyler)" }
+    - id: aaespanoldallas
+      name: "Alcohólicos Anónimos Dallas"
+      site: "https://alcoholicosanonimosdallas.org"
+      feed: "https://alcoholicosanonimosdallas.org/wp-admin/admin-ajax.php?action=meetings"
+      lang: es
+      in_area: true
+      add_types: ["S"]             # every meeting of this office is in Spanish
+      region_label: { en: "Dallas area (Spanish-speaking)", es: "Zona de Dallas (en español)" }
+    - id: district71
+      name: "District 71 AA"
+      site: "https://district71.org"
+      feed: "https://district71.org/wp-admin/admin-ajax.php?action=meetings"
+      lang: en
+      in_area: true                # Abilene — Taylor County is an Area 65 county
+      region_label: { en: "Abilene (District 71)", es: "Abilene (Distrito 71)" }
+    - id: arkansascentraloffice
+      name: "Arkansas Central Office"
+      site: "https://arkansascentraloffice.org"
+      feed: "https://arkansascentraloffice.org/wp-admin/admin-ajax.php?action=meetings"
+      lang: en
+      in_area: false
+      region_types: { "NWA Spanish Speaking GRPS": ["S"] }
+      region_label: { en: "Arkansas & the Fort Smith area", es: "Arkansas y la zona de Fort Smith" }
+    - id: okcintergroup
+      name: "OKC Intergroup"
+      site: "https://okcintergroup.org"
+      feed: "https://okcintergroup.org/wp-admin/admin-ajax.php?action=meetings"
+      lang: en
+      in_area: false
+      region_label: { en: "Oklahoma City area", es: "Zona de Oklahoma City" }
+    - id: nwta66
+      name: "Northwest Texas Area 66"
+      site: "https://nwta66.org"
+      feed: "https://nwta66.org/wp-admin/admin-ajax.php?action=meetings"
+      lang: en
+      in_area: false
+      region_label: { en: "Northwest Texas (Area 66)", es: "Noroeste de Texas (Área 66)" }
+
+# ---------------------------------------------------------------------
 #  Published-writers spotlight (home page + /published/ page)
 #  Grapevine and La Viña stories whose author lists a Texas location.
 #  Writers from Area 65 (the counties below) are always shown first,
@@ -403,6 +531,21 @@ links:
   # The English page shows support_phone_intl, the Spanish page support_phone_intl_es.
   support_phone_intl: "+1 (570) 567-0431"
   support_phone_intl_es: "+1 (570) 567-0437"
+
+# ---------------------------------------------------------------------
+#  Library (/library/): official AA documents only
+#  A document is kept only when its FILE is on one of these hosts (a
+#  subdomain such as www. counts too). aaws.widen.net = the asset
+#  library of AA World Services. Documents found on other sites (e.g. a
+#  local event flyer linked from a Grapevine event page) are left out,
+#  and the crawler no longer records them (scripts/sync/crawl_rules.py).
+# ---------------------------------------------------------------------
+library:
+  official_hosts:
+    - aagrapevine.org
+    - aalavina.org
+    - aa.org
+    - aaws.widen.net
 
 # ---------------------------------------------------------------------
 #  Optional weekly e-mail digest (off unless these GitHub secrets exist):

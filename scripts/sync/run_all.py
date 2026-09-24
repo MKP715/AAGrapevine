@@ -9,8 +9,9 @@
     python -m scripts.sync.run_all --skip crawl --no-translate
 
 Order: drive, announcements, podcasts, youtube, instagram, articles, editorial, weekly_open,
-shop (Book of the Month + subscription prices, ~15 requests), events_external, crawl (last,
-time-boxed), then build_data (which translates).
+shop (Book of the Month + subscription prices, ~15 requests), meetings (Grapevine meetings from
+the intergroups' meeting lists, one request per list), events_external, crawl (last, time-boxed),
+then build_data (which translates).
 
 Each module runs in this same process (so the polite crawl delay for aagrapevine.org /
 aalavina.org is shared) and is isolated: if one fails — or is missing — it is logged and the
@@ -35,7 +36,7 @@ from .common import RAW_DIR, get_logger, load_raw, run_module
 log = get_logger("run_all")
 
 MODULES = ["drive", "announcements", "podcasts", "youtube", "instagram", "articles", "editorial",
-           "weekly_open", "shop", "events_external", "crawl"]
+           "weekly_open", "shop", "meetings", "events_external", "crawl"]
 RAW_NAME = {"crawl": "pdfs"}            # module → data/raw/<name>.json it writes (default: same name)
 
 # --quick (a settings/content edit was pushed): only the sources that are cheap and do not touch
@@ -136,7 +137,7 @@ def run_build(no_translate: bool, out: str | None = None, translate_minutes: flo
         st = json.loads(((Path(out) if out else RAW_DIR.parent / "site") / "status.json").read_text(encoding="utf-8"))
         tr = st.get("translations") or {}
         counts = st.get("counts") or {}
-        row["items"] = sum(v for k, v in counts.items() if isinstance(v, int) and k not in ("whatsnew", "districts"))
+        row["items"] = sum(v for k, v in counts.items() if isinstance(v, int) and k != "whatsnew")
         row["note"] = row["note"] or (f"translated {tr.get('translated_this_run', 0)} new in {tr.get('seconds', 0)}s, "
                                       f"{tr.get('pending', 0)} pending, {tr.get('rejected_by_guard', 0)} kept original")
     except Exception:

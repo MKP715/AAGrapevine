@@ -174,7 +174,7 @@ pageScripts: ["/assets/js/community.js"]
             {%- elif it.kind == "video" and (it | mediaVideoKind) == "weekly" -%}{%- set kindLabel = "media.show_short_weekly" | t(lang) -%}
             {%- elif it.kind == "post" and igProfiles[ex.account] -%}{%- set kindLabel = igProfiles[ex.account].name -%}
             {%- elif it.kind == "article" and ex.section -%}{%- set kindLabel = it | tx("section", lang) -%}
-            {%- elif it.kind == "pdf" -%}{%- set kindLabel = ("library.cat." + ((it.tags or []) | first or it.category)) | cmTOr(lang, "PDF") -%}
+            {%- elif it.kind == "pdf" -%}{%- set kindLabel = ("library.cat." + ((it.tags or []) | first or it.category)) | cmTOr(lang, "kind.pdf" | t(lang)) -%}
             {%- else -%}{%- set kindLabel = ("kind." + it.kind) | cmTOr(lang, "") -%}{%- endif -%}
             {%- if it._isGroup -%}{%- set thumb = "group" -%}
             {%- elif it._group in ["video", "post", "article", "pdf"] or it.kind == "photo" -%}{%- set thumb = ex.thumb or it.image -%}

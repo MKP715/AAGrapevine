@@ -146,6 +146,10 @@
   "media.stat_weekly_open": { "en": "Weekly Open recordings", "es": "reuniones abiertas grabadas" },
   "media.stat_playlists": { "en": "playlists", "es": "listas" },
   "media.latest_video": { "en": "Latest video", "es": "Video más reciente" },
+  "media.short_eyebrow": { "en": "Official YouTube Short", "es": "Short oficial de YouTube" },
+  "media.short_text": { "en": "Get the Grapevine app — every issue, the audio and the archive on your phone.", "es": "Descarga la app de Grapevine: cada edición, el audio y el archivo en tu teléfono." },
+  "media.short_gv_app": { "en": "Grapevine app", "es": "App de Grapevine" },
+  "media.short_lv_app": { "en": "La Viña app", "es": "App de La Viña" },
   "media.watch_on_yt": { "en": "Watch on YouTube", "es": "Ver en YouTube" },
   "media.all_videos": { "en": "All videos", "es": "Todos los videos" },
   "media.all_videos_sub": {

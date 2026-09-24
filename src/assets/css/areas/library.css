@@ -224,6 +224,13 @@
 .lib-ref { position: relative; z-index: 1; font-size: 0.76rem; color: var(--c-faint); overflow-wrap: anywhere; }
 .lib-ref a { font-weight: 600; color: var(--c-muted); text-decoration: underline; text-decoration-color: var(--c-line); text-underline-offset: 2px; }
 .lib-ref a:hover { color: var(--c-gv); text-decoration-color: currentColor; }
+/* One document in several languages: "Available in English · Español" (this page's language first). */
+.lib-versions { position: relative; z-index: 1; display: flex; flex-wrap: wrap; align-items: center; gap: 0.15rem 0.7rem; font-size: 0.76rem; color: var(--c-muted); }
+.lib-versions > .icon { flex-shrink: 0; color: var(--c-lv); }
+.lib-versions a { display: inline-flex; align-items: center; min-height: 1.5rem; font-weight: 600; color: var(--c-ink); text-decoration: underline; text-decoration-color: var(--c-line); text-underline-offset: 2px; }
+.lib-versions a + a { position: relative; }
+.lib-versions a + a::before { content: "·"; position: absolute; left: -0.35rem; transform: translateX(-50%); color: var(--c-faint); pointer-events: none; }
+.lib-versions a:hover { color: var(--c-gv); text-decoration-color: currentColor; }
 .lib-auto { position: relative; z-index: 1; }
 .lib-event { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.78rem; font-weight: 600; color: var(--c-vine); }
 /* A file no page links to any more: still available, visibly de-emphasized. */

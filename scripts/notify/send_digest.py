@@ -96,7 +96,7 @@ T = {
         "episodes": "Podcast episodes",
         "videos": "Videos",
         "instagram": "On Instagram",
-        "pdfs": "New PDFs & service resources",
+        "pdfs": "New documents & service resources",
         "drive": "From the committee",
         "see_all": "See all",
         "details": "Details",
@@ -145,7 +145,7 @@ T = {
         "episodes": "Episodios del podcast",
         "videos": "Videos",
         "instagram": "En Instagram",
-        "pdfs": "Nuevos PDF y recursos de servicio",
+        "pdfs": "Nuevos documentos y recursos de servicio",
         "drive": "Del comité",
         "see_all": "Ver todo",
         "details": "Detalles",
@@ -490,7 +490,8 @@ def item_label(item: dict, lang: str) -> tuple[str, str, str]:
         return ("La Viña", C["lv"], C["lv_soft"]) if item.get("category") == "lv" else ("Grapevine", C["gv"], C["gv_soft"])
     if kind == "pdf":
         host = (item.get("extra") or {}).get("host") or ""
-        return ("PDF · La Viña", C["lv"], C["lv_soft"]) if "lavina" in host else ("PDF · Grapevine", C["gv"], C["gv_soft"])
+        doc = "Documento" if lang == "es" else "Document"
+        return (f"{doc} · La Viña", C["lv"], C["lv_soft"]) if "lavina" in host else (f"{doc} · Grapevine", C["gv"], C["gv_soft"])
     if src == "drive":
         en, es = DRIVE_CATEGORIES.get(item.get("category") or "other", DRIVE_CATEGORIES["other"])
         return (es if lang == "es" else en), C["vine"], C["vine_soft"]
@@ -829,7 +830,7 @@ def render_html(data: dict, cfg: dict, links: Links, max_per: int, subject: str)
     title = site.get("title") or "Grapevine / La Viña"
     logo = links.base + "/assets/img/logo-180x180.png"
     short_names = {"articles": "magazine stories", "episodes": "podcast episodes", "videos": "videos",
-                   "instagram": "Instagram posts", "pdfs": "PDFs", "drive": "committee files"}
+                   "instagram": "Instagram posts", "pdfs": "documents", "drive": "committee files"}
     teaser = [tx(i, "title", "en") for i in data["announcements"][:1]]
     teaser += [f"{len(v)} {short_names[g]}" for g, v in data["groups"].items() if v]
     preheader = shorten(" · ".join(teaser), 140) or T["en"]["heading"]

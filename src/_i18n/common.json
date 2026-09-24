@@ -100,14 +100,6 @@
     "en": "Everything a group representative needs",
     "es": "Todo lo que necesita un representante de grupo"
   },
-  "nav.districts": {
-    "en": "Districts",
-    "es": "Distritos"
-  },
-  "nav.districts_desc": {
-    "en": "Keep your district informed, automatically",
-    "es": "Mantén informado a tu distrito, automáticamente"
-  },
   "nav.contribute": {
     "en": "Share Your Story",
     "es": "Comparte tu historia"
@@ -133,8 +125,8 @@
     "es": "Kit del mes y carteles"
   },
   "nav.monthly_desc": {
-    "en": "This month's issue, how to put it to work, printable posters",
-    "es": "La revista del mes, cómo usarla y carteles para imprimir"
+    "en": "This month's issue, your GV/LV report, printable posters",
+    "es": "La revista del mes, tu informe de GV/LV y carteles para imprimir"
   },
   "nav.instagram": {
     "en": "Instagram",
@@ -205,8 +197,8 @@
     "es": "Última actualización"
   },
   "footer.disclaimer": {
-    "en": "Maintained by NETA 65 service volunteers. Articles, podcasts, videos, PDFs and posts shown here link to their official sources; AA Grapevine and La Viña content is © AA Grapevine, Inc. This site is not an official AA Grapevine website. Spanish/English versions of synced content are machine-translated and marked as such.",
-    "es": "Mantenido por voluntarios de servicio de NETA 65. Los artículos, podcasts, videos, PDF y publicaciones enlazan a sus fuentes oficiales; el contenido de La Viña y AA Grapevine es © AA Grapevine, Inc. Este no es un sitio oficial de AA Grapevine. Las versiones en español/inglés del contenido sincronizado se traducen automáticamente y se indican como tales."
+    "en": "Maintained by NETA 65 service volunteers. Articles, podcasts, videos, documents and posts shown here link to their official sources; AA Grapevine and La Viña content is © AA Grapevine, Inc. This site is not an official AA Grapevine website. Spanish/English versions of synced content are machine-translated and marked as such.",
+    "es": "Mantenido por voluntarios de servicio de NETA 65. Los artículos, podcasts, videos, documentos y publicaciones enlazan a sus fuentes oficiales; el contenido de La Viña y AA Grapevine es © AA Grapevine, Inc. Este no es un sitio oficial de AA Grapevine. Las versiones en español/inglés del contenido sincronizado se traducen automáticamente y se indican como tales."
   },
   "feeds.rss_title": {
     "en": "NETA 65 Grapevine / La Viña — What's New",
@@ -285,8 +277,8 @@
     "es": "Abrir"
   },
   "common.open_pdf": {
-    "en": "Open PDF",
-    "es": "Abrir PDF"
+    "en": "Open document",
+    "es": "Abrir documento"
   },
   "common.preview": {
     "en": "Preview",
@@ -341,8 +333,8 @@
     "es": "Buscar"
   },
   "common.search_placeholder": {
-    "en": "Search articles, PDFs, podcasts, videos…",
-    "es": "Busca artículos, PDF, podcasts, videos…"
+    "en": "Search articles, documents, podcasts, videos…",
+    "es": "Busca artículos, documentos, podcasts, videos…"
   },
   "common.no_results": {
     "en": "Nothing matches that yet.",
@@ -421,8 +413,8 @@
     "es": "Artículo"
   },
   "kind.pdf": {
-    "en": "PDF",
-    "es": "PDF"
+    "en": "Document",
+    "es": "Documento"
   },
   "kind.video": {
     "en": "Video",

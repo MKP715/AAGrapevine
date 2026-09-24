@@ -28,8 +28,8 @@
     "es": "Lo que encontrarás en este sitio"
   },
   "home.stat_pdfs": {
-    "en": "PDFs",
-    "es": "PDF"
+    "en": "Documents",
+    "es": "Documentos"
   },
   "home.stat_episodes": {
     "en": "podcast episodes",
@@ -244,8 +244,8 @@
     "es": "Lo más reciente"
   },
   "home.fresh_sub": {
-    "en": "The newest stories, episodes, videos, posts and PDFs — gathered automatically from the official Grapevine and La Viña sources.",
-    "es": "Las historias, episodios, videos, publicaciones y PDF más nuevos — reunidos automáticamente de las fuentes oficiales de La Viña y Grapevine."
+    "en": "The newest stories, episodes, videos, posts and documents — gathered from the official Grapevine and La Viña sources and kept up to date every day.",
+    "es": "Las historias, episodios, videos, publicaciones y documentos más nuevos — reunidos de las fuentes oficiales de La Viña y Grapevine y actualizados cada día."
   },
   "home.fresh_all": {
     "en": "Everything new",
@@ -264,8 +264,8 @@
     "es": "La primera actualización diaria ya viene en camino"
   },
   "home.fresh_empty_text": {
-    "en": "New articles, episodes, videos and PDFs appear here automatically every day. Check back soon!",
-    "es": "Los nuevos artículos, episodios, videos y PDF aparecen aquí automáticamente cada día. ¡Vuelve pronto!"
+    "en": "New articles, episodes, videos and documents appear here every day. Check back soon!",
+    "es": "Los nuevos artículos, episodios, videos y documentos aparecen aquí cada día. ¡Vuelve pronto!"
   },
   "home.ann_title": {
     "en": "From the committee",
@@ -520,16 +520,16 @@
     "es": "La biblioteca"
   },
   "home.lib_title": {
-    "en": "Every Grapevine & La Viña PDF, in one place",
-    "es": "Todos los PDF de Grapevine y La Viña, en un solo lugar"
+    "en": "Every Grapevine & La Viña document, in one place",
+    "es": "Todos los documentos de Grapevine y La Viña, en un solo lugar"
   },
   "home.lib_sub": {
-    "en": "Every day our helper bot reads aagrapevine.org and aalavina.org and files each flyer, catalog, workbook and service guide it finds — so you never have to hunt for them.",
-    "es": "Cada día nuestro robot ayudante recorre aagrapevine.org y aalavina.org y archiva cada volante, catálogo, cuaderno de trabajo y guía de servicio que encuentra — para que nunca tengas que buscarlos."
+    "en": "Flyers, catalogs, workbooks and service guides from aagrapevine.org and aalavina.org, all in one place — we keep it updated regularly, so you never have to hunt for them.",
+    "es": "Volantes, catálogos, cuadernos de trabajo y guías de servicio de aagrapevine.org y aalavina.org, todo en un solo lugar — lo mantenemos actualizado con regularidad para que nunca tengas que buscarlos."
   },
   "home.lib_count": {
-    "en": "PDFs and counting",
-    "es": "PDF y contando"
+    "en": "Documents and counting",
+    "es": "Documentos y contando"
   },
   "home.lib_sites": {
     "en": "2 official sites checked daily",
@@ -548,16 +548,16 @@
     "es": "Explorar la biblioteca"
   },
   "home.lib_newest": {
-    "en": "Newest PDFs",
-    "es": "PDF más recientes"
+    "en": "Newest documents",
+    "es": "Documentos más recientes"
   },
   "home.lib_empty_title": {
     "en": "The library is being built",
     "es": "La biblioteca se está armando"
   },
   "home.lib_empty_text": {
-    "en": "Our bot visits the official sites a little every day — PDFs appear here as it finds them.",
-    "es": "Nuestro robot visita los sitios oficiales un poco cada día — los PDF aparecen aquí a medida que los encuentra."
+    "en": "We keep the library updated regularly — documents appear here as they are added.",
+    "es": "Mantenemos la biblioteca actualizada con regularidad — los documentos aparecen aquí a medida que se agregan."
   },
   "home.pdfcat.gvr": {
     "en": "GVR resources",
@@ -667,9 +667,13 @@
     "en": "Everything new this week, ready to paste into WhatsApp or e-mail",
     "es": "Todo lo nuevo de la semana, listo para pegar en WhatsApp o en un correo"
   },
-  "home.svc_districts_desc": {
-    "en": "Keep every district in the loop",
-    "es": "Mantén al tanto a cada distrito"
+  "home.svc_report": {
+    "en": "Your monthly GV/LV report",
+    "es": "Tu informe mensual de GV/LV"
+  },
+  "home.svc_report_desc": {
+    "en": "Ready to read at your district meeting — it fills itself in",
+    "es": "Listo para leer en la reunión de tu distrito — se llena solo"
   },
   "home.svc_rss_desc": {
     "en": "New content in any reader or newsletter",
