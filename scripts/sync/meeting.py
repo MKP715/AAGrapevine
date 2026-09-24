@@ -1,8 +1,20 @@
-"""Committee meeting dates from config/site.yml `meeting` (e.g. 3rd Wednesday 19:00–20:00 Central)."""
+"""Monthly date rules: "the Nth <weekday> of every month, HH:MM–HH:MM" in the site's time zone.
+
+One rule engine (upcoming_rule_dates) serves both
+  * the committee meeting — config/site.yml `meeting:` (e.g. 3rd Wednesday 19:00–20:00 Central), and
+  * every entry of `recurring_events:` (e.g. the GV/LV booth at CityWide Dallas, 2nd Saturday
+    17:00–20:00) — see build_data.recurring_events().
+
+Dates are counted on the local calendar and each start/end is turned into a real instant with the
+time zone's own rules, so a daylight-saving change (or a month / year boundary) never moves an
+event by an hour: 17:00 Central is 22:00 UTC in October (CDT) and 23:00 UTC in November (CST).
+"""
 from __future__ import annotations
 
 import re
+from dataclasses import dataclass
 from datetime import date, datetime, timedelta, timezone
+from typing import Any
 from zoneinfo import ZoneInfo
 
 from .common import load_config, to_iso
@@ -10,6 +22,11 @@ from .common import load_config, to_iso
 WEEKDAYS = {"monday": 0, "tuesday": 1, "wednesday": 2, "thursday": 3, "friday": 4, "saturday": 5, "sunday": 6,
             "lunes": 0, "martes": 1, "miercoles": 2, "miércoles": 2, "jueves": 3, "viernes": 4, "sabado": 5,
             "sábado": 5, "domingo": 6}
+# "week_of_month" written as a word: second / 2nd / segundo / 2.º / last / último …
+_ORDINAL_WORDS = {"first": 1, "second": 2, "third": 3, "fourth": 4, "fifth": 5, "last": -1,
+                  "primer": 1, "primero": 1, "primera": 1, "segundo": 2, "segunda": 2, "tercer": 3, "tercero": 3,
+                  "tercera": 3, "cuarto": 4, "cuarta": 4, "quinto": 5, "quinta": 5, "ultimo": -1, "último": -1,
+                  "ultima": -1, "última": -1}
 
 
 def parse_hhmm(v, default: tuple[int, int]) -> tuple[int, int]:
@@ -41,6 +58,55 @@ def parse_hhmm(v, default: tuple[int, int]) -> tuple[int, int]:
     return (h, mi) if 0 <= h <= 23 and 0 <= mi <= 59 else default
 
 
+def weekday_index(v: Any) -> int | None:
+    """'saturday' / 'Saturday' / 'Saturdays' / 'sábado' / 'Sábados' → 5 (Monday = 0); None if not understood."""
+    s = str(v or "").strip().lower().rstrip(".")
+    if s in WEEKDAYS:
+        return WEEKDAYS[s]
+    if s.endswith("s") and s[:-1] in WEEKDAYS:        # plural: "saturdays", "sábados"
+        return WEEKDAYS[s[:-1]]
+    return None
+
+
+def week_of_month_value(v: Any) -> int | None:
+    """1–5, or -1 for "the last one" — from 2, "2", "2nd", "second", "segundo", "2.º", "last", "último".
+    None when it cannot be understood."""
+    if isinstance(v, bool) or v is None:
+        return None
+    if isinstance(v, int):
+        return v if v in (1, 2, 3, 4, 5, -1) else None
+    s = str(v).strip().lower()
+    if s in _ORDINAL_WORDS:
+        return _ORDINAL_WORDS[s]
+    m = re.fullmatch(r"(-?\d)\s*(?:st|nd|rd|th|\.?\s*[ºoª°]|\.?\s*er|\.?\s*ra)?", s)
+    if m and int(m[1]) in (1, 2, 3, 4, 5, -1):
+        return int(m[1])
+    return None
+
+
+def ymd_text(v: Any) -> str | None:
+    """A skip date from the settings → "YYYY-MM-DD" (YAML turns an unquoted 2027-01-09 into a date)."""
+    if isinstance(v, datetime):
+        return v.date().isoformat()
+    if isinstance(v, date):
+        return v.isoformat()
+    s = str(v or "").strip()
+    try:
+        return date.fromisoformat(s).isoformat() if re.fullmatch(r"\d{4}-\d{2}-\d{2}", s) else None
+    except ValueError:                     # "2027-02-30"
+        return None
+
+
+@dataclass(frozen=True)
+class MonthlyRule:
+    """The Nth weekday of every month, from `start` to `end` (local wall-clock time)."""
+    week_of_month: int                     # 1–5, or -1 = the last one of the month
+    weekday: int                           # 0 = Monday … 6 = Sunday
+    start: tuple[int, int]                 # (hour, minute)
+    end: tuple[int, int]                   # (hour, minute); not after start → a one-hour event
+    skip: frozenset[str] = frozenset()     # "YYYY-MM-DD" dates that do not happen
+
+
 def _nth_weekday(y: int, m: int, weekday: int, n: int) -> date | None:
     if n == -1:
         last = (date(y + (m == 12), m % 12 + 1, 1) - timedelta(days=1))
@@ -50,10 +116,46 @@ def _nth_weekday(y: int, m: int, weekday: int, n: int) -> date | None:
     return d if d.month == m else None
 
 
-def upcoming_meetings(count: int = 12, include_recent_days: int = 0) -> list[dict]:
-    cfg = load_config().get("meeting", {}) or {}
-    tz = ZoneInfo(load_config().get("site", {}).get("timezone", "America/Chicago"))
-    wd = WEEKDAYS.get(str(cfg.get("weekday", "wednesday")).strip().lower(), 2)
+def upcoming_rule_dates(rule: MonthlyRule, count: int, tz: ZoneInfo, now: datetime | None = None,
+                        include_recent_days: int = 0, horizon_months: int | None = None) -> list[dict]:
+    """The next `count` dates of a monthly rule that are not over yet (end ≥ now − include_recent_days),
+    soonest first: [{"ymd": "2026-10-10", "start": "2026-10-10T22:00:00Z", "end": "2026-10-11T01:00:00Z"}].
+
+    Months are walked on the LOCAL calendar starting with the month before `now` (so an evening event on
+    the last day of a month is still found while it is running, even though it is already the next month
+    in UTC), for at most `horizon_months` months (default count + 14: a "5th Saturday" rule simply lists
+    the months that have one). A date in `rule.skip` is left out and does not count."""
+    if count <= 0:
+        return []
+    now = now or datetime.now(timezone.utc)
+    since = now - timedelta(days=include_recent_days)
+    sh, sm = rule.start
+    eh, em = rule.end
+    if (eh, em) <= (sh, sm):               # missing / earlier end → a one-hour event
+        eh, em = min(sh + 1, 23), (sm if sh < 23 else 59)
+    local = since.astimezone(tz)
+    y, m = (local.year, local.month - 1) if local.month > 1 else (local.year - 1, 12)
+    out: list[dict] = []
+    for _ in range(horizon_months if horizon_months is not None else count + 14):
+        d = _nth_weekday(y, m, rule.weekday, rule.week_of_month)
+        if d and d.isoformat() not in rule.skip:
+            start = datetime(d.year, d.month, d.day, sh, sm, tzinfo=tz)
+            end = datetime(d.year, d.month, d.day, eh, em, tzinfo=tz)
+            if end.astimezone(timezone.utc) >= since:
+                out.append({"ymd": d.isoformat(), "start": to_iso(start), "end": to_iso(end)})
+                if len(out) >= count:
+                    break
+        m += 1
+        if m > 12:
+            y, m = y + 1, 1
+    return out
+
+
+def meeting_rule(cfg: dict | None) -> MonthlyRule:
+    """config/site.yml `meeting:` → its rule. Tolerant on purpose (the committee meeting must always
+    show): anything that cannot be understood falls back to the 3rd Wednesday, 19:00–20:00."""
+    cfg = cfg or {}
+    wd = weekday_index(cfg.get("weekday", "wednesday"))
     try:
         n = int(cfg.get("week_of_month", 3))
     except (TypeError, ValueError):
@@ -62,25 +164,16 @@ def upcoming_meetings(count: int = 12, include_recent_days: int = 0) -> list[dic
         n = 3
     sh, sm = parse_hhmm(cfg.get("start"), (19, 0))
     eh, em = parse_hhmm(cfg.get("end"), ((sh + 1) % 24, sm))
-    if (eh, em) <= (sh, sm):               # missing / earlier end → a one-hour meeting
-        eh, em = min(sh + 1, 23), (sm if sh < 23 else 59)
-    skip = set(str(s) for s in (cfg.get("skip_dates") or []))
-    now = datetime.now(timezone.utc) - timedelta(days=include_recent_days)
-    out = []
-    y, m = now.year, now.month
-    for _ in range(count + 14):
-        d = _nth_weekday(y, m, wd, n)
-        if d and d.isoformat() not in skip:
-            start = datetime(d.year, d.month, d.day, sh, sm, tzinfo=tz)
-            end = datetime(d.year, d.month, d.day, eh, em, tzinfo=tz)
-            if end.astimezone(timezone.utc) >= now:
-                out.append({"ymd": d.isoformat(), "start": to_iso(start), "end": to_iso(end)})
-                if len(out) >= count:
-                    break
-        m += 1
-        if m > 12:
-            y, m = y + 1, 1
-    return out
+    return MonthlyRule(week_of_month=n, weekday=2 if wd is None else wd, start=(sh, sm), end=(eh, em),
+                       skip=frozenset(str(s) for s in (cfg.get("skip_dates") or [])))
+
+
+def upcoming_meetings(count: int = 12, include_recent_days: int = 0) -> list[dict]:
+    """The next `count` committee meetings (config/site.yml `meeting:`)."""
+    cfg = load_config()
+    tz = ZoneInfo((cfg.get("site", {}) or {}).get("timezone", "America/Chicago"))
+    return upcoming_rule_dates(meeting_rule(cfg.get("meeting", {})), count, tz,
+                               include_recent_days=include_recent_days)
 
 
 if __name__ == "__main__":
