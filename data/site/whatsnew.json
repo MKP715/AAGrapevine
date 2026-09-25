@@ -1,7 +1,57 @@
 {
- "updated": "2026-09-25T00:34:54Z",
+ "updated": "2026-09-25T07:13:25Z",
  "fixture": false,
  "items": [
+  {
+   "id": "pod:wo:a29f638e2d5d",
+   "source": "podcast",
+   "kind": "episode",
+   "url": "https://player.captivate.fm/episode/8a41c06b-5b8c-4d48-bea8-ec0586a3f657",
+   "title": "Grapevine Weekly Open AA Meeting, September 23, 2026 [Season 2, Episode 13]",
+   "summary": "In this AA Grapevine podcast, you'll hear a recording of Grapevine's open AA meeting, held on September 23, 2026. We meet every Wednesday at Noon Eastern and hope that you will join us. The code on Zoom is 871 2036 8287 and the password is 238047. Each meeting is recorded and distributed as a podcast. This week meeting leader Jeff welcomes speakers Camille and Joe, who share their experience…",
+   "lang": "en",
+   "date": "2026-09-25T04:15:00Z",
+   "first_seen": "2026-09-25T07:13:24Z",
+   "image": "https://artwork.captivate.fm/6b1f80c3-b80e-4988-bb2d-959fbec5e005/81444FEF-9557-4996-B7AB-9949DD0BA6C3-1-102-o.jpeg",
+   "tags": [
+    "season-2"
+   ],
+   "category": "wo",
+   "status": "ok",
+   "extra": {
+    "audio_url": "https://episodes.captivate.fm/episode/8a41c06b-5b8c-4d48-bea8-ec0586a3f657.mp3",
+    "audio_type": "audio/mpeg",
+    "audio_bytes": 73517462,
+    "duration_sec": 3063,
+    "season": 2,
+    "episode": 13,
+    "episode_type": "full",
+    "show": "wo",
+    "show_name": "Grapevine Weekly Open AA Meeting",
+    "link": "https://www.aagrapevine.org/grapevine-weekly-open",
+    "player_url": "https://player.captivate.fm/episode/8a41c06b-5b8c-4d48-bea8-ec0586a3f657",
+    "show_web": "https://www.aagrapevine.org/grapevine-weekly-open",
+    "apple": "https://podcasts.apple.com/us/podcast/grapevine-weekly-open-aa-meeting/id1874809908",
+    "spotify": "https://open.spotify.com/show/2jk469TmDC31spPqf8L0SF",
+    "amazon": "https://music.amazon.com/podcasts/8dfb5269-8733-42f3-b075-2d9e596bf4c5/grapevine-weekly-open-aa-meeting",
+    "thumb": "/assets/cache/pod/3e3cd0ac7162b7fe.webp"
+   },
+   "i18n": {
+    "title": {
+     "en": "Grapevine Weekly Open AA Meeting, September 23, 2026 [Season 2, Episode 13]",
+     "es": "Grapevine Weekly Open AA Meeting, 23 de septiembre de 2026 [Temporada 2, Episodio 13]"
+    },
+    "summary": {
+     "en": "In this AA Grapevine podcast, you'll hear a recording of Grapevine's open AA meeting, held on September 23, 2026. We meet every Wednesday at Noon Eastern and hope that you will join us. The code on Zoom is 871 2036 8287 and the password is 238047. Each meeting is recorded and distributed as a podcast. This week meeting leader Jeff welcomes speakers Camille and Joe, who share their experience…",
+     "es": "En este AA Grapevine Podcast, usted escuchará una grabación de la reunión abierta AA de Grapevine, celebrada el 23 de septiembre de 2026. Nos reunimos cada miércoles al mediodía (hora del Este) y esperamos que se una a nosotros. El código de Zoom es 871 2036 8287 y la contraseña es 238047. Cada reunión se graba y distribuye como podcast. Esta semana el líder de la reunión Jeff da la bienvenida a los oradores Camille y Joe, que comparten su experiencia …"
+    }
+   },
+   "machine": [
+    "es"
+   ],
+   "is_new": true,
+   "wn_date": "2026-09-25T04:15:00Z"
+  },
   {
    "id": "ig:DdrKBZ_l5JQ",
    "source": "instagram",
@@ -4328,7 +4378,7 @@
    "machine": [
     "es"
    ],
-   "is_new": true,
+   "is_new": false,
    "wn_date": "2026-09-11T04:32:53Z"
   },
   {
@@ -4378,7 +4428,7 @@
    "machine": [
     "es"
    ],
-   "is_new": true,
+   "is_new": false,
    "wn_date": "2026-09-11T04:15:00Z"
   },
   {
@@ -8880,56 +8930,6 @@
    ],
    "is_new": false,
    "wn_date": "2026-07-13T04:30:31Z"
-  },
-  {
-   "id": "pod:gv:f4a9e4e99574",
-   "source": "podcast",
-   "kind": "episode",
-   "url": "https://player.captivate.fm/episode/fcb3129b-8dbe-4ac5-ab84-d949250474c1",
-   "title": "My Operating System Was Broken [Season 11, Episode 2]",
-   "summary": "In his drinking years Leonard felt like life was punishment. He tells Olis and Don how a woman kindly asked him if he thought his drinking was a problem, and he soon found his way to an AA meeting. He walked through the door, got a sponsor and his life changed. In Listener Feedback we hear from Angela and Emily. We also hear back about favorite non-alcoholic beverages from Pat, Chad and Sunny…",
-   "lang": "en",
-   "date": "2026-07-13T04:15:00Z",
-   "first_seen": "2026-09-23T16:27:02Z",
-   "image": "https://artwork.captivate.fm/0ad84761-e27d-40a0-be3f-982e28f5cfed/NA7eDTnRxVFYjt4qJyGSFDog.jpeg",
-   "tags": [
-    "season-11"
-   ],
-   "category": "gv",
-   "status": "ok",
-   "extra": {
-    "audio_url": "https://episodes.captivate.fm/episode/fcb3129b-8dbe-4ac5-ab84-d949250474c1.mp3",
-    "audio_type": "audio/mpeg",
-    "audio_bytes": 22296765,
-    "duration_sec": 2230,
-    "season": 11,
-    "episode": 2,
-    "episode_type": "full",
-    "show": "gv",
-    "show_name": "AA Grapevine's Podcast",
-    "link": "https://www.aagrapevine.org/podcast",
-    "player_url": "https://player.captivate.fm/episode/fcb3129b-8dbe-4ac5-ab84-d949250474c1",
-    "show_web": "https://www.aagrapevine.org/podcasts",
-    "apple": "https://podcasts.apple.com/us/podcast/aa-grapevines-podcast/id1591924167",
-    "spotify": "https://open.spotify.com/show/714djcL57SFf0Nzf40CL8Q",
-    "amazon": "https://music.amazon.com/podcasts/de231bfa-837b-4a27-a331-a927019cb5d7",
-    "thumb": "/assets/cache/pod/345ae0651cb102a9.webp"
-   },
-   "i18n": {
-    "title": {
-     "en": "My Operating System Was Broken [Season 11, Episode 2]",
-     "es": "Mi sistema operativo estaba roto [Temporada 11, Episodio 2]"
-    },
-    "summary": {
-     "en": "In his drinking years Leonard felt like life was punishment. He tells Olis and Don how a woman kindly asked him if he thought his drinking was a problem, and he soon found his way to an AA meeting. He walked through the door, got a sponsor and his life changed. In Listener Feedback we hear from Angela and Emily. We also hear back about favorite non-alcoholic beverages from Pat, Chad and Sunny…",
-     "es": "En sus años de beber Leonard sentía que la vida era un castigo. Le dice a Olis y Don cómo una mujer amablemente le preguntó si pensó que su bebida era un problema, y pronto encontró su camino a una reunión de AA. Pasó por la puerta, consiguió un padrino y su vida cambió. En Comentarios de los oyentes escuchamos de Angela y Emily. También escuchamos sobre bebidas no alcohólicas favoritas de Pat, Chad y Sunny …"
-    }
-   },
-   "machine": [
-    "es"
-   ],
-   "is_new": false,
-   "wn_date": "2026-07-13T04:15:00Z"
   }
  ]
 }

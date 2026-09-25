@@ -1,14 +1,14 @@
 {
  "source": "podcasts",
- "updated": "2026-09-25T00:34:53Z",
- "attempted": "2026-09-25T00:34:53Z",
+ "updated": "2026-09-25T07:13:24Z",
+ "attempted": "2026-09-25T07:13:24Z",
  "ok": true,
  "error": null,
  "stats": {
-  "fetched": 295,
-  "new": 0,
-  "total": 295,
-  "active": 295,
+  "fetched": 296,
+  "new": 1,
+  "total": 296,
+  "active": 296,
   "gone": 0,
   "spanish": 0,
   "shows": {
@@ -19,20 +19,56 @@
    },
    "wo": {
     "ok": true,
-    "episodes": 33,
-    "latest": "2026-09-18T04:15:00Z"
+    "episodes": 34,
+    "latest": "2026-09-25T04:15:00Z"
    }
   },
   "missing_from_feed": 0,
   "gone_checks": 0,
   "discovery_checked": "2026-09-23T16:27:25Z",
   "discovered_feeds": [],
-  "seconds": 2.5,
+  "seconds": 2.4,
   "artwork": 3,
   "artwork_missing": 0,
   "artwork_removed": 0
  },
  "items": [
+  {
+   "id": "pod:wo:a29f638e2d5d",
+   "source": "podcast",
+   "kind": "episode",
+   "url": "https://player.captivate.fm/episode/8a41c06b-5b8c-4d48-bea8-ec0586a3f657",
+   "title": "Grapevine Weekly Open AA Meeting, September 23, 2026 [Season 2, Episode 13]",
+   "summary": "In this AA Grapevine podcast, you'll hear a recording of Grapevine's open AA meeting, held on September 23, 2026. We meet every Wednesday at Noon Eastern and hope that you will join us. The code on Zoom is 871 2036 8287 and the password is 238047. Each meeting is recorded and distributed as a podcast. This week meeting leader Jeff welcomes speakers Camille and Joe, who share their experience…",
+   "lang": "en",
+   "date": "2026-09-25T04:15:00Z",
+   "first_seen": "2026-09-25T07:13:24Z",
+   "last_seen": "2026-09-25T07:13:24Z",
+   "image": "https://artwork.captivate.fm/6b1f80c3-b80e-4988-bb2d-959fbec5e005/81444FEF-9557-4996-B7AB-9949DD0BA6C3-1-102-o.jpeg",
+   "tags": [
+    "season-2"
+   ],
+   "category": "wo",
+   "status": "ok",
+   "extra": {
+    "audio_url": "https://episodes.captivate.fm/episode/8a41c06b-5b8c-4d48-bea8-ec0586a3f657.mp3",
+    "audio_type": "audio/mpeg",
+    "audio_bytes": 73517462,
+    "duration_sec": 3063,
+    "season": 2,
+    "episode": 13,
+    "episode_type": "full",
+    "show": "wo",
+    "show_name": "Grapevine Weekly Open AA Meeting",
+    "link": "https://www.aagrapevine.org/grapevine-weekly-open",
+    "player_url": "https://player.captivate.fm/episode/8a41c06b-5b8c-4d48-bea8-ec0586a3f657",
+    "show_web": "https://www.aagrapevine.org/grapevine-weekly-open",
+    "apple": "https://podcasts.apple.com/us/podcast/grapevine-weekly-open-aa-meeting/id1874809908",
+    "spotify": "https://open.spotify.com/show/2jk469TmDC31spPqf8L0SF",
+    "amazon": "https://music.amazon.com/podcasts/8dfb5269-8733-42f3-b075-2d9e596bf4c5/grapevine-weekly-open-aa-meeting",
+    "thumb": "/assets/cache/pod/3e3cd0ac7162b7fe.webp"
+   }
+  },
   {
    "id": "pod:gv:955b639f3533",
    "source": "podcast",
@@ -10683,7 +10719,7 @@
    "apple": "https://podcasts.apple.com/us/podcast/grapevine-weekly-open-aa-meeting/id1874809908",
    "spotify": "https://open.spotify.com/show/2jk469TmDC31spPqf8L0SF",
    "amazon": "https://music.amazon.com/podcasts/8dfb5269-8733-42f3-b075-2d9e596bf4c5/grapevine-weekly-open-aa-meeting",
-   "episodes": 33,
+   "episodes": 34,
    "thumb": "/assets/cache/pod/3e3cd0ac7162b7fe.webp"
   }
  ],

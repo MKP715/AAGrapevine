@@ -1,6 +1,6 @@
 {
- "generated": "2026-09-25T00:34:54Z",
- "updated": "2026-09-25T00:34:54Z",
+ "generated": "2026-09-25T07:13:25Z",
+ "updated": "2026-09-25T07:13:25Z",
  "fixture": false,
  "sources": [
   {
@@ -8,8 +8,8 @@
    "label": "Google Drive (committee uploads)",
    "label_es": "Google Drive (archivos del comité)",
    "ok": true,
-   "updated": "2026-09-25T00:34:51Z",
-   "attempted": "2026-09-25T00:34:51Z",
+   "updated": "2026-09-25T07:13:21Z",
+   "attempted": "2026-09-25T07:13:21Z",
    "count": 0,
    "new_7d": 0,
    "error": null,
@@ -67,8 +67,8 @@
    "label": "Announcements (content/announcements)",
    "label_es": "Anuncios (content/announcements)",
    "ok": true,
-   "updated": "2026-09-25T00:34:51Z",
-   "attempted": "2026-09-25T00:34:51Z",
+   "updated": "2026-09-25T07:13:21Z",
+   "attempted": "2026-09-25T07:13:21Z",
    "count": 0,
    "new_7d": 0,
    "error": null,
@@ -85,8 +85,8 @@
    "label": "Events (content/events)",
    "label_es": "Eventos (content/events)",
    "ok": true,
-   "updated": "2026-09-25T00:34:51Z",
-   "attempted": "2026-09-25T00:34:51Z",
+   "updated": "2026-09-25T07:13:21Z",
+   "attempted": "2026-09-25T07:13:21Z",
    "count": 9,
    "new_7d": 9,
    "error": null,
@@ -220,16 +220,16 @@
    "label": "Podcasts",
    "label_es": "Pódcasts",
    "ok": true,
-   "updated": "2026-09-25T00:34:53Z",
-   "attempted": "2026-09-25T00:34:53Z",
-   "count": 295,
-   "new_7d": 295,
+   "updated": "2026-09-25T07:13:24Z",
+   "attempted": "2026-09-25T07:13:24Z",
+   "count": 296,
+   "new_7d": 296,
    "error": null,
    "stats": {
-    "fetched": 295,
-    "new": 0,
-    "total": 295,
-    "active": 295,
+    "fetched": 296,
+    "new": 1,
+    "total": 296,
+    "active": 296,
     "gone": 0,
     "spanish": 0,
     "shows": {
@@ -240,15 +240,15 @@
      },
      "wo": {
       "ok": true,
-      "episodes": 33,
-      "latest": "2026-09-18T04:15:00Z"
+      "episodes": 34,
+      "latest": "2026-09-25T04:15:00Z"
      }
     },
     "missing_from_feed": 0,
     "gone_checks": 0,
     "discovery_checked": "2026-09-23T16:27:25Z",
     "discovered_feeds": [],
-    "seconds": 2.5,
+    "seconds": 2.4,
     "artwork": 3,
     "artwork_missing": 0,
     "artwork_removed": 0
@@ -404,21 +404,21 @@
   "updated": "2026-09-24T15:25:03Z"
  },
  "translations": {
-  "cached": 1867,
+  "cached": 1869,
   "engine": "argos1.0-ct2/v5",
   "model_enabled": true,
-  "translated_this_run": 0,
+  "translated_this_run": 2,
   "from_cache": 1867,
   "pending": 0,
   "rejected_by_guard": 0,
-  "seconds": 0.1,
-  "model_seconds": 0.0,
-  "texts_per_second": null,
+  "seconds": 0.9,
+  "model_seconds": 0.4,
+  "texts_per_second": 2.3,
   "glossary_entries": 257
  },
  "counts": {
   "videos": 528,
-  "episodes": 295,
+  "episodes": 296,
   "instagram": 28,
   "articles": 226,
   "pdfs": 92,
@@ -454,7 +454,7 @@
  ],
  "items": [],
  "spotlight": {
-  "today": "2026-09-24",
+  "today": "2026-09-25",
   "home_days": 60,
   "list_days": [
    60,
