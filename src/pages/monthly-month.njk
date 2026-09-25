@@ -39,7 +39,7 @@ eleventyComputed:
       <div class="mp-actions mp-no-print">
         <button type="button" class="btn-primary" hidden data-mp-download data-file="{{ m.fileName }}" data-working="{{ 'monthly.working' | t(lang) }}" data-done="{{ 'monthly.saved' | t(lang) }}" data-failed="{{ 'monthly.failed' | t(lang) }}">{% icon "image-down", "size-4" %} {{ "monthly.download" | t(lang) }}</button>
         <button type="button" class="btn-secondary" hidden data-mp-share data-file="{{ m.fileName }}" data-url="{{ pageAbs }}" data-title="{{ m.title }} — {{ site | pick(lang, 'title') }}" data-text="{{ 'monthly.share_text' | t(lang, { month: m.label, url: pageAbs }) }}" data-copied="{{ 'monthly.link_copied' | t(lang) }}">{% icon "share-2", "size-4" %} {{ "monthly.share" | t(lang) }}</button>
-        <button type="button" class="btn-secondary" onclick="window.print()">{% icon "printer", "size-4" %} <span class="sm:hidden">{{ "monthly.print_short" | t(lang) }}</span><span class="max-sm:hidden">{{ "monthly.print" | t(lang) }}</span></button>
+        <button type="button" class="btn-secondary" onclick="window.print()" title="{{ 'monthly.print' | t(lang) }}">{% icon "printer", "size-4" %} {{ "monthly.print_short" | t(lang) }}</button>
       </div>
       <p class="mp-hint mp-no-print">{% icon "info", "size-4 shrink-0" %} {{ "monthly.poster_hint" | t(lang) }}</p>
     </div>

@@ -16,7 +16,8 @@
                  · freshness (ui.freshness) · step-num
      grids       grid-cards · grid-cards-4 · grid-cards-fit · rail / rail-item
      layouts     measure · layout-aside · layout-sidebar · sticky-aside / sticky-aside-xl
-     other       input · empty-state · auto-note · section-head (ui.sectionHead) · page-nav (ui.pageNav)
+     other       input · empty-state (ui.emptyState) · page-empty (ui.pageEmpty) · auto-note ·
+                 section-head (ui.sectionHead) · page-nav (ui.pageNav)
    Touch sizes: btn is 44px everywhere; btn-sm and chip are 36px with a mouse on desktop and
    44px below 640px and on any touch screen (pointer: coarse). Never override with min-h-9!.
    Sticky rules and the z-index scale: see "Sticky rules" below (nothing may cover content).
@@ -31,6 +32,10 @@
 /* Dark mode is driven by <html data-theme="dark"> (set by app.js from
    the saved choice or the OS preference). */
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+/* Wide AND tall screens (from 1536 × 896px): where a third column can stick beside taller ones
+   (the home page's "Write for the magazines"); on shorter windows the layout keeps the 2xl-less
+   arrangement, so no column is left short and empty. */
+@custom-variant tall-2xl (@media (width >= 96rem) and (height >= 56rem));
 
 /* ---------- Fonts (self-hosted, OFL) ---------- */
 @font-face { font-family: "Inter Variable"; font-style: normal; font-display: swap; font-weight: 100 900;
@@ -203,8 +208,10 @@
 
 /* ---------- Chip rows (a row of chip filters / jumps) ----------
    chip-row         one line that scrolls sideways (right-edge fade, snapping) on phones and
-                    tablets; wraps onto more lines from 1024px. For filter rows.
-   chip-row-nowrap  never wraps, at any width. For sticky filter bars and ui.pageNav.
+                    tablets; wraps onto more lines from 1024px. For filter rows and ui.pageNav.
+   chip-row-nowrap  never wraps, at any width. For sticky filter bars only — make sure the chips
+                    fit on a desktop (mouse users can't swipe sideways).
+   Once a row has been scrolled, app.js adds .is-scrolled and the left edge fades too.
    <div class="chip-row" role="group" aria-label="…"><button class="chip" aria-pressed="true">…</button>…</div>
    The row keeps 0.25rem of room around the chips (focus rings, the 2px lift) and 2rem at the
    right end for the fade, so the last chip is never hidden under it when everything fits. */
@@ -214,13 +221,18 @@
           mask-image: linear-gradient(to right, #000 calc(100% - 2rem), transparent);
   &::-webkit-scrollbar { display: none; }
   & > * { flex-shrink: 0; scroll-snap-align: start; }
-  @media (width >= 64rem) { flex-wrap: wrap; overflow: visible; -webkit-mask-image: none; mask-image: none; padding-right: 0.25rem; } }
+  &.is-scrolled { -webkit-mask-image: linear-gradient(to right, transparent, #000 2rem, #000 calc(100% - 2rem), transparent);
+                          mask-image: linear-gradient(to right, transparent, #000 2rem, #000 calc(100% - 2rem), transparent); }
+  @media (width >= 64rem) { flex-wrap: wrap; overflow: visible; padding-right: 0.25rem;
+    &, &.is-scrolled { -webkit-mask-image: none; mask-image: none; } } }
 @utility chip-row-nowrap { display: flex; gap: 0.5rem; min-width: 0; overflow-x: auto; overscroll-behavior-x: contain;
   scroll-snap-type: x proximity; scrollbar-width: none; margin: -0.25rem; padding: 0.25rem 2rem 0.25rem 0.25rem;
   -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 2rem), transparent);
           mask-image: linear-gradient(to right, #000 calc(100% - 2rem), transparent);
   &::-webkit-scrollbar { display: none; }
-  & > * { flex-shrink: 0; scroll-snap-align: start; } }
+  & > * { flex-shrink: 0; scroll-snap-align: start; }
+  &.is-scrolled { -webkit-mask-image: linear-gradient(to right, transparent, #000 2rem, #000 calc(100% - 2rem), transparent);
+                          mask-image: linear-gradient(to right, transparent, #000 2rem, #000 calc(100% - 2rem), transparent); } }
 
 /* ---------- Meta row: date · show · time · language ----------
    <p class="meta-row text-xs text-faint"><time …>Sep 24</time><span>Grapevine</span><span>7 p.m.</span></p>
@@ -314,21 +326,22 @@
 
    sticky-aside     a right (or left) column that sticks from 1024px, when the window is at least
                     40rem (640px) tall. It never grows taller than the window: it scrolls on its
-                    own with a fade at the bottom. Put it on the aside (a grid item of layout-aside
+                    own with a fade at the bottom, and it ends above the language banner while
+                    that is shown (--sticky-bottom, below). Put it on the aside (a grid item of layout-aside
                     / layout-sidebar), not on a card inside it:
                       <div class="layout-aside"><div>main…</div><aside class="sticky-aside space-y-5">…</aside></div>
    sticky-aside-xl  the same from 1280px (when the aside sits under the main column below that). */
 @utility sticky-aside {
   @media (width >= 64rem) and (height >= 40rem) {
     position: sticky; top: var(--sticky-top); align-self: start;
-    max-height: calc(100dvh - var(--sticky-top) - 1rem); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin;
+    max-height: calc(100dvh - var(--sticky-top) - 1rem - var(--sticky-bottom, 0px)); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin;
     padding: 0.25rem 0.5rem 1.5rem; margin: -0.25rem -0.5rem 0;   /* room for card shadows + focus rings */
     -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 1.5rem), transparent);
             mask-image: linear-gradient(to bottom, #000 calc(100% - 1.5rem), transparent); } }
 @utility sticky-aside-xl {
   @media (width >= 80rem) and (height >= 40rem) {
     position: sticky; top: var(--sticky-top); align-self: start;
-    max-height: calc(100dvh - var(--sticky-top) - 1rem); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin;
+    max-height: calc(100dvh - var(--sticky-top) - 1rem - var(--sticky-bottom, 0px)); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin;
     padding: 0.25rem 0.5rem 1.5rem; margin: -0.25rem -0.5rem 0;
     -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 1.5rem), transparent);
             mask-image: linear-gradient(to bottom, #000 calc(100% - 1.5rem), transparent); } }
@@ -351,7 +364,9 @@
                   phones and touch screens. Inline links in a paragraph use "link".
    freshness      the small "Updated 2 hours ago" line — render it with ui.freshness. */
 @utility section-head { @apply mb-6 flex flex-wrap items-end justify-between gap-x-6 gap-y-4 sm:mb-8; }
-@utility section-head-actions { @apply flex flex-wrap items-center gap-2; }
+@utility section-head-actions { @apply flex flex-wrap items-center gap-2;
+  /* phones, with two actions: the same rule as hero-actions (fill the line, no ragged stack) */
+  @media (width < 40rem) { &:has(> :nth-child(2)) > * { flex: 1 1 auto; } } }
 @utility card-h { display: flex; align-items: flex-start; gap: 0.6rem; font-family: var(--font-display);
   font-size: 1.25rem; font-weight: 600; line-height: 1.25; color: var(--c-ink); text-wrap: balance;
   & > span:first-child:not(:only-child) { display: grid; place-items: center; flex-shrink: 0; height: 1.25em; color: var(--c-gv); }
@@ -512,6 +527,16 @@
   /* In-page navigation — ui.pageNav(): a card with "On this page" (label shown from 1280px) and
      ONE row of chip links that never wraps (chip-row-nowrap scrolls sideways with a fade).
      It is the page-overlap block under the hero; it never sticks. */
+  /* Page-level "nothing yet" — ui.pageEmpty(): one solid card, centred; the icon in a soft circle
+     with a faint halo (tone: gv by default, .is-lv / .is-vine / .is-grape). */
+  .page-empty { --pe: var(--c-gv); --pe-soft: var(--c-gv-soft); padding: 2.5rem 1.25rem; text-align: center; }
+  .page-empty.is-lv { --pe: var(--c-lv); --pe-soft: var(--c-lv-soft); }
+  .page-empty.is-vine { --pe: var(--c-vine); --pe-soft: var(--c-vine-soft); }
+  .page-empty.is-grape { --pe: var(--c-grape); --pe-soft: var(--c-grape-soft); }
+  @media (width >= 40rem) { .page-empty { padding: 3rem 2rem; } }
+  .page-empty-icon { display: grid; place-items: center; width: 4.5rem; height: 4.5rem; margin: 0.5rem auto 0; border-radius: 9999px;
+    background: var(--pe-soft); color: var(--pe); box-shadow: 0 0 0 10px color-mix(in srgb, var(--pe-soft) 55%, transparent); }
+
   .page-nav { display: flex; align-items: center; gap: 0.75rem 1rem; padding: 0.5rem 0.75rem; }
   .page-nav-label { display: none; align-items: center; gap: 0.5rem; flex-shrink: 0; padding-left: 0.25rem;
     font-size: 0.72rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--c-muted); }
@@ -528,8 +553,11 @@
 /* Legacy decorative vine drawing (still used inside a few page sections) */
 @utility page-hero-vine { position: absolute; right: -2rem; top: 3rem; width: min(30rem, 62vw); height: auto; opacity: 0.2; pointer-events: none; }
 
-/* Hero actions row — for inside pageHero's caller(): <div class="hero-actions">buttons…</div> */
-@utility hero-actions { @apply flex flex-wrap items-center gap-2.5 sm:gap-3; }
+/* Hero actions row — for inside pageHero's caller(): <div class="hero-actions">buttons…</div>
+   Phones (< 640px): the buttons grow to fill their line, so two that fit share the row and two
+   that don't each take a full-width line — never a ragged stack of different widths. */
+@utility hero-actions { @apply flex flex-wrap items-center gap-2.5 sm:gap-3;
+  @media (width < 40rem) { & > * { flex: 1 1 auto; } } }
 
 /* Hero stats — ui.heroStats(): compact number (display serif) over label, same on every page.
    Shown from 768px only (phones keep the hero short), so pages need no max-sm/max-md wrappers. */
@@ -552,6 +580,22 @@
    line can always be scrolled into view above them. :root.x (0,2,1) beats media.css's
    html.has-player rule (0,1,2), which still applies when there is no banner. */
 :root.has-lang-banner body { padding-bottom: calc(var(--banner-h, 4.5rem) + var(--player-h, 0px) + env(safe-area-inset-bottom, 0px) + 1.25rem); }
+/* …and every sticky column (sticky-aside, the library facets, the Listen player, the month
+   poster) ends above it: --sticky-bottom is taken off their max-height. */
+:root.has-lang-banner { --sticky-bottom: calc(var(--banner-h, 4.5rem) + var(--player-h, 0px) + env(safe-area-inset-bottom, 0px) + 0.75rem); }
+
+/* End of the page: the footer's mt-16 (64px) is the ONLY gap after the last section, on every page.
+   The last plain section (section / section-tight / page-start — directly in <main> or in one
+   wrapper; scripts and dialogs after it don't count) drops its bottom padding. A tinted band
+   (section-band) keeps it: that padding is inside its colour. Unlayered, so it also beats a
+   page's own pb-* utilities. */
+main > :is(.section, .section-tight, .page-start):not(.section-band):not(:has(~ :not(script, template, dialog, style))),
+main > :not(script, template, dialog, style):not(:has(~ :not(script, template, dialog, style)))
+  > :is(.section, .section-tight, .page-start):not(.section-band):not(:has(~ :not(script, template, dialog, style))) { padding-bottom: 0; }
+
+/* A control that only works with JavaScript: hidden without it (html.js is set in <head>), shown
+   from the first paint with it — unlike x-cloak, which pops it in when Alpine starts. */
+:root:not(.js) [data-js-only] { display: none !important; }
 
 /* Print: the site header prints once at the top (logo + name), not fixed over the content */
 @media print {

@@ -1,9 +1,10 @@
 {
-  "media.listen_eyebrow": { "en": "AA Grapevine podcasts", "es": "Podcasts de AA Grapevine" },
+  "media.listen_eyebrow": { "en": "Media · Podcasts", "es": "Medios · Podcasts" },
+  "media.listen_share_title": { "en": "AA Grapevine podcasts", "es": "Podcasts de AA Grapevine" },
   "media.listen_title": { "en": "Listen", "es": "Escuchar" },
   "media.listen_sub": {
-    "en": "AA members sharing experience, strength and hope — new episodes every week. Play them here; the player remembers where you left off.",
-    "es": "Miembros de AA compartiendo experiencia, fortaleza y esperanza — episodios nuevos cada semana. Escúchalos aquí; el reproductor recuerda dónde te quedaste."
+    "en": "AA members sharing experience, strength and hope. New episodes every week; the player remembers your place.",
+    "es": "Miembros de AA comparten experiencia, fortaleza y esperanza. Episodios nuevos cada semana; el reproductor recuerda dónde vas."
   },
   "media.listen_meta": {
     "en": "Listen to AA Grapevine's Podcast and the Grapevine Weekly Open AA Meeting with a built-in player that remembers where you left off. New episodes every week.",
@@ -28,6 +29,8 @@
   "media.resume": { "en": "Resume", "es": "Continuar" },
   "media.played": { "en": "Played", "es": "Escuchado" },
   "media.playing": { "en": "Playing", "es": "Sonando" },
+  "media.now_playing": { "en": "Now playing", "es": "Escuchando ahora" },
+  "media.back_latest": { "en": "Back to latest", "es": "Volver al más reciente" },
   "media.back_15": { "en": "Back 15 seconds", "es": "Retroceder 15 segundos" },
   "media.fwd_30": { "en": "Forward 30 seconds", "es": "Adelantar 30 segundos" },
   "media.speed": { "en": "Playback speed", "es": "Velocidad de reproducción" },
@@ -79,11 +82,8 @@
   "media.search_episodes": { "en": "Search episodes", "es": "Buscar episodios" },
   "media.search_episodes_ph": { "en": "Search by title, topic or guest…", "es": "Busca por título, tema o invitado…" },
   "media.filter_show": { "en": "Show", "es": "Programa" },
-  "media.all_shows": { "en": "All shows", "es": "Todos" },
   "media.filter_season": { "en": "Season", "es": "Temporada" },
-  "media.all_seasons": { "en": "All seasons", "es": "Todas las temporadas" },
   "media.filter_lang": { "en": "Language", "es": "Idioma" },
-  "media.all_langs": { "en": "All", "es": "Todos" },
   "media.lang_en": { "en": "English", "es": "Inglés" },
   "media.lang_es": { "en": "Español", "es": "Español" },
   "media.sort": { "en": "Sort", "es": "Orden" },
@@ -140,11 +140,13 @@
     "es": "Los episodios nuevos del podcast aparecen aquí en cuanto salen; mantenemos esta página actualizada con regularidad. Mientras tanto, puedes escucharlos en el sitio de AA Grapevine o en tu app de podcasts."
   },
 
-  "media.watch_eyebrow": { "en": "AA Grapevine & La Viña on YouTube", "es": "La Viña y AA Grapevine en YouTube" },
+  "media.watch_eyebrow": { "en": "Media · YouTube", "es": "Medios · YouTube" },
+
+  "media.watch_share_title": { "en": "AA Grapevine & La Viña on YouTube", "es": "La Viña y AA Grapevine en YouTube" },
   "media.watch_title": { "en": "Watch", "es": "Ver" },
   "media.watch_sub": {
-    "en": "Weekly Open meeting recordings, podcast episodes, ASL shares and La Viña audio stories — in English and Spanish.",
-    "es": "Grabaciones de la Reunión Abierta Semanal, episodios del podcast, historias en lenguaje de señas y audios de La Viña — en español y en inglés."
+    "en": "Weekly Open recordings, podcast episodes, ASL shares and La Viña audio stories — in English and Spanish.",
+    "es": "Grabaciones de la Reunión Abierta, episodios del podcast, historias en lengua de señas y audios de La Viña, en español e inglés."
   },
   "media.watch_meta": {
     "en": "Watch the latest AA Grapevine and La Viña videos: Weekly Open meeting recordings, podcast episodes, ASL shares and more, in English and Spanish.",
@@ -170,7 +172,6 @@
   "media.search_videos": { "en": "Search videos", "es": "Buscar videos" },
   "media.search_videos_ph": { "en": "Search by title…", "es": "Busca por título…" },
   "media.filter_collection": { "en": "Type", "es": "Tipo" },
-  "media.all_collections": { "en": "Everything", "es": "Todo" },
   "media.filter_playlist": { "en": "Playlist", "es": "Lista" },
   "media.all_playlists": { "en": "All playlists", "es": "Todas las listas" },
   "media.pl_group_en": { "en": "Grapevine — in English", "es": "Grapevine — en inglés" },
@@ -204,7 +205,9 @@
     "es": "Los videos nuevos del canal de YouTube de La Viña y AA Grapevine aparecen aquí a medida que se publican; mantenemos esta página actualizada con regularidad. Mientras tanto, visita el canal directamente."
   },
 
-  "media.ig_eyebrow": { "en": "AA Grapevine & La Viña", "es": "La Viña y AA Grapevine" },
+  "media.ig_eyebrow": { "en": "Media · Instagram", "es": "Medios · Instagram" },
+
+  "media.ig_share_title": { "en": "Instagram — AA Grapevine & La Viña", "es": "Instagram — La Viña y AA Grapevine" },
   "media.ig_title": { "en": "Instagram", "es": "Instagram" },
   "media.ig_sub": {
     "en": "Daily inspiration, new issues and ways to be of service — the latest posts from AA Grapevine and La Viña.",
@@ -221,6 +224,8 @@
   "media.ig_load_embed_aria": { "en": "Load this Instagram post on this page", "es": "Cargar esta publicación de Instagram en esta página" },
   "media.ig_hide_embed": { "en": "Hide post", "es": "Ocultar" },
   "media.ig_embed_title": { "en": "Instagram post from @{u}", "es": "Publicación de Instagram de @{u}" },
+  "media.ig_posts_eyebrow": { "en": "On Instagram", "es": "En Instagram" },
+  "media.ig_posts_title": { "en": "Latest posts", "es": "Publicaciones recientes" },
   "media.ig_privacy": {
     "en": "To protect your privacy, nothing loads from Instagram until you ask for it.",
     "es": "Para proteger tu privacidad, nada se carga desde Instagram hasta que tú lo pidas."

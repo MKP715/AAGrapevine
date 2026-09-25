@@ -187,6 +187,9 @@
         filter: "all", showAll: false, labels: { many: "{n}", one: "{n}" },
         init: function () {
           this.labels = countLabels(this.$root);
+          this.recount();
+          // x-show now owns what is hidden: drop the first-paint rule (committee.css [data-dflt-hidden])
+          this.$nextTick(function () { document.documentElement.classList.add("cm-ev-ready"); });
           try {
             var p = new URLSearchParams(location.search).get("filter");
             if (p && ["all", "committee", "neta", "calendar"].indexOf(p) !== -1) this.filter = p;
@@ -206,6 +209,23 @@
           }
         },
         set: function (f) { this.filter = f; },
+        /* The chip counts are what each filter shows: events whose time has passed (hidden by
+           expire() between builds) and the later dates of a monthly series don't count; a chip
+           that reaches 0 hides (and "All" takes over if it was the one picked). */
+        recount: function () {
+          var root = this.$root, self = this;
+          root.querySelectorAll("[data-cm-filter]").forEach(function (chip) {
+            var f = chip.getAttribute("data-cm-filter");
+            if (f === "all") return;
+            var n = Array.prototype.filter.call(root.querySelectorAll('li[data-group="' + f + '"]'), function (li) {
+              return !li.hasAttribute("data-cm-expired") && !li.hasAttribute("data-later");
+            }).length;
+            var c = chip.querySelector(".cm-chip-count");
+            if (c) c.textContent = n;
+            chip.hidden = !n;
+            if (!n && self.filter === f) self.filter = "all";
+          });
+        },
         show: function (el) {
           if (el.hasAttribute("data-cm-expired")) return false;
           // a later date of a monthly series (its first date lists it): only with "Show every monthly date"
@@ -233,7 +253,11 @@
        chip stands for — one per weekday of its row). A card shows when its text and area match and
        at least one of its times matches the day and in person / online; those rows and times are
        highlighted. Empty regions and the whole "Nearby areas" block hide with their cards.
-       Without JavaScript the filters stay hidden (x-cloak) and every group shows. */
+       Phones (< 640px, committee.css): "Filters" (moreOpen) folds the day / in person / nearby
+       controls; each region shows 3 cards (data-fold on the others) + "Show all N groups"
+       (toggleRegion); the nearby areas fold behind one button (nearOpen). While searching or
+       filtering by day / in person nothing is folded, so every match shows.
+       Without JavaScript the filters stay hidden (committee.css, html.js) and every group shows. */
     Alpine.data("cmGvMeetings", function () {
       function fold(s) {
         return String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/\s+/g, " ").trim();
@@ -248,6 +272,7 @@
       }
       return {
         day: "", q: "", how: "", nearby: true, today: -1, shown: 0, groups: 0, total: 0, labels: { many: "{n}", one: "{n}" },
+        moreOpen: false, nearOpen: false, open: {}, regionN: {},
         init: function () {
           var root = this.$root, self = this;
           this.labels = countLabels(root);
@@ -256,6 +281,7 @@
           this.groups = root.querySelectorAll("li[data-gvg]").length;
           this.today = weekday();
           this.markToday();
+          this.fold();
           // a page left open past midnight moves "Meets today" to the new day
           this._t = setInterval(function () { var d = weekday(); if (d !== self.today) { self.today = d; self.markToday(); } }, 60000);
           this.$watch("day", function () { self.apply(); });
@@ -271,6 +297,12 @@
           else if (/^mtg-[a-z0-9-]+$/i.test(id)) card = root.querySelector('li[data-mtg~="' + id + '"]');
           if (card && root.contains(card)) {
             if (id.indexOf("mtg-") === 0) card.classList.add("is-target");
+            // on a phone the card may be folded away (a region's 4th card on, or the nearby areas):
+            // unfold its region / the nearby block first
+            if (card.getAttribute("data-area") === "nearby") this.nearOpen = true;
+            var rid = this.regionOf(card);
+            if (rid) this.open[rid] = true;
+            this.fold();
             this.$nextTick(function () { card.scrollIntoView({ block: "center" }); });
           }
         },
@@ -293,6 +325,38 @@
           });
         },
         get filtered() { return this.day !== "" || this.q.trim() !== "" || this.how !== "" || !this.nearby; },
+        // a search or a day / in person filter: every match shows (nothing folded on phones)
+        get searching() { return this.day !== "" || this.q.trim() !== "" || this.how !== ""; },
+        // how many of the folded filters (behind "Filters" on phones) are set
+        get moreCount() { return (this.day !== "" ? 1 : 0) + (this.how !== "" ? 1 : 0) + (this.nearby ? 0 : 1); },
+        regionOf: function (el) { var r = el && el.closest ? el.closest("[data-gvm-group]") : null; return r ? r.getAttribute("data-gvm-group") : ""; },
+        isOpen: function (el) { return !!this.open[this.regionOf(el)]; },
+        foldable: function (el) { return !this.searching && (this.regionN[this.regionOf(el)] || 0) > 3; },
+        foldLabel: function (el) {
+          var id = this.regionOf(el), b = el && el.closest ? el.closest("[data-more]") : null;
+          if (!b) return "";
+          return this.open[id] ? b.getAttribute("data-less") : String(b.getAttribute("data-more") || "").replace("{n}", this.regionN[id] || 0);
+        },
+        toggleRegion: function (el) {
+          var id = this.regionOf(el);
+          if (!id) return;
+          this.open[id] = !this.open[id];
+          this.fold();
+        },
+        // Phones: a region shows its first 3 visible cards (the rest get data-fold, hidden by
+        // committee.css below 640px) unless it is open or a search / filter is on.
+        fold: function () {
+          var self = this, all = this.searching;
+          this.$root.querySelectorAll(".cm-gvg-region").forEach(function (reg) {
+            var id = reg.getAttribute("data-gvm-group"), k = 0, open = all || !!self.open[id];
+            reg.querySelectorAll("li[data-gvg]").forEach(function (li) {
+              var vis = !li.hidden;
+              li.toggleAttribute("data-fold", vis && !open && k >= 3);
+              if (vis) k++;
+            });
+            self.regionN[id] = k;
+          });
+        },
         get statusText() { return countText(this.labels, this.shown).replace("{groups}", plural(this.$root, "data-groups", this.groups)); },
         reset: function () {
           this.day = ""; this.q = ""; this.how = ""; this.nearby = true;
@@ -343,34 +407,20 @@
               var n = x.cards.length;
               for (var C = 1; C <= 4; C++) x.el.style.setProperty("--h" + C, 1 + 4 * (n >= C ? Math.ceil(n / C) : 1));
             });
+            // every card is one column wide (committee.css); a region spans the whole row when it has a
+            // row of cards or more, else just its cards, so small regions sit side by side
             [2, 3, 4].forEach(function (C) {
-              var row = [], k = 0;
-              function close() {
-                row.forEach(function (x) {
-                  var w = 12 / k;
-                  x.el.style.setProperty("--r" + C, x.cards.length * w);
-                  Array.prototype.forEach.call(x.cards, function (li) { li.style.setProperty("--c" + C, w); });
-                });
-                row = []; k = 0;
-              }
               regions.forEach(function (x) {
-                var n = x.cards.length, t = n % C;
-                if (n >= C) {
-                  close();
-                  x.el.style.setProperty("--r" + C, 12);
-                  Array.prototype.forEach.call(x.cards, function (li, j) { li.style.setProperty("--c" + C, t && j >= n - t ? 12 / t : 12 / C); });
-                } else {
-                  if (k + n > C) close();
-                  row.push(x); k += n;
-                }
+                var n = x.cards.length;
+                x.el.style.setProperty("--r" + C, n && n < C ? (n * 12) / C : 12);
               });
-              close();
             });
           });
           var nb = root.querySelector("[data-gvm-nearby]");
           if (nb) nb.hidden = !nb.querySelector("li[data-gvg]:not([hidden])");
           this.shown = shown;
           this.groups = groups;
+          this.fold();
         },
       };
     });

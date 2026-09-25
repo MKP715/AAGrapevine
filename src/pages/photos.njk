@@ -11,8 +11,8 @@ pageStyles: ["/assets/vendor/glightbox.min.css"]
 {#- Photo albums from the committee's Google Drive "photos" folder.
     Every sub-folder becomes an album. Lightbox: GLightbox (MIT, self-hosted).
     Below the shared page hero and the committee sub-nav: the album index (grid-cards) and one photo
-    grid per album (2 → 3 → 4 → 5 → 6 columns) — or, with no photos yet, one solid card written for
-    visitors (what will be here + one next step). Then "Protecting anonymity" (what is great to share
+    grid per album (2 → 3 → 4 → 5 → 6 columns) — or, with no photos yet, the shared page-level empty
+    card (ui.pageEmpty; the one visitor action is the hero's). Then "Protecting anonymity" (what is great to share
     | what never is), and, collapsed, "For committee members · Share photos" (ui.memberHelp,
     #share-photos): the steps, where photos go, Open Drive folder · Ask for upload access. -#}
 {% import "macros/ui.njk" as ui with context %}
@@ -23,12 +23,12 @@ pageStyles: ["/assets/vendor/glightbox.min.css"]
 
 {% call ui.pageHero(lang, "nav.photos" | t(lang), "committee.photos.hero_sub" | t(lang), "images", "committee.photos.eyebrow" | t(lang)) %}
   <div class="hero-actions">
+    {#- one visitor action (the committee how-to is ui.memberHelp, below) -#}
     {% if albums | length %}
     <a class="btn-light" href="#albums">{% icon "layout-grid", "size-4" %} {{ "committee.photos.browse" | t(lang) }}</a>
     {% else %}
     <a class="btn-light" href="{{ '/instagram/' | lurl(lang) }}">{% icon "instagram", "size-4" %} {{ "committee.photos.see_instagram" | t(lang) }}</a>
     {% endif %}
-    <a class="btn-on-dark" href="#share-photos">{% icon "key-round", "size-4" %} {{ "committee.photos.add_btn" | t(lang) }}</a>
   </div>
   {% if albums | length %}
   {{ ui.heroStats([
@@ -116,20 +116,9 @@ pageStyles: ["/assets/vendor/glightbox.min.css"]
 {% endfor %}
 
 {% else %}
-{#- ---------- No photos yet: one solid card for visitors — what will be here, and one next step ---------- -#}
+{#- ---------- No photos yet: the shared page-level empty card (the visitor action is the hero's) ---------- -#}
 <div class="container-page section pt-10 sm:pt-12">
-  <section class="card cm-docs-empty" aria-labelledby="photos-empty-h">
-    <div class="cm-polaroids" aria-hidden="true">
-      <span class="cm-polaroid -rotate-6">{% icon "grapes", "size-10" %}</span>
-      <span class="cm-polaroid rotate-3">{% icon "book-open-text", "size-10" %}</span>
-      <span class="cm-polaroid -rotate-2">{% icon "users", "size-10" %}</span>
-    </div>
-    <h2 id="photos-empty-h" class="h-section mt-8 text-center text-balance">{{ "committee.photos.empty_title" | t(lang) }}</h2>
-    <p class="mx-auto mt-3 max-w-xl text-center leading-relaxed text-muted">{{ "committee.photos.empty_text" | t(lang) }}</p>
-    <div class="mt-6 flex justify-center">
-      <a class="btn-primary" href="{{ '/instagram/' | lurl(lang) }}">{% icon "instagram", "size-4" %} {{ "committee.photos.see_instagram" | t(lang) }}</a>
-    </div>
-  </section>
+  {{ ui.pageEmpty("images", "committee.photos.empty_title" | t(lang), "committee.photos.empty_text" | t(lang), { id: "photos-empty-h" }) }}
 </div>
 {% endif %}
 

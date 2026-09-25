@@ -746,6 +746,18 @@ whoever helps with the website (or open an **Issue** in this repository).
 Technical details, how to run it on your own computer, and how to add a new source:
 **[docs/OPERATIONS.md](docs/OPERATIONS.md)**.
 
+**Page design (for developers).** Every page is built from the same shared pieces, so the site
+reads as one: the hero (`ui.pageHero`, with the grapevine art), section headers (`ui.sectionHead`
+in eyebrow form), the in-page nav of long pages (`ui.pageNav`), "Updated … ago" (`ui.freshness`),
+closing link cards (`ui.nextSteps`), the collapsed "For committee members" help (`ui.memberHelp`),
+the page-level "nothing yet" card (`ui.pageEmpty`) and the in-list "no results" box
+(`ui.emptyState`) — all in `src/_includes/macros/ui.njk`, each documented at the top of that file.
+The matching CSS utilities (cards, buttons, chip rows, `sticky-aside`, `meta-row`, `tap-link`,
+`step-num` …) and the rules for what may stick to the screen are documented at the top of
+`src/assets/css/main.css`. Two rules to keep: nothing may cover content (sticky columns end above
+the language banner and never grow taller than the window), and the one gap before the footer is
+the footer's own margin.
+
 ---
 
 ## 17. Credits and licenses

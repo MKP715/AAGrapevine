@@ -119,11 +119,13 @@ pageScripts: ["/assets/js/media.js"]
 {#- Both accounts side by side from 1024px (the page language's account on the left); each
     account's posts in 2 columns, 3 from 1800px (6 across at 1920). Phones/tablets: one account
     at a time (tabs) with 2 columns, 3 from 768px. -#}
-<section class="container-page page-start" x-data="igPage('{{ accounts[0].key if accounts.length else 'gv' }}')" aria-label="{{ 'media.ig_title' | t(lang) }}">
-  <div class="mb-6 flex flex-col gap-4 lg:mb-8">
+<section class="container-page page-start" x-data="igPage('{{ accounts[0].key if accounts.length else 'gv' }}')" aria-labelledby="ig-posts-title">
+  {#- The site's section header: eyebrow · title · the privacy note as its one-line intro -#}
+  {{ ui.sectionHead("media.ig_posts_title" | t(lang), "media.ig_privacy" | t(lang), "", "", "instagram", { eyebrow: "media.ig_posts_eyebrow" | t(lang), tone: "text-grape", id: "ig-posts-title", lang: lang }) }}
+  <div class="mb-6 flex flex-col gap-4 lg:hidden">
     {#- Phone: pick an account (both columns show side by side on large screens) -#}
     {% if accounts.length > 1 %}
-    <div class="flex justify-center lg:hidden" role="group" aria-label="{{ 'media.ig_tabs_label' | t(lang) }}">
+    <div class="flex justify-center" role="group" aria-label="{{ 'media.ig_tabs_label' | t(lang) }}">
       <div class="inline-flex gap-1 rounded-full border border-line bg-surface p-1 shadow-[var(--shadow-card)]">
         {% for acc in accounts %}
         <button type="button" class="chip border-transparent" :aria-pressed="(tab === '{{ acc.key }}').toString()" aria-pressed="{{ 'true' if loop.first else 'false' }}" @click="tab = '{{ acc.key }}'">{% icon "grapes", "size-4" %}{{ acc.name }}</button>
@@ -131,7 +133,6 @@ pageScripts: ["/assets/js/media.js"]
       </div>
     </div>
     {% endif %}
-    <p class="text-center text-sm text-muted text-pretty lg:text-left">{% icon "shield-check", "mr-1.5 inline size-4 align-[-3px] text-vine" %}{{ "media.ig_privacy" | t(lang) }}</p>
   </div>
 
   <div class="grid grid-cols-1 items-start gap-10 lg:grid-cols-2 lg:gap-8 min-[112.5rem]:gap-12">
@@ -150,7 +151,7 @@ pageScripts: ["/assets/js/media.js"]
             <span class="ig-avatar is-{{ acc.key }} relative z-10"><span>{% icon "grapes", "size-8" %}</span>{% if prof.avatar %}<img src="{{ prof.avatar }}" alt="" width="72" height="72" decoding="async" onerror="this.remove()">{% endif %}</span>
             <a class="{{ 'btn-lv' if isLv else 'btn-primary' }} btn-sm" href="{{ profile }}" target="_blank" rel="noopener">{% icon "instagram", "size-4" %} {{ "common.follow" | t(lang) }}</a>
           </div>
-          <h2 id="ig-{{ acc.key }}-title" class="mt-3 font-display text-2xl font-semibold">{{ acc.name }}</h2>
+          <h3 id="ig-{{ acc.key }}-title" class="mt-3 font-display text-2xl font-semibold">{{ acc.name }}</h3>
           <p class="mt-0.5 flex flex-wrap items-center gap-2 text-sm text-muted">
             <a class="tap-link font-medium hover:text-gv" href="{{ profile }}" target="_blank" rel="noopener">@{{ prof.username }}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a>
             <span class="{{ 'badge-lv' if isLv else 'badge-gv' }}">{{ ("media.ig_in_spanish" if isLv else "media.ig_in_english") | t(lang) }}</span>
@@ -189,4 +190,4 @@ pageScripts: ["/assets/js/media.js"]
 </section>
 
 {#- ------------------------------------------------------------------ tell your group -#}
-{{ media.shareBlock(lang, "ig-share-title", "media.ig_share_text" | t(lang), "media.ig_announcement" | t(lang), page.url | siteUrl(site), ("media.ig_title" | t(lang)) + " — " + ("media.ig_eyebrow" | t(lang))) }}
+{{ media.shareBlock(lang, "ig-share-title", "media.ig_share_text" | t(lang), "media.ig_announcement" | t(lang), page.url | siteUrl(site), "media.ig_share_title" | t(lang)) }}

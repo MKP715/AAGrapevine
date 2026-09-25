@@ -71,8 +71,8 @@ pageScripts: ["/assets/js/committee.js"]
   {#- ============ The meeting board (one grid, so every card lines up) ============
       Markup order = phone order: next meeting → how to join → the next dates → who can come → the
       chair (questions) → what happens. Tablets: who | chair side by side. From 1024px two columns
-      (committee.css .cm-board):  countdown | how to join  ·  who | chair  ·  what happens (both
-      columns)  ·  the dates (both columns, laid out in rows of three). From 1280px three columns: the
+      (committee.css .cm-board):  countdown | how to join  ·  the dates (both columns, laid out in rows
+      of three)  ·  who | chair  ·  what happens (both columns). From 1280px three columns: the
       countdown and the dates on the left; how to join, who | chair and what happens on the right —
       both sides end together. The cards lay out their own insides by their width (container queries). -#}
   <div class="cm-board">
@@ -94,7 +94,7 @@ pageScripts: ["/assets/js/committee.js"]
       </p>
 
       {#- The tiles sit right under the date; the buttons end the card -#}
-      <div role="timer" aria-live="off" class="cm-tiles my-5" x-cloak x-show="phase !== 'live'">
+      <div role="timer" aria-live="off" class="cm-tiles my-5" data-js-only x-show="phase !== 'live'">
         {% for u in [["d", "common.days"], ["h", "common.hours"], ["m", "common.min"], ["s", "common.sec"]] %}
         <div class="cm-tile">
           <span class="cm-tile-num" x-text="{{ 'd' if u[0] == 'd' else 'pad(' + u[0] + ')' }}">–</span>
@@ -263,15 +263,18 @@ pageScripts: ["/assets/js/committee.js"]
     Both halves are organised the same way, by region: our Area by the office that lists the group
     (Dallas area, Fort Worth area, East Texas, Abilene — config/site.yml meetings.feeds region_label),
     then each nearby region. Every region opens with the same head (icon · name · "N groups ·
-    M meetings"); small regions share a row, and no row is left with an empty column (the card
-    spans come from packRegions in eleventy/filters/committee.js: --r2/--r3/--r4 on a region and
-    --c2/--c3/--c4 on a card, for 2 / 3 / 4 cards a row). Each card carries data-days / data-area /
-    data-q and its time chips data-att + the row's data-days, for the filters (committee.js →
-    cmGvMeetings, which hides empty regions and re-packs the rows); data-mtg lists its meetings'
-    old #mtg-… addresses. Without JavaScript the filters stay hidden and every group shows. -#}
-{% macro gvgCard(p, L, h) %}
+    M meetings"). Every card is one column wide (2 / 3 / 4 a row from 640 / 1280 / 1800px), so the
+    list is one even grid; small regions share a row (the region spans come from packRegions in
+    eleventy/filters/committee.js: --r2/--r3/--r4 and the row counts --h1…--h4). Each card carries
+    data-days / data-area / data-q and its time chips data-att + the row's data-days, for the filters
+    (committee.js → cmGvMeetings, which hides empty regions and re-packs the rows); data-mtg lists its
+    meetings' old #mtg-… addresses. Phones (< 640px): the day / in person / nearby filters fold behind
+    "Filters" (search stays visible), each region shows 3 groups + "Show all N groups" (data-fold, the
+    4th card on), and the nearby areas fold behind one button. Without JavaScript the filters stay
+    hidden and every group shows. -#}
+{% macro gvgCard(p, L, h, fold=false) %}
 {%- set attIcon = "video" if p.attendance == "online" else ("users-round" if p.attendance == "in_person" else "monitor-smartphone") -%}
-<li id="{{ p.anchor }}" class="cm-gvg card{{ ' is-nearby' if not p.inArea }}" style="--c2: {{ p.span.s2 }}; --c3: {{ p.span.s3 }}; --c4: {{ p.span.s4 }}" data-gvg data-area="{{ 'ours' if p.inArea else 'nearby' }}" data-days="{{ p.days | join(' ') }}" data-q="{{ p.search }}" data-mtg="{{ p.ids | join(' ') }}">
+<li id="{{ p.anchor }}" class="cm-gvg card{{ ' is-nearby' if not p.inArea }}"{% if fold %} data-fold{% endif %} data-gvg data-area="{{ 'ours' if p.inArea else 'nearby' }}" data-days="{{ p.days | join(' ') }}" data-q="{{ p.search }}" data-mtg="{{ p.ids | join(' ') }}">
   <div class="cm-gvg-top">
     <p class="cm-gvg-where">{{ p.placeLine }}</p>
     <span class="cm-gvg-today" data-gvm-today hidden>{% icon "sun", "size-3.5" %} {{ "committee.gvm.meets_today" | t(L) }}</span>
@@ -285,8 +288,7 @@ pageScripts: ["/assets/js/committee.js"]
     {%- if p.access %}<span class="badge-muted">{% icon "accessibility", "size-3" %} {{ "committee.gvm.access" | t(L) }}</span>{% endif %}
   </p>
 
-  {#- The body lays itself out by the card's width: stacked, or the week | the place + links side by
-      side when a card spans a whole row (committee.css .cm-gvg-body, a container) -#}
+  {#- The body: the week, the place, then the links at the bottom (committee.css .cm-gvg-body) -#}
   <div class="cm-gvg-body">
   <div class="cm-gvg-inner">
   {#- The week: one row per set of weekdays with the same meetings -#}
@@ -354,8 +356,18 @@ pageScripts: ["/assets/js/committee.js"]
     </div>
   </div>
   <ul class="cm-gvg-grid" role="list">
-    {%- for p in g.places %}{{ gvgCard(p, L, 5) }}{% endfor %}
+    {%- for p in g.places %}{{ gvgCard(p, L, 5, loop.index0 >= 3) }}{% endfor %}
   </ul>
+  {#- Phones only: a region shows 3 groups, then this toggle (committee.js keeps it current while filtering) -#}
+  {% if g.places | length > 3 %}
+  <div class="cm-gvg-more" x-show="foldable($el)">
+    <button type="button" class="btn-ghost w-full text-gv" @click="toggleRegion($el)" :aria-expanded="isOpen($el).toString()" aria-expanded="false" aria-describedby="gvm-g-{{ g.id }}"
+            data-more="{{ 'committee.gvm.show_all_n' | t(L) }}" data-less="{{ 'common.show_less' | t(L) }}">
+      <span x-text="foldLabel($el)">{{ "committee.gvm.show_all_n" | t(L, { n: g.places | length }) }}</span>
+      {% icon "chevron-down", "size-4" %}
+    </button>
+  </div>
+  {% endif %}
 </section>
 {% endmacro %}
 
@@ -371,14 +383,26 @@ pageScripts: ["/assets/js/committee.js"]
 
     {% if gvm.total %}
     {#- ---------- Filters (JavaScript only: without it every group shows) ---------- -#}
-    <div class="cm-gvm-filters card" role="group" aria-label="{{ 'committee.gvm.filters_aria' | t(lang) }}" x-cloak>
+    {#- (shown from the first paint when JavaScript is on — html.js, committee.css — so the list
+        never jumps down when Alpine starts) -#}
+    <div class="cm-gvm-filters card" role="group" aria-label="{{ 'committee.gvm.filters_aria' | t(lang) }}">
       <div class="cm-gvm-field cm-gvm-field--q">
         <label for="gvm-q-{{ lang }}" class="cm-gvm-label">{{ "committee.gvm.f_where" | t(lang) }}</label>
-        <div class="relative">
-          <span class="pointer-events-none absolute inset-y-0 left-3.5 grid place-items-center text-faint" aria-hidden="true">{% icon "search", "size-4" %}</span>
-          <input id="gvm-q-{{ lang }}" type="search" class="input pl-10" x-model.debounce.150ms="q" placeholder="{{ 'committee.gvm.f_where_ph' | t(lang) }}" autocomplete="off" enterkeyhint="search" spellcheck="false">
+        <div class="flex gap-2">
+          <div class="relative min-w-0 flex-1">
+            <span class="pointer-events-none absolute inset-y-0 left-3.5 grid place-items-center text-faint" aria-hidden="true">{% icon "search", "size-4" %}</span>
+            <input id="gvm-q-{{ lang }}" type="search" class="input pl-10" x-model.debounce.150ms="q" placeholder="{{ 'committee.gvm.f_where_ph' | t(lang) }}" autocomplete="off" enterkeyhint="search" spellcheck="false">
+          </div>
+          {#- phones: the other filters fold behind this button -#}
+          <div class="cm-gvm-more-toggle">
+            <button type="button" class="btn-secondary px-4" @click="moreOpen = !moreOpen" :aria-expanded="moreOpen.toString()" aria-expanded="false" aria-controls="gvm-more-{{ lang }}">
+              {% icon "sliders-horizontal", "size-4" %} {{ "committee.gvm.f_more" | t(lang) }}
+              <span class="cm-chip-count" x-show="moreCount" x-cloak x-text="moreCount"></span>
+            </button>
+          </div>
         </div>
       </div>
+      <div id="gvm-more-{{ lang }}" class="cm-gvm-more" :class="moreOpen && 'is-open'">
       <div class="cm-gvm-field">
         <label for="gvm-day-{{ lang }}" class="cm-gvm-label">{{ "committee.gvm.f_day" | t(lang) }}</label>
         <div class="relative">
@@ -408,6 +432,7 @@ pageScripts: ["/assets/js/committee.js"]
         <span>{{ "committee.gvm.f_nearby" | t(lang) }} <span class="cm-chip-count" aria-hidden="true">{{ gvm.nearbyPlaces }}</span><span class="sr-only"> ({{ (groupTpl.one if gvm.nearbyPlaces == 1 else groupTpl.many) | replace("{n}", gvm.nearbyPlaces) }})</span></span>
       </label>
       {% endif %}
+      </div>
     </div>
     {#- What is shown (the filters rewrite it) · the one note that matters before you go -#}
     <div class="cm-gvm-status">
@@ -436,7 +461,7 @@ pageScripts: ["/assets/js/committee.js"]
 
     {#- ---------- Nearby areas (outside NETA 65): the same region blocks ---------- -#}
     {% if gvm.nearbyGroups | length %}
-    <div class="cm-gvm-group cm-gvm-nearby" data-gvm-nearby>
+    <div class="cm-gvm-group cm-gvm-nearby" data-gvm-nearby :class="(nearOpen || searching) && 'is-open'">
       <div class="cm-gvm-group-head">
         <span class="cm-gvm-group-icon is-vine" aria-hidden="true">{% icon "compass", "size-5" %}</span>
         <div class="min-w-0">
@@ -444,7 +469,15 @@ pageScripts: ["/assets/js/committee.js"]
           <p class="text-sm text-muted">{{ "committee.gvm.nearby_sub" | t(lang) }}</p>
         </div>
       </div>
-      <div class="cm-gvg-regions" data-gvm-regions>
+      {#- phones: the nearby groups fold behind one button (always open while searching) -#}
+      <div class="cm-gvm-near" x-show="!searching">
+        <button type="button" class="btn-secondary w-full" @click="nearOpen = !nearOpen" :aria-expanded="nearOpen.toString()" aria-expanded="false" aria-controls="gvm-near-{{ lang }}">
+          <span x-show="!nearOpen">{{ "committee.gvm.nearby_show" | t(lang) }}</span><span x-show="nearOpen" x-cloak>{{ "committee.gvm.nearby_hide" | t(lang) }}</span>
+          <span class="cm-chip-count" aria-hidden="true">{{ gvm.nearbyPlaces }}</span>
+          {% icon "chevron-down", "size-4" %}
+        </button>
+      </div>
+      <div id="gvm-near-{{ lang }}" class="cm-gvg-regions" data-gvm-regions>
         {% for g in gvm.nearbyGroups %}{{ gvRegion(g, lang, "is-vine") }}{% endfor %}
       </div>
     </div>

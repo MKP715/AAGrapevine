@@ -163,17 +163,35 @@
    Columns: 1 → 2 (640px) → 3 (1024px) → 4 (1536px) → 5 (1800px); cards stay ≥ ~290px wide.
    Until "Show all" (.is-more — also set while searching) a group shows 3 files on phones and
    two full rows above that (4 · 6 · 8 · 10). The button's own visibility (gvr.njk) uses the
-   same steps. Folding needs .is-js (added by Alpine), so without JavaScript every file shows. */
+   same steps. Folding needs html.js (set in <head>, so groups are folded from the first paint),
+   so without JavaScript every file shows. */
 .read-kit-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.75rem; }
+/* The groups of a kit share one grid with the same columns and gap as the files, so a small group
+   (.is-small: 1–2 cards, gvr.njk) spans just its cards and the next small group sits beside it;
+   every other group spans the row. */
+.read-kit-groups { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2rem 0.75rem; }
+.read-kit-groups > .read-kit-group { grid-column: 1 / -1; min-width: 0; }
+@media (width >= 40rem) {
+  .read-kit-groups { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .read-kit-groups > .is-n1 { grid-column: span 1; }
+  .read-kit-groups > .is-small .read-kit-grid { grid-template-columns: repeat(var(--kn, 2), minmax(0, 1fr)); }
+  .read-kit-groups > .is-n1 { --kn: 1; }
+}
+@media (width >= 64rem) {
+  .read-kit-groups { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .read-kit-groups > .is-n2 { grid-column: span 2; }
+}
+@media (width >= 96rem) { .read-kit-groups { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (width >= 112.5rem) { .read-kit-groups { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
 @media (width >= 40rem) { .read-kit-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (width >= 64rem) { .read-kit-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (width >= 96rem) { .read-kit-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 @media (width >= 112.5rem) { .read-kit-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
-@media (width < 40rem) { .read-kit-group.is-js:not(.is-more) .read-kit-grid > li:nth-child(n+4) { display: none; } }
-@media (40rem <= width < 64rem) { .read-kit-group.is-js:not(.is-more) .read-kit-grid > li:nth-child(n+5) { display: none; } }
-@media (64rem <= width < 96rem) { .read-kit-group.is-js:not(.is-more) .read-kit-grid > li:nth-child(n+7) { display: none; } }
-@media (96rem <= width < 112.5rem) { .read-kit-group.is-js:not(.is-more) .read-kit-grid > li:nth-child(n+9) { display: none; } }
-@media (width >= 112.5rem) { .read-kit-group.is-js:not(.is-more) .read-kit-grid > li:nth-child(n+11) { display: none; } }
+@media (width < 40rem) { :root.js .read-kit-group:not(.is-more) .read-kit-grid > li:nth-child(n+4) { display: none; } }
+@media (40rem <= width < 64rem) { :root.js .read-kit-group:not(.is-more) .read-kit-grid > li:nth-child(n+5) { display: none; } }
+@media (64rem <= width < 96rem) { :root.js .read-kit-group:not(.is-more) .read-kit-grid > li:nth-child(n+7) { display: none; } }
+@media (96rem <= width < 112.5rem) { :root.js .read-kit-group:not(.is-more) .read-kit-grid > li:nth-child(n+9) { display: none; } }
+@media (width >= 112.5rem) { :root.js .read-kit-group:not(.is-more) .read-kit-grid > li:nth-child(n+11) { display: none; } }
 
 /* ---------- GVR checklist ----------
    One column; two when the checklist card is at least 56rem wide (its @container), filled

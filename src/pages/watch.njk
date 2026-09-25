@@ -21,8 +21,8 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
 {%- set subscribeUrl = ("https://www.youtube.com/channel/" + ch.id + "?sub_confirmation=1") if ch.id else channelUrl -%}
 {%- set vids = db.videos | mediaItems("videos") -%}
 {%- set featured = vids | mediaFeaturedVideo -%}
-{%- set kinds = vids | mediaCount("videoKind") -%}
-{%- set vlangs = vids | mediaCount("videoLang") -%}
+{#- (the kind / language counts come from gridVids below: the list the chips filter — the featured
+    video sits above it and is not in it — so the hero, the chips and "Showing 24 of N" agree) -#}
 {#- channel playlists (videos.json `playlists`, titles in the page language; Spanish ones = La Viña) -#}
 {%- set pls = db.videos | mediaPlaylists(vids, lang) -%}
 {%- set plGroups = pls | mediaPlaylistGroups(lang) -%}
@@ -30,6 +30,8 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
 {#- The grid skips the featured video (it is right above it); media.js videoPage skips it too. -#}
 {%- set fid0 = (featured.extra.video_id or (featured.id | replace("yt:", ""))) if featured else "" -%}
 {%- set gridVids = vids | mediaWithout(featured) -%}
+{%- set kinds = gridVids | mediaCount("videoKind") -%}
+{%- set vlangs = gridVids | mediaCount("videoLang") -%}
 {%- set ssr = gridVids | limit(24) -%}
 {#- The weekly open meetings in one short line ("Wednesdays (English) and Thursdays (Spanish)"), linking
     to their one home, /meetings/#weekly-open, where the times and Zoom details are -#}
@@ -113,7 +115,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
   </div>
   {% if vids.length %}
   {{ ui.heroStats([
-    { value: vids.length | mediaNumber(lang), label: "media.stat_videos" | t(lang) },
+    { value: gridVids.length | mediaNumber(lang), label: "media.stat_videos" | t(lang) },
     { value: kinds.weekly or "", label: "media.stat_weekly_open" | t(lang) },
     { value: plTotal if plTotal > 1 else "", label: "media.stat_playlists" | t(lang) }
   ]) }}
@@ -220,7 +222,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
         </label>
         {% if vlangs.gv and vlangs.lv %}
         <div class="flex shrink-0 gap-1 rounded-full border border-line bg-surface-2 p-1" role="group" aria-label="{{ 'media.filter_lang' | t(lang) }}">
-          <button type="button" class="chip border-transparent bg-transparent" :aria-pressed="(vlang === '').toString()" aria-pressed="true" @click="vlang = ''">{{ "media.all_langs" | t(lang) }}</button>
+          <button type="button" class="chip border-transparent bg-transparent" :aria-pressed="(vlang === '').toString()" aria-pressed="true" @click="vlang = ''">{{ "common.all" | t(lang) }}</button>
           <button type="button" class="chip border-transparent bg-transparent" :aria-pressed="(vlang === 'gv').toString()" aria-pressed="false" @click="vlang = vlang === 'gv' ? '' : 'gv'" lang="en">{{ "media.lang_en" | t(lang) }} <span class="media-chip-n">{{ vlangs.gv }}</span></button>
           <button type="button" class="chip border-transparent bg-transparent" :aria-pressed="(vlang === 'lv').toString()" aria-pressed="false" @click="vlang = vlang === 'lv' ? '' : 'lv'" lang="es">{{ "media.lang_es" | t(lang) }} <span class="media-chip-n">{{ vlangs.lv }}</span></button>
         </div>
@@ -231,7 +233,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
       <div class="flex min-w-0 items-center gap-2" role="group" aria-label="{{ 'media.filter_collection' | t(lang) }}">
         <span class="hidden w-16 shrink-0 text-xs font-semibold tracking-wider text-faint uppercase md:inline">{{ "media.filter_collection" | t(lang) }}</span>
         <div class="chip-row flex-1">
-          <button type="button" class="chip" :aria-pressed="(coll === '').toString()" aria-pressed="true" @click="coll = ''">{{ "media.all_collections" | t(lang) }}</button>
+          <button type="button" class="chip" :aria-pressed="(coll === '').toString()" aria-pressed="true" @click="coll = ''">{{ "common.all" | t(lang) }}</button>
           {% if kinds.weekly %}<button type="button" class="chip" :aria-pressed="(coll === 'weekly').toString()" aria-pressed="false" @click="setColl('weekly')">{% icon "users", "size-4" %}{{ "media.kind_weekly" | t(lang) }} <span class="media-chip-n">{{ kinds.weekly }}</span></button>{% endif %}
           {% if kinds.podcast %}<button type="button" class="chip" :aria-pressed="(coll === 'podcast').toString()" aria-pressed="false" @click="setColl('podcast')">{% icon "headphones", "size-4" %}{{ "media.kind_podcast" | t(lang) }} <span class="media-chip-n">{{ kinds.podcast }}</span></button>{% endif %}
           {% if kinds.short %}<button type="button" class="chip" :aria-pressed="(coll === 'short').toString()" aria-pressed="false" @click="setColl('short')">{% icon "smartphone", "size-4" %}{{ "media.kind_short" | t(lang) }} <span class="media-chip-n">{{ kinds.short }}</span></button>{% endif %}
@@ -308,7 +310,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
 </div>
 
 {#- ------------------------------------------------------------ tell your group -#}
-{{ media.shareBlock(lang, "watch-share-title", "media.share_watch_text" | t(lang), "media.watch_announcement" | t(lang, { url: page.url | siteUrl(site) }), page.url | siteUrl(site), "media.watch_eyebrow" | t(lang), "media.watch_sub" | t(lang)) }}
+{{ media.shareBlock(lang, "watch-share-title", "media.share_watch_text" | t(lang), "media.watch_announcement" | t(lang, { url: page.url | siteUrl(site) }), page.url | siteUrl(site), "media.watch_share_title" | t(lang), "media.watch_sub" | t(lang)) }}
 {% else %}
 <section class="container-page page-start">
   {{ ui.emptyState("circle-play", "media.empty_videos_title" | t(lang), "media.empty_videos_text" | t(lang), channelUrl, "media.watch_on_yt" | t(lang)) }}

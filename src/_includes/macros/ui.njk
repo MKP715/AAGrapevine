@@ -66,7 +66,7 @@
       sticky-aside / sticky-aside-xl   the ONLY sticky side column (from 1024 / 1280px, windows ≥ 640px
                      tall, never taller than the window). Nothing else sticks (main.css "Sticky rules").
     ── Small components (main.css) ──
-      chip-row (scrolls on phones, wraps from 1024) · chip-row-nowrap (never wraps) · meta-row
+      chip-row (scrolls on phones, wraps from 1024) · chip-row-nowrap (never wraps: sticky bars) · meta-row
       (date · show · time, dots drawn by CSS) · card-h (panel title with icon) · step-num (28px
       numbered circle) · panel-muted (flat note panel) · section-band (tinted full-width band, with
       "section") · tap-link (44px standalone link on touch) · btn-sm and chip are 44px on phones.
@@ -90,7 +90,15 @@
         <div class="container-page page-overlap">{{ ui.pageNav([
           { href: "#botm", label: "Book of the Month", icon: "book-open" },
           { href: "#magazines", label: "Magazines" } ], lang) }}</div>
-      A card: "On this page" (from 1280px) + one row of chips that never wraps. opts: label, class.
+      A card: "On this page" (from 1280px) + one row of chips (scrolls on phones, wraps from
+      1024px). opts: label, class.
+
+    ── Page-level "nothing yet" — ui.pageEmpty(icon, title, text, opts=null) ──
+        {{ ui.pageEmpty("folder-open", "Nothing here yet", "Reports and notes will show up here.", { id: "docs-empty" }) }}
+      One solid card for visitors: the icon in a soft circle, an h2 and ONE sentence. The one
+      visitor action lives in the hero (btn-light) — never repeated here; the committee how-to goes
+      in ui.memberHelp. opts: id (on the h2), tone ("lv" / "vine" / "grape"; default gv), class.
+      (A list with no results uses ui.emptyState instead: dashed, small, "Clear filters".)
 
     ── Freshness — ui.freshness(date, lang, opts=null) — at most once per page, next to its list ──
         {{ ui.freshness(site.built, lang) }}                  → "Updated 2 hours ago"
@@ -180,12 +188,14 @@
 
 {#- In-page navigation for long pages: <div class="container-page page-overlap">{{ ui.pageNav(items, lang) }}</div>
     items = [{ href: "#botm", label: "Book of the Month", icon: "book-open" }, …] (icon optional;
-    items without an href are skipped). opts: { label, class }. Never sticky. -#}
+    items without an href are skipped). opts: { label, class }. Never sticky. The chips are one line
+    that scrolls sideways on phones and tablets and wrap from 1024px (chip-row), so on a desktop
+    every section is always in view — nothing hides behind the fade. -#}
 {% macro pageNav(items, lang, opts=null) %}
 {%- set o = opts or {} -%}{%- set lbl = o.label or ("common.on_this_page" | t(lang)) -%}
 <nav class="page-nav card{{ (' ' ~ o.class) if o.class }}" aria-label="{{ lbl }}">
   <p class="page-nav-label" aria-hidden="true">{% icon "list", "size-4 shrink-0" %} {{ lbl }}</p>
-  <ul class="chip-row-nowrap" role="list">
+  <ul class="chip-row flex-1" role="list">
     {%- for it in items %}{% if it.href %}
     <li><a class="chip" href="{{ it.href }}">{% if it.icon %}{% icon it.icon, "size-4 shrink-0" %}{% endif %}{{ it.label }}</a></li>
     {%- endif %}{% endfor %}
@@ -199,7 +209,7 @@
     With no date and note: true it says only "We keep it updated regularly". -#}
 {% macro freshness(date, lang, opts=null) %}
 {%- set o = opts or {} -%}
-{%- if date %}<p class="freshness{{ (' ' ~ o.class) if o.class }}">{% icon "refresh-cw", "size-3.5 shrink-0" %}<span>{{ "common.updated" | t(lang) }} <time datetime="{{ date | isoDate }}" data-relative>{{ date | fmtDate(lang, "medium") }}</time>{% if o.note %} · {{ "common.kept_updated" | t(lang) }}{% endif %}</span></p>
+{%- if date %}<p class="freshness{{ (' ' ~ o.class) if o.class }}">{% icon "refresh-cw", "size-3.5 shrink-0" %}<span>{{ "common.updated" | t(lang) }} <time datetime="{{ date | isoDate }}" data-relative>{{ date | fmtDate(lang, "short") }}</time>{% if o.note %} · {{ "common.kept_updated" | t(lang) }}{% endif %}</span></p>
 {%- elif o.note %}<p class="freshness{{ (' ' ~ o.class) if o.class }}">{% icon "refresh-cw", "size-3.5 shrink-0" %}<span>{{ "common.kept_updated" | t(lang) }}</span></p>{% endif -%}
 {% endmacro %}
 
@@ -236,6 +246,16 @@
 {% endmacro %}
 
 {#- Empty state box -#}
+{#- Page-level "nothing yet" (Documents, Photos, Announcements): see the header comment. -#}
+{% macro pageEmpty(icon, title, text="", opts=null) %}
+{%- set o = opts or {} -%}
+<section class="card page-empty{{ (' is-' ~ o.tone) if o.tone }}{{ (' ' ~ o.class) if o.class }}"{% if o.id %} aria-labelledby="{{ o.id }}"{% endif %}>
+  <span class="page-empty-icon" aria-hidden="true">{% icon icon, "size-8" %}</span>
+  <h2{% if o.id %} id="{{ o.id }}"{% endif %} class="h-section mt-7 text-balance">{{ title }}</h2>
+  {% if text %}<p class="mx-auto mt-3 max-w-xl leading-relaxed text-muted">{{ text }}</p>{% endif %}
+</section>
+{% endmacro %}
+
 {% macro emptyState(icon, title, text="", ctaHref="", ctaLabel="") %}
 <div class="empty-state">
   <span class="mx-auto mb-3 grid size-12 place-items-center rounded-full bg-surface-2 text-faint">{% icon icon, "size-6" %}</span>

@@ -21,6 +21,8 @@
   font-size: 0.875rem; font-weight: 500; line-height: 1.2; color: var(--c-ink);
   cursor: pointer; user-select: none; transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
 }
+/* phones and touch screens: 44px, like the shared chip */
+@media (width < 40rem), (pointer: coarse) { .pw-chip { min-height: 2.75rem; } }
 .pw-chip:hover { border-color: var(--c-gv); }
 .pw-chip:has(> input:checked) { border-color: var(--c-gv); background: var(--c-gv); color: #fff; }
 [data-theme="dark"] .pw-chip:has(> input:checked) { color: var(--c-paper); }

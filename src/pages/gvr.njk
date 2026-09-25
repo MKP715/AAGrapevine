@@ -66,9 +66,20 @@ pageScripts: ["/assets/js/read.js"]
     <a class="btn-on-dark btn-sm" href="{{ L.rlv_resources if isLv else L.gvr_resources }}" target="_blank" rel="noopener">{{ "read.gvr.official_page" | t(lang) }} {% icon "arrow-up-right", "size-4" %}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a>
   </div>
   {% if items.length %}
-  <div class="mt-5 space-y-8">
-    {% for g in items | readKitGroups %}
-    <div role="group" class="read-kit-group" x-data="{ more: false }" :class="{ 'is-js': true, 'is-more': more || q }" x-show="groupHas($el)" aria-labelledby="kit-{{ kit }}-{{ g.key }}">
+  {#- The groups share one grid with the files' columns (read.css .read-kit-groups): a group of one
+      or two cards (the Shop pointers: news & catalogs, order forms) takes just that many columns,
+      and those two come first, so they sit side by side instead of each leaving empty columns. -#}
+  {%- set gs = items | readKitGroups -%}
+  {%- set ordered = [] -%}
+  {%- for key in ["news", "forms", "guides", "flyers", "other"] %}{% for g in gs %}{% if g.key == key and ordered.push(g) %}{% endif %}{% endfor %}{% endfor -%}
+  {%- for g in gs %}{% if g.key not in ["news", "forms", "guides", "flyers", "other"] and ordered.push(g) %}{% endif %}{% endfor -%}
+  <div class="read-kit-groups mt-5">
+    {% for g in ordered %}
+    {#- cards shown: the forms pointer = 1; news = its files + one "Catalogs: in the Shop" card -#}
+    {%- set cats = [] -%}
+    {%- if g.key == "news" %}{% for p in g.items %}{% if ("catalog" in (p.tags or []) or r/cat[aá]logo/i.test(p.title or "")) and cats.push(1) %}{% endif %}{% endfor %}{% endif -%}
+    {%- set nt = 1 if g.key == "forms" else (g.items.length - (cats | length) + (1 if cats | length else 0)) -%}
+    <div role="group" class="read-kit-group{{ (' is-small is-n' ~ nt) if nt <= 2 }}" x-data="{ more: false }" :class="{ 'is-js': true, 'is-more': more || q }" x-show="groupHas($el)" aria-labelledby="kit-{{ kit }}-{{ g.key }}">
       <h4 id="kit-{{ kit }}-{{ g.key }}" class="mb-3 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.12em] text-muted">
         <span class="{{ 'text-lv' if isLv else 'text-gv' }}">{% icon groupIcons[g.key], "size-4" %}</span>{{ ("read.gvr.g_" + g.key) | t(lang) }}
         <span class="badge-muted normal-case tracking-normal">{{ g.items.length }}</span>

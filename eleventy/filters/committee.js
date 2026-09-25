@@ -1199,45 +1199,25 @@ export function dayRunLabel(days, lang = "en") {
 }
 
 /**
- * How the region blocks of /meetings/#grapevine-meetings share the card columns, so no row is left
- * with an empty column. The regions grid has 12 sub-columns; the cards show 2, 3 or 4 per row
- * (from 640 / 1280 / 1800px — committee.css .cm-gvg-regions). For each of those column counts C:
- *  · a region with C or more cards fills whole rows (C cards of 12/C sub-columns); a last row that
- *    is not full is stretched: its t cards get 12/t sub-columns each;
- *  · smaller regions share a row, in order, while their cards fit; the cards of such a row
- *    (k of them, k < C) are stretched to 12/k sub-columns each, so the row is always full.
- * Sets region.span = { s2, s3, s4 } (sub-columns of the region) and place.span (of each card), and
- * region.span.h1…h4: the grid rows the region takes (its head + 4 per row of cards: every card's
- * place · name · types · body sit on rows shared across the regions grid, so cards side by side
- * always line up). committee.js (cmGvMeetings) runs the same rules on the cards left after filtering.
+ * How the region blocks of /meetings/#grapevine-meetings share the card columns. The regions grid has
+ * 12 sub-columns and the cards show 2, 3 or 4 per row (from 640 / 1280 / 1800px — committee.css
+ * .cm-gvg-regions); EVERY card is one column wide (12 / C sub-columns) at every width, so the whole
+ * list reads as one even grid — a card is never stretched. For each column count C:
+ *  · a region with C or more cards takes the whole row (12 sub-columns); its last row fills from the
+ *    left, like any card grid;
+ *  · smaller regions (fewer than C cards) take just their cards' width (n × 12 / C), so the next small
+ *    region can sit beside them on the same row (CSS auto-placement puts it there when it fits).
+ * Sets region.span = { s2, s3, s4 } (sub-columns of the region) and region.span.h1…h4: the grid rows
+ * the region takes (its head + 4 per row of cards: every card's place · name · types · body sit on
+ * rows shared across the regions grid, so cards side by side always line up).
+ * committee.js (cmGvMeetings) runs the same rules on the cards left after filtering.
  */
 export function packRegions(regions) {
-  for (const r of regions) { r.span = {}; for (const p of r.places) p.span = {}; }
   for (const r of regions) {
     const n = r.places.length;
-    for (const C of [1, 2, 3, 4]) r.span["h" + C] = 1 + 4 * (n >= C ? Math.ceil(n / C) : 1);
-  }
-  for (const C of [2, 3, 4]) {
-    const key = "s" + C;
-    let row = [], k = 0;
-    const close = () => {
-      for (const r of row) { const w = 12 / k; r.span[key] = r.places.length * w; for (const p of r.places) p.span[key] = w; }
-      row = []; k = 0;
-    };
-    for (const r of regions) {
-      const n = r.places.length;
-      if (!n) continue;
-      if (n >= C) {
-        close();
-        const t = n % C;
-        r.span[key] = 12;
-        r.places.forEach((p, j) => { p.span[key] = t && j >= n - t ? 12 / t : 12 / C; });
-      } else {
-        if (k + n > C) close();
-        row.push(r); k += n;
-      }
-    }
-    close();
+    r.span = {};
+    for (const C of [1, 2, 3, 4]) r.span["h" + C] = 1 + 4 * Math.max(1, Math.ceil(n / C));
+    for (const C of [2, 3, 4]) r.span["s" + C] = n && n < C ? (n * 12) / C : 12;
   }
   return regions;
 }
@@ -1626,8 +1606,8 @@ export default function (eleventyConfig, helpers) {
     ];
     return `
 <div class="card cm-subscribe relative overflow-hidden card-pad">
-  <p class="eyebrow flex items-center gap-2 text-gv">${icon("calendar-sync", "size-4 shrink-0")}<span>${esc(t("committee.sub.eyebrow", L))}</span></p>
-  <h2 class="mt-2 font-display text-2xl font-semibold leading-tight text-ink text-balance">${esc(t("committee.sub.title", L))}</h2>
+  <p class="eyebrow text-gv">${esc(t("committee.sub.eyebrow", L))}</p>
+  <h2 class="card-h mt-2"><span>${icon("calendar-sync", "size-5")}</span>${esc(t("committee.sub.title", L))}</h2>
   <p class="mt-2 text-sm leading-relaxed text-muted">${esc(t("committee.sub.text", L))}</p>
   <div class="mt-5 grid gap-2">
     ${rows.map((r) => `
@@ -1653,7 +1633,12 @@ export default function (eleventyConfig, helpers) {
   eleventyConfig.addShortcode("committeeNav", function (lang, current, db) {
     const L = lang || "en";
     const n = {
-      events: EMPTY ? 0 : normalizeEvents(db?.events?.items || [], {}, L, { monthsBack: 0, monthsAhead: 0 }).filter((e) => !e.past && !e.committee).length,
+      // upcoming events as /events/ lists them: a monthly series counts once (cmCollapseRecurring)
+      events: EMPTY ? 0 : (() => {
+        const seen = new Set();
+        return normalizeEvents(db?.events?.items || [], {}, L, { monthsBack: 0, monthsAhead: 0 })
+          .filter((e) => !e.past && !e.committee && !(e.recurring && e.series && (seen.has(e.series) || !seen.add(e.series)))).length;
+      })(),
       documents: documentTabs(EMPTY ? [] : db?.drive?.items, L).total,
       photos: photoAlbums(EMPTY ? [] : db?.drive?.items, L).reduce((s, a) => s + a.count, 0),
       announcements: announcementList(EMPTY ? [] : db?.announcements?.items).length,

@@ -84,12 +84,13 @@ pageScripts: ["/assets/js/community.js"]
          data-day-one="{{ 'community.wn.day_items_one' | t(lang) }}" data-day-many="{{ 'community.wn.day_items' | t(lang) }}">
 
       {% if days | length %}
-      {#- Filter chips (JS only — hidden without JS since they would do nothing) -#}
-      <div class="cm-chipbar -mx-4 mb-4 bg-paper/90 px-4 py-2.5 backdrop-blur sm:mx-0 sm:px-0 2xl:mb-0 2xl:bg-transparent 2xl:py-0 2xl:backdrop-blur-none" x-cloak>
+      {#- Filter chips (JS only — hidden without JS since they would do nothing; community.css keys
+          that on html.js, so the bar is there from the first paint and the feed never jumps) -#}
+      <div class="cm-chipbar -mx-4 mb-4 bg-paper/90 px-4 py-2.5 backdrop-blur sm:mx-0 sm:px-0 2xl:mb-0 2xl:bg-transparent 2xl:py-0 2xl:backdrop-blur-none">
         <p id="wn-filter-title" class="eyebrow mb-3 hidden 2xl:block">{{ "community.wn.filter_aria" | t(lang) }}</p>
         <div class="cm-chips chip-row-nowrap" role="group" aria-labelledby="wn-filter-title">
           <button type="button" class="chip" :aria-pressed="(filter === '').toString()" aria-pressed="true" @click="setFilter('')">
-            {{ "community.wn.all" | t(lang) }} <span class="cm-wn-count">{{ items | length }}</span>
+            {{ "common.all" | t(lang) }} <span class="cm-wn-count">{{ items | length }}</span>
           </button>
           {% for c in chips %}
           <button type="button" class="chip" :aria-pressed="(filter === '{{ c.key }}').toString()" aria-pressed="false" @click="setFilter('{{ c.key }}')">
@@ -110,9 +111,10 @@ pageScripts: ["/assets/js/community.js"]
         <li class="cm-day" data-day="{{ day.ymd }}" data-counts="{{ day.counts | json }}" data-total="{{ day.total }}" data-icounts="{{ day.itemCounts | json }}" data-itotal="{{ day.itemTotal }}"
             x-show="dayShown('{{ day.ymd }}')"{% if loop.index0 >= DAYS_INITIAL %} x-cloak{% endif %}>
           <h2 class="cm-day-head mb-3 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-            <span class="font-display text-xl font-semibold text-ink sm:text-2xl">
-              <span class="cm-rel text-gv" data-rel-day="{{ day.ymd }}"></span>{{ day.label or ("community.wn.undated" | t(lang)) }}
-            </span>
+            <span class="font-display text-xl font-semibold text-ink sm:text-2xl">{{ day.label or ("community.wn.undated" | t(lang)) }}</span>
+            {#- "Today" / "Yesterday" (community.js, the visitor's own date): a small badge beside the
+                count, so filling it in never re-wraps the heading (no layout shift) -#}
+            <span class="cm-rel badge-gv self-center py-0" data-rel-day="{{ day.ymd }}"></span>
             {#- follows the type filter (e.g. "1 update" when only podcasts are shown); the build-time text is the unfiltered count -#}
             <span class="text-sm text-muted" x-text="dayLabel('{{ day.ymd }}')">{{ ("community.wn.day_items_one" if day.itemTotal == 1 else "community.wn.day_items") | t(lang, { n: day.itemTotal }) }}</span>
           </h2>
@@ -207,8 +209,8 @@ pageScripts: ["/assets/js/community.js"]
                 {#- one entry for the episode and its YouTube upload: listen or watch -#}
                 {%- set vHref = it._twin | cmHref(lang) -%}
                 <p class="mt-1 flex flex-wrap items-center gap-x-4 text-xs font-semibold">
-                  {% if href %}<a class="relative z-10 inline-flex min-h-11 items-center gap-1.5 text-gv hover:underline sm:min-h-8" href="{{ href }}"{% if it._ext %} target="_blank" rel="noopener"{% endif %}>{{ ic("headphones", "size-3.5") }} {{ "nav.listen" | t(lang) }}{% if it._ext %}<span class="sr-only"> {{ "community.new_tab" | t(lang) }}</span>{% endif %}</a>{% endif %}
-                  {% if vHref %}<a class="relative z-10 inline-flex min-h-11 items-center gap-1.5 text-gv hover:underline sm:min-h-8" href="{{ vHref }}" target="_blank" rel="noopener">{{ ic("youtube", "size-3.5") }} {{ "nav.watch" | t(lang) }}<span class="sr-only"> {{ "community.new_tab" | t(lang) }}</span></a>{% endif %}
+                  {% if href %}<a class="relative z-10 inline-flex min-h-11 min-w-11 items-center gap-1.5 text-gv hover:underline sm:min-h-8" href="{{ href }}"{% if it._ext %} target="_blank" rel="noopener"{% endif %}>{{ ic("headphones", "size-3.5") }} {{ "nav.listen" | t(lang) }}{% if it._ext %}<span class="sr-only"> {{ "community.new_tab" | t(lang) }}</span>{% endif %}</a>{% endif %}
+                  {% if vHref %}<a class="relative z-10 inline-flex min-h-11 min-w-11 items-center gap-1.5 text-gv hover:underline sm:min-h-8" href="{{ vHref }}" target="_blank" rel="noopener">{{ ic("youtube", "size-3.5") }} {{ "nav.watch" | t(lang) }}<span class="sr-only"> {{ "community.new_tab" | t(lang) }}</span></a>{% endif %}
                 </p>
                 {% endif %}
               </div>
@@ -269,7 +271,7 @@ pageScripts: ["/assets/js/community.js"]
     <aside id="subscribe" class="cm-wn-aside sticky-aside-xl" aria-labelledby="subscribe-title">
       <div class="cm-wn-sub card overflow-hidden">
         <div class="cm-wn-sub-head px-5 pb-3 pt-4">
-          <h2 id="subscribe-title" class="flex items-center gap-2 font-display text-xl font-semibold text-ink">{% icon "bell", "size-5 text-gv" %} {{ "community.sub.title" | t(lang) }}</h2>
+          <h2 id="subscribe-title" class="card-h"><span>{% icon "bell", "size-5" %}</span>{{ "community.sub.title" | t(lang) }}</h2>
           <p class="mt-1 text-sm text-muted">{{ "community.sub.text" | t(lang) }}</p>
         </div>
         <ul class="cm-wn-sub-list divide-y divide-line border-t border-line" role="list">

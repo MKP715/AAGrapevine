@@ -25,7 +25,7 @@
         <h2 class="eyebrow mb-2 font-sans sm:mb-3">{{ "footer.explore" | t(L) }}</h2>
         <ul class="grid gap-y-0 sm:gap-y-2">
           {%- for item in nav.primary %}{% if not item.children %}
-          <li class="flex"><a class="inline-flex min-h-11 items-center hover:text-gv sm:min-h-0" href="{{ item.url | lurl(L) }}"{% if pageKey == item.page %} aria-current="page"{% endif %}>{{ item.key | t(L) }}</a></li>
+          <li class="flex"><a class="inline-flex min-h-11 min-w-11 items-center hover:text-gv sm:min-h-0 sm:min-w-0" href="{{ item.url | lurl(L) }}"{% if pageKey == item.page %} aria-current="page"{% endif %}>{{ item.key | t(L) }}</a></li>
           {%- endif %}{% endfor %}
         </ul>
       </div>

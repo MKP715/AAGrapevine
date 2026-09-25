@@ -86,16 +86,17 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
             <p class="mt-1 text-sm font-semibold text-ink"><time datetime="{{ r.deadline }}" class="read-deadline-date">{{ r.deadline | fmtDate(lang, "medium") }}</time> · <span data-days-label>{{ dueText(r, lang) }}</span></p>
           </div>
         </div>
-        {% if r.summary %}<p class="mt-3 line-clamp-4 text-sm leading-relaxed text-muted" lang="{{ r.summaryLang }}">{{ r.summary }}</p>{% endif %}
+        {% if r.summary %}<p class="mt-3 line-clamp-3 text-sm leading-relaxed text-muted" lang="{{ r.summaryLang }}">{{ r.summary }}</p>{% endif %}
         {% if r.summaryMachine %}<p class="auto-note mt-2" title="{{ 'common.auto_translated_help' | t(lang) }}">{% icon "languages", "size-3" %} {{ "common.auto_translated" | t(lang) }}</p>{% endif %}
       </div>
     {% endfor %}
     {% if restRows.length %}
-    {#- the next deadline + 4 more; the rest behind "Show all N deadlines" -#}
+    {#- the next deadline + 3 more; the rest behind "Show all N deadlines" (so the Grapevine card
+        ends close to La Viña's beside it) -#}
     <div class="grid grid-cols-1 gap-x-4 gap-y-1 @2xl:grid-cols-2">
-      {% for r in restRows | limit(4) %}{{ dlRow(r, lang, isLv) }}{% endfor %}
+      {% for r in restRows | limit(3) %}{{ dlRow(r, lang, isLv) }}{% endfor %}
     </div>
-    {% if restRows.length > 4 %}
+    {% if restRows.length > 3 %}
     <details class="read-more group/dl">
       <summary class="btn-ghost btn-sm cursor-pointer {{ 'text-lv' if isLv else 'text-gv' }}">
         <span class="group-open/dl:hidden">{{ "read.contrib.all_deadlines" | t(lang, {n: ed.upcoming.length}) }}</span>
@@ -103,29 +104,32 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
         {% icon "chevron-down", "size-4 transition group-open/dl:rotate-180" %}
       </summary>
       <div class="mt-1 grid grid-cols-1 gap-x-4 gap-y-1 @2xl:grid-cols-2">
-        {% for r in restRows | offset(4) %}{{ dlRow(r, lang, isLv) }}{% endfor %}
+        {% for r in restRows | offset(3) %}{{ dlRow(r, lang, isLv) }}{% endfor %}
       </div>
     </details>
     {% endif %}
     {% endif %}
 
     {% if ed.evergreen.length %}
-    {%- set EV_SHOW = 8 -%}
+    {#- 8 topics on phones and tablets; 12 from 1024px, where the card sits beside Grapevine's
+        deadlines (topics 9–12 are in both lists: shown in this one from 1024px, in "Show all"
+        below that) -#}
+    {%- set EV_SHOW = 8 -%}{%- set EV_WIDE = 12 -%}
     <div class="{{ 'mt-1 border-t border-line pt-4' if ed.upcoming.length }}">
       <p class="flex items-center gap-2 font-semibold text-ink"><span class="{{ 'text-lv' if isLv else 'text-gv' }}">{% icon "feather", "size-5" %}</span>{{ "read.contrib.evergreen_title" | t(lang) }}</p>
       <p class="mt-0.5 text-sm text-muted">{{ ("read.contrib.evergreen_sub_lv" if isLv else "read.contrib.evergreen_sub_gv") | t(lang) }}</p>
       <ul class="mt-3 grid grid-cols-1 gap-2 @md:grid-cols-2 @4xl:grid-cols-3">
-        {% for r in ed.evergreen | limit(EV_SHOW) %}{{ topicChip(r, lang, isLv) }}{% endfor %}
+        {% for r in ed.evergreen | limit(EV_WIDE) %}{{ topicChip(r, lang, isLv, "hidden lg:flex" if loop.index > EV_SHOW else "") }}{% endfor %}
       </ul>
       {% if ed.evergreen.length > EV_SHOW %}
-      <details class="read-more group/ev mt-2">
+      <details class="read-more group/ev mt-2{{ ' lg:hidden' if ed.evergreen.length <= EV_WIDE }}">
         <summary class="btn-ghost btn-sm cursor-pointer {{ 'text-lv' if isLv else 'text-gv' }}">
           <span class="group-open/ev:hidden">{{ "read.contrib.all_topics" | t(lang, {n: ed.evergreen.length}) }}</span>
           <span class="hidden group-open/ev:inline">{{ "common.show_less" | t(lang) }}</span>
           {% icon "chevron-down", "size-4 transition group-open/ev:rotate-180" %}
         </summary>
         <ul class="mt-1 grid grid-cols-1 gap-2 @md:grid-cols-2 @4xl:grid-cols-3">
-          {% for r in ed.evergreen | offset(EV_SHOW) %}{{ topicChip(r, lang, isLv) }}{% endfor %}
+          {% for r in ed.evergreen | offset(EV_SHOW) %}{{ topicChip(r, lang, isLv, "flex lg:hidden" if loop.index <= EV_WIDE - EV_SHOW else "") }}{% endfor %}
         </ul>
       </details>
       {% endif %}
@@ -160,8 +164,8 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
 {% endmacro %}
 
 {#- One open-ended suggested topic -#}
-{% macro topicChip(r, lang, isLv) %}
-<li class="flex items-start gap-2.5 rounded-xl bg-surface-2 px-3 py-2.5">
+{% macro topicChip(r, lang, isLv, show="") %}
+<li class="{{ show or 'flex' }} items-start gap-2.5 rounded-xl bg-surface-2 px-3 py-2.5">
   <span class="mt-0.5 shrink-0 {{ 'text-lv' if isLv else 'text-gv' }}">{% icon "pen-line", "size-4" %}</span>
   <span class="min-w-0">
     <span class="block text-sm font-semibold leading-snug text-ink" lang="{{ r.themeLang }}">{{ r.theme }}{% if r.machine %} <span class="auto-note align-middle" title="{{ 'common.auto_translated' | t(lang) }} — {{ 'common.auto_translated_help' | t(lang) }}">{% icon "languages", "size-3" %}<span class="sr-only">{{ "common.auto_translated" | t(lang) }}</span></span>{% endif %}</span>
@@ -189,7 +193,7 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
         <p class="text-xs font-semibold uppercase tracking-wider text-muted">{{ "read.contrib.by_email" | t(lang) }}</p>
         <div class="mt-1 flex items-center justify-between gap-2">
           <a class="link tap-link min-w-0 break-all" href="mailto:{{ email }}">{{ email }}</a>
-          <button type="button" class="btn-ghost btn-sm -my-1 shrink-0 px-2.5!" data-copy="{{ email }}" aria-label="{{ 'common.copy' | t(lang) }}: {{ email }}">{% icon "copy", "size-4" %}</button>
+          <button type="button" class="btn-ghost btn-sm -my-1 min-w-11 shrink-0 px-2.5!" data-copy="{{ email }}" aria-label="{{ 'common.copy' | t(lang) }}: {{ email }}">{% icon "copy", "size-4" %}</button>
         </div>
       </dd>
     </div>
@@ -199,7 +203,7 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
         <p class="text-xs font-semibold uppercase tracking-wider text-muted">{{ "read.contrib.by_mail" | t(lang) }}</p>
         <div class="mt-1 flex items-start justify-between gap-2">
           <address class="min-w-0 not-italic text-ink">{{ mail }}</address>
-          <button type="button" class="btn-ghost btn-sm -my-1 shrink-0 px-2.5!" data-copy="{{ mail }}" aria-label="{{ 'common.copy' | t(lang) }}: {{ mail }}">{% icon "copy", "size-4" %}</button>
+          <button type="button" class="btn-ghost btn-sm -my-1 min-w-11 shrink-0 px-2.5!" data-copy="{{ mail }}" aria-label="{{ 'common.copy' | t(lang) }}: {{ mail }}">{% icon "copy", "size-4" %}</button>
         </div>
       </dd>
     </div>

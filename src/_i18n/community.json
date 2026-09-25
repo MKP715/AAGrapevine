@@ -30,7 +30,6 @@
   "community.wn.btn_subscribe": { "en": "Subscribe", "es": "Suscribirse" },
   "community.wn.btn_digest": { "en": "Weekly digest", "es": "Resumen semanal" },
   "community.wn.filter_aria": { "en": "Filter updates by type", "es": "Filtrar novedades por tipo" },
-  "community.wn.all": { "en": "Everything", "es": "Todo" },
   "community.wn.showing": { "en": "Showing {n} updates", "es": "Mostrando {n} novedades" },
   "community.wn.more_in_day": { "en": "Show {n} more from this day", "es": "Mostrar {n} más de este día" },
   "community.wn.older": { "en": "Show older updates", "es": "Ver novedades anteriores" },

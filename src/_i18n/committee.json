@@ -463,13 +463,17 @@
     "en": "Subscribe to calendar",
     "es": "Suscribirse al calendario"
   },
-  "committee.events.stat_upcoming": {
-    "en": "Upcoming events",
-    "es": "Próximos eventos"
-  },
   "committee.events.stat_next_meeting": {
     "en": "Next committee meeting",
     "es": "Próxima reunión del comité"
+  },
+  "committee.events.list_eyebrow": {
+    "en": "What's coming up",
+    "es": "Lo que viene"
+  },
+  "committee.events.list_sub": {
+    "en": "Filter by kind or jump to a month — and add any event to your calendar.",
+    "es": "Filtra por tipo o salta a un mes, y agrega cualquier evento a tu calendario."
   },
   "committee.events.upcoming": {
     "en": "Upcoming events",
@@ -530,6 +534,18 @@
   "committee.events.view_flyer_of": {
     "en": "View flyer: {title}",
     "es": "Ver volante: {title}"
+  },
+  "committee.events.cal_short": {
+    "en": "Calendar",
+    "es": "Calendario"
+  },
+  "committee.events.join_short": {
+    "en": "Join online",
+    "es": "Conectarse"
+  },
+  "committee.events.details_short": {
+    "en": "Details",
+    "es": "Detalles"
   },
   "committee.events.details": {
     "en": "Event details",
@@ -716,16 +732,16 @@
     "es": "Ver documentos"
   },
   "committee.docs.stat_files": {
-    "en": "Files",
-    "es": "Archivos"
+    "en": "files",
+    "es": "archivos"
   },
   "committee.docs.stat_folders": {
-    "en": "Categories",
-    "es": "Categorías"
+    "en": "categories",
+    "es": "categorías"
   },
   "committee.docs.stat_panel": {
-    "en": "Panel",
-    "es": "Panel"
+    "en": "panel",
+    "es": "panel"
   },
   "committee.docs.count": {
     "en": "{n} files",
@@ -764,8 +780,8 @@
     "es": "Un nuevo comienzo para el {panel}"
   },
   "committee.docs.empty_text": {
-    "en": "Reports, meeting notes, slides and workshop materials from the committee will show up here. Meanwhile, browse the official Grapevine and La Viña documents in our library.",
-    "es": "Aquí aparecerán los informes, notas, presentaciones y materiales de talleres del comité. Mientras tanto, explora los documentos oficiales de Grapevine y La Viña en nuestra biblioteca."
+    "en": "The committee's files for this panel will show up here as they're shared.",
+    "es": "Los archivos del comité para este panel aparecerán aquí a medida que se compartan."
   },
   "committee.docs.empty_where": {
     "en": "Where a file goes",
@@ -971,21 +987,17 @@
     "en": "Browse albums",
     "es": "Ver álbumes"
   },
-  "committee.photos.add_btn": {
-    "en": "Share photos",
-    "es": "Compartir fotos"
-  },
   "committee.photos.stat_albums": {
-    "en": "Albums",
-    "es": "Álbumes"
+    "en": "albums",
+    "es": "álbumes"
   },
   "committee.photos.stat_photos": {
-    "en": "Photos",
-    "es": "Fotos"
+    "en": "photos",
+    "es": "fotos"
   },
   "committee.photos.stat_videos": {
-    "en": "Videos",
-    "es": "Videos"
+    "en": "videos",
+    "es": "videos"
   },
   "committee.photos.albums": {
     "en": "Albums",
@@ -1052,8 +1064,8 @@
     "es": "Nuestros álbumes de fotos están listos para el nuevo panel"
   },
   "committee.photos.empty_text": {
-    "en": "Photos from booths, workshops and service events will show up here. Meanwhile, see Grapevine and La Viña on Instagram.",
-    "es": "Aquí aparecerán las fotos de mesas, talleres y eventos de servicio. Mientras tanto, mira Grapevine y La Viña en Instagram."
+    "en": "New albums will show up here as the committee shares them.",
+    "es": "Los nuevos álbumes aparecerán aquí a medida que el comité los comparta."
   },
   "committee.photos.empty_where": {
     "en": "Where photos go",
@@ -1350,6 +1362,22 @@
   "committee.gvm.f_nearby": {
     "en": "Include nearby areas",
     "es": "Incluir áreas cercanas"
+  },
+  "committee.gvm.f_more": {
+    "en": "Filters",
+    "es": "Filtros"
+  },
+  "committee.gvm.show_all_n": {
+    "en": "Show all {n} groups",
+    "es": "Ver los {n} grupos"
+  },
+  "committee.gvm.nearby_show": {
+    "en": "Show nearby groups",
+    "es": "Ver grupos cercanos"
+  },
+  "committee.gvm.nearby_hide": {
+    "en": "Hide nearby groups",
+    "es": "Ocultar grupos cercanos"
   },
   "committee.gvm.f_reset": {
     "en": "Clear filters",

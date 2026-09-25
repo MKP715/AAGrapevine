@@ -58,6 +58,12 @@
    windows at least 40rem tall (a shorter window keeps all of its height for the feed). Entries and
    day headings that get focus or a jump land below it (scroll-padding-top covers the header only). */
 @media (height >= 40rem) { .cm-chipbar { position: sticky; top: var(--header-h); z-index: 20; } }
+:root:not(.js) .cm-chipbar { display: none; }
+/* On a desktop (mouse: no sideways swipe) every chip must fit on the one line: from 1024px the
+   icons go (the labels say it), and where the timeline is narrowest (1280–1439px, beside the
+   subscribe column) the counts go too. From 1536px the chips are a column with icons and counts. */
+@media (64rem <= width < 96rem) { .cm-chipbar .chip > svg { display: none; } }
+@media (80rem <= width < 90rem) { .cm-chipbar .cm-wn-count { display: none; } }
 .cm-wn-main .cm-entry, .cm-wn-main .cm-day-head { scroll-margin-top: 4.5rem; }
 /* The subscribe card, 768–1279px (under the timeline): two columns — title + e-mail | the feeds. */
 @media (width >= 48rem) and (width < 80rem) {
@@ -149,21 +155,23 @@
 }
 
 /* Digest page layout (digest.njk). Phones and tablets: one column in DOM order — the compact tool
-   card ("More" folds e-mail, print and the steps once JS runs), the newsletter, the text previews.
-   From 1024px: the newsletter on the left; on the right the tool card (sticky-aside, row 1, which
-   stretches to the newsletter's height) and the previews at the end of the column (row 2) —
-   outside the sticky part, so it never covers them and always fits the window. */
+   card ("More" folds e-mail, print and the steps when JS runs: html.js is set in <head>, so the
+   card is drawn folded from the first paint), the newsletter, the text previews.
+   From 1024px: the newsletter on the left; on the right the tool aside (row 1, stretched to the
+   newsletter's height minus the previews) and the previews at the end of the column (row 2). The
+   aside itself is NOT sticky: its inner wrapper is (sticky-aside), and a sticky box can't leave its
+   parent, so the tool card stops at the end of row 1 and never covers the previews. */
 .cm-dg-layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.25rem;
   grid-template-areas: "tools" "digest" "previews"; }
 .cm-dg-tools { grid-area: tools; }
 .cm-dg-previews { grid-area: previews; align-self: end; }
 .cm-digest { grid-area: digest; }
 @media (width < 64rem) {
-  .cm-dg-layout.is-js:not(.is-more) .cm-dg-more { display: none; }
+  :root.js .cm-dg-layout:not(.is-more) .cm-dg-more { display: none; }
   .cm-dg-layout.is-more [aria-controls="dg-more"] .icon { transform: rotate(180deg); }
 }
 @media (width >= 64rem) {
-  .cm-dg-layout { grid-template-columns: minmax(0, 1fr) 21rem; grid-template-rows: minmax(0, 1fr) auto;
+  .cm-dg-layout { grid-template-columns: minmax(0, 1fr) 21rem; grid-template-rows: 1fr auto;
     grid-template-areas: "digest tools" "digest previews"; column-gap: 2rem; row-gap: 1.25rem; }
 }
 @media (width >= 80rem) { .cm-dg-layout { column-gap: 3rem; } }
@@ -218,12 +226,13 @@
 /* Narrow screens: let long URLs wrap without leaving orphaned indentation. */
 @media (width < 40rem) { .cm-report { white-space: pre-line; } }
 /* The report box is folded to a readable height (26rem; 20rem on phones) with a fade at the
-   bottom until "Show the full report" (.is-open). Needs JS (.is-js), so without it the whole
+   bottom until "Show the full report" (.is-open). Needs JS (html.js, set in <head> so the box is
+   folded from the first paint — no jump when Alpine starts), so without it the whole
    report shows. "Copy report" copies the full text either way. */
-.cm-report-box.is-js:not(.is-open) { max-height: 26rem; overflow: hidden;
+:root.js .cm-report-box:not(.is-open) { max-height: 26rem; overflow: hidden;
   -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 4rem), transparent);
           mask-image: linear-gradient(to bottom, #000 calc(100% - 4rem), transparent); }
-@media (width < 40rem) { .cm-report-box.is-js:not(.is-open) { max-height: 20rem; } }
+@media (width < 40rem) { :root.js .cm-report-box:not(.is-open) { max-height: 20rem; } }
 .cm-report-box + div [aria-expanded="true"] .icon { transform: rotate(180deg); }
 
 /* ------------------------------------------------------------------ */

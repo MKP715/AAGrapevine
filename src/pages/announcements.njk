@@ -82,11 +82,7 @@ pageScripts: ["/assets/js/committee.js"]
   {%- set nm = site | cmNextMeeting(lang) -%}
   {%- set ne = (db.events.items | cmEvents(site, lang)) | where("past", false) | whereNot("committee", true) | first -%}
   <div class="cm-ann-empty{{ ' is-solo' if not (nm or ne) }}">
-    <div class="card cm-docs-empty">
-      <div class="cm-megaphone" aria-hidden="true">{% icon "megaphone", "size-10" %}</div>
-      <h2 class="h-section mt-8 text-center text-balance">{{ "committee.ann.empty_title" | t(lang) }}</h2>
-      <p class="mx-auto mt-3 max-w-lg text-center leading-relaxed text-muted">{{ "committee.ann.empty_text" | t(lang) }}</p>
-    </div>
+    {{ ui.pageEmpty("megaphone", "committee.ann.empty_title" | t(lang), "committee.ann.empty_text" | t(lang), { id: "ann-empty-h" }) }}
 
     {% if nm or ne %}
     <section class="min-w-0" aria-labelledby="ann-soon-h">

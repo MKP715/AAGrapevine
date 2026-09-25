@@ -12,8 +12,8 @@
     "es": "La *reunión impresa* de AA en el Noreste de Texas"
   },
   "home.hero_lead": {
-    "en": "Grapevine and La Viña stories, podcasts, videos and service resources for every group in Area 65 — in English and Spanish.",
-    "es": "Historias, podcasts, videos y recursos de servicio de La Viña y Grapevine para cada grupo del Área 65 — en español y en inglés."
+    "en": "Grapevine and La Viña stories, podcasts, videos and service tools for Area 65 groups, in English and Spanish.",
+    "es": "Historias, podcasts, videos y recursos de servicio de La Viña y Grapevine para los grupos del Área 65, en español e inglés."
   },
   "home.cta_whats_new": {
     "en": "See what's new",
@@ -28,8 +28,8 @@
     "es": "Lo que encontrarás en este sitio"
   },
   "home.stat_pdfs": {
-    "en": "Documents",
-    "es": "Documentos"
+    "en": "documents",
+    "es": "documentos"
   },
   "home.stat_episodes": {
     "en": "podcast episodes",
@@ -599,15 +599,6 @@
     "en": "Ready to read at your district meeting — already filled in",
     "es": "Listo para leer en la reunión de tu distrito — ya viene completo"
   },
-  "home.svc_rss_desc": {
-    "en": "New content in any reader or newsletter",
-    "es": "Lo nuevo en cualquier lector o boletín"
-  },
-  "home.svc_ics_desc": {
-    "en": "Meetings & events in your calendar app",
-    "es": "Reuniones y eventos en tu calendario"
-  },
-  "home.svc_more": { "en": "More for your group", "es": "Más para tu grupo" },
   "home.drive_eyebrow": {
     "en": "Committee uploads",
     "es": "Archivos del comité"

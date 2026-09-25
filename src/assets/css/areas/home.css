@@ -386,17 +386,14 @@
 }
 
 /* ---------- 5. Magazines ---------- */
-/* From 1536px the "Write for the magazines" panel is a third column next to the two magazines */
-@media (width >= 96rem) {
-  .home-mags.has-write { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(22rem, 0.72fr); }
-  /* The panel is as tall as its own themes — not stretched down beside the taller magazine
-     columns, which left an empty tinted lower third. */
-  .home-mags.has-write > .home-write { align-self: start; }
-}
-/* …and on screens tall enough to show all of it, it stays in view (below the fixed header)
-   while the magazine columns scroll past. */
+/* On screens at least 1536px wide AND 896px tall (the tall-2xl variant in main.css) the "Write for
+   the magazines" panel is a third column next to the two magazines, as tall as its own themes, and it
+   stays in view (below the fixed header) while the magazine columns scroll past. On shorter windows
+   it can't stick, so it stays the full-width row under both magazines — never a short column beside
+   an empty space. */
 @media (width >= 96rem) and (height >= 56rem) {
-  .home-mags.has-write > .home-write { position: sticky; top: var(--sticky-top); }
+  .home-mags.has-write { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(22rem, 0.72fr); }
+  .home-mags.has-write > .home-write { align-self: start; position: sticky; top: var(--sticky-top); }
 }
 /* This month in the Shop (the closing row of the magazines section): compact covers */
 .home-shop .shop-teaser-covers { padding: 0.25rem 0.375rem 0.25rem 0.125rem; }

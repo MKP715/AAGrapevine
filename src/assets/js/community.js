@@ -154,7 +154,7 @@
 
   /* ---------------- enhancements (no Alpine needed) ---------------- */
   function enhance() {
-    // "Today" / "Yesterday" prefixes on What's New day headings (computed in
+    // "Today" / "Yesterday" badges on What's New day headings (computed in
     // the browser so a page built yesterday still reads correctly today).
     var wrap = document.querySelector("[data-today]");
     if (wrap) {
@@ -163,7 +163,7 @@
       document.querySelectorAll("[data-rel-day]").forEach(function (el) {
         var d = el.getAttribute("data-rel-day");
         var label = d === today ? wrap.getAttribute("data-today") : d === yest ? wrap.getAttribute("data-yesterday") : "";
-        if (label) el.textContent = label + " · ";
+        if (label) el.textContent = label;
       });
     }
 

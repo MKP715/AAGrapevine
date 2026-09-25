@@ -4,7 +4,7 @@
     "en": "The current issues of AA Grapevine and La Viña — tables of contents, themes and teasers, with links to each story on the official sites. We keep it updated regularly.",
     "es": "Las ediciones actuales de La Viña y AA Grapevine: índices, temas y adelantos, con enlaces a cada historia en los sitios oficiales. Lo mantenemos al día con regularidad."
   },
-  "read.eyebrow": { "en": "AA's meeting in print", "es": "La reunión impresa de AA" },
+  "read.eyebrow": { "en": "Read · Magazines", "es": "Leer · Revistas" },
   "read.subtitle": {
     "en": "The newest stories from Grapevine (monthly, in English) and La Viña (every two months, in Spanish).",
     "es": "Las historias más recientes de La Viña (cada dos meses, en español) y Grapevine (mensual, en inglés)."
@@ -199,7 +199,7 @@
   "read.contrib.recent_past": { "en": "Recently closed", "es": "Cerrados recientemente" },
   "read.contrib.gv_note": { "en": "Grapevine plans its theme issues many months ahead — send your story by the deadline shown for that issue.", "es": "Grapevine prepara sus ediciones temáticas con muchos meses de anticipación: envía tu historia antes de la fecha límite de esa edición." },
   "read.contrib.lv_note": { "en": "La Viña's suggested topics have no deadline, and stories on any other AA topic are always welcome too.", "es": "Los temas sugeridos de La Viña no tienen fecha límite, y las historias sobre cualquier otro tema de AA siempre son bienvenidas." },
-  "read.contrib.no_themes": { "en": "Editorial themes haven't synced yet", "es": "Los temas editoriales aún no se han sincronizado" },
+  "read.contrib.no_themes": { "en": "Editorial themes aren't available right now", "es": "Los temas editoriales no están disponibles por ahora" },
   "read.contrib.no_themes_text": { "en": "Upcoming themes and deadlines will be listed here soon. Until then, check the official calendars.", "es": "Pronto verás aquí los próximos temas y fechas límite. Mientras tanto, consulta los calendarios oficiales." },
   "read.contrib.gv_calendar": { "en": "Grapevine editorial calendar", "es": "Calendario editorial de Grapevine" },
   "read.contrib.lv_calendar": { "en": "La Viña suggested themes", "es": "Temas sugeridos de La Viña" },
@@ -421,9 +421,9 @@
   "read.gvr.g_flyers": { "en": "Flyers, postcards & posters", "es": "Volantes, postales y carteles" },
   "read.gvr.g_forms": { "en": "Order & subscription forms", "es": "Formularios de pedido y suscripción" },
   "read.gvr.g_other": { "en": "Plays, readings & more", "es": "Obras, lecturas y más" },
-  "read.gvr.kit_empty": { "en": "This kit hasn't synced yet", "es": "Este kit aún no se ha sincronizado" },
+  "read.gvr.kit_empty": { "en": "This kit isn't available right now", "es": "Este kit no está disponible por ahora" },
   "read.gvr.kit_empty_text": { "en": "Every file from the official page will be listed here soon — we keep it updated regularly. Until then, open the official page directly.", "es": "Pronto verás aquí cada archivo de la página oficial — lo mantenemos actualizado con regularidad. Mientras tanto, abre la página oficial directamente." },
-  "read.gvr.kits_empty": { "en": "The resource kits haven't synced yet", "es": "Los kits de recursos aún no se han sincronizado" },
+  "read.gvr.kits_empty": { "en": "The resource kits aren't available right now", "es": "Los kits de recursos no están disponibles por ahora" },
   "read.gvr.kits_empty_text": { "en": "We keep these kits updated regularly from the official GVR and RLV pages. The first files will appear here after the next update.", "es": "Mantenemos estos kits actualizados con regularidad a partir de las páginas oficiales para RLV y GVR. Los primeros archivos aparecerán aquí después de la próxima actualización." },
   "read.gvr.no_match": { "en": "No files match your search", "es": "Ningún archivo coincide con tu búsqueda" },
   "read.gvr.no_match_text": { "en": "Try a shorter word, or choose “All.”", "es": "Prueba con una palabra más corta o elige «Todo»." },
@@ -461,7 +461,7 @@
   "read.gvr.ns_published_cta": { "en": "Meet the writers", "es": "Conoce a los escritores" },
   "read.about.title": { "en": "About us", "es": "Quiénes somos" },
   "read.about.meta_desc": { "en": "About the NETA 65 Grapevine & La Viña Committee, the two magazines we serve, and how we keep this bilingual site up to date.", "es": "Acerca del Comité de Grapevine y La Viña de NETA 65, las dos revistas a las que servimos y cómo mantenemos al día este sitio bilingüe." },
-  "read.about.eyebrow": { "en": "NETA 65 Grapevine & La Viña Committee", "es": "Comité de Grapevine y La Viña de NETA 65" },
+  "read.about.eyebrow": { "en": "About this site", "es": "Sobre este sitio" },
   "read.about.subtitle": { "en": "Who we are, the two magazines we love, and how we keep this site up to date in English and Spanish.", "es": "Quiénes somos, las dos revistas que queremos y cómo mantenemos este sitio al día en español y en inglés." },
   "read.about.contact_btn": { "en": "Contact us", "es": "Contáctanos" },
   "read.about.mags_title": { "en": "The magazines", "es": "Las revistas" },

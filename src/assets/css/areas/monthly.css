@@ -14,15 +14,21 @@
 @media (width >= 64rem) {
   .mp-layout { grid-template-columns: minmax(0, 32rem) minmax(0, 1fr); align-items: start; gap: 2.5rem; }
 }
-/* The pinned poster column fits the window, so Download / Share / Print stay in view on laptop
-   screens (1280 × 720, 1366 × 768, 1536 × 864): the poster's width follows the window height
-   (0.8 = 1080 / 1350); on very short windows the column simply scrolls with the page. */
+/* The pinned poster column fits the window, so Download / Share / Print and the hint stay in view
+   on laptop screens (1024 × 640, 1280 × 720, 1440 × 700, 1536 × 730): the poster's width follows
+   the window height (0.8 = 1080 / 1350). 16rem is what sits around the poster: the sticky top
+   offset (1.25rem), the two button rows (Download · Share | Print, one line each) and the hint
+   (up to 4 lines in the narrow column), plus a small bottom margin — and the language banner while
+   it is shown (--sticky-bottom). Below 40rem of window height the column scrolls with the page. */
 @media screen and (width >= 64rem) {
-  .mp-poster-col :is(.mp-stage, .mp-actions, .mp-hint) { max-width: max(22rem, min(100%, calc((100dvh - var(--header-h) - 13rem) * 0.8))); margin-inline: auto; }
+  .mp-poster-col :is(.mp-stage, .mp-actions, .mp-hint) { max-width: max(16rem, min(100%, calc((100dvh - var(--header-h) - 16rem - var(--sticky-bottom, 0px)) * 0.8))); margin-inline: auto; }
 }
 @media screen and (width >= 64rem) and (height >= 40rem) {
   .mp-poster-col { position: sticky; top: calc(var(--header-h) + 1.25rem); }
 }
+/* A window under 45rem tall with the language banner up has no room for the whole column above the
+   banner (the poster can't shrink below 16rem): it scrolls with the page until the banner goes. */
+@media screen and (width >= 64rem) and (height < 45rem) { :root.has-lang-banner .mp-poster-col { position: static; } }
 @media (width >= 96rem) { .mp-layout { grid-template-columns: minmax(0, 38rem) minmax(0, 1fr); } }
 .mp-poster-col { width: 100%; max-width: 38rem; margin-inline: auto; min-width: 0; }
 .mp-toolkit { display: flex; flex-direction: column; gap: 1.25rem; min-width: 0; }

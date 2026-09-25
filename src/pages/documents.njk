@@ -10,9 +10,9 @@ pageScripts: ["/assets/js/committee.js"]
 {#- Committee documents from the public Google Drive folder (reports, notes,
     slides, workshops, flyers, forms, and any other folder by name), grouped by
     category and panel. Preview opens an accessible modal with Drive's viewer.
-    Below the shared page hero and the committee sub-nav: with files — category chips + search,
-    one card grid per category (grid-cards: up to 5 columns); with none yet — one solid card
-    written for visitors (what will be here + one next step). Then, collapsed, "For committee
+    Below the shared page hero (one visitor action) and the committee sub-nav: with files — category
+    chips + search, one card grid per category (grid-cards: up to 5 columns); with none yet — the
+    shared page-level empty card (ui.pageEmpty: what will be here). Then, collapsed, "For committee
     members · How to add documents" (ui.memberHelp, #how-docs): the steps, the folder names, where
     a file goes, and the two Drive actions (Open Drive folder · Ask for upload access). -#}
 {% import "macros/ui.njk" as ui with context %}
@@ -23,12 +23,12 @@ pageScripts: ["/assets/js/committee.js"]
 
 {% call ui.pageHero(lang, "nav.documents" | t(lang), "committee.docs.hero_sub" | t(lang), "folder-open", "committee.docs.eyebrow" | t(lang)) %}
   <div class="hero-actions">
+    {#- one visitor action (the committee how-to is ui.memberHelp, below) -#}
     {% if dt.total %}
     <a class="btn-light" href="#doc-list">{% icon "layout-grid", "size-4" %} {{ "committee.docs.browse" | t(lang) }}</a>
     {% else %}
     <a class="btn-light" href="{{ '/library/' | lurl(lang) }}">{% icon "library", "size-4" %} {{ "committee.docs.browse_library" | t(lang) }}</a>
     {% endif %}
-    <a class="btn-on-dark" href="#how-docs">{% icon "key-round", "size-4" %} {{ "committee.docs.how_btn" | t(lang) }}</a>
   </div>
   {% if dt.total %}
   {{ ui.heroStats([
@@ -120,17 +120,8 @@ pageScripts: ["/assets/js/committee.js"]
   </div>
 </section>
 {% else %}
-{#- ---------- Nothing uploaded yet: one solid card for visitors — what will be here, and one next step ---------- -#}
-<section class="card cm-docs-empty" aria-labelledby="docs-empty-title">
-  <ul class="cm-folder-tiles" aria-label="{{ 'committee.docs.tabs_aria' | t(lang) }}">
-    {% for tb in dt.tabs | limit(6) %}<li>{% icon tb.icon, "size-4" %}<span>{{ tb.label }}</span></li>{% endfor %}
-  </ul>
-  <h2 id="docs-empty-title" class="h-section mt-6 text-center text-balance">{{ ("committee.docs.empty_title_panel" | t(lang, { panel: di.panel.label })) if di.panel else ("committee.docs.empty_title" | t(lang)) }}</h2>
-  <p class="mx-auto mt-3 max-w-xl text-center leading-relaxed text-muted">{{ "committee.docs.empty_text" | t(lang) }}</p>
-  <div class="mt-6 flex justify-center">
-    <a class="btn-primary" href="{{ '/library/' | lurl(lang) }}">{% icon "library", "size-4" %} {{ "committee.docs.browse_library" | t(lang) }}</a>
-  </div>
-</section>
+{#- ---------- Nothing uploaded yet: the shared page-level empty card (the visitor action is the hero's) ---------- -#}
+{{ ui.pageEmpty("folder-open", ("committee.docs.empty_title_panel" | t(lang, { panel: di.panel.label })) if di.panel else ("committee.docs.empty_title" | t(lang)), "committee.docs.empty_text" | t(lang), { id: "docs-empty-title" }) }}
 {% endif %}
 </div>
 

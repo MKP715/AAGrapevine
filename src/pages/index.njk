@@ -276,6 +276,8 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
 {% set gvIssue = D.articles.items | homeLatestIssue("gv", 5, D.articles.issues, L) %}
 {% set lvIssue = D.articles.items | homeLatestIssue("lv", 5, D.articles.issues, L) %}
 {% set themes = D.editorial.items | homeThemes(4) %}
+{#- /es/: La Viña's themes first, like the magazine columns (magOrder) -#}
+{% if L == "es" %}{% set themes = (themes | where("extra.publication", "lv")).concat(themes | whereNot("extra.publication", "lv")) %}{% endif %}
 {% set epPick = D.episodes.items | homeEpisodes(D.episodes.shows or site.sources.podcasts) %}
 {% set ep = epPick.featured %}
 {% set moreEps = epPick.more %}
@@ -375,8 +377,9 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
 
 {#- =====================================================================
     5. FROM THE MAGAZINES — the latest Grapevine + La Viña issues side by side (La Viña first on
-       /es/); from 1536px the "Write for the magazines" themes are a third column, only as tall as
-       its own content (and, on tall enough screens, sticky while the magazines scroll — home.css).
+       /es/); on screens at least 1536px wide AND 896px tall the "Write for the magazines" themes are a
+       third column that sticks while the magazines scroll (home.css; the tall-2xl variant) — on
+       shorter windows they stay the full-width row under both magazines, so no column ends short.
        Closing row: this month in the Shop — Book of the Month · subscriptions · the monthly
        toolkit, as three compact link cards (the Shop page is the ONE home of the prices/dates).
     ===================================================================== -#}
@@ -396,7 +399,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
       {% for pub in magOrder %}{{ magColumn(pub, lvIssue if pub == "lv" else gvIssue, L, site) }}{% endfor %}
 
       {% if themes.length %}
-      <div class="home-write flex flex-col rounded-[var(--radius-card)] border border-line bg-paper p-5 sm:p-7 md:col-span-2 2xl:col-span-1">
+      <div class="home-write flex flex-col rounded-[var(--radius-card)] border border-line bg-paper p-5 sm:p-7 md:col-span-2 tall-2xl:col-span-1">
         <div class="flex flex-wrap items-start justify-between gap-4">
           <div class="min-w-0">
             <h3 class="card-h"><span class="text-grape!">{% icon "pen-line", "size-5" %}</span>{{ "home.write_title" | t(L) }}</h3>
@@ -404,9 +407,9 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
           </div>
           <a href="{{ '/contribute/' | lurl(L) }}" class="btn-secondary btn-sm max-sm:hidden">{% icon "feather", "size-4" %} {{ "home.write_cta" | t(L) }}</a>
         </div>
-        {#- Phones: the themes fold into one link; 640px up: the theme cards (stacked from 1536px). -#}
+        {#- Phones: the themes fold into one link; 640px up: the theme cards (stacked in the tall-2xl column). -#}
         <a class="link tap-link mt-3 text-sm sm:hidden" href="{{ '/contribute/#deadlines' | lurl(L) }}">{{ ("home.write_themes_one" if themes.length == 1 else "home.write_themes_n") | t(L, { n: themes.length }) }} {% icon "arrow-right", "size-4" %}</a>
-        <ul class="mt-5 grid gap-3 max-sm:hidden sm:grid-cols-2 {{ 'lg:grid-cols-4' if themes.length >= 4 else ('lg:grid-cols-3' if themes.length == 3 else '') }} 2xl:grid-cols-1" role="list">
+        <ul class="mt-5 grid gap-3 max-sm:hidden sm:grid-cols-2 {{ 'lg:grid-cols-4' if themes.length >= 4 else ('lg:grid-cols-3' if themes.length == 3 else '') }} tall-2xl:grid-cols-1" role="list">
           {% for th in themes %}
           {%- set isLv = (th.extra.publication == "lv") -%}
           {%- set tt = th | tx("title", L) -%}
@@ -915,13 +918,14 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
     12. FOR GVRs, RLVs & DISTRICTS — the closing feature band (the monthly GV/LV report lives on
         /monthly/#report). Phones: the first 3 links + "More" (the other 3 open in place).
     ===================================================================== -#}
+{#- Four service tools for a group's GVR / RLV. The feeds (RSS, calendar) are not repeated here:
+    they live in the footer's "Stay updated" column, right below; the digest is the one "get
+    updates" tile. -#}
 {%- set svcLinks = [
   { url: "/gvr/", icon: "badge-check", key: "nav.gvr", desc: "home.svc_corner_desc" },
-  { url: "/share/", icon: "qr-code", key: "nav.share", desc: "home.svc_share_desc" },
-  { url: "/digest/", icon: "mail-open", key: "nav.digest", desc: "home.svc_digest_desc" },
   { url: "/monthly/#report", icon: "clipboard-list", key: "home.svc_report", desc: "home.svc_report_desc" },
-  { url: "/feed.xml", icon: "rss", key: "feeds.rss", desc: "home.svc_rss_desc" },
-  { url: "/events.ics", icon: "calendar-plus", key: "feeds.ics", desc: "home.svc_ics_desc" }
+  { url: "/share/", icon: "qr-code", key: "nav.share", desc: "home.svc_share_desc" },
+  { url: "/digest/", icon: "mail-open", key: "nav.digest", desc: "home.svc_digest_desc" }
 ] %}
 <section class="home-band relative isolate overflow-hidden text-white" aria-labelledby="svc-title">
   <div class="container-page relative z-10 grid gap-10 py-16 sm:py-20 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.35fr)] lg:items-center lg:gap-14">
@@ -934,9 +938,9 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
         <a class="home-btn-amber btn" href="{{ site.links.rlv_register }}" target="_blank" rel="noopener">{% icon "badge-check", "size-4" %} {{ "home.svc_rlv" | t(L) }}<span class="sr-only"> {{ "home.opens_new_tab" | t(L) }}</span></a>
       </div>
     </div>
-    <ul class="grid gap-3 sm:grid-cols-2 2xl:grid-cols-3" role="list" x-data="{ more: false }">
+    <ul class="grid gap-3 sm:grid-cols-2" role="list">
       {% for s in svcLinks %}
-      <li{% if loop.index > 3 %} class="max-sm:hidden" :class="{ 'max-sm:hidden': !more }"{% endif %}>
+      <li>
         <a href="{{ s.url | lurl(L) }}" class="home-band-link group flex h-full items-start gap-3.5 rounded-2xl p-4 no-underline">
           <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-white/12 text-white ring-1 ring-white/20">{% icon s.icon, "size-5" %}</span>
           <span class="min-w-0 flex-1">
@@ -947,9 +951,6 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
         </a>
       </li>
       {% endfor %}
-      <li class="sm:hidden" x-show="!more" x-cloak>
-        <button type="button" class="home-band-link flex min-h-11 w-full items-center justify-center gap-2 rounded-2xl p-3 text-sm font-semibold" @click="more = true; $nextTick(() => { const a = $root.querySelectorAll('li')[3]; if (a) a.querySelector('a').focus(); })" aria-expanded="false">{{ "home.svc_more" | t(L) }} {% icon "chevron-down", "size-4" %}</button>
-      </li>
     </ul>
   </div>
 </section>

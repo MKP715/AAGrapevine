@@ -279,6 +279,11 @@
       dismissed: false,
       featuredId: null,
       featuredVisible: false,
+      curEp: null, // the full list object of what is loaded (the featured card shows it as "Now playing")
+      /* true from 1440px in windows at least 36rem tall — exactly when media.css makes the featured
+         card the sticky right-hand column. Then that card is the ONE player: it shows whatever is
+         loaded, and the mini-player stays hidden while the card is on screen. */
+      wide: false,
       saved: {}, // id → seconds (-1 = finished); reactive copy of positions()
 
       init: function () {
@@ -287,12 +292,19 @@
         this.saved = sv;
         var r = Number(store.get(K_RATE));
         if (RATES.indexOf(r) !== -1) this.rate = r;
+        var self = this, mq = window.matchMedia ? window.matchMedia("(min-width: 90rem) and (min-height: 36rem)") : null;
+        if (mq) {
+          var sync = function () { self.wide = mq.matches; };
+          sync();
+          if (mq.addEventListener) mq.addEventListener("change", sync); else if (mq.addListener) mq.addListener(sync);
+        }
       },
 
       /* the sticky mini-player shows when something is loaded, not dismissed,
-         and the featured card isn't already on screen showing that episode */
+         and the featured card isn't already on screen showing that episode (from 1440px, "wide",
+         the featured card shows whatever is loaded, so: whenever the card is on screen) */
       get mini() {
-        return !!this.cur && !this.dismissed && !(this.featuredVisible && this.cur.id === this.featuredId);
+        return !!this.cur && !this.dismissed && !(this.featuredVisible && (this.wide || this.cur.id === this.featuredId));
       },
       isCurrent: function (id) { return !!this.cur && !!id && this.cur.id === id; },
       isPlaying: function (id) { return this.isCurrent(id) && this.playing; },
@@ -309,6 +321,7 @@
         var a = ensureAudio();
         if (this.cur && this.cur.id !== ep.id) persist();
         this.cur = { id: ep.id, t: ep.t || "", a: safeUrl(ep.a), art: artFor(ep), du: ep.du || 0, sh: ep.sh || "", u: safeUrl(ep.u) };
+        this.curEp = ep;
         this.error = false;
         this.dismissed = false;
         this.playing = false;
@@ -776,11 +789,32 @@
         shown: { gv: 12, lv: 12 },
         init: function () {
           var self = this;
-          function fromHash() { var m = /^#ig-(gv|lv)$/.exec(location.hash || ""); if (m) self.tab = m[1]; }
+          /* A jump to an account that was on the hidden tab: the browser tried to scroll while the
+             target was display:none — show the tab, then scroll to it. */
+          function fromHash(ev) {
+            var m = /^#ig-(gv|lv)$/.exec(location.hash || "");
+            if (!m) return;
+            var was = self.tab;
+            self.tab = m[1];
+            if (ev && was !== m[1]) self.$nextTick(function () { var el = document.getElementById("ig-" + m[1]); if (el) el.scrollIntoView({ block: "start" }); });
+          }
           fromHash();
           window.addEventListener("hashchange", fromHash);
         },
-        more: function (k) { this.shown[k] = (this.shown[k] || 12) + 12; },
+        /* "Show more posts": 12 more. When that shows the last of them the button hides itself, so
+           keyboard focus moves to the first new post (not back to <body>). */
+        more: function (k) {
+          var before = this.shown[k] || 12, root = this.$root;
+          this.shown[k] = before + 12;
+          this.$nextTick(function () {
+            var sec = root.querySelector("#ig-" + k), cards = sec ? sec.querySelectorAll("article") : [];
+            var first = cards[before], btn = document.activeElement;
+            if (first && (!btn || btn.offsetParent === null || btn === document.body)) {
+              var link = first.querySelector("a[href], button");
+              if (link) link.focus();
+            }
+          });
+        },
       };
     });
   });

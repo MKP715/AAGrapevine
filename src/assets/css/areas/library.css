@@ -119,7 +119,7 @@
 .lib-facets:not(.hidden) { margin-top: 0.75rem; }
 @media (width >= 64rem) { .lib-facets { margin-top: 0 !important; } }
 @media (width >= 64rem) and (height >= 40rem) {
-  .lib-facets { position: sticky; top: var(--sticky-top); max-height: calc(100dvh - var(--sticky-top) - 1rem); overflow-y: auto; overscroll-behavior: contain; padding: 0 0.25rem 1.5rem 0; scrollbar-width: thin;
+  .lib-facets { position: sticky; top: var(--sticky-top); max-height: calc(100dvh - var(--sticky-top) - 1rem - var(--sticky-bottom, 0px)); overflow-y: auto; overscroll-behavior: contain; padding: 0 0.25rem 1.5rem 0; scrollbar-width: thin;
     -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 1.5rem), transparent);
             mask-image: linear-gradient(to bottom, #000 calc(100% - 1.5rem), transparent); }
 }
@@ -235,6 +235,9 @@
 .lib-ref { position: relative; z-index: 1; font-size: 0.76rem; color: var(--c-faint); overflow-wrap: anywhere; }
 .lib-ref a { font-weight: 600; color: var(--c-muted); text-decoration: underline; text-decoration-color: var(--c-line); text-underline-offset: 2px; }
 .lib-ref a:hover { color: var(--c-gv); text-decoration-color: currentColor; }
+/* phones / touch: a taller hit area around the same inline link (padding on an inline box doesn't
+   move the text around it) */
+@media (width < 40rem), (pointer: coarse) { .lib-ref a { padding-block: 0.9375rem; } }
 /* One document in several languages: "Available in English · Español" (this page's language first). */
 .lib-versions { position: relative; z-index: 1; display: flex; flex-wrap: wrap; align-items: center; gap: 0.15rem 0.7rem; font-size: 0.76rem; color: var(--c-muted); }
 .lib-versions > .icon { flex-shrink: 0; color: var(--c-lv); }
@@ -242,7 +245,7 @@
 .lib-versions a + a { position: relative; }
 .lib-versions a + a::before { content: "·"; position: absolute; left: -0.35rem; transform: translateX(-50%); color: var(--c-faint); pointer-events: none; }
 .lib-versions a:hover { color: var(--c-gv); text-decoration-color: currentColor; }
-@media (width < 40rem), (pointer: coarse) { .lib-versions a { min-height: 2.75rem; } } /* 44px touch targets */
+@media (width < 40rem), (pointer: coarse) { .lib-versions a { min-height: 2.75rem; min-width: 2.75rem; justify-content: center; } } /* 44px touch targets */
 .lib-auto { position: relative; z-index: 1; }
 .lib-event { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.78rem; font-weight: 600; color: var(--c-vine); }
 /* A file no page links to any more: still available, visibly de-emphasized. */

@@ -8,7 +8,7 @@
       the announcement to read out or paste (with a Copy button) and "Share this page".
       It is the page's last block: the footer's own top margin is the gap below it.
         {{ media.shareBlock(lang, "listen-share-title", "media.share_listen_text" | t(lang), announcement,
-             page.url | siteUrl(site), "media.listen_eyebrow" | t(lang), "media.listen_sub" | t(lang)) }}
+             page.url | siteUrl(site), "media.listen_share_title" | t(lang), "media.listen_sub" | t(lang)) }}
     ========================================================================= -#}
 {% macro shareBlock(lang, id, text, announcement, shareUrl, shareTitle, shareText="") %}
 <section class="container-page" aria-labelledby="{{ id }}">
