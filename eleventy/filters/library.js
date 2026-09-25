@@ -721,6 +721,15 @@ export function searchIndex(db, nav, lang, helpers, site) {
       ic: p.icon || PAGE_ICONS[pk] || "file-text",
     });
   }
+  /* ---- The GV/LV report for the district meeting: its one home is /monthly/#report, so a search
+     for "district" / "distrito" or "report" / "informe" lands on the section, not the page top ---- */
+  if (seenPage.has("/monthly/") && !seenPage.has("/monthly/#report")) {
+    seenPage.add("/monthly/#report");
+    push({
+      id: "report:monthly", k: "page", t: T("community.report.title"), tl: lang, s: T("community.report.sub"),
+      x: both("search.kw.report"), u: "/monthly/#report", src: "site", ic: "clipboard-list",
+    });
+  }
   if (EMPTY() || !db) return out;
 
   /* ---- articles (Grapevine & La Viña) ----

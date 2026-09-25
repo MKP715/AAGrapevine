@@ -77,5 +77,6 @@
   "monthly.stories_wanted": { "en": "Stories wanted", "es": "Se buscan historias" },
   "monthly.machine": { "en": "Automatic translation", "es": "Traducción automática" },
   "monthly.tips_more": { "en": "{n} more ideas on the website", "es": "{n} ideas más en el sitio web" },
-  "search.kw.monthly": { "en": "monthly poster posters flyer whatsapp instagram print carry the message twelfth step tool put it to work editorial calendar theme story deadline book of the month", "es": "cartel carteles volante mensual whatsapp instagram imprimir llevar el mensaje herramienta paso doce ponla a trabajar calendario editorial tema fecha límite historia libro del mes" }
+  "search.kw.monthly": { "en": "monthly poster posters flyer whatsapp instagram print carry the message twelfth step tool put it to work editorial calendar theme story deadline book of the month district report districts dcm gvr report rlv report district meeting group report", "es": "cartel carteles volante mensual whatsapp instagram imprimir llevar el mensaje herramienta paso doce ponla a trabajar calendario editorial tema fecha límite historia libro del mes informe distrito distritos reporte mcd informe de gvr informe de rlv reunión del distrito informe para el grupo" },
+  "search.kw.report": { "en": "gv lv report grapevine report district report district meeting dcm gvr rlv group report read aloud two minutes", "es": "informe de gv lv informe de grapevine informe para el distrito reunión del distrito mcd gvr rlv informe para el grupo leer en voz alta dos minutos" }
 }

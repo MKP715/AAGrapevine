@@ -4155,7 +4155,7 @@
    "source": "crawl",
    "kind": "pdf",
    "url": "https://www.aagrapevine.org/sites/default/files/2022-09/2023_AAGV_Price_Increase_Release_ENG_EE.pdf",
-   "title": "2023 AAGV Price Increase Release EE",
+   "title": "2023 AAGV Price Increase Release",
    "summary": "",
    "lang": "en",
    "date": "2022-09-12",
@@ -4183,21 +4183,131 @@
     "doc_lang": "en",
     "section": "News Release",
     "external": false,
-    "orphan": false
+    "orphan": false,
+    "versions": [
+     {
+      "lang": "en",
+      "id": "pdf:21b819b85a9e",
+      "url": "https://www.aagrapevine.org/sites/default/files/2022-09/2023_AAGV_Price_Increase_Release_ENG_EE.pdf",
+      "title": "2023 AAGV Price Increase Release",
+      "title_lang": "en",
+      "i18n_title": {
+       "en": "2023 AAGV Price Increase Release",
+       "es": "2023 AAGV comunicado de aumento de precios"
+      },
+      "machine": [
+       "es"
+      ],
+      "source": "gv",
+      "date": "2022-09-12",
+      "first_seen": "2026-09-23T16:32:24Z",
+      "category": "news",
+      "tags": [],
+      "is_new": false,
+      "host": "www.aagrapevine.org",
+      "file_url": "https://www.aagrapevine.org/sites/default/files/2022-09/2023_AAGV_Price_Increase_Release_ENG_EE.pdf",
+      "filename": "2023_AAGV_Price_Increase_Release_ENG_EE.pdf",
+      "size_bytes": 123820,
+      "pages": 2,
+      "thumb": "/assets/cache/pdf/21b819b85a9ebac0.webp",
+      "upload_month": "2022-09",
+      "referrers": [
+       {
+        "url": "https://www.aagrapevine.org/news-release",
+        "title": "News Release"
+       }
+      ],
+      "orphan": false
+     },
+     {
+      "lang": "es",
+      "id": "pdf:dc164744bb1f",
+      "url": "https://www.aagrapevine.org/sites/default/files/2022-08/2023_AAGV_Comunicado_Aumento_Precios_SPAN.pdf",
+      "title": "2023 AAGV Comunicado Aumento Precios",
+      "title_lang": "es",
+      "i18n_title": {
+       "en": "2023 AAGV Price Increase Release",
+       "es": "2023 AAGV Comunicado Aumento Precios"
+      },
+      "machine": [
+       "en"
+      ],
+      "source": "gv",
+      "date": "2022-08-29",
+      "first_seen": "2026-09-23T16:32:24Z",
+      "category": "news",
+      "tags": [],
+      "is_new": false,
+      "host": "www.aagrapevine.org",
+      "file_url": "https://www.aagrapevine.org/sites/default/files/2022-08/2023_AAGV_Comunicado_Aumento_Precios_SPAN.pdf",
+      "filename": "2023_AAGV_Comunicado_Aumento_Precios_SPAN.pdf",
+      "size_bytes": 127156,
+      "pages": 2,
+      "thumb": "/assets/cache/pdf/dc164744bb1fd3ec.webp",
+      "upload_month": "2022-08",
+      "referrers": [
+       {
+        "url": "https://www.aagrapevine.org/news-release",
+        "title": "News Release"
+       },
+       {
+        "url": "https://www.aalavina.org/comunicado",
+        "title": "Comunicado"
+       }
+      ],
+      "orphan": false
+     },
+     {
+      "lang": "fr",
+      "id": "pdf:e988c419172a",
+      "url": "https://www.aagrapevine.org/sites/default/files/2022-08/2023_AAGV_Price_Increase_Release_FRE.pdf",
+      "title": "2023 AAGV Price Increase Release",
+      "title_lang": "en",
+      "i18n_title": {
+       "en": "2023 AAGV Price Increase Release",
+       "es": "2023 AAGV comunicado de aumento de precios"
+      },
+      "machine": [
+       "es"
+      ],
+      "source": "gv",
+      "date": "2022-08-29",
+      "first_seen": "2026-09-23T16:32:24Z",
+      "category": "news",
+      "tags": [],
+      "is_new": false,
+      "host": "www.aagrapevine.org",
+      "file_url": "https://www.aagrapevine.org/sites/default/files/2022-08/2023_AAGV_Price_Increase_Release_FRE.pdf",
+      "filename": "2023_AAGV_Price_Increase_Release_FRE.pdf",
+      "size_bytes": 92445,
+      "pages": 2,
+      "thumb": "/assets/cache/pdf/e988c419172afc49.webp",
+      "upload_month": "2022-08",
+      "referrers": [
+       {
+        "url": "https://www.aagrapevine.org/news-release",
+        "title": "News Release"
+       },
+       {
+        "url": "https://www.aalavina.org/comunicado",
+        "title": "Comunicado"
+       }
+      ],
+      "orphan": false
+     }
+    ]
    },
    "i18n": {
     "title": {
-     "en": "2023 AAGV Price Increase Release EE",
-     "es": "2023 AAGV comunicado de aumento de precios EE"
+     "en": "2023 AAGV Price Increase Release",
+     "es": "2023 AAGV Comunicado Aumento Precios"
     },
     "summary": {
      "en": "",
      "es": ""
     }
    },
-   "machine": [
-    "es"
-   ],
+   "machine": [],
    "is_new": false
   },
   {
@@ -4311,168 +4421,6 @@
     "title": {
      "en": "Magazines in digital format",
      "es": "Revistas en formato digital"
-    },
-    "summary": {
-     "en": "",
-     "es": ""
-    }
-   },
-   "machine": [],
-   "is_new": false
-  },
-  {
-   "id": "pdf:068112ae483f",
-   "source": "crawl",
-   "kind": "pdf",
-   "url": "https://www.aalavina.org/sites/default/files/2022-08/2023_AAGV_Price_Increase_Release_ENG.pdf",
-   "title": "2023 AAGV Price Increase Release",
-   "summary": "",
-   "lang": "en",
-   "date": "2022-08-29",
-   "first_seen": "2026-09-23T16:35:27Z",
-   "image": "/assets/cache/pdf/068112ae483f537b.webp",
-   "tags": [],
-   "category": "news",
-   "status": "ok",
-   "extra": {
-    "host": "www.aalavina.org",
-    "file_url": "https://www.aalavina.org/sites/default/files/2022-08/2023_AAGV_Price_Increase_Release_ENG.pdf",
-    "filename": "2023_AAGV_Price_Increase_Release_ENG.pdf",
-    "size_bytes": 83972,
-    "pages": 2,
-    "thumb": "/assets/cache/pdf/068112ae483f537b.webp",
-    "referrers": [
-     {
-      "url": "https://www.aalavina.org/comunicado",
-      "title": "Comunicado"
-     }
-    ],
-    "upload_month": "2022-08",
-    "link_texts": [
-     "2023 AAGV Price Increase Release (English)"
-    ],
-    "event_date": null,
-    "doc_lang": "en",
-    "section": "Comunicado",
-    "external": false,
-    "orphan": false,
-    "versions": [
-     {
-      "lang": "en",
-      "id": "pdf:068112ae483f",
-      "url": "https://www.aalavina.org/sites/default/files/2022-08/2023_AAGV_Price_Increase_Release_ENG.pdf",
-      "title": "2023 AAGV Price Increase Release",
-      "title_lang": "en",
-      "i18n_title": {
-       "en": "2023 AAGV Price Increase Release",
-       "es": "2023 AAGV comunicado de aumento de precios"
-      },
-      "machine": [
-       "es"
-      ],
-      "source": "lv",
-      "date": "2022-08-29",
-      "first_seen": "2026-09-23T16:35:27Z",
-      "category": "news",
-      "tags": [],
-      "is_new": false,
-      "host": "www.aalavina.org",
-      "file_url": "https://www.aalavina.org/sites/default/files/2022-08/2023_AAGV_Price_Increase_Release_ENG.pdf",
-      "filename": "2023_AAGV_Price_Increase_Release_ENG.pdf",
-      "size_bytes": 83972,
-      "pages": 2,
-      "thumb": "/assets/cache/pdf/068112ae483f537b.webp",
-      "upload_month": "2022-08",
-      "referrers": [
-       {
-        "url": "https://www.aalavina.org/comunicado",
-        "title": "Comunicado"
-       }
-      ],
-      "orphan": false
-     },
-     {
-      "lang": "es",
-      "id": "pdf:dc164744bb1f",
-      "url": "https://www.aagrapevine.org/sites/default/files/2022-08/2023_AAGV_Comunicado_Aumento_Precios_SPAN.pdf",
-      "title": "2023 AAGV Comunicado Aumento Precios",
-      "title_lang": "es",
-      "i18n_title": {
-       "en": "2023 AAGV Price Increase Release",
-       "es": "2023 AAGV Comunicado Aumento Precios"
-      },
-      "machine": [
-       "en"
-      ],
-      "source": "gv",
-      "date": "2022-08-29",
-      "first_seen": "2026-09-23T16:32:24Z",
-      "category": "news",
-      "tags": [],
-      "is_new": false,
-      "host": "www.aagrapevine.org",
-      "file_url": "https://www.aagrapevine.org/sites/default/files/2022-08/2023_AAGV_Comunicado_Aumento_Precios_SPAN.pdf",
-      "filename": "2023_AAGV_Comunicado_Aumento_Precios_SPAN.pdf",
-      "size_bytes": 127156,
-      "pages": 2,
-      "thumb": "/assets/cache/pdf/dc164744bb1fd3ec.webp",
-      "upload_month": "2022-08",
-      "referrers": [
-       {
-        "url": "https://www.aagrapevine.org/news-release",
-        "title": "News Release"
-       },
-       {
-        "url": "https://www.aalavina.org/comunicado",
-        "title": "Comunicado"
-       }
-      ],
-      "orphan": false
-     },
-     {
-      "lang": "fr",
-      "id": "pdf:e988c419172a",
-      "url": "https://www.aagrapevine.org/sites/default/files/2022-08/2023_AAGV_Price_Increase_Release_FRE.pdf",
-      "title": "2023 AAGV Price Increase Release",
-      "title_lang": "en",
-      "i18n_title": {
-       "en": "2023 AAGV Price Increase Release",
-       "es": "2023 AAGV comunicado de aumento de precios"
-      },
-      "machine": [
-       "es"
-      ],
-      "source": "gv",
-      "date": "2022-08-29",
-      "first_seen": "2026-09-23T16:32:24Z",
-      "category": "news",
-      "tags": [],
-      "is_new": false,
-      "host": "www.aagrapevine.org",
-      "file_url": "https://www.aagrapevine.org/sites/default/files/2022-08/2023_AAGV_Price_Increase_Release_FRE.pdf",
-      "filename": "2023_AAGV_Price_Increase_Release_FRE.pdf",
-      "size_bytes": 92445,
-      "pages": 2,
-      "thumb": "/assets/cache/pdf/e988c419172afc49.webp",
-      "upload_month": "2022-08",
-      "referrers": [
-       {
-        "url": "https://www.aagrapevine.org/news-release",
-        "title": "News Release"
-       },
-       {
-        "url": "https://www.aalavina.org/comunicado",
-        "title": "Comunicado"
-       }
-      ],
-      "orphan": false
-     }
-    ]
-   },
-   "i18n": {
-    "title": {
-     "en": "2023 AAGV Price Increase Release",
-     "es": "2023 AAGV Comunicado Aumento Precios"
     },
     "summary": {
      "en": "",
@@ -5432,6 +5380,38 @@
        }
       ],
       "orphan": false
+     },
+     {
+      "lang": "fr",
+      "id": "pdf:740e669f7642",
+      "url": "https://www.aagrapevine.org/sites/default/files/2021-03/2021-Coming-Soon-BOOKS-French.pdf",
+      "title": "Libre à l’intérieur: Histoires de rétablissement AA en prison",
+      "title_lang": "en",
+      "i18n_title": {
+       "en": "Libre à l’intérieur: Histoires de rétablissement AA en prison",
+       "es": "Libre à l’intérieur: Histoires de rétablissement AA en prison"
+      },
+      "machine": [],
+      "source": "gv",
+      "date": "2021-03-02",
+      "first_seen": "2026-09-23T17:13:14Z",
+      "category": "literature",
+      "tags": [],
+      "is_new": false,
+      "host": "www.aagrapevine.org",
+      "file_url": "https://www.aagrapevine.org/sites/default/files/2021-03/2021-Coming-Soon-BOOKS-French.pdf",
+      "filename": "2021-Coming-Soon-BOOKS-French.pdf",
+      "size_bytes": 249926,
+      "pages": 1,
+      "thumb": "/assets/cache/pdf/740e669f7642617f.webp",
+      "upload_month": "2021-03",
+      "referrers": [
+       {
+        "url": "https://www.aagrapevine.org/node/72225",
+        "title": "2 New Books!"
+       }
+      ],
+      "orphan": false
      }
     ]
    },
@@ -5439,58 +5419,6 @@
     "title": {
      "en": "Free on the Inside: Stories of AA Recovery in Prison",
      "es": "Libres por dentro: Historias de recuperación en AA en prisión"
-    },
-    "summary": {
-     "en": "",
-     "es": ""
-    }
-   },
-   "machine": [],
-   "is_new": false
-  },
-  {
-   "id": "pdf:740e669f7642",
-   "source": "crawl",
-   "kind": "pdf",
-   "url": "https://www.aagrapevine.org/sites/default/files/2021-03/2021-Coming-Soon-BOOKS-French.pdf",
-   "title": "Libre à l’intérieur: Histoires de rétablissement AA en prison (French)",
-   "summary": "",
-   "lang": "en",
-   "date": "2021-03-02",
-   "first_seen": "2026-09-23T17:13:14Z",
-   "image": "/assets/cache/pdf/740e669f7642617f.webp",
-   "tags": [],
-   "category": "literature",
-   "status": "ok",
-   "extra": {
-    "host": "www.aagrapevine.org",
-    "file_url": "https://www.aagrapevine.org/sites/default/files/2021-03/2021-Coming-Soon-BOOKS-French.pdf",
-    "filename": "2021-Coming-Soon-BOOKS-French.pdf",
-    "size_bytes": 249926,
-    "pages": 1,
-    "thumb": "/assets/cache/pdf/740e669f7642617f.webp",
-    "referrers": [
-     {
-      "url": "https://www.aagrapevine.org/node/72225",
-      "title": "2 New Books!"
-     }
-    ],
-    "upload_month": "2021-03",
-    "link_texts": [
-     "Libre à l’intérieur: Histoires de rétablissement AA en prison",
-     "Les femmes dans AA (en espagnol)",
-     "En savoir plus ici"
-    ],
-    "event_date": null,
-    "doc_lang": "fr",
-    "section": "2 New Books!",
-    "external": false,
-    "orphan": false
-   },
-   "i18n": {
-    "title": {
-     "en": "Libre à l’intérieur: Histoires de rétablissement AA en prison (French)",
-     "es": "Libre à l’intérieur: Histoires de rétablissement AA en prison (French)"
     },
     "summary": {
      "en": "",
@@ -5932,56 +5860,6 @@
    "is_new": false
   },
   {
-   "id": "pdf:a75d743e55c8",
-   "source": "crawl",
-   "kind": "pdf",
-   "url": "https://www.aalavina.org/sites/default/files/2020-02/Grapevine-Politica-de-Prvacidad%282019-09-05%29.pdf",
-   "title": "Política de privacidad de Grapevine",
-   "summary": "",
-   "lang": "es",
-   "date": "2020-02-01",
-   "first_seen": "2026-09-23T17:06:02Z",
-   "image": "/assets/cache/pdf/a75d743e55c84c71.webp",
-   "tags": [],
-   "category": "guidelines",
-   "status": "ok",
-   "extra": {
-    "host": "www.aalavina.org",
-    "file_url": "https://www.aalavina.org/sites/default/files/2020-02/Grapevine-Politica-de-Prvacidad%282019-09-05%29.pdf",
-    "filename": "Grapevine-Politica-de-Prvacidad(2019-09-05).pdf",
-    "size_bytes": 92101,
-    "pages": 4,
-    "thumb": "/assets/cache/pdf/a75d743e55c84c71.webp",
-    "referrers": [
-     {
-      "url": "https://www.aalavina.org/website-policy",
-      "title": "Website Policy"
-     }
-    ],
-    "upload_month": "2020-02",
-    "link_texts": [
-     "Grapevine Politica de Prvacidad (español)"
-    ],
-    "event_date": null,
-    "doc_lang": "es",
-    "section": "Website Policy",
-    "external": false,
-    "orphan": false
-   },
-   "i18n": {
-    "title": {
-     "en": "Grapevine Privacy Policy",
-     "es": "Política de privacidad de Grapevine"
-    },
-    "summary": {
-     "en": "",
-     "es": ""
-    }
-   },
-   "machine": [],
-   "is_new": false
-  },
-  {
    "id": "pdf:eed64d52e6de",
    "source": "crawl",
    "kind": "pdf",
@@ -6082,63 +5960,6 @@
     "title": {
      "en": "Sample Article",
      "es": "Artículo de muestra"
-    },
-    "summary": {
-     "en": "",
-     "es": ""
-    }
-   },
-   "machine": [
-    "es"
-   ],
-   "is_new": false
-  },
-  {
-   "id": "pdf:eb89376deeee",
-   "source": "crawl",
-   "kind": "pdf",
-   "url": "https://www.aalavina.org/sites/default/files/2020-01/Copyright-and-Reprints-Policy-05-28-13.pdf",
-   "title": "Copyright and Reprints Policy",
-   "summary": "",
-   "lang": "en",
-   "date": "2020-01-01",
-   "first_seen": "2026-09-23T17:06:02Z",
-   "image": "/assets/cache/pdf/eb89376deeee60ac.webp",
-   "tags": [],
-   "category": "guidelines",
-   "status": "ok",
-   "extra": {
-    "host": "www.aalavina.org",
-    "file_url": "https://www.aalavina.org/sites/default/files/2020-01/Copyright-and-Reprints-Policy-05-28-13.pdf",
-    "filename": "Copyright-and-Reprints-Policy-05-28-13.pdf",
-    "size_bytes": 69460,
-    "pages": 3,
-    "thumb": "/assets/cache/pdf/eb89376deeee60ac.webp",
-    "referrers": [
-     {
-      "url": "https://www.aalavina.org/website-policy",
-      "title": "Website Policy"
-     },
-     {
-      "url": "https://www.aagrapevine.org/agreement",
-      "title": "Agreement"
-     }
-    ],
-    "upload_month": "2020-01",
-    "link_texts": [
-     "Copyright and Reprints Policy",
-     "Reprints Policy"
-    ],
-    "event_date": null,
-    "doc_lang": "en",
-    "section": "Website Policy",
-    "external": false,
-    "orphan": false
-   },
-   "i18n": {
-    "title": {
-     "en": "Copyright and Reprints Policy",
-     "es": "Política de derechos de autor y reimpresión"
     },
     "summary": {
      "en": "",
@@ -6624,21 +6445,95 @@
     "doc_lang": "en",
     "section": "Website Policy",
     "external": false,
-    "orphan": false
+    "orphan": false,
+    "versions": [
+     {
+      "lang": "en",
+      "id": "pdf:198e2db90444",
+      "url": "https://www.aagrapevine.org/sites/default/files/2020-01/Grapevine-Privacy-Policy-09-05-2019.pdf",
+      "title": "Privacy and Security Policy",
+      "title_lang": "en",
+      "i18n_title": {
+       "en": "Privacy and Security Policy",
+       "es": "Política de privacidad y seguridad"
+      },
+      "machine": [
+       "es"
+      ],
+      "source": "gv",
+      "date": "2020-01-01",
+      "first_seen": "2026-09-23T17:05:57Z",
+      "category": "guidelines",
+      "tags": [],
+      "is_new": false,
+      "host": "www.aagrapevine.org",
+      "file_url": "https://www.aagrapevine.org/sites/default/files/2020-01/Grapevine-Privacy-Policy-09-05-2019.pdf",
+      "filename": "Grapevine-Privacy-Policy-09-05-2019.pdf",
+      "size_bytes": 100337,
+      "pages": 4,
+      "thumb": "/assets/cache/pdf/198e2db9044472c9.webp",
+      "upload_month": "2020-01",
+      "referrers": [
+       {
+        "url": "https://www.aagrapevine.org/website-policy",
+        "title": "Website Policy"
+       },
+       {
+        "url": "https://www.aalavina.org/website-policy",
+        "title": "Website Policy"
+       },
+       {
+        "url": "https://www.aagrapevine.org/agreement",
+        "title": "Agreement"
+       }
+      ],
+      "orphan": false
+     },
+     {
+      "lang": "es",
+      "id": "pdf:a75d743e55c8",
+      "url": "https://www.aalavina.org/sites/default/files/2020-02/Grapevine-Politica-de-Prvacidad%282019-09-05%29.pdf",
+      "title": "Política de privacidad de Grapevine",
+      "title_lang": "es",
+      "i18n_title": {
+       "en": "Grapevine Privacy Policy",
+       "es": "Política de privacidad de Grapevine"
+      },
+      "machine": [],
+      "source": "lv",
+      "date": "2020-02-01",
+      "first_seen": "2026-09-23T17:06:02Z",
+      "category": "guidelines",
+      "tags": [],
+      "is_new": false,
+      "host": "www.aalavina.org",
+      "file_url": "https://www.aalavina.org/sites/default/files/2020-02/Grapevine-Politica-de-Prvacidad%282019-09-05%29.pdf",
+      "filename": "Grapevine-Politica-de-Prvacidad(2019-09-05).pdf",
+      "size_bytes": 92101,
+      "pages": 4,
+      "thumb": "/assets/cache/pdf/a75d743e55c84c71.webp",
+      "upload_month": "2020-02",
+      "referrers": [
+       {
+        "url": "https://www.aalavina.org/website-policy",
+        "title": "Website Policy"
+       }
+      ],
+      "orphan": false
+     }
+    ]
    },
    "i18n": {
     "title": {
      "en": "Privacy and Security Policy",
-     "es": "Política de privacidad y seguridad"
+     "es": "Política de privacidad de Grapevine"
     },
     "summary": {
      "en": "",
      "es": ""
     }
    },
-   "machine": [
-    "es"
-   ],
+   "machine": [],
    "is_new": false
   },
   {

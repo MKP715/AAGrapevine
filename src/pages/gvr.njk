@@ -224,7 +224,7 @@ pageScripts: ["/assets/js/read.js"]
               {% elif s.id == "handbook" %}
                 {% for h in handbooks %}<a class="link" href="{{ h.url }}" target="_blank" rel="noopener" lang="{{ h.lang }}">{{ h | readPdfTitle(lang) }} ({{ "kind.pdf" | t(lang) | lower }})</a>{% else %}<a class="link" href="#kits">{{ "read.gvr.see_kits" | t(lang) }}</a>{% endfor %}
               {% elif s.id == "meeting" %}
-                <a class="link" href="{{ '/meetings/' | lurl(lang) }}">{% if meeting.next %}{{ "read.gvr.next_meeting" | t(lang, {date: meeting.next.start | fmtDate(lang, "medium")}) }}{% else %}{{ "nav.meeting" | t(lang) }}{% endif %}</a>
+                <a class="link" href="{{ '/meetings/' | lurl(lang) }}#committee-meeting">{% if meeting.next %}{{ "read.gvr.next_meeting" | t(lang, {date: meeting.next.start | fmtDate(lang, "medium")}) }}{% else %}{{ "nav.meeting" | t(lang) }}{% endif %}</a>
               {% elif s.id == "table" %}
                 <a class="link" href="{{ '/shop/' | lurl(lang) }}#cat-title">{{ "read.subs.cat_title" | t(lang) }}</a>
                 <a class="link" href="#kit-{{ 'rlv' if lang == 'es' else 'gvr' }}">{{ "read.gvr.g_flyers" | t(lang) }}</a>

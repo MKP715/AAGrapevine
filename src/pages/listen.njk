@@ -141,8 +141,9 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
   <div class="container-page listen-layout">
   {%- set shortId = site.listen.sidebar_short if site.listen else "" %}
 
-  {#- The sidebar (from 1440px the right-hand column, sticky while the episodes scroll by when
-      the window is tall enough): the player, then the Short. Below 1440px both come first. -#}
+  {#- The sidebar (from 1440px the right-hand column; the player stays in view (sticky) while the
+      episodes scroll by, the Short scrolls under it): the player, then the Short. Below 1440px the
+      player comes first and the Short after the episodes. -#}
   <div class="listen-side page-overlap">
 
   {#- ------------------------------------------------------------ featured player -#}
@@ -226,11 +227,17 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
     </div>
   </section>
 
-  {#- ------------------------------------------------------------ the Short (sidebar) -#}
+  {#- ------------------------------------------------------------ the Short
+      Written once (shortCard) and placed twice: in the sidebar from 1440px (.listen-short--side),
+      and after the episode list below 1440px (.listen-short--end), so on phones and tablets the
+      shows and episodes come first. CSS shows one of the two (display: none keeps the other out of
+      the tab order and the accessibility tree); ids get a suffix. -#}
+  {%- set shortCard = "" %}
   {% if shortId %}
   {%- set shortTitle = site.listen.sidebar_short_title or "AA Grapevine" -%}
   {%- set shortUrl = "https://www.youtube.com/shorts/" + shortId -%}
-  <aside class="card listen-short" aria-labelledby="listen-short-title">
+  {% set shortCard %}
+  <aside class="card listen-short listen-short--__WHERE__" aria-labelledby="listen-short-title__SFX__">
     <div class="listen-short-video">
       <lite-youtube videoid="{{ shortId }}" class="media-lyt listen-lyt" params="rel=0&amp;playsinline=1&amp;hl={{ lang }}"
                     style="background-image: url('{{ shortId | ytThumb('oar2') }}');" playlabel="{{ 'media.play' | t(lang) }}: {{ shortTitle }}">
@@ -241,7 +248,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
     </div>
     <div class="listen-short-body">
       <p class="eyebrow flex items-center gap-1.5 text-grape">{% icon "youtube", "size-3.5" %} {{ "media.short_eyebrow" | t(lang) }}</p>
-      <h2 id="listen-short-title" class="mt-1.5 font-display text-xl font-semibold leading-snug text-ink"{% if lang != "en" %} lang="en"{% endif %}>{{ shortTitle }}</h2>
+      <h2 id="listen-short-title__SFX__" class="mt-1.5 font-display text-xl font-semibold leading-snug text-ink"{% if lang != "en" %} lang="en"{% endif %}>{{ shortTitle }}</h2>
       <p class="mt-1.5 text-sm leading-relaxed text-muted">{{ "media.short_text" | t(lang) }}</p>
     </div>
     {% set appBtns = [["gv", site.links.gv_apps, "media.short_gv_app"], ["lv", site.links.lv_apps, "media.short_lv_app"]] %}
@@ -251,6 +258,8 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
       {% endif %}{% endfor %}
     </p>
   </aside>
+  {% endset %}
+  {{ shortCard | replace("__WHERE__", "side") | replace("__SFX__", "") | safe }}
   {% endif %}
   </div>
 
@@ -423,6 +432,8 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
       {% if site.links.podcasts_page %}<a class="link text-sm" href="{{ site.links.podcasts_page }}" target="_blank" rel="noopener">{{ "media.full_archive" | t(lang) }}</a>{% endif %}
     </div>
   </section>
+
+  {% if shortCard %}{{ shortCard | replace("__WHERE__", "end") | replace("__SFX__", "-end") | safe }}{% endif %}
 
   </div>{#- /.listen-layout -#}
 

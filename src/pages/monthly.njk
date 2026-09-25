@@ -101,13 +101,15 @@ pageScripts: ["/assets/js/monthly.js", "/assets/js/community.js"]
     1800px the sidebar's two cards sit side by side so the report keeps a comfortable width
     (areas/community.css .cm-rp-layout). -#}
 <section id="report" class="container-page scroll-mt-20 pb-12 sm:pb-16" aria-labelledby="report-title" x-data="reportBox('{{ lang }}')">
-  <div class="cm-rp-layout">
+  {#- the heading sits above both columns, so the report card and the sidebar start at the same height -#}
+  <div>
+    <p class="eyebrow text-gv">{{ "community.report.eyebrow" | t(lang) }}</p>
+    <h2 id="report-title" class="h-section mt-1 flex items-center gap-2.5"><span class="text-gv">{% icon "clipboard-list", "size-6" %}</span>{{ "community.report.title" | t(lang) }}</h2>
+    <p class="mt-1.5 max-w-2xl text-muted">{{ "community.report.sub" | t(lang) }}</p>
+  </div>
+  <div class="cm-rp-layout mt-6">
     <div class="min-w-0">
-      <p class="eyebrow text-gv">{{ "community.report.eyebrow" | t(lang) }}</p>
-      <h2 id="report-title" class="h-section mt-1 flex items-center gap-2.5"><span class="text-gv">{% icon "clipboard-list", "size-6" %}</span>{{ "community.report.title" | t(lang) }}</h2>
-      <p class="mt-1.5 max-w-2xl text-muted">{{ "community.report.sub" | t(lang) }}</p>
-
-      <div class="card mt-6 overflow-hidden">
+      <div class="card overflow-hidden">
         <div class="flex flex-wrap items-center justify-between gap-3 border-b border-line bg-surface-2/60 px-4 py-3 sm:px-5">
           <fieldset class="min-w-0" x-cloak>
             <legend class="sr-only">{{ "community.report.lang" | t(lang) }}</legend>
@@ -125,7 +127,7 @@ pageScripts: ["/assets/js/monthly.js", "/assets/js/community.js"]
       </div>
     </div>
 
-    <div class="cm-rp-side lg:pt-[8.5rem]">
+    <div class="cm-rp-side">
     <aside class="rounded-2xl border border-line p-5" aria-labelledby="tips-title">
       <h3 id="tips-title" class="h-card flex items-center gap-2">{% icon "lightbulb", "size-5 text-lv" %} {{ "community.report.tips_title" | t(lang) }}</h3>
       <ul class="mt-3 space-y-3 text-sm leading-relaxed text-muted" role="list">

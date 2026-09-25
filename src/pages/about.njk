@@ -263,7 +263,7 @@ descKey: read.about.meta_desc
         <button type="button" class="btn-ghost btn-sm" data-copy="{{ site.contact_email }}">{% icon "copy", "size-4" %} {{ "common.copy" | t(lang) }}</button>
       </div>
       <ul class="mt-5 space-y-2 border-t border-line pt-4 text-sm">
-        <li><a class="link" href="{{ '/meetings/' | lurl(lang) }}">{{ "nav.meeting" | t(lang) }}</a></li>
+        <li><a class="link" href="{{ '/meetings/' | lurl(lang) }}#committee-meeting">{{ "nav.meeting" | t(lang) }}</a></li>
         {% if site.area_website %}<li><a class="link" href="{{ site.area_website }}" target="_blank" rel="noopener">{{ site | pick(lang, "area") }} — {{ site.area_website | hostname }}</a></li>{% endif %}
         <li><a class="link" href="{{ site.links.aa_org_es if lang == 'es' else site.links.aa_org }}" target="_blank" rel="noopener">{{ "read.about.find_meeting" | t(lang) }}</a></li>
       </ul>

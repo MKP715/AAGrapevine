@@ -528,8 +528,8 @@
     "es": "Instagram"
   },
   "search.kind.committee": {
-    "en": "Committee & events",
-    "es": "Comité y eventos"
+    "en": "Committee, meetings & events",
+    "es": "Comité, reuniones y eventos"
   },
   "search.kind_label.page": {
     "en": "Page",
@@ -758,10 +758,6 @@
   "search.kw.gvr": {
     "en": "gvr rlv grapevine representative group rep kit handbook workbook register become",
     "es": "rlv gvr representante de la viña representante de grupo kit manual cuaderno registrarse"
-  },
-  "search.kw.districts": {
-    "en": "districts district dcm group share email rss",
-    "es": "distritos distrito mcd grupo compartir correo"
   },
   "search.kw.contribute": {
     "en": "share your story write submit contribute editorial themes deadlines guidelines record",

@@ -31,9 +31,12 @@ What is kept
   * ONLY public fields (to_record): name, day, time, place, address, map position, region, district,
     types, attendance and the meeting's own page. Phones, e-mails, contact names, Zoom links / phone
     numbers / passwords, notes, payment links and edit links are never copied: online and hybrid meetings
-    link to their page on the office's site, which has the joining details;
+    link to their page on the office's site, which has the joining details. The free-text place name and
+    the meeting name are also checked: a place name with a phone number or an e-mail address is dropped,
+    and such a part of a meeting name is cut off;
   * the same meeting in two lists (same day + time + street address, or ≤ 60 m apart) is ONE item that
-    names both offices; the richer record wins and the other fills its gaps.
+    names both offices; the richer record wins and the other fills its gaps. Two records of ONE office
+    with their own meeting pages are never merged (two groups in two rooms of one club).
 
 Keys (Dallas Intergroup, Fort Worth Central Office)
 ---------------------------------------------------
@@ -41,8 +44,11 @@ Found per office in this order: (1) the environment variable named in `key_env` 
 (2) `feed_obf` in config/site.yml — the full feed address WITH its key, written backwards and then
 base64-encoded, exactly the way RowlettAA's meetings.html stores it (it only keeps the key from casual
 reading: it is NOT encryption); (3) RowlettAA's meetings.html itself (`key_source.url`, one request): the
-JavaScript constant named in `key_const`, decoded the same way. A key is only ever sent to the site it
-belongs to (the decoded address must be on the feed's own host). No key is ever written anywhere in plain
+JavaScript constant named in `key_const`, decoded the same way. When the office refuses a key (HTTP 401 /
+403, e.g. after it changed its key), the next source is tried (a warning names the refused one). A key is
+only ever sent to the site it belongs to: the decoded address must be on the feed's own host, and a
+redirect of the keyed request is followed only on that same host (and when robots.txt allows it) —
+otherwise the list is not read. No key is ever written anywhere in plain
 text — not in data/raw, data/site or status.json, not in the logs: every address and message that could
 carry one goes through redact(), also inside the shared HTTP logger. Without a usable key, the office's
 public page is read instead.
@@ -52,11 +58,14 @@ public page is read instead.
 prints the `feed_obf` value for a new address (e.g. after an office changes its key).
 
 Politeness: one request per office (+1 for a TSML UI cache file, +1 for the key source when it is
-needed), robots.txt and its Crawl-delay obeyed (common.PoliteSession), a clear User-Agent, timeouts,
-retries. If an office's list cannot be read, its previous meetings are kept (feeds[].ok = false, a note
-in stats.warnings); the envelope is ok=false only when no list at all could be read.
+needed), robots.txt and its Crawl-delay obeyed (common.PoliteSession; checked against the full address
+with its query), a clear User-Agent, timeouts, retries. If an office's list cannot be read — or its full
+list comes back empty, or its page has a meeting table without the location data — its previous meetings
+are kept (feeds[].ok = false, a note in stats.warnings); the envelope is ok=false only when no list at all
+could be read.
 
-Items: kind "meeting", source "meetings", id "mtg:<hash of day|time|place>", url = the meeting's page on
+Items: kind "meeting", source "meetings", id "mtg:<hash of day|time|place>" (place = the street address, else
+the meeting's own page), url = the meeting's page on
 the office's site, title = the meeting's name; extra = day (0 = Sunday), time, end_time, location,
 address, street, zip, city, county, state, lat, lng, approximate, region, district, types, attendance,
 in_area, sources. Envelope extras: `feeds` (per office: id, name, url, lang, ok, count, method,
@@ -81,6 +90,7 @@ import traceback
 from typing import Any, Callable, Mapping
 from urllib.parse import parse_qs, quote_plus, urljoin, urlsplit, urlunsplit
 
+import requests
 from bs4 import BeautifulSoup
 
 from .common import (PoliteSession, clean_text, get_logger, load_config, load_raw, make_item, merge_items, now_iso,
@@ -165,6 +175,10 @@ TYPE_LABELS: dict[str, dict[str, str]] = {
 
 class FeedError(Exception):
     """One office's list could not be read (the message is shown on /status/ — always redacted)."""
+
+
+class KeyRejected(FeedError):
+    """The office refused the key (HTTP 401 / 403): the next key source is tried."""
 
 
 # =========================================================================== keys & redaction
@@ -258,31 +272,42 @@ def key_in(address: str | None, feed_url: str) -> str | None:
     return k if re.fullmatch(r"[A-Za-z0-9_.~-]{8,200}", k) else None
 
 
-def resolve_key(feed: dict, env: Mapping[str, str], key_page: Callable[[], str | None]) -> tuple[str | None, str | None]:
-    """(key, where it came from: "secret" | "config" | "key_source") — (None, None) when there is none."""
+def key_candidates(feed: dict, env: Mapping[str, str], key_page: Callable[[], str | None]):
+    """Every usable key in order — (key, "secret" | "config" | "key_source") — each key once. Lazy: the
+    key source page is only read when the keys before it are missing or refused."""
+    seen: set[str] = set()
     name = str(feed.get("key_env") or "").strip()
     val = str(env.get(name) or "").strip() if name else ""
     if val:
         if "key=" in val:                  # the whole feed address was pasted into the secret
             val = key_in(val, feed["feed"]) or ""
         if re.fullmatch(r"[A-Za-z0-9_.~-]{8,200}", val):
-            return val, "secret"
-        log.warning("%s: the %s secret is not a usable key — ignored", feed["id"], name)
+            seen.add(val)
+            yield val, "secret"
+        else:
+            log.warning("%s: the %s secret is not a usable key — ignored", feed["id"], name)
     if feed.get("feed_obf"):
         k = key_in(deobfuscate(feed["feed_obf"]), feed["feed"])
-        if k:
-            return k, "config"
-        log.warning("%s: feed_obf in config/site.yml does not decode to a %s address with a key — ignored",
-                    feed["id"], _bare_host(feed["feed"]))
+        if k and k not in seen:
+            seen.add(k)
+            yield k, "config"
+        elif not k:
+            log.warning("%s: feed_obf in config/site.yml does not decode to a %s address with a key — ignored",
+                        feed["id"], _bare_host(feed["feed"]))
     if feed.get("key_const"):
         page = key_page()
         k = key_in(js_const_url(page or "", str(feed["key_const"])), feed["feed"]) if page else None
-        if k:
-            return k, "key_source"
-        if page:
+        if k and k not in seen:
+            seen.add(k)
+            yield k, "key_source"
+        elif page and not k:
             log.warning("%s: %s was not found in the key source page (or is for another site)",
                         feed["id"], feed["key_const"])
-    return None, None
+
+
+def resolve_key(feed: dict, env: Mapping[str, str], key_page: Callable[[], str | None]) -> tuple[str | None, str | None]:
+    """(key, where it came from: "secret" | "config" | "key_source") — (None, None) when there is none."""
+    return next(key_candidates(feed, env, key_page), (None, None))
 
 
 # =========================================================================== settings
@@ -436,6 +461,8 @@ def parse_page(page: str, page_url: str) -> tuple[list[dict] | None, str | None]
     if m:
         return None, urljoin(page_url, htmllib.unescape(m.group(1)))
     if re.search(r"""\bid=['"](?:meetings_tbody|tsml)['"]""", page):
+        if _table_rows(page):              # meetings listed, but not their places: the page changed
+            raise FeedError("the meetings page changed format (a table but no location data) — not read")
         return [], None                    # the classic page, with no meeting of this type today
     raise FeedError("no meeting list was found on the office's meetings page")
 
@@ -449,16 +476,34 @@ def read_office(feed: dict, fetch: Fetch, env: Mapping[str, str], key_page: Call
     for method in feed["methods"]:
         try:
             if method == "feed":
-                params = None
                 if feed["key_env"] or feed["key_const"] or feed["feed_obf"]:
-                    key, key_from = resolve_key(feed, env, key_page)
-                    if not key:
+                    text, key_from = None, None
+                    refused: list[str] = []
+                    for key, src in key_candidates(feed, env, key_page):
+                        _SECRETS.add(key)
+                        try:
+                            text, _final = fetch(feed["feed"], {"key": key})
+                        except KeyRejected:
+                            refused.append(src)
+                            log.warning("%s: the key from %s was not accepted — trying the next one", feed["id"], src)
+                            continue
+                        key_from = src
+                        break
+                    if refused:
+                        problems.append("the key from " + " and ".join(refused) + " was not accepted"
+                                        + (f" (the key from {key_from} worked)" if key_from else ""))
+                    if text is None:
+                        if refused:
+                            raise FeedError("no key was accepted for its meeting list (update the "
+                                            f"{feed['key_env'] or 'feed_obf'} value — see config/site.yml)")
                         raise FeedError("no key for its meeting list (set the "
                                         f"{feed['key_env'] or 'feed_obf'} value — see config/site.yml)")
-                    _SECRETS.add(key)
-                    params = {"key": key}
-                text, _final = fetch(feed["feed"], params)
-                return parse_feed(text), method, key_from, problems
+                else:
+                    text, _final = fetch(feed["feed"], None)
+                meetings = parse_feed(text)
+                if not meetings:           # an office's whole list is never empty
+                    raise FeedError("the meeting list is empty")
+                return meetings, method, key_from, problems
             page_url = feed["page"]
             text, final = fetch(page_url, {"tsml-day": "any", "tsml-type": type_code})
             meetings, cache_url = parse_page(text, final or page_url)
@@ -467,6 +512,8 @@ def read_office(feed: dict, fetch: Fetch, env: Mapping[str, str], key_page: Call
                     raise FeedError("the page's meeting data is on another site — not read")
                 text, _final = fetch(cache_url, None)
                 meetings = parse_feed(text)
+                if not meetings:           # the cache file holds the office's whole list
+                    raise FeedError("the meeting list is empty")
             return meetings or [], method, None, problems
         except FeedError as e:
             problems.append(f"{method}: {redact(e)}")
@@ -527,17 +574,46 @@ def _county(g: dict) -> str | None:
     return next((c for c in counties if normalize_place(c) in neta), counties[0] if counties else None)
 
 
+_PERSONAL_RE = re.compile(r"@|\(?\b\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}\b|\+\d[\d\s().-]{8,}")
+
+
+def _house_number(v: Any) -> str | None:
+    m = re.match(r"\s*(\d+)\b", str(v or ""))
+    return m.group(1) if m else None
+
+
 def _location_name(loc: Any, name: str, parts: dict) -> str | None:
     """The place's own name ("Serenity Club", "Two story building with Blue Awning") — None when it only
-    repeats the meeting's name or the address."""
+    repeats the meeting's name or the address, or when it carries a phone number or an e-mail address.
+    A place written as the street again plus a detail keeps only the detail
+    ("1144 N Plano Road, Suite 246 (Bus Route Access)" → "Suite 246 (Bus Route Access)")."""
     s = clean_text(loc).strip(" ,")
-    if not s or fold(s) == fold(name):
+    if not s or fold(s) == fold(name) or _PERSONAL_RE.search(s):
         return None
     if parts.get("address") and re.sub(r",\s*usa$", "", fold(s)) == fold(parts["address"]):
         return None
+    num = _house_number(s)
+    if num and num in (_house_number(parts.get("street")), _house_number(parts.get("address"))):
+        rest = s[re.match(r"\s*\d+[^,(]*", s).end():].strip(" ,")
+        if parts.get("city"):              # "…, Suite 5, Richardson, TX" → "Suite 5"; "…, Rockwall, TX" → ""
+            rest = re.split(rf"(?i)(?:^|,)\s*{re.escape(parts['city'])}\b", rest)[0].strip(" ,")
+        if rest.startswith("(") and rest.endswith(")") and rest.count("(") == 1:
+            rest = rest[1:-1].strip()      # "6101 Watauga Rd (Strip Center)" → "Strip Center"
+        return rest[:120] or None
     if parts.get("city") and re.match(r"\d", s) and re.search(rf",\s*{re.escape(fold(parts['city']))}\b", fold(s)):
         return None                        # "190 Shennendoah ln, Rockwall, TX" = the address again
     return s[:120]
+
+
+def _clean_name(v: Any) -> str:
+    """A meeting name without a phone number or an e-mail address someone typed into it."""
+    t = clean_text(v)
+    if _PERSONAL_RE.search(t):
+        t = re.sub(r"\S*@\S+", "", t)
+        t = _PERSONAL_RE.sub("", t)
+        t = re.sub(r"\s{2,}", " ", re.sub(r"[\s,;:–—-]*(?:call|text|tel|phone|contact|email|e-mail)?[\s,;:–—-]*$", "",
+                                          t, flags=re.I)).strip(" ,;:-–—()")
+    return t
 
 
 def _types(v: Any) -> list[str]:
@@ -565,7 +641,7 @@ def to_record(m: dict, feed: dict, type_code: str) -> tuple[dict | None, str]:
     except (TypeError, ValueError):
         day = -1
     start = clock24(m.get("time"))
-    name = clean_text(m.get("name")) or clean_text(m.get("group"))
+    name = _clean_name(m.get("name")) or _clean_name(m.get("group"))
     if not 0 <= day <= 6 or not start or not name:
         return None, "incomplete"
     end = clock24(m.get("end_time"))
@@ -624,6 +700,9 @@ def _meters(a: dict, b: dict) -> float:
 def same_meeting(a: dict, b: dict) -> bool:
     if (a["day"], a["time"]) != (b["day"], b["time"]):
         return False
+    # one office never lists one meeting twice under two pages (two groups in two rooms of one club)
+    if set(a["sources"]) & set(b["sources"]) and a.get("url") and b.get("url") and a["url"] != b["url"]:
+        return False
     ka, kb = address_key(a), address_key(b)
     if ka and ka == kb:
         return True
@@ -635,7 +714,9 @@ def richness(rec: dict) -> float:
 
 
 def record_id(rec: dict) -> str:
-    place = address_key(rec) or fold(rec.get("name") or "")
+    """Stable: day, time and the street address — else the meeting's own page (online meetings with the
+    same name, day and time stay apart), else the name."""
+    place = address_key(rec) or _no_query(rec.get("url")) or fold(rec.get("name") or "")
     return "mtg:" + short_hash(f"{rec['day']}|{rec['time']}|{place}")
 
 
@@ -669,6 +750,12 @@ def dedupe(records: list[dict], order: list[str]) -> tuple[list[dict], int]:
         base.pop("_kept", None)
         base["id"] = record_id(base)
         out.append(base)
+    ids: dict[str, int] = {}
+    for r in out:
+        ids[r["id"]] = ids.get(r["id"], 0) + 1
+    for r in out:                          # two meetings of one office at one address, day and time
+        if ids[r["id"]] > 1 and r.get("url"):
+            r["id"] = "mtg:" + short_hash(f"{r['day']}|{r['time']}|{address_key(r)}|{_no_query(r['url'])}")
     out.sort(key=lambda r: (r["day"], r["time"], fold(r["name"])))
     return out, merged
 
@@ -723,6 +810,7 @@ def collect(fetch: Fetch, prev: dict, cfg: dict | None = None, env: Mapping[str,
     records: list[dict] = []
     feeds_out: list[dict] = []
     errors: list[str] = []
+    notes: list[str] = []              # warnings of offices that were read (a refused key)
     failed: set[str] = set()
     for feed in st["feeds"]:
         before = prev_feeds.get(feed["id"]) or {}
@@ -743,6 +831,9 @@ def collect(fetch: Fetch, prev: dict, cfg: dict | None = None, env: Mapping[str,
             records += got
             row.update(ok=True, count=len(got), method=method, key_from=key_from, updated=now,
                        note=redact("; ".join(problems))[:300] or None)
+            refused = [p for p in problems if "was not accepted" in p]
+            if refused:                    # shown on /status/: the secret or feed_obf needs updating
+                notes.append(redact(f"{feed['name']}: {refused[0]}")[:300])
             stats["offices_ok"] += 1
             log.info("%s: %d %s meeting(s) of %d listed, %d in our Area (%s%s)", feed["id"], len(got), st["type"],
                      len(meetings), sum(1 for r in got if r["in_area"]), method,
@@ -787,7 +878,7 @@ def collect(fetch: Fetch, prev: dict, cfg: dict | None = None, env: Mapping[str,
     ok = bool(st["feeds"]) and stats["offices_ok"] > 0
     if not st["feeds"]:
         errors.append("no meeting lists are set up (config/site.yml meetings.feeds)")
-    return {"items": items, "feeds": feeds_out, "errors": errors, "warnings": errors if ok else [],
+    return {"items": items, "feeds": feeds_out, "errors": errors, "warnings": (errors if ok else []) + notes,
             "stats": stats, "type_labels": type_labels, "ok": ok}
 
 
@@ -825,6 +916,8 @@ def build_site(env: dict, cfg: dict | None = None) -> dict:
     st = settings(cfg)
     if not isinstance(env, dict):
         env = {}
+    if not st["enabled"]:                  # config meetings.enabled: false → no meetings on the site at once
+        return empty_site(env.get("updated"), st["type"])
     feeds = {f["id"]: f for f in st["feeds"]}
     order = {fid: i for i, fid in enumerate(feeds)}
     out: list[dict] = []
@@ -834,7 +927,13 @@ def build_site(env: dict, cfg: dict | None = None) -> dict:
         rec = from_item(it)
         if not rec or not rec.get("url"):
             continue
-        srcs = sorted([x for x in rec["sources"] if x in feeds] or rec["sources"], key=lambda x: order.get(x, 99))
+        if not any(x in feeds for x in rec["sources"]):
+            continue                       # its office was switched off or removed in config/site.yml
+        # the place name is checked again with today's rules (no new sync needed)
+        rec["location"] = _location_name(rec.get("location"), rec["name"],
+                                         {"address": rec.get("address"), "street": rec.get("street"),
+                                          "city": rec.get("city")})
+        srcs = sorted([x for x in rec["sources"] if x in feeds], key=lambda x: order.get(x, 99))
         in_area = bool(rec.get("in_area"))
         home = next((x for x in srcs if x in feeds), None)
         row = {**rec, "id": it["id"], "kind": "meeting", "sources": srcs, "in_area": in_area,
@@ -878,14 +977,33 @@ def http_fetch(http: PoliteSession) -> Fetch:
     FeedError with a plain, redacted reason. The key travels in `params`, so PoliteSession's own log
     lines (which print the address without them) never show it."""
     def fetch(url: str, params: dict | None) -> tuple[str, str]:
-        if not http.allowed(url):
+        # robots.txt is asked about the address that is really requested, with its query (never logged)
+        full = requests.Request("GET", url, params=params or None).prepare().url
+        if not http.allowed(full):
             raise FeedError(f"{_bare_host(url)}'s robots.txt does not allow reading {urlsplit(url).path}")
-        r = http.get(url, params=params)
+        keyed = bool(params and params.get("key"))
+        if keyed:
+            # A key is only sent to its own site: redirects are followed by hand, on the same host only.
+            r = http.get(url, params=params, allow_redirects=False)
+            for _hop in range(3):
+                if r is None or not getattr(r, "is_redirect", False):
+                    break
+                loc = urljoin(r.url or full, r.headers.get("Location") or "")
+                if _bare_host(loc) != _bare_host(url) or not http.allowed(loc):
+                    raise FeedError(f"{_bare_host(url)} redirected the list to another site — the key was not sent")
+                r = http.get(loc, allow_redirects=False)      # the Location carries its own query
+            else:
+                if r is not None and getattr(r, "is_redirect", False):
+                    raise FeedError(f"{_bare_host(url)} redirected the list too many times")
+        else:
+            r = http.get(url, params=params)
         if r is None:
             raise FeedError(f"{_bare_host(url)} did not answer")
         if r.status_code in (401, 403):
-            raise FeedError(f"{_bare_host(url)} refused the request (HTTP {r.status_code})"
-                            + (" — the key was not accepted" if params and params.get("key") else ""))
+            if keyed:
+                raise KeyRejected(f"{_bare_host(url)} refused the request (HTTP {r.status_code}) — the key was "
+                                  "not accepted")
+            raise FeedError(f"{_bare_host(url)} refused the request (HTTP {r.status_code})")
         if r.status_code != 200:
             raise FeedError(f"{_bare_host(url)} answered HTTP {r.status_code}")
         if len(r.content) > MAX_BYTES:

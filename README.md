@@ -16,8 +16,9 @@ to hand-edit pages, retype flyers or translate anything any more.
 Sitio web del **Comité de Grapevine y La Viña del Área 65 del Noreste de Texas**.
 **Se actualiza solo todas las mañanas** (≈ 5 a. m., hora del Centro), en **inglés y español**.
 
-- Trae automáticamente los **artículos nuevos** de Grapevine y La Viña, **todos los PDF** de aagrapevine.org y
-  aalavina.org, los episodios de **los dos podcasts** (el de AA Grapevine y la **Reunión Abierta
+- Trae automáticamente los **artículos nuevos** de Grapevine y La Viña, **los documentos oficiales** (PDF) de
+  aagrapevine.org y aalavina.org — **cada uno una sola vez**, con sus ediciones en inglés, español y francés
+  en la misma tarjeta —, los episodios de **los dos podcasts** (el de AA Grapevine y la **Reunión Abierta
   Semanal de Grapevine**), los **videos de YouTube** y las **publicaciones de Instagram**, y lo
   **traduce todo** (inglés ⇄ español) con software libre.
 - **Lo único que usted hace:** subir archivos a las carpetas del comité en **Google Drive**
@@ -33,7 +34,9 @@ Sitio web del **Comité de Grapevine y La Viña del Área 65 del Noreste de Texa
   (`/es/monthly/`): un cartel para cada mes (descargar en PNG, compartir, imprimir) y las 10 maneras de poner
   una edición a trabajar. La **reunión abierta semanal de La Viña** (jueves, en español) está en
   `/es/meetings/#weekly-open`. La página **Reuniones** (`/es/meetings/`) también reúne las **reuniones de
-  Grapevine** de los grupos de AA de nuestra Área y de las áreas cercanas.
+  Grapevine** de los grupos de AA de nuestra Área y de las áreas cercanas (de las 8 listas de reuniones que usa
+  la página del Grupo Rowlett). El **informe de GV/LV** para la reunión del distrito está en
+  `/es/monthly/#report` (la antigua página *Distritos* ya no existe; su dirección lleva allí).
 - **Ajustes** (reunión del comité, Zoom, correo, eventos de cada mes como la mesa en CityWide Dallas):
   archivo `config/site.yml`.
   **Corregir una traducción:** `data/translations/overrides.yml`.
@@ -93,7 +96,7 @@ It also runs within a few minutes whenever someone saves a change to the setting
 |---|---|---|
 | **AA Grapevine** magazine (aagrapevine.org) | Each new issue's stories: title, author's first name + initial, the publisher's public teaser, link to read it | **Read** |
 | **La Viña** magazine (aalavina.org) | Same, for each bimonthly issue | **Read** |
-| **Both websites, searched page by page** | Every PDF: flyers, catalogs, GVR / RLV kits, order forms, newsletters… with page count and a preview picture | **Library** (catalogs and order forms also on **Shop**) |
+| **Both websites, searched page by page** | Every **official** PDF — only files on aagrapevine.org, aalavina.org, aa.org or aaws.widen.net (`library.official_hosts`) — flyers, catalogs, GVR / RLV kits, order forms, newsletters…, **each once** (`scripts/sync/pdf_curate.py`: copies of one file merged, older versions of one document dropped, English / Spanish / French editions on one card with language links), with page count and a preview picture | **Library** (catalogs and order forms also on **Shop**) |
 | **AA Grapevine's Podcast** | Every episode, playable on the site | **Listen** |
 | **Grapevine Weekly Open AA Meeting** (podcast) | Every recorded meeting, playable on the site | **Listen** |
 | **YouTube** (@AAGrapevine — Grapevine *and* La Viña videos) | Every video, playable on the site | **Watch** |
@@ -104,7 +107,7 @@ It also runs within a few minutes whenever someone saves a change to the setting
 | **La Viña's weekly open meeting** (from the settings, `lavina_weekly_open:` — an official La Viña flyer) | Thursdays in Spanish, first date, Zoom details | **Meetings** (one line on Home · Listen · Watch · monthly posters) |
 | **Official stores** (aagrapevine.org / aalavina.org store pages) | **Book of the Month** (title, cover, percent, sale price, dates) and **subscription prices** per region (U.S. · Canada · International; print / digital / complete) | **Shop** (a short teaser on Home, the monthly posters and the weekly e-mail) |
 | **Committee meeting** (from the settings) | Next dates, countdown, "add to calendar" | **Meetings · Events** |
-| **Local meeting lists** (the 8 intergroup / central office lists the Rowlett Group's meeting page uses: our Area and nearby areas) | Every meeting with the Grapevine ("GR") type: day, time, place, directions, link to the office's page | **Meetings** (one line on Home; each meeting is in the site search) |
+| **Local meeting lists** (the 8 intergroup / central office lists the Rowlett Group's meeting page uses — in or at our Area: Dallas Intergroup, Fort Worth Central Office, Tyler Central Service Office, the Spanish-speaking Dallas office, District 71 Abilene; nearby: Arkansas Central Office, OKC Intergroup, Northwest Texas Area 66) | Every meeting with the Grapevine ("GR") type: day, time, place, directions, link to the office's page. A meeting in two lists is shown once; our Area first (by county), nearby areas after | **Meetings** (one line on Home; each meeting is in the site search) |
 | **Monthly events** (from the settings, e.g. our booth at CityWide Dallas) | The next dates, "add to calendar" | **Events · Home · Meetings · calendar feed · weekly e-mail** |
 | **Other calendars** (optional, e.g. the NETA 65 workshop calendar on neta65.org) | Their events, each shown **once** even when it is also in `content/events` (yours wins). *neta65.org currently blocks robots — see [the NETA 65 workshop calendar](#the-neta-65-workshop-calendar)* | **Events** |
 | **Translation** | Every title, teaser and announcement in both languages | Everywhere |
@@ -130,9 +133,13 @@ What the newer pages do:
   Its QR code opens that month's page; the three previous months' addresses forward to `/monthly/`.
   The same page holds the **GV/LV report** for district meetings (`/monthly/#report`, see section 4); the old
   `/districts/` address forwards there.
-- **Meetings** (`/meetings/`; the old `/meeting/` address forwards there, `#weekly-open` included): the
-  committee meeting, the **Grapevine meetings** of local groups (our Area first, then nearby areas — with
-  filters), and the weekly open meetings.
+- **Meetings** (`/meetings/`, renamed from *Committee meeting*; the old `/meeting/` address forwards there,
+  `#weekly-open` included): the committee meeting (`#committee-meeting`), the **Grapevine meetings** of local
+  groups (`#grapevine-meetings`: our Area first, then each nearby area — filters for place, day, in person /
+  online and "include nearby areas"; each card links to the meeting's page on the office's site, which has the
+  joining details and any changes), and the weekly open meetings (`#weekly-open`).
+- **Districts** page: removed. Its one piece of its own, the GV/LV report, lives at `/monthly/#report`
+  (found in the site search by "district" / "report", "distrito" / "informe"); `/districts/` forwards there.
 - **La Viña's weekly open meeting**: `/meetings/#weekly-open` shows both public weekly meetings (Grapevine on
   Wednesdays in English, La Viña on Thursdays in Spanish) with day, time and Zoom details — the one place
   with those details; other pages link there.
@@ -143,6 +150,11 @@ corner) · **Committee** (Meetings — committee meeting, Grapevine meetings & w
 documents, photos, announcements).
 Instagram, the weekly digest, the share kit, search and status are in the footer and the phone menu.
 Each piece of information has one home page; other pages only link to it.
+
+**Wording on the site** (both languages): visitors read "document(s)" / "documento(s)", never "PDF", and
+"we keep it updated regularly" / "lo mantenemos actualizado con regularidad" — the pages do not describe how
+the sites are searched (no "crawl", "checked every day on …"). Code, file names, data keys and these docs keep
+the technical words.
 
 **Respecting AA Grapevine, Inc.:** the site shows titles and the publishers' own public teasers and
 links back to the official pages. It never copies magazine articles. **Respecting anonymity:** it
@@ -424,7 +436,10 @@ saved (nothing has to be fetched again), but the website is only republished by 
 ## 8. Is everything working?
 
 - **The site's Status page** — <https://mkp715.github.io/AAGrapevine/status/> shows, for every source,
-  when it last updated, how many items it has and any problem, plus how far the PDF search has got.
+  when it last updated, how many items it has and any problem, plus a small **Document library** panel
+  (how many documents have a preview, last update). How far the PDF search has got (pages known ·
+  crawled) is in each run's summary on the **Actions** tab (the **PDF crawl** line) and in
+  `data/site/status.json` → `crawl` — the public page does not describe the crawl.
 - **The Actions tab** on GitHub — each run shows a green ✓ or a red ✗. Click a run to see two summary
   tables (every step of the update, and every source). A yellow ⚠ warning means one source had a
   bad day; the site still published (with that source's previous items). Below the tables,
@@ -526,11 +541,22 @@ The Meetings page lists the Grapevine meetings of the intergroups' public meetin
 (`meetings:` in `config/site.yml`). Dallas Intergroup and the Fort Worth Central Office answer
 their full list only with a key. The key is already stored in the settings (`feed_obf`), hidden the
 same way the Rowlett Group's meetings page hides it (written backwards and base64-encoded — this
-only keeps it from casual reading, it is not encryption). If an office gives out a new key, either
-add it as the GitHub secret **`TSML_KEY_AADALLAS`** / **`TSML_KEY_FORTWORTHAA`** (the key alone), or run
+only keeps it from casual reading, it is not encryption). Each run tries the keys in this order:
+
+1. the optional GitHub secret **`TSML_KEY_AADALLAS`** / **`TSML_KEY_FORTWORTHAA`** (the key alone, or the whole
+   list address with `&key=…`);
+2. that office's `feed_obf` in `config/site.yml`;
+3. the Rowlett Group's `meetings.html` (`meetings.key_source.url`, the constant named in `key_const`).
+
+A key the office refuses (HTTP 401 / 403) is skipped and the next one is tried; a warning on the run (and
+in `data/raw/meetings.json` → `stats.warnings`) names the refused source, so a stale secret or `feed_obf`
+can be updated. A key is only ever sent to its own office's site (a redirect to another site is not
+followed), and no key is written anywhere in plain text. If an office gives out a new key, either add it
+as the secret, or run
 `python -m scripts.sync.meetings --obfuscate "<the full list address with the new key>"` and paste the
-result into that office's `feed_obf`. Without any working key, the office's public meeting page is read
-instead, so the meetings keep showing.
+printed value into that office's `feed_obf`. Without any working key, the office's public meeting page is
+read instead, so the meetings keep showing. If a list cannot be read — or comes back empty, or its page
+changed format — that office's previous meetings stay on the site until it works again.
 
 ### c) Weekly e-mail digest: keep every district informed
 
@@ -578,8 +604,8 @@ details are in **[docs/SETUP-GITHUB.md](docs/SETUP-GITHUB.md)**:
 - [ ] **Actions → Update & Deploy → Run workflow** once, with **crawl_minutes** left empty (the
   daily setting, 40 minutes).
   - Use **`300`** only if the big first PDF search has *not* been saved in the repository yet:
-    after the first run, open the site's **Status** page — if the PDF search shows only a small
-    percentage done, you may run it once more with `300`. (The committee's first PDF search was run
+    after the first run, open the run's summary on the **Actions** tab — if its **PDF crawl** line shows
+    only a small part of the known pages crawled, you may run it once more with `300`. (The committee's first PDF search was run
     ahead of time and saved, so normally `40` is right. Without it, the daily 40-minute search still
     reaches every page within about 10 days.)
 - [ ] When the run shows a green ✓, open the website and its **Status** page.
@@ -687,7 +713,7 @@ the new **Events** page, in Spanish if they had chosen Spanish on the old site.
 | An announcement did not appear | Not in *announcements*, or its `(until …)` date passed | Move/rename it; it must be a Google Doc, .txt, .md or .docx. |
 | A translation is wrong | Machine translation | Add a fix to `data/translations/overrides.yml` ([section 5](#5-fixing-a-translation)). |
 | Instagram stopped updating | Instagram is refusing robots for a while (or `anonymous: false` without a token) | The last posts stay and it usually recovers. For a permanent fix add the [Instagram token](#b-instagram-token-the-official-way). |
-| The PDF library looks small | Usually nothing is wrong: the PDF search has checked every page of both sites (about 3,450 pages) and found about 130 PDFs — that is all of them | Open the **Status** page → **PDF crawl coverage**. If it shows (nearly) 100 %, the library is complete and there is nothing to do. Only if it shows a low percentage (for example after the crawl's saved progress was deleted) run **Update & Deploy** once with `crawl_minutes = 300`. |
+| The PDF library looks small | Usually nothing is wrong: the PDF search has checked every page of both sites (about 3,450 pages) and found about 130 PDFs; the Library shows the official ones, each once (about 90 entries: copies, older versions and language editions are merged) | Open the last **Update & Deploy** run's summary → the **PDF crawl** line (or `data/site/status.json` → `crawl`). If (nearly) every known page is crawled, the library is complete and there is nothing to do. Only if few are (for example after the crawl's saved progress was deleted) run **Update & Deploy** once with `crawl_minutes = 300`. The run log's `pdf_curate` lines say which documents were merged and why. |
 | Site shows "404 — There isn't a GitHub Pages site here" | Pages not switched to GitHub Actions | **Settings → Pages → Source: GitHub Actions**, then run **Update & Deploy**. |
 | Run fails at "Read GitHub Pages settings" | Same as above | Same as above. |
 | Run fails at "Commit refreshed data" with *permission denied* / *403* / *protected branch* | A rule on `main` stops the bot from saving its data | If `main` has branch protection or a ruleset, add **GitHub Actions** to its bypass list (**Settings → Rules** or **Settings → Branches**). The workflow already asks for write access itself; *Workflow permissions* does not need changing. |

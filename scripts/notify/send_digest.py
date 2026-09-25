@@ -212,7 +212,11 @@ GROUPS = [
 
 
 def log(msg: str) -> None:
-    print(f"[digest] {msg}", flush=True)
+    line = f"[digest] {msg}"
+    try:
+        print(line, flush=True)
+    except UnicodeEncodeError:             # a console that is not UTF-8 (Windows cp1252): keep the log line
+        print(line.encode("ascii", "backslashreplace").decode("ascii"), flush=True)
 
 
 # ---------------------------------------------------------------------------- config

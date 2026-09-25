@@ -173,7 +173,6 @@ pageScripts: ["/assets/js/committee.js"]
     {#- ---------- Next dates · who can attend · chair · calendar feed ---------- -#}
     <div class="card card-pad flex flex-col lg:row-span-2">
       <h3 class="h-card flex items-center gap-2 text-xl"><span class="text-gv">{% icon "calendar-days", "size-5" %}</span>{{ "committee.meeting.next_dates" | t(lang) }}</h3>
-      <p class="mt-1 text-sm text-muted">{{ rule }} · {{ timeRange }}</p>
       {% set dates = meeting.upcoming | limit(7) %}
       {% if dates | length %}
       <ol class="cm-dates mt-5 space-y-2" data-cm-max="6">
@@ -267,10 +266,6 @@ pageScripts: ["/assets/js/committee.js"]
 {% macro gvmCard(c, L, h) %}
 {%- set attIcon = "video" if c.attendance == "online" else ("monitor-smartphone" if c.attendance == "hybrid" else "users-round") -%}
 <li id="{{ c.anchor }}" class="cm-gvm-row{{ ' is-nearby' if not c.inArea }}" data-day="{{ c.day }}" data-area="{{ 'ours' if c.inArea else 'nearby' }}" data-att="{{ c.attendance }}" data-q="{{ c.search }}">
-  <p class="cm-gvm-time">
-    {% icon "clock", "size-4 shrink-0" %}
-    <span>{{ c.time }}{% if c.end %}<span class="cm-gvm-end"> –&nbsp;{{ c.end }}</span>{% endif %}<span class="sr-only"> ({{ "committee.gvm.central" | t(L) }})</span></span>
-  </p>
   <div class="cm-gvm-who">
     <h{{ h }} class="cm-gvm-name">{{ c.name }}</h{{ h }}>
     <p class="mt-2 flex flex-wrap gap-1.5">
@@ -280,8 +275,14 @@ pageScripts: ["/assets/js/committee.js"]
       {%- if c.spanish %}<span class="badge-lv">{% icon "languages", "size-3" %} {{ "committee.weekly.lang_es" | t(L) }}</span>{% endif %}
       {%- if c.access %}<span class="badge-muted">{% icon "accessibility", "size-3" %} {{ "committee.gvm.access" | t(L) }}</span>{% endif %}
     </p>
-    {% if c.listedBy | length %}<p class="cm-gvm-src">{{ "committee.gvm.listed_by" | t(L, { names: c.listedBy | join(" · ") }) }}</p>{% endif %}
+    {#- one office: its site is named by the "Details on …" link — only a meeting in two lists names both -#}
+    {% if c.listedBy | length > 1 %}<p class="cm-gvm-src">{{ "committee.gvm.listed_by" | t(L, { names: c.listedBy | join(" · ") }) }}</p>{% endif %}
   </div>
+  {#- after the name in the markup (heading navigation reaches the name, then hears the time); shown first by CSS order -#}
+  <p class="cm-gvm-time">
+    {% icon "clock", "size-4 shrink-0" %}
+    <span>{{ c.time }}{% if c.end %}<span class="cm-gvm-end"> –&nbsp;{{ c.end }}</span>{% endif %}<span class="sr-only"> ({{ "committee.gvm.central" | t(L) }})</span></span>
+  </p>
   <ul class="cm-gvm-meta" role="list">
     <li>
       {% icon "map-pin", "size-4 shrink-0 text-faint" %}
@@ -296,7 +297,7 @@ pageScripts: ["/assets/js/committee.js"]
   </ul>
   <div class="cm-gvm-actions">
     {% if c.directions %}<a class="btn-secondary btn-sm max-sm:min-h-11" href="{{ c.directions }}" target="_blank" rel="noopener" aria-label="{{ 'committee.gvm.directions_aria' | t(L, { name: c.name }) }}">{% icon "navigation", "size-4" %} {{ "committee.gvm.directions" | t(L) }}</a>{% endif %}
-    {% if c.url %}<a class="cm-gvm-details" href="{{ c.url }}" target="_blank" rel="noopener" aria-label="{{ 'committee.gvm.details_aria' | t(L, { site: c.siteHost, name: c.name }) }}">{{ "committee.gvm.details" | t(L, { site: c.siteHost }) }} {% icon "external-link", "size-3.5 shrink-0" %}</a>{% endif %}
+    {% if c.url %}<a class="cm-gvm-details" href="{{ c.url }}" target="_blank" rel="noopener" aria-label="{{ 'committee.gvm.details_aria' | t(L, { site: c.siteHost, name: c.name }) }}"><span>{{ "committee.gvm.details" | t(L, { site: c.siteHost }) }}&nbsp;{% icon "external-link", "inline size-3.5 align-[-0.15em]" %}</span></a>{% endif %}
   </div>
 </li>
 {% endmacro %}
@@ -377,7 +378,7 @@ pageScripts: ["/assets/js/committee.js"]
       {% if gvm.nearby %}
       <label class="cm-gvm-toggle">
         <input type="checkbox" class="cm-switch" x-model="nearby">
-        <span>{{ "committee.gvm.f_nearby" | t(lang) }} <span class="cm-chip-count">{{ gvm.nearby }}</span></span>
+        <span>{{ "committee.gvm.f_nearby" | t(lang) }} <span class="cm-chip-count" aria-hidden="true">{{ gvm.nearby }}</span><span class="sr-only"> ({{ (countTpl.one if gvm.nearby == 1 else countTpl.many) | replace("{n}", gvm.nearby) }})</span></span>
       </label>
       {% endif %}
     </div>

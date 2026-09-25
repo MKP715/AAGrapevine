@@ -220,6 +220,13 @@ class Parsing(unittest.TestCase):
         with self.assertRaises(M.FeedError):
             M.parse_page("<html><body>Nothing here</body></html>", "https://x.org/meetings/")
 
+    def test_a_table_without_location_data_is_an_error(self):
+        page = fx("tyleraa_page.html").replace("var locations", "var places")
+        with self.assertRaises(M.FeedError):
+            M.parse_page(page, "https://www.tyler-aa.org/meetings/")
+        empty = '<table><tbody id="meetings_tbody"></tbody></table>'
+        self.assertEqual(M.parse_page(empty, "https://x.org/meetings/"), ([], None), "no meeting of this type today")
+
     def test_meeting_page_keeps_its_own_query(self):
         self.assertEqual(M._no_query("https://district71.org/?tsml_meeting=sunshine-4"),
                          "https://district71.org/?tsml_meeting=sunshine-4")
@@ -245,11 +252,42 @@ class Records(unittest.TestCase):
         self.assertEqual(rec["url"], "https://www.aadallas.org/meetings/richardson-group-15/")
         self.assertEqual((rec["day"], rec["time"], rec["city"], rec["county"], rec["in_area"]),
                          (3, "20:00", "Richardson", "Dallas", True))
-        self.assertEqual(rec["location"], "1144 N Plano Road, Suite 246 (Bus Route Access)")   # adds the suite
+        self.assertEqual(rec["location"], "Suite 246 (Bus Route Access)")   # the street again is dropped, the suite stays
 
     def test_location_that_repeats_the_address_or_the_name_is_dropped(self):
         self.assertIsNone(self.rec("aadallas", "Big Book (Rockwall) Group")[0]["location"])
         self.assertIsNone(self.rec("fortworthaa", "Mid-Cities")[0]["location"])
+
+    def test_location_that_starts_with_the_street_keeps_only_the_detail(self):
+        loc = M._location_name
+        rich = {"address": "1144 N Plano Rd, Richardson, TX 75081", "street": "1144 N Plano Rd", "city": "Richardson"}
+        self.assertEqual(loc("1144 N Plano Road, Suite 246 (Bus Route Access)", "Richardson Group", rich),
+                         "Suite 246 (Bus Route Access)")
+        self.assertEqual(loc("1144 N Plano Road, Suite 246, Richardson, TX", "Richardson Group", rich), "Suite 246")
+        gp = {"address": "921 W Pioneer Pkwy, Grand Prairie, TX 75052", "street": "921 W Pioneer Pkwy",
+              "city": "Grand Prairie"}
+        self.assertEqual(loc("921 W Pioneer Pkwy, Suite O", "Grand Prairie Group", gp), "Suite O")
+        wat = {"address": "6101 Watauga Rd e, Watauga, TX 76148", "street": "6101 Watauga Rd e", "city": "Watauga"}
+        self.assertEqual(loc("6101 Watauga Rd (Strip Center)", "Serenity", wat), "Strip Center")
+        self.assertIsNone(loc("6101 Watauga Road", "Serenity", wat), "nothing left but the street")
+        self.assertEqual(loc("Serenity Club", "Any Lengths Group", wat), "Serenity Club")
+        self.assertEqual(loc("12 Steps Hall", "X", wat), "12 Steps Hall", "another number: a name, kept")
+
+    def test_phone_or_email_in_a_place_or_a_name_is_not_copied(self):
+        parts = {"address": "1 Main St, Tyler, TX 75702", "street": "1 Main St", "city": "Tyler"}
+        self.assertIsNone(M._location_name("Private home – call Bob (555) 010-0004", "G", parts))
+        self.assertIsNone(M._location_name("Ask pat@example.org for the gate code", "G", parts))
+        self.assertIsNone(M._location_name("Home group 903-555-0100", "G", parts))
+        self.assertEqual(M._clean_name("Tuesday Grapevine – call (555) 010-0004"), "Tuesday Grapevine")
+        self.assertEqual(M._clean_name("Sunday GV pat@example.org"), "Sunday GV")
+        self.assertEqual(M._clean_name("Big Book Group 12 & 12"), "Big Book Group 12 & 12")
+        rows = json.loads(fx("aadallas_feed.json"))
+        m = dict(next(r for r in rows if r["name"] == "Richardson Group"), location="Call (555) 010-0004",
+                 name="Richardson Group (555) 010-0004")
+        rec, _ = M.to_record(m, self.feed["aadallas"], "GR")
+        self.assertEqual(rec["name"], "Richardson Group")
+        self.assertIsNone(rec["location"])
+        self.assertNotIn("555", json.dumps(rec))
 
     def test_non_grapevine_and_inactive_meetings_are_left_out(self):
         self.assertEqual(self.rec("aadallas", "ODAAT Group"), (None, "type"))
@@ -351,6 +389,49 @@ class Collect(unittest.TestCase):
         self.assertEqual(len(gp), 1)
         self.assertEqual(gp[0]["sources"], ["aadallas", "fortworthaa"])
 
+    def test_an_empty_list_or_a_changed_page_keeps_the_previous_meetings(self):
+        first = M.collect(FakeWeb(), {}, feeds_cfg(), env={})
+        prev = {"items": [M.to_item(r) for r in first["items"]]}
+
+        class Broken(FakeWeb):
+            def __call__(self, url, params):
+                if url == D71_FEED:
+                    self.calls.append((url, dict(params or {})))
+                    return "[]", url
+                if url == "https://www.tyler-aa.org/meetings/":
+                    self.calls.append((url, dict(params or {})))
+                    return fx("tyleraa_page.html").replace("var locations", "var places"), url
+                if url == "https://district71.org/meetings/":
+                    raise M.FeedError("district71.org did not answer")
+                return super().__call__(url, params)
+        res = M.collect(Broken(), prev, feeds_cfg(), env={})
+        by = {f["id"]: f for f in res["feeds"]}
+        self.assertFalse(by["tyleraa"]["ok"])
+        self.assertIn("changed format", by["tyleraa"]["error"])
+        self.assertFalse(by["district71"]["ok"])
+        self.assertIn("empty", by["district71"]["error"])
+        self.assertEqual((by["tyleraa"]["count"], by["district71"]["count"]), (3, 1), "their meetings are kept")
+        self.assertEqual(len(res["items"]), len(first["items"]))
+
+    def test_a_refused_key_tries_the_next_source(self):
+        """A stale secret (HTTP 401) → the key from the key page is tried, and a warning says so."""
+        class Strict(FakeWeb):
+            def __call__(self, url, params):
+                if url in self.keys and (params or {}).get("key") and params["key"] != self.keys[url]:
+                    self.calls.append((url, dict(params)))
+                    raise M.KeyRejected(f"{M._bare_host(url)} refused the request (HTTP 401) — the key was not accepted")
+                return super().__call__(url, params)
+        web = Strict()
+        res = M.collect(web, {}, feeds_cfg(), env={"TSML_KEY_AADALLAS": "stalesecret12345"})
+        dal = next(f for f in res["feeds"] if f["id"] == "aadallas")
+        self.assertEqual((dal["ok"], dal["method"], dal["key_from"]), (True, "feed", "key_source"))
+        self.assertIn((DALLAS_FEED, {"key": "stalesecret12345"}), web.calls)
+        self.assertIn((DALLAS_FEED, {"key": FAKE_KEY}), web.calls)
+        self.assertTrue(any("key from secret was not accepted" in w for w in res["warnings"]), res["warnings"])
+        dump = json.dumps(res)
+        self.assertNotIn("stalesecret12345", dump)
+        self.assertNotIn(FAKE_KEY, dump)
+
     def test_nothing_readable_is_a_failed_run(self):
         web = FakeWeb(fail={DALLAS_FEED, FW_FEED, D71_FEED, KEY_PAGE, "https://www.tyler-aa.org/meetings/",
                             "https://fortworthaa.org/meetings/", "https://www.aadallas.org/meetings/",
@@ -381,6 +462,22 @@ class Dedupe(unittest.TestCase):
         self.assertEqual((len(items), merged), (1, 2))
         self.assertEqual(items[0]["sources"], ["x", "y", "z"])
         self.assertEqual(items[0]["end_time"], "12:00")
+
+    def test_two_meetings_of_one_office_at_one_address_stay_apart(self):
+        a = self.base(url="https://x.org/meetings/a/", sources=["x"], name="Room 1 Group")
+        b = self.base(url="https://x.org/meetings/b/", sources=["x"], name="Room 2 Group")
+        items, merged = M.dedupe([a, b], ["x"])
+        self.assertEqual((len(items), merged), (2, 0))
+        self.assertNotEqual(items[0]["id"], items[1]["id"])
+
+    def test_online_meetings_without_a_street_get_their_own_ids(self):
+        a = self.base(street=None, zip=None, city=None, lat=None, lng=None, attendance="online", name="Online GV",
+                      url="https://x.org/meetings/online-gv/", sources=["x"])
+        b = self.base(street=None, zip=None, city=None, lat=None, lng=None, attendance="online", name="Online GV",
+                      url="https://y.org/meetings/online-gv/", sources=["y"])
+        items, _ = M.dedupe([a, b], ["x", "y"])
+        self.assertEqual(len({i["id"] for i in items}), 2)
+        self.assertEqual(M.record_id(a), M.record_id(dict(a, name="Renamed")), "stable: the page, not the name")
 
     def test_other_time_or_place_stays_apart(self):
         items, _ = M.dedupe([self.base(), self.base(time="12:00", sources=["y"]),
@@ -428,11 +525,82 @@ class SiteJson(unittest.TestCase):
         for v in (FAKE_KEY, FAKE_KEY_FW, "key=", *PERSONAL_VALUES):
             self.assertNotIn(v, dump)
 
+    def test_switched_off_meetings_or_office_leave_the_site_at_once(self):
+        self.assertEqual(M.build_site(self.env, feeds_cfg(enabled=False))["items"], [])
+        cfg = feeds_cfg()
+        for f in cfg["meetings"]["feeds"]:
+            if f["id"] == "tyleraa":
+                f["enabled"] = False
+        s = M.build_site(self.env, cfg)
+        self.assertFalse(any("tyleraa" in i["sources"] for i in s["items"]))
+        self.assertEqual(len(s["items"]), len(self.site["items"]) - 3)
+        self.assertNotIn("tyleraa", [x["id"] for x in s["sources"]])
+
     def test_empty_and_broken_input(self):
         self.assertEqual(M.build_site({}, feeds_cfg())["items"], [])
         self.assertEqual(M.build_site(None, feeds_cfg())["groups"], [])
         e = M.empty_site()
         self.assertEqual((e["items"], e["groups"], e["sources"]), ([], [], []))
+
+
+class HttpFetch(unittest.TestCase):
+    """http_fetch(): robots.txt is asked about the real address; a keyed request never leaves its site."""
+
+    class Resp:
+        def __init__(self, url, status=200, location=None, body=b"[]"):
+            self.url, self.status_code, self.content = url, status, body
+            self.headers = {"Location": location} if location else {}
+            self.is_redirect = bool(location) and status in (301, 302, 303, 307, 308)
+
+    class Http:
+        def __init__(self, answers, disallow=()):
+            self.answers, self.disallow = list(answers), disallow
+            self.asked, self.gets = [], []
+
+        def allowed(self, url):
+            self.asked.append(url)
+            return not any(d in url for d in self.disallow)
+
+        def get(self, url, **kw):
+            self.gets.append((url, kw))
+            return self.answers.pop(0)
+
+    def test_robots_is_checked_with_the_query(self):
+        http = self.Http([], disallow=("tsml-type=",))
+        fetch = M.http_fetch(http)
+        with self.assertRaises(M.FeedError) as cm:
+            fetch("https://x.org/meetings/", {"tsml-day": "any", "tsml-type": "GR"})
+        self.assertIn("tsml-type=GR", http.asked[0])
+        self.assertNotIn("tsml-type", str(cm.exception))
+        self.assertEqual(http.gets, [])
+
+    def test_a_redirect_to_another_site_is_not_followed_with_the_key(self):
+        http = self.Http([self.Resp(DALLAS_FEED + "&key=" + FAKE_KEY, 302,
+                                    "https://evil.example.com/wp-admin/admin-ajax.php?action=meetings&key=" + FAKE_KEY)])
+        fetch = M.http_fetch(http)
+        with self.assertRaises(M.FeedError) as cm:
+            fetch(DALLAS_FEED, {"key": FAKE_KEY})
+        self.assertIn("another site", str(cm.exception))
+        self.assertEqual(len(http.gets), 1, "evil.example.com is never asked")
+        self.assertIs(http.gets[0][1]["allow_redirects"], False)
+
+    def test_a_redirect_on_the_same_site_is_followed(self):
+        http = self.Http([self.Resp(DALLAS_FEED, 301, "https://aadallas.org/wp-admin/admin-ajax.php?action=meetings&key=" + FAKE_KEY),
+                          self.Resp("https://aadallas.org/wp-admin/admin-ajax.php?action=meetings&key=" + FAKE_KEY, 200,
+                                    body=b'[{"name": "x"}]')])
+        text, final = M.http_fetch(http)(DALLAS_FEED, {"key": FAKE_KEY})
+        self.assertEqual(json.loads(text), [{"name": "x"}])
+        self.assertNotIn(FAKE_KEY, final)
+        self.assertEqual(len(http.gets), 2)
+
+    def test_a_refused_key_is_its_own_error(self):
+        http = self.Http([self.Resp(DALLAS_FEED, 401)])
+        with self.assertRaises(M.KeyRejected):
+            M.http_fetch(http)(DALLAS_FEED, {"key": FAKE_KEY})
+        http = self.Http([self.Resp("https://x.org/meetings/", 403)])
+        with self.assertRaises(M.FeedError) as cm:
+            M.http_fetch(http)("https://x.org/meetings/", None)
+        self.assertNotIsInstance(cm.exception, M.KeyRejected)
 
 
 class Settings(unittest.TestCase):

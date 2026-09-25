@@ -85,7 +85,7 @@
   "shop.volume_qty": { "en": "Copies", "es": "Ejemplares" },
   "shop.copies_range": { "en": "{a}–{b} copies", "es": "{a} a {b} ejemplares" },
   "shop.copies_plus": { "en": "{a} or more", "es": "{a} o más" },
-  "shop.prices_note": { "en": "Prices in US dollars from {stores}, checked {date}. The store has the final price.", "es": "Precios en dólares estadounidenses de {stores}, revisados el {date}. La tienda tiene el precio final." },
+  "shop.prices_note": { "en": "Prices in US dollars from {stores}, as of {date}. The store has the final price.", "es": "Precios en dólares estadounidenses de {stores}, al {date}. La tienda tiene el precio final." },
   "shop.conversion_note": { "en": "Orders from Canada and other countries may be subject to currency conversion.", "es": "Los pedidos desde Canadá y otros países pueden estar sujetos a conversión de moneda." },
   "shop.all_plans": { "en": "All {mag} subscriptions ({region}) on the store", "es": "Todas las suscripciones de {mag} ({region}) en la tienda" },
   "shop.empty_title": { "en": "Prices are on the official stores", "es": "Los precios están en las tiendas oficiales" },

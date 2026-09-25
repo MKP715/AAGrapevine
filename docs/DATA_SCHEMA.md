@@ -172,13 +172,23 @@ changes only `status.json` (and `updated` stamps).
    the newest upload; a rep-kit copy) and takes over the others' `referrers` (max 5) and kits;
    `extra.duplicates` lists the other addresses. Copies filed under different languages by the two sites
    (a bilingual file, e.g. the joint catalog) become one entry with `extra.same_file: true` (rule 4).
-3. **Superseded versions** — the same original title, publication, document language, category and type
-   (e.g. a 2019 "YouTube Channel" postcard and its 2026 replacement): only the newest stays.
-4. **Language editions** — an English and a Spanish (French…) edition of one document (the same English
-   title once "(English)" / "(Spa.)" markers are removed — word order and small words ignored —, a
-   compatible type, a different `doc_lang`, and dates within 45 days, file names that differ only by the
-   language word, or the GVR-kit / RLV-kit counterparts with the same type and page count) become ONE
-   item: the English edition (else the Spanish one) is the item and `extra.versions` lists every edition:
+3. **Superseded versions** — the same original title, document language, category and type (e.g. a 2019
+   "YouTube Channel" postcard and its 2026 replacement): only the newest stays. The title is compared without
+   a leading publication name ("Grapevine", "AA Grapevine", "AAGV" — not "La Viña"), a trailing edition code
+   ("EE", "Rev 2", "v2") and language markers: the 2013 "Copyright and Reprints Policy" gives way to the 2024
+   "Grapevine Copyright and Reprints Policy", the 2023 price-increase release "(English)" to its "EE"
+   re-issue. The publication does not count (the two sites share one files directory).
+4. **Language editions** — an English and a Spanish (French…) edition of one document (a compatible type
+   and a different `doc_lang`, plus one of: the same English title once "(English)" / "(Spa.)" markers and
+   edition codes are removed — word order and small words ignored — and dates within 45 days, file names
+   that differ only by the language word, or the GVR-kit / RLV-kit counterparts with the same type and page
+   count; or, when the titles differ, file names that differ only by the language word AND dates within 45
+   days — a French flyer whose French title was never translated —, or dates within 45 days + the same page
+   count + a "found on" page in common + one title's words inside the other's once publication names are
+   dropped, the title and every link text tried — "Privacy Policy" ⊆ "Privacy and Security Policy") become
+   ONE item (chains join: FR ↔ ES ↔ EN): the English edition (else the Spanish one) is the item and
+   `extra.versions` lists every edition. A French title the language detector took for English
+   (`lang: "en"`, `doc_lang: "fr"`) is not used as the English title:
 
 ```json
 "extra": { "versions": [
@@ -193,7 +203,7 @@ changes only `status.json` (and `updated` stamps).
 
    `lang` = the edition's document language; order en, es, fr. The item's `i18n.title.<lang>` is the
    title of that language's edition (its original title when written in that language), language markers
-   removed; `machine` / `is_new` follow. `extra.kits` = every rep kit the document is in when that is more
+   and edition codes removed; `machine` / `is_new` follow. `extra.kits` = every rep kit the document is in when that is more
    than its own `category` says. The Library shows one card per item: the edition in the page language
    (else the item's own), with links to every edition ("English · Español"; none for `same_file`), and the
    language filter counts every edition's language. /gvr/ and /shop/ (eleventy/filters/read.js
@@ -336,16 +346,32 @@ the joining details (Zoom links, phones and contacts are never copied).
   `in_area: true`. Everything else is "nearby", grouped under its office's `region_label`.
 * The same meeting in two lists (same day + time + street address — "Road"/"Rd", suite numbers ignored — or
   ≤ 60 m apart) is ONE item; `sources` names both offices and the id does not depend on which one answered.
+  Two records of ONE office with their own meeting pages are never merged (two groups in two rooms of one
+  club). `id` = hash of day | time | street address — else the meeting's own page (online meetings), else the
+  name; two meetings of one office at one address and time also add their page, so ids are unique.
+* `location` = the place's own name ("Serenity Club"); none when it only repeats the meeting's name or the
+  address, and a place written as the street again plus a detail keeps only the detail
+  ("1144 N Plano Road, Suite 246 (Bus Route Access)" → "Suite 246 (Bus Route Access)" — build_site applies
+  this again, so older raw data is fixed without a new sync). A place name with a phone number or an e-mail
+  address is dropped, and such a part of a meeting name is cut off.
 * How each office is read (`methods`, in order): `feed` = the JSON list (`…/admin-ajax.php?action=meetings`);
   `page` = its public meeting-list page filtered to GR (classic page: `var locations` + table; "TSML UI" page:
   its public `tsml-cache-….json`). robots.txt is obeyed (tyler-aa.org: page only).
-* Keys (Dallas, Fort Worth): env `TSML_KEY_AADALLAS` / `TSML_KEY_FORTWORTHAA` (GitHub secrets, optional) →
-  `feed_obf` in config/site.yml (the full address with its key, reversed + base64 exactly like RowlettAA's
-  meetings.html — obfuscation, not encryption; regenerate with `python -m scripts.sync.meetings --obfuscate
-  "<address>"`) → RowlettAA's meetings.html (`key_source`, constant `key_const`). A key is never written in
-  plain text: not in data/raw, data/site, status.json or the logs (`redact()` on every address and message).
+* Keys (Dallas, Fort Worth), tried in this order (`key_candidates`): env `TSML_KEY_AADALLAS` /
+  `TSML_KEY_FORTWORTHAA` (GitHub secrets, optional) → `feed_obf` in config/site.yml (the full address with
+  its key, reversed + base64 exactly like RowlettAA's meetings.html — obfuscation, not encryption;
+  regenerate with `python -m scripts.sync.meetings --obfuscate "<address>"`) → RowlettAA's meetings.html
+  (`key_source`, constant `key_const`, read only when needed). A key the office refuses (HTTP 401 / 403 →
+  `KeyRejected`) moves on to the next source; `feeds[].key_from` names the one that worked and
+  `stats.warnings` the refused one. A key is only sent to its own office's host: the keyed request follows
+  redirects by hand, on that host only and when robots.txt allows (otherwise the list is not read), and
+  robots.txt is checked against the full address with its query. A key is never written in plain text: not
+  in data/raw, data/site, status.json or the logs (`redact()` on every address and message).
 * An office that cannot be read keeps its previous meetings (`sources[].ok: false`, a note in the run
-  summary); the source fails on /status/ only when no list at all could be read.
+  summary); the source fails on /status/ only when no list at all could be read. An empty full list (feed or
+  TSML UI cache) and a classic page with a meeting table but no `var locations` count as "cannot be read".
+* `build_site` follows the settings at once (no new sync needed): `meetings.enabled: false` → the empty file;
+  meetings of an office that is switched off (`enabled: false`) or removed are left out.
 * Without data the file is `{updated: null, fixture: false, type: "GR", sources: [], groups: [], items: [],
   type_labels: {}}` — the page must show a graceful "see the intergroup websites" state.
 * Where it shows: `/meetings/#grapevine-meetings` (`cmGvMeetings` → `gvMeetings()` in
@@ -366,8 +392,10 @@ the joining details (Zoom links, phones and contacts are never copied).
   ],
   "crawl": { "known_pages": 3162, "crawled_pages": 52, "never_crawled": 3110, "never_crawled_events": 2939,
              "queue_remaining": 3110, "est_days_to_full": 9.6, "last_run_pages": 0, "page_errors": 0, "new": 0,
-             "pdfs": 106, "pdfs_gone": 0, "pdfs_with_details": 14, "pdfs_with_thumbs": 14,
-             "updated": "…", "attempted": "…" },
+             "pdfs": 92,               // the Library's entries (curated: official, each once) — as sources[pdfs].count (its new_7d counts the same entries)
+             "pdfs_gone": 0, "pdfs_with_details": 14,
+             "pdfs_with_thumbs": 92,   // Library entries with a first-page preview
+             "updated": "…", "attempted": "…" },   // the crawler's page counters: for the run summary / maintainers
   "translations": { "cached": 1620, "engine": "argos1.0-ct2/v5", "model_enabled": true,
                     "translated_this_run": 0, "from_cache": 1620, "pending": 0, "rejected_by_guard": 0,
                     "seconds": 0.1, "model_seconds": 0.0, "texts_per_second": null, "glossary_entries": 162 },

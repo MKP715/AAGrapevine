@@ -2298,6 +2298,10 @@ def main(argv: list[str] | None = None) -> int:
         for s in status["sources"]:     # the Library's count: official documents, each once (pdf_curate.py)
             if s["source"] == "pdfs":
                 s["count"] = counts["pdfs"]
+                s["new_7d"] = sum(1 for i in cols["pdfs"] if (ts(i.get("first_seen")) or 0) >= ctx.now_ts - 7 * 86400)
+        # the Status page's library panel counts the same curated entries (not the files before merging)
+        status["crawl"]["pdfs"] = counts["pdfs"]
+        status["crawl"]["pdfs_with_thumbs"] = sum(1 for i in cols["pdfs"] if (i.get("extra") or {}).get("thumb"))
         status["spotlight"] = {"today": spotlight["today"], "home_days": spotlight["home_days"],
                                "list_days": spotlight["list_days"], "counts": spotlight["counts"],
                                "items": len(spotlight["items"])}

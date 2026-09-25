@@ -26,10 +26,11 @@
      One container below the hero, three blocks (DOM order = reading order):
      .listen-side (page-overlap: the latest-episode player .listen-feature + the YouTube Short
      .listen-short), .listen-shows, .listen-episodes.
-     < 1440px: stacked, full width.
+     < 1440px: stacked, full width; the Short's second copy (.listen-short--end) comes after the
+     episodes, so the shows and episodes come first.
      ≥ 1440px: shows + episodes in the growing left column; the player in a fixed-width
      right column, sticky under the header while the episode list scrolls by (it is
-     ~32rem tall, so it always fits the window). */
+     ~32rem tall, so it always fits the window); the Short under it scrolls normally. */
   .listen-layout { display: grid; grid-template-columns: minmax(0, 1fr); padding-bottom: 3rem; }
   .listen-shows { padding-top: 2.5rem; }
   .listen-episodes { padding-top: 2.5rem; }
@@ -63,10 +64,18 @@
     box-shadow: 0 1px 2px rgb(0 0 0 / 0.1), 0 8px 20px -10px rgb(0 0 0 / 0.45); }
   .listen-short-body { align-self: end; }
   .listen-short-links { display: flex; flex-wrap: wrap; align-self: start; gap: 0.5rem; }
+  .listen-short--end { margin-top: 2.5rem; }
+  .listen-short-links .media-plat { white-space: nowrap; }
+  /* narrow phones: the two app buttons go under the video and the text, side by side */
+  @media (width < 30rem) {
+    .listen-short-video { grid-row: auto; }
+    .listen-short-body { align-self: center; }
+    .listen-short-links { grid-column: 1 / -1; }
+  }
   @media (width >= 30rem) { .listen-short { grid-template-columns: 7.5rem minmax(0, 1fr); column-gap: 1.25rem; padding: 1rem; } }
   @media (width >= 48rem) { .listen-side { gap: 1.25rem; } }
   @media (width >= 48rem) and (width < 90rem) {
-    .listen-short { grid-template-columns: 7.5rem minmax(0, 34rem) 1fr; align-items: center; padding: 1rem 1.5rem 1rem 1rem; }
+    .listen-short { grid-template-columns: 7.5rem minmax(0, 1fr) auto; align-items: center; padding: 1rem 1.5rem 1rem 1rem; }
     .listen-short-video { grid-row: auto; }
     .listen-short-body { align-self: center; }
     .listen-short-links { flex-direction: column; align-items: stretch; align-self: center; justify-self: end; }
@@ -321,12 +330,9 @@ lite-youtube.media-lyt { width: 100%; max-width: none; border-radius: inherit; }
 lite-youtube.media-lyt::before { display: none; } /* title overlay: the title is shown next to the player */
 lite-youtube.media-lyt > .lyt-playbtn { filter: none; }
 lite-youtube.media-lyt > .lyt-playbtn:focus-visible { outline: 3px solid #fff; outline-offset: -6px; }
-/* LISTEN: in tall windows the whole side column (player + Short) stays in view. Unlayered, so it
-   beats the page-overlap utility's position: relative on the same element. */
-@media (width >= 90rem) and (height >= 56rem) {
-  .listen-side { align-self: start; position: sticky; top: calc(var(--header-h) + 1.25rem); }
-  .listen-side > .listen-feature { position: static; }
-}
+/* LISTEN: one copy of the Short at a time (unlayered, so it beats .listen-short's display: grid). */
+@media (width < 90rem) { .listen-short--side { display: none; } }
+@media (width >= 90rem) { .listen-short--end { display: none; } }
 /* LISTEN: the sidebar's YouTube Short is vertical (9:16). */
 lite-youtube.listen-lyt::after { padding-bottom: calc(100% * 16 / 9); }
 lite-youtube.listen-lyt > .lyt-playbtn { background-size: 52px 37px; }

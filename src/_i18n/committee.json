@@ -104,8 +104,8 @@
     "es": "Próxima fecha: {date}"
   },
   "committee.meeting.hero_sub": {
-    "en": "{rule} · {time} Central time, on Zoom — every AA member is welcome.",
-    "es": "{rule} · {time}, hora del Centro, por Zoom — todo miembro de AA es bienvenido."
+    "en": "{rule} · {time} Central time, on Zoom.",
+    "es": "{rule} · {time}, hora del Centro, por Zoom."
   },
   "committee.meeting.next": {
     "en": "Next meeting",
@@ -384,8 +384,8 @@
     "es": "Detalles en aalavina.org"
   },
   "committee.weekly.source_gv": {
-    "en": "Meeting details are checked every day on aagrapevine.org.",
-    "es": "Los detalles de la reunión se revisan cada día en aagrapevine.org."
+    "en": "Details from aagrapevine.org — we keep them updated regularly.",
+    "es": "Detalles de aagrapevine.org; los mantenemos actualizados con regularidad."
   },
   "committee.weekly.source_lv": {
     "en": "Details from an official La Viña flyer shared with the committee.",
@@ -640,8 +640,8 @@
     "es": "Por ahora no hay eventos de Grapevine / La Viña en Texas"
   },
   "committee.events.empty_cal_text": {
-    "en": "We check the official Grapevine and La Viña event calendars every day and list Texas and online events here.",
-    "es": "Revisamos a diario los calendarios oficiales de eventos de Grapevine y La Viña y aquí mostramos los de Texas y en línea."
+    "en": "Texas and online events from the official Grapevine and La Viña calendars show up here — we keep this list updated regularly.",
+    "es": "Aquí aparecen los eventos de Texas y en línea de los calendarios oficiales de Grapevine y La Viña; mantenemos esta lista actualizada con regularidad."
   },
   "committee.events.empty_cal_cta": {
     "en": "See the official calendar",
@@ -680,8 +680,8 @@
     "es": "Calendarios de Grapevine y La Viña"
   },
   "committee.events.src_calendars_text": {
-    "en": "Texas and online events from the official aagrapevine.org and aalavina.org calendars, checked every day.",
-    "es": "Eventos de Texas y en línea de los calendarios oficiales de aagrapevine.org y aalavina.org, revisados cada día."
+    "en": "Texas and online events from the official aagrapevine.org and aalavina.org calendars — we keep them updated regularly.",
+    "es": "Eventos de Texas y en línea de los calendarios oficiales de aagrapevine.org y aalavina.org; los mantenemos actualizados con regularidad."
   },
   "committee.events.aside_aria": {
     "en": "About this calendar",
@@ -1249,15 +1249,15 @@
   },
   "committee.gvm.eyebrow": {
     "en": "AA groups in and near our Area",
-    "es": "Grupos de AA en nuestra Área y cerca"
+    "es": "Grupos de AA en nuestra Área y sus alrededores"
   },
   "committee.gvm.title": {
     "en": "Grapevine meetings",
     "es": "Reuniones de Grapevine"
   },
   "committee.gvm.what": {
-    "en": "A Grapevine meeting is an AA group that uses Grapevine or La Viña in its meeting — the “Grapevine” (GR) type in the local meeting lists.",
-    "es": "Una reunión de Grapevine es un grupo de AA que usa Grapevine o La Viña en su reunión: en las listas de reuniones locales tiene el tipo “Grapevine” (GR)."
+    "en": "A Grapevine meeting is an AA meeting that uses Grapevine or La Viña — the “Grapevine” (GR) type in the local meeting lists.",
+    "es": "Una reunión de Grapevine es una reunión de AA que usa Grapevine o La Viña: en las listas de reuniones locales tiene el tipo “Grapevine” (GR)."
   },
   "committee.gvm.summary": {
     "en": "{total} meetings every week: {ours} in our Area and {nearby} in nearby areas.",
@@ -1273,7 +1273,7 @@
   },
   "committee.gvm.times_note": {
     "en": "Times are Central time. Meetings can change, so check the details on the office's site before you go.",
-    "es": "Las horas son del Centro. Las reuniones pueden cambiar: revisa los detalles en el sitio de la oficina antes de ir."
+    "es": "Los horarios están en hora del Centro. Las reuniones pueden cambiar: revisa los detalles en el sitio de la oficina antes de ir."
   },
   "committee.gvm.area_title": {
     "en": "In our Area (NETA 65)",
@@ -1408,8 +1408,8 @@
     "es": "Lo mantenemos actualizado con regularidad."
   },
   "committee.gvm.failed": {
-    "en": "We couldn't check {names} this time — their meetings are shown as of the last update.",
-    "es": "Esta vez no pudimos revisar {names}; sus reuniones aparecen como estaban en la última actualización."
+    "en": "We couldn't update {names} this time — their meetings are shown as of the last update.",
+    "es": "Esta vez no pudimos actualizar {names}; sus reuniones aparecen como estaban en la última actualización."
   },
   "committee.gvm.cta_title": {
     "en": "Does your group read Grapevine or La Viña in its meetings?",

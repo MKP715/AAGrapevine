@@ -14,12 +14,19 @@ the GVR and Shop pages) sees the same list:
      the document's; the newest upload; a rep-kit copy; the most "found on" pages) and takes over the
      others' "found on" pages and kits. Copies that the two sites file under DIFFERENT languages
      (a bilingual file such as the joint catalog) become language versions of one entry (rule d);
-  c) superseded versions: the same original title, publication, document language, category and
-     type (e.g. a 2019 "YouTube Channel" postcard and its 2026 replacement) → only the newest stays;
+  c) superseded versions: the same original title (a leading "Grapevine" / "AAGV", a trailing edition
+     code such as "EE" / "Rev" / "v2" and language markers ignored), document language, category and
+     type — e.g. a 2019 "YouTube Channel" postcard and its 2026 replacement, or the 2013 "Copyright and
+     Reprints Policy" and the 2024 "Grapevine Copyright and Reprints Policy" → only the newest stays.
+     The publication does not count: the two sites share one files directory;
   d) language versions: an English and a Spanish (French…) edition of one document — the same
      English title once "(English)" / "(Spa.)" markers are removed, a compatible type, a different
      document language, and dates within PAIR_DAYS, file names that differ only by the language
-     word, or the GVR-kit / RLV-kit counterparts of each other (same type and page count) — become
+     word, or the GVR-kit / RLV-kit counterparts of each other (same type and page count); or, when
+     the titles differ, file names that differ only by the language word and dates within PAIR_DAYS
+     (a French flyer whose title was never translated), or dates within PAIR_DAYS + the same page
+     count + a "found on" page in common + one title's words inside the other's once the publication
+     names are dropped ("Privacy Policy" ⊆ "Privacy and Security Policy") — become
      ONE entry: the English edition (else the Spanish one) is the item, `extra.versions` lists every
      edition, and the item's i18n title for each page language is that language's edition's title.
 
@@ -57,6 +64,12 @@ _MARKER_RE = re.compile(rf"(?i)\s*(?:[(\[]\s*(?:{_LANG_WORDS})\.?\s*[)\]]|[-–�
 # language words inside a FILE name ("New_Publisher-SPANISH-Anncmnt", "…_Release_FRE")
 _FILE_LANG_RE = re.compile(rf"(?i)(?<![a-z])(?:{_LANG_WORDS})(?![a-z])")
 _STOP = frozenset("the of and a an for to in on with y de del la el los las en et le les du des".split())
+# a trailing edition code: "… Release EE", "… Policy Rev 2", "… Flyer v2"
+_EDITION_RE = re.compile(r"\s+(?:EE|[Rr]ev\.?\s*\d*|REV\s*\d*|v\d+(?:\.\d+)?)\s*$")
+# a leading publication name: "Grapevine Copyright and Reprints Policy" = "Copyright and Reprints Policy"
+_LEAD_PUB_RE = re.compile(r"(?i)^\s*(?:(?:the\s+)?aa\s+grapevine|(?:the\s+)?grapevine|aagv)\b[\s:,\-–—]*")
+# publication names dropped when comparing titles that only overlap (rule d fallback)
+_PUB_WORDS = frozenset("grapevine la vina aa aagv gv lv".split())
 
 
 # =========================================================================== small helpers
@@ -76,11 +89,18 @@ def strip_lang_marker(title: str) -> str:
     return t or str(title or "")
 
 
+def strip_edition(title: str) -> str:
+    """'2023 AAGV Price Increase Release EE' → '2023 AAGV Price Increase Release' (edition codes)."""
+    t = str(title or "")
+    s = _EDITION_RE.sub("", t).strip()
+    return s or t
+
+
 def title_key(title: str) -> str:
     """Word set of a title for comparisons: accents, case, punctuation, word order, small words,
-    ordinal endings and language markers ignored ('2026 Catalog (Postcard)' = '2026 Catalog Postcard',
-    'Grapevine and La Viña Apps' = 'La Viña and Grapevine Apps')."""
-    words = re.findall(r"[a-z0-9]+", fold(strip_lang_marker(title)))
+    ordinal endings, language markers and trailing edition codes ignored ('2026 Catalog (Postcard)' =
+    '2026 Catalog Postcard', 'Grapevine and La Viña Apps' = 'La Viña and Grapevine Apps')."""
+    words = re.findall(r"[a-z0-9]+", fold(strip_edition(strip_lang_marker(title))))
     words = [re.sub(r"^(\d+)(?:st|nd|rd|th|o|a|er|e)$", r"\1", w) for w in words]
     return " ".join(sorted({w for w in words if w not in _STOP}))
 
@@ -135,8 +155,9 @@ def doc_lang(it: dict) -> str:
 
 
 def en_title(it: dict) -> str:
-    """The English title: the original when it is English, else its (machine) translation."""
-    if it.get("lang") == "en":
+    """The English title: the original when it is English (and the document is not in another
+    language: a French title the detector took for English is not English), else its translation."""
+    if it.get("lang") == "en" and doc_lang(it) in ("en", "und"):
         return str(it.get("title") or "")
     tr = ((it.get("i18n") or {}).get("title") or {}).get("en")
     return str(tr or it.get("title") or "")
@@ -342,11 +363,20 @@ def _absorb(keep: dict, other: dict) -> None:
 
 
 # =========================================================================== c) superseded
+def supersede_title(title: str) -> str:
+    """'Grapevine Copyright and Reprints Policy' = 'Copyright and Reprints Policy';
+    '2023 AAGV Price Increase Release EE' = '2023 AAGV Price Increase Release (English)'."""
+    t = strip_edition(strip_lang_marker(str(title or "")))
+    return strict_title(_LEAD_PUB_RE.sub("", t) or t)
+
+
 def _supersede_key(it: dict) -> tuple | None:
-    t = strict_title(it.get("title") or "")
+    """The publication does not count: aagrapevine.org and aalavina.org share one files directory,
+    and an English document on either site is the same Grapevine document."""
+    t = supersede_title(it.get("title") or "")
     if not t:
         return None
-    return (publication(it), doc_lang(it), t, str(it.get("category") or ""))
+    return (doc_lang(it), t, str(it.get("category") or ""))
 
 
 # =========================================================================== d) language versions
@@ -362,15 +392,47 @@ def _kit_counterparts(a: dict, b: dict) -> bool:
             and pages_of(a) > 0 and pages_of(a) == pages_of(b))
 
 
+def _referrer_urls(it: dict) -> set[str]:
+    return {str((r or {}).get("url") or "").rstrip("/").lower() for r in extra(it).get("referrers") or []
+            if (r or {}).get("url")}
+
+
+def _title_keys(it: dict) -> set[str]:
+    """Word keys of the English title and of the link texts, publication names dropped."""
+    keys = set()
+    for t in [en_title(it), *(extra(it).get("link_texts") or [])]:
+        k = " ".join(w for w in title_key(str(t or "")).split() if w not in _PUB_WORDS)
+        if len(k.split()) >= 2:
+            keys.add(k)
+    return keys
+
+
+def _overlapping_titles(a: dict, b: dict) -> bool:
+    """One title's words inside the other's ('policy privacy' ⊆ 'policy privacy security')."""
+    for ka in _title_keys(a):
+        wa = set(ka.split())
+        for kb in _title_keys(b):
+            wb = set(kb.split())
+            if wa <= wb or wb <= wa:
+                return True
+    return False
+
+
 def _pairable(a: dict, b: dict, days: int = PAIR_DAYS) -> str | None:
     if doc_lang(a) == doc_lang(b) or "und" in (doc_lang(a), doc_lang(b)) or not types_compatible(a, b):
         return None
+    near = _near(a, b, days)
+    sa, sb = file_stem(a, drop_lang=True), file_stem(b, drop_lang=True)
+    if near and sa and sa == sb and file_stem(a) != file_stem(b):
+        return "file names differ only by the language word, published together"
     ta, tb = title_key(en_title(a)), title_key(en_title(b))
     if not ta or ta != tb:
+        if (near and pages_of(a) > 0 and pages_of(a) == pages_of(b)
+                and _referrer_urls(a) & _referrer_urls(b) and _overlapping_titles(a, b)):
+            return "found on the same page, same length, matching title, published together"
         return None
-    if _near(a, b, days):
+    if near:
         return "same title, published together"
-    sa, sb = file_stem(a, drop_lang=True), file_stem(b, drop_lang=True)
     if sa and sa == sb:
         return "same title and file name"
     if _kit_counterparts(a, b):
@@ -411,8 +473,8 @@ def _merge_versions(members: list[dict], same_file: bool) -> dict:
     primary = members[0]
     versions = [version_record(it) for it in members]
     for v in versions:                     # the language links say it: no "(English)" in the titles
-        v["title"] = strip_lang_marker(v["title"])
-        v["i18n_title"] = {k: strip_lang_marker(t) for k, t in v["i18n_title"].items()}
+        v["title"] = strip_edition(strip_lang_marker(v["title"]))
+        v["i18n_title"] = {k: strip_edition(strip_lang_marker(t)) for k, t in v["i18n_title"].items()}
     by_lang = {v["lang"]: v for v in versions}
     pv = versions[0]
     ex = primary.setdefault("extra", {})

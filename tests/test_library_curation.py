@@ -169,6 +169,38 @@ class Superseded(unittest.TestCase):
         self.assertEqual(len(out), 3, "a/b differ in category, a/c in type; d is another language (an edition)")
 
 
+    def test_copies_on_the_two_sites_and_edition_codes(self):
+        """The 2013 policy on aalavina.org and the 2024 one on aagrapevine.org; the 2023 price-increase
+        release on aalavina.org and its "EE" re-issue on aagrapevine.org two weeks later."""
+        old = pdf("pdf:c13", LV + "2020-01/Copyright-and-Reprints-Policy-05-28-13.pdf", "Copyright and Reprints Policy",
+                  category="guidelines", tags=(), size=69460, pages=3, date="2020-01-01")
+        new = pdf("pdf:c24", GV + "2024-08/Copyright-and-Reprints-Policy-08-28-24.pdf",
+                  "Grapevine Copyright and Reprints Policy", category="guidelines", tags=(), size=92107, pages=2,
+                  date="2024-08-28")
+        rel = pdf("pdf:r", LV + "2022-08/2023_AAGV_Price_Increase_Release_ENG.pdf",
+                  "2023 AAGV Price Increase Release (English)", category="news", tags=(), size=83972, pages=2,
+                  date="2022-08-29")
+        ee = pdf("pdf:ee", GV + "2022-09/2023_AAGV_Price_Increase_Release_ENG_EE.pdf",
+                 "2023 AAGV Price Increase Release EE", category="news", tags=(), size=123820, pages=2, date="2022-09-12")
+        es = pdf("pdf:es", GV + "2022-08/2023_AAGV_Comunicado_Aumento_Precios_SPAN.pdf",
+                 "2023 AAGV Comunicado Aumento Precios", lang="es", en="2023 AAGV Price Increase Release",
+                 category="news", tags=(), size=90000, pages=2, date="2022-08-29")
+        fr = pdf("pdf:fr", GV + "2022-08/2023_AAGV_Price_Increase_Release_FRE.pdf",
+                 "2023 AAGV Price Increase Release (French)", doc_lang="fr", category="news", tags=(), size=92445,
+                 pages=2, date="2022-08-29")
+        out, swaps = curate([new, ee, rel, es, fr, old])
+        self.assertEqual(sorted(e["id"] for e in out), ["pdf:c24", "pdf:ee"])
+        rel_card = next(e for e in out if e["id"] == "pdf:ee")
+        self.assertEqual([(v["lang"], v["id"]) for v in rel_card["extra"]["versions"]],
+                         [("en", "pdf:ee"), ("es", "pdf:es"), ("fr", "pdf:fr")])
+        self.assertEqual(rel_card["title"], "2023 AAGV Price Increase Release", "no edition code on the card")
+        self.assertEqual(sorted({v["id"] for v in swaps.values()}), ["pdf:c24", "pdf:ee"],
+                         "What's New entries of the left-out copies point at the kept entries")
+        self.assertEqual(P.supersede_title("Grapevine Copyright and Reprints Policy"),
+                         P.supersede_title("Copyright and Reprints Policy"))
+        self.assertNotEqual(P.supersede_title("La Viña Order Form"), P.supersede_title("Order Form"))
+
+
 class LanguageEditions(unittest.TestCase):
     def test_english_and_spanish_edition_become_one_entry(self):
         en = pdf("pdf:en", GV + "2026-01/Audio_download_GV_2026.pdf.pdf", "Audio Downloads", size=97595, is_new=False)
@@ -229,7 +261,7 @@ class LanguageEditions(unittest.TestCase):
     def test_one_edition_per_language(self):
         en1 = pdf("pdf:e1", GV + "2022-08/Release_ENG.pdf", "Price Increase Release (English)", category="news",
                   tags=(), size=1, date="2022-08-29")
-        en2 = pdf("pdf:e2", LV + "2022-08/Release_ENG_v2.pdf", "Price Increase Release (English)", category="news",
+        en2 = pdf("pdf:e2", LV + "2022-08/Release_ENG_v2.pdf", "Release: Price Increase (English)", category="news",
                   tags=(), size=2, date="2022-08-30", refs=[RLV_PAGE])
         es = pdf("pdf:s", GV + "2022-08/Release_SPAN.pdf", "Comunicado", lang="es", category="news", tags=(),
                  en="Price Increase Release (Spanish)", size=3, date="2022-08-29")
@@ -240,6 +272,51 @@ class LanguageEditions(unittest.TestCase):
         self.assertEqual(sorted(v["lang"] for v in merged[0]["extra"]["versions"]), ["en", "es"])
         self.assertEqual(sorted(u for e in out for u in urls_of(e)), sorted(i["url"] for i in (en1, en2, es)),
                          "nothing lost, no address twice")
+
+    def test_french_title_never_translated_same_file_name(self):
+        """'Free on the Inside' flyer 2021-03: English, Spanish and a French edition whose French title is
+        tagged as English (lang 'en', doc_lang 'fr'): the file names differ only by the language word."""
+        page = {"url": "https://www.aagrapevine.org/node/72225", "title": "New books"}
+        en = pdf("pdf:en", GV + "2021-03/2021-Coming-Soon-NEW_BOOKS-Eng.pdf",
+                 "Free on the Inside: Stories of AA Recovery in Prison", category="literature", tags=(), size=147758,
+                 date="2021-03-02", refs=[page])
+        es = pdf("pdf:es", GV + "2021-03/2021-Coming-Soon-BOOKS-Spanish.pdf",
+                 "Libres por dentro: Historias de recuperación en AA en prisión", lang="es",
+                 en="Free on the Inside: Stories of Recovery in AA in Prison", category="literature", tags=(),
+                 size=97143, date="2021-03-02", refs=[page])
+        fr = pdf("pdf:fr", GV + "2021-03/2021-Coming-Soon-BOOKS-French.pdf",
+                 "Libre à l’intérieur: Histoires de rétablissement AA en prison (French)", doc_lang="fr",
+                 category="literature", tags=(), size=249926, date="2021-03-02", refs=[page])
+        out, _ = curate([es, en, fr])
+        self.assertEqual(len(out), 1)
+        self.assertEqual([v["lang"] for v in out[0]["extra"]["versions"]], ["en", "es", "fr"])
+        self.assertEqual(out[0]["id"], "pdf:en")
+        self.assertEqual(P.en_title(fr), fr["i18n"]["title"]["en"], "a French document's title is not English")
+        other = pdf("pdf:o", GV + "2021-09/2021-Coming-Soon-BOOKS-French.pdf", "Autre", doc_lang="fr",
+                    category="literature", tags=(), size=1, date="2021-09-30")
+        self.assertEqual(len(curate([es, other])[0]), 2, "same file names months apart are not paired")
+
+    def test_privacy_policy_editions_with_different_titles(self):
+        """Grapevine's 2019 privacy policy: 'Privacy and Security Policy' (EN, linked as 'Privacy Policy')
+        and 'Política de privacidad de Grapevine' (ES), both on aalavina.org/website-policy, 4 pages each."""
+        pol = {"url": "https://www.aalavina.org/website-policy", "title": "Website policy"}
+        en = pdf("pdf:en", GV + "2020-01/Grapevine-Privacy-Policy-09-05-2019.pdf", "Privacy and Security Policy",
+                 category="guidelines", tags=(), size=100337, pages=4, date="2020-01-01",
+                 refs=[{"url": "https://www.aagrapevine.org/website-policy", "title": "x"}, pol])
+        en["extra"]["link_texts"] = ["Privacy and Security Policy", "Privacy Policy"]
+        es = pdf("pdf:es", LV + "2020-02/Grapevine-Politica-de-Prvacidad%282019-09-05%29.pdf",
+                 "Política de privacidad de Grapevine", lang="es", en="Grapevine Privacy Policy",
+                 category="guidelines", tags=(), size=92101, pages=4, date="2020-02-01", refs=[pol])
+        out, _ = curate([en, es])
+        self.assertEqual(len(out), 1)
+        self.assertEqual([v["lang"] for v in out[0]["extra"]["versions"]], ["en", "es"])
+        cr = pdf("pdf:cr", LV + "2020-01/Copyright-and-Reprints-Policy-05-28-13.pdf", "Copyright and Reprints Policy",
+                 lang="es", en="Copyright and Reprints Policy", category="guidelines", tags=(), size=69460,
+                 pages=4, date="2020-01-01", refs=[pol])
+        self.assertEqual(len(curate([en, cr])[0]), 2, "same page and length, but the titles do not match")
+        es_far = copy.deepcopy(es)
+        es_far["date"] = "2021-06-01"
+        self.assertEqual(len(curate([en, es_far])[0]), 2, "not published together")
 
     def test_whats_new_follows_the_merge(self):
         en = pdf("pdf:en", GV + "2026-01/Audio_download_GV_2026.pdf", "Audio Downloads")

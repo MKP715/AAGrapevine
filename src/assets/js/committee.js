@@ -256,7 +256,12 @@
         },
         get filtered() { return this.day !== "" || this.q.trim() !== "" || this.how !== "" || !this.nearby; },
         get statusText() { return countText(this.labels, this.shown); },
-        reset: function () { this.day = ""; this.q = ""; this.how = ""; this.nearby = true; },
+        reset: function () {
+          this.day = ""; this.q = ""; this.how = ""; this.nearby = true;
+          // the pressed button hides itself: keep keyboard focus in the filters, not on <body>
+          var f = this.$root.querySelector("input[type=search]");
+          if (f) this.$nextTick(function () { f.focus(); });
+        },
         match: function (li, terms) {
           if (this.day !== "" && li.getAttribute("data-day") !== String(this.day)) return false;
           if (!this.nearby && li.getAttribute("data-area") !== "ours") return false;
