@@ -1,15 +1,16 @@
 ---
 pagination: { data: languages, size: 1, alias: lang }
-permalink: "{{ '/' if lang == 'en' else '/es/' }}documents/index.html"
+permalink: "{{ '/' if lang == 'en' else '/es/' }}portfolio/index.html"
 layout: layouts/base.njk
-pageKey: documents
-titleKey: nav.documents
+pageKey: portfolio
+titleKey: nav.portfolio
 descKey: committee.docs.meta_desc
 pageScripts: ["/assets/js/committee.js"]
 ---
-{#- Committee documents from the public Google Drive folder (reports, notes,
-    slides, workshops, flyers, forms, and any other folder by name), grouped by
-    category and panel. Preview opens an accessible modal with Drive's viewer.
+{#- /portfolio/ — the committee's Portfolio: its own files from the public Google Drive folder
+    (reports, notes, slides, workshops, flyers, forms, and any other folder by name), grouped by
+    category and panel. Preview opens an accessible modal with Drive's viewer. The old address,
+    /documents/, is a redirect stub (documents-redirect.njk) that keeps its #anchors.
     Below the shared page hero (one visitor action) and the committee sub-nav: with files — category
     chips + search, one card grid per category (grid-cards: up to 5 columns); with none yet — the
     shared page-level empty card (ui.pageEmpty: what will be here). Then, collapsed, "For committee
@@ -21,7 +22,7 @@ pageScripts: ["/assets/js/committee.js"]
 {%- set nonEmpty = dt.tabs.length - emptyTabs -%}
 {%- set di = db.status | cmDriveInfo(site) -%}
 
-{% call ui.pageHero(lang, "nav.documents" | t(lang), "committee.docs.hero_sub" | t(lang), "folder-open", "committee.docs.eyebrow" | t(lang)) %}
+{% call ui.pageHero(lang, "nav.portfolio" | t(lang), "committee.docs.hero_sub" | t(lang), "folder-open", "committee.docs.eyebrow" | t(lang)) %}
   <div class="hero-actions">
     {#- one visitor action (the committee how-to is ui.memberHelp, below) -#}
     {% if dt.total %}
@@ -39,12 +40,12 @@ pageScripts: ["/assets/js/committee.js"]
   {% endif %}
 {% endcall %}
 
-{% committeeNav lang, "documents", db %}
+{% committeeNav lang, "portfolio", db %}
 
 <div class="container-page section pt-10 sm:pt-12">
 {% if dt.total > 0 %}
 <section id="doc-list" x-data="cmDocs()" data-count-label="{{ 'committee.docs.showing' | t(lang) }}" data-count-label-one="{{ 'committee.docs.showing_one' | t(lang) }}" aria-labelledby="docs-list-h">
-  <h2 id="docs-list-h" class="sr-only">{{ "nav.documents" | t(lang) }}</h2>
+  <h2 id="docs-list-h" class="sr-only">{{ "nav.portfolio" | t(lang) }}</h2>
 
   {#- ---------- Category "tabs" (toggle buttons; without JS every section is shown) + search.
        A category with no files has no chip (a kind with 0 results is hidden). ---------- -#}

@@ -662,6 +662,12 @@ class BuildRules(unittest.TestCase):
         self.assertEqual(len(groups), 1)
         self.assertEqual(groups[0]["url"], "/photos/#fall-assembly-2026")
         self.assertEqual(groups[0]["extra"]["album_slug"], "fall-assembly-2026")
+        # images in the "flyers" folder are Portfolio files, not an album: listed one by one, never grouped
+        flyers = [{"id": f"drive:f{i}", "source": "drive", "kind": "photo", "title": f"f{i}", "date": None,
+                   "first_seen": found, "image": None, "category": "flyers",
+                   "extra": {"album": None, "path": ["flyers"]}} for i in range(2)]
+        plan = [it for _, it in B.plan_whatsnew(ctx, {"drive": flyers})]
+        self.assertEqual(sorted(it["id"] for it in plan), ["drive:f0", "drive:f1"])
 
     def test_spanish_titles_get_english_title_case(self):
         pair = {"en": "The emptiness behind the party", "es": "El vacío detrás de la fiesta"}

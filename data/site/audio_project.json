@@ -1,0 +1,66 @@
+{
+ "updated": "2026-09-25T14:09:42Z",
+ "fixture": false,
+ "checked": "2026-09-25T14:09:27Z",
+ "gv": {
+  "page_url": "https://www.aagrapevine.org/audio-portal",
+  "phone": "(559) 726-1216",
+  "tel": "+15597261216",
+  "minutes_min": 6,
+  "minutes_max": 8,
+  "keys": {
+   "record": "1",
+   "finish": "#",
+   "save": "1",
+   "permission": "2"
+  },
+  "email": "webcoord@aagrapevine.org",
+  "formats": [
+   "WAV",
+   "MP3"
+  ],
+  "no_speakers": true,
+  "channel_url": "https://www.youtube.com/@AAGRAPEVINE",
+  "playlists": [
+   {
+    "title": "Sponsorship",
+    "url": "https://www.youtube.com/watch?v=EfRqtFiXZlA&list=PL32cyZpp2liC2dHbkPWS4JE3y9nGa6e4l"
+   },
+   {
+    "title": "Voices of Women",
+    "url": "https://www.youtube.com/watch?v=DvqEmaYkYHY&list=PL32cyZpp2liDWOjAWzXUPmtrm6a9RwYV0"
+   },
+   {
+    "title": "From Relapse to Recovery",
+    "url": "https://www.youtube.com/watch?v=isulCDau0wk&list=PL32cyZpp2liA844DBOEfGrQfLrKfLYs_c"
+   },
+   {
+    "title": "YPAA World Tour",
+    "url": "https://youtube.com/playlist?list=PL32cyZpp2liDpgykERimevsGVor06iC0u"
+   }
+  ],
+  "checked": "2026-09-25T14:09:27Z"
+ },
+ "lv": {
+  "page_url": "https://www.aalavina.org/graba-tu-historia",
+  "instructions_url": "https://www.aalavina.org/instrucciones-graba-tu-historia",
+  "tips_url": "https://www.aalavina.org/consejos-de-grabacion",
+  "topics_url": "https://www.aalavina.org/temas-sugeridos",
+  "sample_url": "https://www.aalavina.org/audio-de-muestra",
+  "phone": "(559) 670-1601",
+  "tel": "+15596701601",
+  "minutes_max": 7,
+  "keys": {
+   "record": "1"
+  },
+  "permission_text": "Otorgo a La Viña los derechos de autor de la grabación para ser editada y publicada en el caso de que la grabación sea seleccionada; transmitir mi historia personal a través de la página Internet o de un tercero, en medios escritos, de audio y de distintos métodos de distribución.",
+  "long_distance": true,
+  "email": "lveditorial@aagrapevine.org",
+  "formats": [
+   "WAV",
+   "MP3"
+  ],
+  "no_speakers": true,
+  "checked": "2026-09-25T14:09:42Z"
+ }
+}

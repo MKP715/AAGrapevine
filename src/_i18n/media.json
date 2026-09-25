@@ -260,5 +260,6 @@
     "es": "Sigue a La Viña (@alcoholicosanonimos_lv) y a AA Grapevine (@alcoholicsanonymous_gv) en Instagram para recibir inspiración diaria de la reunión impresa de AA."
   },
   "media.ig_in_english": { "en": "In English", "es": "En inglés" },
-  "media.ig_in_spanish": { "en": "In Spanish", "es": "En español" }
+  "media.ig_in_spanish": { "en": "In Spanish", "es": "En español" },
+  "media.record_own": { "en": "Record your own story for Grapevine or La Viña", "es": "Graba tu propia historia para La Viña o Grapevine" }
 }

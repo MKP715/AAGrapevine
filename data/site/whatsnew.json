@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-25T15:30:13Z",
+ "updated": "2026-09-25T15:58:46Z",
  "fixture": false,
  "items": [
   {
@@ -99,7 +99,7 @@
    "summary": "",
    "lang": "en",
    "date": "2026-09-25",
-   "first_seen": "2026-09-25T15:20:06Z",
+   "first_seen": "2026-09-25T15:09:59Z",
    "image": "https://lh3.googleusercontent.com/d/18mW_xghlvSL14WBAmas4gG987EeRN7-w=w600",
    "tags": [
     "panel-77",
@@ -138,63 +138,129 @@
    "i18n": {
     "title": {
      "en": "Grapevine as a Twelfth Step Tool - Put Them to Work (2026-2027 editorial calendar)",
-     "es": "Grapevine como una herramienta Duodécimo Paso - Ponerlos a trabajar (2026-2027 calendario editorial)"
+     "es": "Grapevine como herramienta de Paso Doce - Ponlas a trabajar (calendario editorial 2026-2027)"
     },
     "summary": {
      "en": "",
      "es": ""
     }
    },
-   "machine": [
-    "es"
-   ],
+   "machine": [],
    "is_new": true,
    "wn_date": "2026-09-25T12:00:00Z"
   },
   {
-   "id": "drive:album:595f49c5ec58",
+   "id": "drive:1NeF9BQOvPOTbb1feiPYykHbjFuZ7iRBJ",
    "source": "drive",
    "kind": "photo",
-   "url": "/photos/#flyers",
-   "title": "2 new photos in flyers",
+   "url": "https://drive.google.com/file/d/1NeF9BQOvPOTbb1feiPYykHbjFuZ7iRBJ/view",
+   "title": "Nueva reunión abierta de La Viña - jueves a las 12 p. m. (hora del Este) por Zoom",
    "summary": "",
-   "lang": "en",
+   "lang": "es",
    "date": "2026-09-25",
-   "first_seen": "2026-09-25T15:20:06Z",
+   "first_seen": "2026-09-25T15:09:59Z",
    "image": "https://lh3.googleusercontent.com/d/1NeF9BQOvPOTbb1feiPYykHbjFuZ7iRBJ=w600",
    "tags": [
-    "album"
+    "panel-77",
+    "png"
    ],
-   "category": "photos",
+   "category": "flyers",
    "status": "ok",
    "extra": {
-    "album": "flyers",
-    "count": 2,
-    "is_group": true,
-    "photo_ids": [
-     "drive:1NeF9BQOvPOTbb1feiPYykHbjFuZ7iRBJ",
-     "drive:1PQk08ukyuVAWKnq1kLRbnURvS1FUyX1i"
-    ],
-    "thumbs": [
-     "https://lh3.googleusercontent.com/d/1NeF9BQOvPOTbb1feiPYykHbjFuZ7iRBJ=w600",
-     "https://lh3.googleusercontent.com/d/1PQk08ukyuVAWKnq1kLRbnURvS1FUyX1i=w600"
-    ],
+    "file_id": "1NeF9BQOvPOTbb1feiPYykHbjFuZ7iRBJ",
+    "mime": "image/png",
+    "name": "Nueva reunión abierta de La Viña - jueves a las 12 p. m. (hora del Este) por Zoom.png",
     "panel": 77,
     "panel_label": "Panel 77 (2027–2028)",
-    "album_slug": "flyers"
+    "path": [
+     "flyers"
+    ],
+    "album": null,
+    "view_url": "https://drive.google.com/file/d/1NeF9BQOvPOTbb1feiPYykHbjFuZ7iRBJ/view",
+    "preview_url": "https://drive.google.com/file/d/1NeF9BQOvPOTbb1feiPYykHbjFuZ7iRBJ/preview",
+    "download_url": "https://drive.google.com/uc?export=download&id=1NeF9BQOvPOTbb1feiPYykHbjFuZ7iRBJ",
+    "thumb_url": "https://lh3.googleusercontent.com/d/1NeF9BQOvPOTbb1feiPYykHbjFuZ7iRBJ=w600",
+    "image_url": "https://lh3.googleusercontent.com/d/1NeF9BQOvPOTbb1feiPYykHbjFuZ7iRBJ=w1600",
+    "is_image": true,
+    "is_video": false,
+    "is_pdf": false,
+    "file_type": "PNG",
+    "folder_id": "1PCtA8C1JzZfZ6kjqJwon__S35JYg1EA8",
+    "folder_url": "https://drive.google.com/drive/folders/1PCtA8C1JzZfZ6kjqJwon__S35JYg1EA8",
+    "folder_chain": [
+     "1cTCFxTujRm-m8Xn0OobJGH2EIWI753S1",
+     "1bebd9TAz1L3LHhbeKUSlcENndtqas5O0",
+     "1PCtA8C1JzZfZ6kjqJwon__S35JYg1EA8"
+    ],
+    "modified_text": "8:11 am"
    },
    "i18n": {
     "title": {
-     "en": "2 new photos in flyers",
-     "es": "2 fotos nuevas en flyers"
+     "en": "New La Viña Open Meeting - Thursdays at 12 PM Eastern on Zoom",
+     "es": "Nueva reunión abierta de La Viña - jueves a las 12 p. m. (hora del Este) por Zoom"
     },
     "summary": {
      "en": "",
      "es": ""
+    }
+   },
+   "machine": [],
+   "is_new": true,
+   "wn_date": "2026-09-25T12:00:00Z"
+  },
+  {
+   "id": "drive:1PQk08ukyuVAWKnq1kLRbnURvS1FUyX1i",
+   "source": "drive",
+   "kind": "photo",
+   "url": "https://drive.google.com/file/d/1PQk08ukyuVAWKnq1kLRbnURvS1FUyX1i/view",
+   "title": "Grapevine Editorial - Share your story - Fun in Sobriety and Emotional Sobriety",
+   "summary": "",
+   "lang": "en",
+   "date": "2026-09-25",
+   "first_seen": "2026-09-25T15:09:59Z",
+   "image": "https://lh3.googleusercontent.com/d/1PQk08ukyuVAWKnq1kLRbnURvS1FUyX1i=w600",
+   "tags": [
+    "panel-77",
+    "jpeg"
+   ],
+   "category": "flyers",
+   "status": "ok",
+   "extra": {
+    "file_id": "1PQk08ukyuVAWKnq1kLRbnURvS1FUyX1i",
+    "mime": "image/jpeg",
+    "name": "Grapevine Editorial - Share your story - Fun in Sobriety and Emotional Sobriety.jpeg",
+    "panel": 77,
+    "panel_label": "Panel 77 (2027–2028)",
+    "path": [
+     "flyers"
+    ],
+    "album": null,
+    "view_url": "https://drive.google.com/file/d/1PQk08ukyuVAWKnq1kLRbnURvS1FUyX1i/view",
+    "preview_url": "https://drive.google.com/file/d/1PQk08ukyuVAWKnq1kLRbnURvS1FUyX1i/preview",
+    "download_url": "https://drive.google.com/uc?export=download&id=1PQk08ukyuVAWKnq1kLRbnURvS1FUyX1i",
+    "thumb_url": "https://lh3.googleusercontent.com/d/1PQk08ukyuVAWKnq1kLRbnURvS1FUyX1i=w600",
+    "image_url": "https://lh3.googleusercontent.com/d/1PQk08ukyuVAWKnq1kLRbnURvS1FUyX1i=w1600",
+    "is_image": true,
+    "is_video": false,
+    "is_pdf": false,
+    "file_type": "JPEG",
+    "folder_id": "1PCtA8C1JzZfZ6kjqJwon__S35JYg1EA8",
+    "folder_url": "https://drive.google.com/drive/folders/1PCtA8C1JzZfZ6kjqJwon__S35JYg1EA8",
+    "folder_chain": [
+     "1cTCFxTujRm-m8Xn0OobJGH2EIWI753S1",
+     "1bebd9TAz1L3LHhbeKUSlcENndtqas5O0",
+     "1PCtA8C1JzZfZ6kjqJwon__S35JYg1EA8"
+    ],
+    "modified_text": "6:34 am"
+   },
+   "i18n": {
+    "title": {
+     "en": "Grapevine Editorial - Share your story - Fun in Sobriety and Emotional Sobriety",
+     "es": "Editorial de Grapevine - Comparte tu historia - La diversión en la sobriedad y la sobriedad emocional"
     },
-    "album": {
-     "en": "flyers",
-     "es": "flyers"
+    "summary": {
+     "en": "",
+     "es": ""
     }
    },
    "machine": [],
@@ -8319,7 +8385,7 @@
    "summary": "",
    "lang": "en",
    "date": "2026-08-11",
-   "first_seen": "2026-09-25T15:20:06Z",
+   "first_seen": "2026-09-25T15:09:59Z",
    "image": "https://lh3.googleusercontent.com/d/1Fs9t4jxeMXemu_FQP-bKc7smr6NZHuiu=w600",
    "tags": [
     "panel-77",
@@ -8358,16 +8424,14 @@
    "i18n": {
     "title": {
      "en": "Grapevine Area Chair Meeting Agenda",
-     "es": "Grapevine programa de reunión del presidente de la zona"
+     "es": "Orden del día de la reunión de coordinadores de Área de Grapevine"
     },
     "summary": {
      "en": "",
      "es": ""
     }
    },
-   "machine": [
-    "es"
-   ],
+   "machine": [],
    "is_new": false,
    "wn_date": "2026-08-11T12:00:00Z"
   },
@@ -8380,7 +8444,7 @@
    "summary": "",
    "lang": "en",
    "date": "2026-08-11",
-   "first_seen": "2026-09-25T15:20:06Z",
+   "first_seen": "2026-09-25T15:09:59Z",
    "image": "https://lh3.googleusercontent.com/d/1fC3vvsu0CG-XdUagGDb_fgiwzkqEEfG4=w600",
    "tags": [
     "panel-77",
@@ -8419,16 +8483,14 @@
    "i18n": {
     "title": {
      "en": "Grapevine Area Chair Meeting Report",
-     "es": "Informe de la reunión de presidentes de zona Grapevine"
+     "es": "Informe de la reunión de coordinadores de Área de Grapevine"
     },
     "summary": {
      "en": "",
      "es": ""
     }
    },
-   "machine": [
-    "es"
-   ],
+   "machine": [],
    "is_new": false,
    "wn_date": "2026-08-11T12:00:00Z"
   },
@@ -8910,56 +8972,6 @@
    ],
    "is_new": false,
    "wn_date": "2026-07-27T04:30:39Z"
-  },
-  {
-   "id": "pod:gv:77e7e7ffa495",
-   "source": "podcast",
-   "kind": "episode",
-   "url": "https://player.captivate.fm/episode/750422d8-d9ca-4c82-bf1e-ef77e5f56b62",
-   "title": "Hi Marissa, It's Jack [Season 11, Episode 4]",
-   "summary": "Marissa sits down with Don and Sam on her 13th sober anniversary. Lots of troubles followed Marissa into sobriety, and she says she learned slowly in AA that by taking actions, never alone, that she can walk through anything. Some great advice she got from a sponsor about a broken relationship: treat it as a service commitment until it doesn't feel that way. In the Ask It Basket we hear questions…",
-   "lang": "en",
-   "date": "2026-07-27T04:15:00Z",
-   "first_seen": "2026-09-23T16:27:02Z",
-   "image": "https://artwork.captivate.fm/0ad84761-e27d-40a0-be3f-982e28f5cfed/NA7eDTnRxVFYjt4qJyGSFDog.jpeg",
-   "tags": [
-    "season-11"
-   ],
-   "category": "gv",
-   "status": "ok",
-   "extra": {
-    "audio_url": "https://episodes.captivate.fm/episode/750422d8-d9ca-4c82-bf1e-ef77e5f56b62.mp3",
-    "audio_type": "audio/mpeg",
-    "audio_bytes": 19112013,
-    "duration_sec": 1911,
-    "season": 11,
-    "episode": 4,
-    "episode_type": "full",
-    "show": "gv",
-    "show_name": "AA Grapevine's Podcast",
-    "link": "https://www.aagrapevine.org/podcast",
-    "player_url": "https://player.captivate.fm/episode/750422d8-d9ca-4c82-bf1e-ef77e5f56b62",
-    "show_web": "https://www.aagrapevine.org/podcasts",
-    "apple": "https://podcasts.apple.com/us/podcast/aa-grapevines-podcast/id1591924167",
-    "spotify": "https://open.spotify.com/show/714djcL57SFf0Nzf40CL8Q",
-    "amazon": "https://music.amazon.com/podcasts/de231bfa-837b-4a27-a331-a927019cb5d7",
-    "thumb": "/assets/cache/pod/345ae0651cb102a9.webp"
-   },
-   "i18n": {
-    "title": {
-     "en": "Hi Marissa, It's Jack [Season 11, Episode 4]",
-     "es": "Hola Marissa, soy Jack [Temporada 11, Episodio 4]"
-    },
-    "summary": {
-     "en": "Marissa sits down with Don and Sam on her 13th sober anniversary. Lots of troubles followed Marissa into sobriety, and she says she learned slowly in AA that by taking actions, never alone, that she can walk through anything. Some great advice she got from a sponsor about a broken relationship: treat it as a service commitment until it doesn't feel that way. In the Ask It Basket we hear questions…",
-     "es": "Marissa se sienta con Don y Sam en su 13.º sobrio aniversario. Muchos problemas siguieron a Marissa en sobriedad, y dice que aprendió lentamente en AA que tomando acciones, nunca solas, que ella puede caminar a través de cualquier cosa. Un gran consejo que obtuvo de un padrino sobre una relación rota: tratarlo como un compromiso de servicio hasta que no se siente de esa manera. En el Ask-It-Basket escuchamos preguntas …"
-    }
-   },
-   "machine": [
-    "es"
-   ],
-   "is_new": false,
-   "wn_date": "2026-07-27T04:15:00Z"
   }
  ]
 }

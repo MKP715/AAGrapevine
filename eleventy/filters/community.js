@@ -27,7 +27,7 @@ export const GROUPS = {
   video: { icon: "circle-play", tone: "grape", page: "/watch/", emoji: "🎬" },
   post: { icon: "instagram", tone: "grape", page: "/instagram/", emoji: "📸" },
   pdf: { icon: "file-text", tone: "gv", page: "/library/", emoji: "📄" },
-  drive: { icon: "folder-open", tone: "vine", page: "/documents/", emoji: "📁" },
+  drive: { icon: "folder-open", tone: "vine", page: "/portfolio/", emoji: "📁" },
   event: { icon: "calendar-days", tone: "vine", page: "/events/", emoji: "📅" },
   topic: { icon: "pen-line", tone: "lv", page: "/contribute/", emoji: "✍️" },
   other: { icon: "sparkles", tone: "muted", page: "/whats-new/", emoji: "•" },

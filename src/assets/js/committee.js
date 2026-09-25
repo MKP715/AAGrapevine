@@ -446,7 +446,7 @@
       };
     });
 
-    /* /documents/ category toggles + quick search */
+    /* /portfolio/ category toggles + quick search */
     Alpine.data("cmDocs", function () {
       return {
         tab: "all", q: "", labels: { many: "{n}", one: "{n}" },

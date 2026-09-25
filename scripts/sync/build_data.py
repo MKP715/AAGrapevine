@@ -29,6 +29,7 @@ from zoneinfo import ZoneInfo
 
 from . import meetings as MTG
 from . import pdf_curate as PDF
+from . import quote as QUOTE
 from . import translate as T
 from .common import (RAW_DIR, SITE_DIR, STATE_DIR, clean_text, get_logger, load_config, now_iso,
                      parse_iso, read_json, short_hash, slugify, strip_html, to_iso, truncate, write_json)
@@ -73,7 +74,10 @@ SOURCES: list[tuple[str, str, str]] = [
     ("weekly_open", "Grapevine Weekly Open meeting", "Reunión Grapevine Weekly Open"),
     ("events_external", "GV/LV event calendars", "Calendarios de eventos de GV/LV"),
     ("shop", "Book of the Month & subscription prices", "Libro del mes y precios de suscripción"),
+    ("audio_project", "Record your story by phone (Grapevine & La Viña)",
+     "Graba tu historia por teléfono (La Viña y Grapevine)"),
     ("meetings", "Grapevine meetings (our Area and nearby)", "Reuniones de Grapevine (nuestra Área y cercanas)"),
+    ("quote", "Daily quote", "Cita del día"),
 ]
 
 # Canonical key order of a site item. `last_seen` is deliberately NOT here: it only serves the sync
@@ -1756,7 +1760,11 @@ def plan_whatsnew(ctx: Ctx, cols: dict[str, list[dict]]) -> list[tuple[float, di
         wn = ctx.effective_ts(it, "drive")
         if wn is None:
             continue
-        if it.get("kind") != "photo":
+        # Only what /photos/ shows as an album photo is grouped (isPhotoItem in eleventy/filters/committee.js:
+        # a photo in "photos", "other" or no category). An image in another folder — a flyer in "flyers" —
+        # is a file of the Portfolio: listed on its own, like a document (a group would link to an album
+        # anchor that /photos/ does not have).
+        if it.get("kind") != "photo" or it.get("category") not in (None, "", "photos", "other"):
             if not it["extra"].get("event_date"):     # dated flyers appear as their event instead
                 out.append((wn, it))
             continue
@@ -2089,6 +2097,69 @@ def shop_count(doc: dict) -> int:
     return len(doc.get("botm") or []) + sum(len(s.get("plans") or []) for s in doc.get("subscriptions") or [])
 
 
+# =========================================================================== audio project (stories by phone)
+# data/raw/audio_project.json (scripts/sync/audio_project.py) → data/site/audio_project.json: the phone
+# lines, keys to press, e-mail addresses and links of Grapevine's Audio Project and La Viña's "Graba tu
+# historia", as the official pages give them. Nothing is translated: /contribute/ words the steps itself
+# (community.rec.*, hand-written) around these values. Contract: docs/DATA_SCHEMA.md → "audio_project.json".
+AUDIO_FIELDS = {
+    "gv": ("page_url", "phone", "tel", "minutes_min", "minutes_max", "keys", "email", "formats", "no_speakers",
+           "channel_url", "playlists", "checked"),
+    "lv": ("page_url", "instructions_url", "tips_url", "topics_url", "sample_url", "phone", "tel", "minutes_max",
+           "keys", "permission_text", "long_distance", "email", "formats", "no_speakers", "checked"),
+}
+_AUDIO_TEL = re.compile(r"^\+1\d{10}$")
+_AUDIO_KEY = re.compile(r"^[0-9#*]$")
+_AUDIO_EMAIL = re.compile(r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$")
+
+
+def us_phone(tel: str) -> str:
+    """"+15597261216" → "(559) 726-1216": both story lines in one style (the site's, like the customer
+    service numbers in config/site.yml), whatever way each official page writes its number."""
+    d = str(tel)[2:]
+    return f"({d[:3]}) {d[3:6]}-{d[6:]}"
+
+
+def empty_audio_project(updated: str | None = None) -> dict:
+    return {"updated": updated, "fixture": False, "checked": None, "gv": None, "lv": None}
+
+
+def build_audio_project(ctx: Ctx) -> dict:
+    """{gv, lv, checked}: one entry per publication whose phone line is known (else null), with only the
+    fields the page uses, each checked again (a number the page can dial, keys that are one digit / # / *,
+    a real e-mail address). `checked` = the older of the two parts' last good reading."""
+    env = ctx.raw.get("audio_project") or {}
+    doc = empty_audio_project(env.get("updated"))
+    by_id = {i.get("id"): i for i in ctx.items("audio_project")}
+    checked = []
+    for pub, fields in AUDIO_FIELDS.items():
+        ex = (by_id.get(f"audio:{pub}") or {}).get("extra") or {}
+        if not ex.get("phone") or not _AUDIO_TEL.match(str(ex.get("tel") or "")):
+            continue
+        row = {k: ex.get(k) for k in fields}
+        row["phone"] = us_phone(ex["tel"])        # shown; `tel` is dialled
+        row["keys"] = {k: str(v) for k, v in (ex.get("keys") or {}).items() if _AUDIO_KEY.match(str(v))}
+        row["email"] = ex.get("email") if _AUDIO_EMAIL.match(str(ex.get("email") or "")) else None
+        row["formats"] = [str(f) for f in (ex.get("formats") or []) if re.fullmatch(r"[A-Z0-9]{2,5}", str(f))]
+        for k in ("minutes_min", "minutes_max"):
+            if k in row:
+                row[k] = _int_or_none(row[k])
+        for k in ("no_speakers", "long_distance"):
+            if k in row:
+                row[k] = bool(row[k])
+        if pub == "gv":
+            row["playlists"] = [{"title": clean_text(p.get("title")), "url": p.get("url")}
+                                for p in (ex.get("playlists") or [])
+                                if isinstance(p, dict) and clean_text(p.get("title")) and p.get("url")]
+        else:
+            row["permission_text"] = clean_text(ex.get("permission_text")) or None
+        doc[pub] = row
+        if row.get("checked"):
+            checked.append(str(row["checked"]))
+    doc["checked"] = min(checked) if checked else None
+    return doc
+
+
 # Weekly Open meetings: the Grapevine one (Wednesdays) first — templates read db.weekly_open.items[0] —
 # then La Viña's (Thursdays, config/site.yml `lavina_weekly_open`).
 WEEKLY_OPEN_ORDER = ("weekly_open", "weekly_open_lv")
@@ -2241,6 +2312,16 @@ def main(argv: list[str] | None = None) -> int:
         except Exception as e:  # never breaks the build
             log.error("meetings.json could not be built (%s: %s) — writing an empty one", type(e).__name__, e)
             meetings = MTG.empty_site()
+        try:   # record-your-story phone lines (scripts/sync/audio_project.py): nothing to translate
+            audio = build_audio_project(ctx)
+        except Exception as e:  # never breaks the build
+            log.error("audio_project.json could not be built (%s: %s) — writing an empty one", type(e).__name__, e)
+            audio = empty_audio_project()
+        try:   # the Grapevine / La Viña daily quote (scripts/sync/quote.py): shown as published, never translated
+            quote = QUOTE.build_site(ctx.raw.get("quote") or {})
+        except Exception as e:  # never breaks the build
+            log.error("quote.json could not be built (%s: %s) — writing an empty one", type(e).__name__, e)
+            quote = QUOTE.empty_site()
         wn_plan = plan_whatsnew(ctx, cols)
         spot_items, spot_counts = plan_spotlight(ctx, cols["articles"])
         # What's New and the spotlight (home page) are translated first
@@ -2294,6 +2375,10 @@ def main(argv: list[str] | None = None) -> int:
         write_json(out_dir / "shop.json", {**shop, "updated": shop.get("updated") or now})
         counts["meetings"] = len(meetings["items"])
         write_json(out_dir / "meetings.json", {**meetings, "updated": meetings.get("updated") or now})
+        counts["audio_project"] = sum(1 for p in AUDIO_FIELDS if audio.get(p))
+        write_json(out_dir / "audio_project.json", {**audio, "updated": audio.get("updated") or now})
+        counts["quote"] = len(quote["items"])
+        write_json(out_dir / "quote.json", {**quote, "updated": quote.get("updated") or now})
         status = build_status(ctx, translator, i18n, counts, not a.no_translate, i18n.seconds)
         for s in status["sources"]:     # the Library's count: official documents, each once (pdf_curate.py)
             if s["source"] == "pdfs":

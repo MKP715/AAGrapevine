@@ -139,6 +139,54 @@
 .home-stat-l { display: block; font-size: 0.85rem; line-height: 1.3; color: var(--c-muted); }
 .home-stat:hover .home-stat-l { color: var(--c-ink); text-decoration: underline; }
 
+/* ---------- 1c. Daily quote: the second card of the page-overlap block (index.njk → .home-quote) ----------
+   The card's heading is an eyebrow in the Read tone (above the magazine names in the hierarchy).
+   Grapevine's and La Viña's quotes side by side from 1024px (a hairline between them), stacked with a
+   divider below that (on tablets two ~40-character columns of italic text read poorly). On phones
+   (< 640px, with JS) the second quote waits behind its button (.home-q-toggle; the card gets .is-open).
+   Each quote: the magazine's name (italic display, its tone) + its day, the quote with a tone bar on
+   its left (text + attribution + source), then the two links — right under the quote, so a short quote
+   next to a long one never leaves a blank band between its text and its links. */
+/* stacked cards: 20px apart (a gap, so a card hidden at some widths leaves no stray margin) */
+.home-under { display: flex; flex-direction: column; gap: 1.25rem; }
+.home-quote { padding: 1.25rem; }
+.home-quote-title {
+  display: flex; align-items: center; gap: 0.5rem; font-family: var(--font-sans);
+  font-size: 0.75rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--c-gv);
+}
+@media (width >= 40rem) { .home-quote { padding: 1.25rem 1.5rem 1.375rem; } }
+.home-quote-grid { display: grid; grid-template-columns: minmax(0, 1fr); margin-top: 0.875rem; }
+.home-q { display: flex; flex-direction: column; min-width: 0; }
+.home-q.is-other { margin-top: 1.25rem; padding-top: 1.25rem; border-top: 1px solid var(--c-line); }
+.home-q-toggle { display: none; }
+.home-q-toggle .icon { transition: transform 0.15s; }
+.home-q-toggle[aria-expanded="true"] .icon { transform: rotate(180deg); }
+@media (width < 40rem) {
+  :root.js .home-q-toggle { display: inline-flex; justify-self: start; margin: 0.75rem 0 0 -0.625rem; }
+  :root.js .home-quote-grid:not(.is-open) .home-q.is-other { display: none; }
+}
+@media (width >= 64rem) {
+  .home-quote-grid:not(.is-single) { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 3rem; }
+  .home-quote-grid:not(.is-single) .home-q.is-other { position: relative; margin-top: 0; padding-top: 0; border-top: 0; }
+  .home-quote-grid:not(.is-single) .home-q.is-other::before {
+    content: ""; position: absolute; top: 0; bottom: 0; left: -1.5rem; border-left: 1px solid var(--c-line);
+  }
+}
+.home-q-head { display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem 0.75rem; }
+.home-q-mag { font-family: var(--font-display); font-size: 1.25rem; font-style: italic; font-weight: 600; line-height: 1.2; color: var(--tone); }
+.home-q-when { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 0.25rem 0.5rem; font-size: 0.8125rem; color: var(--c-muted); }
+.home-q-fig { margin-top: 0.625rem; padding-left: 1rem; border-left: 3px solid color-mix(in srgb, var(--tone) 55%, transparent); }
+.home-q-text, .home-q-by { max-width: 72ch; }
+.home-q-text p {
+  font-family: var(--font-display); font-size: 1rem; font-style: italic; line-height: 1.55; color: var(--c-ink);
+  text-wrap: pretty;
+}
+@media (width >= 40rem) { .home-q-text p { font-size: 1.0625rem; } }
+.home-q-by { margin-top: 0.5rem; font-size: 0.8125rem; line-height: 1.5; color: var(--c-muted); }
+.home-q-by cite { font-style: italic; }
+.home-q-links { display: flex; flex-wrap: wrap; align-items: center; gap: 0.125rem 1.25rem; padding-top: 0.75rem; font-size: 0.875rem; }
+.home-q-links a { display: inline-flex; align-items: center; gap: 0.375rem; }
+
 /* ---------- 2. Published writers spotlight ---------- */
 /* A soft vine / amber glow behind the section that fades out INSIDE it (the mask), so there is
    no hard seam where the section meets its neighbours. */

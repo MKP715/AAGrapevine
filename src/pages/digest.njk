@@ -280,7 +280,7 @@ pageScripts: ["/assets/js/community.js"]
 
         {#- Book of the Month: a compact teaser of db.shop.botm (title, sale price, last day; the title opens
             the official store). Prices and dates have ONE home, /shop/#botm — linked, never repeated in full.
-            Then one line to this month's poster & toolkit (/monthly/YYYY-MM/, Central time). -#}
+            Then one line to this month's toolkit (/monthly/YYYY-MM/, Central time). -#}
         {%- set sh = db.shop | cmDigestShop(lang) -%}
         {% if sh.offers | length %}
         {%- set botmKey = "community.digest.botm_title" if sh.pct else "community.digest.botm_title_plain" -%}

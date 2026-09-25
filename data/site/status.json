@@ -1,6 +1,6 @@
 {
- "generated": "2026-09-25T15:30:13Z",
- "updated": "2026-09-25T15:30:13Z",
+ "generated": "2026-09-25T15:58:47Z",
+ "updated": "2026-09-25T15:58:47Z",
  "fixture": false,
  "sources": [
   {
@@ -8,8 +8,8 @@
    "label": "Google Drive (committee uploads)",
    "label_es": "Google Drive (archivos del comité)",
    "ok": true,
-   "updated": "2026-09-25T15:20:06Z",
-   "attempted": "2026-09-25T15:20:06Z",
+   "updated": "2026-09-25T15:11:41Z",
+   "attempted": "2026-09-25T15:11:41Z",
    "count": 6,
    "new_7d": 6,
    "error": null,
@@ -41,7 +41,7 @@
     "folders": 8,
     "files": 6,
     "fetched": 6,
-    "new": 6,
+    "new": 0,
     "removed": 0,
     "kept_unverified": 0,
     "by_category": {
@@ -372,6 +372,25 @@
    }
   },
   {
+   "source": "audio_project",
+   "label": "Record your story by phone (Grapevine & La Viña)",
+   "label_es": "Graba tu historia por teléfono (La Viña y Grapevine)",
+   "ok": true,
+   "updated": "2026-09-25T14:09:42Z",
+   "attempted": "2026-09-25T14:09:42Z",
+   "count": 2,
+   "new_7d": 2,
+   "error": null,
+   "stats": {
+    "parts": 2,
+    "fresh": [
+     "gv",
+     "lv"
+    ],
+    "requests": 3
+   }
+  },
+  {
    "source": "meetings",
    "label": "Grapevine meetings (our Area and nearby)",
    "label_es": "Reuniones de Grapevine (nuestra Área y cercanas)",
@@ -398,6 +417,24 @@
      "Arkansas Central Office: feed: arkansascentraloffice.org did not answer; page: arkansascentraloffice.org did not answer"
     ]
    }
+  },
+  {
+   "source": "quote",
+   "label": "Daily quote",
+   "label_es": "Cita del día",
+   "ok": true,
+   "updated": "2026-09-25T14:14:34Z",
+   "attempted": "2026-09-25T14:14:34Z",
+   "count": 2,
+   "new_7d": 2,
+   "error": null,
+   "stats": {
+    "fetched": 2,
+    "parsed": 2,
+    "requests": 2,
+    "today": "2026-09-25",
+    "new": 2
+   }
   }
  ],
  "crawl": {
@@ -418,16 +455,16 @@
   "updated": "2026-09-25T15:30:10Z"
  },
  "translations": {
-  "cached": 1885,
+  "cached": 1883,
   "engine": "argos1.0-ct2/v5",
   "model_enabled": true,
-  "translated_this_run": 16,
-  "from_cache": 1868,
+  "translated_this_run": 0,
+  "from_cache": 1877,
   "pending": 0,
   "rejected_by_guard": 0,
-  "seconds": 2.4,
-  "model_seconds": 2.0,
-  "texts_per_second": 6.7,
+  "seconds": 0.1,
+  "model_seconds": 0.0,
+  "texts_per_second": null,
   "glossary_entries": 257
  },
  "counts": {
@@ -443,7 +480,9 @@
   "events": 30,
   "whatsnew": 150,
   "shop": 54,
-  "meetings": 23
+  "meetings": 23,
+  "audio_project": 2,
+  "quote": 2
  },
  "problems": {},
  "feeds": [

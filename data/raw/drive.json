@@ -1,7 +1,7 @@
 {
  "source": "drive",
- "updated": "2026-09-25T15:20:06Z",
- "attempted": "2026-09-25T15:20:06Z",
+ "updated": "2026-09-25T15:11:41Z",
+ "attempted": "2026-09-25T15:11:41Z",
  "ok": true,
  "error": null,
  "stats": {
@@ -32,7 +32,7 @@
   "folders": 8,
   "files": 6,
   "fetched": 6,
-  "new": 6,
+  "new": 0,
   "removed": 0,
   "kept_unverified": 0,
   "by_category": {
@@ -70,8 +70,8 @@
    "summary": "",
    "lang": "en",
    "date": "2026-09-25",
-   "first_seen": "2026-09-25T15:20:06Z",
-   "last_seen": "2026-09-25T15:20:06Z",
+   "first_seen": "2026-09-25T15:09:59Z",
+   "last_seen": "2026-09-25T15:09:59Z",
    "image": "https://lh3.googleusercontent.com/d/1PQk08ukyuVAWKnq1kLRbnURvS1FUyX1i=w600",
    "tags": [
     "panel-77",
@@ -117,8 +117,8 @@
    "summary": "",
    "lang": "es",
    "date": "2026-09-25",
-   "first_seen": "2026-09-25T15:20:06Z",
-   "last_seen": "2026-09-25T15:20:06Z",
+   "first_seen": "2026-09-25T15:09:59Z",
+   "last_seen": "2026-09-25T15:09:59Z",
    "image": "https://lh3.googleusercontent.com/d/1NeF9BQOvPOTbb1feiPYykHbjFuZ7iRBJ=w600",
    "tags": [
     "panel-77",
@@ -164,8 +164,8 @@
    "summary": "",
    "lang": "en",
    "date": "2026-09-25",
-   "first_seen": "2026-09-25T15:20:06Z",
-   "last_seen": "2026-09-25T15:20:06Z",
+   "first_seen": "2026-09-25T15:09:59Z",
+   "last_seen": "2026-09-25T15:09:59Z",
    "image": "https://lh3.googleusercontent.com/d/18mW_xghlvSL14WBAmas4gG987EeRN7-w=w600",
    "tags": [
     "panel-77",
@@ -211,8 +211,8 @@
    "summary": "",
    "lang": "en",
    "date": "2026-08-11",
-   "first_seen": "2026-09-25T15:20:06Z",
-   "last_seen": "2026-09-25T15:20:06Z",
+   "first_seen": "2026-09-25T15:09:59Z",
+   "last_seen": "2026-09-25T15:09:59Z",
    "image": "https://lh3.googleusercontent.com/d/1Fs9t4jxeMXemu_FQP-bKc7smr6NZHuiu=w600",
    "tags": [
     "panel-77",
@@ -258,8 +258,8 @@
    "summary": "",
    "lang": "en",
    "date": "2026-08-11",
-   "first_seen": "2026-09-25T15:20:06Z",
-   "last_seen": "2026-09-25T15:20:06Z",
+   "first_seen": "2026-09-25T15:09:59Z",
+   "last_seen": "2026-09-25T15:09:59Z",
    "image": "https://lh3.googleusercontent.com/d/1fC3vvsu0CG-XdUagGDb_fgiwzkqEEfG4=w600",
    "tags": [
     "panel-77",
@@ -305,8 +305,8 @@
    "summary": "",
    "lang": "en",
    "date": "2026-05-12",
-   "first_seen": "2026-09-25T15:20:06Z",
-   "last_seen": "2026-09-25T15:20:06Z",
+   "first_seen": "2026-09-25T15:09:59Z",
+   "last_seen": "2026-09-25T15:09:59Z",
    "image": "https://lh3.googleusercontent.com/d/1a54yYQkKPkTffjCeGLD9fFC6r7fL7G9k=w600",
    "tags": [
     "panel-77",

@@ -361,7 +361,7 @@
       tEl.textContent = S.noneTitle;
       xEl.textContent = S.noneText;
     }
-    // Committee reports come from the committee's Drive: point to the Documents page too.
+    // Committee reports come from the committee's Drive: point to the Portfolio page (/portfolio/) too.
     var docsLink = emptyEl.querySelector("[data-lib-docs]");
     if (reports && !docsLink && CFG.docsPage) {
       docsLink = document.createElement("a");

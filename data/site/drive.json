@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-25T15:20:06Z",
+ "updated": "2026-09-25T15:11:41Z",
  "fixture": false,
  "items": [
   {
@@ -11,7 +11,7 @@
    "summary": "",
    "lang": "en",
    "date": "2026-09-25",
-   "first_seen": "2026-09-25T15:20:06Z",
+   "first_seen": "2026-09-25T15:09:59Z",
    "image": "https://lh3.googleusercontent.com/d/1PQk08ukyuVAWKnq1kLRbnURvS1FUyX1i=w600",
    "tags": [
     "panel-77",
@@ -50,16 +50,14 @@
    "i18n": {
     "title": {
      "en": "Grapevine Editorial - Share your story - Fun in Sobriety and Emotional Sobriety",
-     "es": "Grapevine Editorial - Comparte tu historia - Diversión en sobriedad y Sobriedad emocional"
+     "es": "Editorial de Grapevine - Comparte tu historia - La diversión en la sobriedad y la sobriedad emocional"
     },
     "summary": {
      "en": "",
      "es": ""
     }
    },
-   "machine": [
-    "es"
-   ],
+   "machine": [],
    "is_new": true
   },
   {
@@ -71,7 +69,7 @@
    "summary": "",
    "lang": "es",
    "date": "2026-09-25",
-   "first_seen": "2026-09-25T15:20:06Z",
+   "first_seen": "2026-09-25T15:09:59Z",
    "image": "https://lh3.googleusercontent.com/d/1NeF9BQOvPOTbb1feiPYykHbjFuZ7iRBJ=w600",
    "tags": [
     "panel-77",
@@ -109,7 +107,7 @@
    },
    "i18n": {
     "title": {
-     "en": "New open meeting of La Viña - Thursday at 12 p.m. (Eastern time) by Zoom",
+     "en": "New La Viña Open Meeting - Thursdays at 12 PM Eastern on Zoom",
      "es": "Nueva reunión abierta de La Viña - jueves a las 12 p. m. (hora del Este) por Zoom"
     },
     "summary": {
@@ -117,9 +115,7 @@
      "es": ""
     }
    },
-   "machine": [
-    "en"
-   ],
+   "machine": [],
    "is_new": true
   },
   {
@@ -131,7 +127,7 @@
    "summary": "",
    "lang": "en",
    "date": "2026-09-25",
-   "first_seen": "2026-09-25T15:20:06Z",
+   "first_seen": "2026-09-25T15:09:59Z",
    "image": "https://lh3.googleusercontent.com/d/18mW_xghlvSL14WBAmas4gG987EeRN7-w=w600",
    "tags": [
     "panel-77",
@@ -170,16 +166,14 @@
    "i18n": {
     "title": {
      "en": "Grapevine as a Twelfth Step Tool - Put Them to Work (2026-2027 editorial calendar)",
-     "es": "Grapevine como una herramienta Duodécimo Paso - Ponerlos a trabajar (2026-2027 calendario editorial)"
+     "es": "Grapevine como herramienta de Paso Doce - Ponlas a trabajar (calendario editorial 2026-2027)"
     },
     "summary": {
      "en": "",
      "es": ""
     }
    },
-   "machine": [
-    "es"
-   ],
+   "machine": [],
    "is_new": true
   },
   {
@@ -191,7 +185,7 @@
    "summary": "",
    "lang": "en",
    "date": "2026-08-11",
-   "first_seen": "2026-09-25T15:20:06Z",
+   "first_seen": "2026-09-25T15:09:59Z",
    "image": "https://lh3.googleusercontent.com/d/1fC3vvsu0CG-XdUagGDb_fgiwzkqEEfG4=w600",
    "tags": [
     "panel-77",
@@ -230,16 +224,14 @@
    "i18n": {
     "title": {
      "en": "Grapevine Area Chair Meeting Report",
-     "es": "Informe de la reunión de presidentes de zona Grapevine"
+     "es": "Informe de la reunión de coordinadores de Área de Grapevine"
     },
     "summary": {
      "en": "",
      "es": ""
     }
    },
-   "machine": [
-    "es"
-   ],
+   "machine": [],
    "is_new": false
   },
   {
@@ -251,7 +243,7 @@
    "summary": "",
    "lang": "en",
    "date": "2026-08-11",
-   "first_seen": "2026-09-25T15:20:06Z",
+   "first_seen": "2026-09-25T15:09:59Z",
    "image": "https://lh3.googleusercontent.com/d/1Fs9t4jxeMXemu_FQP-bKc7smr6NZHuiu=w600",
    "tags": [
     "panel-77",
@@ -290,16 +282,14 @@
    "i18n": {
     "title": {
      "en": "Grapevine Area Chair Meeting Agenda",
-     "es": "Grapevine programa de reunión del presidente de la zona"
+     "es": "Orden del día de la reunión de coordinadores de Área de Grapevine"
     },
     "summary": {
      "en": "",
      "es": ""
     }
    },
-   "machine": [
-    "es"
-   ],
+   "machine": [],
    "is_new": false
   },
   {
@@ -311,7 +301,7 @@
    "summary": "",
    "lang": "en",
    "date": "2026-05-12",
-   "first_seen": "2026-09-25T15:20:06Z",
+   "first_seen": "2026-09-25T15:09:59Z",
    "image": "https://lh3.googleusercontent.com/d/1a54yYQkKPkTffjCeGLD9fFC6r7fL7G9k=w600",
    "tags": [
     "panel-77",
@@ -350,16 +340,14 @@
    "i18n": {
     "title": {
      "en": "Grapevine Area Chair Meeting Report",
-     "es": "Informe de la reunión de presidentes de zona Grapevine"
+     "es": "Informe de la reunión de coordinadores de Área de Grapevine"
     },
     "summary": {
      "en": "",
      "es": ""
     }
    },
-   "machine": [
-    "es"
-   ],
+   "machine": [],
    "is_new": false
   }
  ]

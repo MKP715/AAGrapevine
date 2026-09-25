@@ -288,6 +288,8 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
       </button>
       {% endif %}
       <a class="link inline-flex min-h-11 items-center text-sm" href="{{ channelUrl }}" target="_blank" rel="noopener">{{ "media.watch_on_yt" | t(lang) }} · {{ ch.handle or "@AAGrapevine" }}</a>
+      {#- one-line pointer: the story lines live on /contribute/#record -#}
+      <a class="link inline-flex min-h-11 items-center gap-1.5 text-sm" href="{{ '/contribute/' | lurl(lang) }}#record">{% icon "mic", "size-4 shrink-0" %}{{ "media.record_own" | t(lang) }}</a>
     </div>
   </section>
 

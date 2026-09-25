@@ -109,7 +109,7 @@ You can close the browser. What happens:
 | *Build & publish website* | ~3 minutes | Builds the site and publishes it on GitHub Pages |
 
 *In a hurry?* Run it first with **skip_crawl** ticked (about 15 minutes) to get the site online; it
-refreshes only Google Drive, announcements and the podcasts, and the next daily run does the rest.
+refreshes only Google Drive, announcements, the podcasts and the daily quote, and the next daily run does the rest.
 
 ---
 
@@ -130,7 +130,7 @@ From now on the site updates itself **every morning at about 5:17 AM Central**.
 
 **What to expect on day 1:** magazine stories, both podcasts (AA Grapevine's Podcast and the
 Grapevine Weekly Open AA Meeting), videos and Instagram appear right away. The committee's own
-sections (Documents, Photos, flyer events, Drive announcements) show a friendly "nothing here yet"
+sections (Portfolio, Photos, flyer events, Drive announcements) show a friendly "nothing here yet"
 message until files are uploaded to the Panel 77 folders in Google Drive — that is expected.
 Translations of a large first batch may take a few daily runs; untranslated titles show in their
 original language meanwhile.

@@ -143,6 +143,12 @@ sources:
       us: "/store/us-subscriptions"
       ca: "/store/canada-subscriptions"
       intl: "/store/international-subscriptions"
+    # The Audio Project (members record a story by phone or send a recording), read daily by
+    # scripts/sync/audio_project.py (→ data/site/audio_project.json → /contribute/#record).
+    audio_project: "/audio-portal"
+    # The page with the "Grapevine Daily Quote" (#quote-of-the-day), read by scripts/sync/quote.py
+    # in the daily run and again at 12:07 UTC (→ data/site/quote.json → the home page card).
+    quote_page: "/"
   lavina:
     base: "https://www.aalavina.org"
     magazine_hub: "/la-revista"
@@ -154,6 +160,15 @@ sources:
       us: "/US-suscripciones"
       ca: "/tienda/canada-suscripciones"
       intl: "/tienda/internacional-suscripciones"
+    # "Graba tu historia" (a story by phone or a recording by e-mail), read daily by
+    # scripts/sync/audio_project.py with its instructions page; the other three are only linked.
+    record_story: "/graba-tu-historia"
+    record_instructions: "/instrucciones-graba-tu-historia"
+    record_tips: "/consejos-de-grabacion"
+    record_topics: "/temas-sugeridos"
+    sample_audio: "/audio-de-muestra"
+    # The page with the "Cita Diaria con La Viña" (#quote-of-the-day) — scripts/sync/quote.py.
+    quote_page: "/"
   crawler:
     hosts: ["www.aagrapevine.org", "www.aalavina.org"]
     user_agent: "NETA65-GrapevineCommitteeBot/2.0 (+https://github.com/MKP715/AAGrapevine)"
@@ -500,7 +515,7 @@ links:
   lv_store: "https://www.aalavina.org/tienda"
   carry_the_message: "https://www.aagrapevine.org/carry-the-message"
   gv_share_story: "https://www.aagrapevine.org/share"
-  gv_audio_project: "https://www.aagrapevine.org/audioproject"
+  gv_audio_project: "https://www.aagrapevine.org/audio-portal"
   gv_photo_contest: "https://www.aagrapevine.org/photocontest"
   lv_share_story: "https://www.aalavina.org/comparte"
   gv_contribute: "https://www.aagrapevine.org/contribute"

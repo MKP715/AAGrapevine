@@ -612,8 +612,8 @@
     "es": "Informes, notas, presentaciones, volantes y fotos del Comité de Grapevine / La Viña de NETA 65."
   },
   "home.drive_all": {
-    "en": "All committee documents",
-    "es": "Todos los documentos del comité"
+    "en": "See the portfolio",
+    "es": "Ver el portafolio"
   },
   "home.opens_new_tab": {
     "en": "(opens a new tab)",
@@ -684,8 +684,8 @@
     "es": "Impresa, digital o ambas: compara los planes."
   },
   "home.monthly_title": {
-    "en": "Monthly toolkit & poster",
-    "es": "Kit del mes y cartel"
+    "en": "Monthly toolkit",
+    "es": "Kit del mes"
   },
   "home.monthly_desc": {
     "en": "Print it for your group or share it online.",
@@ -694,5 +694,41 @@
   "home.shop_label": {
     "en": "This month: Book of the Month, subscriptions and the monthly toolkit",
     "es": "Este mes: libro del mes, suscripciones y el kit del mes"
+  },
+  "home.quote_title": {
+    "en": "Daily quote",
+    "es": "Cita del día"
+  },
+  "home.quote_today": {
+    "en": "Today",
+    "es": "Hoy"
+  },
+  "home.quote_from": {
+    "en": "From",
+    "es": "De"
+  },
+  "home.quote_more": {
+    "en": "Read it on {host}",
+    "es": "Léela en {host}"
+  },
+  "home.quote_today_on": {
+    "en": "Today's quote on {host}",
+    "es": "La cita de hoy en {host}"
+  },
+  "home.quote_yesterday": {
+    "en": "Yesterday",
+    "es": "Ayer"
+  },
+  "home.quote_show_gv": {
+    "en": "Show Grapevine's quote",
+    "es": "Ver la cita de Grapevine"
+  },
+  "home.quote_show_lv": {
+    "en": "Show La Viña's quote",
+    "es": "Ver la cita de La Viña"
+  },
+  "home.quote_email": {
+    "en": "Get it by e-mail",
+    "es": "Recíbela por correo"
   }
 }

@@ -2,7 +2,8 @@
 
 Every sync module (drive.py, youtube.py, …) uses:
   * CONFIG / load_config()          – config/site.yml
-  * PoliteSession                   – requests with UA, robots.txt, per-server crawl-delay, retries
+  * PoliteSession                   – requests with UA, robots.txt, per-server crawl-delay, retries,
+                                      and a per-run page memo (a magazine page is asked for once per run)
   * load_raw() / save_raw()         – data/raw/<source>.json envelope (see docs/DATA_SCHEMA.md)
   * merge_items()                   – cumulative merge that preserves first_seen and never drops items
                                       (authoritative=True for sources that are their own full truth)
@@ -19,10 +20,11 @@ import re
 import sys
 import time
 import unicodedata
+from collections import OrderedDict
 from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urljoin, urlparse, urlsplit, urlunsplit
 
 import requests
 import yaml
@@ -432,7 +434,17 @@ class PoliteSession:
 
         http = PoliteSession(min_delay=1.0)           # generic
         r = http.get(url)                             # returns Response or None (robots-disallowed / failed)
+        html = http.get_text(url)                     # text of a 200 answer, else None (a magazine page
+                                                      # already read in this run is not asked for again)
     """
+
+    # Per-run page memo: the daily run asks the magazines' server (SAME_SERVER_HOSTS) for each page at
+    # most ONCE, whichever modules need it — quote, the podcast discovery and the crawl all read the two
+    # home pages; shop and the crawl /BOTM and /libro-del-mes; weekly_open and the crawl
+    # /grapevine-weekly-open; events_external and the crawl the sitemap. Every such page read with
+    # get_text() is kept for the rest of the process (oldest dropped first above MEMO_MAX_CHARS); the
+    # next get_text() of it returns that copy, and the crawler takes it through remembered().
+    MEMO_MAX_CHARS = 48 * 1024 * 1024
 
     def __init__(self, user_agent: str | None = None, min_delay: float = 1.0, respect_robots: bool = True,
                  timeout: float = 30.0, retries: int = 3, browser_ua: bool = False):
@@ -449,6 +461,9 @@ class PoliteSession:
         self._last: dict[str, float] = {}          # pace key (see pace_key) → time of the last request
         self._delay: dict[str, float] = {}         # pace key → strictest delay seen for that group
         self.requests_made = 0
+        self.memo_hits = 0                         # get_text() answers served from the page memo
+        self._memo: OrderedDict[str, dict] = OrderedDict()   # memo_key → {url, text, headers}
+        self._memo_chars = 0
         self.log = get_logger("http")
 
     # pacing ---------------------------------------------------------------
@@ -577,14 +592,74 @@ class PoliteSession:
     def head(self, url: str, **kw) -> requests.Response | None:
         return self.request("HEAD", url, **kw)
 
-    def get_text(self, url: str, **kw) -> str | None:
+    def get_text(self, url: str, reuse: bool = True, **kw) -> str | None:
+        """GET → the page text (None when robots.txt disallows it, the request failed or the answer is
+        not 200). A magazine page (SAME_SERVER_HOSTS) already read in this run is NOT asked for again:
+        its copy is returned (reuse=False sends a new request anyway). Plain GETs only — a call with
+        `params` is neither reused nor remembered."""
+        plain = "params" not in kw
+        if reuse and plain:
+            hit = self.remembered(url)
+            if hit is not None:
+                self.memo_hits += 1
+                self.log.debug("%s: already read in this run — reused", url)
+                return hit["text"]
         r = self.get(url, **kw)
         if r is None or r.status_code != 200:
             return None
         r.encoding = r.encoding or "utf-8"
         if r.encoding.lower() in ("iso-8859-1", "latin-1") and "charset" not in r.headers.get("Content-Type", ""):
             r.encoding = "utf-8"
-        return r.text
+        text = r.text
+        if plain:
+            self._remember(url, getattr(r, "url", None) or url, text, r.headers)
+        return text
+
+    # page memo --------------------------------------------------------------
+    @staticmethod
+    def memo_key(url: str) -> str | None:
+        """One key per magazine page: https, the www host, "/" for an empty path, no fragment.
+        None for every other host (those pages are never remembered)."""
+        try:
+            p = urlsplit(str(url).strip())
+        except ValueError:
+            return None
+        host = (p.hostname or "").lower()
+        if host not in SAME_SERVER_HOSTS:
+            return None
+        if not host.startswith("www."):
+            host = "www." + host
+        return urlunsplit(("https", host, p.path or "/", p.query, ""))
+
+    def remembered(self, url: str) -> dict | None:
+        """The copy of a magazine page read earlier in this run — {"url": the final URL (after
+        redirects), "text", "headers": {Content-Type, ETag, Last-Modified}} — or None."""
+        key = self.memo_key(url)
+        hit = self._memo.get(key) if key else None
+        return {**hit, "headers": dict(hit["headers"])} if hit else None
+
+    def _remember(self, url: str, final_url: str, text: str, headers) -> None:
+        keys = {k for k in (self.memo_key(url), self.memo_key(final_url)) if k}
+        if not keys or not text or len(text) > self.MEMO_MAX_CHARS // 4:
+            return
+        hdrs = {}
+        for h in ("Content-Type", "ETag", "Last-Modified"):
+            try:
+                v = headers.get(h) if headers is not None else None
+            except Exception:  # noqa: BLE001 — a header object without .get()
+                v = None
+            if v:
+                hdrs[h] = v
+        entry = {"url": final_url, "text": text, "headers": hdrs}
+        for key in keys:
+            old = self._memo.pop(key, None)
+            if old is not None:
+                self._memo_chars -= len(old["text"])
+            self._memo[key] = entry
+            self._memo_chars += len(text)
+        while self._memo_chars > self.MEMO_MAX_CHARS and self._memo:
+            _k, old = self._memo.popitem(last=False)
+            self._memo_chars -= len(old["text"])
 
 
 _SHARED: PoliteSession | None = None
@@ -593,7 +668,8 @@ _SHARED: PoliteSession | None = None
 def shared_session() -> PoliteSession:
     """ONE bot session for aagrapevine.org / aalavina.org shared by every module in a run,
     so robots.txt Crawl-delay (5 s) is respected across modules and across BOTH hosts (one server,
-    see SAME_SERVER_HOSTS), not just within one module or one host name."""
+    see SAME_SERVER_HOSTS), not just within one module or one host name. It also holds the run's page
+    memo (PoliteSession.get_text / remembered), so a page that several modules need is requested once."""
     global _SHARED
     if _SHARED is None:
         _SHARED = PoliteSession(min_delay=5.0, respect_robots=True)

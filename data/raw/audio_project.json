@@ -1,0 +1,123 @@
+{
+ "source": "audio_project",
+ "updated": "2026-09-25T14:09:42Z",
+ "attempted": "2026-09-25T14:09:42Z",
+ "ok": true,
+ "error": null,
+ "stats": {
+  "parts": 2,
+  "fresh": [
+   "gv",
+   "lv"
+  ],
+  "requests": 3
+ },
+ "items": [
+  {
+   "id": "audio:gv",
+   "source": "grapevine",
+   "kind": "audio_project",
+   "url": "https://www.aagrapevine.org/audio-portal",
+   "title": "Audio Project",
+   "summary": "",
+   "lang": "en",
+   "date": null,
+   "first_seen": "2026-09-25T14:09:42Z",
+   "last_seen": "2026-09-25T14:09:42Z",
+   "image": null,
+   "tags": [],
+   "category": "audio_project",
+   "status": "ok",
+   "extra": {
+    "page_url": "https://www.aagrapevine.org/audio-portal",
+    "phone": "559-726-1216",
+    "tel": "+15597261216",
+    "minutes_min": 6,
+    "minutes_max": 8,
+    "keys": {
+     "record": "1",
+     "finish": "#",
+     "save": "1",
+     "permission": "2"
+    },
+    "email": "webcoord@aagrapevine.org",
+    "formats": [
+     "WAV",
+     "MP3"
+    ],
+    "no_speakers": true,
+    "channel_url": "https://www.youtube.com/@AAGRAPEVINE",
+    "playlists": [
+     {
+      "title": "Sponsorship",
+      "url": "https://www.youtube.com/watch?v=EfRqtFiXZlA&list=PL32cyZpp2liC2dHbkPWS4JE3y9nGa6e4l"
+     },
+     {
+      "title": "Voices of Women",
+      "url": "https://www.youtube.com/watch?v=DvqEmaYkYHY&list=PL32cyZpp2liDWOjAWzXUPmtrm6a9RwYV0"
+     },
+     {
+      "title": "From Relapse to Recovery",
+      "url": "https://www.youtube.com/watch?v=isulCDau0wk&list=PL32cyZpp2liA844DBOEfGrQfLrKfLYs_c"
+     },
+     {
+      "title": "YPAA World Tour",
+      "url": "https://youtube.com/playlist?list=PL32cyZpp2liDpgykERimevsGVor06iC0u"
+     }
+    ],
+    "steps_text": [
+     "Call the voicemail system at 559-726-1216.",
+     "Press 1 to hear helpful tips and to begin recording your story after the tone.",
+     "When finished, press #. You will be prompted to Press 1 to save your story.",
+     "Press 2 to give AA Grapevine permission to use your story."
+    ],
+    "checked": "2026-09-25T14:09:27Z"
+   }
+  },
+  {
+   "id": "audio:lv",
+   "source": "lavina",
+   "kind": "audio_project",
+   "url": "https://www.aalavina.org/graba-tu-historia",
+   "title": "Graba tu historia",
+   "summary": "",
+   "lang": "es",
+   "date": null,
+   "first_seen": "2026-09-25T14:09:42Z",
+   "last_seen": "2026-09-25T14:09:42Z",
+   "image": null,
+   "tags": [],
+   "category": "audio_project",
+   "status": "ok",
+   "extra": {
+    "page_url": "https://www.aalavina.org/graba-tu-historia",
+    "phone": "(559) 670-1601",
+    "tel": "+15596701601",
+    "minutes_max": 7,
+    "email": "lveditorial@aagrapevine.org",
+    "formats": [
+     "WAV",
+     "MP3"
+    ],
+    "no_speakers": true,
+    "instructions_url": "https://www.aalavina.org/instrucciones-graba-tu-historia",
+    "tips_url": "https://www.aalavina.org/consejos-de-grabacion",
+    "topics_url": "https://www.aalavina.org/temas-sugeridos",
+    "sample_url": "https://www.aalavina.org/audio-de-muestra",
+    "keys": {
+     "record": "1"
+    },
+    "permission_text": "Otorgo a La Viña los derechos de autor de la grabación para ser editada y publicada en el caso de que la grabación sea seleccionada; transmitir mi historia personal a través de la página Internet o de un tercero, en medios escritos, de audio y de distintos métodos de distribución.",
+    "long_distance": true,
+    "steps_text": [
+     "Paso 1: Llama a la casilla de correo de voz al (559) 670-1601. (Se aplicarán cargos de larga distancia internacional). Cuando accedas al sistema, escucharás el mensaje inicial, este atento a ese mensaje.",
+     "Paso 2: Luego de escuchar el mensaje, el sistema te indicará que presiones 1 para grabar tu historia. Presiona 1 para grabar tu historia.",
+     "Paso 3: Comience su historia como lo haría en una reunión: es decir, me llamo José y soy alcohólico. Dinos tu nombre y número de teléfono. Y diga esto: “Otorgo a La Viña los derechos de autor de la grabación para ser editada y publicada en el caso de que la grabación sea seleccionada; transmitir mi historia personal a través de la página Internet o de un tercero, en medios escritos, de audio y de distintos métodos de distribución.”",
+     "Paso 4: Cuelgue la llamada. Listo, has compartido tu historia con La Viña."
+    ],
+    "checked": "2026-09-25T14:09:42Z"
+   }
+  }
+ ],
+ "first_harvest": "2026-09-25T14:09:42Z"
+}

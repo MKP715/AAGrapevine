@@ -38,7 +38,7 @@ source drops old items.
 
 Source file names: `drive.json`, `youtube.json`, `podcasts.json`, `instagram.json`,
 `articles.json`, `pdfs.json`, `events_external.json`, `editorial.json`,
-`weekly_open.json`, `announcements.json`, `shop.json`, `meetings.json`.
+`weekly_open.json`, `announcements.json`, `shop.json`, `meetings.json`, `quote.json`, `audio_project.json`.
 
 ## 2. Item (common shape for every piece of content)
 
@@ -68,6 +68,8 @@ Source file names: `drive.json`, `youtube.json`, `podcasts.json`, `instagram.jso
 |---|---|---|---|
 | podcast | episode | show key (`gv` AA Grapevine's Podcast, `wo` Grapevine Weekly Open AA Meeting — `sources.podcasts[].key`) | `audio_url`, `duration_sec`, `season`, `episode`, `show`, `show_name`, `link` |
 | youtube | video | `gv` / `lv` (by language) | `video_id`, `channel_id`, `duration_sec`, `playlists` [names] , `is_short` |
+| grapevine / lavina | audio_project | `audio_project` | items `audio:gv` / `audio:lv` (scripts/sync/audio_project.py): see *audio_project.json* in §3 |
+| quote | quote | — | `pub` (gv/lv), `text`, `attribution`, `source`, `source_lang`, `signup_url`, `date_label`, `date_from_heading`, `block` (teaser/embed/anchor), `node` — items `quote:<pub>:<date>` (scripts/sync/quote.py): see *quote.json* in §3 |
 | instagram | post | account key `gv` / `lv` | `shortcode`, `account`, `username`, `media_type` (image/video/carousel), `thumb` (local path or null), `embed_url` |
 | grapevine / lavina | article | publication `gv` / `lv` | `publication`, `issue_label` ("October 2026" / "Septiembre / Octubre 2026"), `issue_key` ("2026-10" / "2026-09"), `topic`, `section`, `author`, `free` (bool\|null) |
 | crawl | pdf | `gvr` `rlv` `catalog` `flyer` `postcard` `news` `guidelines` `order-form` `workbook` `service` `literature` `other` | `host`, `file_url`, `size_bytes`, `pages`, `thumb` (site-relative path or null), `referrers` [{`url`,`title`}], `upload_month` ("2026-02"), `link_texts` [..] |
@@ -147,7 +149,8 @@ Files: `episodes.json`, `videos.json`, `instagram.json`, `articles.json`, `pdfs.
 `sources.ics_feeds` calendars — each real event ONCE, see *Events from several places* in §5), `announcements.json`, `editorial.json`, `weekly_open.json`,
 `whatsnew.json` (newest 150 across all sources, sorted by date desc),
 `spotlight.json` (published-writers spotlight, below), `status.json` (below),
-`shop.json` (official store data, below — no `items`), `meetings.json` (Grapevine meetings, below).
+`shop.json` (official store data, below — no `items`), `meetings.json` (Grapevine meetings, below),
+`quote.json` (the Grapevine / La Viña daily quote, below), `audio_project.json` (the magazines' story lines, below).
 
 Each site file is `{ "updated": "...", "fixture": false, <extra top-level keys>, "items": [...] }`,
 items sorted newest first (events: soonest first). Extra top-level keys: `instagram.profiles`,
@@ -379,6 +382,83 @@ the joining details (Zoom links, phones and contacts are never copied).
   on the home page (counts) and the site search — one `meeting` entry per group and place (`meeting:<id>`,
   a group that meets several times a week is one result), linking to its row.
 
+### quote.json — the daily quote (home page)
+Grapevine's "Daily Quote" and La Viña's "Cita Diaria", read by `scripts/sync/quote.py` from the block
+`#quote-of-the-day` of each magazine's home page (`sources.<grapevine|lavina>.quote_page`, default `/`): one
+request per site, in the full daily run (10:17 UTC) and again in the quick 12:07 UTC run (always after 6 AM
+Texas time, when the new quote is out) — none when an earlier module of the same run already read that home page
+(the shared session's page memo). `build_data.py` → `quote.build_site()`; nothing is translated.
+```json
+{ "updated": "2026-09-25T12:09:40Z", "fixture": false,
+  "items": [                                   // the newest quote of each publication: Grapevine, then La Viña
+    { "id": "quote:gv:2026-09-25", "pub": "gv", "lang": "en",
+      "date": "2026-09-25",                    // the quote's day (Central): from the heading, else the day it was read
+      "date_label": "September 25",            // the same day in the quote's language ("25 de septiembre")
+      "heading": "Grapevine Daily Quote September 25",
+      "text": "During his first AA years …",   // as published: whitespace and the outer quotation marks cleaned
+      "attribution": "AA Co-Founder, Bill W., September 1945",
+      "source": "“’Rules’ Dangerous but Unity Vital”, The Language of the Heart",   // after "From:" / "De"
+      "source_lang": "en",                     // a Spanish quote can come from an English book
+      "url": "https://www.aagrapevine.org/#quote-of-the-day",
+      "signup_url": "https://visitor.r20.constantcontact.com/…" } ] }  // the publication's own e-mail sign-up
+```
+* The raw file also keeps `history` (the last 14 days per publication — see *Raw envelope extras*): it is only
+  the guard that keeps a newer quote when a page shows an older one, so it is not copied into the site file.
+* A page that cannot be fetched or read keeps that publication's previous quote (item + history); the raw
+  envelope gets `ok: false` with the reason ("Daily quote" on /status/). The sign-up link is the teaser's
+  own link field; the embed near the top of both pages links Grapevine's list, so a fallback only takes a
+  link whose text names the publication's quote ("Sign up … Daily Quote" / "Regístrate … Cita").
+* Where it shows: the home page only (`homeDailyQuotes` in `eleventy/filters/home.js` — the page language's
+  magazine first, a quote older than 2 days left out; `home.js` adds "Today" / "Yesterday" in Central time
+  and names the link "Today's quote on …" when the quote shown is not today's; on phones only the page
+  language's quote shows, the other behind a button). No other page repeats it.
+* Without data the file is `{updated: null, items: []}` and the home page leaves the card out.
+
+### audio_project.json — record your story by phone (/contribute/#record)
+Read daily by `scripts/sync/audio_project.py` from the official pages (`config/site.yml` → `sources.grapevine.audio_project`
+= aagrapevine.org/audio-portal; `sources.lavina.record_story` + `record_instructions` = aalavina.org/graba-tu-historia and
+its instructions page; `record_tips`, `record_topics`, `sample_audio` are only linked) — 3 requests a day through the
+shared polite session, then `build_data.py` (nothing is translated). **ONE canonical home**: /contribute/#record;
+Listen and Watch only link to it. The steps on the page are the site's own words (`community.rec.*`, hand-written EN/ES)
+around the values below — never the official sentences machine-translated.
+```json
+{
+  "updated": "2026-09-25T14:09:42Z", "fixture": false,
+  "checked": "2026-09-25T14:09:27Z",          // the older of the two parts' last good reading
+  "gv": {                                     // null when unknown (first run, or never read)
+    "page_url": "https://www.aagrapevine.org/audio-portal",
+    "phone": "(559) 726-1216", "tel": "+15597261216",     // shown (one style for both lines) / for the tel: link
+    "minutes_min": 6, "minutes_max": 8,
+    "keys": { "record": "1", "finish": "#", "save": "1", "permission": "2" },   // one of 0-9 # *
+    "email": "webcoord@aagrapevine.org",      // Cloudflare-protected on the page: decoded (first byte = XOR key)
+    "formats": ["WAV", "MP3"], "no_speakers": true,        // "does not collect recordings from speakers"
+    "channel_url": "https://www.youtube.com/@AAGRAPEVINE",
+    "playlists": [ { "title": "Sponsorship", "url": "https://www.youtube.com/watch?v=…&list=…" } ],
+    "checked": "2026-09-25T14:09:27Z" },
+  "lv": {
+    "page_url": "https://www.aalavina.org/graba-tu-historia",
+    "instructions_url": "…/instrucciones-graba-tu-historia", "tips_url": "…/consejos-de-grabacion",
+    "topics_url": "…/temas-sugeridos", "sample_url": "…/audio-de-muestra",
+    "phone": "(559) 670-1601", "tel": "+15596701601", "minutes_max": 7,
+    "keys": { "record": "1" },
+    "permission_text": "Otorgo a La Viña los derechos de autor de la grabación …",   // said on the call, quoted as is (es)
+    "long_distance": true, "email": "lveditorial@aagrapevine.org", "formats": ["WAV", "MP3"],
+    "no_speakers": true, "checked": "2026-09-25T14:09:42Z" }
+}
+```
+* Raw items `audio:gv` / `audio:lv` (kind `audio_project`) carry the same fields in `extra`, plus `steps_text`
+  (the official steps as written, for checking only).
+* Each part is independent. A page that cannot be fetched, or on which a number, a key, the length or the
+  e-mail address is not found (a layout or process change), keeps the previous data of that part and the raw
+  envelope gets `ok: false` with the reason ("Record your story by phone" on /status/). When only La Viña's
+  instructions page fails, the keys and the sentence come from the previous run and the source still counts as
+  updated (`ok: true`; the problem is a note in `stats.warnings`, shown under "Notes" in the run summary).
+* `phone` in the site file is written from `tel` in one style, "(559) 726-1216", whatever way each official
+  page writes it (the raw `extra.phone` keeps the page's own spelling).
+* `build_data` checks every value again: a part without a dialable `tel` (`+1` and 10 digits) is null; keys
+  that are not one digit / `#` / `*` and an address that is not an e-mail address are dropped. The page shows a
+  part's steps only when all its keys are there, and "see the official page" when the part is null.
+
 ### status.json
 ```json
 {
@@ -471,6 +551,7 @@ field also gets `i18n.<name> = {en, es}` in the site file.
 | `pdfs.json` | `crawl` {`known_pages`, `crawled_pages`, `pdfs`, `last_run_pages`}; crawler counters are in `stats` |
 | `events_external.json` | `cache`, `sitemap` (module bookkeeping — not used by the site) |
 | `meetings.json` | `feeds` [{`id`, `name`, `url`, `lang`, `ok`, `count`, `method` (feed/page), `key_from` (secret/config/key_source — never the key), `error`, `note`, `updated`, `attempted`}], `type_labels` {code: {en, es}}. Items: `mtg:<hash>` (kind `meeting`, `title` = name, `url` = the meeting's page; `extra` = `day`, `time`, `end_time`, `location`, `address`, `street`, `zip`, `city`, `county`, `state`, `lat`, `lng`, `approximate`, `region`, `district`, `types`, `attendance`, `in_area`, `sources`) |
+| `quote.json` | `history` {gv/lv: [{`pub`, `lang`, `date`, `heading`, `text`, `attribution`, `source`, `source_lang`, `url`, `signup_url`}]} — the last 14 days, newest first, one per day (raw only: the guard against a page going back to an older quote; never shown). Items: `quote:<pub>:<date>` (kind `quote`, `title` = the official heading, `url` = the page anchor; `extra` = `pub`, `text`, `attribution`, `source`, `source_lang`, `signup_url`, `date_label`, `date_from_heading`, `block` (teaser/embed/anchor), `node`) |
 | `shop.json` | `bulk_discounts` {`source_url`, `tiers`, `note` {en?, es?}}, `types` {gv/lv: {print/digital/complete: {`text`, `lang`, `url`}}}, `listings` [{`pub`, `region`, `url`}], `types_checked` (ISO; type descriptions are re-read every 30 days). Items: `botm:gv` / `botm:lv` (kind `botm`; `extra` = `pub`, `page_url`, `price`, `sale_price`, `discount_pct`, `currency`, `sku`, `starts`, `ends`, `month`, `month_label`, `offer_text`, `product_name`, `image_src`) and `sub:<pub>:<region>:<sku>` (kind `subscription`; `extra` = `pub`, `region`, `listing_url`, `type`, `term_months`, `price`, `currency`, `sku`, `volume`, `position`, `image_src`) |
 
 `articles.json` → `archive_state` — the archive listings (aagrapevine.org/archive, aalavina.org/archivo):

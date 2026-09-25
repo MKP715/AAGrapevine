@@ -1,5 +1,5 @@
 """Weekly e-mail digest (scripts/notify/send_digest.py): the Book of the Month teaser and the
-"this month's poster & toolkit" line, rendered in the --dry-run preview (HTML + plain text, both
+"this month's toolkit" line, rendered in the --dry-run preview (HTML + plain text, both
 languages) from a small data/site folder written for each test.
 
 Run:  python -m unittest tests.test_send_digest -v   (CI: python -m unittest discover -s tests)
@@ -85,14 +85,14 @@ class SendDigestTests(unittest.TestCase):
         assert en.index("[Grapevine]") < en.index("[La Viña] Frente a Frente")   # the title it is sold under
         assert GV_PRODUCT in en and LV_PRODUCT in en
         assert f"→ Book of the Month details on our shop page: {SITE}/shop/#botm" in en
-        assert f"This month's poster & toolkit (September 2026): {SITE}/monthly/2026-09/" in en
+        assert f"This month's toolkit (September 2026): {SITE}/monthly/2026-09/" in en
 
         # Spanish half: La Viña first, Spanish dates/links; each book keeps its own title
         assert "LIBRO DEL MES — 20% DE DESCUENTO" in es
         assert "* [La Viña] Frente a Frente: El apadrinamiento en acción — $11.99 (precio regular $14.99) · hasta el 14 de octubre" in es
         assert es.index("[La Viña]") < es.index("[Grapevine] No Matter What")
         assert f"{SITE}/es/shop/#botm" in es
-        assert f"El cartel y el kit de este mes (septiembre de 2026): {SITE}/es/monthly/2026-09/" in es
+        assert f"El kit de este mes (septiembre de 2026): {SITE}/es/monthly/2026-09/" in es
 
         # HTML: the same in both halves, titles escaped, official store + our shop page linked
         assert html.count("Book of the Month — 20% off") == 1 and html.count("Libro del mes — 20% de descuento") == 1

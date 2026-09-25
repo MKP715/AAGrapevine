@@ -3,15 +3,19 @@
     python -m scripts.sync.run_all                       # everything (what GitHub Actions runs daily)
     python -m scripts.sync.run_all --crawl-minutes 40    # crawl budget (or env GV_CRAWL_MINUTES)
     python -m scripts.sync.run_all --crawl-minutes 0     # everything except the PDF crawl
-    python -m scripts.sync.run_all --quick               # push/edit refresh: drive, announcements,
-                                                         #   podcasts (cheap) + build_data; no crawl
+    python -m scripts.sync.run_all --quick               # push/edit refresh + the 12:07 UTC run: drive,
+                                                         #   announcements, podcasts (cheap), the daily
+                                                         #   quote (2 requests) + build_data; no crawl
     python -m scripts.sync.run_all --only youtube,podcasts
     python -m scripts.sync.run_all --skip crawl --no-translate
 
 Order: drive, announcements, podcasts, youtube, instagram, articles, editorial, weekly_open,
-shop (Book of the Month + subscription prices, ~15 requests), meetings (Grapevine meetings from
-the intergroups' meeting lists, one request per list), events_external, crawl (last, time-boxed),
-then build_data (which translates).
+shop (Book of the Month + subscription prices, ~15 requests), audio_project (the record-your-story
+phone lines of Grapevine and La Viña, 3 requests), meetings (Grapevine meetings from
+the intergroups' meeting lists, one request per list), events_external, quote (Grapevine's and La
+Viña's daily quote, one request per home page; as late as possible, so a winter run at 4:17 AM
+Central is more likely to find the new one), crawl (last, time-boxed), then build_data (which
+translates).
 
 Each module runs in this same process (so the polite crawl delay for aagrapevine.org /
 aalavina.org is shared) and is isolated: if one fails — or is missing — it is logged and the
@@ -36,12 +40,14 @@ from .common import RAW_DIR, get_logger, load_raw, run_module
 log = get_logger("run_all")
 
 MODULES = ["drive", "announcements", "podcasts", "youtube", "instagram", "articles", "editorial",
-           "weekly_open", "shop", "meetings", "events_external", "crawl"]
+           "weekly_open", "shop", "audio_project", "meetings", "events_external", "quote", "crawl"]
 RAW_NAME = {"crawl": "pdfs"}            # module → data/raw/<name>.json it writes (default: same name)
 
-# --quick (a settings/content edit was pushed): only the sources that are cheap and do not touch
-# aagrapevine.org / aalavina.org (5 s crawl delay), then build_data. The daily run does the rest.
-QUICK_MODULES = ("drive", "announcements", "podcasts")
+# --quick (a settings/content edit was pushed, or the 12:07 UTC scheduled run — see
+# .github/workflows/update.yml): only the sources that are cheap, then build_data. The daily run does
+# the rest. "quote" is the one that touches aagrapevine.org / aalavina.org (5 s crawl delay): just the
+# two home pages, so the day's quote (out before 6 AM Texas time) is on the site early every morning.
+QUICK_MODULES = ("drive", "announcements", "podcasts", "quote")
 # Flags for the slow, optional parts of a module under --quick (also with --only … --quick).
 # They are only passed if the module supports them.
 QUICK_ARGS = {

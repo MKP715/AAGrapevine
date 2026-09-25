@@ -47,9 +47,9 @@
     "en": "Events",
     "es": "Eventos"
   },
-  "committee.subnav.documents": {
-    "en": "Documents",
-    "es": "Documentos"
+  "committee.subnav.portfolio": {
+    "en": "Portfolio",
+    "es": "Portafolio"
   },
   "committee.subnav.photos": {
     "en": "Photos",
@@ -292,8 +292,8 @@
     "es": "Cerramos en más o menos una hora"
   },
   "committee.meeting.step_close_text": {
-    "en": "We close on time with the Responsibility Statement. Notes and slides are shared on the Documents page.",
-    "es": "Cerramos a tiempo con la Declaración de la Responsabilidad. Las notas y presentaciones se comparten en la página de Documentos."
+    "en": "We close on time with the Responsibility Statement. Notes and slides are shared in our Portfolio.",
+    "es": "Cerramos a tiempo con la Declaración de la Responsabilidad. Las notas y presentaciones se comparten en nuestro Portafolio."
   },
   "committee.weekly.eyebrow": {
     "en": "Also on Zoom · Open to everyone",
@@ -712,12 +712,16 @@
     "es": "Sobre este calendario"
   },
   "committee.docs.meta_desc": {
-    "en": "Reports, meeting notes, slides, workshop materials and flyers from the NETA 65 Grapevine / La Viña Committee, from our Google Drive.",
-    "es": "Informes, notas de reuniones, presentaciones, materiales de talleres y volantes del Comité de Grapevine / La Viña de NETA 65, desde nuestro Google Drive."
+    "en": "The portfolio of the NETA 65 Grapevine / La Viña Committee: reports, meeting notes, slides, workshop materials and flyers from our Google Drive.",
+    "es": "El portafolio del Comité de Grapevine / La Viña de NETA 65: informes, notas de reuniones, presentaciones, materiales de talleres y volantes de nuestro Google Drive."
+  },
+  "committee.docs.moved_text": {
+    "en": "The committee's reports, notes, slides and workshop files are now in our Portfolio:",
+    "es": "Los informes, notas, presentaciones y materiales de talleres del comité ahora están en nuestro Portafolio:"
   },
   "committee.docs.eyebrow": {
-    "en": "Committee · Documents",
-    "es": "Comité · Documentos"
+    "en": "Committee · Portfolio",
+    "es": "Comité · Portafolio"
   },
   "committee.docs.hero_sub": {
     "en": "Reports, meeting notes, slides and workshop materials from the committee.",
@@ -764,8 +768,8 @@
     "es": "Categorías de documentos"
   },
   "committee.docs.search_label": {
-    "en": "Search committee documents",
-    "es": "Buscar documentos del comité"
+    "en": "Search the portfolio",
+    "es": "Buscar en el portafolio"
   },
   "committee.docs.search_placeholder": {
     "en": "Search documents…",
@@ -892,8 +896,8 @@
     "es": "Anuncios"
   },
   "committee.docs.folders_note": {
-    "en": "These are the folder names on our Drive; Spanish names (informes, notas, presentaciones, talleres, volantes, formularios, fotos, anuncios) work too. Sub-folders are included, and any other folder shows up under its own name. Response spreadsheets and anything marked PRIVATE are never published.",
-    "es": "Estos son los nombres de las carpetas en nuestro Drive; también funcionan en español (informes, notas, presentaciones, talleres, volantes, formularios, fotos, anuncios). Se incluyen las subcarpetas, y cualquier otra carpeta aparece con su propio nombre. Las hojas de respuestas y todo lo marcado como PRIVADO nunca se publican."
+    "en": "These are the folder names on our Drive; Spanish names (informes, notas, presentaciones, talleres, volantes, formularios, fotos, anuncios) work too. Sub-folders are included, and any other folder shows up under its own name. Response spreadsheets and anything marked PRIVATE are left off this site — but anyone with the link can open the Drive folders, so keep private files out of them.",
+    "es": "Estos son los nombres de las carpetas en nuestro Drive; también funcionan en español (informes, notas, presentaciones, talleres, volantes, formularios, fotos, anuncios). Se incluyen las subcarpetas, y cualquier otra carpeta aparece con su propio nombre. Las hojas de respuestas y todo lo marcado como PRIVADO no aparecen en este sitio, pero cualquiera con el enlace puede abrir las carpetas de Drive: no guardes allí archivos privados."
   },
   "committee.docs.cat.reports": {
     "en": "Reports",

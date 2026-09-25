@@ -1,5 +1,5 @@
 /* Area styles: committee — owned by the committee page agent.
-   Pages: /meetings/ /events/ /documents/ /photos/ /announcements/
+   Pages: /meetings/ /events/ /portfolio/ /photos/ /announcements/
    Prefer Tailwind utilities in templates; put only what utilities cannot
    express here (pseudo-elements, dialog/backdrop, animations, tone variables,
    complex grids). Everything uses theme tokens so dark mode just works.

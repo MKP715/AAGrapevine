@@ -22,7 +22,8 @@ Sitio web del **Comité de Grapevine y La Viña del Área 65 del Noreste de Texa
   Semanal de Grapevine**), los **videos de YouTube** y las **publicaciones de Instagram**, y lo
   **traduce todo** (inglés ⇄ español) con software libre.
 - **Lo único que usted hace:** subir archivos a las carpetas del comité en **Google Drive**
-  (dentro de la carpeta del Panel 77). Al día siguiente aparecen en el sitio.
+  (dentro de la carpeta del Panel 77). Al día siguiente aparecen en el sitio: informes, notas, presentaciones y
+  talleres en el **Portafolio** (`/es/portfolio/`; la antigua dirección `/es/documents/` lleva allí).
   - Un **volante** con la fecha al inicio del nombre se convierte en **evento** — con hora y lugar si
     los escribe: `2027-03-14 Asamblea de primavera 9am @ Tyler TX.pdf`
   - Un **Google Doc** en `anuncios` se convierte en **anuncio**; `(fijado)` lo deja arriba y
@@ -30,7 +31,7 @@ Sitio web del **Comité de Grapevine y La Viña del Área 65 del Noreste de Texa
   - Cada **subcarpeta** de `fotos` es un **álbum**. Por favor, solo fotos donde **no se reconozca la
     cara** de ningún miembro de AA.
 - **Tienda** (`/es/shop/`): el **libro del mes** de Grapevine y La Viña y los **precios de suscripción** por
-  región, leídos cada día de las tiendas oficiales (toda compra se hace allí). **Kit del mes y carteles**
+  región, leídos cada día de las tiendas oficiales (toda compra se hace allí). **Kit del mes**
   (`/es/monthly/`): un cartel para cada mes (descargar en PNG, compartir, imprimir) y las 10 maneras de poner
   una edición a trabajar. La **reunión abierta semanal de La Viña** (jueves, en español) está en
   `/es/meetings/#weekly-open`. La página **Reuniones** (`/es/meetings/`) también reúne las **reuniones de
@@ -90,6 +91,8 @@ No paid services, no passwords or API keys required.
 ## 1. What updates automatically
 
 Every day at about **5:17 AM Central** (4:17 AM in winter) GitHub runs the **Update & Deploy** job.
+A short second run at about **7:07 AM Central** (6:07 AM in winter) picks up the Grapevine and La Viña
+**daily quote**, which is out before 6 AM Texas time.
 It also runs within a few minutes whenever someone saves a change to the settings or content.
 
 | Source | What the site gets | Where it shows |
@@ -101,11 +104,13 @@ It also runs within a few minutes whenever someone saves a change to the setting
 | **Grapevine Weekly Open AA Meeting** (podcast) | Every recorded meeting, playable on the site | **Listen** |
 | **YouTube** (@AAGrapevine — Grapevine *and* La Viña videos) | Every video, playable on the site | **Watch** |
 | **Instagram** (@alcoholicsanonymous_gv, @alcoholicosanonimos_lv) | Newest posts — see [section 9](#9-instagram-how-the-site-reads-it-please-read) | **Instagram** |
-| **Committee Google Drive** | Reports, notes, slides, workshops, forms, photo albums; dated flyers → events; docs in *announcements* → announcements | **Documents · Photos · Events · Announcements** |
+| **Committee Google Drive** | Reports, notes, slides, workshops, forms, photo albums; dated flyers → events; docs in *announcements* → announcements | **Portfolio · Photos · Events · Announcements** |
 | **Editorial calendar** (Grapevine) and suggested topics (La Viña) | Upcoming themes and story deadlines | **Contribute** |
 | **Grapevine Weekly Open meeting** (web page) | Current day, time and Zoom details | **Meetings** |
 | **La Viña's weekly open meeting** (from the settings, `lavina_weekly_open:` — an official La Viña flyer) | Thursdays in Spanish, first date, Zoom details | **Meetings** (one line on Home · Listen · Watch · monthly posters) |
 | **Official stores** (aagrapevine.org / aalavina.org store pages) | **Book of the Month** (title, cover, percent, sale price, dates) and **subscription prices** per region (U.S. · Canada · International; print / digital / complete) | **Shop** (a short teaser on Home, the monthly posters and the weekly e-mail) |
+| **Daily quote** (the home pages of aagrapevine.org and aalavina.org) | Grapevine's *Daily Quote* and La Viña's *Cita Diaria*: the quote as published (never translated), who said it, the book it comes from, the official e-mail sign-up | **Home** |
+| **Record your story by phone** (aagrapevine.org/audio-portal, aalavina.org/graba-tu-historia) | Grapevine's *Audio Project* and La Viña's *Graba tu historia*: the phone number, the keys to press, the length, the e-mail address for recordings, Grapevine's story playlists | **Share your story** (`/contribute/#record`; one link on Listen · Watch) |
 | **Committee meeting** (from the settings) | Next dates, countdown, "add to calendar" | **Meetings · Events** |
 | **Local meeting lists** (the 8 intergroup / central office lists the Rowlett Group's meeting page uses — in or at our Area: Dallas Intergroup, Fort Worth Central Office, Tyler Central Service Office, the Spanish-speaking Dallas office, District 71 Abilene; nearby: Arkansas Central Office, OKC Intergroup, Northwest Texas Area 66) | Every meeting with the Grapevine ("GR") type: day, time, place, directions, link to the office's page. A meeting in two lists is shown once; our Area first (by county), nearby areas after | **Meetings** (one line on Home; each meeting is in the site search) |
 | **Monthly events** (from the settings, e.g. our booth at CityWide Dallas) | The next dates, "add to calendar" | **Events · Home · Meetings · calendar feed · weekly e-mail** |
@@ -126,7 +131,7 @@ What the newer pages do:
 - **Subscriptions & prices** (`/shop/#subscriptions`): a switch for magazine × region (U.S., Canada,
   International) with every term's price as the stores list it, volume prices, gift subscriptions (Carry the
   Message), home-group order forms and catalogs. Links like `/shop/?pub=lv#subscriptions` open La Viña's prices.
-- **Monthly toolkit & posters** (`/monthly/`): the "10 ways to put an issue to work" guide
+- **Monthly toolkit** (`/monthly/`): the "10 ways to put an issue to work" guide
   (`config/carry.yml`), and a page for this month and each of the next 12 — the issue themes, tips, story
   deadlines, dates (committee meeting, the CityWide booth, workshops) and a **poster** in its own seasonal
   design to download as a PNG for WhatsApp / Instagram (1080 × 1350), share, or print on one letter page.
@@ -147,7 +152,8 @@ What the newer pages do:
 **Menus** (`src/_data/nav.js`): What's New · Read · Listen · Watch · Library · Shop ·
 **Get Involved** (monthly toolkit & GV/LV report, share your story, published writers, GVR / RLV
 corner) · **Committee** (Meetings — committee meeting, Grapevine meetings & weekly open meetings —, events,
-documents, photos, announcements).
+Portfolio — the committee's reports, notes, slides and workshop files, `/portfolio/` —, photos, announcements).
+The Portfolio was called *Committee documents* (`/documents/`); that address forwards to `/portfolio/`, `#anchors` included.
 Instagram, the weekly digest, the share kit, search and status are in the footer and the phone menu.
 Each piece of information has one home page; other pages only link to it.
 
@@ -182,10 +188,11 @@ A65_GV/
         └── Writing Workshop/
 ```
 
-Upload files into the right folder. **They appear on the site the next morning**
+Upload files into the right folder (reports, notes, slides, workshops and forms show on the **Portfolio**
+page, `/portfolio/`). **They appear on the site the next morning**
 (or a few minutes after you [run the update](#7-running-the-update-right-now)).
 Folder names can be English or Spanish, any capitalization. Any other folder name also works —
-it shows in the Documents page under its own name. Folders *outside* a Panel folder are ignored.
+it shows on the Portfolio page (`/portfolio/`) under its own name. Folders *outside* a Panel folder are ignored.
 
 ### Naming files (optional, but it makes the site smarter)
 
@@ -218,8 +225,10 @@ Dates can also be written `03-14-2027`, `March 14, 2027` or `14 de marzo de 2027
 
 - **A new panel** (e.g. Panel 79): create `2029-2030_Panel79_GVLV` with the same sub-folders. The site picks it up
   automatically. Panels older than `drive.min_panel` in the settings are ignored.
-- **Never published:** spreadsheets (form responses can contain personal information) and anything
-  whose name contains `PRIVATE`, `PRIVADO`, `(Responses)` or `(Respuestas)`.
+- **Never published on the site:** spreadsheets (form responses can contain personal information) and anything
+  whose name contains `PRIVATE`, `PRIVADO`, `(Responses)` or `(Respuestas)`. **But the Drive folders are shared
+  "Anyone with the link"** (the Portfolio page links to them): a file inside them can still be opened there.
+  Keep private drafts and personal information out of the A65_GV folders altogether.
 - **Deleting or moving** a file in Drive removes it from the site on the next update.
 - Empty folders are fine — the site shows a friendly "nothing here yet" message.
 
@@ -420,7 +429,7 @@ After that, nothing needs changing here: the next daily update reads it, and the
      Leave it **empty** to use the daily setting (normally 40 minutes). Use up to `300` only for a
      big catch-up (see the [first-run checklist](#11-first-run-checklist)).
    - **skip_crawl** — tick it for a **quick refresh** (about 10–20 minutes): only **Google Drive**,
-     **announcements** and the **podcasts** are updated. Videos, magazine stories, Instagram and
+     **announcements**, the **podcasts** and the **daily quote** are updated. Videos, magazine stories, Instagram and
      PDFs wait for the next daily run.
 4. Click the green **Run workflow** button. A normal run takes about an hour in total (the PDF
    search waits 5 seconds between pages, as the sites ask); a 300-minute catch-up about 6 hours.
@@ -616,7 +625,7 @@ details are in **[docs/SETUP-GITHUB.md](docs/SETUP-GITHUB.md)**:
 
 - **Magazine stories, both podcasts, videos and Instagram** appear on the first run.
 - **The PDF Library** shows what the first PDF search found and keeps growing and re-checking daily.
-- **Committee sections** (Documents, Photos, flyer events, Drive announcements) show a friendly
+- **Committee sections** (Portfolio, Photos, flyer events, Drive announcements) show a friendly
   **"nothing here yet"** message: the Panel 77 folders in Drive are still empty. They fill in the
   morning after the first uploads. The **committee meeting** dates show right away (from the settings).
 - **Translations:** the first run translates hundreds of titles (up to 40 minutes a day); anything not
