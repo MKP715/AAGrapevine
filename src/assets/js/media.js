@@ -261,6 +261,29 @@
     apply();
   }
 
+  /* Listen, from 1440px: the right-hand column .listen-side (latest-episode player + the
+     YouTube Short) stays in view as ONE stack — but only while the whole stack fits between
+     the header and the bottom of the window (.is-sticky → position: sticky, areas/media.css).
+     So nothing in it is ever covered or cut off; in a shorter window it scrolls with the page
+     and the mini-player keeps playback at hand. Re-checked when the window or the stack resizes. */
+  function watchListenSide() {
+    var side = document.querySelector(".listen-side");
+    if (!side || !window.matchMedia) return;
+    var wide = window.matchMedia("(min-width: 90rem)"); // the CSS breakpoint of the column
+    var header = document.querySelector(".site-header");
+    var queued = false;
+    function apply() {
+      queued = false;
+      var top = (header ? header.offsetHeight : 64) + 20; // CSS top: var(--header-h) + 1.25rem
+      var fits = wide.matches && top + side.offsetHeight + 16 <= window.innerHeight;
+      side.classList.toggle("is-sticky", fits);
+    }
+    function queue() { if (!queued) { queued = true; window.requestAnimationFrame(apply); } }
+    if ("ResizeObserver" in window) new ResizeObserver(queue).observe(side);
+    window.addEventListener("resize", queue);
+    apply();
+  }
+
   /* ------------------------------------------------------------ Alpine */
 
   document.addEventListener("alpine:init", function () {
@@ -543,6 +566,7 @@
           ["show", "season"].forEach(function (k) { self.$watch(k, function () { self.syncUrl(); }); });
           this.resumeEp = lastResume();
           this.$nextTick(watchPlayerChrome);
+          this.$nextTick(watchListenSide);
         },
         /* Filters in the address: /listen/?show=wo (the Meeting page's "Listen to past
            meetings" button) and ?show=wo&season=2. Picking a show / season updates the

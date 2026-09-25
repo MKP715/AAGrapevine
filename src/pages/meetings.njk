@@ -9,14 +9,16 @@ pageScripts: ["/assets/js/committee.js"]
 ---
 {#- Meetings (/meetings/ — the old /meeting/ address redirects here, #anchors kept: meeting.njk).
     The shared page hero with an in-page nav (three jump links), the committee sub-nav, then:
-    (a) #committee-meeting — the committee's monthly Zoom meeting: live countdown and Zoom details
-        side by side on wide screens, the next dates, who can attend, the chair, the calendar feed
-        and what happens at the meeting;
+    (a) #committee-meeting — the committee's monthly Zoom meeting: live countdown, how to join, who
+        can attend, the chair, what happens at the meeting and the next dates (+ the calendar feed),
+        on one board that ends level on wide screens;
     (b) #grapevine-meetings — the Grapevine ("GR") meetings of the meeting lists in and next to our
-        Area (db.meetings, its ONE home on the site): our Area first, then each nearby region, every
-        group by weekday; filters (day, city/county/group, in person/online, nearby on/off) in
-        committee.js (cmGvMeetings) — without JavaScript the whole list shows;
-    (c) #weekly-open — the weekly open meetings of AA Grapevine and La Viña. -#}
+        Area (db.meetings, its ONE home on the site): one card per group with its whole week, our
+        Area first (by county and city), then each nearby region; filters (day, city/county/group,
+        in person/online, nearby on/off) in committee.js (cmGvMeetings) — without JavaScript every
+        group shows;
+    (c) #weekly-open — the weekly open meetings of AA Grapevine and La Viña.
+    Each section opens the same way (secHead: eyebrow, title, one line of text). -#}
 {% import "macros/ui.njk" as ui with context %}
 {%- set m = site.meeting -%}
 {%- set gvm = db.meetings | cmGvMeetings(lang, site) -%}
@@ -57,24 +59,30 @@ pageScripts: ["/assets/js/committee.js"]
 
 {% committeeNav lang, "meetings", db %}
 
-{#- ================= (a) The committee's monthly meeting ================= -#}
-<section id="committee-meeting" class="scroll-mt-24" aria-labelledby="committee-meeting-h">
-<div class="container-page pt-8 sm:pt-10">
-  <div class="max-w-3xl">
-    <p class="eyebrow flex items-center gap-2 text-gv">{% icon "users", "size-4" %} {{ "committee.meetings.committee_eyebrow" | t(lang) }}</p>
-    <h2 id="committee-meeting-h" class="h-section mt-2">{{ "committee.meetings.committee_title" | t(lang) }}</h2>
-    <p class="mt-2 leading-relaxed text-muted">{% if next %}{{ "committee.meeting.hero_sub" | t(lang, { rule: rule, time: timeRange }) }}{% else %}{{ "committee.meeting.no_next" | t(lang) }}{% endif %}</p>
-  </div>
+{#- The page's three sections open the same way: eyebrow (icon + label), title, one line of text -#}
+{% macro secHead(id, icon, eyebrow, title, text, tone="text-gv") %}
+<div class="max-w-3xl">
+  <p class="eyebrow flex items-center gap-2 {{ tone }}">{% icon icon, "size-4" %} {{ eyebrow }}</p>
+  <h2 id="{{ id }}" class="h-section mt-2">{{ title }}</h2>
+  {% if text %}<p class="mt-2 leading-relaxed text-muted">{{ text }}</p>{% endif %}
+  {{ caller() if caller }}
 </div>
+{% endmacro %}
 
-{#- ============ The meeting board (one grid, so every card lines up) ============
-    Phones: one column. From 1024px two columns: countdown | how to join, then the next
-    dates (two rows tall) next to who can attend and the chair, then the calendar feed.
-    From 1440px three columns: the countdown and the dates on the left, how to join across
-    the other two, who | chair side by side, the calendar feed under them. The cards lay out
-    their own insides by their width (container queries), so they fit any of those slots. -#}
-<div class="container-page pt-6 pb-12 sm:pt-8 sm:pb-16">
-  <div class="cm-board">
+{#- ================= (a) The committee's monthly meeting ================= -#}
+<section id="committee-meeting" class="container-page scroll-mt-24 pt-8 pb-12 sm:pt-10 sm:pb-16" aria-labelledby="committee-meeting-h">
+  {{ secHead("committee-meeting-h", "users", "committee.meetings.committee_eyebrow" | t(lang), "committee.meetings.committee_title" | t(lang),
+    ("committee.meeting.hero_sub" | t(lang, { rule: rule, time: timeRange })) if next else ("committee.meeting.no_next" | t(lang))) }}
+
+  {#- ============ The meeting board (one grid, so every card lines up) ============
+      Markup order = phone order: next meeting → how to join → who can come → the chair (questions)
+      → what happens → the next dates. From 1024px two columns (committee.css .cm-board):
+        countdown | how to join  ·  who | chair  ·  what happens | next dates
+      From 1440px three: the countdown and the dates on the left; how to join, who | chair and
+      what happens on the right — so both sides end together. Only the countdown, how to join, the
+      chair and the dates hold links or buttons, so Tab still goes top to bottom at every width.
+      The cards lay out their own insides by their width (container queries). -#}
+  <div class="cm-board mt-6 sm:mt-8">
 
     {#- ---------- Live countdown ---------- -#}
     {% if next %}
@@ -86,7 +94,7 @@ pageScripts: ["/assets/js/committee.js"]
         <span x-show="phase === 'soon'" x-cloak>{{ "committee.meeting.starting_soon" | t(lang) }}</span>
         <span x-show="phase === 'live'" x-cloak>{{ "committee.meeting.live_now" | t(lang) }}</span>
       </h3>
-      <p class="mt-3 font-display text-2xl font-semibold leading-tight text-balance text-white sm:text-3xl" x-text="dateLabel">{{ next.dateLabel }}</p>
+      <p class="mt-3 font-display text-2xl font-semibold leading-tight text-balance text-white sm:text-3xl min-[90rem]:max-[112.5rem]:text-2xl" x-text="dateLabel">{{ next.dateLabel }}</p>
       <p class="mt-1.5 text-white/85">
         <span x-text="timeLabel">{{ next.timeLabel }}</span>
         <span class="block text-sm text-white/70" x-show="localLabel" x-text="localLabel" x-cloak></span>
@@ -131,17 +139,17 @@ pageScripts: ["/assets/js/committee.js"]
     {% endif %}
 
     {#- ---------- How to join (Zoom ID + passcode) ---------- -#}
-    <section class="cm-join card card-pad @container flex flex-col" aria-labelledby="join-h">
-      <h3 id="join-h" class="h-section flex items-center gap-2.5"><span class="text-gv">{% icon "video", "size-6" %}</span>{{ "committee.meeting.how_to_join" | t(lang) }}</h3>
+    <div class="cm-join card card-pad @container flex flex-col">
+      <h3 class="cm-card-h"><span class="text-gv">{% icon "video", "size-5" %}</span>{{ "committee.meeting.how_to_join" | t(lang) }}</h3>
       <p class="mt-2 max-w-[60ch] text-muted">{{ "committee.meeting.how_to_join_text" | t(lang) }}</p>
 
-      <dl class="mt-6 grid gap-3 @min-[38rem]:grid-cols-2">
+      <dl class="mt-5 grid gap-3 @min-[38rem]:grid-cols-2">
         {% if m.meeting_id %}
         <div class="cm-field">
           <dt class="eyebrow">{{ "committee.meeting.id" | t(lang) }}</dt>
           <dd class="mt-1.5 flex items-center justify-between gap-3">
             <span class="font-mono text-xl font-semibold tracking-wide text-ink @sm:text-2xl">{{ m.meeting_id }}</span>
-            <button type="button" class="btn-secondary btn-sm" data-copy="{{ m.meeting_id | cmDigits }}" aria-label="{{ 'committee.meeting.copy_id' | t(lang) }}">{% icon "copy", "size-4" %} {{ "common.copy" | t(lang) }}</button>
+            <button type="button" class="btn-secondary btn-sm max-sm:min-h-11" data-copy="{{ m.meeting_id | cmDigits }}" aria-label="{{ 'committee.meeting.copy_id' | t(lang) }}">{% icon "copy", "size-4" %} {{ "common.copy" | t(lang) }}</button>
           </dd>
         </div>
         {% endif %}
@@ -150,7 +158,7 @@ pageScripts: ["/assets/js/committee.js"]
           <dt class="eyebrow">{{ "committee.meeting.passcode" | t(lang) }}</dt>
           <dd class="mt-1.5 flex items-center justify-between gap-3">
             <span class="font-mono text-xl font-semibold tracking-wide text-ink @sm:text-2xl">{{ m.passcode }}</span>
-            <button type="button" class="btn-secondary btn-sm" data-copy="{{ m.passcode }}" aria-label="{{ 'committee.meeting.copy_passcode' | t(lang) }}">{% icon "copy", "size-4" %} {{ "common.copy" | t(lang) }}</button>
+            <button type="button" class="btn-secondary btn-sm max-sm:min-h-11" data-copy="{{ m.passcode }}" aria-label="{{ 'committee.meeting.copy_passcode' | t(lang) }}">{% icon "copy", "size-4" %} {{ "common.copy" | t(lang) }}</button>
           </dd>
         </div>
         {% endif %}
@@ -161,18 +169,54 @@ pageScripts: ["/assets/js/committee.js"]
         <button type="button" class="btn-secondary" data-copy="{{ m.zoom_url }}">{% icon "link", "size-4" %} {{ "committee.meeting.copy_link" | t(lang) }}</button>
       </div>
 
-      <div class="mt-auto pt-7">
+      <div class="mt-auto pt-6">
         <ul class="grid gap-3 border-t border-line pt-5 text-sm text-muted @3xl:grid-cols-3">
           <li class="flex gap-2.5"><span class="mt-0.5 text-gv">{% icon "clock-3", "size-4" %}</span><span>{{ "committee.meeting.tip_early" | t(lang) }}</span></li>
           <li class="flex gap-2.5"><span class="mt-0.5 text-gv">{% icon "smartphone", "size-4" %}</span><span>{{ "committee.meeting.tip_phone" | t(lang) }}</span></li>
           <li class="flex gap-2.5"><span class="mt-0.5 text-gv">{% icon "languages", "size-4" %}</span><span>{{ "committee.meeting.tip_lang" | t(lang) }}</span></li>
         </ul>
       </div>
-    </section>
+    </div>
 
-    {#- ---------- Next dates · who can attend · chair · calendar feed ---------- -#}
-    <div class="card card-pad flex flex-col lg:row-span-2">
-      <h3 class="h-card flex items-center gap-2 text-xl"><span class="text-gv">{% icon "calendar-days", "size-5" %}</span>{{ "committee.meeting.next_dates" | t(lang) }}</h3>
+    {#- ---------- Who can come ---------- -#}
+    <div class="cm-who card card-pad">
+      <h3 class="cm-card-h"><span class="text-vine">{% icon "hand-heart", "size-5" %}</span>{{ "committee.meeting.who_title" | t(lang) }}</h3>
+      <p class="mt-2 max-w-[65ch] leading-relaxed text-muted">{{ "committee.meeting.who_text" | t(lang) }}</p>
+      <ul class="mt-4 flex flex-wrap gap-2">
+        {% for k in ["gvr", "rlv", "dcm", "members"] %}<li class="badge-muted text-xs">{{ ("committee.meeting.who_" + k) | t(lang) }}</li>{% endfor %}
+      </ul>
+    </div>
+
+    {#- ---------- The chair (questions) ---------- -#}
+    <div class="cm-chair card card-pad flex flex-col">
+      <h3 class="cm-card-h"><span class="text-gv">{% icon "mail", "size-5" %}</span>{{ m | pick(lang, "chair_title") }}</h3>
+      <p class="mt-2 max-w-[65ch] leading-relaxed text-muted">{{ "committee.meeting.contact_text" | t(lang) }}</p>
+      <div class="mt-auto flex flex-wrap gap-2.5 pt-5">
+        <a class="btn-primary" href="{{ (m.chair_email or site.contact_email) | mailto('committee.meeting.mail_subject' | t(lang)) }}">{% icon "mail", "size-4" %} {{ "committee.meeting.write_chair" | t(lang) }}</a>
+        <button type="button" class="btn-secondary max-w-full" data-copy="{{ m.chair_email or site.contact_email }}">{% icon "copy", "size-4" %} <span class="truncate">{{ m.chair_email or site.contact_email }}</span></button>
+      </div>
+    </div>
+
+    {#- ---------- What happens at the meeting: six numbered steps (1 → 2 → 3 columns by the card's width) ---------- -#}
+    <div class="cm-agenda card card-pad @container flex flex-col">
+      <h3 class="cm-card-h"><span class="text-gv">{% icon "list-ordered", "size-5" %}</span>{{ "committee.meeting.agenda_title" | t(lang) }}</h3>
+      <p class="mt-1.5 text-muted">{{ "committee.meeting.agenda_sub" | t(lang) }}</p>
+      <ol class="cm-steps mt-5">
+        {% for s in ["welcome", "reports", "news", "plan", "questions", "close"] %}
+        <li class="cm-step">
+          <span class="cm-step-num" aria-hidden="true">{{ loop.index }}</span>
+          <div class="min-w-0">
+            <h4 class="font-semibold leading-snug text-ink">{{ ("committee.meeting.step_" + s) | t(lang) }}</h4>
+            <p class="mt-1 text-sm leading-relaxed text-muted">{{ ("committee.meeting.step_" + s + "_text") | t(lang) }}</p>
+          </div>
+        </li>
+        {% endfor %}
+      </ol>
+    </div>
+
+    {#- ---------- The next dates · also every month · the calendar feed ---------- -#}
+    <div class="cm-dates-card card card-pad flex flex-col">
+      <h3 class="cm-card-h"><span class="text-gv">{% icon "calendar-days", "size-5" %}</span>{{ "committee.meeting.next_dates" | t(lang) }}</h3>
       {% set dates = meeting.upcoming | limit(7) %}
       {% if dates | length %}
       <ol class="cm-dates mt-5 space-y-2" data-cm-max="6">
@@ -198,10 +242,11 @@ pageScripts: ["/assets/js/committee.js"]
         <h4 class="eyebrow font-sans">{{ "committee.meeting.also_monthly" | t(lang) }}</h4>
         <ul class="mt-2.5 space-y-3">
           {% for ev in monthly %}
-          <li class="flex gap-2.5">
+          {#- the whole line is the link's target (after:inset-0), not just its title -#}
+          <li class="relative flex gap-2.5 rounded-lg">
             <span class="mt-0.5 text-vine">{% icon "repeat", "size-4" %}</span>
             <span class="min-w-0">
-              <a class="font-semibold text-ink underline-offset-2 hover:text-gv hover:underline" href="{{ '/events/' | lurl(lang) }}#{{ ev.anchor }}">{{ ev.title }}</a>
+              <a class="font-semibold text-ink underline-offset-2 after:absolute after:inset-0 after:content-[''] hover:text-gv hover:underline" href="{{ '/events/' | lurl(lang) }}#{{ ev.anchor }}">{{ ev.title }}</a>
               <span class="block text-sm text-muted">{{ ev.recurrence }}</span>
               {#- Spanish weekday and month names are lower-case inside a sentence -#}
               <span class="block text-sm text-muted">{{ "committee.meeting.also_next" | t(lang, { date: (ev.dateLabel | lower) if lang == "es" else ev.dateLabel }) }}</span>
@@ -212,138 +257,105 @@ pageScripts: ["/assets/js/committee.js"]
       </div>
       {% endif %}
       {#- The calendar feed (every meeting and event) is set up in ONE place: /events/#subscribe -#}
-      <a href="{{ '/events/' | lurl(lang) }}#subscribe" class="mt-auto inline-flex min-h-10 items-center gap-1.5 pt-5 text-sm font-semibold text-gv hover:underline">{% icon "calendar-sync", "size-4" %} {{ "committee.meeting.subscribe_all" | t(lang) }}</a>
-    </div>
-
-    <div class="card card-pad relative overflow-hidden">
-      <span class="cm-deco-icon text-vine">{% icon "hand-heart", "size-28" %}</span>
-      <p class="eyebrow">{{ "committee.meeting.who_eyebrow" | t(lang) }}</p>
-      <h3 class="h-section mt-2">{{ "committee.meeting.who_title" | t(lang) }}</h3>
-      <p class="mt-3 max-w-[65ch] leading-relaxed text-muted">{{ "committee.meeting.who_text" | t(lang) }}</p>
-      <ul class="mt-4 flex flex-wrap gap-2">
-        {% for k in ["gvr", "rlv", "dcm", "members"] %}<li class="badge-muted text-xs">{{ ("committee.meeting.who_" + k) | t(lang) }}</li>{% endfor %}
-      </ul>
-    </div>
-
-    <div class="card card-pad relative overflow-hidden">
-      <span class="cm-deco-icon text-gv">{% icon "mail", "size-28" %}</span>
-      <p class="eyebrow">{{ "committee.meeting.contact_eyebrow" | t(lang) }}</p>
-      <h3 class="h-section mt-2">{{ m | pick(lang, "chair_title") }}</h3>
-      <p class="mt-3 max-w-[65ch] leading-relaxed text-muted">{{ "committee.meeting.contact_text" | t(lang) }}</p>
-      <div class="mt-5 flex flex-wrap gap-2.5">
-        <a class="btn-primary" href="{{ (m.chair_email or site.contact_email) | mailto('committee.meeting.mail_subject' | t(lang)) }}">{% icon "mail", "size-4" %} {{ "committee.meeting.write_chair" | t(lang) }}</a>
-        <button type="button" class="btn-secondary max-w-full" data-copy="{{ m.chair_email or site.contact_email }}">{% icon "copy", "size-4" %} <span class="truncate">{{ m.chair_email or site.contact_email }}</span></button>
-      </div>
+      <a href="{{ '/events/' | lurl(lang) }}#subscribe" class="mt-auto inline-flex min-h-11 items-center gap-1.5 pt-5 text-sm font-semibold text-gv hover:underline">{% icon "calendar-sync", "size-4" %} {{ "committee.meeting.subscribe_all" | t(lang) }}</a>
     </div>
   </div>
-</div>
-
-{#- ============ What happens at the meeting ============
-    3 columns from 1024px; all six in one row from 1800px. -#}
-<section class="container-page pb-12 sm:pb-16" aria-labelledby="agenda-h">
-  <div class="mb-6">
-    <h3 id="agenda-h" class="h-section flex items-center gap-2.5"><span class="text-gv">{% icon "list-ordered", "size-6" %}</span>{{ "committee.meeting.agenda_title" | t(lang) }}</h3>
-    <p class="mt-1.5 max-w-2xl text-muted">{{ "committee.meeting.agenda_sub" | t(lang) }}</p>
-  </div>
-  <ol class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 min-[112.5rem]:grid-cols-6">
-    {% for s in [["welcome", "coffee"], ["reports", "users"], ["news", "book-open-text"], ["plan", "calendar-check"], ["questions", "message-circle-question"], ["close", "heart-handshake"]] %}
-    <li class="card card-pad cm-step">
-      <span class="cm-step-num" aria-hidden="true">{{ loop.index }}</span>
-      <span class="grid size-11 place-items-center rounded-xl bg-gv-soft text-gv">{% icon s[1], "size-5" %}</span>
-      <h4 class="h-card mt-4">{{ ("committee.meeting.step_" + s[0]) | t(lang) }}</h4>
-      <p class="mt-1.5 text-sm leading-relaxed text-muted">{{ ("committee.meeting.step_" + s[0] + "_text") | t(lang) }}</p>
-    </li>
-    {% endfor %}
-  </ol>
-</section>
 </section>
 
 {#- ================= (b) Grapevine meetings in our Area and nearby =================
-    One card per meeting (db.meetings, via cmGvMeetings): time, name, types (Grapevine first),
-    place, in person / online, Directions and the meeting's page on the office's own site (the
-    joining details and any changes live there — nothing else is copied). Each card carries
-    data-day / data-area / data-att / data-q for the filters (committee.js → cmGvMeetings). -#}
-{% macro gvmCard(c, L, h) %}
-{%- set attIcon = "video" if c.attendance == "online" else ("monitor-smartphone" if c.attendance == "hybrid" else "users-round") -%}
-<li id="{{ c.anchor }}" class="cm-gvm-row{{ ' is-nearby' if not c.inArea }}" data-day="{{ c.day }}" data-area="{{ 'ours' if c.inArea else 'nearby' }}" data-att="{{ c.attendance }}" data-q="{{ c.search }}">
-  <div class="cm-gvm-who">
-    <h{{ h }} class="cm-gvm-name">{{ c.name }}</h{{ h }}>
-    <p class="mt-2 flex flex-wrap gap-1.5">
-      {%- for b in c.badges %}
-      <span class="{{ 'badge-gv' if b.gv else 'badge-muted' }}">{% if b.gv %}{% icon "grapes", "size-3" %} {% endif %}{{ b.label }}</span>
-      {%- endfor %}
-      {%- if c.spanish %}<span class="badge-lv">{% icon "languages", "size-3" %} {{ "committee.weekly.lang_es" | t(L) }}</span>{% endif %}
-      {%- if c.access %}<span class="badge-muted">{% icon "accessibility", "size-3" %} {{ "committee.gvm.access" | t(L) }}</span>{% endif %}
-    </p>
-    {#- one office: its site is named by the "Details on …" link — only a meeting in two lists names both -#}
-    {% if c.listedBy | length > 1 %}<p class="cm-gvm-src">{{ "committee.gvm.listed_by" | t(L, { names: c.listedBy | join(" · ") }) }}</p>{% endif %}
+    One card per GROUP and place (db.meetings, via cmGvMeetings → places): where (city · county),
+    the group's name, its types (Grapevine first; what only some of its meetings have is said next
+    to their time), its week as rows of weekdays with the same times ("Wed–Fri · 6:30 AM"), the
+    address, in person / online, Directions and the meeting's page on the office's own site (the
+    joining details and any changes live there — nothing else is copied). Our Area first, by
+    county and city; then the nearby areas, one group of cards per region. Each card carries
+    data-days / data-area / data-q and its time chips data-att + the row's data-days, for the
+    filters (committee.js → cmGvMeetings); data-mtg lists its meetings' old #mtg-… addresses.
+    Without JavaScript the filters stay hidden and every group shows. -#}
+{% macro gvgCard(p, L, h) %}
+{%- set attIcon = "video" if p.attendance == "online" else ("users-round" if p.attendance == "in_person" else "monitor-smartphone") -%}
+<li id="{{ p.anchor }}" class="cm-gvg card{{ ' is-nearby' if not p.inArea }}" data-gvg data-area="{{ 'ours' if p.inArea else 'nearby' }}" data-days="{{ p.days | join(' ') }}" data-q="{{ p.search }}" data-mtg="{{ p.ids | join(' ') }}">
+  <div class="cm-gvg-top">
+    <p class="cm-gvg-where">{{ p.placeLine }}</p>
+    <span class="cm-gvg-today" data-gvm-today hidden>{% icon "sun", "size-3.5" %} {{ "committee.gvm.meets_today" | t(L) }}</span>
   </div>
-  {#- after the name in the markup (heading navigation reaches the name, then hears the time); shown first by CSS order -#}
-  <p class="cm-gvm-time">
-    {% icon "clock", "size-4 shrink-0" %}
-    <span>{{ c.time }}{% if c.end %}<span class="cm-gvm-end"> –&nbsp;{{ c.end }}</span>{% endif %}<span class="sr-only"> ({{ "committee.gvm.central" | t(L) }})</span></span>
+  <h{{ h }} class="cm-gvg-name">{{ p.name }}</h{{ h }}>
+  <p class="cm-gvg-badges">
+    {%- for b in p.badges %}
+    <span class="{{ 'badge-gv' if b.gv else 'badge-muted' }}">{% if b.gv %}{% icon "grapes", "size-3" %} {% endif %}{{ b.label }}</span>
+    {%- endfor %}
+    {%- if p.spanish %}<span class="badge-lv">{% icon "languages", "size-3" %} {{ "committee.weekly.lang_es" | t(L) }}</span>{% endif %}
+    {%- if p.access %}<span class="badge-muted">{% icon "accessibility", "size-3" %} {{ "committee.gvm.access" | t(L) }}</span>{% endif %}
   </p>
+
+  <div class="cm-gvg-body">
+  {#- The week: one row per set of weekdays with the same meetings -#}
+  <div class="cm-gvg-sched">
+    <ul class="cm-gvg-rows" role="list" aria-label="{{ 'committee.gvm.schedule' | t(L) }}">
+      {%- for r in p.rows %}
+      <li class="cm-gvg-row" data-days="{{ r.days | join(' ') }}">
+        <span class="cm-gvg-day"><span aria-hidden="true">{{ r.label }}</span><span class="sr-only">{{ r.sr }}:</span></span>
+        <span class="cm-gvg-times">
+          {%- for s in r.slots %}
+          <span class="cm-gvg-time" data-slot data-att="{{ s.att }}" data-n="{{ r.n }}">{{ s.time }}{% if s.extras | length %} <span class="cm-gvg-extra">{{ s.extras | join(" · ") }}</span>{% endif %}</span>{% if not loop.last %}<span class="sr-only">, </span>{% endif %}
+          {%- endfor %}
+        </span>
+      </li>
+      {%- endfor %}
+    </ul>
+  </div>
+
+  <div class="cm-gvg-place">
   <ul class="cm-gvm-meta" role="list">
+    {% if p.address or p.location or p.approximate %}
     <li>
       {% icon "map-pin", "size-4 shrink-0 text-faint" %}
       <span class="min-w-0">
-        {% if c.placeLine %}<span class="block font-semibold text-ink">{{ c.placeLine }}</span>{% endif %}
-        {% if c.address and not c.approximate %}<span class="block">{{ c.address }}</span>{% endif %}
-        {% if c.location %}<span class="block text-faint"{% if c.textLang != L %} lang="{{ c.textLang }}"{% endif %}>{{ c.location }}</span>{% endif %}
-        {% if c.approximate %}<span class="block text-faint">{{ "committee.gvm.approx" | t(L) }}</span>{% endif %}
+        {% if p.address and not p.approximate %}<span class="block text-ink">{{ p.address }}</span>{% endif %}
+        {% if p.location %}<span class="block"{% if p.textLang != L %} lang="{{ p.textLang }}"{% endif %}>{{ p.location }}</span>{% endif %}
+        {% if p.approximate %}<span class="block">{{ "committee.gvm.approx" | t(L) }}</span>{% endif %}
       </span>
     </li>
-    <li>{% icon attIcon, "size-4 shrink-0 text-faint" %}<span>{{ ("committee.gvm.att_" + c.attendance) | t(L) }}</span></li>
+    {% endif %}
+    <li>{% icon attIcon, "size-4 shrink-0 text-faint" %}<span>{{ p.attLabel }}</span></li>
   </ul>
-  <div class="cm-gvm-actions">
-    {% if c.directions %}<a class="btn-secondary btn-sm max-sm:min-h-11" href="{{ c.directions }}" target="_blank" rel="noopener" aria-label="{{ 'committee.gvm.directions_aria' | t(L, { name: c.name }) }}">{% icon "navigation", "size-4" %} {{ "committee.gvm.directions" | t(L) }}</a>{% endif %}
-    {% if c.url %}<a class="cm-gvm-details" href="{{ c.url }}" target="_blank" rel="noopener" aria-label="{{ 'committee.gvm.details_aria' | t(L, { site: c.siteHost, name: c.name }) }}"><span>{{ "committee.gvm.details" | t(L, { site: c.siteHost }) }}&nbsp;{% icon "external-link", "inline size-3.5 align-[-0.15em]" %}</span></a>{% endif %}
+  {#- one office: its site is named by the "Details on …" link — only a group in two lists names both -#}
+  {% if p.listedBy | length > 1 %}<p class="cm-gvm-src">{{ "committee.gvm.listed_by" | t(L, { names: p.listedBy | join(" · ") }) }}</p>{% endif %}
+  </div>
+
+  <div class="cm-gvg-actions">
+    {% if p.directions %}<a class="btn-secondary btn-sm max-sm:min-h-11" href="{{ p.directions }}" target="_blank" rel="noopener" aria-label="{{ 'committee.gvm.directions_aria' | t(L, { name: p.name }) }}">{% icon "navigation", "size-4" %} {{ "committee.gvm.directions" | t(L) }}</a>{% endif %}
+    {% if p.url %}<a class="cm-gvm-details" href="{{ p.url }}" target="_blank" rel="noopener" aria-label="{{ 'committee.gvm.details_aria' | t(L, { site: p.siteHost, name: p.name }) }}"><span>{{ "committee.gvm.details" | t(L, { site: p.siteHost }) }}&nbsp;{% icon "external-link", "inline size-3.5 align-[-0.15em]" %}</span></a>{% endif %}
+  </div>
   </div>
 </li>
 {% endmacro %}
 
-{#- A group's meetings by weekday, Sunday → Saturday: one card per weekday (a plain div, not a landmark:
-    "Sunday" repeats in every group), one row per meeting (a table-like list on wide screens, stacked on
-    phones). committee.js marks today's weekday. -#}
-{% macro gvmDays(days, L, h, gid) %}
-<div class="cm-gvm-days">
-  {%- for dg in days %}
-  <div class="cm-gvm-day card" data-gvm-dayg="{{ dg.day }}" :class="today === {{ dg.day }} && 'is-today'">
-    <h{{ h }} id="gvm-{{ gid }}-d{{ dg.day }}" class="cm-gvm-day-name">
-      {% icon "calendar-days", "size-4 shrink-0" %}<span>{{ dg.name }}</span>
-      <span class="cm-gvm-today" x-show="today === {{ dg.day }}" x-cloak>{{ "committee.gvm.today" | t(L) }}</span>
-    </h{{ h }}>
-    <ul class="cm-gvm-list" role="list">
-      {%- for c in dg.items %}{{ gvmCard(c, L, h + 1) }}{% endfor %}
-    </ul>
-  </div>
-  {%- endfor %}
-</div>
-{% endmacro %}
-
+{#- "12 groups · 13 meetings" (a region's head; committee.js rewrites it while filtering) -#}
 {%- set countTpl = { one: "committee.gvm.count_one" | t(lang), many: "committee.gvm.count" | t(lang) } -%}
+{%- set groupTpl = { one: "committee.gvm.groups_one" | t(lang), many: "committee.gvm.groups" | t(lang) } -%}
+{% macro gvCount(groups, meetings, gt, ct) -%}
+<span data-gvm-count>{{ (gt.one if groups == 1 else gt.many) | replace("{n}", groups) }} · {{ (ct.one if meetings == 1 else ct.many) | replace("{n}", meetings) }}</span>
+{%- endmacro %}
+
 <section id="grapevine-meetings" class="cm-gvm-band scroll-mt-24" aria-labelledby="gvm-title"
   x-data="cmGvMeetings()" data-total="{{ gvm.total }}"
-  data-count-label="{{ 'committee.gvm.showing' | t(lang, { total: gvm.total }) }}" data-count-label-one="{{ 'committee.gvm.showing_one' | t(lang, { total: gvm.total }) }}">
+  data-count-label="{{ 'committee.gvm.showing' | t(lang, { total: gvm.total }) }}" data-count-label-one="{{ 'committee.gvm.showing_one' | t(lang, { total: gvm.total }) }}"
+  data-groups-one="{{ groupTpl.one }}" data-groups-many="{{ groupTpl.many }}" data-meetings-one="{{ countTpl.one }}" data-meetings-many="{{ countTpl.many }}" data-today-label="{{ 'committee.gvm.day_today' | t(lang) }}">
   <div class="container-page">
-    <div>
-      <div class="max-w-3xl">
-        <p class="eyebrow flex items-center gap-2 text-gv">{% icon "grapes", "size-4" %} {{ "committee.gvm.eyebrow" | t(lang) }}</p>
-        <h2 id="gvm-title" class="h-section mt-2">{{ "committee.gvm.title" | t(lang) }}</h2>
-        <p class="mt-2 leading-relaxed text-muted">{{ "committee.gvm.what" | t(lang) }}</p>
-        {% if gvm.total %}
-        <p class="mt-3 font-semibold text-ink">
-          {%- if gvm.total == 1 %}{{ "committee.gvm.summary_one" | t(lang) }}
-          {%- elif gvm.nearby and gvm.inArea %}{{ "committee.gvm.summary" | t(lang, { total: gvm.total, ours: gvm.inArea, nearby: gvm.nearby }) }}
-          {%- else %}{{ "committee.gvm.summary_area" | t(lang, { total: gvm.total }) }}{% endif -%}
-        </p>
-        <p class="mt-1 text-sm text-muted">{{ "committee.gvm.times_note" | t(lang) }}</p>
-        {% endif %}
-      </div>
-    </div>
+    {% call secHead("gvm-title", "grapes", "committee.gvm.eyebrow" | t(lang), "committee.gvm.title" | t(lang), "committee.gvm.what" | t(lang)) %}
+      {% if gvm.total %}
+      <p class="mt-3 font-semibold text-ink">
+        {%- if gvm.total == 1 %}{{ "committee.gvm.summary_one" | t(lang) }}
+        {%- elif gvm.nearby and gvm.inArea %}{{ "committee.gvm.summary" | t(lang, { total: gvm.total, ours: gvm.inArea, nearby: gvm.nearby }) }}
+        {%- else %}{{ "committee.gvm.summary_area" | t(lang, { total: gvm.total }) }}{% endif -%}
+      </p>
+      <p class="mt-1 text-sm text-muted">{{ "committee.gvm.times_note" | t(lang) }}</p>
+      {% endif %}
+    {% endcall %}
 
     {% if gvm.total %}
-    {#- ---------- Filters (JavaScript only: without it the whole list shows) ---------- -#}
+    {#- ---------- Filters (JavaScript only: without it every group shows) ---------- -#}
     <div class="cm-gvm-filters card" role="group" aria-label="{{ 'committee.gvm.filters_aria' | t(lang) }}" x-cloak>
       <div class="cm-gvm-field cm-gvm-field--q">
         <label for="gvm-q-{{ lang }}" class="cm-gvm-label">{{ "committee.gvm.f_where" | t(lang) }}</label>
@@ -358,7 +370,7 @@ pageScripts: ["/assets/js/committee.js"]
           <select id="gvm-day-{{ lang }}" class="input cm-gvm-select" x-model="day">
             <option value="">{{ "committee.gvm.f_any_day" | t(lang) }}</option>
             {%- for dc in gvm.dayCounts %}
-            <option value="{{ dc.day }}"{% if not dc.count %} disabled{% endif %}>{{ dc.name }}</option>
+            <option value="{{ dc.day }}" data-name="{{ dc.name }}"{% if not dc.count %} disabled{% endif %}>{{ dc.name }}</option>
             {%- endfor %}
           </select>
           <span class="cm-gvm-chev" aria-hidden="true">{% icon "chevron-down", "size-4" %}</span>
@@ -378,56 +390,65 @@ pageScripts: ["/assets/js/committee.js"]
       {% if gvm.nearby %}
       <label class="cm-gvm-toggle">
         <input type="checkbox" class="cm-switch" x-model="nearby">
-        <span>{{ "committee.gvm.f_nearby" | t(lang) }} <span class="cm-chip-count" aria-hidden="true">{{ gvm.nearby }}</span><span class="sr-only"> ({{ (countTpl.one if gvm.nearby == 1 else countTpl.many) | replace("{n}", gvm.nearby) }})</span></span>
+        <span>{{ "committee.gvm.f_nearby" | t(lang) }} <span class="cm-chip-count" aria-hidden="true">{{ gvm.nearbyPlaces }}</span><span class="sr-only"> ({{ (groupTpl.one if gvm.nearbyPlaces == 1 else groupTpl.many) | replace("{n}", gvm.nearbyPlaces) }})</span></span>
       </label>
       {% endif %}
     </div>
     <div class="cm-gvm-status" x-cloak>
-      <p class="text-sm font-medium text-muted" aria-live="polite" x-text="statusText">{{ "committee.gvm.showing" | t(lang, { n: gvm.total, total: gvm.total }) }}</p>
+      <p class="text-sm font-medium text-muted" aria-live="polite" x-text="statusText">{{ "committee.gvm.showing" | t(lang, { n: gvm.total, total: gvm.total }) | replace("{groups}", (groupTpl.one if gvm.places == 1 else groupTpl.many) | replace("{n}", gvm.places)) }}</p>
       <button type="button" class="btn-ghost btn-sm max-sm:min-h-11" x-show="filtered" @click="reset()">{% icon "rotate-ccw", "size-4" %} {{ "committee.gvm.f_reset" | t(lang) }}</button>
     </div>
 
-    {#- ---------- Our Area (the main list) ---------- -#}
+    {#- ---------- Our Area (the main list), by county and city ---------- -#}
     <div class="cm-gvm-group" data-gvm-group="ours">
       <div class="cm-gvm-group-head">
         <span class="cm-gvm-group-icon" aria-hidden="true">{% icon "map-pinned", "size-5" %}</span>
         <div class="min-w-0">
           <h3 class="cm-gvm-group-title">{{ "committee.gvm.area_title" | t(lang) }}</h3>
-          <p class="text-sm text-muted" data-gvm-count data-one="{{ countTpl.one }}" data-many="{{ countTpl.many }}">{{ (countTpl.one if gvm.inArea == 1 else countTpl.many) | replace("{n}", gvm.inArea) }}</p>
+          <p class="text-sm text-muted">{{ gvCount(gvm.areaGroup.placeCount, gvm.inArea, groupTpl, countTpl) }}</p>
         </div>
       </div>
-      {% if gvm.inArea %}{{ gvmDays(gvm.areaGroup.days, lang, 4, "ours") }}{% else %}<p class="text-muted">{{ "committee.gvm.area_none" | t(lang) }}</p>{% endif %}
+      {% if gvm.inArea %}
+      <ul class="cm-gvg-grid" role="list">
+        {%- for p in gvm.areaGroup.places %}{{ gvgCard(p, lang, 4) }}{% endfor %}
+      </ul>
+      {% else %}<p class="text-muted">{{ "committee.gvm.area_none" | t(lang) }}</p>{% endif %}
     </div>
 
-    {#- ---------- Nearby areas (outside NETA 65), one group per region ---------- -#}
+    {#- ---------- Nearby areas (outside NETA 65): one group of cards per region; small regions sit
+        side by side (committee.css .cm-gvg-regions: a region spans as many columns as it has cards) ---------- -#}
     {% if gvm.nearbyGroups | length %}
     <div class="cm-gvm-nearby" data-gvm-nearby>
       <div class="max-w-3xl">
         <h3 class="cm-gvm-group-title flex items-center gap-2.5"><span class="text-vine">{% icon "compass", "size-5" %}</span>{{ "committee.gvm.nearby_title" | t(lang) }}</h3>
         <p class="mt-1.5 text-sm leading-relaxed text-muted">{{ "committee.gvm.nearby_sub" | t(lang) }}</p>
       </div>
-      {% for g in gvm.nearbyGroups %}
-      <section class="cm-gvm-group is-nearby" data-gvm-group="{{ g.id }}" aria-labelledby="gvm-g-{{ g.id }}">
-        <div class="cm-gvm-group-head">
-          <span class="cm-gvm-group-icon" aria-hidden="true">{% icon "map-pin", "size-5" %}</span>
-          <div class="min-w-0">
-            <h4 id="gvm-g-{{ g.id }}" class="cm-gvm-group-title text-xl">{{ g.label }}</h4>
-            <p class="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-sm text-muted">
-              <span class="badge-muted">{{ "committee.gvm.outside" | t(lang) }}</span>
-              <span data-gvm-count data-one="{{ countTpl.one }}" data-many="{{ countTpl.many }}">{{ (countTpl.one if g.count == 1 else countTpl.many) | replace("{n}", g.count) }}</span>
-            </p>
+      <div class="cm-gvg-regions">
+        {% for g in gvm.nearbyGroups %}
+        <section class="cm-gvg-region cm-n{{ 4 if g.placeCount > 4 else g.placeCount }}" data-gvm-group="{{ g.id }}" aria-labelledby="gvm-g-{{ g.id }}">
+          <div class="cm-gvg-region-head">
+            <span class="cm-gvm-group-icon" aria-hidden="true">{% icon "map-pin", "size-5" %}</span>
+            <div class="min-w-0">
+              <h4 id="gvm-g-{{ g.id }}" class="cm-gvm-group-title text-lg sm:text-xl">{{ g.label }}</h4>
+              <p class="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-sm text-muted">
+                <span class="badge-muted">{{ "committee.gvm.outside" | t(lang) }}</span>
+                {{ gvCount(g.placeCount, g.count, groupTpl, countTpl) }}
+              </p>
+            </div>
           </div>
-        </div>
-        {{ gvmDays(g.days, lang, 5, g.id) }}
-      </section>
-      {% endfor %}
+          <ul class="cm-gvg-grid is-sub" role="list">
+            {%- for p in g.places %}{{ gvgCard(p, lang, 5) }}{% endfor %}
+          </ul>
+        </section>
+        {% endfor %}
+      </div>
     </div>
     {% endif %}
 
     <div class="empty-state mt-8" x-show="shown === 0" x-cloak>
       <span class="mx-auto mb-3 grid size-12 place-items-center rounded-full bg-surface-2 text-faint">{% icon "search", "size-6" %}</span>
       <p class="font-semibold text-ink">{{ "committee.gvm.none" | t(lang) }}</p>
-      <button type="button" class="btn-secondary btn-sm mt-4" @click="reset()">{% icon "rotate-ccw", "size-4" %} {{ "committee.gvm.f_reset" | t(lang) }}</button>
+      <button type="button" class="btn-secondary btn-sm mt-4 max-sm:min-h-11" @click="reset()">{% icon "rotate-ccw", "size-4" %} {{ "committee.gvm.f_reset" | t(lang) }}</button>
     </div>
     {% else %}
     {#- ---------- No data (never read, or every list failed): where to look instead ---------- -#}
@@ -482,13 +503,9 @@ pageScripts: ["/assets/js/committee.js"]
     home page, /listen/, /watch/ and the site search — nowhere else repeats the Zoom details. -#}
 {%- set closing = "committee.weekly.closing" | t(lang) -%}
 <section id="weekly-open" class="container-page scroll-mt-24 pt-12 pb-12 sm:pt-16 sm:pb-16" aria-labelledby="weekly-title">
-  <div class="mb-6 max-w-3xl">
-    <p class="eyebrow flex items-center gap-2 text-grape">{% icon "grapes", "size-4" %} {{ "committee.weekly.eyebrow" | t(lang) }}</p>
-    <h2 id="weekly-title" class="h-section mt-2">{{ "committee.weekly.section_title" | t(lang) }}</h2>
-    <p class="mt-2 leading-relaxed text-muted">{{ "committee.weekly.section_text" | t(lang) }}</p>
-  </div>
+  {{ secHead("weekly-title", "grapes", "committee.weekly.eyebrow" | t(lang), "committee.weekly.section_title" | t(lang), "committee.weekly.section_text" | t(lang), "text-grape") }}
   {% if wos | length %}
-  <div class="grid gap-5 lg:grid-cols-2 lg:gap-6">
+  <div class="mt-6 grid gap-5 sm:mt-8 lg:grid-cols-2 lg:gap-6">
     {% for w in wos %}
     {%- set key = "lv" if w.isLv else "gv" -%}
     <article class="card flex flex-col overflow-hidden lg:row-span-2 lg:grid lg:grid-rows-subgrid lg:gap-0" aria-labelledby="wo-{{ key }}-title">
@@ -561,7 +578,7 @@ pageScripts: ["/assets/js/committee.js"]
     <span>{{ closing }}</span>
   </p>
   {% else %}
-  <div class="card card-pad flex flex-col items-start gap-3">
+  <div class="card card-pad mt-6 flex flex-col items-start gap-3 sm:mt-8">
     <p class="text-sm leading-relaxed text-muted">{{ "committee.weekly.text" | t(lang) }}</p>
     <a class="btn-secondary" href="{{ site.links.weekly_open }}" target="_blank" rel="noopener">{% icon "external-link", "size-4" %} {{ "committee.weekly.details_gv" | t(lang) }}</a>
   </div>

@@ -203,10 +203,6 @@
     "en": "Get every meeting in your calendar",
     "es": "Recibe todas las reuniones en tu calendario"
   },
-  "committee.meeting.who_eyebrow": {
-    "en": "Who can attend",
-    "es": "Quién puede asistir"
-  },
   "committee.meeting.who_title": {
     "en": "Everyone in AA is welcome",
     "es": "Todos en AA son bienvenidos"
@@ -230,10 +226,6 @@
   "committee.meeting.who_members": {
     "en": "Any AA member",
     "es": "Cualquier miembro de AA"
-  },
-  "committee.meeting.contact_eyebrow": {
-    "en": "Questions?",
-    "es": "¿Preguntas?"
   },
   "committee.meeting.contact_text": {
     "en": "Want the agenda, need help with Zoom, or thinking about becoming a GVR or RLV? Write to our chair — we'd love to hear from you.",
@@ -1303,9 +1295,33 @@
     "en": "1 meeting",
     "es": "1 reunión"
   },
-  "committee.gvm.today": {
-    "en": "Today",
-    "es": "Hoy"
+  "committee.gvm.groups": {
+    "en": "{n} groups",
+    "es": "{n} grupos"
+  },
+  "committee.gvm.groups_one": {
+    "en": "1 group",
+    "es": "1 grupo"
+  },
+  "committee.gvm.schedule": {
+    "en": "Every week · Central time",
+    "es": "Cada semana · hora del Centro"
+  },
+  "committee.gvm.every_day": {
+    "en": "Every day",
+    "es": "Todos los días"
+  },
+  "committee.gvm.day_range": {
+    "en": "{from} to {to}",
+    "es": "{from} a {to}"
+  },
+  "committee.gvm.meets_today": {
+    "en": "Meets today",
+    "es": "Se reúne hoy"
+  },
+  "committee.gvm.day_today": {
+    "en": "{day} (today)",
+    "es": "{day} (hoy)"
   },
   "committee.gvm.filters_aria": {
     "en": "Filter the Grapevine meetings",
@@ -1344,12 +1360,12 @@
     "es": "Borrar filtros"
   },
   "committee.gvm.showing": {
-    "en": "Showing {n} of {total} meetings",
-    "es": "Se muestran {n} de {total} reuniones"
+    "en": "Showing {n} of {total} meetings · {groups}",
+    "es": "Se muestran {n} de {total} reuniones · {groups}"
   },
   "committee.gvm.showing_one": {
-    "en": "Showing 1 of {total} meetings",
-    "es": "Se muestra 1 de {total} reuniones"
+    "en": "Showing 1 of {total} meetings · {groups}",
+    "es": "Se muestra 1 de {total} reuniones · {groups}"
   },
   "committee.gvm.none": {
     "en": "No meetings match these filters.",
@@ -1370,10 +1386,6 @@
   "committee.gvm.access": {
     "en": "Wheelchair access",
     "es": "Acceso para silla de ruedas"
-  },
-  "committee.gvm.central": {
-    "en": "Central time",
-    "es": "hora del Centro"
   },
   "committee.gvm.directions": {
     "en": "Directions",

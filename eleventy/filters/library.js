@@ -994,7 +994,7 @@ export function searchIndex(db, nav, lang, helpers, site) {
     }
   });
 
-  /* ---- Grapevine meetings (db.meetings) → their card on /meetings/ (#mtg-…). ONE entry per group
+  /* ---- Grapevine meetings (db.meetings) → their group's card on /meetings/ (#gvg-…). ONE entry per group
      and place: a group that meets several times a week (e.g. every morning) is one result, not six.
      Found by its name, city, county, region and "Grapevine meeting" / "reunión de Grapevine". ---- */
   safely("meetings", () => {
@@ -1015,7 +1015,7 @@ export function searchIndex(db, nav, lang, helpers, site) {
         s: when ? [when, c.placeLine].filter(Boolean).join(" · ") : T("committee.gvm.search_many", { place: c.placeLine, n: list.length }),
         x: uniq([both("committee.gvm.search_kw"), both("committee.gvm.title"), group.inArea ? "NETA 65 Area 65" : group.label,
           c.search, ...c.badges.map((b) => b.label), c.spanish ? both("committee.weekly.lang_es") : ""].map(squish), " "),
-        u: "/meetings/#" + c.anchor, ic: "map-pin",
+        u: "/meetings/#" + (c.groupAnchor || c.anchor), ic: "map-pin",
       });
     }
   });

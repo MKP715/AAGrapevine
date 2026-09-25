@@ -1165,10 +1165,42 @@ const pickL = (o, lang) => (o && typeof o === "object" ? o[lang] || o.en || "" :
 // Type codes shown another way on the card (attendance line, language badge) or that repeat the section
 const GVM_SKIP_TYPES = new Set(["ONL", "TC", "S", "EN", "INACTIVE"]);
 const GVM_ACCESS_TYPES = new Set(["X", "XB"]);
+// Short weekday names for a group's schedule (0 = Sunday): the same in every browser (no Intl quirks)
+const DAY_ABBR = {
+  en: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+  es: ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"],
+};
+
+/**
+ * A set of weekdays as a short label and a spoken one: all seven → "Every day"; three or more in a
+ * row → "Mon–Fri" ("Monday to Friday"); the others one by one → "Sun, Wed" ("Sunday, Wednesday").
+ */
+export function dayRunLabel(days, lang = "en") {
+  const L = lang === "es" ? "es" : "en";
+  const ds = [...new Set((days || []).map(Number))].filter((d) => d >= 0 && d <= 6).sort((a, b) => a - b);
+  if (ds.length === 7) { const s = t("committee.gvm.every_day", L); return { label: s, sr: s }; }
+  const runs = [];
+  for (const d of ds) {
+    const r = runs[runs.length - 1];
+    if (r && d === r[1] + 1) r[1] = d; else runs.push([d, d]);
+  }
+  const short = [], spoken = [];
+  for (const [a, b] of runs) {
+    if (b - a >= 2) {
+      short.push(`${DAY_ABBR[L][a]}–${DAY_ABBR[L][b]}`);
+      spoken.push(t("committee.gvm.day_range", L, { from: weekdayName(a, L), to: weekdayName(b, L) }));
+    } else {
+      for (let d = a; d <= b; d++) { short.push(DAY_ABBR[L][d]); spoken.push(weekdayName(d, L)); }
+    }
+  }
+  return { label: short.join(", "), sr: spoken.join(", ") };
+}
 
 /**
  * The Grapevine meetings of data/site/meetings.json, ready for /meetings/:
- * our Area first (grouped by weekday), then one group per nearby region, each by weekday.
+ * our Area first, then one group per nearby region. Each region lists its PLACES (`places`: one card
+ * per group and address, with its whole week on it — see place() below) and, for the site search,
+ * its meetings by weekday (`days`).
  * Nothing here decides WHICH meetings exist — the data does; this only shapes and labels them.
  */
 export function gvMeetings(data, lang = "en", site = {}) {
@@ -1220,8 +1252,98 @@ export function gvMeetings(data, lang = "en", site = {}) {
       inArea: !!it.in_area,
       // what the "City, county or group" box searches (accent- and case-insensitive)
       search: foldText([it.name, it.city, it.county, it.county ? countyWord(it.county) : "", it.region, it.district, it.state, it.address, it.location, groupLabel].filter(Boolean).join(" ")),
+      // for sorting and grouping the places (place() below)
+      timeRaw: String(it.time || ""),
+      city: it.city || "",
+      county: it.county || "",
+      state: texas ? "" : it.state || "",
     };
   };
+
+  /* One card per PLACE: the meetings of one group at one address (or, with no address, in one city),
+     however many times a week it meets. Its week is shown as rows of weekdays with the same times
+     ("Wed–Fri · 6:30 AM"): days whose meetings are alike (same times, same types) share a row.
+     What every meeting of the group has (Open, Wheelchair access, In person …) is said once on the
+     card; what only some have is said next to their time. */
+  const usedAnchors = new Set();
+  const place = (list) => {
+    const week = [...list].sort((a, b) => a.day - b.day || a.timeRaw.localeCompare(b.timeRaw));
+    const first = week[0];
+    const codeSets = list.map((c) => new Set(c.badges.map((b) => b.code)));
+    const common = first.badges.filter((b) => codeSets.every((s) => s.has(b.code)));
+    const commonCodes = new Set(common.map((b) => b.code));
+    const atts = [...new Set(week.map((c) => c.attendance))];
+    const allAccess = list.every((c) => c.access);
+    const allSpanish = list.every((c) => c.spanish);
+    const extrasOf = (c) => [
+      ...c.badges.filter((b) => !commonCodes.has(b.code)).map((b) => b.label),
+      atts.length > 1 ? t("committee.gvm.att_" + c.attendance, L) : "",
+      c.spanish && !allSpanish ? t("committee.weekly.lang_es", L) : "",
+      c.access && !allAccess ? t("committee.gvm.access", L) : "",
+    ].filter(Boolean);
+    // weekdays with the same meetings share a row (in week order, Sunday first)
+    const rowsBySig = new Map();
+    for (let dd = 0; dd < 7; dd++) {
+      const slots = week.filter((c) => c.day === dd).map((c) => ({ c, extras: extrasOf(c) }));
+      if (!slots.length) continue;
+      const sig = slots.map((s) => [s.c.timeRaw, s.c.attendance, ...s.extras].join("|")).join(";");
+      if (!rowsBySig.has(sig)) {
+        rowsBySig.set(sig, { days: [], slots: slots.map((s) => ({ time: s.c.time, att: s.c.attendance, extras: s.extras, ids: [] })) });
+      }
+      const row = rowsBySig.get(sig);
+      row.days.push(dd);
+      slots.forEach((s, i) => row.slots[i].ids.push(s.c.anchor));
+    }
+    const rows = [...rowsBySig.values()].map((r) => ({ ...r, ...dayRunLabel(r.days, L), n: r.days.length }));
+    // #gvg-<group>-<city>: the card's address for links (the site search); unique on the page
+    let anchor = "gvg-" + slugify(`${first.name} ${first.city || first.placeLine}`, 60);
+    for (let i = 2; usedAnchors.has(anchor); i++) anchor = anchor.replace(/-\d+$/, "") + "-" + i;
+    usedAnchors.add(anchor);
+    list.forEach((c) => { c.groupAnchor = anchor; });
+    const pick = (f) => (week.find((c) => c[f]) || {})[f] || "";
+    const listedBy = [...new Set(list.flatMap((c) => c.listedBy))];
+    const withUrl = week.find((c) => c.url) || first;
+    return {
+      anchor,
+      name: first.name,
+      placeLine: first.placeLine,
+      city: first.city,
+      county: first.county,
+      state: first.state,
+      address: pick("address"),
+      location: pick("location"),
+      approximate: list.every((c) => c.approximate),
+      textLang: first.textLang,
+      inArea: first.inArea,
+      badges: common,
+      access: allAccess,
+      spanish: allSpanish,
+      attendance: atts.length === 1 ? atts[0] : "mixed",
+      attLabel: atts.map((a) => t("committee.gvm.att_" + a, L)).join(" · "),
+      directions: pick("directions"),
+      url: withUrl.url || "",
+      siteHost: withUrl.siteHost || "",
+      listedBy,
+      count: list.length,
+      days: [...new Set(week.map((c) => c.day))],
+      rows,
+      ids: week.map((c) => c.anchor),
+      search: [...new Set(list.map((c) => c.search))].join(" "),
+    };
+  };
+  const placesOf = (cards, sortKey) => {
+    const byKey = new Map();
+    for (const c of cards) {
+      const k = foldText(c.name) + "|" + foldText(c.address || c.placeLine);
+      if (!byKey.has(k)) byKey.set(k, []);
+      byKey.get(k).push(c);
+    }
+    return [...byKey.values()].map(place)
+      .sort((a, b) => sortKey(a).localeCompare(sortKey(b), L) || a.name.localeCompare(b.name, L));
+  };
+  // Our Area: by county, then city (a county-less place after the counties); nearby: by state, then city
+  const areaSort = (p) => `${p.county ? "0" : "1"} ${foldText(p.county)} ${foldText(p.city)}`;
+  const nearbySort = (p) => `${foldText(p.state)} ${foldText(p.city)}`;
 
   const byDay = (cards) => {
     const days = [];
@@ -1237,7 +1359,11 @@ export function gvMeetings(data, lang = "en", site = {}) {
   const groups = [];
   const groupList = Array.isArray(d.groups) ? d.groups : [];
   const areaGroup = groupList.find((g) => g && g.in_area);
-  groups.push({ id: areaGroup?.id || "neta65", inArea: true, label: pickL(areaGroup?.label, L) || pickL(site?.meetings?.area_label, L), count: ours.length, days: byDay(ours) });
+  const region = (id, inArea, label, list) => {
+    const places = placesOf(list, inArea ? areaSort : nearbySort);
+    return { id, inArea, label, count: list.length, days: byDay(list), places, placeCount: places.length };
+  };
+  groups.push(region(areaGroup?.id || "neta65", true, pickL(areaGroup?.label, L) || pickL(site?.meetings?.area_label, L), ours));
   const nearbyCards = all.filter((c) => !c.inArea);
   const placed = new Set();
   for (const g of groupList) {
@@ -1245,13 +1371,13 @@ export function gvMeetings(data, lang = "en", site = {}) {
     const list = nearbyCards.filter((c) => items.find((it) => it.id === c.id)?.nearby?.id === g.id);
     if (!list.length) continue;
     list.forEach((c) => placed.add(c.id));
-    groups.push({ id: g.id, inArea: false, label: pickL(g.label, L), count: list.length, days: byDay(list) });
+    groups.push(region(g.id, false, pickL(g.label, L), list));
   }
   // A nearby meeting whose group is missing from `groups` still shows (under its own label)
   const rest = nearbyCards.filter((c) => !placed.has(c.id));
   if (rest.length) {
     const lbl = pickL(items.find((it) => it.id === rest[0].id)?.nearby?.label, L) || t("committee.gvm.nearby_title", L);
-    groups.push({ id: "nearby-other", inArea: false, label: lbl, count: rest.length, days: byDay(rest) });
+    groups.push(region("nearby-other", false, lbl, rest));
   }
 
   const okSources = sources.filter((s) => s && s.ok === true).map((s) => ({ name: s.name, url: s.url, host: hostOf(s.url) }));
@@ -1265,6 +1391,9 @@ export function gvMeetings(data, lang = "en", site = {}) {
     total: all.length,
     inArea: ours.length,
     nearby: nearbyCards.length,
+    // groups (places) — one card each
+    places: groups.reduce((n, g) => n + g.placeCount, 0),
+    nearbyPlaces: groups.slice(1).reduce((n, g) => n + g.placeCount, 0),
     areaGroup: groups[0],
     nearbyGroups: groups.slice(1),
     updated: d.updated || null,

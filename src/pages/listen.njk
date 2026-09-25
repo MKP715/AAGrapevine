@@ -14,8 +14,9 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
     Server-renders the newest 24 episodes (no-JS / SEO); media.js loads the rest
     from /episodes-index.json for "Load more", search and filters, and drives one
     shared <audio> element (featured player, show cards, rows + sticky mini-player).
-    Sidebar: the latest-episode player and, below it, an official AA Grapevine YouTube Short
-    (config/site.yml site.listen.sidebar_short) in a privacy-friendly vertical lite-youtube. -#}
+    Top block (.listen-side): the latest-episode player and, right under it, an official AA
+    Grapevine YouTube Short (config/site.yml site.listen.sidebar_short) in a privacy-friendly
+    vertical lite-youtube — written once; from 1440px it is the right-hand column. -#}
 {% import "macros/ui.njk" as ui with context %}
 {% mediaSprite %}
 {%- set cfgShows = site.sources.podcasts or [] -%}
@@ -92,7 +93,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
     <h3 class="mt-1 font-display text-[1.05rem] font-semibold leading-snug text-ink sm:text-lg"{% if not srv %} x-text="ep.t"{% endif %}>{% if srv %}{{ title }}{% endif %}</h3>
     <p class="measure mt-1 text-sm leading-relaxed text-muted" :class="!open && 'line-clamp-2'"{% if not srv %} x-text="ep.s"{% endif %}>{% if srv %}{{ summary }}{% endif %}</p>
     <div class="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1">
-      <button type="button" class="inline-flex min-h-8 items-center gap-1 text-xs font-semibold text-gv hover:underline" x-show="long(ep)" x-cloak @click="open = !open" :aria-expanded="open"><span x-text="open ? T.show_less : T.show_more"></span>{% micon "chevron-down", "size-3.5" %}</button>
+      <button type="button" class="-my-1.5 inline-flex min-h-11 items-center gap-1 text-xs font-semibold text-gv hover:underline" x-show="long(ep)" x-cloak @click="open = !open" :aria-expanded="open"><span x-text="open ? T.show_less : T.show_more"></span>{% micon "chevron-down", "size-3.5" %}</button>
       {%- if srv %}{% if e | machineFor(lang) %}<span class="auto-note" title="{{ 'common.auto_translated_help' | t(lang) }}">{% micon "languages", "size-3" %} {{ "common.auto_translated" | t(lang) }}</span>{% endif %}
       {%- else %}<span class="auto-note" x-show="ep.m" title="{{ 'common.auto_translated_help' | t(lang) }}">{% micon "languages", "size-3" %} {{ "common.auto_translated" | t(lang) }}</span>{% endif %}
     </div>
@@ -135,15 +136,14 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
 <div x-data="podcastPage" data-index="{{ '/episodes-index.json' | lurl(lang) }}" data-total="{{ eps.length }}" data-mixed="{{ 'true' if mixedLangs else 'false' }}">
 
   {#- Layout (areas/media.css .listen-layout): below 1440px the three blocks stack —
-      latest-episode player (tucked into the hero's fade), the shows, all episodes.
-      From 1440px: shows + episodes on the left, the player in a fixed-width column on
-      the right that stays in view (sticky) while you browse the list. -#}
+      .listen-side (the latest-episode player, tucked into the hero's fade, with the Short right
+      under it), the shows, all episodes. From 1440px: shows + episodes on the left, .listen-side
+      a fixed-width column on the right that stays in view as ONE stack while you browse the list
+      (media.js adds .is-sticky only while the whole stack fits the window, so the Short is never
+      covered or cut off; in a shorter window the column scrolls with the page). -#}
   <div class="container-page listen-layout">
   {%- set shortId = site.listen.sidebar_short if site.listen else "" %}
 
-  {#- The sidebar (from 1440px the right-hand column; the player stays in view (sticky) while the
-      episodes scroll by, the Short scrolls under it): the player, then the Short. Below 1440px the
-      player comes first and the Short after the episodes. -#}
   <div class="listen-side page-overlap">
 
   {#- ------------------------------------------------------------ featured player -#}
@@ -158,9 +158,13 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
         <div class="media-feature-art hidden md:flex min-[90rem]:hidden">
           {% if fArt %}<img src="{{ fArt }}" alt="" width="304" height="304" decoding="async" referrerpolicy="no-referrer">{% else %}<span class="ep-art-ph size-full">{% icon "headphones", "size-16" %}</span>{% endif %}
         </div>
-        <div class="flex min-w-0 flex-col gap-3 p-4 min-[400px]:p-5 sm:p-7 min-[90rem]:p-6">
+        {#- From 1440px (the right-hand column) the card is compact, so the player and the Short fit
+            the window together: no artwork (the Short under it brings the picture), the short date,
+            a two-line summary (the full one is in the first row of the episode list), a slimmer
+            player and the keyboard hint alone. -#}
+        <div class="flex min-w-0 flex-col gap-3 p-4 min-[400px]:p-5 sm:p-7 min-[90rem]:p-5">
           <div class="flex items-start gap-4">
-            {% if fArt %}<img src="{{ fArt }}" alt="" width="88" height="88" class="size-[5.5rem] shrink-0 rounded-xl object-cover shadow-md ring-1 ring-black/5 md:hidden min-[90rem]:block" decoding="async" referrerpolicy="no-referrer">{% endif %}
+            {% if fArt %}<img src="{{ fArt }}" alt="" width="88" height="88" class="size-[5.5rem] shrink-0 rounded-xl object-cover shadow-md ring-1 ring-black/5 md:hidden" decoding="async" referrerpolicy="no-referrer">{% endif %}
             <div class="min-w-0">
               <p class="flex flex-wrap items-center gap-2">
                 <span class="eyebrow text-gv">{{ "media.latest_episode" | t(lang) }}</span>
@@ -173,22 +177,22 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
           </div>
           <p class="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted">
             <span class="font-medium text-ink">{{ fShow.name if fShow else f.extra.show_name }}</span>
-            {% if f.date %}<time datetime="{{ f.date | isoDate }}">{{ f.date | fmtDate(lang, "medium") }}</time>{% endif %}
+            {% if f.date %}<time datetime="{{ f.date | isoDate }}"><span class="min-[90rem]:hidden">{{ f.date | fmtDate(lang, "medium") }}</span><span class="hidden min-[90rem]:inline">{{ f.date | fmtDate(lang, "short") }}</span></time>{% endif %}
             {% if f.extra.duration_sec %}<span class="inline-flex items-center gap-1">{% icon "clock-3", "size-3.5" %}{{ f.extra.duration_sec | mediaMinutes(lang) }}</span>{% endif %}
           </p>
           {%- set fSum = f | tx("summary", lang) -%}
           {% if fSum %}
           <div x-data="{ more: false }">
-            <p class="leading-relaxed text-muted" :class="!more && 'line-clamp-3'">{{ fSum }}</p>
+            <p class="leading-relaxed text-muted min-[90rem]:line-clamp-2" :class="!more && 'line-clamp-3'">{{ fSum }}</p>
             <div class="mt-1 flex flex-wrap items-center gap-x-4">
-              {% if fSum.length > 180 %}<button type="button" class="inline-flex min-h-8 items-center text-xs font-semibold text-gv hover:underline" x-cloak @click="more = !more" :aria-expanded="more" x-text="more ? T.show_less : T.show_more">{{ "common.show_more" | t(lang) }}</button>{% endif %}
+              {% if fSum.length > 180 %}<button type="button" class="-my-1.5 inline-flex min-h-11 items-center text-xs font-semibold text-gv hover:underline min-[90rem]:hidden" x-cloak @click="more = !more" :aria-expanded="more" x-text="more ? T.show_less : T.show_more">{{ "common.show_more" | t(lang) }}</button>{% endif %}
               {{ ui.autoNote(f, lang) }}
             </div>
           </div>
           {% endif %}
 
           {#- The player (shares the page-wide audio element with the mini-player) -#}
-          <div class="media-player mt-1 max-sm:p-3 min-[90rem]:p-4" role="group" aria-label="{{ 'media.player_label' | t(lang) }}: {{ fTitle }}"
+          <div class="media-player mt-1 max-sm:p-3 min-[90rem]:px-4 min-[90rem]:py-3" role="group" aria-label="{{ 'media.player_label' | t(lang) }}: {{ fTitle }}"
                x-init="$store.audio.watchFeatured($el, ep)" @keydown="$store.audio.onKey($event, ep)">
             <div class="flex items-center gap-3 text-xs font-medium tabular-nums text-muted">
               <span class="w-12 text-right" x-text="clock($store.audio.timeFor(ep))">0:00</span>
@@ -202,12 +206,12 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
             <div class="mt-3 flex items-center justify-between gap-2">
               <button type="button" class="media-rate max-sm:min-w-12 max-sm:px-2 max-[359px]:hidden" @click="$store.audio.cycleRate()" aria-label="{{ 'media.speed' | t(lang) }}" :aria-label="T.speed + ': ' + $store.audio.rate + '×'" title="{{ 'media.speed' | t(lang) }}"><span x-text="$store.audio.rate + '×'">1×</span></button>
               <div class="flex items-center gap-1 sm:gap-3">
-                <button type="button" class="media-pbtn media-skip max-sm:size-10" @click="$store.audio.skipFor(ep, -15)" aria-label="{{ 'media.back_15' | t(lang) }}" title="{{ 'media.back_15' | t(lang) }}">{% icon "rotate-ccw", "size-6" %}<span>15</span></button>
-                <button type="button" class="media-play max-sm:size-14" @click="$store.audio.toggleEp(ep)"
+                <button type="button" class="media-pbtn media-skip" @click="$store.audio.skipFor(ep, -15)" aria-label="{{ 'media.back_15' | t(lang) }}" title="{{ 'media.back_15' | t(lang) }}">{% icon "rotate-ccw", "size-6" %}<span>15</span></button>
+                <button type="button" class="media-play max-sm:size-14 min-[90rem]:size-14" @click="$store.audio.toggleEp(ep)"
                         aria-label="{{ 'media.play' | t(lang) }}: {{ fTitle }}" :aria-label="playLabel(ep)">
                   {{ ppIcons("$store.audio.isPlaying(ep.id)", "$store.audio.isCurrent(ep.id) && $store.audio.loading", "size-7") }}
                 </button>
-                <button type="button" class="media-pbtn media-skip max-sm:size-10" @click="$store.audio.skipFor(ep, 30)" aria-label="{{ 'media.fwd_30' | t(lang) }}" title="{{ 'media.fwd_30' | t(lang) }}">{% icon "rotate-cw", "size-6" %}<span>30</span></button>
+                <button type="button" class="media-pbtn media-skip" @click="$store.audio.skipFor(ep, 30)" aria-label="{{ 'media.fwd_30' | t(lang) }}" title="{{ 'media.fwd_30' | t(lang) }}">{% icon "rotate-cw", "size-6" %}<span>30</span></button>
               </div>
               <div class="flex min-w-12 items-center justify-end sm:min-w-14 max-[359px]:min-w-0">
                 <button type="button" class="media-pbtn" data-share="{{ page.url | siteUrl(site) }}#episodes" data-share-title="{{ fTitle }}" aria-label="{{ 'common.share' | t(lang) }}" title="{{ 'common.share' | t(lang) }}">{% icon "share-2", "size-5" %}</button>
@@ -221,23 +225,20 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
             </p>
             <noscript><audio class="mt-3 w-full" controls preload="none" src="{{ f.extra.audio_url | mediaSafeUrl('') }}"></audio></noscript>
           </div>
-          <p class="hidden text-xs text-faint lg:block">{% icon "keyboard", "mr-1 inline size-3.5 align-[-2px]" %}{{ "media.keys_hint" | t(lang) }} · {{ "media.remembers" | t(lang) }}</p>
+          {#- (from 1440px without "your place is saved" — the hero's lead already says so) -#}
+          <p class="hidden text-xs text-faint lg:block">{% icon "keyboard", "mr-1 inline size-3.5 align-[-2px]" %}{{ "media.keys_hint" | t(lang) }}<span class="min-[90rem]:hidden"> · {{ "media.remembers" | t(lang) }}</span></p>
         </div>
       </div>
     </div>
   </section>
 
   {#- ------------------------------------------------------------ the Short
-      Written once (shortCard) and placed twice: in the sidebar from 1440px (.listen-short--side),
-      and after the episode list below 1440px (.listen-short--end), so on phones and tablets the
-      shows and episodes come first. CSS shows one of the two (display: none keeps the other out of
-      the tab order and the accessibility tree); ids get a suffix. -#}
-  {%- set shortCard = "" %}
+      One element: right under the player at every width (a band below 1440px, the lower half of
+      the right-hand column from 1440px). A 9:16 video beside its caption and the two app links. -#}
   {% if shortId %}
   {%- set shortTitle = site.listen.sidebar_short_title or "AA Grapevine" -%}
   {%- set shortUrl = "https://www.youtube.com/shorts/" + shortId -%}
-  {% set shortCard %}
-  <aside class="card listen-short listen-short--__WHERE__" aria-labelledby="listen-short-title__SFX__">
+  <aside class="card listen-short" aria-labelledby="listen-short-title">
     <div class="listen-short-video">
       <lite-youtube videoid="{{ shortId }}" class="media-lyt listen-lyt" params="rel=0&amp;playsinline=1&amp;hl={{ lang }}"
                     style="background-image: url('{{ shortId | ytThumb('oar2') }}');" playlabel="{{ 'media.play' | t(lang) }}: {{ shortTitle }}">
@@ -248,7 +249,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
     </div>
     <div class="listen-short-body">
       <p class="eyebrow flex items-center gap-1.5 text-grape">{% icon "youtube", "size-3.5" %} {{ "media.short_eyebrow" | t(lang) }}</p>
-      <h2 id="listen-short-title__SFX__" class="mt-1.5 font-display text-xl font-semibold leading-snug text-ink"{% if lang != "en" %} lang="en"{% endif %}>{{ shortTitle }}</h2>
+      <h2 id="listen-short-title" class="mt-1.5 font-display text-xl font-semibold leading-snug text-ink"{% if lang != "en" %} lang="en"{% endif %}>{{ shortTitle }}</h2>
       <p class="mt-1.5 text-sm leading-relaxed text-muted">{{ "media.short_text" | t(lang) }}</p>
     </div>
     {% set appBtns = [["gv", site.links.gv_apps, "media.short_gv_app"], ["lv", site.links.lv_apps, "media.short_lv_app"]] %}
@@ -258,8 +259,6 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
       {% endif %}{% endfor %}
     </p>
   </aside>
-  {% endset %}
-  {{ shortCard | replace("__WHERE__", "side") | replace("__SFX__", "") | safe }}
   {% endif %}
   </div>
 
@@ -400,7 +399,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
 
     <div class="mb-3 flex min-h-6 flex-wrap items-center justify-between gap-2 text-sm text-muted">
       <p aria-live="polite" aria-atomic="true"><span x-text="statusText">{{ "media.showing" | t(lang, { n: ssr.length, total: eps.length }) }}</span><span x-show="loading" x-cloak x-text="(statusText ? ' · ' : '') + T.loading"> · {{ "common.loading" | t(lang) }}</span></p>
-      <button type="button" class="inline-flex min-h-8 items-center gap-1 font-semibold text-gv hover:underline" x-show="filtering" x-cloak @click="clear()">{% icon "x", "size-4" %}{{ "media.clear_filters" | t(lang) }}</button>
+      <button type="button" class="-my-1.5 inline-flex min-h-11 items-center gap-1 font-semibold text-gv hover:underline" x-show="filtering" x-cloak @click="clear()">{% icon "x", "size-4" %}{{ "media.clear_filters" | t(lang) }}</button>
     </div>
     <p class="mb-3 rounded-xl bg-lv-soft px-4 py-2 text-sm text-lv-strong" x-show="failed" x-cloak role="status">{{ "media.index_error" | t(lang) }} <button type="button" class="font-semibold underline" @click="retryIndex()">{{ "media.retry" | t(lang) }}</button></p>
 
@@ -429,11 +428,9 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
         {{ "media.load_more" | t(lang) }}
       </button>
       {% endif %}
-      {% if site.links.podcasts_page %}<a class="link text-sm" href="{{ site.links.podcasts_page }}" target="_blank" rel="noopener">{{ "media.full_archive" | t(lang) }}</a>{% endif %}
+      {% if site.links.podcasts_page %}<a class="link inline-flex min-h-11 items-center text-sm" href="{{ site.links.podcasts_page }}" target="_blank" rel="noopener">{{ "media.full_archive" | t(lang) }}</a>{% endif %}
     </div>
   </section>
-
-  {% if shortCard %}{{ shortCard | replace("__WHERE__", "end") | replace("__SFX__", "-end") | safe }}{% endif %}
 
   </div>{#- /.listen-layout -#}
 

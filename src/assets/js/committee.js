@@ -224,76 +224,119 @@
       };
     });
 
-    /* /meetings/#grapevine-meetings: filters for the Grapevine meetings list (day, city / county /
-       group, in person / online, nearby areas on or off) and today's weekday (Central time).
-       Cards carry data-day / data-area / data-att / data-q (folded text); empty weekday blocks,
-       region groups and the whole "Nearby areas" block hide with their cards. Without JavaScript
-       the filters stay hidden (x-cloak) and every meeting shows. */
+    /* /meetings/#grapevine-meetings: filters for the Grapevine meetings (city / county / group, day,
+       in person / online, nearby areas on or off) and "Meets today" (Central time).
+       One card per group (li[data-gvg]: data-area, data-days, data-q = folded text); inside, rows of
+       weekdays (data-days) with time chips ([data-slot]: data-att, data-n = how many meetings the
+       chip stands for — one per weekday of its row). A card shows when its text and area match and
+       at least one of its times matches the day and in person / online; those rows and times are
+       highlighted. Empty regions and the whole "Nearby areas" block hide with their cards.
+       Without JavaScript the filters stay hidden (x-cloak) and every group shows. */
     Alpine.data("cmGvMeetings", function () {
       function fold(s) {
         return String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/\s+/g, " ").trim();
       }
+      function days(el) { return (el.getAttribute("data-days") || "").split(" ").filter(Boolean); }
+      function plural(el, pre, n) { return String(el.getAttribute(pre + (n === 1 ? "-one" : "-many")) || "{n}").replace("{n}", n); }
+      // today's weekday in Central time, 0 = Sunday
+      function weekday() {
+        try {
+          return ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].indexOf(new Intl.DateTimeFormat("en-US", { timeZone: TZ, weekday: "short" }).format(new Date()));
+        } catch (e) { return new Date().getDay(); }
+      }
       return {
-        day: "", q: "", how: "", nearby: true, today: -1, shown: 0, total: 0, labels: { many: "{n}", one: "{n}" },
+        day: "", q: "", how: "", nearby: true, today: -1, shown: 0, groups: 0, total: 0, labels: { many: "{n}", one: "{n}" },
         init: function () {
-          this.labels = countLabels(this.$root);
-          this.total = Number(this.$root.getAttribute("data-total")) || 0;
+          var root = this.$root, self = this;
+          this.labels = countLabels(root);
+          this.total = Number(root.getAttribute("data-total")) || 0;
           this.shown = this.total;
-          try {
-            var wd = new Intl.DateTimeFormat("en-US", { timeZone: TZ, weekday: "short" }).format(new Date());
-            this.today = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].indexOf(wd);
-          } catch (e) { this.today = new Date().getDay(); }
-          var self = this;
+          this.groups = root.querySelectorAll("li[data-gvg]").length;
+          this.today = weekday();
+          this.markToday();
+          // a page left open past midnight moves "Meets today" to the new day
+          this._t = setInterval(function () { var d = weekday(); if (d !== self.today) { self.today = d; self.markToday(); } }, 60000);
           this.$watch("day", function () { self.apply(); });
           this.$watch("q", function () { self.apply(); });
           this.$watch("how", function () { self.apply(); });
           this.$watch("nearby", function () { self.apply(); });
-          // A link to one meeting (#mtg-…, e.g. from the site search): make sure it is visible
+          // A link to one group (#gvg-…, the site search) or to one of its meetings (#mtg-…, older
+          // links): bring the group's card into view and outline it
           var id = "";
           try { id = location.hash ? decodeURIComponent(location.hash.slice(1)) : ""; } catch (e) {}
-          var el = id && id.indexOf("mtg-") === 0 && document.getElementById(id);
-          if (el && this.$root.contains(el)) this.$nextTick(function () { el.scrollIntoView({ block: "center" }); });
+          var card = null;
+          if (id.indexOf("gvg-") === 0) card = document.getElementById(id);
+          else if (/^mtg-[a-z0-9-]+$/i.test(id)) card = root.querySelector('li[data-mtg~="' + id + '"]');
+          if (card && root.contains(card)) {
+            if (id.indexOf("mtg-") === 0) card.classList.add("is-target");
+            this.$nextTick(function () { card.scrollIntoView({ block: "center" }); });
+          }
+        },
+        destroy: function () { clearInterval(this._t); },
+        // "Meets today" on the cards of the groups that meet today, today's row in blue, and
+        // "(today)" after today's name in the Day list
+        markToday: function () {
+          var t = String(this.today), root = this.$root;
+          root.querySelectorAll("li[data-gvg]").forEach(function (card) {
+            var on = days(card).indexOf(t) !== -1;
+            card.classList.toggle("is-today", on);
+            var b = card.querySelector("[data-gvm-today]");
+            if (b) b.hidden = !on;
+          });
+          root.querySelectorAll(".cm-gvg-row").forEach(function (row) { row.classList.toggle("is-today", days(row).indexOf(t) !== -1); });
+          var tpl = root.getAttribute("data-today-label") || "{day}";
+          root.querySelectorAll('select[x-model="day"] option[data-name]').forEach(function (o) {
+            var name = o.getAttribute("data-name");
+            o.textContent = o.value === t ? tpl.replace("{day}", name) : name;
+          });
         },
         get filtered() { return this.day !== "" || this.q.trim() !== "" || this.how !== "" || !this.nearby; },
-        get statusText() { return countText(this.labels, this.shown); },
+        get statusText() { return countText(this.labels, this.shown).replace("{groups}", plural(this.$root, "data-groups", this.groups)); },
         reset: function () {
           this.day = ""; this.q = ""; this.how = ""; this.nearby = true;
           // the pressed button hides itself: keep keyboard focus in the filters, not on <body>
           var f = this.$root.querySelector("input[type=search]");
           if (f) this.$nextTick(function () { f.focus(); });
         },
-        match: function (li, terms) {
-          if (this.day !== "" && li.getAttribute("data-day") !== String(this.day)) return false;
-          if (!this.nearby && li.getAttribute("data-area") !== "ours") return false;
-          var att = li.getAttribute("data-att");
-          if (this.how === "in_person" && att === "online") return false;
-          if (this.how === "online" && att === "in_person") return false;
-          var text = li.getAttribute("data-q") || "";
-          for (var i = 0; i < terms.length; i++) if (text.indexOf(terms[i]) === -1) return false;
-          return true;
-        },
         apply: function () {
-          var root = this.$root, self = this, n = 0;
+          var root = this.$root, self = this, shown = 0, groups = 0;
           var terms = fold(this.q).split(" ").filter(Boolean);
-          var cards = root.querySelectorAll("li[data-day]");
-          for (var i = 0; i < cards.length; i++) {
-            var ok = self.match(cards[i], terms);
-            cards[i].hidden = !ok;
-            if (ok) n++;
-          }
-          function hideEmpty(sel) {
-            var els = root.querySelectorAll(sel);
-            for (var j = 0; j < els.length; j++) {
-              var v = els[j].querySelectorAll("li[data-day]:not([hidden])").length;
-              els[j].hidden = !v;
-              var c = els[j].querySelector(":scope > .cm-gvm-group-head [data-gvm-count]");
-              if (c) c.textContent = (v === 1 ? c.getAttribute("data-one") : c.getAttribute("data-many")).replace("{n}", v);
+          var day = String(this.day), how = this.how, slotFilter = day !== "" || how !== "";
+          root.querySelectorAll("li[data-gvg]").forEach(function (card) {
+            var ok = self.nearby || card.getAttribute("data-area") === "ours";
+            var text = card.getAttribute("data-q") || "";
+            for (var i = 0; ok && i < terms.length; i++) if (text.indexOf(terms[i]) === -1) ok = false;
+            var n = 0;
+            card.querySelectorAll(".cm-gvg-row").forEach(function (row) {
+              var dayOk = day === "" || days(row).indexOf(day) !== -1, rowHit = false;
+              row.querySelectorAll("[data-slot]").forEach(function (chip) {
+                var att = chip.getAttribute("data-att");
+                var hit = dayOk && !(how === "in_person" && att === "online") && !(how === "online" && att === "in_person");
+                chip.classList.toggle("is-match", slotFilter && hit);
+                if (hit) { rowHit = true; n += day === "" ? Number(chip.getAttribute("data-n")) || 1 : 1; }
+              });
+              row.classList.toggle("is-match", slotFilter && rowHit);
+            });
+            ok = ok && n > 0;
+            card.hidden = !ok;
+            if (ok) { shown += n; groups++; }
+            card._gvN = ok ? n : 0;
+          });
+          // regions (and our Area): hide when empty, say what is left, span as many columns as cards
+          root.querySelectorAll("[data-gvm-group]").forEach(function (g) {
+            var cards = g.querySelectorAll("li[data-gvg]:not([hidden])"), m = 0;
+            for (var j = 0; j < cards.length; j++) m += cards[j]._gvN;
+            g.hidden = !cards.length;
+            var c = g.querySelector("[data-gvm-count]");
+            if (c) c.textContent = plural(root, "data-groups", cards.length) + " · " + plural(root, "data-meetings", m);
+            if (g.classList.contains("cm-gvg-region")) {
+              for (var k = 1; k <= 4; k++) g.classList.toggle("cm-n" + k, k === Math.min(Math.max(cards.length, 1), 4));
             }
-          }
-          hideEmpty("[data-gvm-dayg]");
-          hideEmpty("[data-gvm-group]");
-          hideEmpty("[data-gvm-nearby]");
-          this.shown = n;
+          });
+          var nb = root.querySelector("[data-gvm-nearby]");
+          if (nb) nb.hidden = !nb.querySelector("li[data-gvg]:not([hidden])");
+          this.shown = shown;
+          this.groups = groups;
         },
       };
     });
