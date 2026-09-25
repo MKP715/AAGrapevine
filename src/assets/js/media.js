@@ -280,9 +280,10 @@
       featuredId: null,
       featuredVisible: false,
       curEp: null, // the full list object of what is loaded (the featured card shows it as "Now playing")
-      /* true from 1440px in windows at least 36rem tall — exactly when media.css makes the featured
-         card the sticky right-hand column. Then that card is the ONE player: it shows whatever is
-         loaded, and the mini-player stays hidden while the card is on screen. */
+      /* true from 1440px — exactly when media.css makes the featured card (with the Short under it)
+         the right-hand column, sticky or not. Then that card is the ONE player: it shows whatever
+         is loaded, and the mini-player stays hidden while the card is on screen (in windows under
+         56.25rem, where only the Short sticks, it takes over once the card has scrolled away). */
       wide: false,
       saved: {}, // id → seconds (-1 = finished); reactive copy of positions()
 
@@ -292,7 +293,7 @@
         this.saved = sv;
         var r = Number(store.get(K_RATE));
         if (RATES.indexOf(r) !== -1) this.rate = r;
-        var self = this, mq = window.matchMedia ? window.matchMedia("(min-width: 90rem) and (min-height: 36rem)") : null;
+        var self = this, mq = window.matchMedia ? window.matchMedia("(min-width: 90rem)") : null;
         if (mq) {
           var sync = function () { self.wide = mq.matches; };
           sync();
@@ -428,15 +429,20 @@
         else if (k === "l") { e.preventDefault(); this.skipFor(ep, 30); }
       },
       /* The featured player's controls report whether they're on screen: while
-         at least half visible, the mini-player stays hidden for that episode. */
+         at least half visible, the mini-player stays hidden for that episode. "On screen" = below
+         the fixed site header (rootMargin), so controls scrolled up under the header count as
+         gone and the mini-player takes over (e.g. from 1440px in windows under 56.25rem, where the
+         player scrolls away and the Short alone sticks). */
       watchFeatured: function (el, ep) {
         var self = this;
         this.featuredId = ep && ep.id;
         if (!("IntersectionObserver" in window) || !el) return;
+        var hdr = document.querySelector(".site-header");
+        var top = hdr ? Math.round(hdr.getBoundingClientRect().height) : 0;
         new IntersectionObserver(function (entries) {
           var e = entries[entries.length - 1];
           self.featuredVisible = e.isIntersecting && e.intersectionRatio >= 0.5;
-        }, { threshold: [0, 0.5, 1] }).observe(el);
+        }, { threshold: [0, 0.5, 1], rootMargin: "-" + top + "px 0px 0px 0px" }).observe(el);
       },
     });
 

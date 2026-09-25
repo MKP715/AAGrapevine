@@ -119,7 +119,7 @@
 .lib-facets:not(.hidden) { margin-top: 0.75rem; }
 @media (width >= 64rem) { .lib-facets { margin-top: 0 !important; } }
 @media (width >= 64rem) and (height >= 40rem) {
-  .lib-facets { position: sticky; top: var(--sticky-top); max-height: calc(100dvh - var(--sticky-top) - 1rem - var(--sticky-bottom, 0px)); overflow-y: auto; overscroll-behavior: contain; padding: 0 0.25rem 1.5rem 0; scrollbar-width: thin;
+  .lib-facets { position: sticky; top: var(--sticky-top); max-height: calc(100dvh - var(--sticky-top) - 1rem - var(--sticky-bottom, 0px)); overflow-y: auto; padding: 0 0.25rem 1.5rem 0; scrollbar-width: thin;
     -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 1.5rem), transparent);
             mask-image: linear-gradient(to bottom, #000 calc(100% - 1.5rem), transparent); }
 }

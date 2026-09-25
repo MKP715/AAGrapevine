@@ -314,9 +314,9 @@
 /* ---------- Sticky rules: NOTHING may cover content ----------
    What may stick: the site header (fixed, z-50) · the podcast mini-player and the language
    banner (fixed bottom, z-40; they reserve --player-h / --banner-h at the page end) · a side
-   tool, aside or facet column (sticky-aside / sticky-aside-xl below) · the Listen player
-   (≥1440) · the month poster · the What's New filter bar (one line, z-20). Nothing else:
-   no sticky page nav, no sticky section headers, no floating buttons. JS never switches sticky
+   tool, aside or facet column (sticky-aside / sticky-aside-xl below) · the Listen player + Short
+   column (≥1440; the Short alone in shorter windows) · the month poster · the What's New filter
+   bar (one line, z-20). Nothing else: no sticky page nav, no sticky section headers, no floating buttons. JS never switches sticky
    on and off (that shifts the layout): width AND height media queries decide it.
    z-index scale: content 0–10 · sticky bars and asides 20 · banner + mini-player 40 ·
    header 50 · phone drawer 60 · skip link 100.
@@ -334,14 +334,14 @@
 @utility sticky-aside {
   @media (width >= 64rem) and (height >= 40rem) {
     position: sticky; top: var(--sticky-top); align-self: start;
-    max-height: calc(100dvh - var(--sticky-top) - 1rem - var(--sticky-bottom, 0px)); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin;
+    max-height: calc(100dvh - var(--sticky-top) - 1rem - var(--sticky-bottom, 0px)); overflow-y: auto; scrollbar-width: thin;
     padding: 0.25rem 0.5rem 1.5rem; margin: -0.25rem -0.5rem 0;   /* room for card shadows + focus rings */
     -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 1.5rem), transparent);
             mask-image: linear-gradient(to bottom, #000 calc(100% - 1.5rem), transparent); } }
 @utility sticky-aside-xl {
   @media (width >= 80rem) and (height >= 40rem) {
     position: sticky; top: var(--sticky-top); align-self: start;
-    max-height: calc(100dvh - var(--sticky-top) - 1rem - var(--sticky-bottom, 0px)); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin;
+    max-height: calc(100dvh - var(--sticky-top) - 1rem - var(--sticky-bottom, 0px)); overflow-y: auto; scrollbar-width: thin;
     padding: 0.25rem 0.5rem 1.5rem; margin: -0.25rem -0.5rem 0;
     -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 1.5rem), transparent);
             mask-image: linear-gradient(to bottom, #000 calc(100% - 1.5rem), transparent); } }

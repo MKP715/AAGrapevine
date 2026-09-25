@@ -14,10 +14,11 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
     Server-renders the newest 24 episodes (no-JS / SEO); media.js loads the rest
     from /episodes-index.json for "Load more", search and filters, and drives one
     shared <audio> element (featured player, show cards, rows + sticky mini-player).
-    Blocks, in DOM (= phone, = Tab) order: the latest-episode player (.listen-feature), an official
-    AA Grapevine YouTube Short (config/site.yml site.listen.sidebar_short) in a privacy-friendly
-    vertical lite-youtube (.listen-short), the shows, all episodes. From 1440px the player alone is
-    the sticky right-hand column and the Short is a band at the top of the left column. -#}
+    Blocks, in DOM (= phone, = Tab) order: .listen-side = the latest-episode player (.listen-feature)
+    + an official AA Grapevine YouTube Short (config/site.yml site.listen.sidebar_short) in a
+    privacy-friendly vertical lite-youtube (.listen-short); the shows; all episodes. From 1440px
+    .listen-side is the right-hand column (the player, the Short right under it): in windows tall
+    enough for both it stays in view as ONE sticky stack; in shorter ones the Short alone sticks. -#}
 {% import "macros/ui.njk" as ui with context %}
 {% import "macros/media.njk" as media with context %}
 {% mediaSprite %}
@@ -137,13 +138,18 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
 
 <div x-data="podcastPage" data-index="{{ '/episodes-index.json' | lurl(lang) }}" data-total="{{ eps.length }}" data-mixed="{{ 'true' if mixedLangs else 'false' }}">
 
-  {#- Layout (areas/media.css .listen-layout): below 1440px the four blocks stack — the
-      latest-episode player (tucked into the hero's fade), the Short (a slim band), the shows, all
-      episodes. From 1440px: the Short, the shows and the episodes on the left; the player ALONE is
-      the fixed-width right-hand column, sticky (CSS only: windows at least 36rem tall) all the way
-      down the episode list. Nothing sits under it, so nothing can slide under it. -#}
+  {#- Layout (areas/media.css .listen-layout): below 1440px it all stacks — .listen-side (the
+      latest-episode player, tucked into the hero's fade, and the Short right under it as a slim
+      band), the shows, all episodes. From 1440px: the shows and the episodes on the left;
+      .listen-side is the fixed-width right-hand column — the player, then the Short. In windows at
+      least 56.25rem (900px) tall (the whole column fits under the header) the two stay in view
+      together as ONE sticky stack all the way down the episode list; in shorter windows the player
+      scrolls away (the mini-player takes over) and the Short alone sticks under the header. The
+      Short never moves up into the player, so nothing can slide over it (CSS only, no JS). -#}
   <div class="container-page listen-layout">
   {%- set shortId = site.listen.sidebar_short if site.listen else "" %}
+
+  <div class="listen-side page-overlap">
 
   {#- ------------------------------------------------------------ featured player -#}
   {%- set f = featured -%}
@@ -151,19 +157,20 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
   {%- set fSE = f | mediaSE(lang) -%}
   {%- set fArt = (f.extra.thumb or f.image) | mediaSafeUrl("") -%}
   {%- set fShow = f | mediaShowOf(shows) -%}
-  <section class="listen-feature page-overlap" aria-labelledby="featured-ep-title">
-    {#- From 1440px, in windows tall enough for the sticky column (media.js $store.audio.wide), this
-        card is THE player: an episode started from the list or a show card shows here as
-        "Now playing" (alt), with "Back to latest"; the mini-player stays hidden while the card is on
-        screen. Below that it always shows the latest episode and the mini-player takes over. -#}
+  <section class="listen-feature" aria-labelledby="featured-ep-title">
+    {#- From 1440px, where it is the right-hand column (media.js $store.audio.wide), this card is THE
+        player: an episode started from the list or a show card shows here as "Now playing" (alt),
+        with "Back to latest"; the mini-player stays hidden while the card is on screen. Below that
+        it always shows the latest episode and the mini-player takes over. -#}
     <div class="card media-feature overflow-hidden" x-data="{ latest: epAt(0), get alt() { var a = this.$store.audio; return a.wide && a.curEp && a.curEp.id && a.curEp.id !== this.latest.id ? a.curEp : null; }, get ep() { return this.alt || this.latest; } }">
       <div class="grid grid-cols-1 md:grid-cols-[minmax(0,15rem)_minmax(0,1fr)] lg:grid-cols-[minmax(0,19rem)_minmax(0,1fr)] min-[90rem]:grid-cols-1">
         <div class="media-feature-art hidden md:flex min-[90rem]:hidden">
           {% if fArt %}<img src="{{ fArt }}" alt="" width="304" height="304" decoding="async" referrerpolicy="no-referrer">{% else %}<span class="ep-art-ph size-full">{% icon "headphones", "size-16" %}</span>{% endif %}
         </div>
-        {#- From 1440px (the sticky right-hand column) the card is compact, so it always fits the
-            window: the small artwork beside the title, the short date, a two-line summary (the full
-            one is in the first row of the episode list), a slimmer player and the keyboard hint alone. -#}
+        {#- From 1440px (the right-hand column, above the Short) the card is compact and of bounded
+            height (~400–480px), so the two fit the window together: the small artwork beside a title
+            of at most three lines, the short date, a two-line summary (the full title and summary are
+            in the first row of the episode list), a slimmer player and the keyboard hint alone. -#}
         <div class="flex min-w-0 flex-col gap-3 p-4 min-[400px]:p-5 sm:p-7 min-[90rem]:p-5">
           <div class="flex items-start gap-4">
             {% if fArt %}<img src="{{ fArt }}" alt="" width="88" height="88" class="size-[5.5rem] shrink-0 rounded-xl object-cover shadow-md ring-1 ring-black/5 md:hidden min-[90rem]:block" x-show="!alt" decoding="async" referrerpolicy="no-referrer">{% endif %}
@@ -179,7 +186,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
                 <span class="eyebrow text-grape">{{ "media.now_playing" | t(lang) }}</span>
                 <button type="button" class="-my-3 inline-flex min-h-11 items-center gap-1 text-xs font-semibold text-gv hover:underline" @click="$store.audio.load(latest, false)">{% icon "rotate-ccw", "size-3.5" %}{{ "media.back_latest" | t(lang) }}</button>
               </p>
-              <h2 id="featured-ep-title" class="mt-2 font-display text-2xl font-semibold leading-tight text-balance sm:text-3xl min-[90rem]:text-2xl"><span x-show="!alt">{{ fTitle }}</span><span x-show="alt" x-cloak x-text="alt ? alt.t : ''"></span></h2>
+              <h2 id="featured-ep-title" class="mt-2 font-display text-2xl font-semibold leading-tight text-balance sm:text-3xl min-[90rem]:line-clamp-3 min-[90rem]:text-2xl"><span x-show="!alt">{{ fTitle }}</span><span x-show="alt" x-cloak x-text="alt ? alt.t : ''"></span></h2>
             </div>
           </div>
           <p class="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted" x-show="!alt">
@@ -248,8 +255,9 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
   </section>
 
   {#- ------------------------------------------------------------ the Short
-      One element: a band right under the player below 1440px; from 1440px the band at the top of
-      the left column, level with the player. A 9:16 video beside its caption and the two app links. -#}
+      One element, always right under the player: below 1440px a band (a 9:16 video beside its
+      caption and the two app links); from 1440px the lower card of the right-hand column (the video
+      beside the caption, the app links stacked under the caption). -#}
   {% if shortId %}
   {%- set shortTitle = site.listen.sidebar_short_title or "AA Grapevine" -%}
   {%- set shortUrl = "https://www.youtube.com/shorts/" + shortId -%}
@@ -263,8 +271,8 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
       </lite-youtube>
     </div>
     <div class="listen-short-body">
-      <p class="eyebrow flex items-center gap-1.5 text-grape">{% icon "youtube", "size-3.5" %} {{ "media.short_eyebrow" | t(lang) }}</p>
-      <h2 id="listen-short-title" class="mt-1.5 font-display text-xl font-semibold leading-snug text-ink"{% if lang != "en" %} lang="en"{% endif %}>{{ shortTitle }}</h2>
+      <p class="eyebrow flex items-center gap-1.5 text-grape">{% icon "youtube", "size-3.5 min-[90rem]:hidden" %} {{ "media.short_eyebrow" | t(lang) }}</p>
+      <h2 id="listen-short-title" class="mt-1.5 font-display text-xl font-semibold leading-snug text-ink min-[90rem]:text-lg"{% if lang != "en" %} lang="en"{% endif %}>{{ shortTitle }}</h2>
       <p class="mt-1.5 text-sm leading-relaxed text-muted">{{ "media.short_text" | t(lang) }}</p>
     </div>
     {% set appBtns = [["gv", site.links.gv_apps, "media.short_gv_app"], ["lv", site.links.lv_apps, "media.short_lv_app"]] %}
@@ -275,6 +283,8 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
     </p>
   </aside>
   {% endif %}
+
+  </div>{#- /.listen-side -#}
 
   {#- ------------------------------------------------------------ the shows -#}
   <section id="shows" class="listen-shows" aria-labelledby="shows-title">
