@@ -196,8 +196,9 @@ class SiteFileTest(unittest.TestCase):
         self.assertEqual(set(gv), set(Q.SITE_KEYS))
         self.assertEqual((gv["date"], gv["date_label"], gv["lang"]), ("2026-09-25", "September 25", "en"))
         self.assertEqual(doc["items"][1]["date_label"], "25 de septiembre")
-        self.assertEqual(sorted(doc["history"]), ["gv", "lv"])
-        self.assertEqual(doc["history"]["lv"][0]["date_label"], "25 de septiembre")
+        # the raw history is a guard for collect(), never shown: it stays out of the site file
+        self.assertNotIn("history", doc)
+        self.assertEqual(set(doc), {"updated", "fixture", "items"})
 
     def test_build_site_skips_bad_rows(self):
         env = {"items": [{"id": "quote:gv:x", "kind": "quote", "url": "https://www.aagrapevine.org/#quote-of-the-day",

@@ -28,7 +28,8 @@ import { safeUrl } from "../../eleventy.config.js";
 // /contribute/#record. No `items` list of its own (an empty one is added here).
 // "quote" = Grapevine's Daily Quote and La Viña's Cita Diaria as published on their home pages
 // (scripts/sync/quote.py → build_data; docs/DATA_SCHEMA.md → "quote.json"): db.quote.items (the newest
-// quote of each, Grapevine first; url + signup_url cleaned below) and db.quote.history, read by the home page.
+// quote of each, Grapevine first; url + signup_url cleaned below), read by the home page. (The past days'
+// quotes stay in data/raw/quote.json — a guard for the sync, not shown anywhere.)
 const FILES = [
   "episodes", "videos", "instagram", "articles", "pdfs", "drive", "events",
   "announcements", "editorial", "weekly_open", "whatsnew", "status",

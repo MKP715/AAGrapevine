@@ -755,8 +755,12 @@ export default function (eleventyConfig, helpers) {
      page may be a day old when it is read, so home.js adds "Today" in the browser) — and `host`
      ("aagrapevine.org") for the "More on …" link. A quote more than `maxAgeDays` days old (its source
      stopped updating) is left out, so the card goes away instead of showing a stale "daily" quote. */
-  eleventyConfig.addFilter("homeDailyQuotes", (quote, lang = "en", maxAgeDays = 7) => {
-    const cutoff = ymdMinus(ymdCentral(Date.now()), maxAgeDays);
+  /* The daily quotes for the home card: the page language's magazine first, only quotes of the last
+     `maxAgeDays` days (Central time). `fresh` = the quote is of the build day (the server's guess for
+     the link name; home.js corrects it in the visitor's browser). */
+  eleventyConfig.addFilter("homeDailyQuotes", (quote, lang = "en", maxAgeDays = 2) => {
+    const today = ymdCentral(Date.now());
+    const cutoff = ymdMinus(today, maxAgeDays);
     const order = lang === "es" ? ["lv", "gv"] : ["gv", "lv"];
     const loc = LOCALES[lang] || "en-US";
     return arr(quote && quote.items)
@@ -769,7 +773,7 @@ export default function (eleventyConfig, helpers) {
         try { day = new Intl.DateTimeFormat(loc, { month: "long", day: "numeric", timeZone: "UTC" }).format(new Date(`${ymd}T12:00:00Z`)); } catch { /* keep the ISO day */ }
         let host = "";
         try { host = new URL(q.url).hostname.replace(/^www\./, ""); } catch { /* no host */ }
-        return { ...q, date: ymd, day, host };
+        return { ...q, date: ymd, day, host, fresh: ymd === today };
       });
   });
 

@@ -215,7 +215,6 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
       <dd class="flex flex-wrap gap-x-4 gap-y-1">
         <a class="link tap-link" href="{{ L.lv_guidelines if isLv else L.gv_guidelines }}" target="_blank" rel="noopener">{{ "read.contrib.guidelines" | t(lang) }}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a>
         <a class="link tap-link" href="{{ lvCalendar if isLv else gvCalendar }}" target="_blank" rel="noopener">{{ "read.contrib.themes_link" | t(lang) }}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a>
-        <a class="link tap-link" href="#record">{{ "community.rec.nav" | t(lang) }}</a>
       </dd>
     </div>
   </dl>
@@ -243,7 +242,8 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
 <article class="card card-pad flex flex-col" aria-labelledby="rec-{{ pub }}-title">
   <p class="eyebrow flex items-center gap-2 {{ 'text-lv' if isLv else 'text-gv' }}">{% icon "grapes", "size-4 shrink-0" %}<span>{{ ("community.rec." + pub + "_eyebrow") | t(lang) }}</span></p>
   <div class="mt-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-    <h3 id="rec-{{ pub }}-title" class="card-h"{% if isLv and lang != "es" %} lang="es"{% endif %}>{{ "Graba tu historia" if isLv else ("community.rec.gv_name" | t(lang)) }}</h3>
+    {#- Each program keeps its own name, in its own language: "Graba tu historia" / "Audio Project" -#}
+    <h3 id="rec-{{ pub }}-title" class="card-h"{% if isLv and lang != "es" %} lang="es"{% elif not isLv and lang != "en" %} lang="en"{% endif %}>{{ "Graba tu historia" if isLv else "Audio Project" }}</h3>
     {% if d and d.minutes_max %}<span class="{{ 'badge-lv' if isLv else 'badge-gv' }}">{% icon "timer", "size-3.5" %}{% if d.minutes_min %}{{ "community.rec.len_range" | t(lang, {min: d.minutes_min, max: d.minutes_max}) }}{% else %}{{ "community.rec.len_max" | t(lang, {max: d.minutes_max}) }}{% endif %}</span>{% endif %}
   </div>
   <p class="mt-2 leading-relaxed text-muted">{{ ("community.rec." + pub + "_what") | t(lang) }}</p>
@@ -252,8 +252,7 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
     <span class="cm-rec-phone-icon">{% icon "phone", "size-5" %}</span>
     <span class="min-w-0"><span class="block text-sm font-semibold {{ 'text-lv-strong' if isLv else 'text-gv-strong' }}">{{ "community.rec.call" | t(lang) }}</span> <span class="cm-rec-num">{{ d.phone }}</span></span>
   </a>
-  {%- set phoneNote = ("community.rec.long_distance" if d.long_distance else "") if isLv else ("community.rec.gv_no_answer" if d.email else "") %}
-  {% if phoneNote %}<p class="mt-2 flex items-start gap-1.5 text-sm text-muted">{% icon "info", "mt-0.5 size-4 shrink-0" %}<span>{{ phoneNote | t(lang) }}</span></p>{% endif %}
+  {% if isLv and d.long_distance %}<p class="mt-2 flex items-start gap-1.5 text-sm text-muted">{% icon "info", "mt-0.5 size-4 shrink-0" %}<span>{{ "community.rec.long_distance" | t(lang) }}</span></p>{% endif %}
 
   {% if stepsOk %}
   <h4 class="eyebrow mt-6">{{ "community.rec.steps" | t(lang) }}</h4>
@@ -281,7 +280,7 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
   <div class="mt-5 rounded-xl bg-surface-2 p-4">
     <p class="flex items-center gap-2 font-semibold text-ink"><span class="text-grape">{% icon "mic", "size-4 shrink-0" %}</span>{{ "community.rec.diy_title" | t(lang) }}</p>
     <p class="mt-1 text-sm leading-relaxed text-muted">{{ "community.rec.diy_text" | t(lang, {formats: (d.formats | join(orWord)) or ("WAV" ~ orWord ~ "MP3")}) }}</p>
-    <div class="mt-2 flex items-center justify-between gap-2">
+    <div class="mt-2 flex items-center justify-start gap-2">
       <a class="link tap-link min-w-0 break-all" href="mailto:{{ d.email }}">{{ d.email }}</a>
       <button type="button" class="btn-ghost btn-sm -my-1 min-w-11 shrink-0 px-2.5!" data-copy="{{ d.email }}" aria-label="{{ 'common.copy' | t(lang) }}: {{ d.email }}">{% icon "copy", "size-4" %}</button>
     </div>
@@ -296,11 +295,13 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
   <p class="panel-muted mt-5 text-sm leading-relaxed text-muted">{{ "community.rec.unavailable" | t(lang) }}</p>
   {% endif %}
 
-  <div class="mt-auto pt-5">
+  <div class="pt-5">
     <div class="border-t border-line pt-4">
       {% if d and not isLv and (d.playlists.length or d.channel_url) %}
       <p class="eyebrow">{{ "community.rec.gv_listen" | t(lang) }}</p>
-      <ul class="mt-2 flex flex-col items-start gap-y-1.5 text-sm" role="list">
+      {#- one wrapping row on phones and tablets, like La Viña's "Before you call" links (short); a list
+          once the cards sit side by side (it balances La Viña's longer card beside it) -#}
+      <ul class="mt-1 flex flex-wrap gap-x-5 gap-y-1 text-sm lg:mt-2 lg:flex-col lg:items-start lg:gap-y-1.5" role="list">
         {% for pl in d.playlists %}<li><a class="link tap-link inline-flex items-center gap-1.5" href="{{ pl.url }}" target="_blank" rel="noopener"{% if lang != "en" %} lang="en"{% endif %}><span class="text-grape">{% icon "youtube", "size-4 shrink-0" %}</span>{{ pl.title }}<span class="sr-only" lang="{{ lang }}"> ({{ "common.external" | t(lang) }})</span></a></li>{% endfor %}
         {% if d.channel_url %}<li><a class="link tap-link inline-flex items-center gap-1.5" href="{{ d.channel_url }}" target="_blank" rel="noopener"><span class="text-grape">{% icon "youtube", "size-4 shrink-0" %}</span>{{ "community.rec.channel" | t(lang) }}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a></li>{% endif %}
       </ul>
@@ -384,7 +385,6 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
   { href: "#why", label: "read.contrib.nav_why" | t(lang), icon: "heart-handshake" },
   { href: "#what", label: "read.contrib.nav_what" | t(lang), icon: "feather" },
   { href: "#submit", label: "read.contrib.nav_submit" | t(lang), icon: "send" },
-  { href: "#record", label: "community.rec.nav" | t(lang), icon: "phone" },
   { href: "#deadlines", label: "read.contrib.nav_deadlines" | t(lang), icon: "calendar-clock" },
   { href: "#tips", label: "read.contrib.nav_tips" | t(lang), icon: "lightbulb" },
   { href: "#workshop", label: "read.contrib.nav_workshop" | t(lang), icon: "users" },
@@ -456,10 +456,12 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
   </div>
 </section>
 
-{#- ---------- Record your story by phone: the ONE home of the story lines (db.audio_project) ---------- -#}
+{#- ---------- Record your story by phone: the ONE home of the story lines (db.audio_project) ----------
+    The two cards keep their own heights (items-start): La Viña's has the sentence to say, so stretching
+    Grapevine's to match would leave a blank band in it. -#}
 <section id="record" class="section container-page pt-0" aria-labelledby="record-title">
   {{ ui.sectionHead("community.rec.title" | t(lang), "community.rec.sub" | t(lang), "", "", "mic", { eyebrow: "community.rec.eyebrow" | t(lang), tone: "text-grape", id: "record-title", lang: lang }) }}
-  <div class="grid grid-cols-1 gap-5 lg:grid-cols-2 lg:gap-6">
+  <div class="grid grid-cols-1 items-start gap-5 lg:grid-cols-2 lg:gap-6">
     {% for p in pubOrder %}{{ recordCard(p, ap[p], lang) }}{% endfor %}
   </div>
 </section>
@@ -568,6 +570,7 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
         <span class="grid size-8 shrink-0 place-items-center rounded-full bg-surface-2 text-muted transition group-open/faq:rotate-45">{% icon "plus", "size-4" %}</span>
       </summary>
       <p class="px-5 pb-5 leading-relaxed text-muted">{{ ("read.contrib.faq" + n + "_a") | t(lang) }}</p>
+      {% if n == 6 %}<p class="-mt-3 px-5 pb-5 text-sm"><a class="link tap-link inline-flex items-center gap-1" href="#record">{{ "community.rec.jump" | t(lang) }} {% icon "arrow-up", "size-4" %}</a></p>{% endif %}
     </details>
     {% endfor %}
   </div>

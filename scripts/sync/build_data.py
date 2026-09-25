@@ -1760,7 +1760,11 @@ def plan_whatsnew(ctx: Ctx, cols: dict[str, list[dict]]) -> list[tuple[float, di
         wn = ctx.effective_ts(it, "drive")
         if wn is None:
             continue
-        if it.get("kind") != "photo":
+        # Only what /photos/ shows as an album photo is grouped (isPhotoItem in eleventy/filters/committee.js:
+        # a photo in "photos", "other" or no category). An image in another folder — a flyer in "flyers" —
+        # is a file of the Portfolio: listed on its own, like a document (a group would link to an album
+        # anchor that /photos/ does not have).
+        if it.get("kind") != "photo" or it.get("category") not in (None, "", "photos", "other"):
             if not it["extra"].get("event_date"):     # dated flyers appear as their event instead
                 out.append((wn, it))
             continue
@@ -2109,6 +2113,13 @@ _AUDIO_KEY = re.compile(r"^[0-9#*]$")
 _AUDIO_EMAIL = re.compile(r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$")
 
 
+def us_phone(tel: str) -> str:
+    """"+15597261216" → "(559) 726-1216": both story lines in one style (the site's, like the customer
+    service numbers in config/site.yml), whatever way each official page writes its number."""
+    d = str(tel)[2:]
+    return f"({d[:3]}) {d[3:6]}-{d[6:]}"
+
+
 def empty_audio_project(updated: str | None = None) -> dict:
     return {"updated": updated, "fixture": False, "checked": None, "gv": None, "lv": None}
 
@@ -2126,7 +2137,7 @@ def build_audio_project(ctx: Ctx) -> dict:
         if not ex.get("phone") or not _AUDIO_TEL.match(str(ex.get("tel") or "")):
             continue
         row = {k: ex.get(k) for k in fields}
-        row["phone"] = clean_text(ex["phone"])
+        row["phone"] = us_phone(ex["tel"])        # shown; `tel` is dialled
         row["keys"] = {k: str(v) for k, v in (ex.get("keys") or {}).items() if _AUDIO_KEY.match(str(v))}
         row["email"] = ex.get("email") if _AUDIO_EMAIL.match(str(ex.get("email") or "")) else None
         row["formats"] = [str(f) for f in (ex.get("formats") or []) if re.fullmatch(r"[A-Z0-9]{2,5}", str(f))]

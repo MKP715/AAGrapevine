@@ -225,8 +225,10 @@ Dates can also be written `03-14-2027`, `March 14, 2027` or `14 de marzo de 2027
 
 - **A new panel** (e.g. Panel 79): create `2029-2030_Panel79_GVLV` with the same sub-folders. The site picks it up
   automatically. Panels older than `drive.min_panel` in the settings are ignored.
-- **Never published:** spreadsheets (form responses can contain personal information) and anything
-  whose name contains `PRIVATE`, `PRIVADO`, `(Responses)` or `(Respuestas)`.
+- **Never published on the site:** spreadsheets (form responses can contain personal information) and anything
+  whose name contains `PRIVATE`, `PRIVADO`, `(Responses)` or `(Respuestas)`. **But the Drive folders are shared
+  "Anyone with the link"** (the Portfolio page links to them): a file inside them can still be opened there.
+  Keep private drafts and personal information out of the A65_GV folders altogether.
 - **Deleting or moving** a file in Drive removes it from the site on the next update.
 - Empty folders are fine — the site shows a friendly "nothing here yet" message.
 

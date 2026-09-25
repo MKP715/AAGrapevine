@@ -1910,16 +1910,14 @@
    "i18n": {
     "title": {
      "en": "GV Audio Project",
-     "es": "Proyecto de Audio GV"
+     "es": "Audio Project de GV"
     },
     "summary": {
      "en": "",
      "es": ""
     }
    },
-   "machine": [
-    "es"
-   ],
+   "machine": [],
    "is_new": false
   },
   {

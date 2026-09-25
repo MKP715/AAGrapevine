@@ -708,8 +708,24 @@
     "es": "De"
   },
   "home.quote_more": {
-    "en": "More on {host}",
-    "es": "Más en {host}"
+    "en": "Read it on {host}",
+    "es": "Léela en {host}"
+  },
+  "home.quote_today_on": {
+    "en": "Today's quote on {host}",
+    "es": "La cita de hoy en {host}"
+  },
+  "home.quote_yesterday": {
+    "en": "Yesterday",
+    "es": "Ayer"
+  },
+  "home.quote_show_gv": {
+    "en": "Show Grapevine's quote",
+    "es": "Ver la cita de Grapevine"
+  },
+  "home.quote_show_lv": {
+    "en": "Show La Viña's quote",
+    "es": "Ver la cita de La Viña"
   },
   "home.quote_email": {
     "en": "Get it by e-mail",

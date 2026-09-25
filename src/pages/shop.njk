@@ -487,15 +487,17 @@ pageScripts: ["/assets/js/shop.js"]
 </section>
 
 {#- ---------- 6. Catalogs (db.pdfs) + 7. customer service: one band ----------
-    From 1024px the customer service card sits on the RIGHT of the catalogs: two equal columns with
-    1–3 catalogs (the usual case), or a 20rem / 24rem column beside the cover grid when there are
-    more. It is a sticky-aside, so it stays in view beside a taller catalog column. Below 1024px it
-    comes after the catalogs and the store links (DOM order = phone order).
+    From 1024px customer service sits on the RIGHT of the catalogs: two equal columns with 1–3
+    catalogs (the usual case; with ONE catalog the catalog column stops at 42rem from 1536px, so the
+    card never stretches empty and customer service gets the room), or a 20rem / 24rem column beside
+    the cover grid when there are more. Both columns open with the same section head (eyebrow + h2 +
+    intro). Customer service is a sticky-aside, so it stays in view beside a taller catalog column.
+    Below 1024px it comes after the catalogs and the store links (DOM order = phone order).
     Catalogs: 1–3 are horizontal cards (cover left, text right); more are a cover grid, older ones
     in a list. -#}
 {%- set fewCats = catalogs.length and catalogs.length <= 3 -%}
 <div class="section section-band">
-  <div class="container-page {{ 'layout-aside' if catalogs.length > 3 else 'shop-cat-help' }}">
+  <div class="container-page {{ 'layout-aside' if catalogs.length > 3 else ('shop-cat-help' ~ (' is-one' if catalogs.length == 1 else '')) }}">
     <section id="catalogs" class="min-w-0" aria-labelledby="cat-title">
       {% call ui.sectionHead("read.subs.cat_title" | t(lang), "read.subs.cat_sub" | t(lang), "", "", "book-open", { eyebrow: "shop.cat_eyebrow" | t(lang), id: "cat-title", lang: lang }) %}{% if catalogs.length %}{{ ui.freshness(db.pdfs.updated, lang) }}{% endif %}{% endcall %}
       {% if fewCats %}
@@ -517,20 +519,18 @@ pageScripts: ["/assets/js/shop.js"]
       {% else %}
       {{ ui.emptyState("book-open", "read.subs.cat_empty" | t(lang), "read.subs.cat_empty_text" | t(lang)) }}
       {% endif %}
-      <div class="mt-6 flex flex-wrap items-center gap-2 sm:gap-3">
+      <div class="mt-6 grid grid-cols-1 gap-2 sm:flex sm:flex-wrap sm:items-center sm:gap-3">
         {% for pub in pubOrder %}<a class="btn-secondary" href="{{ L.lv_store if pub == 'lv' else L.gv_store }}" target="_blank" rel="noopener">{% icon "store", "size-4" %} {{ ("read.subs.lv_store" if pub == "lv" else "read.subs.gv_store") | t(lang) }}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a>{% endfor %}
       </div>
     </section>
 
-    {#- Customer service: a panel card (card-h heading); its phone list is laid out in shop.css
-        (.shop-help-list: label over number on phones, one row each once the card is 24rem wide,
-        three columns while the card spans the page at 768–1023px) -#}
+    {#- Customer service: the same section head as the catalogs, then one card with the numbers, laid
+        out in shop.css by the card's width (.shop-help-list: label over number on phones, one row
+        each from 24rem, three tiles side by side from 34rem) -#}
     <section id="help" class="sticky-aside" aria-labelledby="help-title">
+      {{ ui.sectionHead("read.subs.help_title" | t(lang), "read.subs.help_text" | t(lang), "", "", "phone", { eyebrow: "shop.nav_help" | t(lang), id: "help-title", lang: lang }) }}
       <div class="card card-pad shop-help">
-        <p class="eyebrow flex items-center gap-2 text-gv">{% icon "phone", "size-4 shrink-0" %}<span>{{ "shop.nav_help" | t(lang) }}</span></p>
-        <h2 id="help-title" class="card-h mt-2">{{ "read.subs.help_title" | t(lang) }}</h2>
-        <p class="mt-2 max-w-2xl text-sm leading-relaxed text-muted">{{ "read.subs.help_text" | t(lang) }}</p>
-        <ul class="shop-help-list mt-4" role="list">
+        <ul class="shop-help-list" role="list">
           {#- pick(): the page language's number when config/site.yml has one (support_phone_intl_es:
               the Spanish international desk on /es/), else the plain key. support_phone_es is the
               Spanish toll-free line and is shown on both pages. -#}

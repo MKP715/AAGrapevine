@@ -25,6 +25,9 @@ build_data.py turns them into data/site/audio_project.json ({gv, lv, checked}).
 Each publication is independent: a page that cannot be fetched or is not understood (a number, key or
 e-mail address missing — a layout or process change) keeps the previous data of that part and the
 envelope is marked ok=false with the reason (→ /status/), so the site never shows half-read steps.
+When only La Viña's instructions page fails, its steps come from the previous run and the rest is read
+fresh: the source still counts as updated (ok=true) and the problem is a note in stats.warnings (the
+run summary's "Notes"), so /status/ and the stale-source report are not set off by current data.
 
 Run:  python -m scripts.sync.audio_project [--dry-run] [--html-dir DIR] [--save-html DIR]
 """
@@ -387,11 +390,14 @@ def collect_lv(s: dict, fetch: Fetch, prev_extra: dict) -> tuple[dict, str | Non
 
 
 def collect(fetch: Fetch, prev: dict, cfg: dict | None = None) -> dict:
-    """Everything one run finds → {"items", "errors", "stats"}. A part that failed keeps its previous item."""
+    """Everything one run finds → {"items", "errors", "warnings", "stats"}. A part that failed keeps its
+    previous item (an error); a part read fresh with some earlier data reused (La Viña's steps when only its
+    instructions page failed) is a warning."""
     st = settings(cfg)
     prev_items = {i["id"]: i for i in prev.get("items", []) if isinstance(i, dict) and i.get("id")}
     items: list[dict] = []
     errors: list[str] = []
+    warnings: list[str] = []
     for pub in ("gv", "lv"):
         pid = f"audio:{pub}"
         prev_extra = (prev_items.get(pid) or {}).get("extra") or {}
@@ -402,13 +408,13 @@ def collect(fetch: Fetch, prev: dict, cfg: dict | None = None) -> dict:
                 extra, problem = collect_lv(st[pub], fetch, prev_extra)
             items.append(_item(pub, extra))
             if problem:
-                errors.append(f"{pub}: {problem}")
+                warnings.append(f"{pub}: {problem} — the steps from the previous run are kept")
         except Exception as e:  # noqa: BLE001 — one part never stops the other
             errors.append(f"{pub}: {e}")
             log.warning("%s: %s — keeping the previous data", pub, e)
             if pid in prev_items:
                 items.append(prev_items[pid])
-    return {"items": items, "errors": errors,
+    return {"items": items, "errors": errors, "warnings": warnings,
             "stats": {"parts": len(items), "fresh": [p for p in ("gv", "lv") if not any(
                 e.startswith(f"{p}:") for e in errors)]}}
 
@@ -432,7 +438,7 @@ def main(argv=None) -> None:
     asked: set[str] = set()
 
     def fetch(url: str) -> str | None:
-        if url in asked:            # one request per page per run
+        if url in asked:            # this module asks for a page once (the session's memo covers other modules)
             return None
         asked.add(url)
         if args.html_dir:
@@ -448,14 +454,17 @@ def main(argv=None) -> None:
     stats = {**res["stats"], "requests": http.requests_made - before}
     if res["errors"]:
         stats["problems"] = res["errors"]
+    if res["warnings"]:
+        stats["warnings"] = [w[:200] for w in res["warnings"]]
     if args.dry_run:
         print(json.dumps({**res, "stats": stats}, ensure_ascii=False, indent=1))
         return
     merged, _ = merge_items(prev.get("items") or [], res["items"], drop_missing=True, authoritative=True)
     ok = not res["errors"]
     save_raw(SOURCE, merged, ok=ok, error="; ".join(res["errors"])[:300] if not ok else None, stats=stats)
-    log.info("audio project: %d part(s) read, %d request(s)%s", len(stats["fresh"]), stats["requests"],
-             f" — problems: {res['errors']}" if res["errors"] else "")
+    log.info("audio project: %d part(s) read, %d request(s)%s%s", len(stats["fresh"]), stats["requests"],
+             f" — problems: {res['errors']}" if res["errors"] else "",
+             f" — notes: {res['warnings']}" if res["warnings"] else "")
 
 
 if __name__ == "__main__":

@@ -1,7 +1,7 @@
 {
  "source": "drive",
- "updated": "2026-09-25T08:53:58Z",
- "attempted": "2026-09-25T08:53:58Z",
+ "updated": "2026-09-25T15:11:41Z",
+ "attempted": "2026-09-25T15:11:41Z",
  "ok": true,
  "error": null,
  "stats": {
@@ -30,13 +30,21 @@
   ],
   "skipped_panels": [],
   "folders": 8,
-  "files": 0,
-  "fetched": 0,
+  "files": 6,
+  "fetched": 6,
   "new": 0,
   "removed": 0,
   "kept_unverified": 0,
-  "by_category": {},
-  "by_kind": {},
+  "by_category": {
+   "flyers": 2,
+   "reports": 2,
+   "workshops": 1,
+   "notes": 1
+  },
+  "by_kind": {
+   "document": 4,
+   "photo": 2
+  },
   "albums": {},
   "events_from_flyers": 0,
   "excluded": 1,
@@ -52,6 +60,289 @@
   "truncated": false,
   "warnings": []
  },
- "items": [],
+ "items": [
+  {
+   "id": "drive:1PQk08ukyuVAWKnq1kLRbnURvS1FUyX1i",
+   "source": "drive",
+   "kind": "photo",
+   "url": "https://drive.google.com/file/d/1PQk08ukyuVAWKnq1kLRbnURvS1FUyX1i/view",
+   "title": "Grapevine Editorial - Share your story - Fun in Sobriety and Emotional Sobriety",
+   "summary": "",
+   "lang": "en",
+   "date": "2026-09-25",
+   "first_seen": "2026-09-25T15:09:59Z",
+   "last_seen": "2026-09-25T15:09:59Z",
+   "image": "https://lh3.googleusercontent.com/d/1PQk08ukyuVAWKnq1kLRbnURvS1FUyX1i=w600",
+   "tags": [
+    "panel-77",
+    "jpeg"
+   ],
+   "category": "flyers",
+   "status": "ok",
+   "extra": {
+    "file_id": "1PQk08ukyuVAWKnq1kLRbnURvS1FUyX1i",
+    "mime": "image/jpeg",
+    "name": "Grapevine Editorial - Share your story - Fun in Sobriety and Emotional Sobriety.jpeg",
+    "panel": 77,
+    "panel_label": "Panel 77 (2027–2028)",
+    "path": [
+     "flyers"
+    ],
+    "album": null,
+    "view_url": "https://drive.google.com/file/d/1PQk08ukyuVAWKnq1kLRbnURvS1FUyX1i/view",
+    "preview_url": "https://drive.google.com/file/d/1PQk08ukyuVAWKnq1kLRbnURvS1FUyX1i/preview",
+    "download_url": "https://drive.google.com/uc?export=download&id=1PQk08ukyuVAWKnq1kLRbnURvS1FUyX1i",
+    "thumb_url": "https://lh3.googleusercontent.com/d/1PQk08ukyuVAWKnq1kLRbnURvS1FUyX1i=w600",
+    "image_url": "https://lh3.googleusercontent.com/d/1PQk08ukyuVAWKnq1kLRbnURvS1FUyX1i=w1600",
+    "is_image": true,
+    "is_video": false,
+    "is_pdf": false,
+    "file_type": "JPEG",
+    "folder_id": "1PCtA8C1JzZfZ6kjqJwon__S35JYg1EA8",
+    "folder_url": "https://drive.google.com/drive/folders/1PCtA8C1JzZfZ6kjqJwon__S35JYg1EA8",
+    "folder_chain": [
+     "1cTCFxTujRm-m8Xn0OobJGH2EIWI753S1",
+     "1bebd9TAz1L3LHhbeKUSlcENndtqas5O0",
+     "1PCtA8C1JzZfZ6kjqJwon__S35JYg1EA8"
+    ],
+    "modified_text": "6:34 am"
+   }
+  },
+  {
+   "id": "drive:1NeF9BQOvPOTbb1feiPYykHbjFuZ7iRBJ",
+   "source": "drive",
+   "kind": "photo",
+   "url": "https://drive.google.com/file/d/1NeF9BQOvPOTbb1feiPYykHbjFuZ7iRBJ/view",
+   "title": "Nueva reunión abierta de La Viña - jueves a las 12 p. m. (hora del Este) por Zoom",
+   "summary": "",
+   "lang": "es",
+   "date": "2026-09-25",
+   "first_seen": "2026-09-25T15:09:59Z",
+   "last_seen": "2026-09-25T15:09:59Z",
+   "image": "https://lh3.googleusercontent.com/d/1NeF9BQOvPOTbb1feiPYykHbjFuZ7iRBJ=w600",
+   "tags": [
+    "panel-77",
+    "png"
+   ],
+   "category": "flyers",
+   "status": "ok",
+   "extra": {
+    "file_id": "1NeF9BQOvPOTbb1feiPYykHbjFuZ7iRBJ",
+    "mime": "image/png",
+    "name": "Nueva reunión abierta de La Viña - jueves a las 12 p. m. (hora del Este) por Zoom.png",
+    "panel": 77,
+    "panel_label": "Panel 77 (2027–2028)",
+    "path": [
+     "flyers"
+    ],
+    "album": null,
+    "view_url": "https://drive.google.com/file/d/1NeF9BQOvPOTbb1feiPYykHbjFuZ7iRBJ/view",
+    "preview_url": "https://drive.google.com/file/d/1NeF9BQOvPOTbb1feiPYykHbjFuZ7iRBJ/preview",
+    "download_url": "https://drive.google.com/uc?export=download&id=1NeF9BQOvPOTbb1feiPYykHbjFuZ7iRBJ",
+    "thumb_url": "https://lh3.googleusercontent.com/d/1NeF9BQOvPOTbb1feiPYykHbjFuZ7iRBJ=w600",
+    "image_url": "https://lh3.googleusercontent.com/d/1NeF9BQOvPOTbb1feiPYykHbjFuZ7iRBJ=w1600",
+    "is_image": true,
+    "is_video": false,
+    "is_pdf": false,
+    "file_type": "PNG",
+    "folder_id": "1PCtA8C1JzZfZ6kjqJwon__S35JYg1EA8",
+    "folder_url": "https://drive.google.com/drive/folders/1PCtA8C1JzZfZ6kjqJwon__S35JYg1EA8",
+    "folder_chain": [
+     "1cTCFxTujRm-m8Xn0OobJGH2EIWI753S1",
+     "1bebd9TAz1L3LHhbeKUSlcENndtqas5O0",
+     "1PCtA8C1JzZfZ6kjqJwon__S35JYg1EA8"
+    ],
+    "modified_text": "8:11 am"
+   }
+  },
+  {
+   "id": "drive:18mW_xghlvSL14WBAmas4gG987EeRN7-w",
+   "source": "drive",
+   "kind": "document",
+   "url": "https://drive.google.com/file/d/18mW_xghlvSL14WBAmas4gG987EeRN7-w/view",
+   "title": "Grapevine as a Twelfth Step Tool - Put Them to Work (2026-2027 editorial calendar)",
+   "summary": "",
+   "lang": "en",
+   "date": "2026-09-25",
+   "first_seen": "2026-09-25T15:09:59Z",
+   "last_seen": "2026-09-25T15:09:59Z",
+   "image": "https://lh3.googleusercontent.com/d/18mW_xghlvSL14WBAmas4gG987EeRN7-w=w600",
+   "tags": [
+    "panel-77",
+    "pdf"
+   ],
+   "category": "workshops",
+   "status": "ok",
+   "extra": {
+    "file_id": "18mW_xghlvSL14WBAmas4gG987EeRN7-w",
+    "mime": "application/pdf",
+    "name": "Grapevine as a Twelfth Step Tool - Put Them to Work (2026-2027 editorial calendar).pdf",
+    "panel": 77,
+    "panel_label": "Panel 77 (2027–2028)",
+    "path": [
+     "workshops"
+    ],
+    "album": null,
+    "view_url": "https://drive.google.com/file/d/18mW_xghlvSL14WBAmas4gG987EeRN7-w/view",
+    "preview_url": "https://drive.google.com/file/d/18mW_xghlvSL14WBAmas4gG987EeRN7-w/preview",
+    "download_url": "https://drive.google.com/uc?export=download&id=18mW_xghlvSL14WBAmas4gG987EeRN7-w",
+    "thumb_url": "https://lh3.googleusercontent.com/d/18mW_xghlvSL14WBAmas4gG987EeRN7-w=w600",
+    "image_url": null,
+    "is_image": false,
+    "is_video": false,
+    "is_pdf": true,
+    "file_type": "PDF",
+    "folder_id": "1F-JX93b8nDV3tqx97bYxev2OJpv-XnNt",
+    "folder_url": "https://drive.google.com/drive/folders/1F-JX93b8nDV3tqx97bYxev2OJpv-XnNt",
+    "folder_chain": [
+     "1cTCFxTujRm-m8Xn0OobJGH2EIWI753S1",
+     "1bebd9TAz1L3LHhbeKUSlcENndtqas5O0",
+     "1F-JX93b8nDV3tqx97bYxev2OJpv-XnNt"
+    ],
+    "modified_text": "6:15 am"
+   }
+  },
+  {
+   "id": "drive:1Fs9t4jxeMXemu_FQP-bKc7smr6NZHuiu",
+   "source": "drive",
+   "kind": "document",
+   "url": "https://drive.google.com/file/d/1Fs9t4jxeMXemu_FQP-bKc7smr6NZHuiu/view",
+   "title": "Grapevine Area Chair Meeting Agenda",
+   "summary": "",
+   "lang": "en",
+   "date": "2026-08-11",
+   "first_seen": "2026-09-25T15:09:59Z",
+   "last_seen": "2026-09-25T15:09:59Z",
+   "image": "https://lh3.googleusercontent.com/d/1Fs9t4jxeMXemu_FQP-bKc7smr6NZHuiu=w600",
+   "tags": [
+    "panel-77",
+    "pdf"
+   ],
+   "category": "notes",
+   "status": "ok",
+   "extra": {
+    "file_id": "1Fs9t4jxeMXemu_FQP-bKc7smr6NZHuiu",
+    "mime": "application/pdf",
+    "name": "2026-08-11 Grapevine Area Chair Meeting Agenda.pdf",
+    "panel": 77,
+    "panel_label": "Panel 77 (2027–2028)",
+    "path": [
+     "notes"
+    ],
+    "album": null,
+    "view_url": "https://drive.google.com/file/d/1Fs9t4jxeMXemu_FQP-bKc7smr6NZHuiu/view",
+    "preview_url": "https://drive.google.com/file/d/1Fs9t4jxeMXemu_FQP-bKc7smr6NZHuiu/preview",
+    "download_url": "https://drive.google.com/uc?export=download&id=1Fs9t4jxeMXemu_FQP-bKc7smr6NZHuiu",
+    "thumb_url": "https://lh3.googleusercontent.com/d/1Fs9t4jxeMXemu_FQP-bKc7smr6NZHuiu=w600",
+    "image_url": null,
+    "is_image": false,
+    "is_video": false,
+    "is_pdf": true,
+    "file_type": "PDF",
+    "folder_id": "1jVTdPsLhBK4RUsHqnxuWsrJF0qg9BSnL",
+    "folder_url": "https://drive.google.com/drive/folders/1jVTdPsLhBK4RUsHqnxuWsrJF0qg9BSnL",
+    "folder_chain": [
+     "1cTCFxTujRm-m8Xn0OobJGH2EIWI753S1",
+     "1bebd9TAz1L3LHhbeKUSlcENndtqas5O0",
+     "1jVTdPsLhBK4RUsHqnxuWsrJF0qg9BSnL"
+    ],
+    "modified_text": "6:24 am"
+   }
+  },
+  {
+   "id": "drive:1fC3vvsu0CG-XdUagGDb_fgiwzkqEEfG4",
+   "source": "drive",
+   "kind": "document",
+   "url": "https://drive.google.com/file/d/1fC3vvsu0CG-XdUagGDb_fgiwzkqEEfG4/view",
+   "title": "Grapevine Area Chair Meeting Report",
+   "summary": "",
+   "lang": "en",
+   "date": "2026-08-11",
+   "first_seen": "2026-09-25T15:09:59Z",
+   "last_seen": "2026-09-25T15:09:59Z",
+   "image": "https://lh3.googleusercontent.com/d/1fC3vvsu0CG-XdUagGDb_fgiwzkqEEfG4=w600",
+   "tags": [
+    "panel-77",
+    "pdf"
+   ],
+   "category": "reports",
+   "status": "ok",
+   "extra": {
+    "file_id": "1fC3vvsu0CG-XdUagGDb_fgiwzkqEEfG4",
+    "mime": "application/pdf",
+    "name": "2026-08-11 Grapevine Area Chair Meeting Report.pdf",
+    "panel": 77,
+    "panel_label": "Panel 77 (2027–2028)",
+    "path": [
+     "reports"
+    ],
+    "album": null,
+    "view_url": "https://drive.google.com/file/d/1fC3vvsu0CG-XdUagGDb_fgiwzkqEEfG4/view",
+    "preview_url": "https://drive.google.com/file/d/1fC3vvsu0CG-XdUagGDb_fgiwzkqEEfG4/preview",
+    "download_url": "https://drive.google.com/uc?export=download&id=1fC3vvsu0CG-XdUagGDb_fgiwzkqEEfG4",
+    "thumb_url": "https://lh3.googleusercontent.com/d/1fC3vvsu0CG-XdUagGDb_fgiwzkqEEfG4=w600",
+    "image_url": null,
+    "is_image": false,
+    "is_video": false,
+    "is_pdf": true,
+    "file_type": "PDF",
+    "folder_id": "1JIDosA0bb5PWmY5h_H6MYh5XEXjGMD2r",
+    "folder_url": "https://drive.google.com/drive/folders/1JIDosA0bb5PWmY5h_H6MYh5XEXjGMD2r",
+    "folder_chain": [
+     "1cTCFxTujRm-m8Xn0OobJGH2EIWI753S1",
+     "1bebd9TAz1L3LHhbeKUSlcENndtqas5O0",
+     "1JIDosA0bb5PWmY5h_H6MYh5XEXjGMD2r"
+    ],
+    "modified_text": "6:20 am"
+   }
+  },
+  {
+   "id": "drive:1a54yYQkKPkTffjCeGLD9fFC6r7fL7G9k",
+   "source": "drive",
+   "kind": "document",
+   "url": "https://drive.google.com/file/d/1a54yYQkKPkTffjCeGLD9fFC6r7fL7G9k/view",
+   "title": "Grapevine Area Chair Meeting Report",
+   "summary": "",
+   "lang": "en",
+   "date": "2026-05-12",
+   "first_seen": "2026-09-25T15:09:59Z",
+   "last_seen": "2026-09-25T15:09:59Z",
+   "image": "https://lh3.googleusercontent.com/d/1a54yYQkKPkTffjCeGLD9fFC6r7fL7G9k=w600",
+   "tags": [
+    "panel-77",
+    "pdf"
+   ],
+   "category": "reports",
+   "status": "ok",
+   "extra": {
+    "file_id": "1a54yYQkKPkTffjCeGLD9fFC6r7fL7G9k",
+    "mime": "application/pdf",
+    "name": "2026-05-12 Grapevine Area Chair Meeting Report.pdf",
+    "panel": 77,
+    "panel_label": "Panel 77 (2027–2028)",
+    "path": [
+     "reports"
+    ],
+    "album": null,
+    "view_url": "https://drive.google.com/file/d/1a54yYQkKPkTffjCeGLD9fFC6r7fL7G9k/view",
+    "preview_url": "https://drive.google.com/file/d/1a54yYQkKPkTffjCeGLD9fFC6r7fL7G9k/preview",
+    "download_url": "https://drive.google.com/uc?export=download&id=1a54yYQkKPkTffjCeGLD9fFC6r7fL7G9k",
+    "thumb_url": "https://lh3.googleusercontent.com/d/1a54yYQkKPkTffjCeGLD9fFC6r7fL7G9k=w600",
+    "image_url": null,
+    "is_image": false,
+    "is_video": false,
+    "is_pdf": true,
+    "file_type": "PDF",
+    "folder_id": "1JIDosA0bb5PWmY5h_H6MYh5XEXjGMD2r",
+    "folder_url": "https://drive.google.com/drive/folders/1JIDosA0bb5PWmY5h_H6MYh5XEXjGMD2r",
+    "folder_chain": [
+     "1cTCFxTujRm-m8Xn0OobJGH2EIWI753S1",
+     "1bebd9TAz1L3LHhbeKUSlcENndtqas5O0",
+     "1JIDosA0bb5PWmY5h_H6MYh5XEXjGMD2r"
+    ],
+    "modified_text": "6:13 am"
+   }
+  }
+ ],
  "first_harvest": "2026-09-24T06:47:35Z"
 }

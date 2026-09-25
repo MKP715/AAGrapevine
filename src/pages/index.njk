@@ -243,11 +243,14 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
     link to their pages, so the strip doubles as a quick way in.
     Then the DAILY QUOTE card (db.quote ← scripts/sync/quote.py; homeDailyQuotes): Grapevine's Daily
     Quote and La Viña's Cita Diaria exactly as published, each in its own language (lang set, never
-    translated), the page language's magazine first — side by side from 1024px, stacked below.
-    Each quote shows ITS day; home.js adds "Today" in the visitor's browser when that day is today in
-    Central time. Links: the quote on the official home page and the official e-mail sign-up. No other
-    page repeats it; left out when there is no quote from the last 7 days. -#}
-{%- set quotes = D.quote | homeDailyQuotes(L) -%}
+    translated), the page language's magazine first — side by side from 1024px, stacked below; on
+    phones (< 640px, with JS) only the page language's quote, the other behind one button.
+    Each quote shows ITS day; home.js adds "Today" / "Yesterday" in the visitor's browser (Central time)
+    and, for a quote that is not today's, names the link "Today's quote on …" (the official page has
+    moved on). Links: the quote on the official home page and the official e-mail sign-up (its
+    magazine named for screen readers). No other page repeats it; left out when there is no quote from
+    the last 2 days (two runs a day keep it current). -#}
+{%- set quotes = D.quote | homeDailyQuotes(L, 2) -%}
 {%- set stats = [
   { n: D.pdfs.items.length, key: "home.stat_pdfs", url: "/library/", icon: "file-text", tone: "gv" },
   { n: D.episodes.items.length, key: "home.stat_episodes", url: "/listen/", icon: "headphones", tone: "grape" },
@@ -277,14 +280,18 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
   {% endif %}
   {% if quotes.length %}
   <section class="card home-quote" aria-labelledby="quote-title">
-    <h2 id="quote-title" class="home-under-label">{% icon "quote", "size-4 shrink-0" %} {{ "home.quote_title" | t(L) }}</h2>
-    <div class="home-quote-grid{{ ' is-single' if quotes.length == 1 }}">
+    <h2 id="quote-title" class="home-quote-title">{% icon "quote", "size-4 shrink-0" %} {{ "home.quote_title" | t(L) }}</h2>
+    <div class="home-quote-grid{{ ' is-single' if quotes.length == 1 }}" data-quote-grid>
       {% for q in quotes %}
       {%- set isLv = q.pub == "lv" -%}
-      <article class="home-q home-tone-{{ q.pub }}" aria-labelledby="quote-{{ q.pub }}-mag" data-quote-day="{{ q.date }}">
+      {%- set mag = "La Viña" if isLv else "Grapevine" -%}
+      {% if not loop.first %}
+      <button type="button" class="home-q-toggle btn-ghost btn-sm" aria-expanded="false" aria-controls="quote-{{ q.pub }}" data-quote-toggle>{% icon "chevron-down", "size-4 shrink-0" %}<span>{{ ("home.quote_show_" ~ q.pub) | t(L) }}</span></button>
+      {% endif %}
+      <article id="quote-{{ q.pub }}" class="home-q home-tone-{{ q.pub }}{{ ' is-other' if not loop.first }}" aria-labelledby="quote-{{ q.pub }}-mag" data-quote-day="{{ q.date }}">
         <div class="home-q-head">
-          <h3 id="quote-{{ q.pub }}-mag" class="home-q-mag"{% if isLv and L != "es" %} lang="es"{% endif %}>{{ "La Viña" if isLv else "Grapevine" }}</h3>
-          <p class="home-q-when"><span class="badge-new" data-quote-today hidden>{{ "home.quote_today" | t(L) }}</span><time datetime="{{ q.date }}">{{ q.day }}</time></p>
+          <h3 id="quote-{{ q.pub }}-mag" class="home-q-mag"{% if isLv and L != "es" %} lang="es"{% endif %}>{{ mag }}</h3>
+          <p class="home-q-when"><span class="badge-new" data-quote-today hidden>{{ "home.quote_today" | t(L) }}</span><span class="badge-muted" data-quote-yesterday hidden>{{ "home.quote_yesterday" | t(L) }}</span><time datetime="{{ q.date }}">{{ q.day }}</time></p>
           {% if q.lang != L %}<span class="badge-muted"><span class="uppercase" aria-hidden="true">{{ q.lang }}</span><span class="sr-only">{{ ('lang.' ~ q.lang) | t(L) }}</span></span>{% endif %}
         </div>
         <figure class="home-q-fig">
@@ -297,8 +304,8 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
           {% endif %}
         </figure>
         <p class="home-q-links">
-          <a class="link tap-link" href="{{ q.url }}" target="_blank" rel="noopener">{{ "home.quote_more" | t(L, { host: q.host }) }}<span class="sr-only"> {{ "home.opens_new_tab" | t(L) }}</span></a>
-          {% if q.signup_url %}<a class="link tap-link" href="{{ q.signup_url }}" target="_blank" rel="noopener">{% icon "mail", "size-4 shrink-0" %}{{ "home.quote_email" | t(L) }}<span class="sr-only"> {{ "home.opens_new_tab" | t(L) }}</span></a>{% endif %}
+          <a class="link tap-link" href="{{ q.url }}" target="_blank" rel="noopener"><span data-quote-link="this"{% if not q.fresh %} hidden{% endif %}>{{ "home.quote_more" | t(L, { host: q.host }) }}</span><span data-quote-link="today"{% if q.fresh %} hidden{% endif %}>{{ "home.quote_today_on" | t(L, { host: q.host }) }}</span><span class="sr-only"> {{ "home.opens_new_tab" | t(L) }}</span></a>
+          {% if q.signup_url %}<a class="link tap-link" href="{{ q.signup_url }}" target="_blank" rel="noopener">{% icon "mail", "size-4 shrink-0" %}{{ "home.quote_email" | t(L) }}<span class="sr-only"> ({{ mag }}) {{ "home.opens_new_tab" | t(L) }}</span></a>{% endif %}
         </p>
       </article>
       {% endfor %}

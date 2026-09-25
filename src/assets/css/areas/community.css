@@ -329,12 +329,14 @@
 /*  Record your story by phone (/contribute/#record)                    */
 /* ------------------------------------------------------------------ */
 /* The story line: ONE big tel: link (at least 64px tall, the number in large type) in the magazine's
-   soft tone; the caption above the number uses the strong tone (small text on a soft fill). */
+   soft tone; the caption above the number uses the strong tone (small text on a soft fill). Full width
+   on phones; from 640px only as wide as its content (a wide card never leaves the bar mostly empty). */
 .cm-rec-phone {
   display: flex; align-items: center; gap: 0.875rem; min-height: 4rem; padding: 0.75rem 1.125rem 0.75rem 0.75rem;
   border-radius: 1rem; color: var(--c-ink); text-decoration: none;
   transition: box-shadow 0.15s ease, background-color 0.15s ease;
 }
+@media (width >= 40rem) { .cm-rec-phone { width: fit-content; max-width: 100%; padding-right: 1.75rem; } }
 .cm-rec-phone--gv { background: var(--c-gv-soft); }
 .cm-rec-phone--lv { background: var(--c-lv-soft); }
 .cm-rec-phone:hover { box-shadow: var(--shadow-card); }

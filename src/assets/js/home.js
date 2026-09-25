@@ -9,7 +9,9 @@
    - Published-writers spotlight: recounts the "last 60 days" window with the visitor's own
      date (plain JS, no Alpine needed), so stories drop out on time between daily builds,
      and re-sizes the "see the full list" tile that closes the grid's last row.
-   - Daily quote: shows "Today" next to a quote whose day is today in Central time.
+   - Daily quote: "Today" / "Yesterday" next to each quote (Central time), the link name for a quote
+     that is not today's ("Today's quote on …"), and on phones the button that shows the other
+     magazine's quote.
    The hero art (hero-canvas.js, loaded by base.njk) sizes itself; nothing to do here. */
 (function () {
   "use strict";
@@ -245,16 +247,36 @@
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initSpotlights); else initSpotlights();
 
-  /* Daily quote card: the "Today" badge of a quote whose day (data-quote-day) is today in Central time.
-     The server never says "today" (the page may be read the next morning, before the new quote is on
-     the site); a tab left open overnight is re-checked when it comes back into view. */
+  /* Daily quote card: the "Today" / "Yesterday" badge of each quote (data-quote-day, Central time), and
+     its first link: "Read it on …" for today's quote, "Today's quote on …" for an older one (the
+     official page shows a newer quote by then). The server never says "today" (the page may be read
+     the next morning, before the new quote is on the site); a tab left open overnight is re-checked
+     when it comes back into view. */
   function markQuoteToday() {
-    var today = ymdToday(), quotes = document.querySelectorAll("[data-quote-day]");
+    var today = ymdToday(), yesterday = ymdMinus(today, 1), quotes = document.querySelectorAll("[data-quote-day]");
     for (var i = 0; i < quotes.length; i++) {
-      var badge = quotes[i].querySelector("[data-quote-today]");
-      if (badge) badge.hidden = quotes[i].getAttribute("data-quote-day") !== today;
+      var day = quotes[i].getAttribute("data-quote-day"), isToday = day === today;
+      var t = quotes[i].querySelector("[data-quote-today]"), y = quotes[i].querySelector("[data-quote-yesterday]");
+      if (t) t.hidden = !isToday;
+      if (y) y.hidden = day !== yesterday;
+      var names = quotes[i].querySelectorAll("[data-quote-link]");
+      for (var k = 0; k < names.length; k++) names[k].hidden = (names[k].getAttribute("data-quote-link") === "this") !== isToday;
     }
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", markQuoteToday); else markQuoteToday();
   document.addEventListener("visibilitychange", function () { if (!document.hidden) markQuoteToday(); });
+
+  /* Phones (< 640px): only the page language's quote shows; the button opens the other magazine's
+     (home.css hides it while the card is not .is-open — only with JS, so nothing is ever unreachable). */
+  function initQuoteToggle() {
+    var btns = document.querySelectorAll("[data-quote-toggle]");
+    for (var i = 0; i < btns.length; i++) {
+      btns[i].addEventListener("click", function () {
+        var open = this.getAttribute("aria-expanded") !== "true", grid = this.closest("[data-quote-grid]");
+        this.setAttribute("aria-expanded", open ? "true" : "false");
+        if (grid) grid.classList.toggle("is-open", open);
+      });
+    }
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initQuoteToggle); else initQuoteToggle();
 })();

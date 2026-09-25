@@ -1,6 +1,6 @@
 {
- "generated": "2026-09-25T14:14:44Z",
- "updated": "2026-09-25T14:14:44Z",
+ "generated": "2026-09-25T15:28:42Z",
+ "updated": "2026-09-25T15:28:42Z",
  "fixture": false,
  "sources": [
   {
@@ -8,10 +8,10 @@
    "label": "Google Drive (committee uploads)",
    "label_es": "Google Drive (archivos del comité)",
    "ok": true,
-   "updated": "2026-09-25T08:53:58Z",
-   "attempted": "2026-09-25T08:53:58Z",
-   "count": 0,
-   "new_7d": 0,
+   "updated": "2026-09-25T15:11:41Z",
+   "attempted": "2026-09-25T15:11:41Z",
+   "count": 6,
+   "new_7d": 6,
    "error": null,
    "stats": {
     "mode": "html",
@@ -39,13 +39,21 @@
     ],
     "skipped_panels": [],
     "folders": 8,
-    "files": 0,
-    "fetched": 0,
+    "files": 6,
+    "fetched": 6,
     "new": 0,
     "removed": 0,
     "kept_unverified": 0,
-    "by_category": {},
-    "by_kind": {},
+    "by_category": {
+     "flyers": 2,
+     "reports": 2,
+     "workshops": 1,
+     "notes": 1
+    },
+    "by_kind": {
+     "document": 4,
+     "photo": 2
+    },
     "albums": {},
     "events_from_flyers": 0,
     "excluded": 1,
@@ -441,11 +449,11 @@
   "updated": "2026-09-24T15:25:03Z"
  },
  "translations": {
-  "cached": 1869,
+  "cached": 1868,
   "engine": "argos1.0-ct2/v5",
   "model_enabled": true,
   "translated_this_run": 0,
-  "from_cache": 1869,
+  "from_cache": 1868,
   "pending": 0,
   "rejected_by_guard": 0,
   "seconds": 0.1,
@@ -459,7 +467,7 @@
   "instagram": 28,
   "articles": 226,
   "pdfs": 92,
-  "drive": 0,
+  "drive": 6,
   "editorial": 37,
   "weekly_open": 2,
   "announcements": 0,

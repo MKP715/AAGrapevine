@@ -24,7 +24,10 @@ HOW (one daily run, time-boxed; default 40 min, see config sources.crawler):
      stopped. data/raw/pdfs.json is rebuilt from that state at the end of every run.
 
 The bot is polite: robots.txt is obeyed and the 5-second Crawl-delay is applied across BOTH hosts
-together (they are one server), through the pipeline's shared_session().
+together (they are one server), through the pipeline's shared_session(). A page (or sitemap) that an
+earlier module of the same run already read — the home pages (quote), /BOTM (shop), the sitemap
+(events_external)… — is taken from that session's page memo instead of being requested again, so the
+daily run asks for each page once.
 
     python -m scripts.sync.crawl                      # normal daily run (config minutes)
     python -m scripts.sync.crawl --minutes 240        # long seed crawl
@@ -78,6 +81,7 @@ MAX_KNOWN_PAGES = 8000       # runaway guards for link discovery
 MAX_PER_SECTION = 400        # … per first path segment (e.g. /store/…)
 MAX_REFERRERS = 40
 SAVE_EVERY_S = 120           # checkpoint the state file this often during a run
+LOGIN_PATH_RE = re.compile(r"(^|/)(user|usuario)/(login|inicio-sesion)|/login$")
 
 log = get_logger("crawl")
 
@@ -356,16 +360,22 @@ class Crawler:
                 complete = False       # some child sitemaps unread → don't flag pages as removed
                 continue
             seen_maps.add(sm)
-            r = self.request("GET", sm, timeout=(10, 60), headers={"Accept": "application/xml,text/xml;q=0.9,*/*;q=0.5"})
-            self.c["sitemap_requests"] += 1
-            if r is None or r.status_code != 200:
-                complete = False
-                log.warning("sitemap %s → %s", sm, getattr(r, "status_code", "no response"))
-                continue
+            memo = self.http.remembered(sm)          # already read this run (events_external)
+            if memo is not None:
+                content, status = memo["text"].encode("utf-8"), 200
+                self.c["sitemap_reused"] += 1
+            else:
+                r = self.request("GET", sm, timeout=(10, 60), headers={"Accept": "application/xml,text/xml;q=0.9,*/*;q=0.5"})
+                self.c["sitemap_requests"] += 1
+                if r is None or r.status_code != 200:
+                    complete = False
+                    log.warning("sitemap %s → %s", sm, getattr(r, "status_code", "no response"))
+                    continue
+                content, status = r.content, r.status_code
             try:
                 from lxml import etree
-                root = etree.fromstring(r.content, parser=etree.XMLParser(recover=True, huge_tree=True,
-                                                                          resolve_entities=False, no_network=True))
+                root = etree.fromstring(content, parser=etree.XMLParser(recover=True, huge_tree=True,
+                                                                        resolve_entities=False, no_network=True))
             except Exception as e:
                 complete = False
                 log.warning("sitemap %s unparsable: %s", sm, e)
@@ -399,7 +409,7 @@ class Crawler:
                         d = parse_iso(lm.text.strip())
                         lastmod = to_iso(d) if d else None
                     found[nu] = lastmod
-            meta[sm] = {"fetched": now_iso(), "status": r.status_code}
+            meta[sm] = {"fetched": now_iso(), "status": status}
         if not found:
             self.sitemap_ok = False
             log.warning("sitemap refresh failed — continuing with %d known pages", len(self.pages))
@@ -614,6 +624,9 @@ class Crawler:
             pg.update(status="robots", crawled_at=now)
             self.c["robots_skipped"] += 1
             return
+        memo = self.http.remembered(url) if _host(url) in R.DRUPAL_HOSTS else None
+        if memo is not None and self.crawl_remembered(url, pg, memo, known_before, now):
+            return
         headers = {"Accept": "text/html,application/xhtml+xml;q=0.9,*/*;q=0.5"}
         if pg.get("pv") == PARSER_VERSION and pg.get("status") == 200:
             if pg.get("etag"):
@@ -651,7 +664,7 @@ class Crawler:
                 self._fail(pg, code)
                 return
             fpath = urlsplit(final).path.lower()
-            if re.search(r"(^|/)(user|usuario)/(login|inicio-sesion)|/login$", fpath):
+            if LOGIN_PATH_RE.search(fpath):
                 pg.update(status="login", crawled_at=now, fails=0, next_try=None)
                 return
             if _host(final) not in R.DRUPAL_HOSTS:
@@ -687,6 +700,26 @@ class Crawler:
                 r.close()
             except Exception:
                 pass
+        self.record_page(url, pg, body, final, charset, etag, last_mod, known_before, now)
+
+    def crawl_remembered(self, url: str, pg: dict, memo: dict, known_before: bool, now: str) -> bool:
+        """A page another module already read in this run (the shared session's page memo): parse that
+        copy instead of asking the server again. False when the copy can't stand in for a crawl (it
+        redirected off the magazine hosts or to a login page, or it is not HTML) → the normal GET."""
+        final = R.normalize_page_url(memo.get("url") or url) or url
+        ctype = str((memo.get("headers") or {}).get("Content-Type") or "").lower()
+        if (_host(final) not in R.DRUPAL_HOSTS or LOGIN_PATH_RE.search(urlsplit(final).path.lower())
+                or (ctype and "html" not in ctype and "xml" not in ctype)):
+            return False
+        body = memo["text"].encode("utf-8")[:MAX_PAGE_BYTES]
+        h = memo.get("headers") or {}
+        self.c["pages_reused"] += 1
+        self.record_page(url, pg, body, final, "utf-8", h.get("ETag"), h.get("Last-Modified"), known_before, now)
+        return True
+
+    def record_page(self, url: str, pg: dict, body: bytes, final: str, charset: str | None, etag: str | None,
+                    last_mod: str | None, known_before: bool, now: str) -> None:
+        """A page read (200, HTML): its PDFs and links → the state."""
         title, pdf_links, links = parse_page(body, final, charset)
         pg.update(status=200, crawled_at=now, etag=etag, last_modified=last_mod, title=title[:200],
                   out_links=len(links), fails=0, next_try=None, pv=PARSER_VERSION)
@@ -1139,6 +1172,7 @@ def crawl_stats(st: dict, crawler: Crawler | None, pages_per_run: float) -> dict
         "pdfs_with_thumbs": with_thumbs,
         "last_run_pages": c["pages_fetched"],
         "fetched": c["pages_fetched"],
+        "reused": c["pages_reused"] + c["sitemap_reused"],   # read by an earlier module this run (no request)
         "new": c["new_pdfs"],
         "not_modified": c["not_modified"],
         "page_errors": c["page_errors"],
@@ -1271,7 +1305,8 @@ def print_summary(stats: dict, crawler: Crawler | None, n_items: int) -> None:
         lines += [
             f"  time used              : {crawler.budget.elapsed() / 60:.1f} min of {crawler.budget.limit / 60:.1f}",
             f"  pages fetched          : {c['pages_fetched']} (ok {c['pages_ok']}, not modified {c['not_modified']}, "
-            f"errors {c['page_errors']}, gone {c['pages_gone']})",
+            f"errors {c['page_errors']}, gone {c['pages_gone']}); reused from earlier modules: "
+            f"{c['pages_reused']} page(s), {c['sitemap_reused']} sitemap(s)",
             f"  new pages discovered   : {c['pages_discovered']}  (sitemap: {c['sitemap_urls']} URLs, {c['sitemap_new']} new)",
             f"  PDF downloads (details): {c['details']} (ok {c['details_ok']}), HEAD checks: {c['heads']} "
             f"(vanished {c['vanished_checks']}, periodic {c['periodic_checks']})",

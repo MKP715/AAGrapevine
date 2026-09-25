@@ -157,8 +157,11 @@ class Collect(unittest.TestCase):
     def test_instructions_down_uses_previous_steps(self):
         prev = {"items": A.collect(fetcher(), {"items": []}, CFG)["items"]}
         res = A.collect(fetcher({LV_STEPS: None}), prev, CFG)
-        self.assertEqual(len(res["errors"]), 1)
-        self.assertIn("instructions", res["errors"][0])
+        # both main pages were read today: a note (warning), not a failed source
+        self.assertEqual(res["errors"], [])
+        self.assertEqual(len(res["warnings"]), 1)
+        self.assertTrue(res["warnings"][0].startswith("lv: instructions"))
+        self.assertEqual(res["stats"]["fresh"], ["gv", "lv"])
         lv = next(i for i in res["items"] if i["id"] == "audio:lv")["extra"]
         self.assertEqual(lv["keys"], {"record": "1"})
         self.assertTrue(lv["permission_text"].startswith("Otorgo"))
@@ -187,6 +190,8 @@ class SiteFile(unittest.TestCase):
         doc = B.build_audio_project(FakeCtx(self.env()))
         self.assertEqual(doc["updated"], "2026-09-25T14:09:42Z")
         self.assertEqual(doc["gv"]["tel"], "+15597261216")
+        # both numbers in the site's one style, however each official page writes it
+        self.assertEqual((doc["gv"]["phone"], doc["lv"]["phone"]), ("(559) 726-1216", "(559) 670-1601"))
         self.assertEqual(doc["gv"]["keys"]["finish"], "#")
         self.assertEqual(len(doc["gv"]["playlists"]), 4)
         self.assertNotIn("steps_text", doc["gv"])          # the page words the steps itself

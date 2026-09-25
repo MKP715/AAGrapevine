@@ -22,14 +22,17 @@ split apart ("From:" / "De"), the day (from the heading, year inferred around to
 fetch day when the heading has no date), the official page anchor and the publication's sign-up link.
 
 Cost: ONE page request per publication (+ robots.txt), through the shared polite session (5 s between
-requests to the magazines' server). Runs in the daily update AND in the quick one (run_all QUICK_MODULES):
-the 12:07 UTC scheduled run (.github/workflows/update.yml) is always after 6 AM Texas time.
+requests to the magazines' server) — none when an earlier module of the same run already read that home
+page (the session's page memo; the crawl, later, reuses these copies too). Runs in the daily update AND in
+the quick one (run_all QUICK_MODULES): the 12:07 UTC scheduled run (.github/workflows/update.yml) is always
+after 6 AM Texas time.
 
 Output (docs/DATA_SCHEMA.md → "quote"): items `quote:<pub>:<date>` kind "quote" (the newest quote of each
 publication), and the envelope key `history` = {"gv": [...], "lv": [...]}: the quotes of the last
-HISTORY_DAYS days per publication, newest first, one per day. When a page cannot be fetched or read,
-that publication's previous quote is kept and the run is marked ok=false (→ /status/).
-build_data.py turns it into data/site/quote.json (build_site below).
+HISTORY_DAYS days per publication, newest first, one per day. `history` stays in data/raw only: it is the
+memory behind "a page that shows an older quote than one we already have keeps the newer one". When a page
+cannot be fetched or read, that publication's previous quote is kept and the run is marked ok=false
+(→ /status/). build_data.py turns it into data/site/quote.json (build_site below: the items only).
 
 Run:  python -m scripts.sync.quote [--dry-run] [--only gv|lv] [--html-dir DIR] [--save-html DIR]
 """
@@ -344,12 +347,13 @@ SITE_KEYS = ("id", "pub", "lang", "date", "date_label", "heading", "text", "attr
 
 
 def empty_site(updated: str | None = None) -> dict:
-    return {"updated": updated, "fixture": False, "items": [], "history": {}}
+    return {"updated": updated, "fixture": False, "items": []}
 
 
 def build_site(env: dict) -> dict:
     """data/raw/quote.json → data/site/quote.json: {updated, fixture, items (Grapevine then La Viña, the newest
-    quote of each), history {gv: [...], lv: [...]} (newest first)}. Rows without text or link are left out."""
+    quote of each)}. Rows without text or link are left out. The raw `history` is not copied: nothing on the
+    site shows past quotes (it only guards against a page going back to an older quote — collect())."""
     env = env if isinstance(env, dict) else {}
     doc = empty_site(env.get("updated"))
     by_pub: dict[str, dict] = {}
@@ -369,18 +373,6 @@ def build_site(env: dict) -> dict:
         if pub not in by_pub or row["date"] > by_pub[pub]["date"]:
             by_pub[pub] = row
     doc["items"] = [by_pub[p] for p in PUB_ORDER if p in by_pub]
-    hist = env.get("history") if isinstance(env.get("history"), dict) else {}
-    for pub in PUB_ORDER:
-        rows = []
-        for h in hist.get(pub) or []:
-            if isinstance(h, dict) and clean_text(h.get("text")) and h.get("date"):
-                rows.append({"date": str(h["date"])[:10], "date_label": date_label(h["date"], PUBS[pub]["lang"]),
-                             "heading": clean_text(h.get("heading")), "text": clean_text(h.get("text")),
-                             "attribution": clean_text(h.get("attribution")), "source": clean_text(h.get("source")),
-                             "source_lang": h.get("source_lang"), "url": h.get("url"),
-                             "signup_url": h.get("signup_url")})
-        if rows:
-            doc["history"][pub] = sorted(rows, key=lambda h: h["date"], reverse=True)[:HISTORY_DAYS]
     return doc
 
 
@@ -403,7 +395,7 @@ def main(argv=None) -> None:
         if args.html_dir:
             p = Path(args.html_dir) / f"{pub}.html"
             return p.read_text(encoding="utf-8") if p.exists() else None
-        html = http.get_text(url)                               # one request per page (PoliteSession retries 5xx)
+        html = http.get_text(url)       # at most one request per page per run (the session's page memo; 5xx retried)
         if html and args.save_html:
             Path(args.save_html).mkdir(parents=True, exist_ok=True)
             (Path(args.save_html) / f"{pub}.html").write_text(html, encoding="utf-8")

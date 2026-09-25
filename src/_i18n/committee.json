@@ -896,8 +896,8 @@
     "es": "Anuncios"
   },
   "committee.docs.folders_note": {
-    "en": "These are the folder names on our Drive; Spanish names (informes, notas, presentaciones, talleres, volantes, formularios, fotos, anuncios) work too. Sub-folders are included, and any other folder shows up under its own name. Response spreadsheets and anything marked PRIVATE are never published.",
-    "es": "Estos son los nombres de las carpetas en nuestro Drive; también funcionan en español (informes, notas, presentaciones, talleres, volantes, formularios, fotos, anuncios). Se incluyen las subcarpetas, y cualquier otra carpeta aparece con su propio nombre. Las hojas de respuestas y todo lo marcado como PRIVADO nunca se publican."
+    "en": "These are the folder names on our Drive; Spanish names (informes, notas, presentaciones, talleres, volantes, formularios, fotos, anuncios) work too. Sub-folders are included, and any other folder shows up under its own name. Response spreadsheets and anything marked PRIVATE are left off this site — but anyone with the link can open the Drive folders, so keep private files out of them.",
+    "es": "Estos son los nombres de las carpetas en nuestro Drive; también funcionan en español (informes, notas, presentaciones, talleres, volantes, formularios, fotos, anuncios). Se incluyen las subcarpetas, y cualquier otra carpeta aparece con su propio nombre. Las hojas de respuestas y todo lo marcado como PRIVADO no aparecen en este sitio, pero cualquiera con el enlace puede abrir las carpetas de Drive: no guardes allí archivos privados."
   },
   "committee.docs.cat.reports": {
     "en": "Reports",

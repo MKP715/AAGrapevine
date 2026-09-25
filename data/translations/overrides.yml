@@ -157,7 +157,18 @@
 "Letter about the Grapevine and La Viña Apps Survey": { es: "Carta sobre la encuesta de la aplicación de Grapevine y La Viña" }
 "The Home Group: Heartbeat of AA (30th Anniversary Edition)": { es: "El Grupo Base: Corazón de AA (edición del 30.º aniversario)" }
 
+# Committee Portfolio (Google Drive, Panel 77), written by hand 2026-09-25: "Area Chair" = the
+# Grapevine chair of each Area (coordinador de Área), "Put Them to Work" = the magazine copies.
+"Grapevine Area Chair Meeting Report": { es: "Informe de la reunión de coordinadores de Área de Grapevine" }
+"Grapevine Area Chair Meeting Agenda": { es: "Orden del día de la reunión de coordinadores de Área de Grapevine" }
+"Grapevine Editorial - Share your story - Fun in Sobriety and Emotional Sobriety": { es: "Editorial de Grapevine - Comparte tu historia - La diversión en la sobriedad y la sobriedad emocional" }
+"Grapevine as a Twelfth Step Tool - Put Them to Work (2026-2027 editorial calendar)": { es: "Grapevine como herramienta de Paso Doce - Ponlas a trabajar (calendario editorial 2026-2027)" }
+# Grapevine's "Audio Project" keeps its own name (as on /contribute/#record)
+"GV Audio Project": { es: "Audio Project de GV" }
+
 # --- Spanish → English ------------------------------------------------
+# Committee Portfolio (Google Drive): La Viña's flyer is in Spanish, so is its file name
+"Nueva reunión abierta de La Viña - jueves a las 12 p. m. (hora del Este) por Zoom": { en: "New La Viña Open Meeting - Thursdays at 12 PM Eastern on Zoom" }
 "Tocaron Fondo": { en: "Hitting Bottom" }                  # YouTube playlist
 "Atados por la misma enfermedad": { en: "Bound by the Same Illness" }
 "Reparando relaciones": { en: "Repairing Relationships" }
