@@ -673,7 +673,7 @@ class MultiDay(TempState):
             got = next(e for e in evs if e["id"] == ev["id"])
             self.assertIs(got["extra"]["past"], past, when)
 
-    def test_weekly_email_shows_the_range_the_place_and_the_note(self):
+    def test_monthly_email_shows_the_range_the_place_and_the_note(self):
         from scripts.notify import send_digest as D
         ev = self.manual_events({"2027-06-25-summer.md": (
             'title: "NETA 65 Summer Assembly 2027"\ntitle_es: "Asamblea de Verano 2027 de NETA 65"\nstart: 2027-06-25\n'
@@ -684,12 +684,12 @@ class MultiDay(TempState):
         self.assertEqual(en["when"], "Fri, Jun 25 – Sun, Jun 27 · details to be confirmed")
         self.assertEqual(es["when"], "vie., 25 de jun. – dom., 27 de jun. · detalles por confirmar")
         self.assertEqual((en["where"], es["where"]), ("Venue to be announced", "Lugar por anunciarse"))
-        # … and it stays in the e-mail through Sunday
+        # … and it stays in the monthly e-mail's "coming up" through Sunday
         with mock.patch.object(D, "load_items", lambda name: [ev] if name == "events" else []):
-            data = D.collect(datetime(2027, 6, 27, 20, 0, tzinfo=CHI).astimezone(timezone.utc), 7, 30, 6)
+            data = D.collect(datetime(2027, 6, 27, 20, 0, tzinfo=CHI).astimezone(timezone.utc))   # the June 2027 edition
         self.assertEqual([e["id"] for e in data["events"]], [ev["id"]])
 
-    def test_weekly_email_uses_the_sites_multi_day_rule(self):
+    def test_monthly_email_uses_the_sites_multi_day_rule(self):
         """A timed event that only runs past midnight is ONE day (as on the website: more than 18 hours, or
         all-day over several dates); an end at midnight belongs to the day before."""
         from scripts.notify import send_digest as D

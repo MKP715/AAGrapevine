@@ -66,7 +66,7 @@ tentative: true            # also works: yes, sí
 ```
 
 The event then shows a **"Details to be confirmed" / "Detalles por confirmar"**
-badge on the Events page, the home page, the weekly digest and the search, and
+badge on the Events page, the home page, the monthly digest and the search, and
 people's calendar apps mark it as *tentative*.
 
 **When the details are final**, edit the file: put the real place in `location`

@@ -15,11 +15,31 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <script>
+    // Reading & display settings before the first paint (the "Aa" panel, app.js GV.prefs):
+    // localStorage "gvlv-prefs" = {text: 100|115|130|150, spacing: "normal"|"relaxed",
+    // contrast: "normal"|"high", motion: "auto"|"reduce", saver: "off"|"on"|"auto"} → data-text,
+    // data-spacing, data-contrast, data-motion and data-saver on <html> (main.css reacts to them).
+    // data-saver is "on" for saver "on", or for "auto" (the default) when the browser asks to save
+    // data, the connection is 2G or the device is offline. Blocked storage or bad JSON → the
+    // defaults; the page works either way.
+    (function (d) {
+      var p = {};
+      try { p = JSON.parse(localStorage.getItem("gvlv-prefs") || "{}") || {}; } catch (e) {}
+      var c = navigator.connection || {}, txt = String(p.text);
+      d.setAttribute("data-text", /^(115|130|150)$/.test(txt) ? txt : "100");
+      d.setAttribute("data-spacing", p.spacing === "relaxed" ? "relaxed" : "normal");
+      d.setAttribute("data-contrast", p.contrast === "high" ? "high" : "normal");
+      d.setAttribute("data-motion", p.motion === "reduce" ? "reduce" : "auto");
+      d.setAttribute("data-saver", p.saver === "on" || (p.saver !== "off" && (c.saveData === true || /^(slow-2g|2g)$/.test(c.effectiveType || "") || navigator.onLine === false)) ? "on" : "off");
+    })(document.documentElement);
+  </script>
   <title>{{ fullTitle }}</title>
   <meta name="description" content="{{ desc }}">
-  {%- if pageKey == "404" %}
+  {%- if pageKey == "404" or pageKey == "offline" %}
   {#- "Page not found" is served for every missing address; fetched directly as /404.html it
-      answers 200, so keep it out of search results and don't claim a canonical URL for it. #}
+      answers 200, so keep it out of search results and don't claim a canonical URL for it.
+      The offline page (/offline/) is the service worker's stand-in for pages not saved yet. #}
   <meta name="robots" content="noindex">
   {%- else %}
   <link rel="canonical" href="{{ page.url | siteUrl(site) }}">
@@ -28,7 +48,16 @@
   <link rel="alternate" hreflang="x-default" href="{{ (alt if L == 'es' else page.url) | siteUrl(site) }}">
   {%- endif %}
   <link rel="alternate" type="application/rss+xml" title="{{ 'feeds.rss_title' | t(L) }}" href="{{ '/feed.xml' | lurl(L) }}">
-  <meta name="theme-color" content="#0b3f73">
+  {#- Installable app (src/pages/manifest.11ty.js, sw.11ty.js, assets/js/pwa.js): the manifest of the
+      page's language; address-bar colour = --c-gv-strong (light) / --c-paper (dark) — pwa.js keeps
+      both metas on the site's own theme choice; iPhone/iPad home-screen name and icon. #}
+  <link rel="manifest" href="{{ '/manifest.webmanifest' | lurl(L) }}">
+  <meta name="theme-color" content="#07457c" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#121019" media="(prefers-color-scheme: dark)">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="GV/LV 65">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="{{ siteTitle }} — NETA 65">
   <meta property="og:title" content="{{ fullTitle }}">
@@ -42,7 +71,7 @@
   <link rel="icon" href="/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/logo-32x32.png">
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/img/logo-192x192.png">
-  <link rel="apple-touch-icon" href="/assets/img/logo-180x180.png">
+  <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon-180.png">
   <link rel="preload" href="/assets/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/assets/fonts/fraunces-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
   <script>
@@ -58,9 +87,11 @@
     })();
     window.SITE = { lang: "{{ L }}", base: "{{ '/' | url }}", tz: "{{ site.timezone }}" };
   </script>
-  <link rel="stylesheet" href="/assets/css/main.css">
+  {#- ?v= = build.version (src/_data/build.js, a fingerprint of the site's code): new styles and
+      scripts get a new address, so no cache (browser or service worker) pairs a page with old ones. #}
+  <link rel="stylesheet" href="/assets/css/main.css?v={{ build.version }}">
   {%- for s in pageStyles %}
-  <link rel="stylesheet" href="{{ s }}">
+  <link rel="stylesheet" href="{{ s }}{{ '&' if '?' in s else '?' }}v={{ build.version }}">
   {%- endfor %}
 </head>
 <body class="min-h-screen flex flex-col {{ bodyClass }}">
@@ -75,11 +106,12 @@
 
   {% include "partials/footer.njk" %}
 
-  <script src="/assets/js/app.js" defer></script>
-  <script src="/assets/js/hero-canvas.js" defer></script>
+  <script src="/assets/js/app.js?v={{ build.version }}" defer></script>
+  <script src="/assets/js/pwa.js?v={{ build.version }}" defer></script>
+  <script src="/assets/js/hero-canvas.js?v={{ build.version }}" defer></script>
   {%- for s in pageScripts %}{% if s != "/assets/js/hero-canvas.js" %}
-  <script src="{{ s }}" defer></script>
+  <script src="{{ s }}{{ '&' if '?' in s else '?' }}v={{ build.version }}" defer></script>
   {%- endif %}{% endfor %}
-  <script src="/assets/vendor/alpine.min.js" defer></script>
+  <script src="/assets/vendor/alpine.min.js?v={{ build.version }}" defer></script>
 </body>
 </html>

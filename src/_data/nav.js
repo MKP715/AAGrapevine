@@ -14,6 +14,8 @@ const nav = {
     {
       key: "nav.get_involved", icon: "hand-heart", children: [
         { key: "nav.monthly", url: "/monthly/", icon: "calendar-heart", page: "monthly", descKey: "nav.monthly_desc" },
+        // GVR / RLV 101: six short lessons for new representatives (config/orientation.yml), with slides and a handout.
+        { key: "nav.orientation", url: "/orientation/", icon: "graduation-cap", page: "orientation", descKey: "nav.orientation_desc" },
         { key: "nav.contribute", url: "/contribute/", icon: "pen-line", page: "contribute", descKey: "nav.contribute_desc" },
         { key: "nav.published", url: "/published/", icon: "award", page: "published", descKey: "nav.published_desc" },
         { key: "nav.gvr", url: "/gvr/", icon: "badge-check", page: "gvr", descKey: "nav.gvr_desc" },
@@ -43,6 +45,9 @@ const nav = {
     // from the home page and /photos/.
     { key: "nav.instagram", url: "/instagram/", page: "instagram", icon: "instagram", group: "stay" },
     { key: "nav.about", url: "/about/", page: "about", icon: "info", group: "site" },
+    // Accessibility: the reading settings explained, captions, ASL, audio, joining meetings by phone,
+    // printing (src/pages/accessibility.njk). Also linked from the "Aa" panel.
+    { key: "nav.accessibility", url: "/accessibility/", page: "accessibility", icon: "accessibility", group: "site" },
     { key: "nav.share", url: "/share/", page: "share", icon: "qr-code", group: "site" },
     { key: "nav.search", url: "/search/", page: "search", icon: "search", group: "site" },
     { key: "nav.status", url: "/status/", page: "status", icon: "activity", group: "site" },

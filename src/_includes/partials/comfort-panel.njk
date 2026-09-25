@@ -1,0 +1,77 @@
+{#- Reading & display settings — the "Aa" panel (included by partials/header.njk, right after the
+    <header>, so it is never inside the header's backdrop-filter and #pwa-slot is in the page from
+    the first byte). Opened by the "Aa" buttons (header from 640px, drawer top bar) through
+    Alpine.store("gvlv"); the logic is app.js (gvlvPanel + GV.prefs + GV.tts), the look is
+    areas/access.css (.gvlv-*).
+    A NON-modal dialog: focus moves in when it opens, Escape closes it and puts focus back on the
+    button that opened it (or the Menu button), a click or Tab outside closes it; nothing is trapped.
+    Every choice is a native radio group (arrow keys move and apply), applied live and saved in
+    localStorage "gvlv-prefs" (this device only). Groups, in order: text size · spacing ·
+    contrast · motion · read aloud · data saver · #pwa-slot (filled by the offline-app script,
+    pwa.js: install / save pages for offline / offline status — hidden while empty) · the
+    Accessibility page link + Reset. JS only (hidden without JavaScript, like its buttons). -#}
+{%- set L = lang or "en" -%}
+{% macro seg(name, legendKey, hintKey, icon, options, L) %}
+<fieldset class="gvlv-group">
+  <legend class="gvlv-legend">{% icon icon, "size-4 shrink-0" %}<span>{{ legendKey | t(L) }}</span></legend>
+  <div class="gvlv-seg" data-n="{{ options | length }}">
+    {%- for o in options %}
+    <label class="gvlv-opt"><input type="radio" class="sr-only" name="gvlv-{{ name }}" value="{{ o[0] }}" :checked="String(p.{{ name }}) === '{{ o[0] }}'" @change="set('{{ name }}', $event.target.value)"><span>{{ o[1] | safe }}</span></label>
+    {%- endfor %}
+  </div>
+  {% if hintKey %}<p class="gvlv-hint">{{ hintKey | t(L) }}</p>{% endif %}
+  {{ caller() if caller }}
+</fieldset>
+{% endmacro %}
+<div id="gvlv-panel" class="gvlv-panel" x-data="gvlvPanel" x-show="$store.gvlv.open" x-cloak data-js-only data-tts-skip
+     role="dialog" aria-modal="false" aria-labelledby="gvlv-title" tabindex="-1"
+     @keydown.escape.window="onEscape($event)" @click.outside="onOutside($event)" @focusout="onFocusOut($event)"
+     data-read-now="{{ 'comfort.read_now' | t(L) }}" data-read-paused="{{ 'comfort.read_paused' | t(L) }}" data-read-done="{{ 'comfort.read_done' | t(L) }}"
+     data-read-top="{{ 'comfort.read_top' | t(L) }}" data-read-empty="{{ 'comfort.read_empty' | t(L) }}" data-reset-done="{{ 'comfort.reset_done' | t(L) }}">
+  <div class="gvlv-head">
+    <h2 id="gvlv-title" class="card-h"><span>{% icon "a-large-small", "size-5" %}</span>{{ "comfort.title" | t(L) }}</h2>
+    <button type="button" class="gvlv-close" @click="close(true)" aria-label="{{ 'common.close' | t(L) }}">{% icon "x", "size-5" %}</button>
+  </div>
+  <p class="gvlv-note">{{ "comfort.saved_note" | t(L) }}</p>
+
+  {% call seg("text", "comfort.text", "", "type", [
+    ["100", '<span class="gvlv-a gvlv-a1" aria-hidden="true">A</span><span>100%</span>'],
+    ["115", '<span class="gvlv-a gvlv-a2" aria-hidden="true">A</span><span>115%</span>'],
+    ["130", '<span class="gvlv-a gvlv-a3" aria-hidden="true">A</span><span>130%</span>'],
+    ["150", '<span class="gvlv-a gvlv-a4" aria-hidden="true">A</span><span>150%</span>']
+  ], L) %}
+  <p class="gvlv-preview" aria-hidden="true">{{ "comfort.text_preview" | t(L) }}</p>
+  {% endcall %}
+  {{ seg("spacing", "comfort.spacing", "comfort.spacing_hint", "whole-word", [["normal", "comfort.normal" | t(L)], ["relaxed", "comfort.spacing_relaxed" | t(L)]], L) }}
+  {{ seg("contrast", "comfort.contrast", "comfort.contrast_hint", "contrast", [["normal", "comfort.normal" | t(L)], ["high", "comfort.contrast_high" | t(L)]], L) }}
+  {{ seg("motion", "comfort.motion", "comfort.motion_hint", "sparkles", [["auto", "comfort.motion_auto" | t(L)], ["reduce", "comfort.motion_reduce" | t(L)]], L) }}
+
+  {#- Read aloud: the page's <main> in the page language, paragraph by paragraph (GV.tts) -#}
+  <fieldset class="gvlv-group">
+    <legend class="gvlv-legend">{% icon "volume-2", "size-4 shrink-0" %}<span>{{ "comfort.read" | t(L) }}</span></legend>
+    <div x-show="tts.supported">
+      <div class="gvlv-read">
+        <button type="button" class="btn-primary btn-sm" @click="ttsToggle()" x-ref="ttsMain">
+          <span x-show="tts.state !== 'playing'">{% icon "play", "size-4" %}</span><span x-show="tts.state === 'playing'" x-cloak>{% icon "pause", "size-4" %}</span>
+          <span x-show="tts.state === 'idle'">{{ "comfort.read_play" | t(L) }}</span><span x-show="tts.state === 'playing'" x-cloak>{{ "comfort.read_pause" | t(L) }}</span><span x-show="tts.state === 'paused'" x-cloak>{{ "comfort.read_resume" | t(L) }}</span>
+        </button>
+        <button type="button" class="btn-secondary btn-sm" @click="ttsStop()" :disabled="tts.state === 'idle'" disabled>{% icon "square", "size-4" %} {{ "comfort.read_stop" | t(L) }}</button>
+      </div>
+      <p class="gvlv-status" x-show="statusText()" x-text="statusText()" x-cloak></p>
+      <p class="gvlv-hint">{{ "comfort.read_hint" | t(L) }}</p>
+    </div>
+    <p class="gvlv-hint" x-show="!tts.supported" x-cloak>{{ "comfort.read_none" | t(L) }}</p>
+  </fieldset>
+
+  {% call seg("saver", "comfort.saver", "comfort.saver_hint", "gauge", [["off", "comfort.off" | t(L)], ["on", "comfort.on" | t(L)], ["auto", "comfort.auto" | t(L)]], L) %}
+  <p class="gvlv-status" x-show="p.saver === 'auto' && saverOn" x-cloak>{{ "comfort.saver_active" | t(L) }}</p>
+  {% endcall %}
+
+  {#- The offline-app script (pwa.js) fills this: install the app, save pages for offline, offline status -#}
+  <div id="pwa-slot"></div>
+
+  <div class="gvlv-foot">
+    <a class="gvlv-more" href="{{ '/accessibility/' | lurl(L) }}">{% icon "accessibility", "size-4 shrink-0" %}<span>{{ "comfort.more" | t(L) }}</span></a>
+    <button type="button" class="btn-ghost btn-sm" @click="reset()" :disabled="!$store.gvlv.custom">{% icon "rotate-ccw", "size-4" %} {{ "comfort.reset" | t(L) }}</button>
+  </div>
+</div>

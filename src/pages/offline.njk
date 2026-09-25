@@ -1,0 +1,62 @@
+---
+# The offline page (/offline/ and /es/offline/). The service worker (src/pages/sw.11ty.js) keeps both
+# in its app shell and shows them — in the language of the address asked for — when a page is not
+# saved on this device and there is no connection. It is also "See saved pages" in the Aa menu, so it
+# reads naturally online too: pwa.js swaps the hero to its online wording (data-pwa-offline-copy).
+# The list of saved pages is read from the worker's caches by pwa.js (no JavaScript or no service
+# worker: a plain note instead). Not in the sitemap or the search index; noindex (base.njk).
+pagination: { data: languages, size: 1, alias: lang }
+permalink: "{{ '/' if lang == 'en' else '/es/' }}offline/index.html"
+layout: layouts/base.njk
+pageKey: offline
+titleKey: pwa.offline.page_title
+descKey: pwa.offline.meta_desc
+sitemap: false
+eleventyExcludeFromCollections: true
+---
+{% import "macros/ui.njk" as ui with context %}
+{%- set how = [
+  { icon: "history", tone: "bg-gv-soft text-gv", h: "pwa.offline.how1_h", t: "pwa.offline.how1_t" },
+  { icon: "hard-drive-download", tone: "bg-vine-soft text-vine", h: "pwa.offline.how2_h", t: "pwa.offline.how2_t", save: true },
+  { icon: "smartphone", tone: "bg-grape-soft text-grape", h: "pwa.offline.how3_h", t: "pwa.offline.how3_t", install: true },
+  { icon: "gauge", tone: "bg-lv-soft text-lv", h: "pwa.offline.how4_h", t: "pwa.offline.how4_t" }
+] -%}
+
+{% call ui.pageHero(lang, "pwa.offline.title" | t(lang), "pwa.offline.sub" | t(lang), "", "pwa.offline.eyebrow" | t(lang), { eyebrowIcon: "wifi-off", titleId: "offline-title" }) %}
+<div class="hero-actions" data-pwa-offline-copy
+     data-title-online="{{ 'pwa.offline.title_online' | t(lang) }}" data-sub-online="{{ 'pwa.offline.sub_online' | t(lang) }}"
+     data-home-label="{{ 'pwa.offline.home' | t(lang) }}">
+  {#- No JavaScript (or online): a plain link home. With JavaScript and no connection: reload this address. -#}
+  <a class="btn-light" href="{{ '/' | lurl(lang) }}" data-pwa-retry>{% icon "refresh-cw", "size-4" %} <span>{{ "pwa.offline.retry" | t(lang) }}</span></a>
+</div>
+{% endcall %}
+
+{#- ============ The pages saved on this device (read from the service worker's caches) ============ -#}
+<section class="container-page page-overlap" aria-labelledby="pwa-saved-h">
+  <div class="card card-pad" data-pwa-saved
+       data-t-saved="{{ 'pwa.offline.group_saved' | t(lang) }}" data-t-recent="{{ 'pwa.offline.group_recent' | t(lang) }}">
+    <h2 id="pwa-saved-h" class="card-h"><span>{% icon "hard-drive-download", "size-5" %}</span><span>{{ "pwa.offline.list_h" | t(lang) }}</span></h2>
+    <p class="mt-2 text-sm text-muted" data-js-only data-pwa-saved-status role="status">{{ "pwa.offline.loading" | t(lang) }}</p>
+    <noscript><p class="mt-2 text-sm text-muted">{{ "pwa.offline.nojs" | t(lang) }}</p></noscript>
+    <p class="mt-2 text-sm text-muted" data-pwa-saved-unsupported hidden>{{ "pwa.offline.unsupported" | t(lang) }}</p>
+    <div class="mt-5" data-pwa-saved-empty hidden>{{ ui.emptyState("hard-drive", "pwa.offline.empty_title" | t(lang), "pwa.offline.empty_text" | t(lang)) }}</div>
+    <div class="pwa-saved-groups" data-pwa-saved-list></div>
+  </div>
+</section>
+
+{#- ============ How it works (the four things a visitor can do about a weak signal) ============ -#}
+<section class="section container-page pt-10 sm:pt-12" aria-labelledby="pwa-how-h">
+  {{ ui.sectionHead("pwa.offline.how_h" | t(lang), "pwa.offline.how_sub" | t(lang), "", "", "wifi-low", { eyebrow: "pwa.offline.how_eyebrow" | t(lang), tone: "text-vine", id: "pwa-how-h", lang: lang }) }}
+  <ul class="grid-cards-4" role="list">
+    {% for c in how %}
+    <li class="card card-pad flex flex-col gap-3">
+      <span class="grid size-11 place-items-center rounded-xl {{ c.tone }}">{% icon c.icon, "size-5" %}</span>
+      <h3 class="h-card">{{ c.h | t(lang) }}</h3>
+      <p class="text-sm leading-relaxed text-muted">{{ c.t | t(lang) }}</p>
+      {#- pwa.js: the save button (disabled while offline) / the install button or steps (empty → hidden) -#}
+      {% if c.save %}<div class="pwa-card-slot mt-auto empty:hidden" data-pwa-save></div>{% endif %}
+      {% if c.install %}<div class="pwa-card-slot mt-auto empty:hidden" data-pwa-install></div>{% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+</section>

@@ -347,7 +347,7 @@ pageScripts: ["/assets/js/shop.js"]
           </div>
           {% if ci and ci.cover %}
           <a class="read-cover-frame mt-1 block w-[5.25rem] shrink-0 rotate-2 sm:w-24" href="{{ '/read/' | lurl(lang) }}#{{ p }}-current" title="{{ 'read.subs.see_issue' | t(lang, {issue: ciInSentence}) }}">
-            <img src="{{ ci.cover }}" width="480" height="686" alt="{{ 'read.cover_alt' | t(lang, {pub: ('La Viña' if isLv else 'Grapevine'), issue: ciInSentence}) }}" class="block aspect-[7/10] w-full rounded-[0.3rem] object-cover">
+            <img src="{{ ci.cover }}" width="480" height="686" loading="lazy" alt="{{ 'read.cover_alt' | t(lang, {pub: ('La Viña' if isLv else 'Grapevine'), issue: ciInSentence}) }}" class="block aspect-[7/10] w-full rounded-[0.3rem] object-cover">
           </a>
           {% endif %}
         </div>

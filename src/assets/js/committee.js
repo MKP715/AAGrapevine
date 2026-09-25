@@ -9,7 +9,8 @@
   var LANG = GV.lang || document.documentElement.lang || "en";
   var LOCALE = LANG === "es" ? "es-US" : "en-US";
   var TZ = (window.SITE && window.SITE.tz) || "America/Chicago";
-  var REDUCED = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // The OS setting or the site's own "Reduce motion" (app.js GV.reducedMotion, loaded first)
+  var REDUCED = window.GV && window.GV.reducedMotion ? window.GV.reducedMotion() : (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
   var CM = (window.CM = window.CM || {});
 
   document.documentElement.classList.add("cm-js");

@@ -1,0 +1,613 @@
+# =====================================================================
+#  "GVR / RLV 101" — the orientation for new Grapevine and La Viña
+#  representatives: /orientation/ (lessons, slides, printable handout)
+#  and one page per lesson, /orientation/<id>/. Read by
+#  src/_data/orientation.js (templates see it as orientation.*).
+#
+#  Format
+#  - Every text is a pair:  { en: "English", es: "Español" }  — both are
+#    required (the site build stops if one is missing). Spanish is written
+#    by hand (Latin-American, "tú"); on the Spanish pages La Viña comes first.
+#  - Keep it short: each lesson is read in 5–8 minutes and shown on slides
+#    (a key point is at most about 220 characters).
+#  - Facts only from the official pages (aagrapevine.org / aalavina.org)
+#    or from this site's own data. Never copy the GVR Workbook, the RLV
+#    manual or magazine stories: summarize in your own words and link.
+#  - Placeholders the pages fill in: {rule_lc} = "every third Wednesday of
+#    the month" (from config/site.yml `meeting:`), {time} = the meeting's
+#    time, {panel} = the panel number below, {panel_start} = its first month.
+#  - lessons[].id is also the page address (/orientation/<id>/): keep it
+#    once published. `example` picks the live example the pages show from
+#    the site's data: issue · meeting · tip · botm · deadline · poster.
+#  - links: `href` = a page of this site (no /es/), `link` = a key of
+#    config/site.yml `links:`, or `url` (+ `url_es` for the Spanish page).
+#    `pub: gv | lv` puts La Viña's link first on the Spanish page.
+#  - check: 3 questions, 3 options each; `answer` is the number (1–3) of
+#    the right option, `why` is the one-line explanation shown after it.
+# =====================================================================
+
+panel:
+  number: 77
+  starts: "2027-01"   # the month Panel 77 starts (YYYY-MM)
+
+lessons:
+  # ------------------------------------------------------------------
+  - id: magazines
+    icon: book-open
+    minutes: 5
+    example: issue
+    title:
+      en: "What Grapevine and La Viña are"
+      es: "Qué son La Viña y Grapevine"
+    summary:
+      en: "AA's meeting in print: who publishes it, how often it comes out and the ways to read it."
+      es: "La reunión impresa de AA: quién la publica, cada cuánto sale y las formas de leerla."
+    goal:
+      en: "Explain in one minute what Grapevine and La Viña are, and why they matter to your group."
+      es: "Explicar en un minuto qué son La Viña y Grapevine, y por qué le importan a tu grupo."
+    points:
+      - title:
+          en: "Our meeting in print"
+          es: "Nuestra reunión impresa"
+        text:
+          en: "Both magazines are made of AA members' stories: experience, strength and hope you can carry in your pocket. AA members serving overseas gave Grapevine that name in its first years."
+          es: "Las dos revistas están hechas de historias de miembros de AA: experiencia, fortaleza y esperanza que puedes llevar en el bolsillo. Miembros de AA que servían en el extranjero le dieron ese nombre a Grapevine en sus primeros años."
+      - title:
+          en: "Two magazines, one publisher"
+          es: "Dos revistas, una sola editorial"
+        text:
+          en: "AA Grapevine, Inc. publishes Grapevine in English every month (since 1944) and La Viña in Spanish every two months (since 1996)."
+          es: "AA Grapevine, Inc. publica La Viña en español cada dos meses (desde 1996) y Grapevine en inglés cada mes (desde 1944)."
+      - title:
+          en: "Read it your way"
+          es: "Léela a tu manera"
+        text:
+          en: "In print, online, in the apps, or as audio: podcasts and recorded stories. Each home group can choose what works best for its members."
+          es: "Impresa, en línea, en las aplicaciones o en audio: podcasts e historias grabadas. Cada grupo base puede elegir lo que mejor les sirva a sus miembros."
+      - title:
+          en: "Supported by its readers"
+          es: "La sostienen sus lectores"
+        text:
+          en: "The magazines don't take group contributions. Subscriptions and the sale of books and other items pay their way, so every subscription is also a form of service."
+          es: "Las revistas no reciben contribuciones de los grupos. Se sostienen con las suscripciones y la venta de libros y otros artículos, así que cada suscripción también es una forma de servicio."
+      - title:
+          en: "Many voices, not AA policy"
+          es: "Muchas voces, no la política de AA"
+        text:
+          en: "Each story shares one member's own experience. Stories are not statements of AA policy — which is why they make such good topics for a meeting."
+          es: "Cada historia comparte la experiencia de un miembro. No son declaraciones de la política de AA, y por eso son tan buenos temas para una reunión."
+    try:
+      en: "Hold up this month's issue during announcements and say its theme in one sentence. Offer to lend it after the meeting."
+      es: "Muestra la edición de este mes durante los anuncios y di su tema en una frase. Ofrece prestarla al terminar la reunión."
+    discuss:
+      en: "Which story or issue first made you want to read more?"
+      es: "¿Qué historia o edición te dio ganas de leer más por primera vez?"
+    links:
+      - href: /read/
+        label: { en: "Read the current issues", es: "Lee las ediciones actuales" }
+      - url: "https://www.aagrapevine.org/history-aa-grapevine"
+        pub: gv
+        label: { en: "History of Grapevine (aagrapevine.org)", es: "Historia de Grapevine (aagrapevine.org, en inglés)" }
+      - url: "https://www.aalavina.org/Historia-de-LV"
+        pub: lv
+        label: { en: "History of La Viña (aalavina.org, in Spanish)", es: "Historia de La Viña (aalavina.org)" }
+    check:
+      - q:
+          en: "Who publishes Grapevine and La Viña?"
+          es: "¿Quién publica La Viña y Grapevine?"
+        options:
+          - { en: "Each AA area", es: "Cada área de AA" }
+          - { en: "AA Grapevine, Inc.", es: "AA Grapevine, Inc." }
+          - { en: "Our district committee", es: "Nuestro comité de distrito" }
+        answer: 2
+        why:
+          en: "AA Grapevine, Inc. publishes both magazines. Areas, districts and GVRs help members get to know them."
+          es: "AA Grapevine, Inc. publica las dos revistas. Las áreas, los distritos y los RLV y GVR ayudan a que los miembros las conozcan."
+      - q:
+          en: "How often does a new La Viña come out?"
+          es: "¿Cada cuánto sale una nueva edición de La Viña?"
+        options:
+          - { en: "Every two months", es: "Cada dos meses" }
+          - { en: "Every month", es: "Cada mes" }
+          - { en: "Once a year", es: "Una vez al año" }
+        answer: 1
+        why:
+          en: "La Viña comes out every two months; Grapevine comes out every month."
+          es: "La Viña sale cada dos meses; Grapevine sale cada mes."
+      - q:
+          en: "How are the magazines supported?"
+          es: "¿Cómo se sostienen las revistas?"
+        options:
+          - { en: "With a share of each group's Seventh Tradition", es: "Con una parte de la Séptima Tradición de cada grupo" }
+          - { en: "With grants from outside AA", es: "Con donaciones de fuera de AA" }
+          - { en: "With subscriptions and the sale of books and items", es: "Con las suscripciones y la venta de libros y artículos" }
+        answer: 3
+        why:
+          en: "They don't take group contributions: readers support them through subscriptions and purchases."
+          es: "No reciben contribuciones de los grupos: sus lectores las sostienen con suscripciones y compras."
+
+  # ------------------------------------------------------------------
+  - id: role
+    icon: badge-check
+    minutes: 7
+    example: meeting
+    title:
+      en: "The GVR / RLV role"
+      es: "El servicio de RLV / GVR"
+    summary:
+      en: "What the service is, how to register, and how you connect with your district and our Area."
+      es: "En qué consiste el servicio, cómo registrarte y cómo te conectas con tu distrito y con nuestra Área."
+    goal:
+      en: "Know what your group expects of you, and where to go for help."
+      es: "Saber qué espera tu grupo de ti y a dónde acudir cuando necesites ayuda."
+    points:
+      - title:
+          en: "The link between the magazines and your group"
+          es: "El enlace entre las revistas y tu grupo"
+        text:
+          en: "A GVR (Grapevine) or RLV (La Viña) keeps the magazines alive at the home group: announcing each new issue, inviting members to write and helping them subscribe."
+          es: "El RLV (La Viña) o GVR (Grapevine) mantiene vivas las revistas en el grupo base: anuncia cada edición nueva, invita a los miembros a escribir y les ayuda a suscribirse."
+      - title:
+          en: "Your group chooses you"
+          es: "Tu grupo te elige"
+        text:
+          en: "The group conscience elects its GVR or RLV and decides how long the term lasts. When yours ends, help train the next one — rotation keeps the service fresh."
+          es: "La conciencia de grupo elige a su RLV o GVR y decide cuánto dura el servicio. Cuando termine el tuyo, ayuda a preparar a quien sigue: la rotación mantiene vivo el servicio."
+      - title:
+          en: "Register online"
+          es: "Regístrate en línea"
+        text:
+          en: "Fill in the short form on the official page. Grapevine sends new GVRs a digital kit, and La Viña's resources, including the RLV manual, are free to download."
+          es: "Llena el formulario breve de la página oficial. La Viña ofrece sus recursos, incluido el manual del RLV, para descargar gratis, y Grapevine les envía un kit digital a los nuevos GVR."
+      - title:
+          en: "Group, district, Area"
+          es: "Grupo, distrito y Área"
+        text:
+          en: "You report to your group. Your district brings its GVRs and RLVs together, and our Area's Grapevine / La Viña committee connects the districts with both magazines."
+          es: "Le informas a tu grupo. Tu distrito reúne a sus RLV y GVR, y el comité de La Viña / Grapevine de nuestra Área conecta a los distritos con las dos revistas."
+      - title:
+          en: "Our committee meets every month"
+          es: "Nuestro comité se reúne cada mes"
+        text:
+          en: "The Area committee meets on Zoom {rule_lc}, {time} Central time. Every AA member is welcome, and you don't need to register."
+          es: "El comité del Área se reúne por Zoom {rule_lc}, {time} (hora del Centro). Todos los miembros de AA son bienvenidos y no hace falta registrarse."
+      - title:
+          en: "A new panel in {panel_start}"
+          es: "Un nuevo panel en {panel_start}"
+        text:
+          en: "Panel {panel} of our Area starts in {panel_start}. This site is your toolbox for it: the Monthly toolkit, the district report, resource kits, deadlines and prices."
+          es: "El Panel {panel} de nuestra Área empieza en {panel_start}. Este sitio es tu caja de herramientas: el Kit del mes, el informe para el distrito, los kits de recursos, las fechas límite y los precios."
+    try:
+      en: "At the next business meeting, tell your group you're their new GVR or RLV, then register on the official page that same week."
+      es: "En la próxima reunión de trabajo, cuéntale a tu grupo que eres su nuevo RLV o GVR, y regístrate en la página oficial esa misma semana."
+    discuss:
+      en: "What does your group need most from its GVR or RLV this year?"
+      es: "¿Qué necesita más tu grupo de su RLV o GVR este año?"
+    links:
+      - link: gvr_register
+        pub: gv
+        label: { en: "Register as a GVR (aagrapevine.org)", es: "Regístrate como GVR (aagrapevine.org)" }
+      - link: rlv_register
+        pub: lv
+        label: { en: "Register as an RLV (aalavina.org)", es: "Regístrate como RLV (aalavina.org)" }
+      - href: /gvr/#steps
+        label: { en: "Your first steps (checklist)", es: "Tus primeros pasos (lista)" }
+      - href: /meetings/#committee-meeting
+        label: { en: "Committee meeting details", es: "Detalles de la reunión del comité" }
+    check:
+      - q:
+          en: "Who chooses a group's GVR or RLV?"
+          es: "¿Quién elige al RLV o GVR de un grupo?"
+        options:
+          - { en: "The Area chair", es: "El coordinador del Área" }
+          - { en: "The group conscience", es: "La conciencia de grupo" }
+          - { en: "AA Grapevine, Inc.", es: "AA Grapevine, Inc." }
+        answer: 2
+        why:
+          en: "Each group elects its own representative and decides how long the term lasts."
+          es: "Cada grupo elige a su representante y decide cuánto dura el servicio."
+      - q:
+          en: "What do the magazine offices give new representatives?"
+          es: "¿Qué les dan las oficinas de las revistas a los nuevos representantes?"
+        options:
+          - { en: "A free subscription", es: "Una suscripción gratis" }
+          - { en: "A membership card", es: "Una credencial de miembro" }
+          - { en: "Free service kits and resources", es: "Kits y recursos de servicio gratuitos" }
+        answer: 3
+        why:
+          en: "Registering connects you with the office: Grapevine sends a digital kit, and La Viña's resources are free to download."
+          es: "Al registrarte quedas en contacto con la oficina: los recursos de La Viña se descargan gratis y Grapevine envía un kit digital."
+      - q:
+          en: "When does our Area committee meet?"
+          es: "¿Cuándo se reúne el comité de nuestra Área?"
+        options:
+          - { en: "On Zoom, {rule_lc}", es: "Por Zoom, {rule_lc}" }
+          - { en: "Only at the Area assembly", es: "Solo en la asamblea del Área" }
+          - { en: "Every Sunday morning", es: "Cada domingo por la mañana" }
+        answer: 1
+        why:
+          en: "Every AA member is welcome — bring your questions."
+          es: "Todos los miembros de AA son bienvenidos: trae tus preguntas."
+
+  # ------------------------------------------------------------------
+  - id: literature-table
+    icon: library
+    minutes: 6
+    example: tip
+    title:
+      en: "Your literature table"
+      es: "Tu mesa de literatura"
+    summary:
+      en: "Set up a table people stop at, lend back issues and carry the message with every issue."
+      es: "Arma una mesa donde la gente se detenga, presta ediciones pasadas y lleva el mensaje con cada edición."
+    goal:
+      en: "Turn the magazines on your table into a Twelfth Step tool."
+      es: "Convertir las revistas de tu mesa en una herramienta del Paso Doce."
+    points:
+      - title:
+          en: "A table people stop at"
+          es: "Una mesa donde la gente se detenga"
+        text:
+          en: "Show the current Grapevine and La Viña face up, with a catalog and a few free postcards from the rep kits. Keep it tidy and refresh it every month."
+          es: "Pon a la vista la edición actual de La Viña y de Grapevine, con un catálogo y unas postales gratuitas de los kits para representantes. Mantenla ordenada y renuévala cada mes."
+      - title:
+          en: "Back issues keep working"
+          es: "Las ediciones pasadas siguen sirviendo"
+        text:
+          en: "Older issues are still full of stories. Sort them by theme so a member can find one on sponsorship, the Steps or the holidays."
+          es: "Las ediciones anteriores siguen llenas de historias. Ordénalas por tema para que un miembro encuentre una sobre el apadrinamiento, los Pasos o las fiestas."
+      - title:
+          en: "A lending library"
+          es: "Una biblioteca de préstamo"
+        text:
+          en: "Let members borrow an issue and bring it back, or pass it on to someone who needs it. A simple sign-out sheet with first names only is enough."
+          es: "Deja que los miembros se lleven una edición prestada y la devuelvan, o que se la pasen a quien la necesite. Basta con una hoja sencilla, solo con nombres de pila."
+      - title:
+          en: "Put each issue to work"
+          es: "Pon cada edición a trabajar"
+        text:
+          en: "Our Monthly toolkit gathers 10 ways to carry the message with the magazines — from a newcomer's first copy to a doctor's waiting room — with tips for each month's theme."
+          es: "Nuestro Kit del mes reúne 10 maneras de llevar el mensaje con las revistas —desde el primer ejemplar de un recién llegado hasta la sala de espera de un consultorio—, con ideas para el tema de cada mes."
+      - title:
+          en: "Share with other service work"
+          es: "Compártelas con otros servicios"
+        text:
+          en: "Offer copies to the members who serve in H&I, Corrections, PI or CPC: a magazine can go where a meeting can't."
+          es: "Ofrece ejemplares a los miembros que sirven en H&I, Correccionales, IP o CCP: una revista puede llegar a donde una reunión no llega."
+    try:
+      en: "Pick one of the 10 ways this month and try it, then tell your district how it went."
+      es: "Escoge una de las 10 maneras este mes y ponla en práctica; luego cuéntale a tu distrito cómo te fue."
+    discuss:
+      en: "Where in your town could a magazine reach someone who isn't in AA yet?"
+      es: "¿En qué lugar de tu ciudad podría una revista llegarle a alguien que todavía no está en AA?"
+    links:
+      - href: /monthly/#ways
+        label: { en: "The 10 ways (Monthly toolkit)", es: "Las 10 maneras (Kit del mes)" }
+      - href: /gvr/#kits
+        label: { en: "GVR and RLV resource kits", es: "Kits de recursos para RLV y GVR" }
+      - href: /shop/#catalogs
+        label: { en: "Catalogs in the Shop", es: "Catálogos en la Tienda" }
+    check:
+      - q:
+          en: "What makes a literature table people stop at?"
+          es: "¿Qué hace que la gente se detenga en una mesa de literatura?"
+        options:
+          - { en: "Every back issue, stacked high", es: "Todas las ediciones pasadas, bien apiladas" }
+          - { en: "Current issues face up, a catalog and a few postcards", es: "Las ediciones actuales a la vista, un catálogo y unas postales" }
+          - { en: "A sign asking for donations", es: "Un letrero que pide donaciones" }
+        answer: 2
+        why:
+          en: "A small, current, tidy table invites people in; back issues can go in a lending box."
+          es: "Una mesa pequeña, actual y ordenada invita a acercarse; las ediciones pasadas pueden ir en una caja de préstamo."
+      - q:
+          en: "What does a lending library do?"
+          es: "¿Para qué sirve una biblioteca de préstamo?"
+        options:
+          - { en: "Lets members borrow issues and pass them on", es: "Permite que los miembros tomen ediciones prestadas y las pasen a otros" }
+          - { en: "Sells issues at a discount", es: "Vende ediciones con descuento" }
+          - { en: "Replaces subscriptions", es: "Reemplaza las suscripciones" }
+        answer: 1
+        why:
+          en: "Borrowing puts more stories in more hands, alongside subscriptions."
+          es: "El préstamo pone más historias en más manos, junto con las suscripciones."
+      - q:
+          en: "Where do you find the 10 ways to put an issue to work?"
+          es: "¿Dónde encuentras las 10 maneras de poner una edición a trabajar?"
+        options:
+          - { en: "Only at the Area assembly", es: "Solo en la asamblea del Área" }
+          - { en: "In the Big Book", es: "En el Libro Grande" }
+          - { en: "In the Monthly toolkit on this site", es: "En el Kit del mes de este sitio" }
+        answer: 3
+        why:
+          en: "They're on the Monthly toolkit page, with tips for each month's theme."
+          es: "Están en la página del Kit del mes, con ideas para el tema de cada mes."
+
+  # ------------------------------------------------------------------
+  - id: subscriptions
+    icon: gift
+    minutes: 7
+    example: botm
+    title:
+      en: "Subscriptions and gifts"
+      es: "Suscripciones y regalos"
+    summary:
+      en: "Help members and the group subscribe, give the magazines as gifts and support Carry the Message."
+      es: "Ayuda a los miembros y al grupo a suscribirse, a regalar las revistas y a apoyar Lleva el Mensaje."
+    goal:
+      en: "Know the ways to put the magazines in more hands, and where to send people to buy."
+      es: "Conocer las formas de poner las revistas en más manos y a dónde enviar a la gente para comprar."
+    points:
+      - title:
+          en: "A subscription for the group"
+          es: "Una suscripción para el grupo"
+        text:
+          en: "The group conscience can vote a home-group subscription for the literature table: print, digital or both. The Shop page compares them."
+          es: "La conciencia de grupo puede aprobar una suscripción del grupo base para la mesa de literatura: impresa, digital o ambas. La página de la Tienda las compara."
+      - title:
+          en: "Gifts for someone you know"
+          es: "Regalos para alguien que conoces"
+        text:
+          en: "A gift subscription or gift certificate makes a thoughtful present for a sponsee, a friend or a sobriety anniversary."
+          es: "Una suscripción o un certificado de regalo es un buen obsequio para un ahijado, un amigo o un aniversario de sobriedad."
+      - title:
+          en: "Carry the Message: for someone you don't know"
+          es: "Lleva el Mensaje: para alguien que no conoces"
+        text:
+          en: "Buy a Carry the Message gift and the magazine office gives it to an alcoholic in need, such as someone in prison. Several cost less each, so a group or district can buy them together."
+          es: "Compras un regalo de Lleva el Mensaje y la oficina de la revista se lo entrega a un alcohólico que lo necesita, por ejemplo, a alguien en prisión. Varios salen más baratos por unidad, así que un grupo o distrito puede comprarlos juntos."
+      - title:
+          en: "Book of the Month"
+          es: "Libro del mes"
+        text:
+          en: "Grapevine and La Viña each put a book on sale for a limited time. Mention it during announcements while the offer lasts."
+          es: "La Viña y Grapevine ponen cada una un libro en oferta por tiempo limitado. Menciónalo en los anuncios mientras dure la oferta."
+      - title:
+          en: "Send people to the official stores"
+          es: "Envía a la gente a las tiendas oficiales"
+        text:
+          en: "Orders, renewals and address changes go through the official stores or their customer service. Our Shop page gathers the links, prices and order forms."
+          es: "Los pedidos, las renovaciones y los cambios de dirección se hacen en las tiendas oficiales o con su servicio al cliente. Nuestra página de la Tienda reúne los enlaces, los precios y los formularios de pedido."
+    try:
+      en: "Bring the order forms to the next business meeting and propose one group subscription and one Carry the Message gift."
+      es: "Lleva los formularios de pedido a la próxima reunión de trabajo y propón una suscripción del grupo y un regalo de Lleva el Mensaje."
+    discuss:
+      en: "Who in your community could a Carry the Message gift reach?"
+      es: "¿A quién de tu comunidad podría llegarle un regalo de Lleva el Mensaje?"
+    links:
+      - href: /shop/#subscriptions
+        label: { en: "Subscriptions and prices", es: "Suscripciones y precios" }
+      - href: /shop/#carry
+        label: { en: "Carry the Message in the Shop", es: "Lleva el Mensaje en la Tienda" }
+      - link: carry_the_message
+        pub: gv
+        label: { en: "Carry the Message (aagrapevine.org)", es: "Carry the Message (aagrapevine.org, en inglés)" }
+      - url: "https://www.aalavina.org/lleva-el-mensaje"
+        pub: lv
+        label: { en: "Lleva el Mensaje (aalavina.org, in Spanish)", es: "Lleva el Mensaje (aalavina.org)" }
+    check:
+      - q:
+          en: "What happens with a Carry the Message gift?"
+          es: "¿Qué pasa con un regalo de Lleva el Mensaje?"
+        options:
+          - { en: "You pick the person who gets it", es: "Tú escoges a quien lo recibe" }
+          - { en: "The magazine office gives it to an alcoholic in need", es: "La oficina de la revista se lo da a un alcohólico que lo necesita" }
+          - { en: "It lowers the price of your own subscription", es: "Baja el precio de tu propia suscripción" }
+        answer: 2
+        why:
+          en: "It's for someone you don't know, such as a person in prison; for someone you know, give a regular gift."
+          es: "Es para alguien que no conoces, como una persona en prisión; para alguien que conoces, da un regalo normal."
+      - q:
+          en: "Who decides on a home-group subscription?"
+          es: "¿Quién decide si el grupo base se suscribe?"
+        options:
+          - { en: "The GVR or RLV alone", es: "El RLV o GVR por su cuenta" }
+          - { en: "The district", es: "El distrito" }
+          - { en: "The group conscience", es: "La conciencia de grupo" }
+        answer: 3
+        why:
+          en: "It's the group's money: bring a proposal to the business meeting."
+          es: "Es dinero del grupo: lleva una propuesta a la reunión de trabajo."
+      - q:
+          en: "Where does a member renew a subscription?"
+          es: "¿Dónde renueva un miembro su suscripción?"
+        options:
+          - { en: "At the official store or its customer service", es: "En la tienda oficial o con su servicio al cliente" }
+          - { en: "With the Area treasurer", es: "Con el tesorero del Área" }
+          - { en: "Through this website", es: "En este sitio web" }
+        answer: 1
+        why:
+          en: "This site links to the stores; orders and renewals happen there."
+          es: "Este sitio enlaza a las tiendas; los pedidos y las renovaciones se hacen allí."
+
+  # ------------------------------------------------------------------
+  - id: stories
+    icon: pen-line
+    minutes: 6
+    example: deadline
+    title:
+      en: "Stories, audio and workshops"
+      es: "Historias, audio y talleres"
+    summary:
+      en: "Invite members to write or record their story, and keep the deadlines in view."
+      es: "Invita a los miembros a escribir o grabar su historia, y ten presentes las fechas límite."
+    goal:
+      en: "Help your group see that the magazines are written by members like them."
+      es: "Ayudar a tu grupo a ver que las revistas las escriben miembros como ellos."
+    points:
+      - title:
+          en: "Written by members"
+          es: "Escritas por los miembros"
+        text:
+          en: "Grapevine and La Viña are written by AA members. Both welcome stories, and also photos, artwork and jokes."
+          es: "La Viña y Grapevine las escriben miembros de AA. Las dos reciben historias, y también fotos, dibujos y chistes."
+      - title:
+          en: "Themes and deadlines"
+          es: "Temas y fechas límite"
+        text:
+          en: "Grapevine plans its themes months ahead and closes each one on a deadline; La Viña suggests open topics. Our Share your story page lists what's open now."
+          es: "Grapevine planea sus temas con meses de anticipación y cierra cada uno en una fecha límite; La Viña sugiere temas abiertos. Nuestra página Comparte tu historia muestra lo que está abierto ahora."
+      - title:
+          en: "Record it by phone"
+          es: "Grábala por teléfono"
+        text:
+          en: "Not a writer? A member can record their story by phone for Grapevine's Audio Project or La Viña's \"Graba tu historia\". The steps are on our site."
+          es: "¿No te gusta escribir? Puedes grabar tu historia por teléfono para \"Graba tu historia\" de La Viña o para el Proyecto de Audio de Grapevine. Los pasos están en nuestro sitio."
+      - title:
+          en: "Host a writing workshop"
+          es: "Organiza un taller de escritura"
+        text:
+          en: "A workshop helps members write together and send their stories in. Look for the next one in our events, or plan one with your district."
+          es: "Un taller ayuda a los miembros a escribir juntos y a enviar sus historias. Busca el próximo en nuestros eventos o planea uno con tu distrito."
+      - title:
+          en: "Anonymity for writers"
+          es: "El anonimato de quien escribe"
+        text:
+          en: "Writers usually sign with a first name and last initial, plus their city. Read each magazine's short guidelines together before anyone sends a story."
+          es: "Quien escribe suele firmar con su nombre de pila y la inicial de su apellido, además de su ciudad. Lean juntos la guía breve de cada revista antes de enviar una historia."
+    try:
+      en: "Announce the next deadline and its theme, and invite anyone interested to write for 15 minutes after the meeting."
+      es: "Anuncia la próxima fecha límite y su tema, e invita a quien quiera a escribir 15 minutos al terminar la reunión."
+    discuss:
+      en: "What part of your story could help someone who is where you once were?"
+      es: "¿Qué parte de tu historia podría ayudar a alguien que está donde tú estuviste?"
+    links:
+      - href: /contribute/#deadlines
+        label: { en: "Themes and deadlines", es: "Temas y fechas límite" }
+      - href: /contribute/#record
+        label: { en: "Record your story by phone", es: "Graba tu historia por teléfono" }
+      - href: /contribute/#workshop
+        label: { en: "Host a writing workshop", es: "Organiza un taller de escritura" }
+      - link: gv_guidelines
+        pub: gv
+        label: { en: "Grapevine's guidelines (aagrapevine.org)", es: "Guía de Grapevine (aagrapevine.org, en inglés)" }
+      - link: lv_guidelines
+        pub: lv
+        label: { en: "La Viña's guidelines (aalavina.org, in Spanish)", es: "Guía de La Viña (aalavina.org)" }
+    check:
+      - q:
+          en: "Who writes the stories in Grapevine and La Viña?"
+          es: "¿Quién escribe las historias de La Viña y Grapevine?"
+        options:
+          - { en: "Professional writers", es: "Escritores profesionales" }
+          - { en: "AA members", es: "Miembros de AA" }
+          - { en: "Only the magazines' staff", es: "Solo el personal de las revistas" }
+        answer: 2
+        why:
+          en: "Members write them — which is why every member's story matters."
+          es: "Las escriben los miembros; por eso importa la historia de cada miembro."
+      - q:
+          en: "A member doesn't like to write. What can they do?"
+          es: "A un miembro no le gusta escribir. ¿Qué puede hacer?"
+        options:
+          - { en: "Nothing — only written stories count", es: "Nada: solo cuentan las historias escritas" }
+          - { en: "Ask the GVR or RLV to write it for them", es: "Pedirle al RLV o GVR que la escriba por él" }
+          - { en: "Record their story by phone", es: "Grabar su historia por teléfono" }
+        answer: 3
+        why:
+          en: "Both magazines take recorded stories; the phone steps are on Share your story."
+          es: "Las dos revistas reciben historias grabadas; los pasos por teléfono están en Comparte tu historia."
+      - q:
+          en: "How do writers usually sign their story?"
+          es: "¿Cómo suelen firmar su historia quienes escriben?"
+        options:
+          - { en: "First name, last initial and city", es: "Nombre de pila, inicial del apellido y ciudad" }
+          - { en: "Full name and phone number", es: "Nombre completo y número de teléfono" }
+          - { en: "Their home group's address", es: "La dirección de su grupo base" }
+        answer: 1
+        why:
+          en: "That keeps the writer anonymous while readers know where the story comes from."
+          es: "Así quien escribe mantiene su anonimato y los lectores saben de dónde viene la historia."
+
+  # ------------------------------------------------------------------
+  - id: traditions
+    icon: shield-check
+    minutes: 8
+    example: poster
+    title:
+      en: "The Traditions in practice"
+      es: "Las Tradiciones en la práctica"
+    summary:
+      en: "Anonymity, attraction, group conscience and copyright — and reporting to your district."
+      es: "Anonimato, atracción, conciencia de grupo y derechos de autor, y cómo informar a tu distrito."
+    goal:
+      en: "Carry the message without breaking anyone's anonymity or anyone's copyright."
+      es: "Llevar el mensaje sin romper el anonimato ni los derechos de autor de nadie."
+    points:
+      - title:
+          en: "Anonymity in photos, posters and chats"
+          es: "Anonimato en fotos, carteles y chats"
+        text:
+          en: "No faces or full names of members in photos, posters, flyers or WhatsApp groups. Take pictures of the table, not of the people."
+          es: "Nada de caras ni nombres completos de miembros en fotos, carteles, volantes o grupos de WhatsApp. Fotografía la mesa, no a las personas."
+      - title:
+          en: "Attraction, not promotion"
+          es: "Atracción, no promoción"
+        text:
+          en: "Share what the magazines have done for you, without pushing or selling. AA's public relations rest on attraction (Tradition Eleven)."
+          es: "Comparte lo que las revistas han hecho por ti, sin presionar ni vender. Las relaciones públicas de AA se basan en la atracción (Undécima Tradición)."
+      - title:
+          en: "Your group, your decision"
+          es: "Tu grupo, su decisión"
+        text:
+          en: "Each group is autonomous (Tradition Four). What it buys, shows or gives is decided by its group conscience: bring information and a proposal, and let the group decide."
+          es: "Cada grupo es autónomo (Cuarta Tradición). Lo que compra, muestra o regala lo decide su conciencia de grupo: lleva información y una propuesta, y deja que el grupo decida."
+      - title:
+          en: "Stories are copyrighted"
+          es: "Las historias tienen derechos de autor"
+        text:
+          en: "The stories are copyrighted by AA Grapevine, Inc. Don't photocopy, post or forward whole stories: share the link, the issue itself or the audio."
+          es: "Las historias tienen derechos de autor de AA Grapevine, Inc. No fotocopies, publiques ni reenvíes historias completas: comparte el enlace, la edición o el audio."
+      - title:
+          en: "Report back every month"
+          es: "Informa cada mes"
+        text:
+          en: "Your district wants to hear from you. The monthly GV/LV report on this site is ready to copy, and you can edit it to fit your group."
+          es: "Tu distrito quiere saber de ti. El informe mensual de GV/LV de este sitio está listo para copiar, y puedes editarlo para tu grupo."
+    try:
+      en: "Before the next district meeting, copy this month's report, add one thing your group did and read it in two minutes."
+      es: "Antes de la próxima reunión del distrito, copia el informe de este mes, añade algo que hizo tu grupo y léelo en dos minutos."
+    discuss:
+      en: "How can your group share the magazines online and still protect everyone's anonymity?"
+      es: "¿Cómo puede tu grupo compartir las revistas en línea y proteger el anonimato de todos?"
+    links:
+      - href: /monthly/#report
+        label: { en: "Your monthly GV/LV report", es: "Tu informe mensual de GV/LV" }
+      - href: /contribute/#tips
+        label: { en: "Protecting anonymity when you write", es: "Cuida el anonimato al escribir" }
+      - link: aa_org
+        link_es: aa_org_es
+        label: { en: "Alcoholics Anonymous (aa.org)", es: "Alcohólicos Anónimos (aa.org)" }
+    check:
+      - q:
+          en: "You want to share a photo of your group's literature table. What's the AA way?"
+          es: "Quieres compartir una foto de la mesa de literatura de tu grupo. ¿Cuál es la manera de AA?"
+        options:
+          - { en: "A selfie with the members at the table", es: "Una selfi con los miembros junto a la mesa" }
+          - { en: "A photo of the table with no people in it", es: "Una foto de la mesa sin personas" }
+          - { en: "A group photo with everyone's full names", es: "Una foto del grupo con los nombres completos de todos" }
+        answer: 2
+        why:
+          en: "Photograph the table, not the people: no faces and no full names."
+          es: "Fotografía la mesa, no a las personas: sin caras y sin nombres completos."
+      - q:
+          en: "A story in this month's issue would help a friend. What do you do?"
+          es: "Una historia de la edición de este mes le ayudaría a un amigo. ¿Qué haces?"
+        options:
+          - { en: "Share the link or lend the issue", es: "Compartes el enlace o le prestas la edición" }
+          - { en: "Photocopy it for everyone", es: "La fotocopias para todos" }
+          - { en: "Post the whole story in the group chat", es: "Publicas la historia completa en el chat del grupo" }
+        answer: 1
+        why:
+          en: "The stories are copyrighted by AA Grapevine, Inc.; a link or the issue itself shares them the right way."
+          es: "Las historias tienen derechos de autor de AA Grapevine, Inc.; un enlace o la edición misma las comparte de la manera correcta."
+      - q:
+          en: "What does \"attraction rather than promotion\" mean for a GVR or RLV?"
+          es: "¿Qué significa \"atracción en vez de promoción\" para un RLV o GVR?"
+        options:
+          - { en: "Sell as many subscriptions as you can", es: "Vender todas las suscripciones que puedas" }
+          - { en: "Pay for ads on social media", es: "Pagar anuncios en las redes sociales" }
+          - { en: "Share your own experience with the magazines", es: "Compartir tu propia experiencia con las revistas" }
+        answer: 3
+        why:
+          en: "We invite by example: no pressure and no hard sell."
+          es: "Invitamos con el ejemplo: sin presión y sin insistir en vender."

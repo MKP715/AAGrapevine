@@ -158,8 +158,10 @@ pageScripts: ["/assets/js/committee.js"]
         {% endif %}
       </dl>
 
-      <div class="mt-4">
+      <div class="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2">
         <button type="button" class="btn-secondary" data-copy="{{ m.zoom_url }}">{% icon "link", "size-4" %} {{ "committee.meeting.copy_link" | t(lang) }}</button>
+        {#- no internet or app: the dial-in numbers and steps live on /accessibility/#phone -#}
+        <a class="link tap-link inline-flex items-center gap-1.5 text-sm" href="{{ '/accessibility/' | lurl(lang) }}#phone">{% icon "phone", "size-4 shrink-0" %}{{ "access.join_by_phone" | t(lang) }} <span aria-hidden="true">→</span></a>
       </div>
 
       <ul class="mt-6 grid gap-3 border-t border-line pt-5 text-sm text-muted @3xl:grid-cols-3">
@@ -610,7 +612,7 @@ pageScripts: ["/assets/js/committee.js"]
       </div>
 
       <div class="@container flex flex-1 flex-col p-6 sm:p-7">
-        {% if not sharedZoom %}<div class="mb-5">{{ zoomFields(w.zoomId, w.zoomDigits, w.passcode, ("committee.weekly.copy_id_" + key) | t(lang), ("committee.weekly.copy_passcode_" + key) | t(lang)) }}</div>{% endif %}
+        {% if not sharedZoom %}<div class="mb-5">{{ zoomFields(w.zoomId, w.zoomDigits, w.passcode, ("committee.weekly.copy_id_" + key) | t(lang), ("committee.weekly.copy_passcode_" + key) | t(lang)) }}<p class="mt-2"><a class="link tap-link inline-flex items-center gap-1.5 text-sm" href="{{ '/accessibility/' | lurl(lang) }}#phone">{% icon "phone", "size-4 shrink-0" %}{{ "access.join_by_phone" | t(lang) }} <span aria-hidden="true">→</span></a></p></div>{% endif %}
         <div class="flex flex-wrap gap-2.5">
           {% if w.zoomUrl %}<a class="btn-primary" href="{{ w.zoomUrl }}" target="_blank" rel="noopener" aria-label="{{ ('committee.weekly.join_' + key) | t(lang) }}">{% icon "video", "size-4" %} {{ "committee.meeting.join" | t(lang) }}</a>{% endif %}
           {% if not w.isLv %}<a class="btn-secondary" href="{{ '/listen/?show=wo#episodes' | lurl(lang) }}">{% icon "headphones", "size-4" %} {{ "committee.weekly.listen" | t(lang) }}</a>{% endif %}
@@ -630,6 +632,7 @@ pageScripts: ["/assets/js/committee.js"]
         <span class="min-w-0">
           <span class="block font-semibold text-ink">{{ "committee.weekly.same_zoom" | t(lang) }}</span>
           <span class="mt-0.5 block text-sm text-muted">{{ "committee.weekly.same_zoom_sub" | t(lang) }}</span>
+          <a class="link tap-link mt-1 inline-flex items-center gap-1.5 text-sm" href="{{ '/accessibility/' | lurl(lang) }}#phone">{% icon "phone", "size-4 shrink-0" %}{{ "access.join_by_phone" | t(lang) }} <span aria-hidden="true">→</span></a>
         </span>
       </p>
       {{ zoomFields(wos[0].zoomId, wos[0].zoomDigits, wos[0].passcode, "committee.meeting.copy_id" | t(lang), "committee.meeting.copy_passcode" | t(lang)) }}

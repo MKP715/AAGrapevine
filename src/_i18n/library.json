@@ -672,8 +672,8 @@
     "es": "Quiénes somos y cómo funciona este sitio que se actualiza solo."
   },
   "search.page_desc.digest": {
-    "en": "A weekly summary of everything new, ready to forward to your district.",
-    "es": "Un resumen semanal de todo lo nuevo, listo para reenviar a tu distrito."
+    "en": "A monthly summary: last month's news and this month's dates, ready to forward to your district.",
+    "es": "Un resumen mensual: las novedades del mes pasado y las fechas de este mes, listo para reenviar a tu distrito."
   },
   "search.page_desc.share": {
     "en": "QR codes, links and ready-to-print material to share this site.",
@@ -749,8 +749,8 @@
     "es": "acerca de quiénes somos contacto correo coordinador"
   },
   "search.kw.digest": {
-    "en": "weekly digest email summary newsletter",
-    "es": "resumen semanal correo boletín"
+    "en": "monthly digest email summary newsletter month edition whatsapp",
+    "es": "resumen mensual correo boletín edición del mes whatsapp"
   },
   "search.kw.share": {
     "en": "share kit qr code print poster link",

@@ -1,6 +1,6 @@
 """Offline tests for monthly recurring events: the date rule shared by the committee meeting and
 config/site.yml `recurring_events:` (scripts/sync/meeting.py), the events build_data makes of them
-(scripts/sync/build_data.py) and the weekly e-mail's handling (scripts/notify/send_digest.py).
+(scripts/sync/build_data.py) and the monthly e-mail's handling (scripts/notify/send_digest.py).
 
 The settings are written here, not read from config/site.yml, so the chair can change the real
 booth (or add others) without turning these tests red. No network, no translation model.
@@ -383,7 +383,7 @@ recurring_events:
         self.assertEqual(ev["machine"], [])
 
 
-# --------------------------------------------------------------------------- weekly e-mail
+# --------------------------------------------------------------------------- monthly e-mail
 class DigestEmail(unittest.TestCase):
     def test_booth_listed_once_and_alone_it_is_not_news(self):
         from scripts.notify import send_digest as D
@@ -391,12 +391,12 @@ class DigestEmail(unittest.TestCase):
         with mock.patch.object(B.T, "get_translator", lambda **kw: NoTranslator()), \
                 mock.patch.object(B, "ics_events", lambda c: []):
             events = B.build_events(ctx)
-        now = datetime(2026, 9, 21, 14, 0, tzinfo=timezone.utc)
-        with mock.patch.object(D, "load_items", lambda name: events if name == "events" else []):
-            data = D.collect(now, 7, 60, 6)      # 60 days ahead: Oct 10 AND Nov 14 are in the window
+        now = datetime(2026, 10, 1, 15, 5, tzinfo=timezone.utc)     # the October edition goes out
+        with mock.patch.object(D, "load_items", lambda name: events if name == "events" else []),                 mock.patch.object(D, "load_file", lambda name: {}):
+            data = D.collect(now)                # this month only: Oct 10 (Nov 14 is the next edition's)
         booth = [e for e in data["events"] if e["category"] == "recurring"]
         self.assertEqual([e["id"] for e in booth], ["ev:recurring:citywide-dallas:2026-10-10"])
-        self.assertEqual(D.total_count(data), 0)            # nothing new → no e-mail that week
+        self.assertEqual(D.total_count(data), 0)            # nothing new → no e-mail that month
         row = D.event_row(booth[0], "es", D.Links("https://example.org"))
         self.assertIn("cada mes", row["when"])
         self.assertEqual(row["url"], "https://citywidedallasaa.org")

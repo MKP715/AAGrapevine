@@ -175,6 +175,16 @@ pageScripts: ["/assets/js/read.js"]
         </div>
       </div>
       <p class="mt-5 flex items-start gap-2 text-sm leading-relaxed text-muted">{% icon "users-round", "mt-0.5 size-4 shrink-0 text-vine" %}<span><strong class="text-ink">{{ "read.gvr.who_t" | t(lang) }}</strong> {{ "read.gvr.who" | t(lang) }}</span></p>
+      {#- GVR / RLV 101 (/orientation/): the lessons for new representatives — the first stop for someone new -#}
+      <div class="card card-link group relative mt-6 flex items-start gap-4 p-5">
+        <span class="grid size-12 shrink-0 place-items-center rounded-xl bg-grape-soft text-grape">{% icon "graduation-cap", "size-6" %}</span>
+        <div class="min-w-0 flex-1">
+          <p class="eyebrow text-grape">{{ "orientation.gvr_eyebrow" | t(lang) }}</p>
+          <h3 class="h-card mt-1"><a class="no-underline after:absolute after:inset-0 after:rounded-[var(--radius-card)] group-hover:text-gv" href="{{ '/orientation/' | lurl(lang) }}">{{ "orientation.gvr_title" | t(lang) }}</a></h3>
+          <p class="mt-1 text-sm leading-relaxed text-muted">{{ "orientation.gvr_text" | t(lang, { min: orientation.totalMinutes }) }}</p>
+        </div>
+        {% icon "arrow-right", "mt-1 size-5 shrink-0 text-gv transition group-hover:translate-x-0.5" %}
+      </div>
     </div>
     <div class="@container">
     <ul class="grid grid-cols-1 gap-4 @md:grid-cols-2 @4xl:grid-cols-3" role="list">

@@ -638,7 +638,7 @@
           this.setShow(key);
           var el = document.getElementById("episodes");
           if (!el) return;
-          var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+          var reduce = window.GV && window.GV.reducedMotion ? window.GV.reducedMotion() : (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
           el.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
         },
         /* show card "Play the latest": plays here; modifier-clicks keep the link (episode page) */

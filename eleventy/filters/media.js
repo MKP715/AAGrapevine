@@ -357,6 +357,7 @@ export default function (eleventyConfig, helpers) {
     };
     const art = (item.extra && item.extra.thumb) || item.image;
     if (art && (!meta || art !== meta.image)) o.i = safeUrl(art, null);
+    if (Number(x.audio_bytes) > 0) o.b = Math.round(Number(x.audio_bytes)); // audio file size — shown while Data saver is on (pwa.js)
     if (item.is_new) o.n = 1;
     if (machine(item, lang)) o.m = 1;
     return o;

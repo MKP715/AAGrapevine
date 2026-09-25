@@ -1846,7 +1846,7 @@ def local_day(ctx: Ctx, v: Any) -> str | None:
 
 
 def article_pub_date(ctx: Ctx, it: dict) -> str:
-    """The day a magazine story counts as published, for the 60/90-day windows and the weekly digest:
+    """The day a magazine story counts as published, for the 60/90-day windows and the monthly digest:
     the EARLIER of the first day of its issue (La Viña's bimonthly "Septiembre / Octubre" issue →
     September 1) and the day we first saw it online (`first_seen`, site time zone) — never after today.
     It does not move: the October issue seen online on September 16 counts from September 16, also

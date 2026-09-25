@@ -1,0 +1,236 @@
+/* Area styles: access — the "Aa" Reading & display panel (partials/comfort-panel.njk, on every
+   page), the read-aloud highlight, the header's larger-text fallbacks, and the /accessibility/
+   page. Owned by the reading-comfort agent. What the settings DO to the whole site (text scale,
+   relaxed spacing, high contrast, reduced motion) lives in main.css ("READING & DISPLAY
+   SETTINGS"); what data saver does belongs to the offline-app code. Classes: "gvlv-" (panel),
+   "tts-" (read aloud), "ax-" (the page). */
+
+/* ------------------------------------------------------------------ */
+/*  The "Aa" panel — a non-modal dialog under the header, at the right */
+/*  edge of the page container (phones: the full width, 8px margins).  */
+/*  It scrolls on its own when taller than the window (150% text).     */
+/* ------------------------------------------------------------------ */
+.gvlv-panel {
+  position: fixed; z-index: 50;
+  top: calc(var(--header-h) + env(safe-area-inset-top, 0px) + 0.5rem);
+  right: max(0.5rem, calc(max(0px, (100% - var(--container-page)) / 2) + var(--gutter) - 0.5rem));
+  width: min(25rem, calc(100% - 1rem));
+  max-height: calc(100dvh - var(--header-h) - env(safe-area-inset-top, 0px) - 1rem);
+  overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin;
+  padding: 1rem 1.25rem 1.25rem;
+  border: 1px solid var(--c-line); border-radius: var(--radius-card);
+  background: var(--c-surface); color: var(--c-ink);
+  box-shadow: var(--shadow-lift), 0 24px 48px -24px rgb(20 16 40 / 0.35);
+}
+.gvlv-panel:focus { outline: none; }          /* focus lands on its first control; the box itself is not a control */
+@media (width < 40rem) { .gvlv-panel { left: 0.5rem; right: 0.5rem; width: auto; } }
+
+.gvlv-head { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; }
+.gvlv-close { display: grid; place-items: center; flex-shrink: 0; width: 2.75rem; height: 2.75rem; margin-right: -0.5rem;
+  border-radius: 9999px; color: var(--c-muted); }
+.gvlv-close:hover { background: var(--c-surface-2); color: var(--c-ink); }
+.gvlv-note { margin-top: 0.25rem; font-size: 0.8125rem; line-height: 1.45; color: var(--c-muted); }
+
+/* One group per setting: a divider, the legend (icon + name), the choices, a one-line hint.
+   The legend floats so it lays out like a normal block (a fieldset's legend otherwise sits on
+   the border line). */
+.gvlv-group { min-width: 0; margin: 1rem 0 0; padding: 1rem 0 0; border: 0; border-top: 1px solid var(--c-line); }
+.gvlv-legend { float: left; width: 100%; display: flex; align-items: center; gap: 0.5rem; margin: 0 0 0.625rem; padding: 0;
+  font-size: 0.875rem; font-weight: 600; color: var(--c-ink); }
+.gvlv-legend > svg { color: var(--c-gv); }
+.gvlv-group > :not(legend) { clear: both; }
+
+/* Segmented choices (native radios: arrow keys move AND apply). The options share one row and
+   wrap onto a second one when a label doesn't fit (Spanish, 150% text) — never clipped. */
+.gvlv-seg { display: flex; flex-wrap: wrap; gap: 0.25rem; padding: 0.25rem; border-radius: 0.875rem; background: var(--c-surface-2); }
+.gvlv-opt { position: relative; flex: 1 1 auto; min-width: 0; }
+.gvlv-opt > span { display: flex; min-height: 2.75rem; align-items: center; justify-content: center; gap: 0.375rem;
+  padding: 0.375rem 0.75rem; border-radius: 0.625rem; cursor: pointer; text-align: center;
+  font-size: 0.875rem; font-weight: 600; line-height: 1.2; color: var(--c-muted); transition: background-color 0.15s, color 0.15s; }
+.gvlv-opt:hover > span { color: var(--c-ink); }
+.gvlv-opt:has(:checked) > span { background: var(--c-surface); color: var(--c-gv); box-shadow: 0 1px 2px rgb(20 16 40 / 0.14), inset 0 0 0 2px var(--c-gv); }
+.gvlv-opt:has(:focus-visible) > span { outline: 3px solid var(--c-gv); outline-offset: 2px; }
+:root[data-contrast="high"] .gvlv-opt:has(:focus-visible) > span { outline-width: 4px; }
+/* Text size: four equal columns, the "A" (growing like the setting) over the percentage */
+.gvlv-seg[data-n="4"] { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.gvlv-seg[data-n="4"] .gvlv-opt > span { flex-direction: column; gap: 0.125rem; padding-inline: 0.25rem; }
+.gvlv-a { font-family: var(--font-display); font-weight: 600; line-height: 1; color: inherit; }
+.gvlv-a1 { font-size: 0.8rem; } .gvlv-a2 { font-size: 0.95rem; } .gvlv-a3 { font-size: 1.1rem; } .gvlv-a4 { font-size: 1.28rem; }
+.gvlv-preview { margin-top: 0.625rem; font-family: var(--font-display); font-size: 1.0625rem; line-height: 1.35; color: var(--c-ink); }
+
+.gvlv-hint { margin-top: 0.5rem; font-size: 0.8125rem; line-height: 1.45; color: var(--c-muted); }
+.gvlv-status { margin-top: 0.5rem; font-size: 0.8125rem; font-weight: 600; line-height: 1.45; color: var(--c-ink); overflow-wrap: anywhere; }
+.gvlv-read { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.gvlv-read > * { flex: 1 1 auto; }
+
+/* Filled by the offline-app script (pwa.js); hidden while empty, so no blank band */
+#pwa-slot { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--c-line); }
+#pwa-slot:empty { display: none; }
+
+.gvlv-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.25rem 1rem;
+  margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid var(--c-line); }
+.gvlv-more { display: inline-flex; min-height: 2.75rem; align-items: center; gap: 0.5rem; font-size: 0.875rem; font-weight: 600;
+  color: var(--c-gv); text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--c-gv) 40%, transparent); text-underline-offset: 3px; }
+.gvlv-more:hover { text-decoration-color: currentColor; }
+
+/* The dot on the "Aa" buttons: a setting differs from the defaults, or the page is being read */
+.gvlv-dot { position: absolute; top: 0.4rem; right: 0.4rem; width: 0.5rem; height: 0.5rem; border-radius: 9999px;
+  background: var(--c-lv); box-shadow: 0 0 0 2px var(--c-surface); pointer-events: none; }
+.site-header .gvlv-dot { box-shadow: 0 0 0 2px #fff; }
+:root[data-theme="dark"] .site-header .gvlv-dot { box-shadow: 0 0 0 2px var(--c-paper); }
+
+/* ------------------------------------------------------------------ */
+/*  Read aloud: the chunk being read — a highlighter stroke (dark text  */
+/*  on pale yellow), readable on any background, both themes.          */
+/* ------------------------------------------------------------------ */
+.tts-current { background-color: #fff1a8 !important; box-shadow: 0 0 0 0.3em #fff1a8; border-radius: 0.2em; }
+.tts-current, .tts-current * { color: #1d1a26 !important; text-shadow: none !important; }
+@media print {
+  .tts-current { background: none !important; box-shadow: none !important; }
+  .gvlv-panel { display: none !important; }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Larger text on phones and small tablets (below 768px): the header  */
+/*  row (logo, name, search, language, menu) keeps its 100% size — it  */
+/*  is drawn to just fit a 320px phone, its buttons are already 44px   */
+/*  touch targets, and bigger it would push the name into the buttons. */
+/*  --header-h follows, so the hero padding, anchors and the panel     */
+/*  still line up under it. The drawer, the panel and the page keep    */
+/*  the larger text.                                                   */
+/* ------------------------------------------------------------------ */
+@media (width < 48rem) {
+  :root[data-text="115"] { --chrome-zoom: 0.8696; }
+  :root[data-text="130"] { --chrome-zoom: 0.7692; }
+  :root[data-text="150"] { --chrome-zoom: 0.6667; }
+  :root:is([data-text="115"], [data-text="130"], [data-text="150"]) { --header-h: calc(4rem * var(--chrome-zoom)); }
+  :root:is([data-text="115"], [data-text="130"], [data-text="150"]) .site-header { zoom: var(--chrome-zoom); }
+}
+
+/* From 640px the site name sits on one line with the committee line under it, cut with "…" when
+   short of room — with larger text it may wrap instead (never cut). */
+:root:is([data-text="115"], [data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .site-logo [class*="truncate"] {
+  overflow: visible; white-space: normal; text-overflow: clip; }
+
+/* ------------------------------------------------------------------ */
+/*  Larger text / relaxed spacing: the desktop nav needs more than the */
+/*  1280px it gets at 100%, so it waits for a wider window and the     */
+/*  Menu button + drawer stay in use until then (media queries keep    */
+/*  the browser's 16px rem). Measured, EN + ES, nothing truncated or   */
+/*  wrapped — the nav fits from:                                       */
+/*    normal spacing   100% 1248px · 115% 1440 · 130% 1616 · 150% 1872 */
+/*    relaxed spacing  100% 1408px · 115% 1632 · 130% 1840 · 150% 2112 */
+/*  → shown from (rem):     80 · 92 · 104 · 120  /  90 · 104 · 116 · 134 */
+/* ------------------------------------------------------------------ */
+@media (width >= 80rem) {
+  :root:is([data-text="115"], [data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .site-nav { display: none; }
+  :root:is([data-text="115"], [data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .site-menu-btn { display: grid; }
+  :root:is([data-text="115"], [data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .site-drawer { display: block; }
+}
+@media (width >= 90rem) {
+  :root[data-text="100"][data-spacing="relaxed"] .site-nav { display: flex; }
+  :root[data-text="100"][data-spacing="relaxed"] :is(.site-menu-btn, .site-drawer) { display: none; }
+}
+@media (width >= 92rem) {
+  :root[data-text="115"]:not([data-spacing="relaxed"]) .site-nav { display: flex; }
+  :root[data-text="115"]:not([data-spacing="relaxed"]) :is(.site-menu-btn, .site-drawer) { display: none; }
+}
+@media (width >= 104rem) {
+  :root:is([data-text="130"]:not([data-spacing="relaxed"]), [data-text="115"][data-spacing="relaxed"]) .site-nav { display: flex; }
+  :root:is([data-text="130"]:not([data-spacing="relaxed"]), [data-text="115"][data-spacing="relaxed"]) :is(.site-menu-btn, .site-drawer) { display: none; }
+}
+@media (width >= 116rem) {
+  :root[data-text="130"][data-spacing="relaxed"] .site-nav { display: flex; }
+  :root[data-text="130"][data-spacing="relaxed"] :is(.site-menu-btn, .site-drawer) { display: none; }
+}
+@media (width >= 120rem) {
+  :root[data-text="150"]:not([data-spacing="relaxed"]) .site-nav { display: flex; }
+  :root[data-text="150"]:not([data-spacing="relaxed"]) :is(.site-menu-btn, .site-drawer) { display: none; }
+}
+@media (width >= 134rem) {
+  :root[data-text="150"][data-spacing="relaxed"] .site-nav { display: flex; }
+  :root[data-text="150"][data-spacing="relaxed"] :is(.site-menu-btn, .site-drawer) { display: none; }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Larger text (130%+) or relaxed spacing: components of other pages  */
+/*  whose columns were drawn for 100% text get fewer, wider columns.   */
+/*  (The site-wide rules — words that wrap, text columns that move     */
+/*  under their picture, one-column grids on phones — are in main.css.)*/
+/* ------------------------------------------------------------------ */
+@media (width < 40rem) {
+  /* page heroes: the title gets the whole width (the icon tile would squeeze it) */
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .gv-hero-icon { display: none; }
+  /* Library quick collections, Search "Explore" tiles: one per row */
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) :is(.lib-cols, .ss-browse) { grid-template-columns: minmax(0, 1fr); }
+}
+@media (width >= 40rem) and (width < 80rem) {
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) :is(.lib-cols, .ss-browse) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) :is(.lib-cols, .ss-browse) > :last-child:nth-child(odd) { grid-column: 1 / -1; }
+}
+@media (width >= 80rem) {
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .lib-cols { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .lib-cols > :last-child:nth-child(3n+1) { grid-column: 1 / -1; }
+}
+@media (width < 48rem) {
+  /* "Add to calendar" dropdowns (Events, Meetings): the menu opens in the flow, under its button,
+     so it can't reach past the edge of the screen */
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .cm-menu-panel { position: static; margin-top: 0.4rem; min-width: 0; }
+  /* Listen: the YouTube Short above its text instead of beside it */
+  :root:is([data-text="150"], [data-spacing="relaxed"]) .listen-short { grid-template-columns: minmax(0, 1fr); }
+  :root:is([data-text="150"], [data-spacing="relaxed"]) .listen-short-video { grid-row: auto; justify-self: start; width: min(100%, 10rem); }
+}
+@media (width < 96rem) {
+  /* Share kit: the QR code over its links (the two side by side leave the links a sliver) */
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) [class*="md:grid-cols-[minmax(0,20rem)_minmax(0,1fr)]"] { grid-template-columns: minmax(0, 1fr); }
+}
+/* Countdowns (Home, Meetings): a number never splits; four tiles become 2 × 2 on phones */
+:root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) :is(.home-count-n, .cm-tile-num) { white-space: nowrap; overflow-wrap: normal !important; }
+@media (width < 40rem) {
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) :is(.home-meet-count, .cm-tiles) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  /* Home "On this site" numbers: one per row */
+  :root:is([data-text="150"], [data-spacing="relaxed"]) .home-stats { grid-template-columns: minmax(0, 1fr); }
+}
+@media (width >= 40rem) and (width < 96rem) {
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .home-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+/* Events: the date strip, and the "Add to calendar" button and its menu, wrap inside their card */
+:root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .cm-date-strip { flex-wrap: wrap; white-space: normal; max-width: 100%; }
+:root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .cm-menu { min-width: 0; max-width: 100%; }
+:root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) :is(.cm-menu > summary, .cm-menu-panel > a, .cm-menu-panel > button, .cm-pinned-actions > a) { white-space: normal !important; }
+/* Monthly toolkit: tips beside their number, month thumbnails' labels */
+@media (width < 48rem) { :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .mp-tiplist { grid-template-columns: minmax(0, 1fr); } }
+:root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .mp-tiplist > li > :last-child { min-width: 0; flex: 1 1 0%; }
+:root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .mp-thumb-label > * { min-width: 0; white-space: normal; }
+/* Listen: the Short's app links */
+:root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .listen-short-links .media-plat { white-space: normal; }
+@media (width < 40rem) {
+  /* big display headings (a magazine's name on its cover, the page title) stay within the width
+     of a phone: they are capped at about 10% of the screen width */
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) main :is(.text-3xl, .text-4xl, .text-5xl, .h-display) { font-size: min(var(--text-3xl), 9.5vw); }
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) main :is(.text-4xl, .text-5xl, .h-display) { font-size: min(var(--text-4xl), 10.5vw); }
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .gv-hero-title { font-size: min(2rem, 10.5vw); }
+  /* Library list view: the text takes the card's width (the page thumbnail would squeeze it) */
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .lib-results[data-view="list"] .lib-media { display: none; }
+}
+/* Meetings: a meeting time chip ("7:00 PM · Open") may wrap inside */
+:root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .cm-gvg-time { flex-wrap: wrap; white-space: normal; }
+
+/* ------------------------------------------------------------------ */
+/*  /accessibility/ — "ax-"                                            */
+/* ------------------------------------------------------------------ */
+.ax-list { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.875rem; }
+.ax-list > li { display: flex; gap: 0.75rem; align-items: flex-start; }
+.ax-list > li > .step-num { margin-top: 0.1rem; }
+.ax-keys { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; }
+.ax-key { display: inline-flex; align-items: center; gap: 0.5rem; }
+/* Joining by phone: how to dial · the numbers · the keys. One column on narrow cards; two (the
+   steps over the keys, the numbers beside them) on medium; three side by side on wide cards. */
+.ax-dial { display: grid; gap: 2rem; grid-template-areas: "steps" "numbers" "keys"; }
+.ax-dial-steps { grid-area: steps; } .ax-dial-numbers { grid-area: numbers; } .ax-dial-keys { grid-area: keys; }
+@container (width >= 44rem) { .ax-dial { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-areas: "steps numbers" "keys numbers"; column-gap: 3rem; } }
+@container (width >= 60rem) { .ax-dial { grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) minmax(0, 1fr); grid-template-areas: "steps numbers keys"; } }
+kbd.ax-kbd, .ax-list kbd { display: inline-flex; min-width: 2.25rem; align-items: center; justify-content: center; padding: 0.125rem 0.5rem;
+  border: 1px solid var(--c-line); border-bottom-width: 2px; border-radius: 0.5rem; background: var(--c-surface);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.875rem; font-weight: 700; color: var(--c-ink); }
+.ax-num { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-weight: 600; letter-spacing: 0.02em; }

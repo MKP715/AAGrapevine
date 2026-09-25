@@ -35,6 +35,7 @@
 // search index as if no content had been synced yet (to check empty states).
 import { openSync, readSync, closeSync, readFileSync } from "node:fs";
 import path from "node:path";
+import orientationData from "../../src/_data/orientation.js"; // GVR / RLV 101 lessons (config/orientation.yml)
 
 const EMPTY = () => !!process.env.LIB_EMPTY;
 // Only real web links (or site-relative paths) ever reach an href/src.
@@ -728,6 +729,21 @@ export function searchIndex(db, nav, lang, helpers, site) {
     push({
       id: "report:monthly", k: "page", t: T("community.report.title"), tl: lang, s: T("community.report.sub"),
       x: both("search.kw.report"), u: "/monthly/#report", src: "site", ic: "clipboard-list",
+    });
+  }
+  /* ---- GVR / RLV 101: each lesson has a page of its own (/orientation/<id>/), found by its title in
+     both languages, its key points and "orientation" / "orientación" (config/orientation.yml) ---- */
+  if (seenPage.has("/orientation/")) {
+    safely("orientation", () => {
+      const other = lang === "es" ? "en" : "es";
+      const txt = (p, l = lang) => squish(String((p && (p[l] || p.en)) || "").replace(/\{\w+\}/g, ""));
+      for (const l of orientationData().lessons || []) {
+        push({
+          id: "orientation:" + l.id, k: "page", t: `${T("nav.orientation")} · ${txt(l.title)}`, tl: lang, s: txt(l.summary),
+          x: [txt(l.title, other), both("search.kw.orientation"), ...(l.points || []).flatMap((p) => [txt(p.title), txt(p.title, other)])].join(" "),
+          u: `/orientation/${l.id}/`, src: "site", ic: l.icon || "graduation-cap",
+        });
+      }
     });
   }
   if (EMPTY() || !db) return out;

@@ -1,0 +1,236 @@
+{
+  "orientation.meta_desc": {
+    "en": "GVR / RLV 101: six short bilingual lessons for new Grapevine and La Viña representatives, with slides for your district and a printable handout.",
+    "es": "RLV / GVR 101: seis lecciones breves y bilingües para nuevos representantes de La Viña y Grapevine, con diapositivas para tu distrito y una hoja para imprimir."
+  },
+  "orientation.eyebrow": { "en": "Get involved · Orientation", "es": "Participa · Orientación" },
+  "orientation.hero_sub": {
+    "en": "Six short lessons for new Grapevine and La Viña representatives — read, present or print them.",
+    "es": "Seis lecciones breves para nuevos representantes de La Viña y Grapevine: léelas, preséntalas o imprímelas."
+  },
+  "orientation.start": { "en": "Start lesson 1", "es": "Empieza la lección 1" },
+  "orientation.continue": { "en": "Continue: lesson {n}", "es": "Sigue con la lección {n}" },
+  "orientation.review": { "en": "Review lesson 1", "es": "Repasa la lección 1" },
+  "orientation.present": { "en": "Present as slides", "es": "Presentar diapositivas" },
+  "orientation.handout": { "en": "Printable handout", "es": "Hoja para imprimir" },
+  "orientation.stat_lessons": { "en": "lessons", "es": "lecciones" },
+  "orientation.stat_minutes": { "en": "minutes in all", "es": "minutos en total" },
+  "orientation.stat_checks": { "en": "self-check questions", "es": "preguntas de repaso" },
+
+  "orientation.welcome_eyebrow": { "en": "Panel {panel} · starts {start}", "es": "Panel {panel} · empieza en {start}" },
+  "orientation.welcome_title": { "en": "Welcome to the service", "es": "Te damos la bienvenida al servicio" },
+  "orientation.welcome_text": {
+    "en": "New to Grapevine / La Viña service? Thank you for saying yes. These lessons cover the basics in about {min} minutes: take them one at a time on your phone, or go through them together at a district meeting.",
+    "es": "¿Empiezas en el servicio de La Viña / Grapevine? Gracias por decir que sí. Estas lecciones cubren lo básico en unos {min} minutos: tómalas una por una en tu teléfono o repásenlas juntos en una reunión del distrito."
+  },
+  "orientation.progress_label": { "en": "Lessons done", "es": "Lecciones terminadas" },
+  "orientation.progress": { "en": "{n} of {total} lessons done on this device", "es": "{n} de {total} lecciones terminadas en este dispositivo" },
+  "orientation.progress_all": { "en": "All done — thank you for your service!", "es": "¡Todo listo! Gracias por tu servicio." },
+  "orientation.progress_reset": { "en": "Start over", "es": "Empezar de nuevo" },
+  "orientation.saved_note": {
+    "en": "Your progress is saved only in this browser, on this device. Nothing is sent anywhere.",
+    "es": "Tu avance se guarda solo en este navegador, en este dispositivo. No se envía nada a ninguna parte."
+  },
+
+  "orientation.lessons_eyebrow": { "en": "The lessons", "es": "Las lecciones" },
+  "orientation.lessons_title": { "en": "Six short lessons", "es": "Seis lecciones breves" },
+  "orientation.lessons_sub": {
+    "en": "5 to 8 minutes each, with three quick questions at the end. Take them in order, or go straight to what you need.",
+    "es": "De 5 a 8 minutos cada una, con tres preguntas rápidas al final. Tómalas en orden o ve directo a lo que necesitas."
+  },
+  "orientation.lesson_n": { "en": "Lesson {n}", "es": "Lección {n}" },
+  "orientation.lesson_n_of": { "en": "Lesson {n} of {total}", "es": "Lección {n} de {total}" },
+  "orientation.minutes": { "en": "{n} min", "es": "{n} min" },
+  "orientation.minutes_long": { "en": "{n} minutes", "es": "{n} minutos" },
+  "orientation.done": { "en": "Done", "es": "Terminada" },
+  "orientation.start_lesson": { "en": "Start the lesson", "es": "Empezar la lección" },
+  "orientation.review_lesson": { "en": "Review the lesson", "es": "Repasar la lección" },
+
+  "orientation.use_eyebrow": { "en": "Present or print", "es": "Presentar o imprimir" },
+  "orientation.use_title": { "en": "Take it to your district", "es": "Llévalo a tu distrito" },
+  "orientation.use_sub": {
+    "en": "The same lessons as a slide show for a projector, or as a handout for members without a phone.",
+    "es": "Las mismas lecciones como diapositivas para un proyector o como hoja impresa para quien no tiene teléfono."
+  },
+  "orientation.slides_text": {
+    "en": "All six lessons in full screen, with large type, questions to ask the room and a QR code to this page at the end. Once the page has loaded, the slides work without internet.",
+    "es": "Las seis lecciones en pantalla completa, con letra grande, preguntas para hacerle al grupo y un código QR de esta página al final. Una vez cargada la página, las diapositivas funcionan sin internet."
+  },
+  "orientation.keys_title": { "en": "Keyboard", "es": "Teclado" },
+  "orientation.kbd_space": { "en": "Space", "es": "Espacio" },
+  "orientation.kbd_home": { "en": "Home", "es": "Inicio" },
+  "orientation.kbd_end": { "en": "End", "es": "Fin" },
+  "orientation.key_next": { "en": "next", "es": "siguiente" },
+  "orientation.key_prev": { "en": "back", "es": "anterior" },
+  "orientation.key_ends": { "en": "first / last", "es": "primera / última" },
+  "orientation.key_full": { "en": "full screen", "es": "pantalla completa" },
+  "orientation.key_exit": { "en": "exit", "es": "salir" },
+  "orientation.slides_touch": { "en": "On a touch screen, swipe or tap the sides of the slide.", "es": "En una pantalla táctil, desliza o toca los lados de la diapositiva." },
+  "orientation.slides_nojs": {
+    "en": "The slide show needs JavaScript turned on. The lessons and the handout work without it.",
+    "es": "Las diapositivas necesitan JavaScript activado. Las lecciones y la hoja impresa funcionan sin él."
+  },
+  "orientation.handout_text": {
+    "en": "One sheet per lesson: the key points, an idea for your group, the self-check and the links, with a QR code to the lesson.",
+    "es": "Una hoja por lección: los puntos clave, una idea para tu grupo, las preguntas de repaso y los enlaces, con un código QR de la lección."
+  },
+  "orientation.handout_btn": { "en": "Print the handout", "es": "Imprimir la hoja" },
+  "orientation.handout_note": {
+    "en": "Your browser's Print command prints this page as the handout, too.",
+    "es": "El comando Imprimir de tu navegador también imprime esta página como la hoja."
+  },
+
+  "orientation.trainers_eyebrow": { "en": "For trainers", "es": "Para quien presenta" },
+  "orientation.trainers_title": { "en": "Run a {n}-minute district orientation", "es": "Da una orientación de {n} minutos en tu distrito" },
+  "orientation.trainers_sub": {
+    "en": "A simple plan that fits a district meeting: the slides, the handout and time for questions.",
+    "es": "Un plan sencillo que cabe en una reunión del distrito: las diapositivas, la hoja impresa y tiempo para preguntas."
+  },
+  "orientation.plan_title": { "en": "The plan", "es": "El plan" },
+  "orientation.plan_lessons": { "en": "Lessons {a}–{b}", "es": "Lecciones {a} a {b}" },
+  "orientation.plan1_t": { "en": "Welcome", "es": "Bienvenida" },
+  "orientation.plan1": {
+    "en": "Start on the title slide. Ask who is new to the service and which magazine they will carry.",
+    "es": "Empieza con la diapositiva del título. Pregunta quién es nuevo en el servicio y qué revista va a llevar."
+  },
+  "orientation.plan2": {
+    "en": "The magazines, the role and the literature table. For each self-check, read the question, let the room answer, then show the answer.",
+    "es": "Las revistas, el servicio y la mesa de literatura. En cada pregunta de repaso, léela, deja que el grupo responda y luego muestra la respuesta."
+  },
+  "orientation.plan3": {
+    "en": "Subscriptions and gifts, stories and audio, and the Traditions. The \"This month\" boxes show live examples from this site.",
+    "es": "Suscripciones y regalos, historias y audio, y las Tradiciones. Los recuadros \"Este mes\" muestran ejemplos en vivo de este sitio."
+  },
+  "orientation.plan4_t": { "en": "Close", "es": "Cierre" },
+  "orientation.plan4": {
+    "en": "Show the QR code, invite everyone to register and to our next committee meeting, and hand out the sheets.",
+    "es": "Muestra el código QR, invita a todos a registrarse y a la próxima reunión del comité, y reparte las hojas."
+  },
+  "orientation.before_title": { "en": "Before you start", "es": "Antes de empezar" },
+  "orientation.before1": { "en": "A laptop with this page open, and a projector or TV", "es": "Una computadora con esta página abierta y un proyector o una televisión" },
+  "orientation.before2": { "en": "Present as slides, then F for full screen", "es": "Presentar diapositivas y luego F para pantalla completa" },
+  "orientation.before3": { "en": "The printed handout: one sheet per lesson", "es": "La hoja impresa: una por lección" },
+  "orientation.before4": { "en": "A current issue of each magazine to pass around", "es": "Una edición actual de cada revista para pasar de mano en mano" },
+  "orientation.anon_note": {
+    "en": "Please don't take photos of the people in the room. If you pass a sign-in sheet, first names only.",
+    "es": "Por favor, no tomes fotos de las personas presentes. Si pasas una hoja de asistencia, solo nombres de pila."
+  },
+
+  "orientation.next_title": { "en": "Keep going", "es": "Sigue adelante" },
+  "orientation.next_sub": { "en": "Where to go after the lessons.", "es": "A dónde ir después de las lecciones." },
+  "orientation.ns_gvr": { "en": "The first-steps checklist, the official kits and ideas for your group.", "es": "La lista de primeros pasos, los kits oficiales e ideas para tu grupo." },
+  "orientation.ns_gvr_cta": { "en": "See your first steps", "es": "Ver tus primeros pasos" },
+  "orientation.ns_monthly": { "en": "This month's themes, poster and your report for the district.", "es": "Los temas de este mes, el cartel y tu informe para el distrito." },
+  "orientation.ns_monthly_cta": { "en": "Open the toolkit", "es": "Abrir el kit" },
+  "orientation.ns_meeting_t": { "en": "Our committee meeting", "es": "La reunión de nuestro comité" },
+  "orientation.ns_meeting_cta": { "en": "Get the Zoom details", "es": "Ver los datos de Zoom" },
+  "orientation.ns_contribute": { "en": "Open themes, deadlines and how to record a story by phone.", "es": "Temas abiertos, fechas límite y cómo grabar una historia por teléfono." },
+  "orientation.ns_contribute_cta": { "en": "See the deadlines", "es": "Ver las fechas límite" },
+
+  "orientation.lesson_eyebrow": { "en": "GVR / RLV 101 · Lesson {n} of {total}", "es": "RLV / GVR 101 · Lección {n} de {total}" },
+  "orientation.all_lessons": { "en": "See all lessons", "es": "Ver todas las lecciones" },
+  "orientation.present_lesson": { "en": "Present this lesson", "es": "Presentar esta lección" },
+  "orientation.goal": { "en": "Goal", "es": "Objetivo" },
+  "orientation.points_eyebrow": { "en": "Key points", "es": "Puntos clave" },
+  "orientation.points_title": { "en": "What to know", "es": "Lo que hay que saber" },
+  "orientation.try_title": { "en": "Try this at your group", "es": "Pruébalo en tu grupo" },
+  "orientation.discuss_title": { "en": "Talk it over", "es": "Para conversar" },
+  "orientation.live_badge": { "en": "Live example", "es": "Ejemplo en vivo" },
+  "orientation.live_title": { "en": "This month on this site", "es": "Este mes en este sitio" },
+  "orientation.links_title": { "en": "Learn more", "es": "Para saber más" },
+  "orientation.check_eyebrow": { "en": "Self-check", "es": "Repaso" },
+  "orientation.check_title": { "en": "Check what you learned", "es": "Comprueba lo que aprendiste" },
+  "orientation.check_sub": {
+    "en": "Three quick questions with instant feedback. Nothing is sent anywhere.",
+    "es": "Tres preguntas rápidas con respuesta al instante. No se envía nada a ninguna parte."
+  },
+  "orientation.q_n": { "en": "Question {n}", "es": "Pregunta {n}" },
+  "orientation.fb_right": { "en": "Right!", "es": "¡Correcto!" },
+  "orientation.fb_wrong": { "en": "Not quite — try another answer.", "es": "No exactamente: prueba otra respuesta." },
+  "orientation.see_answer": { "en": "See the answer", "es": "Ver la respuesta" },
+  "orientation.answer_is": { "en": "Answer: {letter}.", "es": "Respuesta: {letter}." },
+  "orientation.check_status": { "en": "{n} of 3 answered correctly", "es": "{n} de 3 respuestas correctas" },
+  "orientation.lesson_done": { "en": "Lesson complete — saved on this device.", "es": "Lección terminada: quedó guardada en este dispositivo." },
+  "orientation.aside_title": { "en": "Your lessons", "es": "Tus lecciones" },
+  "orientation.current": { "en": "current lesson", "es": "lección actual" },
+  "orientation.prev": { "en": "Previous lesson", "es": "Lección anterior" },
+  "orientation.next": { "en": "Next lesson", "es": "Lección siguiente" },
+  "orientation.prevnext_label": { "en": "Previous and next lesson", "es": "Lección anterior y siguiente" },
+  "orientation.back_hub": { "en": "Back to all lessons", "es": "Volver a todas las lecciones" },
+  "orientation.finish_title": { "en": "You reached the last lesson", "es": "Llegaste a la última lección" },
+  "orientation.finish_text": {
+    "en": "Present all six at your district, or print the handout for your group.",
+    "es": "Presenta las seis en tu distrito o imprime la hoja para tu grupo."
+  },
+
+  "orientation.live_issue_label": { "en": "This month's issues", "es": "Las ediciones de este mes" },
+  "orientation.live_issue_none": { "en": "The current issues are on the Read page.", "es": "Las ediciones actuales están en la página Leer." },
+  "orientation.live_read": { "en": "Read the current issues", "es": "Lee las ediciones actuales" },
+  "orientation.live_meeting_label": { "en": "Next committee meeting", "es": "Próxima reunión del comité" },
+  "orientation.live_meeting_sub": { "en": "{time} · Zoom · every AA member welcome", "es": "{time} · Zoom · todos los miembros de AA son bienvenidos" },
+  "orientation.live_gvm": { "en": "Our Area has {n} Grapevine meetings: AA meetings that use Grapevine or La Viña.", "es": "Nuestra Área tiene {n} reuniones de Grapevine: reuniones de AA que usan La Viña o Grapevine." },
+  "orientation.live_gvm_one": { "en": "Our Area has 1 Grapevine meeting: an AA meeting that uses Grapevine or La Viña.", "es": "Nuestra Área tiene 1 reunión de Grapevine: una reunión de AA que usa La Viña o Grapevine." },
+  "orientation.live_meeting_link": { "en": "Meeting details", "es": "Detalles de la reunión" },
+  "orientation.live_tip_label": { "en": "Put the {month} issue to work", "es": "Pon a trabajar la edición de {month}" },
+  "orientation.live_tip_theme": { "en": "Grapevine theme: {theme}", "es": "Tema de Grapevine: {theme}" },
+  "orientation.live_tip_link": { "en": "Open this month's toolkit", "es": "Abrir el kit de este mes" },
+  "orientation.live_tip_none": { "en": "The 10 ways are in the Monthly toolkit.", "es": "Las 10 maneras están en el Kit del mes." },
+  "orientation.live_ways_link": { "en": "Read the 10 ways", "es": "Lee las 10 maneras" },
+  "orientation.live_botm_label": { "en": "Book of the Month", "es": "Libro del mes" },
+  "orientation.live_botm_price": { "en": "{sale} instead of {price}, until {date}", "es": "{sale} en vez de {price}, hasta el {date}" },
+  "orientation.live_botm_pct": { "en": "{pct}% off until {date}", "es": "{pct} % de descuento hasta el {date}" },
+  "orientation.live_subs_from": { "en": "Subscriptions start at {price} a month.", "es": "Las suscripciones empiezan en {price} al mes." },
+  "orientation.live_botm_link": { "en": "See the offer", "es": "Ver la oferta" },
+  "orientation.live_botm_none": { "en": "This month's offers are in the Shop.", "es": "Las ofertas de este mes están en la Tienda." },
+  "orientation.live_shop_link": { "en": "Open the Shop", "es": "Abrir la Tienda" },
+  "orientation.live_deadline_label": { "en": "Next Grapevine story deadline", "es": "Próxima fecha límite de Grapevine" },
+  "orientation.live_deadline_sub": { "en": "Send it by {date} for the {issue} issue.", "es": "Envíala antes del {date} para la edición de {issue}." },
+  "orientation.live_deadline_link": { "en": "See every theme and deadline", "es": "Ver todos los temas y fechas" },
+  "orientation.live_deadline_none": { "en": "Open themes and deadlines are on Share your story.", "es": "Los temas abiertos y las fechas límite están en Comparte tu historia." },
+  "orientation.live_poster_label": { "en": "The {month} poster", "es": "El cartel de {month}" },
+  "orientation.live_poster_text": {
+    "en": "No names and no faces — ready to print, pin up at your meeting or share in a group chat.",
+    "es": "Sin nombres ni caras: listo para imprimir, colgar en tu reunión o compartir en un chat de grupo."
+  },
+  "orientation.live_poster_link": { "en": "Open the poster", "es": "Abrir el cartel" },
+
+  "orientation.deck_label": { "en": "GVR / RLV 101 presentation", "es": "Presentación de RLV / GVR 101" },
+  "orientation.deck_slide": { "en": "slide", "es": "diapositiva" },
+  "orientation.deck_prev": { "en": "Previous slide", "es": "Diapositiva anterior" },
+  "orientation.deck_next": { "en": "Next slide", "es": "Diapositiva siguiente" },
+  "orientation.deck_full": { "en": "Full screen", "es": "Pantalla completa" },
+  "orientation.deck_full_exit": { "en": "Exit full screen", "es": "Salir de pantalla completa" },
+  "orientation.deck_exit": { "en": "Exit", "es": "Salir" },
+  "orientation.deck_exit_label": { "en": "Exit the presentation", "es": "Salir de la presentación" },
+  "orientation.deck_live": { "en": "Slide {n} of {total}: {title}", "es": "Diapositiva {n} de {total}: {title}" },
+  "orientation.deck_agenda_eyebrow": { "en": "Today", "es": "Hoy" },
+  "orientation.deck_agenda_title": { "en": "Six lessons, about {n} minutes", "es": "Seis lecciones, unos {n} minutos" },
+  "orientation.deck_part": { "en": "{a} of {b}", "es": "{a} de {b}" },
+  "orientation.deck_check": { "en": "Self-check · question {n} of {total}", "es": "Repaso · pregunta {n} de {total}" },
+  "orientation.deck_show": { "en": "Show the answer", "es": "Mostrar la respuesta" },
+  "orientation.deck_hide": { "en": "Hide the answer", "es": "Ocultar la respuesta" },
+  "orientation.deck_correct": { "en": "correct answer", "es": "respuesta correcta" },
+  "orientation.deck_close_title": { "en": "Thank you for your service", "es": "Gracias por tu servicio" },
+  "orientation.deck_close_register": { "en": "Register as a GVR or RLV", "es": "Regístrate como RLV o GVR" },
+  "orientation.deck_close_steps": { "en": "Your first steps", "es": "Tus primeros pasos" },
+  "orientation.deck_close_meeting": { "en": "Next committee meeting", "es": "Próxima reunión del comité" },
+  "orientation.deck_close_monthly": { "en": "This month's toolkit and district report", "es": "El kit del mes y el informe para el distrito" },
+  "orientation.deck_qr": { "en": "Scan for the lessons", "es": "Escanea para ver las lecciones" },
+  "orientation.qr_alt": { "en": "QR code for {url}", "es": "Código QR de {url}" },
+
+  "orientation.handout_answers": { "en": "Answers: {list}", "es": "Respuestas: {list}" },
+  "orientation.handout_qr": { "en": "This lesson online", "es": "Esta lección en línea" },
+
+  "orientation.gvr_eyebrow": { "en": "New to the service?", "es": "¿Empiezas en el servicio?" },
+  "orientation.gvr_title": { "en": "Start with GVR / RLV 101", "es": "Empieza con RLV / GVR 101" },
+  "orientation.gvr_text": {
+    "en": "Six short lessons, about {min} minutes in all, with a self-check — and slides for your district.",
+    "es": "Seis lecciones breves, unos {min} minutos en total, con preguntas de repaso y diapositivas para tu distrito."
+  },
+  "orientation.monthly_pointer": { "en": "New GVR or RLV? {link} shows how to use this toolkit in six short lessons.", "es": "¿Eres RLV o GVR nuevo? {link} te muestra cómo usar este kit en seis lecciones breves." },
+
+  "search.kw.orientation": {
+    "en": "orientation training new GVR RLV representative onboarding course lessons slides presentation handout panel rotation 101",
+    "es": "orientación capacitación nuevo RLV GVR representante curso lecciones diapositivas presentación hoja panel rotación 101"
+  }
+}

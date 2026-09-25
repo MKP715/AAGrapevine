@@ -1,0 +1,282 @@
+---
+pagination: { data: languages, size: 1, alias: lang }
+permalink: "{{ '/' if lang == 'en' else '/es/' }}accessibility/index.html"
+layout: layouts/base.njk
+pageKey: accessibility
+titleKey: nav.accessibility
+descKey: access.meta_desc
+---
+{#- ACCESSIBILITY (/accessibility/, footer "site" link + the "Aa" panel's link). One page that
+    gathers the ways to use the site and take part without barriers:
+      #settings  the Reading & display settings (the "Aa" panel) + the browser's own tools
+      #captions  YouTube captions on our Watch page and in the YouTube app (what they depend on)
+      #asl       AA Grapevine's American Sign Language playlist + AA's own ASL videos
+      #audio     Listen, the weekly open meetings, record your story by phone, AA's audio;
+                 what the official stores' subscription descriptions say about audio (db.shop)
+      #phone     joining our Zoom meetings by phone (config/site.yml phone_access + the meeting
+                 IDs from `meeting:` and db.weekly_open — times and links stay on /meetings/)
+      #print     printing and large print
+      #feedback  our commitment (WCAG 2.2 AA) and how to report a barrier
+    Long page → ui.pageNav under the hero; no jump buttons in the hero. The hero's one action opens
+    the panel (JavaScript only, like the panel). Filters: eleventy/filters/access.js. -#}
+{% import "macros/ui.njk" as ui with context %}
+{%- set ln = site.links -%}
+{%- set phone = site | axPhone(db.weekly_open.items | cmWeeklyAll(lang), lang) -%}
+{%- set audio = db.shop | axAudioTypes(lang) -%}
+{%- set asl = db.videos | axAslPlaylist(site, lang) -%}
+{%- set chairMail = site.meeting.chair_email or site.contact_email -%}
+
+{% call ui.pageHero(lang, "nav.accessibility" | t(lang), "access.hero_sub" | t(lang), "accessibility", "access.eyebrow" | t(lang)) %}
+  <div class="hero-actions" x-data>
+    <button type="button" class="btn-light" data-js-only @click="$store.gvlv.show($el)" :aria-expanded="$store.gvlv.open.toString()" aria-expanded="false" aria-controls="gvlv-panel" aria-haspopup="dialog">{% icon "a-large-small", "size-4" %} {{ "access.open_settings" | t(lang) }}</button>
+  </div>
+{% endcall %}
+
+<div class="container-page page-overlap">{{ ui.pageNav([
+  { href: "#settings", label: "access.nav_settings" | t(lang), icon: "a-large-small" },
+  { href: "#captions", label: "access.nav_captions" | t(lang), icon: "captions" },
+  { href: "#asl", label: "access.nav_asl" | t(lang), icon: "hand" },
+  { href: "#audio", label: "access.nav_audio" | t(lang), icon: "headphones" },
+  { href: "#phone", label: "access.nav_phone" | t(lang), icon: "phone" },
+  { href: "#print", label: "access.nav_print" | t(lang), icon: "printer" },
+  { href: "#feedback", label: "access.nav_feedback" | t(lang), icon: "mail" }
+], lang) }}</div>
+
+{#- ================= Reading & display settings ================= -#}
+<section id="settings" class="section container-page pt-10 sm:pt-12" aria-labelledby="settings-title">
+  {% call ui.sectionHead("access.set_title" | t(lang), "access.set_sub" | t(lang), "", "", "a-large-small", { eyebrow: "access.set_eyebrow" | t(lang), id: "settings-title", lang: lang }) %}
+    <span x-data class="contents"><button type="button" class="btn-secondary btn-sm" data-js-only @click="$store.gvlv.show($el)" :aria-expanded="$store.gvlv.open.toString()" aria-expanded="false" aria-controls="gvlv-panel" aria-haspopup="dialog">{% icon "sliders-horizontal", "size-4" %} {{ "access.open_short" | t(lang) }}</button></span>
+  {% endcall %}
+  {%- set feats = [
+    ["type", "text", "gv"], ["whole-word", "spacing", "gv"], ["contrast", "contrast", "gv"],
+    ["sparkles", "motion", "grape"], ["volume-2", "read", "grape"], ["gauge", "saver", "vine"]
+  ] -%}
+  <ul class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3" role="list">
+    {% for f in feats %}
+    <li class="card flex gap-4 p-5">
+      <span class="grid size-11 shrink-0 place-items-center rounded-xl {{ 'bg-gv-soft text-gv' if f[2] == 'gv' else ('bg-grape-soft text-grape' if f[2] == 'grape' else 'bg-vine-soft text-vine') }}">{% icon f[0], "size-5" %}</span>
+      <div class="min-w-0">
+        <h3 class="h-card">{{ ("access.f_" + f[1] + "_t") | t(lang) }}</h3>
+        <p class="mt-1 text-sm leading-relaxed text-muted">{{ ("access.f_" + f[1]) | t(lang) }}</p>
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+
+  <div class="panel-muted mt-5">
+    <h3 class="card-h"><span>{% icon "monitor-smartphone", "size-5" %}</span>{{ "access.dev_title" | t(lang) }}</h3>
+    <ul class="mt-4 grid gap-x-10 gap-y-3 text-sm leading-relaxed lg:grid-cols-2" role="list">
+      {% for k in ["zoom", "size", "reader", "sr", "dark"] %}
+      <li class="flex gap-2.5"><span class="mt-0.5 shrink-0 text-gv">{% icon "circle-check", "size-4" %}</span><span class="min-w-0 text-ink">{{ ("access.dev_" + k) | t(lang) | safe }}</span></li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>
+
+{#- ================= Captions ================= -#}
+<section id="captions" class="section container-page pt-0" aria-labelledby="captions-title">
+  {{ ui.sectionHead("access.cap_title" | t(lang), "access.cap_sub" | t(lang), "/watch/" | lurl(lang), "access.cap_watch" | t(lang), "captions", { eyebrow: "access.cap_eyebrow" | t(lang), tone: "text-grape", id: "captions-title", lang: lang }) }}
+  <div class="grid grid-cols-1 items-start gap-5 lg:grid-cols-2 lg:gap-6">
+    {% for c in ["web", "app"] %}
+    <div class="card card-pad">
+      <h3 class="card-h"><span class="text-grape">{% set ic = "monitor" if c == "web" else "smartphone" %}{% icon ic, "size-5" %}</span>{{ ("access.cap_" + c + "_t") | t(lang) }}</h3>
+      <ol class="ax-list mt-4" role="list">
+        {% for n in [1, 2, 3] %}
+        <li><span class="step-num" aria-hidden="true">{{ n }}</span><span class="min-w-0 leading-relaxed text-ink"><span class="sr-only">{{ n }}. </span>{{ ("access.cap_" + c + n) | t(lang) | safe }}</span></li>
+        {% endfor %}
+      </ol>
+    </div>
+    {% endfor %}
+  </div>
+  <div class="panel-muted mt-5 flex w-fit max-w-full gap-3">
+    <span class="mt-0.5 shrink-0 text-grape">{% icon "info", "size-5" %}</span>
+    <p class="measure min-w-0 text-sm leading-relaxed text-ink">{{ "access.cap_note" | t(lang) }}</p>
+  </div>
+</section>
+
+{#- ================= American Sign Language ================= -#}
+<section id="asl" class="section container-page pt-0" aria-labelledby="asl-title">
+  {{ ui.sectionHead("access.asl_title" | t(lang), "access.asl_sub" | t(lang), "", "", "hand", { eyebrow: "access.asl_eyebrow" | t(lang), tone: "text-grape", id: "asl-title", lang: lang }) }}
+  <div class="grid grid-cols-1 items-start gap-5 lg:grid-cols-2 lg:gap-6">
+    {% if asl %}
+    <div class="card card-pad flex flex-col">
+      <h3 class="card-h"><span class="text-grape">{% icon "youtube", "size-5" %}</span>{{ "access.asl_gv_t" | t(lang) }}</h3>
+      <p class="mt-2 leading-relaxed text-muted">{{ ("access.asl_gv_n" | t(lang, { n: asl.count })) if asl.count else ("access.asl_gv" | t(lang)) }}</p>
+      {% if asl.title %}<p class="mt-3 text-sm leading-relaxed text-ink">{{ "access.asl_watch_tip" | t(lang, { title: asl.title }) }} <a class="link" href="{{ '/watch/' | lurl(lang) }}">{{ "access.asl_watch_link" | t(lang) }}</a></p>{% endif %}
+      <div class="mt-5">
+        <a class="btn-primary" href="{{ asl.url }}" target="_blank" rel="noopener">{% icon "circle-play", "size-4" %} {{ "access.asl_gv_btn" | t(lang) }}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a>
+      </div>
+    </div>
+    {% endif %}
+    <div class="card card-pad">
+      <h3 class="card-h"><span class="text-grape">{% icon "book-open-text", "size-5" %}</span>{{ "access.asl_aa_t" | t(lang) }}</h3>
+      <p class="mt-2 leading-relaxed text-muted">{{ "access.asl_aa" | t(lang) }}</p>
+      <ul class="mt-4 divide-y divide-line" role="list">
+        {% for r in [[ln.aa_big_book, "access.asl_bb"], [ln.aa_twelve_and_twelve, "access.asl_12"], [ln.aa_accessibility_resources, "access.asl_list"]] %}{% if r[0] %}
+        <li><a class="tap-link flex min-h-11 items-center justify-between gap-3 py-2 font-semibold text-gv hover:underline" href="{{ r[0] }}" target="_blank" rel="noopener" hreflang="en"><span class="min-w-0 flex-1">{{ r[1] | t(lang) }}{% if lang == "es" %} <span class="font-normal text-muted">{{ "access.in_english" | t(lang) }}</span>{% endif %}</span>{% icon "external-link", "size-4 shrink-0" %}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a></li>
+        {% endif %}{% endfor %}
+      </ul>
+      {% if ln.aa_access_email %}<p class="mt-4 text-sm leading-relaxed text-muted">{{ "access.asl_desk" | t(lang) }} <a class="link" href="mailto:{{ ln.aa_access_email }}">{{ ln.aa_access_email }}</a></p>{% endif %}
+    </div>
+  </div>
+</section>
+
+{#- ================= Audio ================= -#}
+<section id="audio" class="section container-page pt-0" aria-labelledby="audio-title">
+  {{ ui.sectionHead("access.aud_title" | t(lang), "access.aud_sub" | t(lang), "", "", "headphones", { eyebrow: "access.aud_eyebrow" | t(lang), tone: "text-grape", id: "audio-title", lang: lang }) }}
+  {%- set audioCards = [
+    { href: "/listen/" | lurl(lang), k: "listen", icon: "headphones", tone: "bg-grape-soft text-grape" },
+    { href: "/meetings/" | lurl(lang) + "#weekly-open", k: "weekly", icon: "video", tone: "bg-grape-soft text-grape" },
+    { href: "/contribute/" | lurl(lang) + "#record", k: "record", icon: "mic", tone: "bg-lv-soft text-lv" },
+    { href: ln.aa_twelve_and_twelve, k: "aa", icon: "book-open-text", tone: "bg-gv-soft text-gv" }
+  ] -%}
+  {#- 4 cards: 2 × 2, then 4 in a row from 1280px (never 3 + 1) -#}
+  <ul class="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4" role="list">
+    {% for c in audioCards %}{% if c.href %}{%- set isExt = c.href.startsWith("http") -%}
+    <li class="card card-link relative flex flex-col gap-3 p-5">
+      <span class="grid size-11 place-items-center rounded-xl {{ c.tone }}">{% icon c.icon, "size-5" %}</span>
+      <h3 class="h-card"><a class="no-underline after:absolute after:inset-0 after:rounded-[var(--radius-card)] hover:text-gv" href="{{ c.href }}"{% if isExt %} target="_blank" rel="noopener" hreflang="en"{% endif %}>{{ ("access.aud_" + c.k + "_t") | t(lang) }}{% if isExt %}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span>{% endif %}</a></h3>
+      <p class="text-sm leading-relaxed text-muted">{{ ("access.aud_" + c.k) | t(lang) }}</p>
+      <span class="mt-auto inline-flex items-center gap-1.5 pt-1 text-sm font-semibold text-gv" aria-hidden="true">{{ ("access.aud_" + c.k + "_cta") | t(lang) }} {% set ic = "external-link" if isExt else "arrow-right" %}{% icon ic, "size-4" %}</span>
+    </li>
+    {% endif %}{% endfor %}
+  </ul>
+  {% if audio.types %}
+  <div class="panel-muted mt-5 flex w-fit max-w-full gap-3">
+    <span class="mt-0.5 shrink-0 text-lv">{% icon "shopping-bag", "size-5" %}</span>
+    <div class="min-w-0 text-sm leading-relaxed text-ink">
+      <p class="font-semibold">{{ "access.aud_subs_t" | t(lang) }}</p>
+      {% if audio.audio.length %}
+      <p class="mt-1">{{ "access.aud_subs_some" | t(lang) }}</p>
+      <ul class="mt-2 space-y-1.5" role="list">
+        {% for a in audio.audio %}<li><span class="font-semibold">{{ "La Viña" if a.pub == "lv" else "Grapevine" }}</span> — “{{ a.text }}”</li>{% endfor %}
+      </ul>
+      {% else %}
+      <p class="mt-1 measure">{{ "access.aud_subs_none" | t(lang) }}</p>
+      {% endif %}
+      <p class="mt-2"><a class="link" href="{{ '/shop/' | lurl(lang) }}#subscriptions">{{ "access.aud_subs_link" | t(lang) }}</a></p>
+    </div>
+  </div>
+  {% endif %}
+</section>
+
+{#- ================= Join by phone (a band: the one task on this page with its own numbers) ================= -#}
+<section id="phone" class="section section-band" aria-labelledby="phone-title">
+  <div class="container-page">
+  {{ ui.sectionHead("access.ph_title" | t(lang), "access.ph_sub" | t(lang), "", "", "phone", { eyebrow: "access.ph_eyebrow" | t(lang), tone: "text-vine", id: "phone-title", lang: lang }) }}
+  {% if phone.ok %}
+  <div class="grid grid-cols-1 items-start gap-5 lg:grid-cols-2 lg:gap-6">
+    {% for mt in phone.meetings %}
+    <article class="card card-pad @container" aria-labelledby="ph-{{ mt.key }}">
+      {%- set many = mt.titles | length > 1 -%}
+      <h3 id="ph-{{ mt.key }}" class="card-h"><span class="text-vine">{% icon "phone", "size-5" %}</span><span>{{ ("access.aud_weekly_t" | t(lang)) if many else mt.titles[0] }}</span></h3>
+      {% if many %}<ul class="mt-2 space-y-1 text-sm leading-snug text-muted" role="list">{% for tt in mt.titles %}<li>{{ tt }}</li>{% endfor %}</ul>{% endif %}
+      <dl class="mt-4 grid gap-3 @min-[22rem]:grid-cols-2">
+        <div class="rounded-xl bg-surface-2 p-4">
+          <dt class="eyebrow">{{ "committee.meeting.id" | t(lang) }}</dt>
+          <dd class="mt-1 text-lg text-ink"><span class="ax-num">{{ mt.id }}</span></dd>
+        </div>
+        <div class="rounded-xl bg-surface-2 p-4">
+          <dt class="eyebrow">{{ "access.ph_pass" | t(lang) }}</dt>
+          {% if mt.pass %}
+          <dd class="mt-1 text-lg text-ink"><span class="ax-num">{{ mt.pass }}</span></dd>
+          {% else %}
+          <dd class="mt-1 text-sm leading-relaxed text-ink">{{ ("access.ph_ask_chair" if mt.askChair else "access.ph_no_pass") | t(lang) }}</dd>
+          {% endif %}
+        </div>
+      </dl>
+      <div class="mt-5 flex flex-wrap gap-2.5">
+        {% if mt.call %}<a class="btn-primary" href="{{ mt.call }}">{% icon "phone-call", "size-4" %} {{ "access.ph_call" | t(lang, { city: mt.callCity }) }}</a>{% endif %}
+        {% if mt.askChair and chairMail %}<a class="btn-secondary" href="mailto:{{ chairMail }}?subject={{ ('access.ph_ask_subject' | t(lang)) | urlencode }}">{% icon "mail", "size-4" %} {{ "access.ph_ask_btn" | t(lang) }}</a>{% endif %}
+      </div>
+      <p class="mt-4 text-sm"><a class="link tap-link" href="{{ mt.details | lurl(lang) }}">{{ "access.ph_details" | t(lang) }}</a></p>
+    </article>
+    {% endfor %}
+  </div>
+
+  {#- How to dial · the numbers · the keys: one card, three parts side by side on wide cards -#}
+  <div class="card card-pad @container mt-5 lg:mt-6">
+    <div class="ax-dial">
+      <div class="ax-dial-steps">
+        <h3 class="card-h"><span class="text-vine">{% icon "list-ordered", "size-5" %}</span>{{ "access.ph_steps_t" | t(lang) }}</h3>
+        <ol class="ax-list mt-4" role="list">
+          {% for n in [1, 2, 3, 4] %}
+          <li><span class="step-num" aria-hidden="true">{{ n }}</span><span class="min-w-0 leading-relaxed text-ink"><span class="sr-only">{{ n }}. </span>{{ ("access.ph_step" + n) | t(lang) }}</span></li>
+          {% endfor %}
+        </ol>
+      </div>
+      <div class="ax-dial-numbers">
+        <h3 class="card-h"><span class="text-vine">{% icon "phone", "size-5" %}</span>{{ "access.ph_numbers_t" | t(lang) }}</h3>
+        <ul class="mt-3 divide-y divide-line" role="list">
+          {% for n in phone.numbers %}
+          <li><a class="flex min-h-11 flex-wrap items-center gap-x-3 gap-y-0.5 py-1.5 no-underline hover:text-gv" href="tel:{{ n.tel }}"><span class="ax-num text-ink">{{ n.display }}</span>{% if n.city %}<span class="text-sm text-muted">{{ n.city }}</span>{% endif %}</a></li>
+          {% endfor %}
+        </ul>
+        <p class="mt-3 text-xs leading-relaxed text-muted">{{ "access.ph_any_number" | t(lang) }}</p>
+      </div>
+      <div class="ax-dial-keys">
+        <h3 class="card-h"><span class="text-vine">{% icon "keyboard", "size-5" %}</span>{{ "access.ph_keys_t" | t(lang) }}</h3>
+        <dl class="mt-4 grid gap-3">
+          {% for k in [["*6", "access.ph_key6"], ["*9", "access.ph_key9"]] %}
+          <div class="flex items-center gap-3"><dt><kbd class="ax-kbd">{{ k[0] }}</kbd></dt><dd class="min-w-0 leading-snug text-ink">{{ k[1] | t(lang) }}</dd></div>
+          {% endfor %}
+        </dl>
+      </div>
+    </div>
+    <ul class="mt-6 grid gap-2.5 border-t border-line pt-5 text-sm text-muted @min-[48rem]:grid-cols-2" role="list">
+      {% for k in ["charges", "host", "tap", "privacy"] %}
+      <li class="flex gap-2.5"><span class="mt-0.5 shrink-0 text-vine">{% set ic = "shield-check" if k == "privacy" else "info" %}{% icon ic, "size-4" %}</span><span class="min-w-0 leading-relaxed">{{ ("access.ph_note_" + k) | t(lang) }}</span></li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% else %}
+  <p class="panel-muted text-sm leading-relaxed text-ink">{{ "access.ph_none" | t(lang) }} <a class="link" href="{{ '/meetings/' | lurl(lang) }}">{{ "access.ph_meetings" | t(lang) }}</a></p>
+  {% endif %}
+  </div>
+</section>
+
+{#- ================= Print and large print ================= -#}
+<section id="print" class="section container-page" aria-labelledby="print-title">
+  {{ ui.sectionHead("access.pr_title" | t(lang), "access.pr_sub" | t(lang), "", "", "printer", { eyebrow: "access.pr_eyebrow" | t(lang), id: "print-title", lang: lang }) }}
+  <div class="grid grid-cols-1 items-start gap-5 lg:grid-cols-2 lg:gap-6">
+    <div class="card card-pad">
+      <h3 class="card-h"><span>{% icon "printer", "size-5" %}</span>{{ "access.pr_page_t" | t(lang) }}</h3>
+      <ul class="mt-4 space-y-3" role="list">
+        {% for n in [1, 2, 3] %}
+        <li class="flex gap-2.5"><span class="mt-1 shrink-0 text-gv">{% icon "circle-check", "size-4" %}</span><span class="min-w-0 leading-relaxed text-ink">{{ ("access.pr_page" + n) | t(lang) }}</span></li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="card card-pad">
+      <h3 class="card-h"><span>{% icon "book-open", "size-5" %}</span>{{ "access.pr_large_t" | t(lang) }}</h3>
+      <ul class="mt-4 space-y-3" role="list">
+        <li class="flex gap-2.5"><span class="mt-1 shrink-0 text-gv">{% icon "calendar-heart", "size-4" %}</span><span class="min-w-0 leading-relaxed text-ink">{{ "access.pr_posters" | t(lang) }} <a class="link" href="{{ '/monthly/' | lurl(lang) }}">{{ "access.pr_posters_link" | t(lang) }}</a></span></li>
+        {% if ln.aa_accessibility_resources %}<li class="flex gap-2.5"><span class="mt-1 shrink-0 text-gv">{% icon "book-open-text", "size-4" %}</span><span class="min-w-0 leading-relaxed text-ink">{{ "access.pr_large" | t(lang) }} <a class="link" href="{{ ln.aa_accessibility_resources }}" target="_blank" rel="noopener" hreflang="en">{{ "access.pr_large_link" | t(lang) }}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a></span></li>{% endif %}
+      </ul>
+    </div>
+  </div>
+</section>
+
+{#- ================= Our commitment + report a barrier ================= -#}
+<section id="feedback" class="section container-page pt-0" aria-labelledby="feedback-title">
+  {{ ui.sectionHead("access.fb_title" | t(lang), "access.fb_sub" | t(lang), "", "", "accessibility", { eyebrow: "access.fb_eyebrow" | t(lang), id: "feedback-title", lang: lang }) }}
+  <div class="card card-pad @container">
+    <div class="grid gap-8 @min-[52rem]:grid-cols-2 @min-[52rem]:gap-12">
+      <div>
+        <h3 class="card-h"><span>{% icon "list-checks", "size-5" %}</span>{{ "access.fb_check_t" | t(lang) }}</h3>
+        <ul class="mt-4 space-y-3" role="list">
+          {% for n in [1, 2, 3, 4] %}
+          <li class="flex gap-2.5"><span class="mt-1 shrink-0 text-vine">{% icon "circle-check", "size-4" %}</span><span class="min-w-0 leading-relaxed text-ink">{{ ("access.fb_check" + n) | t(lang) }}</span></li>
+          {% endfor %}
+        </ul>
+      </div>
+      <div>
+        <h3 class="card-h"><span>{% icon "mail", "size-5" %}</span>{{ "access.fb_report_t" | t(lang) }}</h3>
+        <p class="mt-3 leading-relaxed text-ink">{{ "access.fb_report" | t(lang) }}</p>
+        <p class="mt-3 text-sm leading-relaxed text-muted">{{ "access.fb_others" | t(lang) }}</p>
+        <div class="mt-5"><a class="btn-primary" href="mailto:{{ site.contact_email }}?subject={{ ('access.fb_subject' | t(lang)) | urlencode }}">{% icon "mail", "size-4" %} {{ "access.fb_btn" | t(lang) }}</a></div>
+        <p class="mt-2 text-sm text-muted">{{ site.contact_email }}</p>
+      </div>
+    </div>
+  </div>
+</section>

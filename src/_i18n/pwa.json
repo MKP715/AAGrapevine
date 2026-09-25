@@ -1,0 +1,68 @@
+{
+  "pwa.manifest.description": {
+    "en": "Stories, podcasts, meetings and service resources of the Northeast Texas Area 65 Grapevine and La Viña Committee — in English and Spanish, even on a weak signal.",
+    "es": "Historias, podcasts, reuniones y recursos de servicio del Comité de Grapevine y La Viña del Área 65 del Noreste de Texas, en español e inglés, aun con poca señal."
+  },
+  "pwa.audio_size": { "en": "Download size:", "es": "Tamaño de descarga:" },
+  "pwa.offline.page_title": { "en": "Saved pages", "es": "Páginas guardadas" },
+  "pwa.offline.meta_desc": {
+    "en": "The pages saved on this device, which open without a connection.",
+    "es": "Las páginas guardadas en este dispositivo, que se abren sin conexión."
+  },
+  "pwa.offline.eyebrow": { "en": "Offline use · Saved pages", "es": "Sin conexión · Páginas guardadas" },
+  "pwa.offline.title": { "en": "You're offline", "es": "Estás sin conexión" },
+  "pwa.offline.sub": {
+    "en": "This page isn't saved on this device yet. The pages below are, and they open without a connection.",
+    "es": "Esta página todavía no está guardada en este dispositivo. Las de abajo sí, y se abren sin conexión."
+  },
+  "pwa.offline.title_online": { "en": "Pages saved on this device", "es": "Páginas guardadas en este dispositivo" },
+  "pwa.offline.sub_online": {
+    "en": "These pages open even without a connection. Save more from the Aa menu at the top.",
+    "es": "Estas páginas se abren aun sin conexión. Guarda más desde el menú Aa de arriba."
+  },
+  "pwa.offline.retry": { "en": "Try again", "es": "Intentar de nuevo" },
+  "pwa.offline.home": { "en": "Go to the home page", "es": "Ir a la página de inicio" },
+  "pwa.offline.list_h": { "en": "Saved on this device", "es": "Guardadas en este dispositivo" },
+  "pwa.offline.group_saved": { "en": "Saved for offline", "es": "Guardadas para usar sin conexión" },
+  "pwa.offline.group_recent": { "en": "Pages you opened recently", "es": "Páginas que abriste hace poco" },
+  "pwa.offline.loading": { "en": "Looking for saved pages…", "es": "Buscando páginas guardadas…" },
+  "pwa.offline.empty_title": { "en": "Nothing is saved on this device yet", "es": "Todavía no hay nada guardado en este dispositivo" },
+  "pwa.offline.empty_text": {
+    "en": "When you're back online, open the Aa menu at the top of the page and choose “Save key pages for offline”. The pages you open are kept too.",
+    "es": "Cuando vuelvas a tener conexión, abre el menú Aa arriba en la página y elige “Guardar páginas clave”. Las páginas que abres también se guardan."
+  },
+  "pwa.offline.nojs": {
+    "en": "Turn on JavaScript to see the pages saved on this device.",
+    "es": "Activa JavaScript para ver las páginas guardadas en este dispositivo."
+  },
+  "pwa.offline.unsupported": {
+    "en": "This browser can't keep pages for use without a connection. A current Chrome, Edge, Safari or Firefox can.",
+    "es": "Este navegador no puede guardar páginas para usarlas sin conexión. Un Chrome, Edge, Safari o Firefox actualizado sí puede."
+  },
+  "pwa.offline.how_eyebrow": { "en": "Weak signal? No problem", "es": "¿Poca señal? No hay problema" },
+  "pwa.offline.how_h": { "en": "How the site works without a connection", "es": "Cómo funciona el sitio sin conexión" },
+  "pwa.offline.how_sub": {
+    "en": "Made for weak signals: church basements, country roads and the long drive to the assembly.",
+    "es": "Pensado para la poca señal: sótanos de iglesias, caminos rurales y el viaje largo a la asamblea."
+  },
+  "pwa.offline.how1_h": { "en": "Pages you open are kept", "es": "Las páginas que abres se guardan" },
+  "pwa.offline.how1_t": {
+    "en": "The last 80 pages you opened on this device open again without a connection. Audio, video and images need one.",
+    "es": "Las últimas 80 páginas que abriste en este dispositivo se vuelven a abrir sin conexión. El audio, el video y las imágenes sí la necesitan."
+  },
+  "pwa.offline.how2_h": { "en": "Save key pages before you go", "es": "Guarda las páginas clave antes de salir" },
+  "pwa.offline.how2_t": {
+    "en": "One tap in the Aa menu saves Meetings, this month's toolkit, Share your story, the Shop and more, in your language.",
+    "es": "Un toque en el menú Aa guarda Reuniones, el kit de este mes, Comparte tu historia, la Tienda y más, en tu idioma."
+  },
+  "pwa.offline.how3_h": { "en": "Install it like an app", "es": "Instálalo como una app" },
+  "pwa.offline.how3_t": {
+    "en": "Add the site to your phone's home screen or to your computer. It opens in its own window, even offline.",
+    "es": "Agrega el sitio a la pantalla de inicio de tu teléfono o a tu computadora. Se abre en su propia ventana, aun sin conexión."
+  },
+  "pwa.offline.how4_h": { "en": "Use less data", "es": "Usa menos datos" },
+  "pwa.offline.how4_t": {
+    "en": "Turn on Data saver in the Aa menu: images, video previews and the moving art stay off until you ask for them.",
+    "es": "Activa el Ahorro de datos en el menú Aa: las imágenes, las vistas previas de video y el arte animado quedan apagados hasta que los pidas."
+  }
+}

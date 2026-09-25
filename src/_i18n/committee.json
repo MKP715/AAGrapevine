@@ -1156,8 +1156,8 @@
     "es": "Noticias del comité para grupos, distritos, RLV y GVR — en español y en inglés."
   },
   "committee.ann.get_digest": {
-    "en": "Get the weekly digest",
-    "es": "Recibir el resumen semanal"
+    "en": "Get the monthly digest",
+    "es": "Recibir el resumen mensual"
   },
   "committee.ann.pinned": {
     "en": "Pinned",

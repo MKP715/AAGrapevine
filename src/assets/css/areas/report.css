@@ -1,0 +1,230 @@
+/* =====================================================================
+   The district-meeting report editor — /monthly/#report (src/pages/monthly.njk, src/assets/js/report.js,
+   eleventy/filters/report.js). Owner: the report area. Every class is prefixed "rp-".
+   1. Without JavaScript: the whole report as text
+   2. Layout: details · sections · preview (.rp-grid)
+   3. Your details (fields, the saved status)
+   4. The section list (include, reorder, edit) and its editors
+   5. The preview card: actions, messages, the document
+   6. Print: only the report, on US Letter
+   ===================================================================== */
+
+/* ---------- 1. Without JavaScript ---------- */
+:root.js .rp-nojs { display: none; }
+.rp-nojs-text {
+  margin: 0; padding: 1rem; white-space: pre-wrap; overflow-wrap: anywhere;
+  font-family: var(--font-sans); font-size: 0.92rem; line-height: 1.65; color: var(--c-ink);
+}
+@media (width >= 40rem) { .rp-nojs-text { padding: 1.25rem 1.5rem; } }
+
+/* ---------- 2. Layout ----------
+   Phones and tablets: one column in DOM order (details, sections, preview).
+   64–112.5rem: details across the top; the sections (left) and the preview (right) below.
+   From 112.5rem (1800px): three columns — details · sections · preview.
+   The preview column is pinned (sticky) from 64rem when the window is at least 40rem tall, and
+   never taller than the window: its document scrolls inside (the header's height and the language
+   banner, --sticky-bottom, are taken off). No overscroll containment: the page keeps scrolling. */
+.rp-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.25rem;
+  grid-template-areas: "settings" "side" "main"; }
+.rp-settings { grid-area: settings; }
+.rp-side { grid-area: side; display: flex; flex-direction: column; gap: 1.25rem; min-width: 0; }
+.rp-main { grid-area: main; min-width: 0; }
+@media (width >= 64rem) {
+  .rp-grid { grid-template-columns: minmax(0, 25rem) minmax(0, 1fr); grid-template-areas: "settings settings" "side main";
+    column-gap: 2rem; align-items: start; }
+  .rp-out { display: flex; flex-direction: column; max-height: calc(100dvh - var(--sticky-top) - 1rem - var(--sticky-bottom, 0px)); min-height: 26rem; }
+  .rp-doc-wrap { flex: 1 1 auto; min-height: 10rem; overflow-y: auto; scrollbar-width: thin; }
+}
+@media (width >= 64rem) and (height >= 40rem) {
+  .rp-main { position: sticky; top: var(--sticky-top); }
+}
+@media (width >= 80rem) { .rp-grid { grid-template-columns: minmax(0, 28rem) minmax(0, 1fr); column-gap: 2.5rem; } }
+@media (width >= 96rem) { .rp-grid { grid-template-columns: minmax(0, 32rem) minmax(0, 1fr); } }
+@media (width >= 112.5rem) {
+  .rp-grid { grid-template-columns: 19rem minmax(0, 1fr) minmax(0, 52rem); grid-template-areas: "settings side main"; column-gap: 2rem; }
+}
+@media (width >= 112.5rem) and (height >= 56rem) {   /* the details card (about 44rem in Spanish) fits under the header */
+  .rp-settings { position: sticky; top: var(--sticky-top); }
+}
+
+/* ---------- 3. Your details ---------- */
+.rp-settings-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem 1rem; }
+.rp-saved { display: inline-flex; align-items: center; gap: 0.375rem; font-size: 0.8rem; font-weight: 500; color: var(--c-muted); }
+.rp-saved-icon { display: inline-grid; color: var(--c-vine); }
+.rp-saved.is-failed { color: var(--c-danger); }
+.rp-saved.is-failed .rp-saved-icon { color: var(--c-danger); }
+/* Fields: phones — district | service on one row, the others full width; wider — one row that wraps. */
+.rp-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem 0.75rem; margin-top: 1.25rem; }
+.rp-f-name, .rp-f-group, .rp-f-lang { grid-column: 1 / -1; }
+@media (width >= 40rem) {
+  .rp-fields { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 1rem; }
+  .rp-f { min-width: 0; }
+  .rp-f-district { flex: 0 0 8.5rem; }
+  .rp-f-role { flex: 1 1 12rem; }
+  .rp-f-name { flex: 2 1 15rem; }
+  .rp-f-group { flex: 2 1 14rem; }
+  .rp-f-lang { flex: 0 0 15rem; }
+}
+@media (width >= 112.5rem) {   /* the details column (19rem): one field per line (Spanish labels need the width) */
+  .rp-fields { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem; }
+}
+.rp-f { border: 0; margin: 0; padding: 0; min-width: 0; }
+.rp-label { display: block; margin-bottom: 0.375rem; font-size: 0.8125rem; font-weight: 600; color: var(--c-ink); }
+.rp-hint { margin-top: 0.375rem; font-size: 0.75rem; line-height: 1.45; color: var(--c-muted); }
+.rp-select { appearance: auto; padding-right: 0.75rem; }
+.rp-note { margin-top: 1rem; max-width: 72ch; font-size: 0.8rem; line-height: 1.5; color: var(--c-muted); }
+
+/* ---------- 4. The section list ---------- */
+.rp-list { overflow: hidden; }
+.rp-list-head { padding: 1.25rem 1.25rem 0.75rem; }
+@media (width >= 40rem) { .rp-list-head { padding: 1.5rem 1.5rem 0.75rem; } }
+.rp-secs { border-top: 1px solid var(--c-line); }
+.rp-sec { border-bottom: 1px solid var(--c-line); transition: background-color 0.15s; }
+.rp-sec.is-active, .rp-sec.is-open { background: color-mix(in srgb, var(--c-gv-soft) 45%, transparent); }
+.rp-sec-row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; min-height: 3.25rem; padding-right: 0.5rem; }
+/* The include box: a 44px target around a 20px box */
+.rp-check { display: grid; place-items: center; width: 2.75rem; min-height: 2.75rem; cursor: pointer; }
+.rp-check input { width: 1.2rem; height: 1.2rem; accent-color: var(--c-gv); cursor: pointer; }
+.rp-sec-btn {
+  display: flex; align-items: center; gap: 0.625rem; min-width: 0; min-height: 2.75rem; padding: 0.375rem 0.5rem 0.375rem 0;
+  text-align: left; color: var(--c-ink); border-radius: 0.5rem; cursor: pointer;
+}
+.rp-sec-btn:hover .rp-sec-edit, .rp-sec-btn[aria-expanded="true"] .rp-sec-edit { color: var(--c-gv); }
+.rp-sec-btn:focus-visible { outline: 3px solid var(--c-gv); outline-offset: 1px; }
+.rp-num {
+  display: grid; place-items: center; flex: none; width: 1.625rem; height: 1.625rem; border-radius: 999px;
+  background: var(--c-gv); color: #fff; font-size: 0.75rem; font-weight: 700; font-variant-numeric: tabular-nums;
+}
+:root[data-theme="dark"] .rp-num { color: var(--c-paper); }
+.rp-sec.is-off .rp-num, .rp-sec.is-empty .rp-num { background: var(--c-surface-2); color: var(--c-muted); }
+.rp-sec-name { display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem 0.5rem; min-width: 0; flex: 1 1 auto;
+  font-size: 0.9rem; font-weight: 600; line-height: 1.3; }
+.rp-sec.is-off .rp-sec-name > [id] { color: var(--c-muted); text-decoration: line-through; text-decoration-color: color-mix(in srgb, var(--c-muted) 55%, transparent); }
+.rp-badges { display: inline-flex; gap: 0.25rem; }
+.rp-badges .badge-lv { color: var(--c-lv-strong); }
+.rp-sec-edit { display: inline-flex; align-items: center; gap: 0.3rem; flex: none; font-size: 0.78rem; font-weight: 600; color: var(--c-muted); }
+@media (width < 40rem) { .rp-sec-edit-label { display: none; } }
+.rp-move { display: flex; justify-content: flex-end; min-width: 4.5rem; }   /* the header row keeps the column, so every "Edit" lines up */
+@media (width < 40rem), (pointer: coarse) { .rp-move { min-width: 5.5rem; } }
+.rp-icon-btn {
+  display: grid; place-items: center; width: 2.25rem; height: 2.25rem; border-radius: 999px; color: var(--c-muted); cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+}
+@media (width < 40rem), (pointer: coarse) { .rp-icon-btn { width: 2.75rem; height: 2.75rem; } }
+.rp-icon-btn:hover { background: var(--c-surface-2); color: var(--c-ink); }
+.rp-icon-btn:focus-visible { outline: 3px solid var(--c-gv); outline-offset: 1px; }
+.rp-icon-btn[aria-disabled="true"] { opacity: 0.3; cursor: default; background: none; }
+/* An open section's editor */
+.rp-sec-ed { display: flex; flex-direction: column; gap: 1rem; padding: 0.25rem 1rem 1.25rem 2.75rem; }
+@media (width < 40rem) { .rp-sec-ed { padding-left: 1rem; } }
+.rp-text { display: block; min-height: 9rem; max-height: 32rem; padding-block: 0.75rem; resize: vertical; line-height: 1.55; font-size: 0.9rem; field-sizing: content; }
+.rp-ed-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+.rp-list-foot { display: flex; flex-wrap: wrap; gap: 0.5rem 0.75rem; padding: 1rem 1.25rem 1.25rem; }
+@media (width >= 40rem) { .rp-list-foot { padding-inline: 1.5rem; } }
+/* The county picker (Grapevine meetings) */
+.rp-pick { border: 0; margin: 0; padding: 0; min-width: 0; }
+.rp-pick-group + .rp-pick-group { margin-top: 0.75rem; }
+.rp-pick-head { margin-bottom: 0.375rem; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--c-muted); }
+.rp-pick-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(10.5rem, 1fr)); gap: 0.375rem; }
+.rp-pick-item {
+  display: flex; align-items: center; gap: 0.5rem; min-height: 2.75rem; padding: 0.375rem 0.75rem; border-radius: 0.75rem;
+  background: var(--c-surface); border: 1px solid var(--c-line); font-size: 0.85rem; color: var(--c-ink); cursor: pointer;
+}
+.rp-pick-item:has(input:checked) { border-color: var(--c-gv); background: var(--c-gv-soft); }
+.rp-pick-item:has(input:focus-visible) { outline: 3px solid var(--c-gv); outline-offset: 1px; }
+.rp-pick-item input { width: 1.05rem; height: 1.05rem; flex: none; accent-color: var(--c-gv); }
+.rp-pick-item > span:first-of-type { flex: 1 1 auto; min-width: 0; }
+.rp-pick-n { flex: none; min-width: 1.5rem; padding: 0 0.4rem; border-radius: 999px; background: var(--c-surface-2); text-align: center;
+  font-size: 0.72rem; font-weight: 600; line-height: 1.4rem; color: var(--c-muted); font-variant-numeric: tabular-nums; }
+/* Tips (folded) */
+.rp-tips > summary { list-style: none; }
+.rp-tips > summary::-webkit-details-marker { display: none; }
+.rp-tips-sum { display: flex; align-items: center; gap: 0.75rem; min-height: 3.5rem; padding: 0.75rem 1.25rem; cursor: pointer; }
+
+/* ---------- 5. The preview card ---------- */
+.rp-out { overflow: hidden; }
+.rp-out-head { display: flex; flex-direction: column; gap: 0.875rem; padding: 1.25rem; border-bottom: 1px solid var(--c-line); background: color-mix(in srgb, var(--c-surface-2) 55%, var(--c-surface)); }
+@media (width >= 40rem) { .rp-out-head { padding: 1.25rem 1.5rem; } }
+.rp-out-top { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0.25rem 1rem; }
+.rp-stats { display: flex; flex-wrap: wrap; gap: 0.125rem 1rem; font-size: 0.8rem; color: var(--c-muted); }
+.rp-stats .is-blanks { color: var(--c-lv-strong); font-weight: 600; }
+/* Actions, in two rows — share (copy text, WhatsApp, e-mail, copy formatted) and save (Word, text,
+   print). Phones: each row is a grid of equal pairs; Copy text, Copy formatted and the last button of an
+   odd row take the whole width. Wider: the buttons side by side. */
+.rp-actions { display: flex; flex-direction: column; gap: 0.5rem; }
+.rp-act-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem; }
+.rp-act-row > * { width: 100%; }
+.rp-act-row > :is(.rp-a-main, .rp-a-wide), .rp-act-row:not(:has(.rp-a-main)) > :last-child:nth-child(odd) { grid-column: 1 / -1; }
+@media (width >= 40rem) {
+  .rp-act-row { display: flex; flex-wrap: wrap; }
+  .rp-act-row > * { width: auto; }
+}
+.rp-actions .is-done { border-color: var(--c-vine); }
+.rp-msg { display: flex; align-items: flex-start; gap: 0.5rem; font-size: 0.85rem; font-weight: 500; color: var(--c-vine); }
+.rp-msg > .icon { margin-top: 0.1rem; }
+.rp-wa { padding: 1rem 1.125rem; border-radius: 0.875rem; background: var(--c-lv-soft); }
+.rp-wa h4:focus { outline: none; }
+.rp-wa h4:focus-visible { outline: 3px solid var(--c-gv); outline-offset: 2px; }
+/* The document: a sheet on the card's tinted backdrop (one readable measure, however wide) */
+.rp-doc-wrap { position: relative; background: var(--c-surface-2); }
+.rp-doc-wrap:focus-visible { outline: 3px solid var(--c-gv); outline-offset: -3px; }
+.rp-doc {
+  max-width: 46rem; margin-inline: auto; padding: 1.25rem 1.25rem 1.5rem; background: var(--c-surface);
+  font-size: 0.92rem; line-height: 1.6; color: var(--c-ink); overflow-wrap: anywhere;
+}
+/* From 640px the document is a sheet on the tinted backdrop (phones use the whole width). */
+@media (width >= 40rem) {
+  .rp-doc-wrap { padding: 1.5rem; }
+  .rp-doc { padding: 2rem 2.25rem 2.25rem; border-radius: 0.75rem; border: 1px solid var(--c-line); box-shadow: var(--shadow-card); }
+}
+.rp-doc-sec { position: relative; border-radius: 0.5rem; transition: background-color 0.2s, box-shadow 0.2s; }
+.rp-doc-sec.is-active { background: color-mix(in srgb, var(--c-gv-soft) 60%, transparent); box-shadow: -0.75rem 0 0 color-mix(in srgb, var(--c-gv-soft) 60%, transparent), 0.75rem 0 0 color-mix(in srgb, var(--c-gv-soft) 60%, transparent); }
+.rp-doc-title { font-family: var(--font-display); font-size: 1.3rem; font-weight: 600; line-height: 1.25; text-wrap: balance; }
+@media (width >= 40rem) { .rp-doc-title { font-size: 1.5rem; } }
+.rp-doc-meta { margin-top: 0.25rem; color: var(--c-muted); }
+.rp-doc-h { margin-top: 1.5rem; margin-bottom: 0.375rem; font-family: var(--font-display); font-size: 1.1rem; font-weight: 600; line-height: 1.3; color: var(--c-ink); }
+.rp-doc-sec:first-child > .rp-doc-h:first-child { margin-top: 0; }
+.rp-doc p + p { margin-top: 0.25rem; }
+.rp-doc ul { margin: 0.25rem 0 0.5rem; padding-left: 1.25rem; list-style: disc; }
+.rp-doc li { margin-top: 0.2rem; padding-left: 0.125rem; }
+.rp-doc li::marker { color: var(--c-faint); }
+.rp-doc a { color: var(--c-gv); text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--c-gv) 35%, transparent); text-underline-offset: 2px; }
+.rp-doc a:hover { text-decoration-color: var(--c-gv); }
+.rp-blank { padding: 0 0.15em; border-radius: 0.25em; background: var(--c-lv-soft); color: var(--c-lv-strong); font-weight: 600;
+  box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+/* Phones and tablets: the document is folded to a readable height until "Show the full report". */
+.rp-fold { display: flex; justify-content: center; padding: 0.375rem 1rem; border-top: 1px solid var(--c-line); }
+.rp-fold [aria-expanded="true"] .icon { transform: rotate(180deg); }
+@media (width < 64rem) {
+  .rp-doc-wrap:not(.is-open) { max-height: 30rem; overflow: hidden;
+    -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 4rem), transparent);
+            mask-image: linear-gradient(to bottom, #000 calc(100% - 4rem), transparent); }
+}
+@media (width >= 64rem) { .rp-fold { display: none; } }
+
+/* ---------- 6. Print: only the report, on US Letter (the hub's other content is left out) ---------- */
+@page rp-letter { size: letter; margin: 0.7in 0.75in; }
+@media print {
+  html:root:has(body.mp-hub) { background: #fff !important; color-scheme: light; }
+  body.mp-hub { background: #fff !important; }
+  body.mp-hub > :not(main), body.mp-hub main > :not(#report), body.mp-hub #mobile-drawer { display: none !important; }
+  body.mp-hub #report { padding: 0 !important; margin: 0 !important; max-width: none !important; }
+  body.mp-hub #report > :not(.rp-app):not(.rp-nojs),
+  body.mp-hub .rp-settings, body.mp-hub .rp-side, body.mp-hub .rp-out-head, body.mp-hub .rp-fold { display: none !important; }
+  body.mp-hub .rp-grid, body.mp-hub .rp-main, body.mp-hub .rp-out { display: block !important; position: static !important; max-height: none !important; min-height: 0 !important;
+    border: 0 !important; box-shadow: none !important; background: none !important; overflow: visible !important; }
+  body.mp-hub .rp-doc-wrap { max-height: none !important; overflow: visible !important; padding: 0 !important; background: none !important;
+    -webkit-mask-image: none !important; mask-image: none !important; }
+  body.mp-hub .rp-doc, body.mp-hub .rp-nojs { page: rp-letter; }
+  body.mp-hub .rp-doc { max-width: none; margin: 0; padding: 0; border: 0; box-shadow: none; background: #fff; color: #000; font-size: 11.5pt; line-height: 1.45; }
+  body.mp-hub .rp-nojs { border: 0 !important; box-shadow: none !important; }
+  body.mp-hub .rp-nojs > p { display: none; }
+  body.mp-hub .rp-nojs-text { padding: 0; color: #000; font-size: 11pt; }
+  body.mp-hub .rp-doc-sec.is-active { background: none; box-shadow: none; }
+  body.mp-hub .rp-doc-title { color: #000; font-size: 18pt; }
+  body.mp-hub .rp-doc-meta { color: #333; }
+  body.mp-hub .rp-doc-h { color: #000; font-size: 13pt; break-after: avoid; }
+  body.mp-hub .rp-doc li, body.mp-hub .rp-doc p { break-inside: avoid; }
+  body.mp-hub .rp-doc a { color: #0a4f8f; text-decoration: none; }
+  body.mp-hub .rp-blank { background: none; color: #000; font-weight: 600; }
+}

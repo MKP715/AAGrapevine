@@ -1,0 +1,142 @@
+/* =====================================================================
+   Area styles: pwa — "Works with a weak signal" (src/assets/js/pwa.js, the offline page
+   src/pages/offline.njk, the service worker src/pages/sw.11ty.js). Classes "pwa-".
+     1. What Data saver DOES — html[data-saver="on"] (the "Aa" panel's switch sets it; pwa.js also
+        turns it on while offline). html.pwa-imgs = "Show images" for the page being viewed.
+     2. The top notice (offline / slow connection → a saved copy) and the bottom toast (a new
+        version / images are off).
+     3. The "Offline & app" part of the Aa panel (#pwa-slot) and the offline page's card slots.
+     4. The offline page's list of saved pages.
+   ===================================================================== */
+
+/* ---------- 1. Data saver ----------
+   Pictures are hidden, so the browser never requests them: the site's content images are
+   loading="lazy", and a lazy image that isn't displayed is never fetched (pwa.js makes the ones
+   Alpine fills in later lazy too, before Alpine starts). Kept: the site's own logo and icons
+   (/assets/img/ — tiny and cached), data:/blob: pictures (made on the page), [data-saver-keep]
+   and the photo viewer (opened on purpose). The frame a picture leaves gets .pwa-ph (pwa.js). */
+:root[data-saver="on"]:not(.pwa-imgs) img:not([src^="data:"]):not([src^="blob:"]):not([src*="/assets/img/"]):not([data-saver-keep]):not(.glightbox-container img) {
+  display: none !important;
+}
+:root[data-saver="on"]:not(.pwa-imgs) .pwa-ph { background-color: var(--c-surface-2); }
+:root[data-saver="on"]:not(.pwa-imgs) .pwa-ph-icon {
+  /* Lucide "image-off" */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23948ea6' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='2' x2='22' y1='2' y2='22'/%3E%3Cpath d='M10.41 10.41a2 2 0 1 1-2.83-2.83'/%3E%3Cline x1='13.5' x2='6' y1='13.5' y2='21'/%3E%3Cline x1='18' x2='21' y1='12' y2='15'/%3E%3Cpath d='M3.59 3.59A1.99 1.99 0 0 0 3 5v14a2 2 0 0 0 2 2h14c.55 0 1.052-.22 1.41-.59'/%3E%3Cpath d='M21 15V5a2 2 0 0 0-2-2H9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: min(1.75rem, 40%);
+}
+
+/* YouTube previews (lite-youtube): no thumbnail (the inline background-image is never used, so
+   never fetched) and a plain "Load video (uses data)" button (pwa.js adds the label). */
+:root[data-saver="on"]:not(.pwa-imgs) lite-youtube { background-image: none !important; background-color: var(--c-surface-2) !important; }
+:root[data-saver="on"]:not(.pwa-imgs) lite-youtube::before { display: none; }
+:root[data-saver="on"]:not(.pwa-imgs) lite-youtube > .lyt-playbtn { display: grid; place-items: center; background-image: none; filter: none; }
+:root[data-saver="on"]:not(.pwa-imgs) lite-youtube > .lyt-playbtn:focus-visible { outline: 3px solid var(--c-gv); outline-offset: -3px; }
+.pwa-lyt-label { display: none; }
+:root[data-saver="on"]:not(.pwa-imgs) .pwa-lyt-label {
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+  max-width: calc(100% - 1.5rem); min-height: 2.75rem; padding: 0.5rem 1rem;
+  border: 1px solid var(--c-line); border-radius: 9999px; background: var(--c-surface); color: var(--c-ink);
+  box-shadow: var(--shadow-card); font-family: var(--font-sans); font-size: 0.875rem; font-weight: 600; line-height: 1.2; text-align: center;
+}
+:root[data-saver="on"]:not(.pwa-imgs) lite-youtube > .lyt-playbtn:is(:hover, :focus-visible) .pwa-lyt-label { border-color: var(--c-gv); color: var(--c-gv); }
+.pwa-lyt-label > .icon { flex-shrink: 0; }
+/* A narrow player (the 9:16 Short on phones): the icon over two short lines */
+:root[data-saver="on"]:not(.pwa-imgs) lite-youtube { container-type: inline-size; }
+@container (width < 13rem) {
+  :root[data-saver="on"]:not(.pwa-imgs) .pwa-lyt-label { flex-direction: column; gap: 0.25rem; max-width: calc(100% - 0.75rem); padding: 0.5rem 0.625rem; border-radius: 0.875rem; font-size: 0.75rem; }
+}
+
+/* Only shown while Data saver is on (episode sizes on Home and Listen: "70.1 MB"). revert-layer:
+   the element's own display (a utility class, or span → inline, p → block) comes back. */
+.pwa-saver-only { display: none; }
+:root[data-saver="on"] .pwa-saver-only { display: revert-layer; }
+
+/* ---------- 2. Notices ----------
+   Top notice: fixed right under the 64px header (4rem = header.njk's h-16, not --header-h, which
+   grows by the notice's height while it is up: html.pwa-bar-on — so the hero, anchors, sticky
+   columns and the Aa panel all start below it). Nothing is covered: it is part of the header.
+   z-index 49: under the header (50) and its menus, over sticky bars (20) and the toasts (40). */
+.pwa-bar {
+  position: fixed; inset-inline: 0; top: calc(4rem + env(safe-area-inset-top, 0px)); z-index: 49;
+  border-block: 1px solid color-mix(in srgb, var(--c-lv) 28%, transparent);
+  background: var(--c-lv-soft); color: var(--c-ink);
+  box-shadow: 0 8px 18px -12px rgb(20 16 40 / 0.4);
+}
+.pwa-bar[hidden] { display: none; }
+:root.pwa-bar-on { --header-h: calc(4rem + var(--pwa-bar-h, 2.75rem)); }
+.pwa-bar-inner { display: flex; align-items: center; gap: 0.625rem; min-height: 2.75rem; padding-block: 0.25rem; }
+.pwa-bar-icon { display: grid; place-items: center; flex-shrink: 0; width: 1.75rem; height: 1.75rem; border-radius: 9999px; background: var(--c-surface); color: var(--c-lv-strong); }
+.pwa-bar-text { flex: 1 1 auto; min-width: 0; font-size: 0.875rem; line-height: 1.4; color: var(--c-ink); }
+.pwa-bar-text strong { font-weight: 700; color: var(--c-lv-strong); }
+.pwa-bar-link { font-weight: 700; color: var(--c-lv-strong); text-decoration: underline; text-underline-offset: 3px; white-space: nowrap; }
+.pwa-bar-link:hover { text-decoration-thickness: 2px; }
+.pwa-bar-close, .pwa-toast-close {
+  display: grid; place-items: center; flex-shrink: 0; width: 2.75rem; height: 2.75rem; border-radius: 9999px; color: var(--c-muted);
+}
+.pwa-bar-close { margin-right: -0.625rem; }
+.pwa-bar-close:hover { background: color-mix(in srgb, var(--c-lv) 14%, transparent); color: var(--c-ink); }
+@media (width < 25rem) { .pwa-bar-icon { display: none; } }
+
+/* Bottom toast: above the podcast mini-player and the language banner (both fixed at the bottom),
+   z-index 41. While it is up (html.pwa-toast-on, --pwa-toast-h) the page keeps that much room at
+   its end and sticky columns end above it — the same rule as the language banner (main.css). */
+.pwa-toast {
+  position: fixed; left: 50%; z-index: 41; transform: translateX(-50%);
+  bottom: calc(var(--player-h, 0px) + env(safe-area-inset-bottom, 0px) + 0.75rem);
+  width: min(34rem, calc(100% - 1.5rem));
+  display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 0.5rem 0.5rem 0.875rem;
+  border: 1px solid var(--c-line); border-radius: 1rem;
+  background: color-mix(in srgb, var(--c-surface) 96%, transparent); color: var(--c-ink);
+  box-shadow: var(--shadow-lift); backdrop-filter: blur(12px);
+}
+:root.has-lang-banner .pwa-toast { bottom: calc(var(--player-h, 0px) + var(--banner-h, 4.5rem) + env(safe-area-inset-bottom, 0px) + 1.25rem); }
+.pwa-toast[hidden] { display: none; }
+.pwa-toast-icon { display: grid; place-items: center; flex-shrink: 0; width: 2.25rem; height: 2.25rem; border-radius: 9999px; background: var(--c-gv-soft); color: var(--c-gv); }
+.pwa-toast-text { flex: 1 1 auto; min-width: 0; font-size: 0.875rem; line-height: 1.4; }
+.pwa-toast-text strong { display: block; font-weight: 700; }
+.pwa-toast-close:hover { background: var(--c-surface-2); color: var(--c-ink); }
+@media (width < 25rem) { .pwa-toast-icon { display: none; } .pwa-toast { gap: 0.5rem; } }
+:root.pwa-toast-on body { padding-bottom: calc(var(--pwa-toast-h, 4rem) + var(--banner-h, 0px) + var(--player-h, 0px) + env(safe-area-inset-bottom, 0px) + 1.75rem); }
+:root.pwa-toast-on { --sticky-bottom: calc(var(--pwa-toast-h, 4rem) + var(--banner-h, 0px) + var(--player-h, 0px) + env(safe-area-inset-bottom, 0px) + 1.25rem); }
+
+@media print { .pwa-bar, .pwa-toast { display: none !important; } }
+
+/* ---------- 3. "Offline & app" (#pwa-slot in the Aa panel; the offline page's card slots) ---------- */
+.pwa-slot-h { display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; font-weight: 600; color: var(--c-ink); }
+.pwa-slot-h > .icon { color: var(--c-gv); }
+.pwa-line { display: flex; align-items: flex-start; gap: 0.5rem; margin-top: 0.5rem; font-size: 0.8125rem; line-height: 1.45; color: var(--c-muted); }
+.pwa-line > .icon { margin-top: 0.1rem; }
+.pwa-line.is-online > .icon { color: var(--c-vine); }
+.pwa-line.is-offline > .icon { color: var(--c-lv); }
+.pwa-row { margin-top: 0.75rem; }
+.pwa-wide { width: 100%; }
+.pwa-wide[aria-disabled="true"] { opacity: 0.6; cursor: progress; }
+.pwa-hint { margin-top: 0.5rem; font-size: 0.8125rem; line-height: 1.45; color: var(--c-muted); }
+.pwa-status { margin-top: 0.5rem; font-size: 0.8125rem; font-weight: 600; line-height: 1.45; color: var(--c-ink); }
+.pwa-steps { display: flex; align-items: flex-start; gap: 0.5rem; padding: 0.625rem 0.75rem; border-radius: 0.75rem; background: var(--c-surface-2); font-size: 0.8125rem; line-height: 1.45; color: var(--c-ink); }
+.pwa-steps > .icon { margin-top: 0.1rem; color: var(--c-gv); }
+.pwa-progress { display: flex; align-items: center; gap: 0.625rem; margin-top: 0.5rem; font-size: 0.8125rem; font-weight: 600; color: var(--c-ink); }
+.pwa-progress > progress { flex: 1 1 auto; min-width: 4rem; height: 0.5rem; accent-color: var(--c-gv); }
+.pwa-links { display: flex; flex-wrap: wrap; gap: 0 1rem; margin-top: 0.25rem; }
+.pwa-link {
+  display: inline-flex; min-height: 2.75rem; align-items: center; gap: 0.375rem;
+  font-size: 0.875rem; font-weight: 600; color: var(--c-gv); text-align: left;
+  text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--c-gv) 40%, transparent); text-underline-offset: 3px;
+}
+.pwa-link:hover { text-decoration-color: currentColor; }
+.pwa-card-slot > :first-child { margin-top: 0; }
+
+/* ---------- 4. The offline page: pages saved on this device ---------- */
+.pwa-saved-groups { display: grid; gap: 1.5rem; margin-top: 1.25rem; }
+.pwa-saved-groups:empty { display: none; }
+@media (width >= 64rem) { .pwa-saved-groups:has(> :nth-child(2)) { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 2.5rem; } }
+.pwa-saved-h { font-family: var(--font-sans); font-size: 0.75rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--c-muted); }
+.pwa-saved-h > span { letter-spacing: 0; }
+.pwa-saved-list { margin-top: 0.5rem; border-top: 1px solid var(--c-line); }
+.pwa-saved-list > li { border-bottom: 1px solid var(--c-line); }
+.pwa-saved-link { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.125rem 0.625rem; min-height: 2.75rem; padding: 0.625rem 0.25rem; color: var(--c-ink); text-decoration: none; }
+.pwa-saved-link:hover .pwa-saved-title { color: var(--c-gv); text-decoration: underline; text-underline-offset: 3px; }
+.pwa-saved-title { font-weight: 600; overflow-wrap: anywhere; }
+.pwa-saved-when { font-size: 0.8125rem; color: var(--c-muted); }

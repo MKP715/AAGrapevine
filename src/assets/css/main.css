@@ -159,6 +159,135 @@
   }
 }
 
+/* =====================================================================
+   READING & DISPLAY SETTINGS — the "Aa" panel (partials/header.njk; app.js GV.prefs; the panel's
+   own look and the read-aloud highlight are in areas/access.css). The first <head> script in
+   base.njk puts the visitor's choices on <html> before the first paint (localStorage "gvlv-prefs"):
+     data-text      100 | 115 | 130 | 150   the ROOT font size. Every rem grows with it — text,
+                    spacing, buttons, the header (--header-h is 4rem) — like a zoom, but media
+                    queries keep the browser's 16px rem, so: the desktop nav moves into the
+                    drawer on narrower screens (below), and heroes keep their px height budget
+                    (--text-scale divides it back) and only grow when their content needs it.
+     data-spacing   normal | relaxed        WCAG 1.4.12 text spacing: line height 1.5 (1.7 for
+                    running text), paragraphs 2em apart, letters 0.12em, words 0.16em.
+     data-contrast  normal | high           stronger ink, borders and accents (token overrides,
+                    light AND dark), solid surfaces instead of see-through ones, every text link
+                    underlined, 4px focus rings, a darker scrim behind the hero text.
+     data-motion    auto | reduce           "reduce" = the prefers-reduced-motion rules below +
+                    a still hero picture (hero-canvas.js) + no smooth scrolling (GV.reducedMotion()).
+     data-saver     off | on                what data saver DOES belongs to the offline-app code
+                                            (pwa.js and its styles), not to this block.
+   The overrides that must beat utilities (leading-*, tracking-*, bg-surface/92!, no-underline)
+   sit in @layer base with !important: an important declaration in an EARLIER layer wins over
+   one in a later layer (utilities) and over unlayered ones. Everything else is unlayered. */
+:root { --text-scale: 1; }
+:root[data-text="115"] { font-size: 115%; --text-scale: 1.15; }
+:root[data-text="130"] { font-size: 130%; --text-scale: 1.3; }
+:root[data-text="150"] { font-size: 150%; --text-scale: 1.5; }
+
+/* High contrast: ink ≥ 15:1, muted text ≥ 12:1, borders ≥ 6:1 (light) / ≥ 6:1 (dark), accents ≥ 9:1 */
+:root[data-contrast="high"] {
+  --c-paper: #ffffff; --c-surface: #ffffff; --c-surface-2: #f0ede6;
+  --c-ink: #000000; --c-muted: #22202c; --c-faint: #34313f; --c-line: #5f596d;
+  --c-gv: #063e73; --c-gv-strong: #042b52; --c-gv-soft: #e2edf9;
+  --c-lv: #7a2b05; --c-lv-strong: #5c2003; --c-lv-soft: #fcebdc;
+  --c-grape: #44206a; --c-grape-soft: #eee3f7;
+  --c-vine: #1b4c19; --c-vine-soft: #e2f0dd;
+  --c-danger: #8a1a11;
+}
+:root[data-contrast="high"][data-theme="dark"] {
+  --c-paper: #000000; --c-surface: #0b0a10; --c-surface-2: #17151f;
+  --c-ink: #ffffff; --c-muted: #ece9f6; --c-faint: #d8d4e6; --c-line: #9b95ae;
+  --c-gv: #a9d2f8; --c-gv-strong: #d2e8fc; --c-gv-soft: #0e2238;
+  --c-lv: #ffb47f; --c-lv-strong: #ffd3b2; --c-lv-soft: #2d1a0b;
+  --c-grape: #dcc3f5; --c-grape-soft: #241834;
+  --c-vine: #abe4a6; --c-vine-soft: #0f2313;
+  --c-danger: #ff9d95;
+}
+/* Heroes keep their px height budget at larger text (the content inside still grows the hero
+   when it needs to); the hero text sits on a darker, even scrim with high contrast. */
+:root:not([data-text="100"]) :is(.gv-hero, .page-hero) { min-height: calc(var(--hero-min) / var(--text-scale)); }
+:root[data-contrast="high"] :is(.gv-hero, .page-hero)::before { background: rgb(4 10 24 / 0.78); }
+:root[data-contrast="high"] :is(.gv-hero-sub, .gv-hero-eyebrow, .hero-stat > dt) { color: #fff; }
+:root[data-contrast="high"] .gv-hero-eyebrow { background: #04101f; box-shadow: inset 0 0 0 1px #fff; }
+
+@layer base {
+  /* ---- relaxed text spacing (WCAG 1.4.12). Not inside the fixed-size printable posters and share
+     frames (.mp-poster, .cm-frame: artwork drawn to exact print sizes, kept as designed) ---- */
+  :root[data-spacing="relaxed"] body, :root[data-spacing="relaxed"] body *:not(:is(.mp-poster, .cm-frame, .mp-poster *, .cm-frame *, .site-logo *)) {
+    line-height: 1.5 !important; letter-spacing: 0.12em !important; word-spacing: 0.16em !important; }
+  :root[data-spacing="relaxed"] body :is(p, li, dd, dt, td, th, blockquote, figcaption, label, summary):not(:is(.mp-poster, .cm-frame) *) { line-height: 1.7 !important; }
+  :root[data-spacing="relaxed"] :is(main, footer, .gvlv-panel) p:not(:last-child):not(:is(.mp-poster, .cm-frame) *) { margin-bottom: 2em !important; }
+
+  /* ---- larger text or relaxed spacing: nothing is cut off, squeezed or pushed off the screen.
+     · a word too long for its line breaks inside it (overflow-wrap: break-word — it never makes a
+       column narrower than its longest word, so words don't turn into letter stacks);
+     · at 130%+ (or relaxed spacing) the base 2–4 column grids become one column on phones;
+     · one-line labels (truncate) wrap instead of ending in "…"; no-wrap runs wrap below 768px;
+     · buttons, links, chips and badges never grow wider than their box; dropdowns stay on screen.
+     The printable posters and share frames (.mp-poster, .cm-frame) and the header row keep their
+     own layout (the header is handled in areas/access.css). ---- */
+  :root:is([data-text="115"], [data-text="130"], [data-text="150"], [data-spacing="relaxed"]) :is(main, footer, .gvlv-panel, #mobile-drawer) :not(.mp-poster, .cm-frame, :is(.mp-poster, .cm-frame) *) { overflow-wrap: break-word; }
+  /* e-mail addresses, phone links and web addresses have no spaces: they may break anywhere */
+  :root:is([data-text="115"], [data-text="130"], [data-text="150"], [data-spacing="relaxed"]) :is(main, footer) :is(a[href^="mailto:"], a[href^="tel:"], .break-all, code, kbd, .font-mono, [class*="-url"]):not(:is(.mp-poster, .cm-frame) *) { overflow-wrap: anywhere; }
+  /* a row with a text column that may shrink (min-w-0 / flex-1 / a paragraph or heading next to a
+     picture, a date tile or a button): at 130%+ the text column never gets narrower than ~7
+     characters — when it can't
+     have that much room beside its neighbours it moves onto its own line below them. */
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) main :is(.flex:has(> :is(.min-w-0, p, h2, h3, h4)), :has(> .flex-1)):not(.flex-col, .flex-col-reverse, .chip-row, .chip-row-nowrap, .flex-nowrap, :is(.mp-poster, .cm-frame) *) { flex-wrap: wrap !important; }
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) main :is(.flex:not(.flex-col, .flex-col-reverse, .chip-row, .chip-row-nowrap, .flex-nowrap) > :is(.min-w-0, p, h2, h3, h4), .flex-1):not(svg, img, picture, video, :is(.mp-poster, .cm-frame) *) { flex: 1 1 0% !important; min-width: min(100%, 7em) !important; }
+  /* a grid with no column template of its own gets one flexible column (an implicit "auto" column
+     is as wide as its widest word or picture, and would push past the screen). Not important:
+     every grid-cols-* utility and area style still wins. */
+  :root:is([data-text="115"], [data-text="130"], [data-text="150"], [data-spacing="relaxed"]) :is(main, footer) .grid:not([class*="grid-flow-col"], [class*="auto-cols"], :is(.mp-poster, .cm-frame) *) { grid-template-columns: minmax(0, 1fr); }
+  @media (width < 30rem) {
+    :root:is([data-text="130"], [data-spacing="relaxed"]) main :is(.grid-cols-2, .grid-cols-3, .grid-cols-4):not(:is(.mp-poster, .cm-frame) *) { grid-template-columns: minmax(0, 1fr) !important; }
+  }
+  @media (width < 40rem) {
+    :root[data-text="150"] main :is(.grid-cols-2, .grid-cols-3, .grid-cols-4):not(:is(.mp-poster, .cm-frame) *) { grid-template-columns: minmax(0, 1fr) !important; }
+    :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) main :is(p, li, dd, dt, h1, h2, h3, h4, td, th, figcaption, blockquote) { hyphens: auto; }
+  }
+  :root:is([data-text="115"], [data-text="130"], [data-text="150"], [data-spacing="relaxed"]) :is(.truncate, [class*=":truncate"]):not(:is(.mp-poster, .cm-frame, .site-header) *) {
+    overflow: visible !important; white-space: normal !important; text-overflow: clip !important; overflow-wrap: anywhere; }
+  @media (width < 48rem) {
+    :root:is([data-text="115"], [data-text="130"], [data-text="150"], [data-spacing="relaxed"]) :is(.whitespace-nowrap, .text-nowrap, .meta-row > *):not(:is(.mp-poster, .cm-frame, .site-header) *) { white-space: normal !important; }
+  }
+  :root:is([data-text="115"], [data-text="130"], [data-text="150"], [data-spacing="relaxed"]) :is(main, footer) :is(a, button, summary, .chip, .badge, [class*="badge-"]) { max-width: 100%; }
+  :root:is([data-text="115"], [data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .cm-menu-panel { min-width: min(14.5rem, calc(100vw - 2 * var(--gutter))); max-width: calc(100vw - 2 * var(--gutter)); }
+  :root:is([data-text="115"], [data-text="130"], [data-text="150"], [data-spacing="relaxed"]) main select { max-width: 100%; }
+  :root:is([data-text="115"], [data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .section-head-actions :is(.flex, .inline-flex) { flex-wrap: wrap !important; }
+  /* a label + badge (or + action) row spread to both ends: the badge goes under the label when
+     both don't fit; a pill of chips (All · English · Spanish) wraps onto a second row */
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) main .flex.justify-between:not(.flex-col, .flex-col-reverse, .chip-row, .chip-row-nowrap, .flex-nowrap, :has(> svg:last-child)) { flex-wrap: wrap !important; }
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) main :is(.flex, .inline-flex):has(> .chip):not(.chip-row, .chip-row-nowrap) { flex-wrap: wrap !important; }
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) main .inline-flex.rounded-full:has(> .chip) { border-radius: 1.25rem; }
+  /* side columns stop sticking at 130%+ (their bigger content would need its own scrollbar) */
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) :is(.sticky-aside, .sticky-aside-xl) {
+    position: static !important; max-height: none !important; overflow: visible !important; -webkit-mask-image: none !important; mask-image: none !important; }
+  /* a table in a rounded card: the card scrolls sideways instead of cutting the table off (at any
+     text size — the Spanish Status table is wider than its card at 768px) */
+  main .overflow-hidden:has(> table, > div > table) { overflow-x: auto !important; }
+  /* the footer's link groups: one column on narrow phones at 130%+ (two would push words off) */
+  @media (width < 30rem) {
+    :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) footer .grid-cols-2 { grid-template-columns: minmax(0, 1fr) !important; }
+  }
+
+  /* ---- high contrast: solid surfaces, underlined links, strong focus ---- */
+  :root[data-contrast="high"] :is([class*="bg-surface/"], [class*="bg-paper/"]) { background-color: var(--c-surface) !important; }
+  :root[data-contrast="high"] [class*="bg-surface-2/"] { background-color: var(--c-surface-2) !important; }
+  :root[data-contrast="high"] :is([class*="backdrop-blur"], .btn-on-dark, .gv-hero-eyebrow) { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+  :root[data-contrast="high"] .btn-on-dark { background-color: #04101f !important; border-color: #fff !important; color: #fff !important; }
+  :root[data-contrast="high"] .btn-light { box-shadow: inset 0 0 0 2px #04101f; }
+  :root[data-contrast="high"] a:not([class*="btn"], .chip, .site-logo, [role="button"]) {
+    text-decoration-line: underline !important; text-decoration-thickness: max(1px, 0.07em) !important; text-underline-offset: 0.2em !important; }
+  :root[data-contrast="high"] :focus-visible { outline-style: solid !important; outline-width: 4px !important; outline-offset: 3px !important; }
+  :root[data-contrast="high"] :is(.card, .btn-secondary, .chip, .input, .badge-tbc) { border-color: var(--c-line) !important; }
+
+  /* ---- reduced motion, by choice (the same as the OS setting above) ---- */
+  :root[data-motion="reduce"], :root[data-motion="reduce"] *, :root[data-motion="reduce"] *::before, :root[data-motion="reduce"] *::after {
+    animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}
+
 /* ---------- Shared components (usable as classes AND with @apply) ---------- */
 /* Page container — header, footer and every page section use it, so all edges line up.
    Full width up to 1920px (max-width 120rem), side padding var(--gutter) = clamp(1rem, 3.5vw, 4.5rem):
@@ -618,3 +747,7 @@ main > :not(script, template, dialog, style):not(:has(~ :not(script, template, d
 @import "./areas/published.css";
 @import "./areas/shop.css";
 @import "./areas/monthly.css";
+@import "./areas/report.css";
+@import "./areas/orientation.css";
+@import "./areas/access.css";
+@import "./areas/pwa.css";

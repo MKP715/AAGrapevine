@@ -1,29 +1,36 @@
-"""Weekly bilingual (English + Spanish) e-mail digest for the districts.
+"""Monthly bilingual (English + Spanish) e-mail digest for the districts.
 
-Reads what the daily sync already built — data/site/whatsnew.json, events.json and
-announcements.json — and sends ONE clean e-mail (HTML + plain text) with:
+One EDITION per calendar month (America/Chicago), sent on the 1st (.github/workflows/monthly-digest.yml).
+Edition "2026-10" (sent October 1) holds — the same rules as the website's /digest/ page
+(eleventy/filters/community.js → buildMonthlyDigest; keep the two in step):
 
-  * the next committee meeting (Zoom link, ID, passcode)
-  * new announcements
-  * upcoming events (next 30 days; a monthly event from `recurring_events:` once, with its next date)
-  * everything new in the last N days (config/site.yml → digest.days): magazine
-    articles, podcast episodes, videos, Instagram, PDFs, committee uploads
-  * a compact Book of the Month teaser (data/site/shop.json → botm: title, sale price, last
-    day, the official store link + the site's /shop/#botm) and one line to this month's
-    Monthly toolkit page (/monthly/YYYY-MM/) — never counted as news on their own
+  * the next committee meeting (Zoom link, ID, passcode, the chair's note)
+  * what was new LAST month (September, Central time): announcements, podcast episodes (a YouTube
+    upload of the same episode is folded into it), other videos, new documents, committee files —
+    data/site/whatsnew.json entries whose news date (wn_date) falls in the month, completed from the
+    full episodes / videos / pdfs / announcements files (whatsnew.json keeps only its newest 150)
+  * this month's magazine issues (theme, number of stories, a few highlights — free to read first,
+    members' stories, Area 65 and Texas writers first) + "put it to work" tips (config/carry.yml)
+    + the link to this month's toolkit (/monthly/YYYY-MM/)
+  * stories by writers from Area 65 and the rest of Texas published last month (spotlight.json)
+  * coming up THIS month: events not over yet (a monthly series once), the weekly open meetings,
+    the number of Grapevine meetings in our Area and nearby
+  * story deadlines through the end of NEXT month, La Viña's open topics, the phone story lines
+  * Book of the Month (compact; the prices live on /shop/#botm), the cheapest subscription and a
+    pointer to the daily quote on the home page
   * each section in English first, then in Spanish (titles are already translated)
 
-Standard library only (smtplib + email.mime) so it runs anywhere without installing
-the sync pipeline. PyYAML is used when available to read config/site.yml; a small
-built-in reader is the fallback.
+Standard library only (smtplib + email.mime) so it runs anywhere without installing the sync
+pipeline. PyYAML is used when available to read config/site.yml and config/carry.yml; a small
+built-in reader is the fallback for site.yml (without PyYAML the "put it to work" tips are left out).
 
 Usage (from the repo root):
 
-    python -m scripts.notify.send_digest --dry-run          # writes .tmp/digest.html + .tmp/digest.txt
-    python -m scripts.notify.send_digest                    # sends (needs the SMTP_* env vars below)
-    python -m scripts.notify.send_digest --only-on-weekday  # used by the daily schedule: sends only on digest.weekday
+    python -m scripts.notify.send_digest --dry-run                    # → .tmp/digest.html + .tmp/digest.txt
+    python -m scripts.notify.send_digest --dry-run --month 2026-10    # preview another edition
+    python -m scripts.notify.send_digest                              # sends (needs the SMTP_* env vars below)
 
-Environment (GitHub secrets in .github/workflows/weekly-digest.yml):
+Environment (GitHub secrets in .github/workflows/monthly-digest.yml):
 
     SMTP_SERVER     e.g. smtp.gmail.com                  (required to send)
     SMTP_PORT       587 (STARTTLS, default) or 465 (SSL)
@@ -40,6 +47,7 @@ Exit codes: 0 = sent / previewed / nothing to do, 1 = sending failed, 2 = not co
 from __future__ import annotations
 
 import argparse
+import calendar
 import html
 import json
 import os
@@ -58,125 +66,193 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[2]
 CONFIG_PATH = ROOT / "config" / "site.yml"
+CARRY_PATH = ROOT / "config" / "carry.yml"
 SITE_DIR = ROOT / "data" / "site"
 
-WEEKDAYS = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
-
-# Copies of three rules in scripts/sync/ (kept here so this script runs with the standard library
-# alone, without importing the sync pipeline) — keep them equal:
-NEW_DAYS = 14                                        # build_data.NEW_DAYS: the site's "New" badge
+# Copies of rules in scripts/sync/ and eleventy/filters/ (kept here so this script runs with the
+# standard library alone, without importing the sync pipeline) — keep them equal:
 MULTI_DAY_MIN_HOURS = 18                             # build_data.MULTI_DAY_MIN_H: a timed event over several days
-SCOPE_ORDER = ("neta65", "texas", "other", "unknown")  # geo.SCOPES: Area 65 writers first, then Texas
 EVERY_ISSUE = re.compile(r"(?i)in every issue|en cada (?:edici[oó]n|n[uú]mero)")  # build_data._EVERY_ISSUE
+SE_SUFFIX = re.compile(r"(?i)\s*[\[(]\s*(?:season|temporada)\s*\d+\s*[,;.·-]?\s*(?:episode|episodio|ep\.?)\s*\d+\s*[\])]\s*$")
+ONE_SUFFIX = re.compile(r"(?i)\s*[\[(]\s*(?:season|temporada|episode|episodio)\s*\d+\s*[\])]\s*$")  # media.js
+TIMED_NO_END_HOURS = 6                               # community.js eventEndMs: a timed event without an end
+NEWS_GROUPS = ("announcement", "article", "episode", "video", "pdf", "drive")  # community.js MONTH_NEWS
+NEWS_SOURCES = ("episodes", "videos", "pdfs", "announcements")                 # community.js MONTH_SOURCES
 
 # Brand colors (same tokens as src/assets/css/main.css, light theme).
 C = {
     "paper": "#fbf8f2", "surface": "#ffffff", "surface2": "#f4efe6", "ink": "#1d1a26",
     "muted": "#57526a", "faint": "#8a8599", "line": "#e6dfd2",
     "gv": "#0a5fa8", "gv_strong": "#07457c", "gv_soft": "#e5f0fa",
-    "lv": "#b8430b", "lv_soft": "#fdeee3", "grape": "#5b2a86", "grape_soft": "#f1e8f8",
+    "lv": "#b8430b", "lv_strong": "#8f3308", "lv_soft": "#fdeee3", "grape": "#5b2a86", "grape_soft": "#f1e8f8",
     "vine": "#2f6e2c", "vine_soft": "#e7f3e3",
 }
 
 # ---------------------------------------------------------------------------- words
+# The website's wording (src/_i18n/community.json → community.digest.*), in the e-mail's own table.
 T = {
     "en": {
         "lang_name": "English",
-        "heading": "What's new this week",
-        "intro": "Here is everything new for Grapevine and La Viña from {range}, gathered automatically from "
-                 "aagrapevine.org, aalavina.org, the podcast, YouTube, Instagram and our committee's Google Drive.",
+        "masthead": "Monthly Digest",
+        "edition": "{month} edition",
+        "edition_sub": "What's new in {prev} · Coming up in {month}",
+        "intro": "In {prev}: {list}. And here's what's coming up in {month}.",
+        "intro_quiet": "A quiet {prev} on the site. Here's what's coming up in {month}.",
+        "and": "and",
+        "n": {"article": ("{n} magazine stories", "1 magazine story"), "episode": ("{n} podcast episodes", "1 podcast episode"),
+              "video": ("{n} videos", "1 video"), "pdf": ("{n} documents", "1 document"),
+              "drive": ("{n} committee files", "1 committee file"), "announcement": ("{n} announcements", "1 announcement")},
         "next_meeting": "Next committee meeting",
         "join_zoom": "Join on Zoom",
         "meeting_id": "Meeting ID",
         "passcode": "Passcode",
         "meeting_note": "All AA members are welcome. No registration required.",
-        "announcements": "Announcements",
-        "events": "Coming up",
-        "articles": "New in the magazines",
-        "episodes": "Podcast episodes",
-        "videos": "Videos",
-        "instagram": "On Instagram",
-        "pdfs": "New documents & service resources",
-        "drive": "From the committee",
+        "announcement": "Announcements",
+        "issues": "This month in the magazines",
+        "stories": ("{n} stories", "1 story"),
+        "free_n": "{n} free to read",
+        "free": "free to read",
+        "subscriber": "subscriber story",
+        "issue_more": "See all {n} stories",
+        "tips": "Put it to work",
+        "tips_sub": "Ways to carry the message with this month's Grapevine",
+        "toolkit": "This month's toolkit ({month})",
+        "writers": "Writers from Area 65 & Texas",
+        "writers_sub": "Their stories came out in Grapevine or La Viña in {prev} — Area 65 writers first.",
+        "group_neta65": "Area 65 (Northeast Texas)",
+        "group_texas": "Elsewhere in Texas",
+        "anonymous": "Anonymous",
+        "episode": "Podcasts",
+        "video": "Videos",
+        "pdf": "Documents",
+        "drive": "Committee uploads",
+        "twin": "also on YouTube",
+        "instagram": "Grapevine and La Viña on Instagram",
+        "coming": "Coming up in {month}",
+        "no_events": "No other events on the calendar for the rest of {month} yet.",
+        "every_week": "Every week",
+        "starting": "starting {date}",
+        "gvm": "Grapevine meetings near you",
+        "gvm_text": "{ours} every week in our Area, plus {nearby} in nearby areas",
+        "gvm_text_area": "{ours} every week in our Area",
+        "meetings_n": ("{n} meetings", "1 meeting"),
+        "story": "Share your story — upcoming deadlines",
+        "due": "Due {date}",
+        "lv_anytime": "La Viña takes stories on its suggested themes anytime — no deadline. This month, why not:",
+        "record": "Record your story by phone",
+        "record_how": "How to record by phone",
+        "story_cta": "How to send a story",
         "see_all": "See all",
         "details": "Details",
         "more": "and {n} more on the website",
-        "read_more": "Read more",
-        "new_posts": "{n} new posts",
-        "new_post": "1 new post",
         "album": "Photos: {name}",
         "new_photos": "{n} new photos",
         "new_photo": "1 new photo",
-        "nothing": "Nothing new this week — the website still has hundreds of stories, podcasts and service resources.",
+        "nothing": "A quiet month — nothing new was published in {prev}. The website still has hundreds of stories, podcasts and service resources.",
         "cta_site": "Open the website",
         "cta_new": "Everything new",
         "cta_events": "Events calendar",
         "machine": "Some titles were translated automatically.",
         "online": "Online",
-        "all_day": "All day",
         "monthly": "every month",
         "tentative": "details to be confirmed",
-        "footer_why": "You are receiving this weekly summary from the {committee}.",
+        "footer_why": "You are receiving this monthly summary from the {committee}.",
         "footer_unsub": "To stop receiving it, reply with \"unsubscribe\".",
         "footer_anon": "Feel free to forward it to your group or district — and please protect everyone's anonymity.",
         "pages": "{n} pages",
         "min": "{n} min",
-        "episode": "S{s} · E{e}",
+        "episode_se": "S{s} · E{e}",
         "botm_title": "Book of the Month — {pct}% off",
         "botm_title_plain": "Book of the Month",
         "botm_regular": "(regular {price})",
         "botm_until": "until {date}",
         "botm_more": "Book of the Month details on our shop page",
-        "toolkit": "This month's toolkit ({month})",
+        "subs_from": "Subscriptions from {amount} a month",
+        "quote": "A daily quote from Grapevine and La Viña, on our home page",
+        "quote_link": "Read today's quote",
+        "full_calendar": "Full calendar",
     },
     "es": {
         "lang_name": "Español",
-        "heading": "Novedades de la semana",
-        "intro": "Aquí está todo lo nuevo de Grapevine y La Viña del {range}, recopilado automáticamente de "
-                 "aagrapevine.org, aalavina.org, el podcast, YouTube, Instagram y el Google Drive de nuestro comité.",
+        "masthead": "Resumen mensual",
+        "edition": "Edición de {month}",
+        "edition_sub": "Novedades de {prev} · Lo que viene en {month}",
+        "intro": "En {prev}: {list}. Y esto es lo que viene en {month}.",
+        "intro_quiet": "Un {prev} tranquilo en el sitio. Esto es lo que viene en {month}.",
+        "and": "y",
+        "n": {"article": ("{n} historias de las revistas", "1 historia de las revistas"),
+              "episode": ("{n} episodios de podcast", "1 episodio de podcast"),
+              "video": ("{n} videos", "1 video"), "pdf": ("{n} documentos", "1 documento"),
+              "drive": ("{n} archivos del comité", "1 archivo del comité"), "announcement": ("{n} anuncios", "1 anuncio")},
         "next_meeting": "Próxima reunión del comité",
         "join_zoom": "Entrar por Zoom",
         "meeting_id": "ID de reunión",
         "passcode": "Código de acceso",
-        "meeting_note": "Todos los miembros de AA son bienvenidos. No se requiere inscripción.",
-        "announcements": "Anuncios",
-        "events": "Próximos eventos",
-        "articles": "Nuevo en las revistas",
-        "episodes": "Episodios del podcast",
-        "videos": "Videos",
-        "instagram": "En Instagram",
-        "pdfs": "Nuevos documentos y recursos de servicio",
-        "drive": "Del comité",
+        "meeting_note": "Todos los miembros de AA son bienvenidos. No hace falta inscribirse.",
+        "announcement": "Anuncios",
+        "issues": "Este mes en las revistas",
+        "stories": ("{n} historias", "1 historia"),
+        "free_n": "{n} gratis para leer",
+        "free": "gratis para leer",
+        "subscriber": "historia para suscriptores",
+        "issue_more": "Ver las {n} historias",
+        "tips": "Ponla a trabajar",
+        "tips_sub": "Maneras de llevar el mensaje con la Grapevine de este mes",
+        "toolkit": "El kit de este mes ({month})",
+        "writers": "Escritores del Área 65 y de Texas",
+        "writers_sub": "Sus historias salieron en Grapevine o La Viña en {prev} — primero los del Área 65.",
+        "group_neta65": "Área 65 (Noreste de Texas)",
+        "group_texas": "En el resto de Texas",
+        "anonymous": "Anónimo",
+        "episode": "Podcasts",
+        "video": "Videos",
+        "pdf": "Documentos",
+        "drive": "Archivos del comité",
+        "twin": "también en YouTube",
+        "instagram": "Grapevine y La Viña en Instagram",
+        "coming": "Lo que viene en {month}",
+        "no_events": "Todavía no hay otros eventos en el calendario para lo que queda de {month}.",
+        "every_week": "Cada semana",
+        "starting": "desde el {date}",
+        "gvm": "Reuniones de Grapevine cerca de ti",
+        "gvm_text": "{ours} cada semana en nuestra Área, y {nearby} en áreas cercanas",
+        "gvm_text_area": "{ours} cada semana en nuestra Área",
+        "meetings_n": ("{n} reuniones", "1 reunión"),
+        "story": "Comparte tu historia — próximas fechas límite",
+        "due": "Fecha límite: {date}",
+        "lv_anytime": "La Viña recibe historias sobre sus temas sugeridos en cualquier momento, sin fecha límite. Este mes, ¿por qué no?:",
+        "record": "Graba tu historia por teléfono",
+        "record_how": "Cómo grabar por teléfono",
+        "story_cta": "Cómo enviar una historia",
         "see_all": "Ver todo",
         "details": "Detalles",
         "more": "y {n} más en el sitio web",
-        "read_more": "Leer más",
-        "new_posts": "{n} publicaciones nuevas",
-        "new_post": "1 publicación nueva",
         "album": "Fotos: {name}",
         "new_photos": "{n} fotos nuevas",
         "new_photo": "1 foto nueva",
-        "nothing": "No hay novedades esta semana — el sitio web tiene cientos de historias, podcasts y recursos de servicio.",
+        "nothing": "Un mes tranquilo — no se publicó nada nuevo en {prev}. El sitio web tiene cientos de historias, podcasts y recursos de servicio.",
         "cta_site": "Abrir el sitio web",
         "cta_new": "Todas las novedades",
         "cta_events": "Calendario de eventos",
         "machine": "Algunos títulos se tradujeron automáticamente.",
         "online": "En línea",
-        "all_day": "Todo el día",
         "monthly": "cada mes",
         "tentative": "detalles por confirmar",
-        "footer_why": "Recibe este resumen semanal del {committee}.",
-        "footer_unsub": "Para dejar de recibirlo, responda con \"cancelar\".",
-        "footer_anon": "Puede reenviarlo a su grupo o distrito — y por favor proteja el anonimato de todos.",
+        "footer_why": "Recibes este resumen mensual del {committee}.",
+        "footer_unsub": "Para dejar de recibirlo, responde con \"cancelar\".",
+        "footer_anon": "Puedes reenviarlo a tu grupo o distrito — y, por favor, protege el anonimato de todos.",
         "pages": "{n} páginas",
         "min": "{n} min",
-        "episode": "T{s} · E{e}",
+        "episode_se": "T{s} · E{e}",
         "botm_title": "Libro del mes — {pct}% de descuento",
         "botm_title_plain": "Libro del mes",
         "botm_regular": "(precio regular {price})",
         "botm_until": "hasta el {date}",
         "botm_more": "Detalles del libro del mes en nuestra página de la tienda",
-        "toolkit": "El kit de este mes ({month})",
+        "subs_from": "Suscripciones desde {amount} al mes",
+        "quote": "Una cita diaria de Grapevine y La Viña, en nuestra página de inicio",
+        "quote_link": "Lee la cita de hoy",
+        "full_calendar": "Calendario completo",
     },
 }
 
@@ -200,13 +276,11 @@ DRIVE_CATEGORIES = {
     "announcements": ("Announcements", "Anuncios"), "forms": ("Forms", "Formularios"), "other": ("Files", "Archivos"),
 }
 
-# Section order + which site page "See all" points to.
+# The news lists of the edition, in order, with the site page "See all" points to.
 GROUPS = [
-    ("articles", "/read/"),
-    ("episodes", "/listen/"),
-    ("videos", "/watch/"),
-    ("instagram", "/instagram/"),
-    ("pdfs", "/library/"),
+    ("episode", "/listen/"),
+    ("video", "/watch/"),
+    ("pdf", "/library/"),
     ("drive", "/portfolio/"),
 ]
 
@@ -268,6 +342,37 @@ def load_config() -> dict:
         return _mini_yaml(text)
 
 
+def load_carry() -> dict:
+    """config/carry.yml ("put this issue to work"): {"ways": {id: way}, "tips": {"YYYY-MM": [tip]}}.
+    Needs PyYAML (nested lists); without it, or with a broken file, the tips are simply left out."""
+    try:
+        import yaml  # type: ignore
+
+        data = yaml.safe_load(CARRY_PATH.read_text(encoding="utf-8")) or {}
+    except ImportError:
+        log("PyYAML is not installed — the \"put it to work\" tips are left out")
+        return {"ways": {}, "tips": {}}
+    except Exception as e:  # missing/broken file never stops the digest
+        log(f"could not read config/carry.yml ({e}) — the tips are left out")
+        return {"ways": {}, "tips": {}}
+    ways = {str(w["id"]): w for w in (data.get("ways") or []) if isinstance(w, dict) and w.get("id")}
+    tips = {str(k): v for k, v in (data.get("tips") or {}).items() if isinstance(v, list)}
+    return {"ways": ways, "tips": tips}
+
+
+def load_file(name: str) -> dict:
+    """A whole data/site file ({} when missing or broken — a broken file never stops the digest)."""
+    try:
+        with open(SITE_DIR / f"{name}.json", encoding="utf-8") as f:
+            data = json.load(f)
+        return data if isinstance(data, dict) else {}
+    except FileNotFoundError:
+        return {}
+    except Exception as e:
+        log(f"could not read data/site/{name}.json: {e}")
+        return {}
+
+
 def load_items(name: str) -> list[dict]:
     p = SITE_DIR / f"{name}.json"
     shown = f"data/site/{name}.json"
@@ -286,16 +391,8 @@ def load_items(name: str) -> list[dict]:
 def load_botm() -> list[dict]:
     """The Book of the Month offers of data/site/shop.json (`botm`, 0–2 entries, Grapevine first —
     docs/DATA_SCHEMA.md → shop.json). That file has no `items`; a missing or broken file = no offers."""
-    try:
-        with open(SITE_DIR / "shop.json", encoding="utf-8") as f:
-            data = json.load(f)
-        botm = data.get("botm") if isinstance(data, dict) else None
-        return [b for b in (botm or []) if isinstance(b, dict)]
-    except FileNotFoundError:
-        return []
-    except Exception as e:  # corrupt JSON must never stop the digest
-        log(f"could not read data/site/shop.json: {e}")
-        return []
+    botm = load_file("shop").get("botm")
+    return [b for b in (botm or []) if isinstance(b, dict)]
 
 
 # ---------------------------------------------------------------------------- time
@@ -338,14 +435,57 @@ def is_date_only(v: Any) -> bool:
     return isinstance(v, str) and bool(re.fullmatch(r"\d{4}-\d{2}-\d{2}", v.strip()))
 
 
-def end_of_day(v: str) -> datetime:
-    """Date-only 'YYYY-MM-DD' → 23:59 Central time that day (as build_data.event_end_ts does),
+def central_day(v: Any) -> date | None:
+    """The calendar day (America/Chicago) of an ISO timestamp; a date-only value is that day."""
+    if is_date_only(v):
+        return date.fromisoformat(v.strip())
+    dt = parse_dt(v)
+    return to_central(dt).date() if dt else None
+
+
+def end_of_day(v: str | date) -> datetime:
+    """Date-only 'YYYY-MM-DD' → the midnight after that day, Central time (community.js eventEndMs),
     so an all-day event stays in the digest for the whole of its last day."""
-    d = date.fromisoformat(v.strip())
+    d = v if isinstance(v, date) else date.fromisoformat(v.strip())
+    nxt = d + timedelta(days=1)
     if TZ is not None:
-        return datetime(d.year, d.month, d.day, 23, 59, tzinfo=TZ)
-    off = to_central(datetime(d.year, d.month, d.day, 12, tzinfo=timezone.utc)).utcoffset() or timedelta(hours=-6)
-    return datetime(d.year, d.month, d.day, 23, 59, tzinfo=timezone(off))
+        return datetime(nxt.year, nxt.month, nxt.day, 0, 0, tzinfo=TZ)
+    off = to_central(datetime(nxt.year, nxt.month, nxt.day, 12, tzinfo=timezone.utc)).utcoffset() or timedelta(hours=-6)
+    return datetime(nxt.year, nxt.month, nxt.day, 0, 0, tzinfo=timezone(off))
+
+
+def month_add(key: str, n: int) -> str:
+    """'2026-01' + (-1) → '2025-12'."""
+    y, m = (int(x) for x in key.split("-"))
+    i = y * 12 + (m - 1) + n
+    return f"{i // 12:04d}-{i % 12 + 1:02d}"
+
+
+def month_days(key: str) -> tuple[date, date]:
+    """'2026-02' → (2026-02-01, 2026-02-28)."""
+    y, m = (int(x) for x in key.split("-"))
+    return date(y, m, 1), date(y, m, calendar.monthrange(y, m)[1])
+
+
+def edition_of(now: datetime, key: str | None = None) -> dict:
+    """The edition of `now` (its Central-time month) or of an explicit 'YYYY-MM': the month itself,
+    the PREVIOUS month the news comes from and the NEXT month (story deadlines run through it)."""
+    k = key if key and re.fullmatch(r"\d{4}-(0[1-9]|1[0-2])", key) else to_central(now).strftime("%Y-%m")
+    prev, nxt = month_add(k, -1), month_add(k, 1)
+    first, last = month_days(k)
+    prev_first, prev_last = month_days(prev)
+    return {"key": k, "first": first, "last": last, "prev": prev, "prev_first": prev_first,
+            "prev_last": prev_last, "next": nxt, "next_last": month_days(nxt)[1]}
+
+
+def month_word(key: str, lang: str) -> str:
+    """'2026-09' → "September" / "septiembre"."""
+    return MONTHS[lang][int(key[5:7]) - 1]
+
+
+def month_label(key: str, lang: str) -> str:
+    """'2026-09' → "September 2026" / "septiembre de 2026" (the /monthly/ page's label)."""
+    return f"{month_word(key, lang)} de {key[:4]}" if lang == "es" else f"{month_word(key, lang)} {key[:4]}"
 
 
 def fmt_day(dt: datetime, lang: str, weekday: bool = True, year: bool = False) -> str:
@@ -364,21 +504,16 @@ def fmt_day(dt: datetime, lang: str, weekday: bool = True, year: bool = False) -
 def fmt_time(dt: datetime, lang: str) -> str:
     d = to_central(dt)
     tz = d.tzname() or "CT"
-    if lang == "es":
-        return f"{d.hour}:{d.minute:02d} {tz}"
     h = d.hour % 12 or 12
+    if lang == "es":   # "7:00 p. m. CDT", the site's spelling (no-break spaces: never split across lines)
+        return f"{h}:{d.minute:02d} {'a.' if d.hour < 12 else 'p.'} m. {tz}"
     return f"{h}:{d.minute:02d} {'AM' if d.hour < 12 else 'PM'} {tz}"
 
 
-def fmt_range(start: datetime, end: datetime, lang: str) -> str:
-    a, b = to_central(start), to_central(end)
-    if lang == "es":
-        if a.month == b.month and a.year == b.year:
-            return f"{a.day} al {b.day} de {MONTHS['es'][b.month - 1]} de {b.year}"
-        return f"{a.day} de {MONTHS['es'][a.month - 1]} al {b.day} de {MONTHS['es'][b.month - 1]} de {b.year}"
-    if a.month == b.month and a.year == b.year:
-        return f"{MONTHS['en'][a.month - 1]} {a.day}–{b.day}, {b.year}"
-    return f"{MONTHS['en'][a.month - 1]} {a.day} – {MONTHS['en'][b.month - 1]} {b.day}, {b.year}"
+def fmt_month_day(ymd: str | date, lang: str) -> str:
+    """'2026-10-14' → "October 14" / "14 de octubre"."""
+    d = ymd if isinstance(ymd, date) else date.fromisoformat(ymd)
+    return f"{d.day} de {MONTHS['es'][d.month - 1]}" if lang == "es" else f"{MONTHS['en'][d.month - 1]} {d.day}"
 
 
 # ---------------------------------------------------------------------------- item helpers
@@ -391,28 +526,57 @@ def tx(item: dict, field: str, lang: str) -> str:
     return str(val or "").strip()
 
 
+def tr(item: dict | None, field: str, lang: str) -> str:
+    """The /monthly/ month model's rule (monthly.js tr): i18n[lang], else i18n.en, else the field
+    (or extra[field]) as written."""
+    if not item:
+        return ""
+    i = (item.get("i18n") or {}).get(field) or {}
+    for k in (lang, "en"):
+        if isinstance(i.get(k), str) and i[k].strip():
+            return i[k].strip()
+    return str(item.get(field) or (item.get("extra") or {}).get(field) or "").strip()
+
+
+def tx_extra(item: dict, field: str, lang: str) -> str:
+    """An `extra` field (issue_label, topic, section, album …) in the requested language: build_data's
+    i18n copy when it has that language, else the original value."""
+    val = ((item.get("i18n") or {}).get(field) or {}).get(lang) or (item.get("extra") or {}).get(field)
+    return str(val or "").strip()
+
+
 def is_machine(item: dict, lang: str) -> bool:
     return lang in (item.get("machine") or [])
 
 
-def effective_date(item: dict) -> datetime | None:
-    """When did this item become *news*?  min(publish date, first seen):
-       * brand-new items → their publish date
-       * next month's magazine issue (future-dated) → the day we first saw it
-       * very old PDFs discovered by the first big crawl → their old date (so they don't flood the digest)
-    """
-    ds = [d for d in (parse_dt(item.get("date")), parse_dt(item.get("first_seen"))) if d]
-    return min(ds) if ds else None
+def one_line(v: Any) -> str:
+    return re.sub(r"\s+", " ", str(v or "")).strip()
 
 
-def still_news(item: dict, now: datetime) -> bool:
-    """Does the website still mark this item "New"? build_data's is_new flag decides (it already
-    leaves out everything the very first harvest found); data without the flag falls back to the
-    What's New date being less than NEW_DAYS old."""
-    if "is_new" in item:
-        return bool(item.get("is_new"))
-    wn = parse_dt(item.get("wn_date")) or effective_date(item)
-    return bool(wn and wn <= now and now - wn < timedelta(days=NEW_DAYS))
+def media_title(item: dict, lang: str) -> str:
+    """A podcast episode / video title without its "[Season 11, Episode 12]" tail (the badge says it),
+    like the website's media titles."""
+    t = tx(item, "title", lang)
+    s = ONE_SUFFIX.sub("", SE_SUFFIX.sub("", t)).strip()
+    return s or t
+
+
+def title_of(item: dict, lang: str) -> str:
+    return media_title(item, lang) if item.get("kind") in ("episode", "video") else (tx(item, "title", lang) or str(item.get("title") or ""))
+
+
+def group_of(item: dict) -> str:
+    """Which What's New group an item belongs to (community.js groupOf)."""
+    k = item.get("kind")
+    if k in ("announcement", "event", "article", "episode", "post", "topic"):
+        return k
+    if k == "video":
+        return "drive" if item.get("source") == "drive" else "video"
+    if k == "pdf":
+        return "drive" if item.get("source") == "drive" else "pdf"
+    if item.get("source") == "drive" or k in ("document", "slides", "photo", "video_file", "form"):
+        return "drive"
+    return "other"
 
 
 def is_department(item: dict) -> bool:
@@ -421,21 +585,26 @@ def is_department(item: dict) -> bool:
     return ex.get("department") is True or bool(EVERY_ISSUE.search(str(ex.get("section") or "")))
 
 
-def story_order(item: dict, now: datetime) -> tuple:
-    """Magazine stories: members' stories before "In Every Issue" pages, Area 65 writers first and
-    then the rest of Texas (like the site's published-writers spotlight), then newest first."""
-    scope = ((item.get("extra") or {}).get("geo") or {}).get("scope")
-    rank = SCOPE_ORDER.index(scope) if scope in SCOPE_ORDER else len(SCOPE_ORDER) - 1
-    return is_department(item), rank, -(effective_date(item) or now).timestamp()
+def scope_rank(item: dict) -> int:
+    return {"neta65": 0, "texas": 1}.get(((item.get("extra") or {}).get("geo") or {}).get("scope"), 2)
+
+
+def is_recurring(item: dict) -> bool:
+    """A date of a monthly event from config/site.yml `recurring_events:` (build_data.recurring_events)."""
+    return item.get("category") == "recurring"
+
+
+def photo_count(item: dict) -> int:
+    """How many photos a What's New item stands for (a same-day album group has extra.count)."""
+    try:
+        return max(1, int((item.get("extra") or {}).get("count") or 1))
+    except (TypeError, ValueError):
+        return 1
 
 
 # build_data.committee_meetings writes the meeting's summary as "<this intro> <meeting.note>".
 MEETING_INTRO = {"en": re.compile(r"^Our monthly committee meeting on [^.]*\.\s*"),
                  "es": re.compile(r"^Nuestra reunión mensual del comité por [^.]*\.\s*")}
-
-
-def _one_line(v: Any) -> str:
-    return re.sub(r"\s+", " ", str(v or "")).strip()
 
 
 def meeting_note(cfg: dict, meeting: dict, lang: str) -> str:
@@ -446,15 +615,15 @@ def meeting_note(cfg: dict, meeting: dict, lang: str) -> str:
     mt = cfg.get("meeting")
     if not isinstance(mt, dict):
         return T[lang]["meeting_note"]
-    note = _one_line(mt.get("note"))
+    note = one_line(mt.get("note"))
     if lang == "en" or not note:
         return note
-    es = _one_line(mt.get("note_es"))
+    es = one_line(mt.get("note_es"))
     if es:
         return es
     summary = (meeting.get("i18n") or {}).get("summary") or {}
-    built_en = MEETING_INTRO["en"].sub("", _one_line(summary.get("en")))
-    built_es = MEETING_INTRO["es"].sub("", _one_line(summary.get("es")))
+    built_en = MEETING_INTRO["en"].sub("", one_line(summary.get("en")))
+    built_es = MEETING_INTRO["es"].sub("", one_line(summary.get("es")))
     # only when the site was built from the same note (an edit made today is not built yet)
     return built_es if built_es and built_en == note else note
 
@@ -466,6 +635,10 @@ class Links:
     def page(self, path: str, lang: str) -> str:
         path = path if path.startswith("/") else "/" + path
         return self.base + ("/es" if lang == "es" else "") + path
+
+    def asset(self, path: str) -> str:
+        """A site file (never language-prefixed): '/assets/cache/…' → the full address."""
+        return path if path.startswith(("http://", "https://")) else self.base + ("" if path.startswith("/") else "/") + path
 
     def item(self, item: dict, lang: str, fallback_page: str) -> str:
         ex = item.get("extra") or {}
@@ -488,14 +661,14 @@ def item_label(item: dict, lang: str) -> tuple[str, str, str]:
         # Grapevine Weekly Open AA Meeting ("wo"), which gets its own pill.
         show = item.get("category") or (item.get("extra") or {}).get("show")
         return ("Weekly Open" if show == "wo" else "Podcast"), C["grape"], C["grape_soft"]
-    if kind in ("video", "video_file"):
+    if kind in ("video", "video_file") and src != "drive":
         return "Video", C["grape"], C["grape_soft"]
-    if kind == "post":
-        return ("La Viña", C["lv"], C["lv_soft"]) if item.get("category") == "lv" else ("Grapevine", C["gv"], C["gv_soft"])
-    if kind == "pdf":
+    if kind == "pdf" and src != "drive":
         host = (item.get("extra") or {}).get("host") or ""
         doc = "Documento" if lang == "es" else "Document"
         return (f"{doc} · La Viña", C["lv"], C["lv_soft"]) if "lavina" in host else (f"{doc} · Grapevine", C["gv"], C["gv_soft"])
+    if kind == "announcement":
+        return ("Anuncio" if lang == "es" else "Announcement"), C["vine"], C["vine_soft"]
     if src == "drive":
         en, es = DRIVE_CATEGORIES.get(item.get("category") or "other", DRIVE_CATEGORIES["other"])
         return (es if lang == "es" else en), C["vine"], C["vine_soft"]
@@ -510,28 +683,25 @@ def localize_months(label: str, lang: str) -> str:
     return label
 
 
-def tx_extra(item: dict, field: str, lang: str) -> str:
-    """An `extra` field (issue_label, topic, section, album …) in the requested language: build_data's
-    i18n copy when it has that language, else the original value."""
-    val = ((item.get("i18n") or {}).get(field) or {}).get(lang) or (item.get("extra") or {}).get(field)
-    return str(val or "").strip()
+def issue_label(item: dict, lang: str) -> str:
+    label = ((item.get("i18n") or {}).get("issue_label") or {}).get(lang)
+    return str(label).strip() if label else localize_months(str((item.get("extra") or {}).get("issue_label") or ""), lang)
 
 
 def item_meta(item: dict, lang: str) -> str:
     ex = item.get("extra") or {}
     kind = item.get("kind")
     parts: list[str] = []
-    d = parse_dt(item.get("date"))
+    d = parse_dt(item.get("_when") or item.get("date"))
     if kind == "article":
         if ex.get("issue_label"):
-            label = ((item.get("i18n") or {}).get("issue_label") or {}).get(lang)
-            parts.append(str(label).strip() if label else localize_months(str(ex["issue_label"]), lang))
+            parts.append(issue_label(item, lang))
         topic_field = "topic" if ex.get("topic") else "section" if ex.get("section") else None
         if topic_field:
             parts.append(tx_extra(item, topic_field, lang))
     elif kind == "episode":
         if ex.get("season") and ex.get("episode"):
-            parts.append(T[lang]["episode"].format(s=ex["season"], e=ex["episode"]))
+            parts.append(T[lang]["episode_se"].format(s=ex["season"], e=ex["episode"]))
         if ex.get("duration_sec"):
             parts.append(T[lang]["min"].format(n=max(1, round(int(ex["duration_sec"]) / 60))))
         if d:
@@ -541,7 +711,7 @@ def item_meta(item: dict, lang: str) -> str:
             parts.append(fmt_day(d, lang, weekday=False))
         if ex.get("duration_sec"):
             parts.append(T[lang]["min"].format(n=max(1, round(int(ex["duration_sec"]) / 60))))
-    elif kind == "pdf":
+    elif kind == "pdf" and item.get("source") != "drive":
         if ex.get("pages"):
             parts.append(T[lang]["pages"].format(n=ex["pages"]))
         host = str(ex.get("host") or "").replace("www.", "")
@@ -553,7 +723,6 @@ def item_meta(item: dict, lang: str) -> str:
     return " · ".join(p for p in parts if p)
 
 
-# ---------------------------------------------------------------------------- collect
 def md_to_text(s: str) -> str:
     s = re.sub(r"\[([^\]]+)\]\((\S+?)\)", r"\1 (\2)", s)
     s = re.sub(r"(\*\*|__|\*|_|`)", "", s)
@@ -581,166 +750,426 @@ def shorten(s: str, n: int) -> str:
     return s if len(s) <= n else s[:n].rsplit(" ", 1)[0].rstrip(",;:.- ") + "…"
 
 
-def collect(now: datetime, days: int, event_days: int, max_per: int) -> dict:
-    start = now - timedelta(days=days)
-    data: dict[str, Any] = {"start": start, "end": now, "groups": {}, "announcements": [], "events": [],
-                            "meeting": None, "machine": {"en": False, "es": False}}
+# ---------------------------------------------------------------------------- collect
+def news_date(item: dict, now: datetime, from_whatsnew: bool) -> str | None:
+    """When an item became news. A What's New entry: its wn_date (build_data applied every rule);
+    an entry without it: the community.js whenOf fallback. A full-list item (episodes, videos,
+    documents, announcements): its own date only — undated or future-dated items count only
+    from What's New (build_data.effective_ts)."""
+    if not from_whatsnew:
+        d = item.get("date")
+        return d if isinstance(d, str) and parse_dt(d) else None
+    if item.get("wn_date"):
+        return item["wn_date"]
+    hi = now + timedelta(days=1)
+    d, fs = parse_dt(item.get("date")), parse_dt(item.get("first_seen"))
+    if d and d <= hi:
+        return item.get("date")
+    if fs and fs <= hi:
+        return item.get("first_seen")
+    return item.get("date") or item.get("first_seen")
 
-    hi = now + timedelta(hours=1)
 
-    def in_window(it: dict) -> bool:
-        """New this week when EITHER
-        * it became news in the window (min(date, first_seen), see effective_date), OR
-        * we first found it in the window and the website still marks it "New" — something dated
-          before the previous digest but only found after it (a PDF dated last month, a La Viña
-          issue dated the 1st, an announcement whose name starts with an earlier date) would
-          otherwise miss every digest.
-        An item's first_seen falls in exactly one weekly window, so nothing is listed twice."""
-        d = effective_date(it)
-        if d and start <= d <= hi:
-            return True
-        fs = parse_dt(it.get("first_seen"))
-        return bool(fs and start <= fs <= hi and still_news(it, now))
+def merge_twins(items: list[dict]) -> list[dict]:
+    """A podcast episode and its YouTube upload (same Central day, same title or same season/episode)
+    are ONE entry: the episode, carrying the video as `_twin` (community.js mergeMediaTwins)."""
+    def norm(s: Any) -> str:
+        return one_line(s).lower()
 
-    # ---- new content (whatsnew = newest items across every source)
-    seen: set[str] = set()
-    buckets: dict[str, list[dict]] = {g: [] for g, _ in GROUPS}
-    for it in load_items("whatsnew"):
-        iid = it.get("id") or it.get("url")
-        if not iid or iid in seen or it.get("status") == "gone" or not in_window(it):
-            continue
-        seen.add(iid)
-        kind, src = it.get("kind"), it.get("source")
-        if kind == "article":
-            buckets["articles"].append(it)
-        elif kind == "episode":
-            buckets["episodes"].append(it)
-        elif kind == "video":
-            buckets["videos"].append(it)
-        elif kind == "post":
-            buckets["instagram"].append(it)
-        elif kind == "pdf":
-            buckets["pdfs"].append(it)
-        elif src == "drive" and kind in ("document", "slides", "photo", "video_file", "form"):
-            buckets["drive"].append(it)
-        # announcements/events come from their own files below
-    for g, items in buckets.items():
-        if g == "articles":   # members' stories (Area 65, then Texas) before "In Every Issue" pages
-            items.sort(key=lambda i: story_order(i, now))
-        else:
-            items.sort(key=lambda i: effective_date(i) or now, reverse=True)
-        data["groups"][g] = items
+    def se(i: dict) -> str:
+        ex = i.get("extra") or {}
+        return f"{ex['season']}|{ex['episode']}" if ex.get("season") is not None and ex.get("episode") is not None else ""
 
-    # ---- announcements (new in the window, not expired)
-    today = to_central(now).date().isoformat()
-    for it in load_items("announcements"):
-        ex = it.get("extra") or {}
-        if ex.get("expires") and str(ex["expires"])[:10] < today:
+    eps = [i for i in items if i.get("kind") == "episode"]
+    if not eps:
+        return items
+    twin_of: dict[int, dict] = {}
+    taken: set[int] = set()
+    for v in items:
+        if v.get("kind") != "video" or v.get("source") == "drive":
             continue
-        if in_window(it):
-            data["announcements"].append(it)
-    data["announcements"].sort(key=lambda i: (not (i.get("extra") or {}).get("pinned"), -(effective_date(i) or now).timestamp()))
-
-    # ---- events: next committee meeting (callout) + other upcoming events
-    horizon = now + timedelta(days=event_days)
-    meeting_horizon = now + timedelta(days=max(event_days, 45))  # monthly meeting: always show the next one
-    upcoming = []
-    for it in load_items("events"):
-        ex = it.get("extra") or {}
-        start_raw, end_raw = ex.get("start") or it.get("date"), ex.get("end")
-        st = parse_dt(start_raw)
-        en = parse_dt(end_raw) if end_raw else None
-        if not st:
-            continue
-        # When the event is over. All-day (date-only) events stay until 23:59 Central on their
-        # last day, like the website; a timed event without an end counts as 2 hours long.
-        if en is not None:
-            last = end_of_day(end_raw) if is_date_only(end_raw) else en
-        elif is_date_only(start_raw):
-            last = end_of_day(start_raw)
-        else:
-            last = st + timedelta(hours=2)
-        if last < now or st > (meeting_horizon if it.get("category") == "committee" else horizon):
-            continue
-        upcoming.append((st, it))
-    upcoming.sort(key=lambda x: x[0])
-    series_seen: set[str] = set()
-    for st, it in upcoming:
-        if it.get("category") == "committee":  # auto-generated monthly committee meeting
-            if data["meeting"] is None:
-                data["meeting"] = it
-            continue
-        if is_recurring(it):  # a monthly event from config/site.yml recurring_events: only its next date
-            series = str((it.get("extra") or {}).get("series") or it.get("id"))
-            if series in series_seen:
+        day, t, k = central_day(v["_when"]), norm(v.get("title")), se(v)
+        for e in eps:
+            if id(e) in taken or central_day(e["_when"]) != day:
                 continue
-            series_seen.add(series)
-        data["events"].append(it)
+            if (t and norm(e.get("title")) == t) or (k and se(e) == k):
+                twin_of[id(v)] = e
+                taken.add(id(e))
+                break
+    if not twin_of:
+        return items
+    videos = {id(e): v for v in items if id(v) in twin_of for e in [twin_of[id(v)]]}
+    return [({**i, "_twin": videos[id(i)]} if id(i) in videos else i) for i in items if id(i) not in twin_of]
 
-    # ---- Book of the Month (a compact teaser: the prices and dates live on the site's /shop/#botm)
+
+def month_news(now: datetime, ed: dict) -> dict[str, list[dict]]:
+    """Last month's news by group, newest first (announcements: pinned first)."""
+    today = to_central(now).date().isoformat()
+    hi = now + timedelta(days=1)
+    found: dict[str, dict] = {}
+
+    def add(raw: dict, from_whatsnew: bool) -> None:
+        iid = raw.get("id")
+        if not iid or raw.get("status") == "gone" or iid in found or raw.get("kind") in ("topic", "meeting"):
+            return
+        g = group_of(raw)
+        if g not in NEWS_GROUPS:
+            return
+        when = news_date(raw, now, from_whatsnew)
+        t = parse_dt(when)
+        if not t or t > hi:
+            return
+        day = central_day(when)
+        if not day or not (ed["prev_first"] <= day <= ed["prev_last"]):
+            return
+        exp = (raw.get("extra") or {}).get("expires")
+        if raw.get("kind") == "announcement" and exp and str(exp)[:10] < today:
+            return
+        found[iid] = {**raw, "_when": when, "_group": g}
+
+    for it in load_items("whatsnew"):
+        add(it, True)
+    for name in NEWS_SOURCES:
+        for it in load_items(name):
+            add(it, False)
+    items = sorted(found.values(), key=lambda i: str(i.get("id")))
+    items.sort(key=lambda i: parse_dt(i["_when"]), reverse=True)
+    items = merge_twins(items)
+    out = {g: [i for i in items if i["_group"] == g] for g in NEWS_GROUPS}
+    out["announcement"].sort(key=lambda i: not (i.get("extra") or {}).get("pinned"))
+    return out
+
+
+def gv_theme(ed: dict, lang: str) -> str:
+    """This month's Grapevine theme from the editorial calendar (the /monthly/ page's rule)."""
+    themed = [i for i in load_items("editorial")
+              if (i.get("extra") or {}).get("publication") == "gv" and (i.get("extra") or {}).get("issue_key") == ed["key"]]
+    return " / ".join(t for t in (tr(i, "title", lang) for i in themed) if t)
+
+
+def month_issues(ed: dict, n: int) -> list[dict]:
+    """The magazine issues on the stands in the edition's month (community.js monthIssues)."""
+    data = load_file("articles")
+    arts = [a for a in (data.get("items") or []) if isinstance(a, dict) and a.get("kind") == "article"
+            and a.get("status") != "gone" and a.get("url") and (a.get("extra") or {}).get("issue_key")]
+
+    def pub_of(a: dict) -> str:
+        return a["extra"].get("publication") or a.get("category") or ""
+
+    out = []
+    for pub in ("gv", "lv"):
+        key = next((k for k in (ed["key"], month_add(ed["key"], -1))
+                    if any(pub_of(a) == pub and a["extra"]["issue_key"] == k for a in arts)), None)
+        if not key:
+            continue
+        lst = [a for a in arts if pub_of(a) == pub and a["extra"]["issue_key"] == key]
+        meta = next((i for i in (data.get("issues") or []) if isinstance(i, dict)
+                     and i.get("publication") == pub and i.get("key") == key), None) or {}
+        first = lst[0]
+
+        def theme(lang: str) -> str:
+            cal = gv_theme(ed, lang) if pub == "gv" and key == ed["key"] else ""
+            return one_line(cal or ((meta.get("i18n") or {}).get("theme") or {}).get(lang)
+                            or ((first.get("i18n") or {}).get("issue_theme") or {}).get(lang)
+                            or meta.get("theme") or first["extra"].get("issue_theme") or first["extra"].get("topic"))
+
+        def label(lang: str) -> str:
+            return one_line(((meta.get("i18n") or {}).get("label") or {}).get(lang)) or issue_label(first, lang) or key
+
+        ranked = sorted(enumerate(lst), key=lambda x: (x[1]["extra"].get("free") is not True, is_department(x[1]),
+                                                       scope_rank(x[1]), x[0]))
+        out.append({
+            "pub": pub, "key": key, "is_lv": pub == "lv", "name": "La Viña" if pub == "lv" else "Grapevine",
+            "label": {"en": label("en"), "es": label("es")}, "theme": {"en": theme("en"), "es": theme("es")},
+            "url": meta.get("url") or first["extra"].get("issue_url") or "", "cover": meta.get("cover") or "",
+            "count": len(lst), "free": sum(1 for a in lst if a["extra"].get("free") is True),
+            "highlights": [a for _, a in ranked[:n]],
+        })
+    return out
+
+
+def month_tips(ed: dict, carry: dict) -> dict[str, list[dict]]:
+    """Up to 3 "put it to work" tips for this month's Grapevine issue (config/carry.yml, as on /monthly/)."""
+    ways = carry.get("ways") or {}
+    out: dict[str, list[dict]] = {"en": [], "es": []}
+    for tip in (carry.get("tips") or {}).get(ed["key"]) or []:
+        w = ways.get(str((tip or {}).get("way")))
+        if not w:
+            continue
+        for lang in ("en", "es"):
+            def pair(p: Any) -> str:
+                return str((p or {}).get(lang) or (p or {}).get("en") or (p or {}).get("es") or "").strip() if isinstance(p, dict) else str(p or "")
+            out[lang].append({"title": pair(w.get("title")), "text": pair(tip.get("text")), "icon": w.get("icon") or ""})
+    return {k: v[:3] for k, v in out.items()}
+
+
+def event_start(it: dict) -> str | None:
+    return (it.get("extra") or {}).get("start") or it.get("date")
+
+
+def event_last_day(it: dict) -> date | None:
+    ex = it.get("extra") or {}
+    s = event_start(it)
+    first = central_day(s)
+    end = ex.get("end")
+    if end:
+        last = date.fromisoformat(end.strip()) if is_date_only(end) else (
+            to_central(parse_dt(end) - timedelta(microseconds=1)).date() if parse_dt(end) else None)
+    else:
+        last = first
+    return last if last and first and last > first else first
+
+
+def event_over_at(it: dict) -> datetime | None:
+    """When an event is over (community.js eventEndMs): the midnight after its last day for an
+    all-day event; a timed event at its end (no end: TIMED_NO_END_HOURS after it starts)."""
+    ex = it.get("extra") or {}
+    s = event_start(it)
+    st = parse_dt(s)
+    if not st:
+        return None
+    end = ex.get("end")
+    if end and not is_date_only(end) and parse_dt(end):
+        return parse_dt(end)
+    if end or ex.get("all_day") or is_date_only(s):
+        last = event_last_day(it)
+        return end_of_day(last) if last else None
+    return st + timedelta(hours=TIMED_NO_END_HOURS)
+
+
+def month_events(now: datetime, ed: dict) -> list[dict]:
+    """Events of the edition's month that are not over yet — the committee meeting has its own box,
+    a monthly series (the CityWide booth) once — soonest first."""
+    rows = []
+    for it in load_items("events"):
+        if it.get("status") == "gone" or it.get("category") == "committee":
+            continue
+        st, first, last, over = parse_dt(event_start(it)), central_day(event_start(it)), event_last_day(it), event_over_at(it)
+        if not st or not first or not last or not over or over < now or first > ed["last"] or last < ed["first"]:
+            continue
+        rows.append((st, it))
+    rows.sort(key=lambda x: x[0])
+    out, series = [], set()
+    for _, it in rows:
+        if is_recurring(it):
+            s = str((it.get("extra") or {}).get("series") or it.get("id"))
+            if s in series:
+                continue
+            series.add(s)
+        out.append(it)
+    return out
+
+
+def next_meeting(now: datetime) -> dict | None:
+    """The next committee meeting that is not over (up to 60 days ahead)."""
+    best = None
+    for it in load_items("events"):
+        if it.get("category") != "committee" or it.get("status") == "gone":
+            continue
+        st, over = parse_dt(event_start(it)), event_over_at(it)
+        if st and over and over >= now and st <= now + timedelta(days=60) and (best is None or st < best[0]):
+            best = (st, it)
+    return best[1] if best else None
+
+
+def short_date(d: date, lang: str) -> str:
+    """"Nov 5" / "5 de noviembre" (monthly.js shortDate)."""
+    return f"{d.day} de {MONTHS['es'][d.month - 1]}" if lang == "es" else f"{MONTHS_SHORT['en'][d.month - 1]} {d.day}"
+
+
+def weekly_open(ed: dict) -> dict[str, list[dict]]:
+    """The weekly open meetings (monthly.js: La Viña's only from its start date), the page
+    language's magazine first."""
+    out: dict[str, list[dict]] = {"en": [], "es": []}
+    for w in load_items("weekly_open"):
+        if w.get("status") == "gone":
+            continue
+        starts = str((w.get("extra") or {}).get("starts") or "")
+        if is_date_only(starts) and date.fromisoformat(starts) > ed["last"]:
+            continue
+        pub = "lv" if w.get("source") == "lavina" else "gv"
+        for lang in ("en", "es"):
+            label = short_date(date.fromisoformat(starts), lang) if is_date_only(starts) and date.fromisoformat(starts) >= ed["first"] else ""
+            out[lang].append({"pub": pub, "title": tr(w, "title", lang), "when": tr(w, "when", lang) or tr(w, "day", lang), "starts": label})
+    for lang in out:
+        mine = "lv" if lang == "es" else "gv"
+        out[lang].sort(key=lambda r: r["pub"] != mine)
+    return out
+
+
+def lv_topics(ed: dict) -> dict[str, list[dict]]:
+    """La Viña's suggested topics (no deadline): 3, rotating by month (monthly.js lvTopics)."""
+    topics = sorted((i for i in load_items("editorial")
+                     if (i.get("extra") or {}).get("publication") == "lv" and (i.get("extra") or {}).get("evergreen")),
+                    key=lambda i: str(i.get("id")))
+    picked: list[dict] = []
+    if topics:
+        idx = int(ed["key"][:4]) * 12 + int(ed["key"][5:7])
+        for i in range(min(3, len(topics))):
+            it = topics[(idx * 3 + i) % len(topics)]
+            if it not in picked:
+                picked.append(it)
+    return {lang: [{"text": tr(i, "title", lang), "es": tr(i, "title", "es")} for i in picked] for lang in ("en", "es")}
+
+
+def story_deadlines(now: datetime, ed: dict) -> list[dict]:
+    """Story deadlines from today (Central) through the end of next month."""
+    today = to_central(now).date().isoformat()
+    last = ed["next_last"].isoformat()
+    out = [i for i in load_items("editorial") if i.get("status") != "gone" and is_date_only((i.get("extra") or {}).get("deadline"))
+           and today <= i["extra"]["deadline"] <= last]
+    out.sort(key=lambda i: (i["extra"]["deadline"], one_line(i.get("title"))))
+    return out
+
+
+def month_writers(ed: dict) -> dict[str, list[dict]]:
+    """Stories by writers from Area 65 / the rest of Texas published last month (spotlight.json,
+    extra.pub_date in the previous calendar month) — community.js writersPick with since/until."""
+    a, b = ed["prev_first"].isoformat(), ed["prev_last"].isoformat()
+    out: dict[str, list[dict]] = {"neta65": [], "texas": []}
+    seen: set[str] = set()
+    for it in load_items("spotlight"):
+        ex = it.get("extra") or {}
+        scope = (ex.get("geo") or {}).get("scope")
+        pd = ex.get("pub_date")
+        key = it.get("id") or it.get("url")
+        if (it.get("status") == "gone" or it.get("kind") != "article" or not it.get("url") or scope not in out
+                or not is_date_only(pd) or not a <= pd <= b or key in seen):
+            continue
+        seen.add(key)
+        out[scope].append(it)
+    for lst in out.values():
+        lst.sort(key=lambda i: one_line(i.get("title")))
+        lst.sort(key=lambda i: i["extra"]["pub_date"], reverse=True)
+    return out
+
+
+def gv_meetings() -> dict[str, int]:
+    """How many Grapevine meetings meet every week in our Area and nearby (committee.js gvMeetings)."""
+    ours = nearby = 0
+    for it in load_items("meetings"):
+        try:
+            int(it.get("day"))
+        except (TypeError, ValueError):
+            continue
+        if it.get("attendance") == "inactive":
+            continue
+        if it.get("in_area"):
+            ours += 1
+        else:
+            nearby += 1
+    return {"in_area": ours, "nearby": nearby}
+
+
+def audio_lines() -> dict[str, dict]:
+    """The magazines' record-your-story phone lines (data/site/audio_project.json)."""
+    ap = load_file("audio_project")
+    return {p: {"phone": str(d["phone"]), "tel": str(d["tel"])} for p in ("gv", "lv")
+            if isinstance(d := ap.get(p), dict) and d.get("phone") and d.get("tel")}
+
+
+def subs_from() -> float | None:
+    """The lowest monthly subscription price (shop.js shopFromMonthly)."""
+    plans = [p for s in (load_file("shop").get("subscriptions") or []) if isinstance(s, dict)
+             for p in (s.get("plans") or []) if isinstance(p, dict) and isinstance(p.get("price"), (int, float)) and p["price"] > 0]
+    monthly = [float(p["price"]) for p in plans if p.get("term_months") == 1]
+    if monthly:
+        return min(monthly)
+    rates = [float(p["price"]) / p["term_months"] for p in plans if isinstance(p.get("term_months"), int) and p["term_months"] > 0]
+    return round(min(rates), 2) if rates else None
+
+
+def collect(now: datetime, edition: str | None = None, max_per: int = 5, highlights: int = 3) -> dict:
+    ed = edition_of(now, edition)
+    today = to_central(now).date().isoformat()
+    data: dict[str, Any] = {"edition": ed, "now": now, "month": ed["key"], "machine": {"en": False, "es": False}}
+    data["groups"] = month_news(now, ed)
+    data["issues"] = month_issues(ed, highlights)
+    data["tips"] = month_tips(ed, load_carry())
+    data["writers"] = month_writers(ed)
+    data["meeting"] = next_meeting(now)
+    data["events"] = month_events(now, ed)
+    data["weekly"] = weekly_open(ed)
+    data["gvm"] = gv_meetings()
+    data["deadlines"] = story_deadlines(now, ed)
+    data["lv_topics"] = lv_topics(ed)
+    data["audio"] = audio_lines()
+    # Book of the Month (a compact teaser: the prices and dates live on the site's /shop/#botm).
     # An offer whose last day has passed (Central time) is left out, like the website.
     data["botm"] = [b for b in load_botm()
                     if b.get("url") and isinstance(b.get("sale_price"), (int, float))
                     and not (is_date_only(b.get("ends")) and str(b["ends"]) < today)]
-    # This month's Monthly toolkit page: /monthly/YYYY-MM/ (Central time)
-    data["month"] = to_central(now).strftime("%Y-%m")
-
+    data["subs_from"] = subs_from()
+    data["quote"] = any(isinstance(q, dict) and q.get("text") for q in load_items("quote"))
+    profiles = load_file("instagram").get("profiles") or {}
+    data["instagram"] = [str(p["username"]).lstrip("@") for k in ("gv", "lv")
+                         if isinstance(p := profiles.get(k), dict) and p.get("username")]
     # which languages carry machine translations (for the small footnote)
     # (Book of the Month titles are shown as sold, never translated, so they bring no footnote)
-    every = [i for g in data["groups"].values() for i in g[:max_per]] + data["announcements"] + data["events"]
+    shown = ([i for g in data["groups"].values() for i in g[:max_per]] + data["events"]
+             + [a for iss in data["issues"] for a in iss["highlights"]]
+             + [w for lst in data["writers"].values() for w in lst[:max_per]])
     for lang in ("en", "es"):
-        data["machine"][lang] = any(is_machine(i, lang) for i in every)
+        data["machine"][lang] = any(is_machine(i, lang) for i in shown)
     return data
 
 
-def is_recurring(item: dict) -> bool:
-    """A date of a monthly event from config/site.yml `recurring_events:` (build_data.recurring_events)."""
-    return item.get("category") == "recurring"
-
-
 def total_count(data: dict) -> int:
-    """How much the digest has to tell — nothing means no e-mail. A recurring event (the monthly booth)
-    comes round every month, like the committee meeting, so it is listed but does not count: on its own
-    it never turns a quiet week into an e-mail."""
-    return (sum(len(v) for v in data["groups"].values()) + len(data["announcements"])
-            + sum(1 for e in data["events"] if not is_recurring(e)))
+    """How much the edition has to tell about last month — nothing means no e-mail. This month's
+    issues, dates and deadlines come round every month (a monthly event like the booth too), so on
+    their own they never turn a quiet month (or a site whose updates stopped) into an e-mail."""
+    return sum(len(v) for v in data["groups"].values()) + sum(len(v) for v in data["writers"].values())
+
+
+def news_total(data: dict) -> int:
+    return sum(len(v) for v in data["groups"].values())
+
+
+def count_list(data: dict, lang: str) -> str:
+    """"9 podcast episodes, 2 videos and 8 documents" (community.js digestCountList)."""
+    parts = []
+    for g in ("article", "episode", "video", "pdf", "drive", "announcement"):
+        n = len(data["groups"].get(g) or [])
+        if n:
+            many, one = T[lang]["n"][g]
+            parts.append(one if n == 1 else many.format(n=n))
+    if len(parts) < 2:
+        return parts[0] if parts else ""
+    return f"{', '.join(parts[:-1])} {T[lang]['and']} {parts[-1]}"
+
+
+def intro(data: dict, lang: str) -> str:
+    ed = data["edition"]
+    v = {"prev": month_word(ed["prev"], lang), "month": month_word(ed["key"], lang)}
+    lst = count_list(data, lang)
+    return T[lang]["intro"].format(list=lst, **v) if lst else T[lang]["intro_quiet"].format(**v)
+
+
+def gvm_text(g: dict, lang: str) -> str:
+    if not g.get("in_area"):
+        return ""
+    many, one = T[lang]["meetings_n"]
+    ours = one if g["in_area"] == 1 else many.format(n=g["in_area"])
+    return (T[lang]["gvm_text"] if g.get("nearby") else T[lang]["gvm_text_area"]).format(ours=ours, nearby=g.get("nearby"))
 
 
 # ---------------------------------------------------------------------------- rows (shared by HTML + text)
-def photo_count(item: dict) -> int:
-    """How many photos a What's New item stands for (a same-day album group has extra.count)."""
-    try:
-        return max(1, int((item.get("extra") or {}).get("count") or 1))
-    except (TypeError, ValueError):
-        return 1
-
-
 def build_rows(group: str, items: list[dict], lang: str, links: Links, page: str, max_per: int) -> tuple[list[dict], int]:
-    """Turn items into display rows. Instagram collapses to one row per account and
-    Drive photos to one row per album, so a big upload doesn't flood the e-mail."""
+    """Turn items into display rows. Drive photos collapse to one row per album, so a big upload
+    doesn't flood the e-mail; a podcast episode carries its YouTube twin's link."""
     t = T[lang]
     rows: list[dict] = []
-    if group == "instagram":
-        by_acct: dict[str, list[dict]] = {}
-        for it in items:
-            ex = it.get("extra") or {}
-            by_acct.setdefault(ex.get("username") or it.get("category") or "instagram", []).append(it)
-        for user, its in by_acct.items():
-            label, fg, bg = item_label(its[0], lang)
-            n = len(its)
-            rows.append({"label": label, "fg": fg, "bg": bg, "title": f"@{user}",
-                         "url": links.page(page, lang),
-                         "meta": t["new_post"] if n == 1 else t["new_posts"].format(n=n)})
-        return rows, 0
     photos: dict[str, list[dict]] = {}
     for it in items:
         ex = it.get("extra") or {}
-        if group == "drive" and (it.get("kind") == "photo" or ex.get("is_image")):
+        if group == "drive" and (it.get("kind") == "photo" or ex.get("is_image")) and it.get("category") in (None, "", "photos", "other"):
             photos.setdefault(ex.get("album") or DRIVE_CATEGORIES["photos"][1 if lang == "es" else 0], []).append(it)
             continue
         label, fg, bg = item_label(it, lang)
-        rows.append({"label": label, "fg": fg, "bg": bg, "title": tx(it, "title", lang) or it.get("title") or "",
-                     "url": links.item(it, lang, page), "meta": item_meta(it, lang)})
+        twin = it.get("_twin")
+        rows.append({"label": label, "fg": fg, "bg": bg, "title": title_of(it, lang),
+                     "url": links.item(it, lang, page), "meta": item_meta(it, lang),
+                     "twin": links.item(twin, lang, "/watch/") if twin else ""})
     for album, its in photos.items():
         # What's New already merges one album's photos from one day into a single item
         # ("5 new photos in …", extra.count = 5): count photos, not items.
@@ -750,7 +1179,7 @@ def build_rows(group: str, items: list[dict], lang: str, links: Links, page: str
         name = next((v for v in names if v), album)
         rows.append({"label": DRIVE_CATEGORIES["photos"][1 if lang == "es" else 0], "fg": C["vine"], "bg": C["vine_soft"],
                      "title": t["album"].format(name=name), "url": links.page("/photos/", lang),
-                     "meta": t["new_photo"] if n == 1 else t["new_photos"].format(n=n)})
+                     "meta": t["new_photo"] if n == 1 else t["new_photos"].format(n=n), "twin": ""})
     extra = max(0, len(rows) - max_per)
     return rows[:max_per], extra
 
@@ -792,12 +1221,6 @@ def fmt_money(v: Any) -> str:
         return ""
 
 
-def fmt_month_day(ymd: str, lang: str) -> str:
-    """'2026-10-14' → "October 14" / "14 de octubre"."""
-    d = date.fromisoformat(ymd)
-    return f"{d.day} de {MONTHS['es'][d.month - 1]}" if lang == "es" else f"{MONTHS['en'][d.month - 1]} {d.day}"
-
-
 def botm_block(data: dict, lang: str, links: Links) -> dict:
     """The Book of the Month teaser + this month's toolkit link, shared by the HTML and the text:
     {title, rows: [{label, fg, bg, title, url, price, regular, until}], more_url, month_label, month_url}.
@@ -816,12 +1239,26 @@ def botm_block(data: dict, lang: str, links: Links) -> dict:
                      "title": str(b.get("title") or "").strip() or tx(b, "title", lang),
                      "url": b["url"], "price": fmt_money(sale), "regular": regular,
                      "until": t["botm_until"].format(date=fmt_month_day(b["ends"], lang)) if is_date_only(b.get("ends")) else ""})
-    ym = data.get("month") or to_central(data["end"]).strftime("%Y-%m")
-    y, m = (int(x) for x in ym.split("-"))
-    month_label = f"{MONTHS['es'][m - 1]} de {y}" if lang == "es" else f"{MONTHS['en'][m - 1]} {y}"
+    ym = data.get("month") or to_central(data["now"]).strftime("%Y-%m")
     return {"title": t["botm_title"].format(pct=pcts.pop()) if len(pcts) == 1 else t["botm_title_plain"],
             "rows": rows, "more_url": links.page("/shop/", lang) + "#botm",
-            "month_label": t["toolkit"].format(month=month_label), "month_url": links.page(f"/monthly/{ym}/", lang)}
+            "month_label": t["toolkit"].format(month=month_label(ym, lang)), "month_url": links.page(f"/monthly/{ym}/", lang)}
+
+
+def ordered_issues(data: dict, lang: str) -> list[dict]:
+    """La Viña first in the Spanish half, Grapevine first in the English half."""
+    return sorted(data["issues"], key=lambda i: i["is_lv"] != (lang == "es"))
+
+
+def writer_name(item: dict, lang: str) -> str:
+    a = one_line((item.get("extra") or {}).get("author"))
+    return T[lang]["anonymous"] if not a or re.fullmatch(r"(?i)anonymous|an[oó]nim[oa]|anon\.?", a) else a
+
+
+def writer_place(item: dict, lang: str) -> str:
+    g = (item.get("extra") or {}).get("geo") or {}
+    return one_line(g.get("label_es") if lang == "es" else g.get("label_en")) or one_line(g.get("label_en")) \
+        or one_line((item.get("extra") or {}).get("author_location"))
 
 
 # ---------------------------------------------------------------------------- HTML
@@ -829,29 +1266,33 @@ def _esc(s: Any) -> str:
     return html.escape(str(s or ""), quote=True)
 
 
+def subject_of(data: dict, cfg: dict) -> str:
+    """"Grapevine / La Viña — October 2026 · Novedades de octubre"."""
+    title = (cfg.get("site") or {}).get("title") or "Grapevine / La Viña"
+    k = data["edition"]["key"]
+    return f"{title} — {month_label(k, 'en')} · Novedades de {month_word(k, 'es')}"
+
+
 def render_html(data: dict, cfg: dict, links: Links, max_per: int, subject: str) -> str:
     site = cfg.get("site") or {}
     title = site.get("title") or "Grapevine / La Viña"
     logo = links.base + "/assets/img/logo-180x180.png"
-    short_names = {"articles": "magazine stories", "episodes": "podcast episodes", "videos": "videos",
-                   "instagram": "Instagram posts", "pdfs": "documents", "drive": "committee files"}
-    teaser = [tx(i, "title", "en") for i in data["announcements"][:1]]
-    teaser += [f"{len(v)} {short_names[g]}" for g, v in data["groups"].items() if v]
-    preheader = shorten(" · ".join(teaser), 140) or T["en"]["heading"]
+    ed = data["edition"]
+    teaser = [month_label(ed["key"], "en")]
+    teaser += [f"{iss['name']} “{iss['theme']['en']}”" for iss in data["issues"] if iss["theme"]["en"]]
+    teaser += [count_list(data, "en")] if news_total(data) else []
+    preheader = shorten(" · ".join(x for x in teaser if x), 140)
 
-    sections = []
-    for lang in ("en", "es"):
-        sections.append(render_lang_html(lang, data, cfg, links, max_per))
-
+    sections = [render_lang_html(lang, data, cfg, links, max_per) for lang in ("en", "es")]
     divider = f'<tr><td style="padding:0 32px;"><div style="border-top:2px dashed {C["line"]};height:1px;line-height:1px;">&nbsp;</div></td></tr>'
     committee = site.get("committee") or title
     committee_es = site.get("committee_es") or committee
     contact = site.get("contact_email") or ""
     footer = f"""
 <tr><td style="padding:24px 32px 28px;background:{C['surface2']};border-radius:0 0 12px 12px;font-size:12px;line-height:1.6;color:{C['muted']};">
-  <p style="margin:0 0 8px;">{_esc(T['en']['footer_why'].format(committee=committee))} {_esc(T['en']['footer_anon'])}<br>
-  {_esc(T['es']['footer_why'].format(committee=committee_es))} {_esc(T['es']['footer_anon'])}</p>
-  <p style="margin:0 0 8px;">{_esc(T['en']['footer_unsub'])} · {_esc(T['es']['footer_unsub'])}</p>
+  <p style="margin:0 0 8px;">{_esc(T['en']['footer_why'].format(committee=committee))} {_esc(T['en']['footer_anon'])}</p>
+  <p lang="es" style="margin:0 0 8px;">{_esc(T['es']['footer_why'].format(committee=committee_es))} {_esc(T['es']['footer_anon'])}</p>
+  <p style="margin:0 0 8px;">{_esc(T['en']['footer_unsub'])} · <span lang="es">{_esc(T['es']['footer_unsub'])}</span></p>
   <p style="margin:0;"><a href="{_esc(links.page('/', 'en'))}" style="color:{C['gv']};">{_esc(links.base.split('://')[-1])}</a>
   {f' · <a href="mailto:{_esc(contact)}" style="color:{C["gv"]};">{_esc(contact)}</a>' if contact else ''}</p>
 </td></tr>"""
@@ -875,12 +1316,12 @@ def render_html(data: dict, cfg: dict, links: Links, max_per: int, subject: str)
   <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
     <td style="padding-right:14px;vertical-align:middle;"><img src="{_esc(logo)}" width="48" height="48" alt="" style="display:block;border:0;border-radius:10px;background:#ffffff;"></td>
     <td style="vertical-align:middle;">
-      <div style="font-family:Georgia,'Times New Roman',serif;font-size:22px;line-height:1.2;color:#ffffff;font-weight:bold;">{_esc(title)}</div>
-      <div style="font-size:13px;color:#cfe3f6;margin-top:3px;">{_esc(committee)}</div>
+      <div style="font-family:Georgia,'Times New Roman',serif;font-size:22px;line-height:1.2;color:#ffffff;font-weight:bold;">{_esc(title)} · {_esc(T['en']['masthead'])}</div>
+      <div style="font-size:13px;color:#cfe3f6;margin-top:3px;">{_esc(committee)} · {_esc(month_label(ed['key'], 'en'))}</div>
     </td></tr></table>
 </td></tr>
 <tr><td style="padding:12px 32px;background:{C['gv_soft']};font-size:13px;color:{C['gv_strong']};">
-  English first · <strong>Versión en español más abajo</strong>
+  English first · <strong lang="es">Versión en español más abajo</strong>
 </td></tr>
 {sections[0]}
 {divider}
@@ -895,16 +1336,45 @@ def render_html(data: dict, cfg: dict, links: Links, max_per: int, subject: str)
 
 def render_lang_html(lang: str, data: dict, cfg: dict, links: Links, max_per: int) -> str:
     t = T[lang]
+    ed = data["edition"]
     meeting_cfg = cfg.get("meeting") or {}
-    rng = fmt_range(data["start"], data["end"], lang)
+    prev_w, month_w = month_word(ed["prev"], lang), month_word(ed["key"], lang)
     parts: list[str] = []
-    h2 = f"font-family:Georgia,'Times New Roman',serif;font-size:24px;line-height:1.25;margin:0 0 6px;color:{C['ink']};"
-    h3 = (f"font-family:Georgia,'Times New Roman',serif;font-size:17px;margin:0 0 10px;color:{C['ink']};"
+    h2 = f"font-family:Georgia,'Times New Roman',serif;font-size:26px;line-height:1.2;margin:0 0 4px;color:{C['ink']};"
+    h3 = (f"font-family:Georgia,'Times New Roman',serif;font-size:18px;margin:0 0 10px;color:{C['ink']};"
           f"border-left:4px solid {{color}};padding-left:10px;")
-    parts.append(f"""<tr><td style="padding:28px 32px 8px;">
-  <div style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:{C['faint']};font-weight:bold;">{_esc(t['lang_name'])}</div>
-  <h2 style="{h2}">{_esc(t['heading'])}</h2>
-  <p style="margin:0;font-size:14px;line-height:1.6;color:{C['muted']};">{_esc(t['intro'].format(range=rng))}</p>
+    link_style = f"color:{C['ink']};text-decoration:none;font-weight:600;"
+    small = f"font-size:12px;color:{C['faint']};margin-top:3px;"
+
+    def pill(label: str, fg: str, bg: str) -> str:
+        return (f'<span style="display:inline-block;font-size:11px;font-weight:bold;letter-spacing:.02em;color:{fg};'
+                f'background:{bg};border-radius:999px;padding:2px 8px;margin-right:6px;vertical-align:1px;">{_esc(label)}</span>') if label else ""
+
+    def table(rows: list[str]) -> str:
+        return f'<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">{"".join(rows)}</table>'
+
+    def row(inner: str) -> str:
+        return f'<tr><td style="padding:8px 0;border-bottom:1px solid {C["line"]};font-size:15px;line-height:1.4;">{inner}</td></tr>'
+
+    def section(heading: str, color: str, body: str, page: str | None = None, extra: int = 0, count: int | None = None,
+                label: str = "") -> str:
+        more = ""
+        if page:
+            more_txt = label or (t["more"].format(n=extra) if extra else t["see_all"])
+            more = (f'<p style="margin:8px 0 0;font-size:13px;"><a href="{_esc(links.page(page, lang))}" '
+                    f'style="color:{C["gv"]};">{_esc(more_txt)} →</a></p>')
+        n = f' <span style="font-family:Arial,sans-serif;font-size:12px;color:{C["faint"]};font-weight:normal;">({count})</span>' if count else ""
+        return f"""<tr><td style="padding:22px 32px 4px;">
+  <h3 style="{h3.format(color=color)}">{_esc(heading)}{n}</h3>
+  {body}{more}
+</td></tr>"""
+
+    # ---- headline
+    parts.append(f"""<tr><td style="padding:28px 32px 6px;">
+  <div style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:{C['faint']};font-weight:bold;">{_esc(t['lang_name'])} · {_esc(t['masthead'])}</div>
+  <h2 style="{h2}">{_esc(t['edition'].format(month=month_label(ed['key'], lang)))}</h2>
+  <p style="margin:0 0 10px;font-size:13px;color:{C['gv']};font-weight:bold;">{_esc(t['edition_sub'].format(prev=prev_w, month=month_w))}</p>
+  <p style="margin:0;font-size:15px;line-height:1.6;color:{C['ink']};">{_esc(intro(data, lang))}</p>
 </td></tr>""")
 
     # ---- next committee meeting
@@ -938,46 +1408,80 @@ def render_lang_html(lang: str, data: dict, cfg: dict, links: Links, max_per: in
   </td></tr></table>
 </td></tr>""")
 
-    link_style = f"color:{C['ink']};text-decoration:none;font-weight:600;"
-
-    def section(key: str, color: str, body: str, page: str | None, extra: int = 0) -> str:
-        more = ""
-        if page:
-            more_txt = t["more"].format(n=extra) if extra else t["see_all"]
-            more = (f'<p style="margin:8px 0 0;font-size:13px;"><a href="{_esc(links.page(page, lang))}" '
-                    f'style="color:{C["gv"]};">{_esc(more_txt)} →</a></p>')
-        return f"""<tr><td style="padding:20px 32px 4px;">
-  <h3 style="{h3.format(color=color)}">{_esc(t[key])}</h3>
-  {body}{more}
-</td></tr>"""
-
-    # ---- announcements
-    if data["announcements"]:
+    # ---- announcements (last month, still current)
+    ann = data["groups"]["announcement"]
+    if ann:
         body = []
-        for a in data["announcements"]:
+        for a in ann[:max_per]:
             text = tx(a, "body_md", lang) or tx(a, "summary", lang)
             short = text if len(text) <= 700 else shorten(md_to_text(text), 600)
             body.append(f"""<div style="margin:0 0 14px;">
-  <div style="font-size:16px;font-weight:bold;margin:0 0 4px;">{_esc(tx(a, 'title', lang))}</div>
+  <div style="font-size:16px;font-weight:bold;margin:0 0 4px;"><a href="{_esc(links.item(a, lang, '/announcements/'))}" style="{link_style}">{_esc(tx(a, 'title', lang))}</a></div>
   <div style="font-size:14px;line-height:1.6;color:{C['ink']};">{md_to_html(short, C['gv'])}</div>
 </div>""")
-        parts.append(section("announcements", C["grape"], "".join(body), "/announcements/"))
+        parts.append(section(t["announcement"], C["vine"], "".join(body), "/announcements/", max(0, len(ann) - max_per), len(ann)))
 
-    # ---- upcoming events
-    if data["events"]:
-        rows = []
-        for ev in data["events"][:max_per]:
-            r = event_row(ev, lang, links)
-            rows.append(f"""<tr><td style="padding:8px 0;border-bottom:1px solid {C['line']};">
-  <a href="{_esc(r['url'])}" style="{link_style}font-size:15px;">{_esc(r['title'])}</a>
-  <div style="font-size:13px;color:{C['muted']};margin-top:2px;">{_esc(r['when'])}{(' · ' + _esc(r['where'])) if r['where'] else ''}</div>
-</td></tr>""")
-        body = f'<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">{"".join(rows)}</table>'
-        parts.append(section("events", C["lv"], body, "/events/", max(0, len(data["events"]) - max_per)))
+    # ---- this month in the magazines + put it to work + the toolkit
+    bm = botm_block(data, lang, links)
+    body = []
+    for iss in ordered_issues(data, lang):
+        color = C["lv"] if iss["is_lv"] else C["gv"]
+        cover = (f'<td width="64" style="padding:0 14px 0 0;vertical-align:top;"><img src="{_esc(links.asset(iss["cover"]))}" width="64" alt="" '
+                 f'style="display:block;width:64px;height:auto;border:0;border-radius:6px;"></td>') if iss["cover"] else ""
+        many, one = t["stories"]
+        count = one if iss["count"] == 1 else many.format(n=iss["count"])
+        if iss["free"]:
+            count += " · " + t["free_n"].format(n=iss["free"])
+        theme = f'<div style="font-family:Georgia,serif;font-size:19px;font-weight:bold;margin:4px 0 2px;color:{C["ink"]};">“{_esc(iss["theme"][lang])}”</div>' if iss["theme"][lang] else ""
+        hl = []
+        for a in iss["highlights"][:max_per]:
+            by = writer_name(a, lang) if (a.get("extra") or {}).get("author") else ""
+            place = writer_place(a, lang) if by else ""
+            meta = " · ".join(x for x in (by, place, t["free"] if (a.get("extra") or {}).get("free") is True else t["subscriber"]) if x)
+            hl.append(f'<tr><td style="padding:5px 0 5px 12px;border-left:2px solid {color};font-size:14px;line-height:1.4;">'
+                      f'<a href="{_esc(a["url"])}" style="{link_style}">{_esc(title_of(a, lang))}</a>'
+                      f'<div style="{small}">{_esc(meta)}</div></td></tr>')
+        body.append(f"""<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 16px;"><tr>
+  {cover}<td style="vertical-align:top;">
+    {pill(iss['name'], color, C['lv_soft'] if iss['is_lv'] else C['gv_soft'])}<span style="font-size:13px;font-weight:bold;color:{C['ink']};">{_esc(iss['label'][lang])}</span>
+    {theme}
+    <div style="font-size:12px;color:{C['muted']};margin-bottom:8px;">{_esc(count)}</div>
+    {table(hl)}
+    <p style="margin:8px 0 0;font-size:13px;"><a href="{_esc(links.page('/read/', lang))}" style="color:{C['gv']};">{_esc(t['issue_more'].format(n=iss['count']))} →</a></p>
+  </td></tr></table>""")
+    tips = data["tips"].get(lang) or []
+    tip_rows = "".join(
+        f'<tr><td style="padding:6px 0;font-size:14px;line-height:1.5;"><strong style="color:{C["ink"]};">{_esc(tip["title"])}</strong>'
+        f'<div style="color:{C["muted"]};">{_esc(tip["text"])}</div></td></tr>' for tip in tips)
+    tips_html = (f'<div style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:{C["lv_strong"]};font-weight:bold;">{_esc(t["tips"])}</div>'
+                 f'<div style="font-size:12px;color:{C["muted"]};margin:2px 0 4px;">{_esc(t["tips_sub"])}</div>{table([tip_rows])}') if tips else ""
+    body.append(f"""<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:{C['surface2']};border-radius:10px;">
+  <tr><td style="padding:14px 16px;">{tips_html}
+    <p style="margin:{10 if tips else 0}px 0 0;font-size:14px;"><a href="{_esc(bm['month_url'])}" style="color:{C['gv']};font-weight:bold;">{_esc(bm['month_label'])} →</a></p>
+  </td></tr></table>""")
+    parts.append(section(t["issues"], C["gv"], "".join(body)))
 
-    # ---- new content groups
-    colors = {"articles": C["gv"], "episodes": C["grape"], "videos": C["grape"], "instagram": C["lv"],
-              "pdfs": C["gv"], "drive": C["vine"]}
+    # ---- writers from Area 65 / Texas, published last month
+    W = data["writers"]
+    n_writers = sum(len(v) for v in W.values())
+    if n_writers:
+        body = [f'<p style="margin:0 0 6px;font-size:13px;color:{C["muted"]};">{_esc(t["writers_sub"].format(prev=prev_w))}</p>']
+        for key in ("neta65", "texas"):
+            lst = W[key]
+            if not lst:
+                continue
+            body.append(f'<div style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:{C["faint"]};font-weight:bold;margin:10px 0 2px;">{_esc(t["group_" + key])}</div>')
+            rows = []
+            for it in lst[:max_per]:
+                place = writer_place(it, lang)
+                label, fg, bg = item_label(it, lang)
+                meta = " · ".join(x for x in (writer_name(it, lang) + (f", {place}" if place else ""), issue_label(it, lang)) if x)
+                rows.append(row(f'{pill(label, fg, bg)}<a href="{_esc(it["url"])}" style="{link_style}">{_esc(tx(it, "title", lang))}</a><div style="{small}">{_esc(meta)}</div>'))
+            body.append(table(rows))
+        parts.append(section(t["writers"], C["lv"], "".join(body), "/published/", 0, n_writers))
+
+    # ---- podcasts, videos, documents, committee files (last month)
+    colors = {"episode": C["grape"], "video": C["grape"], "pdf": C["gv"], "drive": C["vine"]}
     for g, page in GROUPS:
         items = data["groups"].get(g) or []
         if not items:
@@ -985,44 +1489,77 @@ def render_lang_html(lang: str, data: dict, cfg: dict, links: Links, max_per: in
         rows_data, extra = build_rows(g, items, lang, links, page, max_per)
         rows = []
         for r in rows_data:
-            pill = (f'<span style="display:inline-block;font-size:11px;font-weight:bold;letter-spacing:.02em;color:{r["fg"]};'
-                    f'background:{r["bg"]};border-radius:999px;padding:2px 8px;margin-right:6px;vertical-align:1px;">'
-                    f'{_esc(r["label"])}</span>') if r["label"] else ""
-            meta = f'<div style="font-size:12px;color:{C["faint"]};margin-top:3px;">{_esc(r["meta"])}</div>' if r["meta"] else ""
-            rows.append(f"""<tr><td style="padding:8px 0;border-bottom:1px solid {C['line']};font-size:15px;line-height:1.4;">
-  {pill}<a href="{_esc(r['url'])}" style="{link_style}">{_esc(r['title'])}</a>{meta}
-</td></tr>""")
-        body = f'<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">{"".join(rows)}</table>'
-        parts.append(section(g, colors[g], body, page, extra))
+            twin = f' · <a href="{_esc(r["twin"])}" style="color:{C["gv"]};">{_esc(t["twin"])}</a>' if r.get("twin") else ""
+            meta = f'<div style="{small}">{_esc(r["meta"])}{twin}</div>' if (r["meta"] or twin) else ""
+            rows.append(row(f'{pill(r["label"], r["fg"], r["bg"])}<a href="{_esc(r["url"])}" style="{link_style}">{_esc(r["title"])}</a>{meta}'))
+        parts.append(section(t[g], colors[g], table(rows), page, extra, len(items)))
+    if data["instagram"]:
+        handles = " · ".join(f"@{h}" for h in data["instagram"])
+        parts.append(f'<tr><td style="padding:14px 32px 0;font-size:14px;"><a href="{_esc(links.page("/instagram/", lang))}" style="color:{C["gv"]};font-weight:bold;">{_esc(t["instagram"])} →</a> <span style="color:{C["muted"]};font-size:13px;">{_esc(handles)}</span></td></tr>')
+    if not total_count(data):
+        parts.append(f'<tr><td style="padding:16px 32px 0;font-size:14px;color:{C["muted"]};">{_esc(t["nothing"].format(prev=prev_w))}</td></tr>')
 
-    if not total_count(data):     # (a monthly recurring event alone is not news)
-        parts.append(f'<tr><td style="padding:16px 32px;font-size:14px;color:{C["muted"]};">{_esc(t["nothing"])}</td></tr>')
+    # ---- coming up this month
+    rows = []
+    for ev in data["events"]:
+        r = event_row(ev, lang, links)
+        rows.append(row(f'<a href="{_esc(r["url"])}" style="{link_style}">{_esc(r["title"])}</a>'
+                        f'<div style="font-size:13px;color:{C["muted"]};margin-top:2px;">{_esc(r["when"])}{(" · " + _esc(r["where"])) if r["where"] else ""}</div>'))
+    if not rows:
+        rows.append(row(f'<span style="font-size:14px;color:{C["muted"]};">{_esc(t["no_events"].format(month=month_w))}</span>'))
+    for w in data["weekly"].get(lang) or []:
+        starts = f' · {t["starting"].format(date=w["starts"])}' if w["starts"] else ""
+        rows.append(row(f'<a href="{_esc(links.page("/meetings/", lang) + "#weekly-open")}" style="{link_style}">{_esc(w["title"])}</a>'
+                        f'<div style="font-size:13px;color:{C["muted"]};margin-top:2px;"><strong style="color:{C["grape"]};">{_esc(t["every_week"])}</strong> · {_esc(w["when"])}{_esc(starts)}</div>'))
+    gt = gvm_text(data["gvm"], lang)
+    if gt:
+        rows.append(row(f'<a href="{_esc(links.page("/meetings/", lang) + "#grapevine-meetings")}" style="{link_style}">{_esc(t["gvm"])}</a>'
+                        f'<div style="font-size:13px;color:{C["muted"]};margin-top:2px;">{_esc(gt)}</div>'))
+    body = table(rows) + f'<p style="margin:8px 0 0;font-size:13px;"><a href="{_esc(links.page("/events/", lang))}" style="color:{C["gv"]};">{_esc(t["full_calendar"])} →</a></p>'
+    parts.append(section(t["coming"].format(month=month_w), C["vine"], body))
 
-    # ---- Book of the Month (compact) + this month's toolkit
-    bm = botm_block(data, lang, links)
-    month_line = (f'<p style="margin:{12 if bm["rows"] else 0}px 0 0;font-size:14px;">'
-                  f'<a href="{_esc(bm["month_url"])}" style="color:{C["gv"]};font-weight:bold;">{_esc(bm["month_label"])} →</a></p>')
+    # ---- share your story: deadlines through next month, La Viña's topics, the phone lines
+    topics = data["lv_topics"].get(lang) or []
+    if data["deadlines"] or topics or data["audio"]:
+        rows = []
+        for d in data["deadlines"]:
+            lv = (d.get("extra") or {}).get("publication") == "lv"
+            due = t["due"].format(date=fmt_month_day(d["extra"]["deadline"], lang))
+            rows.append(row(f'{pill("La Viña" if lv else "Grapevine", C["lv"] if lv else C["gv"], C["lv_soft"] if lv else C["gv_soft"])}'
+                            f'<strong>{_esc(tx(d, "title", lang))}</strong><div style="font-size:13px;margin-top:2px;">'
+                            f'<span style="color:{C["muted"]};">{_esc(issue_label(d, lang))}</span> · <strong style="color:{C["lv_strong"]};">{_esc(due)}</strong></div>'))
+        body = table(rows) if rows else ""
+        if topics:
+            items = "".join(f'<li style="margin:2px 0;">“{_esc(x["text"])}”' + (f' <span lang="es" style="color:{C["muted"]};font-style:italic;">— {_esc(x["es"])}</span>' if lang != "es" and x["es"] != x["text"] else "") + "</li>" for x in topics)
+            body += (f'<div style="background:{C["lv_soft"]};border-radius:10px;padding:12px 14px;margin-top:10px;font-size:14px;">'
+                     f'<div style="color:{C["ink"]};">{_esc(t["lv_anytime"])}</div><ul style="margin:6px 0 0;padding-left:18px;font-weight:bold;">{items}</ul></div>')
+        if data["audio"]:
+            pubs = ("lv", "gv") if lang == "es" else ("gv", "lv")
+            phones = " · ".join(f'{"La Viña" if p == "lv" else "Grapevine"}: <a href="tel:{_esc(data["audio"][p]["tel"])}" style="color:{C["gv"]};font-weight:bold;">{_esc(data["audio"][p]["phone"])}</a>'
+                                for p in pubs if p in data["audio"])
+            body += (f'<div style="background:{C["surface2"]};border-radius:10px;padding:12px 14px;margin-top:10px;font-size:14px;">'
+                     f'<strong>{_esc(t["record"])}</strong><div style="margin-top:4px;">{phones}</div>'
+                     f'<div style="margin-top:4px;font-size:13px;"><a href="{_esc(links.page("/contribute/", lang) + "#record")}" style="color:{C["gv"]};">{_esc(t["record_how"])} →</a></div></div>')
+        parts.append(section(t["story"], C["lv"], body, "/contribute/", label=t["story_cta"]))
+
+    # ---- Book of the Month (compact) + the cheapest subscription
     if bm["rows"]:
         rows = []
         for r in bm["rows"]:
-            pill = (f'<span style="display:inline-block;font-size:11px;font-weight:bold;letter-spacing:.02em;color:{r["fg"]};'
-                    f'background:{r["bg"]};border-radius:999px;padding:2px 8px;margin-right:6px;vertical-align:1px;">'
-                    f'{_esc(r["label"])}</span>')
             meta = " · ".join(x for x in (
                 f'<strong style="color:{C["ink"]};">{_esc(r["price"])}</strong>' + (f' {_esc(r["regular"])}' if r["regular"] else ""),
                 _esc(r["until"])) if x)
-            rows.append(f"""<tr><td style="padding:8px 0;border-bottom:1px solid {C['line']};font-size:15px;line-height:1.4;">
-  {pill}<a href="{_esc(r['url'])}" style="{link_style}">{_esc(r['title'])}</a>
-  <div style="font-size:13px;color:{C['muted']};margin-top:3px;">{meta}</div>
-</td></tr>""")
-        parts.append(f"""<tr><td style="padding:20px 32px 4px;">
-  <h3 style="{h3.format(color=C['grape'])}">{_esc(bm['title'])}</h3>
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">{"".join(rows)}</table>
-  <p style="margin:8px 0 0;font-size:13px;"><a href="{_esc(bm['more_url'])}" style="color:{C['gv']};">{_esc(t['botm_more'])} →</a></p>
-  {month_line}
-</td></tr>""")
-    else:
-        parts.append(f'<tr><td style="padding:16px 32px 0;">{month_line}</td></tr>')
+            rows.append(row(f'{pill(r["label"], r["fg"], r["bg"])}<a href="{_esc(r["url"])}" style="{link_style}">{_esc(r["title"])}</a>'
+                            f'<div style="font-size:13px;color:{C["muted"]};margin-top:3px;">{meta}</div>'))
+        body = table(rows) + f'<p style="margin:8px 0 0;font-size:13px;"><a href="{_esc(bm["more_url"])}" style="color:{C["gv"]};">{_esc(t["botm_more"])} →</a></p>'
+        parts.append(section(bm["title"], C["grape"], body))
+    lines = []
+    if data["subs_from"]:
+        lines.append(f'<a href="{_esc(links.page("/shop/", lang) + "#subscriptions")}" style="color:{C["gv"]};font-weight:bold;">{_esc(t["subs_from"].format(amount=fmt_money(data["subs_from"])))} →</a>')
+    if data["quote"]:
+        lines.append(f'{_esc(t["quote"])}: <a href="{_esc(links.page("/", lang))}" style="color:{C["gv"]};font-weight:bold;">{_esc(t["quote_link"])} →</a>')
+    if lines:
+        parts.append(f'<tr><td style="padding:16px 32px 0;font-size:14px;line-height:1.6;">{"<br>".join(lines)}</td></tr>')
 
     # ---- call to action + machine translation note
     def btn(label: str, url: str, primary: bool) -> str:
@@ -1045,13 +1582,20 @@ def render_lang_html(lang: str, data: dict, cfg: dict, links: Links, max_per: in
 def render_text(data: dict, cfg: dict, links: Links, max_per: int) -> str:
     site = cfg.get("site") or {}
     meeting_cfg = cfg.get("meeting") or {}
+    ed = data["edition"]
     out: list[str] = []
     title = site.get("title") or "Grapevine / La Viña"
-    out += [title, site.get("committee") or "", "English first · Versión en español más abajo", ""]
+    out += [f"{title} — {T['en']['masthead']} · {T['es']['masthead']}", site.get("committee") or "",
+            "English first · Versión en español más abajo", ""]
+
+    def head(s: str) -> list[str]:
+        return [s.upper(), "-" * min(len(s), 60)]
+
     for lang in ("en", "es"):
         t = T[lang]
-        head = f"{t['heading']} ({fmt_range(data['start'], data['end'], lang)})"
-        out += ["=" * len(head), head, "=" * len(head), ""]
+        prev_w, month_w = month_word(ed["prev"], lang), month_word(ed["key"], lang)
+        top = f"{t['masthead']} — {t['edition'].format(month=month_label(ed['key'], lang))}"
+        out += ["=" * len(top), top, "=" * len(top), t["edition_sub"].format(prev=prev_w, month=month_w), "", intro(data, lang), ""]
         m = data.get("meeting")
         if m:
             ex = m.get("extra") or {}
@@ -1065,46 +1609,118 @@ def render_text(data: dict, cfg: dict, links: Links, max_per: int) -> str:
             note = meeting_note(cfg, m, lang)
             if note:
                 out.append(f"  {note}")
+            out.append(f"  {links.page('/meetings/', lang)}")
             out.append("")
-        if data["announcements"]:
-            out += [t["announcements"].upper(), "-" * len(t["announcements"])]
-            for a in data["announcements"]:
+        ann = data["groups"]["announcement"]
+        if ann:
+            out += head(f"{t['announcement']} ({len(ann)})")
+            for a in ann[:max_per]:
                 out.append(f"* {tx(a, 'title', lang)}")
                 body = md_to_text(tx(a, "body_md", lang) or tx(a, "summary", lang))
                 if body:
                     out.append("  " + shorten(body, 600))
             out += [f"  → {links.page('/announcements/', lang)}", ""]
-        if data["events"]:
-            out += [t["events"].upper(), "-" * len(t["events"])]
-            for ev in data["events"][:max_per]:
-                r = event_row(ev, lang, links)
-                out.append(f"* {r['title']} — {r['when']}{(' · ' + r['where']) if r['where'] else ''}")
-                out.append(f"  {r['url']}")
-            out += [f"  → {links.page('/events/', lang)}", ""]
+        # this month in the magazines
+        bm = botm_block(data, lang, links)
+        if data["issues"]:
+            out += head(t["issues"])
+            for iss in ordered_issues(data, lang):
+                many, one = t["stories"]
+                count = one if iss["count"] == 1 else many.format(n=iss["count"])
+                if iss["free"]:
+                    count += " · " + t["free_n"].format(n=iss["free"])
+                theme = f": “{iss['theme'][lang]}”" if iss["theme"][lang] else ""
+                out.append(f"* {iss['name']} — {iss['label'][lang]}{theme} ({count})")
+                for a in iss["highlights"][:max_per]:
+                    free = f" — {t['free']}" if (a.get("extra") or {}).get("free") is True else ""
+                    out.append(f"  - “{title_of(a, lang)}”{free}")
+                    out.append(f"    {a['url']}")
+                out.append(f"  → {t['issue_more'].format(n=iss['count'])}: {links.page('/read/', lang)}")
+            out.append("")
+        tips = data["tips"].get(lang) or []
+        if tips:
+            out += head(t["tips"])
+            for tip in tips:
+                out.append(f"* {tip['title']}: {tip['text']}")
+        out += [f"{bm['month_label']}: {bm['month_url']}", ""]
+        # writers
+        W = data["writers"]
+        n_writers = sum(len(v) for v in W.values())
+        if n_writers:
+            out += head(f"{t['writers']} ({n_writers})")
+            for key in ("neta65", "texas"):
+                if not W[key]:
+                    continue
+                out.append(f"{t['group_' + key]}:")
+                for it in W[key][:max_per]:
+                    place = writer_place(it, lang)
+                    out.append(f"* “{tx(it, 'title', lang)}” — {writer_name(it, lang)}{', ' + place if place else ''} ({item_label(it, lang)[0]}, {issue_label(it, lang)})")
+                    out.append(f"  {it['url']}")
+            out += [f"  → {links.page('/published/', lang)}", ""]
+        # last month's lists
         for g, page in GROUPS:
             items = data["groups"].get(g) or []
             if not items:
                 continue
             rows, extra = build_rows(g, items, lang, links, page, max_per)
-            out += [t[g].upper(), "-" * len(t[g])]
+            out += head(f"{t[g]} ({len(items)})")
             for r in rows:
                 label = f"[{r['label']}] " if r["label"] else ""
                 meta = f" ({r['meta']})" if r["meta"] else ""
                 out.append(f"* {label}{r['title']}{meta}")
                 out.append(f"  {r['url']}")
+                if r.get("twin"):
+                    out.append(f"  {t['twin']}: {r['twin']}")
             more = t["more"].format(n=extra) if extra else t["see_all"]
             out += [f"  → {more}: {links.page(page, lang)}", ""]
+        if data["instagram"]:
+            out += [f"{t['instagram']}: {' · '.join('@' + h for h in data['instagram'])} — {links.page('/instagram/', lang)}", ""]
         if not total_count(data):
-            out += [t["nothing"], ""]
-        bm = botm_block(data, lang, links)
+            out += [t["nothing"].format(prev=prev_w), ""]
+        # coming up this month
+        out += head(t["coming"].format(month=month_w))
+        if not data["events"]:
+            out.append(t["no_events"].format(month=month_w))
+        for ev in data["events"]:
+            r = event_row(ev, lang, links)
+            out.append(f"* {r['title']} — {r['when']}{(' · ' + r['where']) if r['where'] else ''}")
+            out.append(f"  {r['url']}")
+        for w in data["weekly"].get(lang) or []:
+            starts = f" ({t['starting'].format(date=w['starts'])})" if w["starts"] else ""
+            out.append(f"* {t['every_week']}: {w['title']} — {w['when']}{starts}")
+            out.append(f"  {links.page('/meetings/', lang)}#weekly-open")
+        gt = gvm_text(data["gvm"], lang)
+        if gt:
+            out.append(f"* {t['gvm']}: {gt}")
+            out.append(f"  {links.page('/meetings/', lang)}#grapevine-meetings")
+        out += [f"  → {t['full_calendar']}: {links.page('/events/', lang)}", ""]
+        # share your story
+        topics = data["lv_topics"].get(lang) or []
+        if data["deadlines"] or topics or data["audio"]:
+            out += head(t["story"])
+            for d in data["deadlines"]:
+                pub = "La Viña" if (d.get("extra") or {}).get("publication") == "lv" else "Grapevine"
+                out.append(f"* {t['due'].format(date=fmt_month_day(d['extra']['deadline'], lang))} — “{tx(d, 'title', lang)}” ({pub}, {issue_label(d, lang)})")
+            if topics:
+                out.append(f"* {t['lv_anytime']} " + ", ".join(f"“{x['text']}”" + (f" (“{x['es']}”)" if lang != "es" and x["es"] != x["text"] else "") for x in topics))
+            if data["audio"]:
+                pubs = ("lv", "gv") if lang == "es" else ("gv", "lv")
+                out.append(f"* {t['record']}: " + " · ".join(f"{'La Viña' if p == 'lv' else 'Grapevine'} {data['audio'][p]['phone']}" for p in pubs if p in data["audio"]))
+                out.append(f"  {links.page('/contribute/', lang)}#record")
+            out += [f"  → {t['story_cta']}: {links.page('/contribute/', lang)}", ""]
+        # Book of the Month + subscriptions + the daily quote
         if bm["rows"]:
-            out += [bm["title"].upper(), "-" * len(bm["title"])]
+            out += head(bm["title"])
             for r in bm["rows"]:
                 price = f"{r['price']} {r['regular']}".strip()
                 out.append(f"* [{r['label']}] {r['title']} — {price}{(' · ' + r['until']) if r['until'] else ''}")
                 out.append(f"  {r['url']}")
             out.append(f"  → {t['botm_more']}: {bm['more_url']}")
-        out += [f"{bm['month_label']}: {bm['month_url']}", ""]
+        if data["subs_from"]:
+            out.append(f"{t['subs_from'].format(amount=fmt_money(data['subs_from']))}: {links.page('/shop/', lang)}#subscriptions")
+        if data["quote"]:
+            out.append(f"{t['quote']}: {links.page('/', lang)}")
+        out.append("")
         out.append(f"{t['cta_new']}: {links.page('/whats-new/', lang)}")
         if data["machine"].get(lang):
             out.append(t["machine"])
@@ -1196,55 +1812,57 @@ def step_summary(lines: list[str]) -> None:
 
 
 # ---------------------------------------------------------------------------- main
+def _positive(v: Any, default: int) -> int:
+    try:
+        n = int(v)
+        return n if n > 0 else default
+    except (TypeError, ValueError):
+        return default
+
+
 def main(argv: list[str] | None = None) -> int:
-    ap = argparse.ArgumentParser(description="Send the weekly bilingual e-mail digest.")
-    ap.add_argument("--dry-run", action="store_true", help="don't send; write .tmp/digest.html and .tmp/digest.txt")
-    ap.add_argument("--days", type=int, default=None, help="look back N days (default: config digest.days or 7)")
-    ap.add_argument("--event-days", type=int, default=30, help="show events in the next N days (default 30)")
-    ap.add_argument("--max-per-section", type=int, default=6, help="max items listed per section (default 6)")
+    ap = argparse.ArgumentParser(description="Send the monthly bilingual e-mail digest.")
+    ap.add_argument("--dry-run", action="store_true", help="don't send; write digest.html and digest.txt to --out-dir")
+    ap.add_argument("--month", default=None, help="the edition YYYY-MM (default: this month, Central time)")
+    ap.add_argument("--max-per-section", type=int, default=None, help="items listed per section (default: config digest.per_section or 5)")
     ap.add_argument("--to", default=None, help="override recipients (comma-separated)")
-    ap.add_argument("--only-on-weekday", action="store_true",
-                    help="do nothing unless today (Central time) is config digest.weekday")
-    ap.add_argument("--force", action="store_true", help="send even if there is nothing new")
-    ap.add_argument("--as-of", default=None, help="pretend today is YYYY-MM-DD (testing)")
+    ap.add_argument("--force", action="store_true", help="send even if nothing was new last month")
+    ap.add_argument("--as-of", default=None, help="pretend today is YYYY-MM-DD (testing; the scheduled time, 15:05 UTC)")
     ap.add_argument("--out-dir", default=str(ROOT / ".tmp"), help="where --dry-run writes the preview")
     args = ap.parse_args(argv)
 
     cfg = load_config()
     site = cfg.get("site") or {}
-    digest_cfg = cfg.get("digest") or {}
+    digest_cfg = cfg.get("digest") if isinstance(cfg.get("digest"), dict) else {}
 
     if args.as_of:
         d = date.fromisoformat(args.as_of)
-        now = datetime(d.year, d.month, d.day, 23, 0, tzinfo=timezone.utc)
+        now = datetime(d.year, d.month, d.day, 15, 5, tzinfo=timezone.utc)
     else:
         now = datetime.now(timezone.utc).replace(microsecond=0)
+    if args.month and not re.fullmatch(r"\d{4}-(0[1-9]|1[0-2])", args.month):
+        log(f"--month must look like 2026-10 (got {args.month!r})")
+        return 2
 
-    if args.only_on_weekday:
-        want = str(digest_cfg.get("weekday") or "monday").strip().lower()
-        today = WEEKDAYS[to_central(now).weekday()]
-        if want in WEEKDAYS and today != want:
-            log(f"today is {today}; the digest goes out on {want} (config/site.yml → digest.weekday). Nothing to do.")
-            return 0
-
-    days = args.days or int(digest_cfg.get("days") or 7)
+    max_per = args.max_per_section or _positive(digest_cfg.get("per_section"), 5)
+    highlights = _positive(digest_cfg.get("highlights"), 3)
     site_url = (os.environ.get("SITE_URL") or site.get("url") or "").strip().rstrip("/")
     if not site_url:
         log("WARNING: no site URL (config site.url / SITE_URL) — links will be relative")
     links = Links(site_url)
 
-    data = collect(now, days, args.event_days, args.max_per_section)
+    data = collect(now, args.month, max_per, highlights)
+    ed = data["edition"]
     n = total_count(data)
     counts = {g: len(v) for g, v in data["groups"].items() if v}
-    log(f"window {data['start']:%Y-%m-%d} → {data['end']:%Y-%m-%d} ({days} days): {n} item(s) "
-        f"{counts} · announcements={len(data['announcements'])} events={len(data['events'])} "
-        f"meeting={'yes' if data['meeting'] else 'no'}")
+    writers = sum(len(v) for v in data["writers"].values())
+    log(f"edition {ed['key']} — news from {ed['prev_first']} to {ed['prev_last']}: {n} item(s) {counts} "
+        f"writers={writers} · issues={len(data['issues'])} events={len(data['events'])} "
+        f"deadlines={len(data['deadlines'])} meeting={'yes' if data['meeting'] else 'no'}")
 
-    title = site.get("title") or "Grapevine / La Viña"
-    subject = (f"{title} — What's new · Novedades "
-               f"({fmt_range(data['start'], data['end'], 'en')})")
-    html_body = render_html(data, cfg, links, args.max_per_section, subject)
-    text_body = render_text(data, cfg, links, args.max_per_section)
+    subject = subject_of(data, cfg)
+    html_body = render_html(data, cfg, links, max_per, subject)
+    text_body = render_text(data, cfg, links, max_per)
 
     if args.dry_run:
         out = Path(args.out_dir)
@@ -1254,26 +1872,27 @@ def main(argv: list[str] | None = None) -> int:
         log(f"DRY RUN — subject: {subject}")
         log(f"preview written to {out / 'digest.html'} and {out / 'digest.txt'}")
         step_summary(["### E-mail digest preview (not sent)", f"**Subject:** {subject}", "",
-                      f"{n} new item(s): {counts}; announcements {len(data['announcements'])}; "
-                      f"events {len(data['events'])}", "", "Download the `digest-preview` artifact to see it."])
+                      f"{n} new item(s) last month: {counts}; writers {writers}; events this month "
+                      f"{len(data['events'])}; deadlines {len(data['deadlines'])}", "",
+                      "Download the `digest-preview` artifact to see it."])
         return 0
 
     if n == 0 and not args.force:
-        log("nothing new in the window — not sending (use --force to send anyway)")
-        step_summary(["### E-mail digest", "Nothing new this week — no e-mail sent."])
+        log("nothing new last month — not sending (use --force to send anyway)")
+        step_summary(["### E-mail digest", f"Nothing new in {month_label(ed['prev'], 'en')} — no e-mail sent."])
         return 0
 
     recipients = parse_recipients(args.to or os.environ.get("DIGEST_TO", ""))
     missing = [k for k in ("SMTP_SERVER", "SMTP_USERNAME", "SMTP_PASSWORD") if not os.environ.get(k, "").strip()]
     if missing or not recipients:
         log(f"e-mail is not configured (missing: {', '.join(missing + ([] if recipients else ['DIGEST_TO']))}). "
-            "See README → 'Weekly e-mail digest'.")
+            "See README → 'Monthly e-mail digest'.")
         return 2
 
     user = os.environ.get("SMTP_USERNAME", "").strip()
     from_addr = parseaddr(os.environ.get("DIGEST_FROM", "").strip())[1] or (user if "@" in user else site.get("contact_email", ""))
     reply_to = parseaddr(os.environ.get("DIGEST_REPLY_TO", "").strip())[1] or site.get("contact_email", "") or from_addr
-    from_name = site.get("committee") or title
+    from_name = site.get("committee") or site.get("title") or "Grapevine / La Viña"
     msg = build_message(subject, html_body, text_body, from_addr, from_name, recipients, reply_to)
     try:
         send(msg, from_addr, recipients)
@@ -1283,7 +1902,7 @@ def main(argv: list[str] | None = None) -> int:
         return 1
     log(f"sent to {len(recipients)} recipient(s): {subject}")
     step_summary(["### E-mail digest sent", f"**Subject:** {subject}", "",
-                  f"Recipients: {len(recipients)} · new items: {n} {counts}"])
+                  f"Recipients: {len(recipients)} · new items last month: {n} {counts}"])
     return 0
 
 

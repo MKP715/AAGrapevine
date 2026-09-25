@@ -525,6 +525,35 @@ share, print on one Letter page). The 3 months before this one keep small redire
 (`monthlyPastPages`, `src/pages/monthly-past.njk`), so a printed poster's QR code never lands on a 404.
 `MONTHLY_NOW=2026-12-15` fixes "today" for testing.
 
+### The district report (`/monthly/#report`) — no data file of its own
+`eleventy/filters/report.js` (`rpModel`) writes the current month's report in English AND Spanish as 12 sections
+`{id, title, text}` (plain text; a line starting with "•" is a list item): `header` (blanks `[##]`, name, role,
+home group), `committee` (`meeting.next`, `site.meeting`), `issues` (the month model: GV theme, LV issue, the
+`config/carry.yml` tips, a newer issue already out), `deadlines` (next 3 Grapevine deadlines in `db.editorial`, La
+Viña's rotating topics, `db.audio_project` phone lines), `shop` (`db.shop` Book of the Month and the lowest U.S.
+subscription prices, Carry the Message), `events` (`upcomingEvents`: the next 45 days, a monthly series once),
+`writers` (`db.spotlight`, Area 65, 60 days), `meetings` (`gvMeetings`; plus `meetings.options`: one option per
+county of our Area and per nearby region, with its lines, for the county picker), `weekly` (`db.weekly_open`),
+`resources` (`db.pdfs` of the last 45 days, `site.links` GVR/RLV sign-up, contact), `asks`, `notes` (empty). The page
+embeds it as JSON (`rpJson`); `src/assets/js/report.js` is the editor; without JavaScript `rpText` shows it as text.
+Kept per visitor only (optional): `localStorage["gv-report:YYYY-MM:en|es"]` = the changes to that month's report
+`{ order, off, text, titles, custom, meet }` (only what differs from the data; drafts older than 3 months are
+removed), `["gv-report:profile"]` = `{ district, name, role, group }`, `["gv-report:lang"]` = the report language.
+
+### GVR / RLV 101 (`/orientation/`) — `config/orientation.yml`
+Hand-written lessons for new GVRs / RLVs, loaded by `src/_data/orientation.js` as `orientation`
+(`panel`, `lessons[]`, `pages` → `/orientation/<id>/` × en/es, `totalMinutes`, `totalChecks`). Each lesson:
+`id` (the page address — keep it), `icon`, `minutes`, `example` (`issue` · `meeting` · `tip` · `botm` ·
+`deadline` · `poster`: which live example `src/_includes/macros/orientation.njk` builds from `db.*`, `carry` and
+`meeting` — nothing in the file itself goes stale), `title` / `summary` / `goal` / `try` / `discuss` `{en, es}`,
+`points[]` `{title, text}`, `links[]` (`href` a page of this site · `link` a `site.links` key · `url`, with
+`pub: gv|lv` for the La Viña-first order on `/es/`) and `check[]` (3 questions × 3 options, `answer` 1–3, `why`).
+Placeholders `{rule_lc}` `{time}` `{panel}` `{panel_start}` are filled from `site.meeting` and `panel`. The build
+fails on a missing language or a malformed question (`I18N_STRICT=1`); `tests/test_orientation.py` checks the
+same plus lengths and wording. Filters: `eleventy/filters/orientation.js` (`o101Text`, `o101Vars`, `o101Links`,
+`o101Deck` — the slide plan). The search index lists each lesson (`eleventy/filters/library.js`). The only thing
+kept per visitor is `localStorage["gv-orientation-v1"]` = `{ v: 1, done: [lesson ids] }` (optional).
+
 ## 4. Template helpers (Eleventy filters)
 
 * `{{ "nav.home" | t(lang) }}` — UI string from `src/_i18n/*.json`
@@ -711,7 +740,7 @@ calendar feed keeps them for subscribers):
   both labels keep the writer's spelling of the city.
 
 `extra.pub_date` (`YYYY-MM-DD`) = the day the story counts as published for the 60/90-day windows and the
-weekly digest: the EARLIER of the first day of its issue (La Viña's bimonthly issues: the first month) and
+monthly digest (last month's writers): the EARLIER of the first day of its issue (La Viña's bimonthly issues: the first month) and
 the day the story was first seen online (`first_seen`, in America/Chicago) — never later than today. It
 does not move: an October issue seen online on September 16 counts from September 16, also after
 October 1 (so the digest lists it once); a back-catalog story found by the archive backfill counts
