@@ -1,6 +1,6 @@
 {
- "generated": "2026-09-25T15:58:47Z",
- "updated": "2026-09-25T15:58:47Z",
+ "generated": "2026-09-25T16:01:11Z",
+ "updated": "2026-09-25T16:01:11Z",
  "fixture": false,
  "sources": [
   {
@@ -8,8 +8,8 @@
    "label": "Google Drive (committee uploads)",
    "label_es": "Google Drive (archivos del comité)",
    "ok": true,
-   "updated": "2026-09-25T15:11:41Z",
-   "attempted": "2026-09-25T15:11:41Z",
+   "updated": "2026-09-25T16:00:48Z",
+   "attempted": "2026-09-25T16:00:48Z",
    "count": 6,
    "new_7d": 6,
    "error": null,
@@ -75,8 +75,8 @@
    "label": "Announcements (content/announcements)",
    "label_es": "Anuncios (content/announcements)",
    "ok": true,
-   "updated": "2026-09-25T15:20:06Z",
-   "attempted": "2026-09-25T15:20:06Z",
+   "updated": "2026-09-25T16:00:48Z",
+   "attempted": "2026-09-25T16:00:48Z",
    "count": 0,
    "new_7d": 0,
    "error": null,
@@ -93,8 +93,8 @@
    "label": "Events (content/events)",
    "label_es": "Eventos (content/events)",
    "ok": true,
-   "updated": "2026-09-25T15:20:06Z",
-   "attempted": "2026-09-25T15:20:06Z",
+   "updated": "2026-09-25T16:00:48Z",
+   "attempted": "2026-09-25T16:00:48Z",
    "count": 9,
    "new_7d": 9,
    "error": null,
@@ -231,8 +231,8 @@
    "label": "Podcasts",
    "label_es": "Pódcasts",
    "ok": true,
-   "updated": "2026-09-25T15:20:09Z",
-   "attempted": "2026-09-25T15:20:09Z",
+   "updated": "2026-09-25T16:00:52Z",
+   "attempted": "2026-09-25T16:00:52Z",
    "count": 296,
    "new_7d": 296,
    "error": null,
@@ -259,7 +259,7 @@
     "gone_checks": 0,
     "discovery_checked": "2026-09-23T16:27:25Z",
     "discovered_feeds": [],
-    "seconds": 2.6,
+    "seconds": 4.2,
     "artwork": 3,
     "artwork_missing": 0,
     "artwork_removed": 0
@@ -423,8 +423,8 @@
    "label": "Daily quote",
    "label_es": "Cita del día",
    "ok": true,
-   "updated": "2026-09-25T14:14:34Z",
-   "attempted": "2026-09-25T14:14:34Z",
+   "updated": "2026-09-25T16:01:10Z",
+   "attempted": "2026-09-25T16:01:10Z",
    "count": 2,
    "new_7d": 2,
    "error": null,
@@ -433,7 +433,7 @@
     "parsed": 2,
     "requests": 2,
     "today": "2026-09-25",
-    "new": 2
+    "new": 0
    }
   }
  ],
@@ -455,7 +455,7 @@
   "updated": "2026-09-25T15:30:10Z"
  },
  "translations": {
-  "cached": 1883,
+  "cached": 1877,
   "engine": "argos1.0-ct2/v5",
   "model_enabled": true,
   "translated_this_run": 0,
