@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-24T22:38:35Z",
+ "updated": "2026-09-25T15:25:59Z",
  "fixture": false,
  "type": "GR",
  "sources": [
@@ -13,7 +13,7 @@
     "es": "Zona de Dallas"
    },
    "ok": true,
-   "updated": "2026-09-24T22:37:36Z",
+   "updated": "2026-09-25T15:24:53Z",
    "count": 5,
    "error": null
   },
@@ -27,7 +27,7 @@
     "es": "Zona de Fort Worth"
    },
    "ok": true,
-   "updated": "2026-09-24T22:37:36Z",
+   "updated": "2026-09-25T15:24:53Z",
    "count": 5,
    "error": null
   },
@@ -41,7 +41,7 @@
     "es": "Este de Texas (Tyler)"
    },
    "ok": true,
-   "updated": "2026-09-24T22:37:36Z",
+   "updated": "2026-09-25T15:24:53Z",
    "count": 3,
    "error": null
   },
@@ -55,7 +55,7 @@
     "es": "Zona de Dallas (en español)"
    },
    "ok": true,
-   "updated": "2026-09-24T22:37:36Z",
+   "updated": "2026-09-25T15:24:53Z",
    "count": 0,
    "error": null
   },
@@ -69,7 +69,7 @@
     "es": "Abilene (Distrito 71)"
    },
    "ok": true,
-   "updated": "2026-09-24T22:37:36Z",
+   "updated": "2026-09-25T15:24:53Z",
    "count": 1,
    "error": null
   },
@@ -82,10 +82,10 @@
     "en": "Arkansas & the Fort Smith area",
     "es": "Arkansas y la zona de Fort Smith"
    },
-   "ok": true,
+   "ok": false,
    "updated": "2026-09-24T22:37:36Z",
    "count": 2,
-   "error": null
+   "error": "feed: arkansascentraloffice.org did not answer; page: arkansascentraloffice.org did not answer"
   },
   {
    "id": "okcintergroup",
@@ -97,7 +97,7 @@
     "es": "Zona de Oklahoma City"
    },
    "ok": true,
-   "updated": "2026-09-24T22:37:36Z",
+   "updated": "2026-09-25T15:24:53Z",
    "count": 8,
    "error": null
   },
@@ -111,7 +111,7 @@
     "es": "Noroeste de Texas (Área 66)"
    },
    "ok": true,
-   "updated": "2026-09-24T22:37:36Z",
+   "updated": "2026-09-25T15:24:53Z",
    "count": 0,
    "error": null
   }

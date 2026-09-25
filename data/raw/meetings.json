@@ -1,22 +1,25 @@
 {
  "source": "meetings",
- "updated": "2026-09-24T22:38:35Z",
- "attempted": "2026-09-24T22:38:35Z",
+ "updated": "2026-09-25T15:25:59Z",
+ "attempted": "2026-09-25T15:25:59Z",
  "ok": true,
  "error": null,
  "stats": {
   "offices": 8,
-  "offices_ok": 8,
-  "listed": 5899,
-  "grapevine": 24,
+  "offices_ok": 7,
+  "listed": 4963,
+  "grapevine": 22,
   "meetings": 23,
   "in_area": 13,
   "nearby": 10,
   "inactive": 0,
   "incomplete": 0,
   "duplicates_merged": 1,
-  "kept_from_before": 0,
-  "requests": 8
+  "kept_from_before": 2,
+  "requests": 7,
+  "warnings": [
+   "Arkansas Central Office: feed: arkansascentraloffice.org did not answer; page: arkansascentraloffice.org did not answer"
+  ]
  },
  "items": [
   {
@@ -500,7 +503,7 @@
     "day": 3,
     "time": "20:00",
     "end_time": null,
-    "location": "1144 N Plano Road, Suite 246 (Bus Route Access)",
+    "location": "Suite 246 (Bus Route Access)",
     "address": "1144 N Plano Rd, Richardson, TX 75081",
     "street": "1144 N Plano Rd",
     "zip": "75081",
@@ -865,7 +868,7 @@
     "day": 6,
     "time": "11:00",
     "end_time": null,
-    "location": "921 W Pioneer Pkwy, Suite O",
+    "location": "Suite O",
     "address": "921 W Pioneer Pkwy, Grand Prairie, TX 75052",
     "street": "921 W Pioneer Pkwy",
     "zip": "75052",
@@ -962,7 +965,7 @@
     "day": 6,
     "time": "12:00",
     "end_time": "13:00",
-    "location": "6101 Watauga Rd (Strip Center)",
+    "location": "Strip Center",
     "address": "6101 Watauga Rd e, Watauga, TX 76148",
     "street": "6101 Watauga Rd e",
     "zip": "76148",
@@ -1088,8 +1091,8 @@
    "method": "feed",
    "key_from": "config",
    "error": null,
-   "updated": "2026-09-24T22:37:36Z",
-   "attempted": "2026-09-24T22:37:36Z",
+   "updated": "2026-09-25T15:24:53Z",
+   "attempted": "2026-09-25T15:24:53Z",
    "note": null
   },
   {
@@ -1102,8 +1105,8 @@
    "method": "feed",
    "key_from": "config",
    "error": null,
-   "updated": "2026-09-24T22:37:36Z",
-   "attempted": "2026-09-24T22:37:36Z",
+   "updated": "2026-09-25T15:24:53Z",
+   "attempted": "2026-09-25T15:24:53Z",
    "note": null
   },
   {
@@ -1116,8 +1119,8 @@
    "method": "page",
    "key_from": null,
    "error": null,
-   "updated": "2026-09-24T22:37:36Z",
-   "attempted": "2026-09-24T22:37:36Z",
+   "updated": "2026-09-25T15:24:53Z",
+   "attempted": "2026-09-25T15:24:53Z",
    "note": null
   },
   {
@@ -1130,8 +1133,8 @@
    "method": "feed",
    "key_from": null,
    "error": null,
-   "updated": "2026-09-24T22:37:36Z",
-   "attempted": "2026-09-24T22:37:36Z",
+   "updated": "2026-09-25T15:24:53Z",
+   "attempted": "2026-09-25T15:24:53Z",
    "note": null
   },
   {
@@ -1144,8 +1147,8 @@
    "method": "feed",
    "key_from": null,
    "error": null,
-   "updated": "2026-09-24T22:37:36Z",
-   "attempted": "2026-09-24T22:37:36Z",
+   "updated": "2026-09-25T15:24:53Z",
+   "attempted": "2026-09-25T15:24:53Z",
    "note": null
   },
   {
@@ -1153,14 +1156,13 @@
    "name": "Arkansas Central Office",
    "url": "https://arkansascentraloffice.org",
    "lang": "en",
-   "ok": true,
+   "ok": false,
    "count": 2,
-   "method": "feed",
+   "method": null,
    "key_from": null,
-   "error": null,
+   "error": "feed: arkansascentraloffice.org did not answer; page: arkansascentraloffice.org did not answer",
    "updated": "2026-09-24T22:37:36Z",
-   "attempted": "2026-09-24T22:37:36Z",
-   "note": null
+   "attempted": "2026-09-25T15:24:53Z"
   },
   {
    "id": "okcintergroup",
@@ -1172,8 +1174,8 @@
    "method": "feed",
    "key_from": null,
    "error": null,
-   "updated": "2026-09-24T22:37:36Z",
-   "attempted": "2026-09-24T22:37:36Z",
+   "updated": "2026-09-25T15:24:53Z",
+   "attempted": "2026-09-25T15:24:53Z",
    "note": null
   },
   {
@@ -1186,8 +1188,8 @@
    "method": "feed",
    "key_from": null,
    "error": null,
-   "updated": "2026-09-24T22:37:36Z",
-   "attempted": "2026-09-24T22:37:36Z",
+   "updated": "2026-09-25T15:24:53Z",
+   "attempted": "2026-09-25T15:24:53Z",
    "note": null
   }
  ],

@@ -1,7 +1,342 @@
 {
- "updated": "2026-09-25T08:54:02Z",
+ "updated": "2026-09-25T15:30:13Z",
  "fixture": false,
  "items": [
+  {
+   "id": "ig:Ddtu0JsFzEt",
+   "source": "instagram",
+   "kind": "post",
+   "url": "https://www.instagram.com/p/Ddtu0JsFzEt/",
+   "title": "Del artículo “El vacío detrás de la fiesta\", edición de septiembre/octubre de 2026.",
+   "summary": "Del artículo “El vacío detrás de la fiesta\", edición de septiembre/octubre de 2026. Para leer más visite www.aalavina.org/revista",
+   "lang": "es",
+   "date": "2026-09-25T15:00:15Z",
+   "first_seen": "2026-09-25T15:20:59Z",
+   "image": "/assets/cache/ig/Ddtu0JsFzEt.webp",
+   "tags": [],
+   "category": "lv",
+   "status": "ok",
+   "extra": {
+    "shortcode": "Ddtu0JsFzEt",
+    "account": "lv",
+    "username": "alcoholicosanonimos_lv",
+    "media_type": "image",
+    "thumb": "/assets/cache/ig/Ddtu0JsFzEt.webp",
+    "embed_url": "https://www.instagram.com/p/Ddtu0JsFzEt/embed/captioned/",
+    "permalink": "https://www.instagram.com/p/Ddtu0JsFzEt/",
+    "is_reel": false,
+    "manual": false,
+    "strategy": "profile_embed",
+    "caption_known": true,
+    "embed_checked": null
+   },
+   "i18n": {
+    "title": {
+     "en": "From the article “the emptiness behind the party”, September / October 2026 edition.",
+     "es": "Del artículo “El vacío detrás de la fiesta\", edición de septiembre/octubre de 2026."
+    },
+    "summary": {
+     "en": "From the article “the emptiness behind the party”, September / October 2026 edition. To read more visit www.aalavina.org/revista",
+     "es": "Del artículo “El vacío detrás de la fiesta\", edición de septiembre/octubre de 2026. Para leer más visite www.aalavina.org/revista"
+    }
+   },
+   "machine": [
+    "en"
+   ],
+   "is_new": true,
+   "wn_date": "2026-09-25T15:00:15Z"
+  },
+  {
+   "id": "ig:Ddtu0IQl4Ys",
+   "source": "instagram",
+   "kind": "post",
+   "url": "https://www.instagram.com/p/Ddtu0IQl4Ys/",
+   "title": "From the article “Never Too Young\", September 2026 issue.",
+   "summary": "From the article “Never Too Young\", September 2026 issue. To read more, visit www.aagrapevine.org/magazine",
+   "lang": "en",
+   "date": "2026-09-25T15:00:14Z",
+   "first_seen": "2026-09-25T15:20:59Z",
+   "image": "/assets/cache/ig/Ddtu0IQl4Ys.webp",
+   "tags": [],
+   "category": "gv",
+   "status": "ok",
+   "extra": {
+    "shortcode": "Ddtu0IQl4Ys",
+    "account": "gv",
+    "username": "alcoholicsanonymous_gv",
+    "media_type": "image",
+    "thumb": "/assets/cache/ig/Ddtu0IQl4Ys.webp",
+    "embed_url": "https://www.instagram.com/p/Ddtu0IQl4Ys/embed/captioned/",
+    "permalink": "https://www.instagram.com/p/Ddtu0IQl4Ys/",
+    "is_reel": false,
+    "manual": false,
+    "strategy": "profile_embed",
+    "caption_known": true,
+    "embed_checked": null
+   },
+   "i18n": {
+    "title": {
+     "en": "From the article “Never Too Young\", September 2026 issue.",
+     "es": "Del artículo “Never Too Young”, edición de septiembre de 2026."
+    },
+    "summary": {
+     "en": "From the article “Never Too Young\", September 2026 issue. To read more, visit www.aagrapevine.org/magazine",
+     "es": "Del artículo “Never Too Young”, edición de septiembre de 2026. Para leer más, visite www.aagrapevine.org/magazine"
+    }
+   },
+   "machine": [
+    "es"
+   ],
+   "is_new": true,
+   "wn_date": "2026-09-25T15:00:14Z"
+  },
+  {
+   "id": "drive:18mW_xghlvSL14WBAmas4gG987EeRN7-w",
+   "source": "drive",
+   "kind": "document",
+   "url": "https://drive.google.com/file/d/18mW_xghlvSL14WBAmas4gG987EeRN7-w/view",
+   "title": "Grapevine as a Twelfth Step Tool - Put Them to Work (2026-2027 editorial calendar)",
+   "summary": "",
+   "lang": "en",
+   "date": "2026-09-25",
+   "first_seen": "2026-09-25T15:20:06Z",
+   "image": "https://lh3.googleusercontent.com/d/18mW_xghlvSL14WBAmas4gG987EeRN7-w=w600",
+   "tags": [
+    "panel-77",
+    "pdf"
+   ],
+   "category": "workshops",
+   "status": "ok",
+   "extra": {
+    "file_id": "18mW_xghlvSL14WBAmas4gG987EeRN7-w",
+    "mime": "application/pdf",
+    "name": "Grapevine as a Twelfth Step Tool - Put Them to Work (2026-2027 editorial calendar).pdf",
+    "panel": 77,
+    "panel_label": "Panel 77 (2027–2028)",
+    "path": [
+     "workshops"
+    ],
+    "album": null,
+    "view_url": "https://drive.google.com/file/d/18mW_xghlvSL14WBAmas4gG987EeRN7-w/view",
+    "preview_url": "https://drive.google.com/file/d/18mW_xghlvSL14WBAmas4gG987EeRN7-w/preview",
+    "download_url": "https://drive.google.com/uc?export=download&id=18mW_xghlvSL14WBAmas4gG987EeRN7-w",
+    "thumb_url": "https://lh3.googleusercontent.com/d/18mW_xghlvSL14WBAmas4gG987EeRN7-w=w600",
+    "image_url": null,
+    "is_image": false,
+    "is_video": false,
+    "is_pdf": true,
+    "file_type": "PDF",
+    "folder_id": "1F-JX93b8nDV3tqx97bYxev2OJpv-XnNt",
+    "folder_url": "https://drive.google.com/drive/folders/1F-JX93b8nDV3tqx97bYxev2OJpv-XnNt",
+    "folder_chain": [
+     "1cTCFxTujRm-m8Xn0OobJGH2EIWI753S1",
+     "1bebd9TAz1L3LHhbeKUSlcENndtqas5O0",
+     "1F-JX93b8nDV3tqx97bYxev2OJpv-XnNt"
+    ],
+    "modified_text": "6:15 am"
+   },
+   "i18n": {
+    "title": {
+     "en": "Grapevine as a Twelfth Step Tool - Put Them to Work (2026-2027 editorial calendar)",
+     "es": "Grapevine como una herramienta Duodécimo Paso - Ponerlos a trabajar (2026-2027 calendario editorial)"
+    },
+    "summary": {
+     "en": "",
+     "es": ""
+    }
+   },
+   "machine": [
+    "es"
+   ],
+   "is_new": true,
+   "wn_date": "2026-09-25T12:00:00Z"
+  },
+  {
+   "id": "drive:album:595f49c5ec58",
+   "source": "drive",
+   "kind": "photo",
+   "url": "/photos/#flyers",
+   "title": "2 new photos in flyers",
+   "summary": "",
+   "lang": "en",
+   "date": "2026-09-25",
+   "first_seen": "2026-09-25T15:20:06Z",
+   "image": "https://lh3.googleusercontent.com/d/1NeF9BQOvPOTbb1feiPYykHbjFuZ7iRBJ=w600",
+   "tags": [
+    "album"
+   ],
+   "category": "photos",
+   "status": "ok",
+   "extra": {
+    "album": "flyers",
+    "count": 2,
+    "is_group": true,
+    "photo_ids": [
+     "drive:1NeF9BQOvPOTbb1feiPYykHbjFuZ7iRBJ",
+     "drive:1PQk08ukyuVAWKnq1kLRbnURvS1FUyX1i"
+    ],
+    "thumbs": [
+     "https://lh3.googleusercontent.com/d/1NeF9BQOvPOTbb1feiPYykHbjFuZ7iRBJ=w600",
+     "https://lh3.googleusercontent.com/d/1PQk08ukyuVAWKnq1kLRbnURvS1FUyX1i=w600"
+    ],
+    "panel": 77,
+    "panel_label": "Panel 77 (2027–2028)",
+    "album_slug": "flyers"
+   },
+   "i18n": {
+    "title": {
+     "en": "2 new photos in flyers",
+     "es": "2 fotos nuevas en flyers"
+    },
+    "summary": {
+     "en": "",
+     "es": ""
+    },
+    "album": {
+     "en": "flyers",
+     "es": "flyers"
+    }
+   },
+   "machine": [],
+   "is_new": true,
+   "wn_date": "2026-09-25T12:00:00Z"
+  },
+  {
+   "id": "ig:DdtWyC6Fyfe",
+   "source": "instagram",
+   "kind": "post",
+   "url": "https://www.instagram.com/p/DdtWyC6Fyfe/",
+   "title": "“Mi nuevo amigo me preguntó cuándo había bebido por última vez, si había comido y si…",
+   "summary": "“Mi nuevo amigo me preguntó cuándo había bebido por última vez, si había comido y si dormí bajo techo esa noche. Me contó su historia… Mis esperanzas se fortalecieron aún más; supe que había hallado una forma de vivir sin la bebida”. \"“La novia de nadie” MORENO VALLEY, CALIFORNIA, DICIEMBRE DE 1992 De I Am Responsible\" Cita Diaria en www.aalavina.org",
+   "lang": "es",
+   "date": "2026-09-25T11:30:15Z",
+   "first_seen": "2026-09-25T15:20:59Z",
+   "image": "/assets/cache/ig/DdtWyC6Fyfe.webp",
+   "tags": [],
+   "category": "lv",
+   "status": "ok",
+   "extra": {
+    "shortcode": "DdtWyC6Fyfe",
+    "account": "lv",
+    "username": "alcoholicosanonimos_lv",
+    "media_type": "image",
+    "thumb": "/assets/cache/ig/DdtWyC6Fyfe.webp",
+    "embed_url": "https://www.instagram.com/p/DdtWyC6Fyfe/embed/captioned/",
+    "permalink": "https://www.instagram.com/p/DdtWyC6Fyfe/",
+    "is_reel": false,
+    "manual": false,
+    "strategy": "profile_embed",
+    "caption_known": true,
+    "embed_checked": null
+   },
+   "i18n": {
+    "title": {
+     "en": "“My new friend asked me when I had last drunk, whether I had eaten and if …",
+     "es": "“Mi nuevo amigo me preguntó cuándo había bebido por última vez, si había comido y si…"
+    },
+    "summary": {
+     "en": "“My new friend asked me when I had last drunk, whether I had eaten, and if I slept under the roof that night. He told me his story … My hopes were further strengthened; I knew I had found a way of living without the drink.” \"Nobody's Bride\" MORENO VALLEY, CALIFORNIA, 1992 I Am Responsible Daily Quote in www.aalavina.org",
+     "es": "“Mi nuevo amigo me preguntó cuándo había bebido por última vez, si había comido y si dormí bajo techo esa noche. Me contó su historia… Mis esperanzas se fortalecieron aún más; supe que había hallado una forma de vivir sin la bebida”. \"“La novia de nadie” MORENO VALLEY, CALIFORNIA, DICIEMBRE DE 1992 De I Am Responsible\" Cita Diaria en www.aalavina.org"
+    }
+   },
+   "machine": [
+    "en"
+   ],
+   "is_new": true,
+   "wn_date": "2026-09-25T11:30:15Z"
+  },
+  {
+   "id": "ig:DdtWyE6F-w4",
+   "source": "instagram",
+   "kind": "post",
+   "url": "https://www.instagram.com/p/DdtWyE6F-w4/",
+   "title": "“During his first AA years every AA has had plenty of the urge to revolt against…",
+   "summary": "“During his first AA years every AA has had plenty of the urge to revolt against authority. I know I did, and can’t claim to be over it yet. I’ve also served my time as a maker of rules, a regulator of other people’s conduct ... I can now look back upon such experiences with much amusement. And gratitude as well.” AA Co-Founder, Bill W., September 1945, From: “’Rules’ Dangerous but Unity Vital”…",
+   "lang": "en",
+   "date": "2026-09-25T11:30:15Z",
+   "first_seen": "2026-09-25T15:20:59Z",
+   "image": "/assets/cache/ig/DdtWyE6F-w4.webp",
+   "tags": [],
+   "category": "gv",
+   "status": "ok",
+   "extra": {
+    "shortcode": "DdtWyE6F-w4",
+    "account": "gv",
+    "username": "alcoholicsanonymous_gv",
+    "media_type": "image",
+    "thumb": "/assets/cache/ig/DdtWyE6F-w4.webp",
+    "embed_url": "https://www.instagram.com/p/DdtWyE6F-w4/embed/captioned/",
+    "permalink": "https://www.instagram.com/p/DdtWyE6F-w4/",
+    "is_reel": false,
+    "manual": false,
+    "strategy": "profile_embed",
+    "caption_known": true,
+    "embed_checked": null
+   },
+   "i18n": {
+    "title": {
+     "en": "“During his first AA years every AA has had plenty of the urge to revolt against…",
+     "es": "“Durante sus primeros AA años cada AA ha tenido un gran impulso para rebelarse contra …"
+    },
+    "summary": {
+     "en": "“During his first AA years every AA has had plenty of the urge to revolt against authority. I know I did, and can’t claim to be over it yet. I’ve also served my time as a maker of rules, a regulator of other people’s conduct ... I can now look back upon such experiences with much amusement. And gratitude as well.” AA Co-Founder, Bill W., September 1945, From: “’Rules’ Dangerous but Unity Vital”…",
+     "es": "“Durante sus primeros AA años cada AA ha tenido un gran impulso para rebelarse contra la autoridad. Sé que lo hice, y no puedo alegar que lo superó todavía. También he servido mi tiempo como fabricante de reglas, un regulador de la conducta de otras personas ... Ahora puedo mirar atrás sobre tales experiencias con mucha diversión. Y gratitud también”. AA cofundador, Bill W., septiembre de 1945, de: “’rules’ peligroso pero de unidad Vital” …"
+    }
+   },
+   "machine": [
+    "es"
+   ],
+   "is_new": true,
+   "wn_date": "2026-09-25T11:30:15Z"
+  },
+  {
+   "id": "yt:Yf5SFhLiBwc",
+   "source": "youtube",
+   "kind": "video",
+   "url": "https://www.youtube.com/watch?v=Yf5SFhLiBwc",
+   "title": "Grapevine Weekly Open AA Meeting, September 23, 2026 [Season 2, Episode 13]",
+   "summary": "In this AA Grapevine podcast, you'll hear a recording of Grapevine's open AA meeting, held on September 23, 2026. We meet every Wednesday at Noon Eastern and hope that you will join us. The code on Zoom is 871 2036 8287 and the password is 238047. Each meeting is recorded and distributed as a podcast. This week meeting leader Jeff welcomes speakers Camille and Joe, who share their experience…",
+   "lang": "en",
+   "date": "2026-09-25T04:31:03Z",
+   "first_seen": "2026-09-25T15:20:54Z",
+   "image": "https://i.ytimg.com/vi/Yf5SFhLiBwc/hqdefault.jpg",
+   "tags": [
+    "season-2",
+    "weekly-open",
+    "live"
+   ],
+   "category": "gv",
+   "status": "ok",
+   "extra": {
+    "video_id": "Yf5SFhLiBwc",
+    "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
+    "duration_sec": null,
+    "playlists": [
+     "Grapevine Weekly Open AA Meeting"
+    ],
+    "is_short": false,
+    "views": 43,
+    "is_live_recording": true,
+    "date_approx": false,
+    "season": 2,
+    "episode": 13
+   },
+   "i18n": {
+    "title": {
+     "en": "Grapevine Weekly Open AA Meeting, September 23, 2026 [Season 2, Episode 13]",
+     "es": "Grapevine Weekly Open AA Meeting, 23 de septiembre de 2026 [Temporada 2, Episodio 13]"
+    },
+    "summary": {
+     "en": "In this AA Grapevine podcast, you'll hear a recording of Grapevine's open AA meeting, held on September 23, 2026. We meet every Wednesday at Noon Eastern and hope that you will join us. The code on Zoom is 871 2036 8287 and the password is 238047. Each meeting is recorded and distributed as a podcast. This week meeting leader Jeff welcomes speakers Camille and Joe, who share their experience…",
+     "es": "En este AA Grapevine Podcast, usted escuchará una grabación de la reunión abierta AA de Grapevine, celebrada el 23 de septiembre de 2026. Nos reunimos cada miércoles al mediodía (hora del Este) y esperamos que se una a nosotros. El código de Zoom es 871 2036 8287 y la contraseña es 238047. Cada reunión se graba y distribuye como podcast. Esta semana el líder de la reunión Jeff da la bienvenida a los oradores Camille y Joe, que comparten su experiencia …"
+    }
+   },
+   "machine": [
+    "es"
+   ],
+   "is_new": true,
+   "wn_date": "2026-09-25T04:31:03Z"
+  },
   {
    "id": "pod:wo:a29f638e2d5d",
    "source": "podcast",
@@ -3260,7 +3595,7 @@
      "American Sign Language"
     ],
     "is_short": false,
-    "views": 216,
+    "views": 231,
     "is_live_recording": true,
     "date_approx": false
    },
@@ -3530,7 +3865,7 @@
      "AA Grapevine's Podcast"
     ],
     "is_short": false,
-    "views": 202,
+    "views": 221,
     "is_live_recording": false,
     "date_approx": false,
     "season": 11,
@@ -4024,7 +4359,7 @@
      "Grapevine Weekly Open AA Meeting"
     ],
     "is_short": false,
-    "views": 279,
+    "views": 304,
     "is_live_recording": true,
     "date_approx": false,
     "season": 2,
@@ -4261,7 +4596,7 @@
      "AA Grapevine's Podcast"
     ],
     "is_short": false,
-    "views": 288,
+    "views": 297,
     "is_live_recording": false,
     "date_approx": false,
     "season": 11,
@@ -4359,7 +4694,7 @@
      "Grapevine Weekly Open AA Meeting"
     ],
     "is_short": false,
-    "views": 355,
+    "views": 367,
     "is_live_recording": true,
     "date_approx": false,
     "season": 2,
@@ -4456,7 +4791,7 @@
      "American Sign Language"
     ],
     "is_short": false,
-    "views": 274,
+    "views": 275,
     "is_live_recording": true,
     "date_approx": false
    },
@@ -4500,7 +4835,7 @@
      "AA Grapevine's Podcast"
     ],
     "is_short": false,
-    "views": 311,
+    "views": 314,
     "is_live_recording": false,
     "date_approx": false,
     "season": 11,
@@ -4598,7 +4933,7 @@
      "Grapevine Weekly Open AA Meeting"
     ],
     "is_short": false,
-    "views": 322,
+    "views": 325,
     "is_live_recording": true,
     "date_approx": false,
     "season": 2,
@@ -6944,7 +7279,7 @@
      "AA Grapevine's Podcast"
     ],
     "is_short": false,
-    "views": 452,
+    "views": 456,
     "is_live_recording": false,
     "date_approx": false,
     "season": 11,
@@ -7042,7 +7377,7 @@
      "Grapevine Weekly Open AA Meeting"
     ],
     "is_short": false,
-    "views": 382,
+    "views": 385,
     "is_live_recording": true,
     "date_approx": false,
     "season": 2,
@@ -7613,7 +7948,7 @@
      "Grapevine Weekly Open AA Meeting"
     ],
     "is_short": false,
-    "views": 196,
+    "views": 197,
     "is_live_recording": true,
     "date_approx": false,
     "season": 2,
@@ -7710,7 +8045,7 @@
      "American Sign Language"
     ],
     "is_short": false,
-    "views": 235,
+    "views": 237,
     "is_live_recording": true,
     "date_approx": false
    },
@@ -7754,7 +8089,7 @@
      "AA Grapevine's Podcast"
     ],
     "is_short": false,
-    "views": 222,
+    "views": 223,
     "is_live_recording": false,
     "date_approx": false,
     "season": 11,
@@ -7903,7 +8238,7 @@
      "Grapevine Weekly Open AA Meeting"
     ],
     "is_short": false,
-    "views": 226,
+    "views": 228,
     "is_live_recording": true,
     "date_approx": false,
     "season": 2,
@@ -7976,6 +8311,128 @@
    "wn_date": "2026-08-14T04:15:00Z"
   },
   {
+   "id": "drive:1Fs9t4jxeMXemu_FQP-bKc7smr6NZHuiu",
+   "source": "drive",
+   "kind": "document",
+   "url": "https://drive.google.com/file/d/1Fs9t4jxeMXemu_FQP-bKc7smr6NZHuiu/view",
+   "title": "Grapevine Area Chair Meeting Agenda",
+   "summary": "",
+   "lang": "en",
+   "date": "2026-08-11",
+   "first_seen": "2026-09-25T15:20:06Z",
+   "image": "https://lh3.googleusercontent.com/d/1Fs9t4jxeMXemu_FQP-bKc7smr6NZHuiu=w600",
+   "tags": [
+    "panel-77",
+    "pdf"
+   ],
+   "category": "notes",
+   "status": "ok",
+   "extra": {
+    "file_id": "1Fs9t4jxeMXemu_FQP-bKc7smr6NZHuiu",
+    "mime": "application/pdf",
+    "name": "2026-08-11 Grapevine Area Chair Meeting Agenda.pdf",
+    "panel": 77,
+    "panel_label": "Panel 77 (2027–2028)",
+    "path": [
+     "notes"
+    ],
+    "album": null,
+    "view_url": "https://drive.google.com/file/d/1Fs9t4jxeMXemu_FQP-bKc7smr6NZHuiu/view",
+    "preview_url": "https://drive.google.com/file/d/1Fs9t4jxeMXemu_FQP-bKc7smr6NZHuiu/preview",
+    "download_url": "https://drive.google.com/uc?export=download&id=1Fs9t4jxeMXemu_FQP-bKc7smr6NZHuiu",
+    "thumb_url": "https://lh3.googleusercontent.com/d/1Fs9t4jxeMXemu_FQP-bKc7smr6NZHuiu=w600",
+    "image_url": null,
+    "is_image": false,
+    "is_video": false,
+    "is_pdf": true,
+    "file_type": "PDF",
+    "folder_id": "1jVTdPsLhBK4RUsHqnxuWsrJF0qg9BSnL",
+    "folder_url": "https://drive.google.com/drive/folders/1jVTdPsLhBK4RUsHqnxuWsrJF0qg9BSnL",
+    "folder_chain": [
+     "1cTCFxTujRm-m8Xn0OobJGH2EIWI753S1",
+     "1bebd9TAz1L3LHhbeKUSlcENndtqas5O0",
+     "1jVTdPsLhBK4RUsHqnxuWsrJF0qg9BSnL"
+    ],
+    "modified_text": "6:24 am"
+   },
+   "i18n": {
+    "title": {
+     "en": "Grapevine Area Chair Meeting Agenda",
+     "es": "Grapevine programa de reunión del presidente de la zona"
+    },
+    "summary": {
+     "en": "",
+     "es": ""
+    }
+   },
+   "machine": [
+    "es"
+   ],
+   "is_new": false,
+   "wn_date": "2026-08-11T12:00:00Z"
+  },
+  {
+   "id": "drive:1fC3vvsu0CG-XdUagGDb_fgiwzkqEEfG4",
+   "source": "drive",
+   "kind": "document",
+   "url": "https://drive.google.com/file/d/1fC3vvsu0CG-XdUagGDb_fgiwzkqEEfG4/view",
+   "title": "Grapevine Area Chair Meeting Report",
+   "summary": "",
+   "lang": "en",
+   "date": "2026-08-11",
+   "first_seen": "2026-09-25T15:20:06Z",
+   "image": "https://lh3.googleusercontent.com/d/1fC3vvsu0CG-XdUagGDb_fgiwzkqEEfG4=w600",
+   "tags": [
+    "panel-77",
+    "pdf"
+   ],
+   "category": "reports",
+   "status": "ok",
+   "extra": {
+    "file_id": "1fC3vvsu0CG-XdUagGDb_fgiwzkqEEfG4",
+    "mime": "application/pdf",
+    "name": "2026-08-11 Grapevine Area Chair Meeting Report.pdf",
+    "panel": 77,
+    "panel_label": "Panel 77 (2027–2028)",
+    "path": [
+     "reports"
+    ],
+    "album": null,
+    "view_url": "https://drive.google.com/file/d/1fC3vvsu0CG-XdUagGDb_fgiwzkqEEfG4/view",
+    "preview_url": "https://drive.google.com/file/d/1fC3vvsu0CG-XdUagGDb_fgiwzkqEEfG4/preview",
+    "download_url": "https://drive.google.com/uc?export=download&id=1fC3vvsu0CG-XdUagGDb_fgiwzkqEEfG4",
+    "thumb_url": "https://lh3.googleusercontent.com/d/1fC3vvsu0CG-XdUagGDb_fgiwzkqEEfG4=w600",
+    "image_url": null,
+    "is_image": false,
+    "is_video": false,
+    "is_pdf": true,
+    "file_type": "PDF",
+    "folder_id": "1JIDosA0bb5PWmY5h_H6MYh5XEXjGMD2r",
+    "folder_url": "https://drive.google.com/drive/folders/1JIDosA0bb5PWmY5h_H6MYh5XEXjGMD2r",
+    "folder_chain": [
+     "1cTCFxTujRm-m8Xn0OobJGH2EIWI753S1",
+     "1bebd9TAz1L3LHhbeKUSlcENndtqas5O0",
+     "1JIDosA0bb5PWmY5h_H6MYh5XEXjGMD2r"
+    ],
+    "modified_text": "6:20 am"
+   },
+   "i18n": {
+    "title": {
+     "en": "Grapevine Area Chair Meeting Report",
+     "es": "Informe de la reunión de presidentes de zona Grapevine"
+    },
+    "summary": {
+     "en": "",
+     "es": ""
+    }
+   },
+   "machine": [
+    "es"
+   ],
+   "is_new": false,
+   "wn_date": "2026-08-11T12:00:00Z"
+  },
+  {
    "id": "yt:EpxZJke8Q88",
    "source": "youtube",
    "kind": "video",
@@ -7999,7 +8456,7 @@
      "AA Grapevine's Podcast"
     ],
     "is_short": false,
-    "views": 242,
+    "views": 243,
     "is_live_recording": false,
     "date_approx": false,
     "season": 11,
@@ -8194,7 +8651,7 @@
      "American Sign Language"
     ],
     "is_short": false,
-    "views": 172,
+    "views": 173,
     "is_live_recording": true,
     "date_approx": false
    },
@@ -8336,7 +8793,7 @@
      "Grapevine Weekly Open AA Meeting"
     ],
     "is_short": false,
-    "views": 217,
+    "views": 218,
     "is_live_recording": true,
     "date_approx": false,
     "season": 2,
@@ -8503,433 +8960,6 @@
    ],
    "is_new": false,
    "wn_date": "2026-07-27T04:15:00Z"
-  },
-  {
-   "id": "yt:mWkHj0ExZCc",
-   "source": "youtube",
-   "kind": "video",
-   "url": "https://www.youtube.com/watch?v=mWkHj0ExZCc",
-   "title": "Grapevine Weekly Open AA Meeting, July 22, 2026 [Season 2, Episode 4]",
-   "summary": "In this AA Grapevine podcast, you'll hear a recording of Grapevine's open AA meeting, held on July 22, 2026. We meet every Wednesday at Noon Eastern and hope that you will join us. The code on Zoom is 871 2036 8287 and the password is 238047. Each meeting is recorded and distributed as a podcast. This week meeting leader Chris welcomes speakers Don and Gerald, who share their experience, strength…",
-   "lang": "en",
-   "date": "2026-07-24T04:26:42Z",
-   "first_seen": "2026-09-23T16:31:23Z",
-   "image": "https://i.ytimg.com/vi/mWkHj0ExZCc/hqdefault.jpg",
-   "tags": [
-    "season-2",
-    "weekly-open",
-    "live"
-   ],
-   "category": "gv",
-   "status": "ok",
-   "extra": {
-    "video_id": "mWkHj0ExZCc",
-    "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 3457,
-    "playlists": [
-     "Grapevine Weekly Open AA Meeting"
-    ],
-    "is_short": false,
-    "views": 255,
-    "is_live_recording": true,
-    "date_approx": false,
-    "season": 2,
-    "episode": 4
-   },
-   "i18n": {
-    "title": {
-     "en": "Grapevine Weekly Open AA Meeting, July 22, 2026 [Season 2, Episode 4]",
-     "es": "Grapevine Weekly Open AA Meeting, 22 de julio de 2026 [Temporada 2, Episodio 4]"
-    },
-    "summary": {
-     "en": "In this AA Grapevine podcast, you'll hear a recording of Grapevine's open AA meeting, held on July 22, 2026. We meet every Wednesday at Noon Eastern and hope that you will join us. The code on Zoom is 871 2036 8287 and the password is 238047. Each meeting is recorded and distributed as a podcast. This week meeting leader Chris welcomes speakers Don and Gerald, who share their experience, strength…",
-     "es": "En este AA Grapevine Podcast, usted escuchará una grabación de la reunión abierta AA de Grapevine, celebrada el 22 de julio de 2026. Nos reunimos cada miércoles al mediodía (hora del Este) y esperamos que se una a nosotros. El código de Zoom es 871 2036 8287 y la contraseña es 238047. Cada reunión se graba y distribuye como podcast. Esta semana el líder de la reunión Chris da la bienvenida a los oradores Don y Gerald, que comparten su experiencia, fuerza …"
-    }
-   },
-   "machine": [
-    "es"
-   ],
-   "is_new": false,
-   "wn_date": "2026-07-24T04:26:42Z"
-  },
-  {
-   "id": "pod:wo:9e5d03278629",
-   "source": "podcast",
-   "kind": "episode",
-   "url": "https://player.captivate.fm/episode/b1463084-7a91-44dc-8fad-2a16215afdf1",
-   "title": "Grapevine Weekly Open AA Meeting, July 22, 2026 [Season 2, Episode 4]",
-   "summary": "In this AA Grapevine podcast, you'll hear a recording of Grapevine's open AA meeting, held on July 22, 2026. We meet every Wednesday at Noon Eastern and hope that you will join us. The code on Zoom is 871 2036 8287 and the password is 238047. Each meeting is recorded and distributed as a podcast. This week meeting leader Chris welcomes speakers Don and Gerald, who share their experience, strength…",
-   "lang": "en",
-   "date": "2026-07-24T04:15:00Z",
-   "first_seen": "2026-09-23T17:23:49Z",
-   "image": "https://artwork.captivate.fm/6b1f80c3-b80e-4988-bb2d-959fbec5e005/81444FEF-9557-4996-B7AB-9949DD0BA6C3-1-102-o.jpeg",
-   "tags": [
-    "season-2"
-   ],
-   "category": "wo",
-   "status": "ok",
-   "extra": {
-    "audio_url": "https://episodes.captivate.fm/episode/b1463084-7a91-44dc-8fad-2a16215afdf1.mp3",
-    "audio_type": "audio/mpeg",
-    "audio_bytes": 82961146,
-    "duration_sec": 3456,
-    "season": 2,
-    "episode": 4,
-    "episode_type": "full",
-    "show": "wo",
-    "show_name": "Grapevine Weekly Open AA Meeting",
-    "link": "https://www.aagrapevine.org/grapevine-weekly-open",
-    "player_url": "https://player.captivate.fm/episode/b1463084-7a91-44dc-8fad-2a16215afdf1",
-    "show_web": "https://www.aagrapevine.org/grapevine-weekly-open",
-    "apple": "https://podcasts.apple.com/us/podcast/grapevine-weekly-open-aa-meeting/id1874809908",
-    "spotify": "https://open.spotify.com/show/2jk469TmDC31spPqf8L0SF",
-    "amazon": "https://music.amazon.com/podcasts/8dfb5269-8733-42f3-b075-2d9e596bf4c5/grapevine-weekly-open-aa-meeting",
-    "thumb": "/assets/cache/pod/3e3cd0ac7162b7fe.webp"
-   },
-   "i18n": {
-    "title": {
-     "en": "Grapevine Weekly Open AA Meeting, July 22, 2026 [Season 2, Episode 4]",
-     "es": "Grapevine Weekly Open AA Meeting, 22 de julio de 2026 [Temporada 2, Episodio 4]"
-    },
-    "summary": {
-     "en": "In this AA Grapevine podcast, you'll hear a recording of Grapevine's open AA meeting, held on July 22, 2026. We meet every Wednesday at Noon Eastern and hope that you will join us. The code on Zoom is 871 2036 8287 and the password is 238047. Each meeting is recorded and distributed as a podcast. This week meeting leader Chris welcomes speakers Don and Gerald, who share their experience, strength…",
-     "es": "En este AA Grapevine Podcast, usted escuchará una grabación de la reunión abierta AA de Grapevine, celebrada el 22 de julio de 2026. Nos reunimos cada miércoles al mediodía (hora del Este) y esperamos que se una a nosotros. El código de Zoom es 871 2036 8287 y la contraseña es 238047. Cada reunión se graba y distribuye como podcast. Esta semana el líder de la reunión Chris da la bienvenida a los oradores Don y Gerald, que comparten su experiencia, fuerza …"
-    }
-   },
-   "machine": [
-    "es"
-   ],
-   "is_new": false,
-   "wn_date": "2026-07-24T04:15:00Z"
-  },
-  {
-   "id": "yt:FQVxIEBBAL8",
-   "source": "youtube",
-   "kind": "video",
-   "url": "https://www.youtube.com/shorts/FQVxIEBBAL8",
-   "title": "¿Cómo comprar y/o canjear un Certificado de Regalo?",
-   "summary": "Si deseas obtener más información sobre los Certificados de Regalo disponibles en la tienda de La Viña, visita: https://www.aalavina.org/tienda/certificados-de-regalo Nuestro equipo de Atención al Cliente está disponible para ayudarte de lunes a viernes, de 9:00 a. m. a 5:30 p. m. EST, en los siguientes números: EE. UU.: (800) 640-8781 Internacional: +1 (570) 567-0437 También puedes comunicarte…",
-   "lang": "es",
-   "date": "2026-07-20T17:56:25Z",
-   "first_seen": "2026-09-23T16:31:23Z",
-   "image": "https://i.ytimg.com/vi/FQVxIEBBAL8/hqdefault.jpg",
-   "tags": [
-    "short"
-   ],
-   "category": "lv",
-   "status": "ok",
-   "extra": {
-    "video_id": "FQVxIEBBAL8",
-    "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 177,
-    "playlists": [
-     "La Viña"
-    ],
-    "is_short": true,
-    "views": 243,
-    "is_live_recording": false,
-    "date_approx": false
-   },
-   "i18n": {
-    "title": {
-     "en": "How to Buy and/or Exchange a Gift Certificate?",
-     "es": "¿Cómo comprar y/o canjear un Certificado de Regalo?"
-    },
-    "summary": {
-     "en": "For more information on Gift Certificates available at the La Viña store, visit: https://www.aalavina.org/tienda/certificados-de-regalo Our Customer Service team is available to help you from Monday to Friday, from 9:00 a.m. to 5:30 p.m. EST, in the following numbers: USA. UU.: (800) 640-8781 International: +1 (570) 567-0437 You can also communicate …",
-     "es": "Si deseas obtener más información sobre los Certificados de Regalo disponibles en la tienda de La Viña, visita: https://www.aalavina.org/tienda/certificados-de-regalo Nuestro equipo de Atención al Cliente está disponible para ayudarte de lunes a viernes, de 9:00 a. m. a 5:30 p. m. EST, en los siguientes números: EE. UU.: (800) 640-8781 Internacional: +1 (570) 567-0437 También puedes comunicarte…"
-    }
-   },
-   "machine": [
-    "en"
-   ],
-   "is_new": false,
-   "wn_date": "2026-07-20T17:56:25Z"
-  },
-  {
-   "id": "yt:pqoC4YW8pQo",
-   "source": "youtube",
-   "kind": "video",
-   "url": "https://www.youtube.com/watch?v=pqoC4YW8pQo",
-   "title": "Resentment",
-   "summary": "Description: ASL Grapevine night live recording - Topic: Resentment Transcript available here: https://docs.google.com/document/d/1pnc0NrWpJWNvFf031RXk0rWkJcvCbGfWCXSc8l57qrw/edit?usp=sharing",
-   "lang": "en",
-   "date": "2026-07-20T16:00:25Z",
-   "first_seen": "2026-09-23T16:31:23Z",
-   "image": "https://i.ytimg.com/vi/pqoC4YW8pQo/hqdefault.jpg",
-   "tags": [
-    "live",
-    "asl"
-   ],
-   "category": "gv",
-   "status": "ok",
-   "extra": {
-    "video_id": "pqoC4YW8pQo",
-    "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 672,
-    "playlists": [
-     "American Sign Language"
-    ],
-    "is_short": false,
-    "views": 185,
-    "is_live_recording": true,
-    "date_approx": false
-   },
-   "i18n": {
-    "title": {
-     "en": "Resentment",
-     "es": "Resentimiento"
-    },
-    "summary": {
-     "en": "Description: ASL Grapevine night live recording - Topic: Resentment Transcript available here: https://docs.google.com/document/d/1pnc0NrWpJWNvFf031RXk0rWkJcvCbGfWCXSc8l57qrw/edit?usp=sharing",
-     "es": "Descripción: ASL Grapevine noche de grabación en vivo - Tema: Resentimiento Traducción disponible aquí: https://docs.google.com/document/d/1pnc0NrWpJWNvFf031RXk0rWkJcvCbGfWCXSc8l57qrw/edit?usp=sharing"
-    }
-   },
-   "machine": [
-    "es"
-   ],
-   "is_new": false,
-   "wn_date": "2026-07-20T16:00:25Z"
-  },
-  {
-   "id": "yt:Ynb-hGVPfsY",
-   "source": "youtube",
-   "kind": "video",
-   "url": "https://www.youtube.com/watch?v=Ynb-hGVPfsY",
-   "title": "Crutches and Casts [Season 11, Episode 3]",
-   "summary": "Scott started drinking at 11, and says that alcohol was at the foundation of all he did. He chose to attend college in a party town, and it took seven years to get a bachelor degree. He is grateful that the rehab he attended brought him to AA meetings because the counselors talked about Scott and he put up his defenses, while the AA members talked about themselves, and Scott couldn't help but…",
-   "lang": "en",
-   "date": "2026-07-20T04:26:16Z",
-   "first_seen": "2026-09-23T16:31:23Z",
-   "image": "https://i.ytimg.com/vi/Ynb-hGVPfsY/hqdefault.jpg",
-   "tags": [
-    "season-11"
-   ],
-   "category": "gv",
-   "status": "ok",
-   "extra": {
-    "video_id": "Ynb-hGVPfsY",
-    "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 1657,
-    "playlists": [
-     "AA Grapevine's Podcast"
-    ],
-    "is_short": false,
-    "views": 179,
-    "is_live_recording": false,
-    "date_approx": false,
-    "season": 11,
-    "episode": 3
-   },
-   "i18n": {
-    "title": {
-     "en": "Crutches and Casts [Season 11, Episode 3]",
-     "es": "Muletas y yesos [Temporada 11, Episodio 3]"
-    },
-    "summary": {
-     "en": "Scott started drinking at 11, and says that alcohol was at the foundation of all he did. He chose to attend college in a party town, and it took seven years to get a bachelor degree. He is grateful that the rehab he attended brought him to AA meetings because the counselors talked about Scott and he put up his defenses, while the AA members talked about themselves, and Scott couldn't help but…",
-     "es": "Scott empezó a beber a las 11 y dice que el alcohol estaba en la base de todo lo que hizo. Eligió asistir a la universidad en una ciudad de fiesta, y tardó siete años en obtener una licenciatura. Le agradece que la rehabilitación a la que asistió lo llevara a reuniones de AA porque los consejeros hablaron de Scott y él puso sus defensas, mientras que los miembros de AA hablaron de sí mismos, y Scott no pudo evitar …"
-    }
-   },
-   "machine": [
-    "es"
-   ],
-   "is_new": false,
-   "wn_date": "2026-07-20T04:26:16Z"
-  },
-  {
-   "id": "pod:gv:9597a6154308",
-   "source": "podcast",
-   "kind": "episode",
-   "url": "https://player.captivate.fm/episode/3dab0a38-9e37-412d-80e8-7747ea0722ba",
-   "title": "Crutches and Casts [Season 11, Episode 3]",
-   "summary": "Scott started drinking at 11, and says that alcohol was at the foundation of all he did. He chose to attend college in a party town, and it took seven years to get a bachelor degree. He is grateful that the rehab he attended brought him to AA meetings because the counselors talked about Scott and he put up his defenses, while the AA members talked about themselves, and Scott couldn't help but…",
-   "lang": "en",
-   "date": "2026-07-20T04:15:00Z",
-   "first_seen": "2026-09-23T16:27:02Z",
-   "image": "https://artwork.captivate.fm/0ad84761-e27d-40a0-be3f-982e28f5cfed/NA7eDTnRxVFYjt4qJyGSFDog.jpeg",
-   "tags": [
-    "season-11"
-   ],
-   "category": "gv",
-   "status": "ok",
-   "extra": {
-    "audio_url": "https://episodes.captivate.fm/episode/3dab0a38-9e37-412d-80e8-7747ea0722ba.mp3",
-    "audio_type": "audio/mpeg",
-    "audio_bytes": 39710477,
-    "duration_sec": 1657,
-    "season": 11,
-    "episode": 3,
-    "episode_type": "full",
-    "show": "gv",
-    "show_name": "AA Grapevine's Podcast",
-    "link": "https://www.aagrapevine.org/podcast",
-    "player_url": "https://player.captivate.fm/episode/3dab0a38-9e37-412d-80e8-7747ea0722ba",
-    "show_web": "https://www.aagrapevine.org/podcasts",
-    "apple": "https://podcasts.apple.com/us/podcast/aa-grapevines-podcast/id1591924167",
-    "spotify": "https://open.spotify.com/show/714djcL57SFf0Nzf40CL8Q",
-    "amazon": "https://music.amazon.com/podcasts/de231bfa-837b-4a27-a331-a927019cb5d7",
-    "thumb": "/assets/cache/pod/345ae0651cb102a9.webp"
-   },
-   "i18n": {
-    "title": {
-     "en": "Crutches and Casts [Season 11, Episode 3]",
-     "es": "Muletas y yesos [Temporada 11, Episodio 3]"
-    },
-    "summary": {
-     "en": "Scott started drinking at 11, and says that alcohol was at the foundation of all he did. He chose to attend college in a party town, and it took seven years to get a bachelor degree. He is grateful that the rehab he attended brought him to AA meetings because the counselors talked about Scott and he put up his defenses, while the AA members talked about themselves, and Scott couldn't help but…",
-     "es": "Scott empezó a beber a las 11 y dice que el alcohol estaba en la base de todo lo que hizo. Eligió asistir a la universidad en una ciudad de fiesta, y tardó siete años en obtener una licenciatura. Le agradece que la rehabilitación a la que asistió lo llevara a reuniones de AA porque los consejeros hablaron de Scott y él puso sus defensas, mientras que los miembros de AA hablaron de sí mismos, y Scott no pudo evitar …"
-    }
-   },
-   "machine": [
-    "es"
-   ],
-   "is_new": false,
-   "wn_date": "2026-07-20T04:15:00Z"
-  },
-  {
-   "id": "yt:BKEC3PARl10",
-   "source": "youtube",
-   "kind": "video",
-   "url": "https://www.youtube.com/watch?v=BKEC3PARl10",
-   "title": "Grapevine Weekly Open AA Meeting, July 15, 2026 [Season 2, Episode 3]",
-   "summary": "In this AA Grapevine podcast, you'll hear a recording of Grapevine's open AA meeting, held on July 15, 2026. We meet every Wednesday at Noon Eastern and hope that you will join us. The code on Zoom is 871 2036 8287 and the password is 238047. Each meeting is recorded and distributed as a podcast. This week meeting leader Chris welcomes speakers Kimberly and Rich, who share their experience…",
-   "lang": "en",
-   "date": "2026-07-17T04:29:34Z",
-   "first_seen": "2026-09-23T16:31:23Z",
-   "image": "https://i.ytimg.com/vi/BKEC3PARl10/hqdefault.jpg",
-   "tags": [
-    "season-2",
-    "weekly-open",
-    "live"
-   ],
-   "category": "gv",
-   "status": "ok",
-   "extra": {
-    "video_id": "BKEC3PARl10",
-    "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 3501,
-    "playlists": [
-     "Grapevine Weekly Open AA Meeting"
-    ],
-    "is_short": false,
-    "views": 234,
-    "is_live_recording": true,
-    "date_approx": false,
-    "season": 2,
-    "episode": 3
-   },
-   "i18n": {
-    "title": {
-     "en": "Grapevine Weekly Open AA Meeting, July 15, 2026 [Season 2, Episode 3]",
-     "es": "Grapevine Weekly Open AA Meeting, 15 de julio de 2026 [Temporada 2, Episodio 3]"
-    },
-    "summary": {
-     "en": "In this AA Grapevine podcast, you'll hear a recording of Grapevine's open AA meeting, held on July 15, 2026. We meet every Wednesday at Noon Eastern and hope that you will join us. The code on Zoom is 871 2036 8287 and the password is 238047. Each meeting is recorded and distributed as a podcast. This week meeting leader Chris welcomes speakers Kimberly and Rich, who share their experience…",
-     "es": "En este AA Grapevine Podcast, usted escuchará una grabación de la reunión abierta AA de Grapevine, celebrada el 15 de julio de 2026. Nos reunimos cada miércoles al mediodía (hora del Este) y esperamos que se una a nosotros. El código de Zoom es 871 2036 8287 y la contraseña es 238047. Cada reunión se graba y distribuye como podcast. Esta semana el líder de la reunión Chris da la bienvenida a los oradores Kimberly y Rich, que comparten su experiencia …"
-    }
-   },
-   "machine": [
-    "es"
-   ],
-   "is_new": false,
-   "wn_date": "2026-07-17T04:29:34Z"
-  },
-  {
-   "id": "pod:wo:e64d90ad6924",
-   "source": "podcast",
-   "kind": "episode",
-   "url": "https://player.captivate.fm/episode/a7b2b314-ce83-42b8-a18d-7f151814a432",
-   "title": "Grapevine Weekly Open AA Meeting, July 15, 2026 [Season 2, Episode 3]",
-   "summary": "In this AA Grapevine podcast, you'll hear a recording of Grapevine's open AA meeting, held on July 15, 2026. We meet every Wednesday at Noon Eastern and hope that you will join us. The code on Zoom is 871 2036 8287 and the password is 238047. Each meeting is recorded and distributed as a podcast. This week meeting leader Chris welcomes speakers Kimberly and Rich, who share their experience…",
-   "lang": "en",
-   "date": "2026-07-17T04:15:00Z",
-   "first_seen": "2026-09-23T17:23:49Z",
-   "image": "https://artwork.captivate.fm/6b1f80c3-b80e-4988-bb2d-959fbec5e005/81444FEF-9557-4996-B7AB-9949DD0BA6C3-1-102-o.jpeg",
-   "tags": [
-    "season-2"
-   ],
-   "category": "wo",
-   "status": "ok",
-   "extra": {
-    "audio_url": "https://episodes.captivate.fm/episode/a7b2b314-ce83-42b8-a18d-7f151814a432.mp3",
-    "audio_type": "audio/mpeg",
-    "audio_bytes": 84017918,
-    "duration_sec": 3500,
-    "season": 2,
-    "episode": 3,
-    "episode_type": "full",
-    "show": "wo",
-    "show_name": "Grapevine Weekly Open AA Meeting",
-    "link": "https://www.aagrapevine.org/grapevine-weekly-open",
-    "player_url": "https://player.captivate.fm/episode/a7b2b314-ce83-42b8-a18d-7f151814a432",
-    "show_web": "https://www.aagrapevine.org/grapevine-weekly-open",
-    "apple": "https://podcasts.apple.com/us/podcast/grapevine-weekly-open-aa-meeting/id1874809908",
-    "spotify": "https://open.spotify.com/show/2jk469TmDC31spPqf8L0SF",
-    "amazon": "https://music.amazon.com/podcasts/8dfb5269-8733-42f3-b075-2d9e596bf4c5/grapevine-weekly-open-aa-meeting",
-    "thumb": "/assets/cache/pod/3e3cd0ac7162b7fe.webp"
-   },
-   "i18n": {
-    "title": {
-     "en": "Grapevine Weekly Open AA Meeting, July 15, 2026 [Season 2, Episode 3]",
-     "es": "Grapevine Weekly Open AA Meeting, 15 de julio de 2026 [Temporada 2, Episodio 3]"
-    },
-    "summary": {
-     "en": "In this AA Grapevine podcast, you'll hear a recording of Grapevine's open AA meeting, held on July 15, 2026. We meet every Wednesday at Noon Eastern and hope that you will join us. The code on Zoom is 871 2036 8287 and the password is 238047. Each meeting is recorded and distributed as a podcast. This week meeting leader Chris welcomes speakers Kimberly and Rich, who share their experience…",
-     "es": "En este AA Grapevine Podcast, usted escuchará una grabación de la reunión abierta AA de Grapevine, celebrada el 15 de julio de 2026. Nos reunimos cada miércoles al mediodía (hora del Este) y esperamos que se una a nosotros. El código de Zoom es 871 2036 8287 y la contraseña es 238047. Cada reunión se graba y distribuye como podcast. Esta semana el líder de la reunión Chris da la bienvenida a los oradores Kimberly y Rich, que comparten su experiencia …"
-    }
-   },
-   "machine": [
-    "es"
-   ],
-   "is_new": false,
-   "wn_date": "2026-07-17T04:15:00Z"
-  },
-  {
-   "id": "yt:2_HgJf4Oz_A",
-   "source": "youtube",
-   "kind": "video",
-   "url": "https://www.youtube.com/watch?v=2_HgJf4Oz_A",
-   "title": "My Operating System Was Broken [Season 11, Episode 2]",
-   "summary": "In his drinking years Leonard felt like life was punishment. He tells Olis and Don how a woman kindly asked him if he thought his drinking was a problem, and he soon found his way to an AA meeting. He walked through the door, got a sponsor and his life changed. In Listener Feedback we hear from Angela and Emily. We also hear back about favorite non-alcoholic beverages from Pat, Chad and Sunny…",
-   "lang": "en",
-   "date": "2026-07-13T04:30:31Z",
-   "first_seen": "2026-09-23T16:31:23Z",
-   "image": "https://i.ytimg.com/vi/2_HgJf4Oz_A/hqdefault.jpg",
-   "tags": [
-    "season-11"
-   ],
-   "category": "gv",
-   "status": "ok",
-   "extra": {
-    "video_id": "2_HgJf4Oz_A",
-    "channel_id": "UCI9uFLJ__aXT3-At0PlPWUQ",
-    "duration_sec": 2230,
-    "playlists": [
-     "AA Grapevine's Podcast"
-    ],
-    "is_short": false,
-    "views": 270,
-    "is_live_recording": false,
-    "date_approx": false,
-    "season": 11,
-    "episode": 2
-   },
-   "i18n": {
-    "title": {
-     "en": "My Operating System Was Broken [Season 11, Episode 2]",
-     "es": "Mi sistema operativo estaba roto [Temporada 11, Episodio 2]"
-    },
-    "summary": {
-     "en": "In his drinking years Leonard felt like life was punishment. He tells Olis and Don how a woman kindly asked him if he thought his drinking was a problem, and he soon found his way to an AA meeting. He walked through the door, got a sponsor and his life changed. In Listener Feedback we hear from Angela and Emily. We also hear back about favorite non-alcoholic beverages from Pat, Chad and Sunny…",
-     "es": "En sus años de beber Leonard sentía que la vida era un castigo. Le dice a Olis y Don cómo una mujer amablemente le preguntó si pensó que su bebida era un problema, y pronto encontró su camino a una reunión de AA. Pasó por la puerta, consiguió un padrino y su vida cambió. En Comentarios de los oyentes escuchamos de Angela y Emily. También escuchamos sobre bebidas no alcohólicas favoritas de Pat, Chad y Sunny …"
-    }
-   },
-   "machine": [
-    "es"
-   ],
-   "is_new": false,
-   "wn_date": "2026-07-13T04:30:31Z"
   }
  ]
 }

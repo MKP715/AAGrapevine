@@ -1,7 +1,7 @@
 {
  "source": "events_external",
- "updated": "2026-09-24T15:21:05Z",
- "attempted": "2026-09-24T15:21:05Z",
+ "updated": "2026-09-25T15:26:09Z",
+ "attempted": "2026-09-25T15:26:09Z",
  "ok": true,
  "error": null,
  "stats": {
@@ -15,51 +15,12 @@
   "pending": 0,
   "cached": 15,
   "texas": 0,
-  "online_es": 1,
-  "items": 1,
+  "online_es": 0,
+  "items": 0,
   "new": 0,
-  "requests": 60
+  "requests": 44
  },
- "items": [
-  {
-   "id": "ev:lvcal:82a64d52e47d",
-   "source": "calendar",
-   "kind": "event",
-   "url": "https://www.aalavina.org/get-involved/events/2026-09-24/taller-mensual",
-   "title": "Taller Mensual",
-   "summary": "",
-   "lang": "es",
-   "date": "2026-09-24",
-   "first_seen": "2026-09-23T16:43:55Z",
-   "last_seen": "2026-09-23T16:48:18Z",
-   "image": null,
-   "tags": [
-    "online"
-   ],
-   "category": "lv-calendar",
-   "status": "ok",
-   "extra": {
-    "start": "2026-09-24",
-    "end": null,
-    "all_day": true,
-    "location": "Zoom",
-    "city": null,
-    "state": null,
-    "country": null,
-    "region": null,
-    "online_url": "https://us06web.zoom.us/j/81595931777",
-    "platform": "Zoom",
-    "website": null,
-    "organizer": null,
-    "flyer_url": null,
-    "flyer_thumb": null,
-    "scope": "online",
-    "online": true,
-    "site": "lavina",
-    "date_text": "Septiembre 24, 2026"
-   }
-  }
- ],
+ "items": [],
  "first_harvest": "2026-09-23T16:43:55Z",
  "cache": {
   "https://www.aalavina.org/get-involved/events/2026-09-24/taller-mensual": {
@@ -367,13 +328,14 @@
  "sitemap": {
   "pages": {
    "https://www.aagrapevine.org/sitemap.xml?page=1": {
-    "lastmod": "2026-09-22T18:36:26-05:00",
+    "lastmod": "2026-09-24T18:37:52-05:00",
     "events": [],
-    "fetched": "2026-09-23T16:42:43Z",
-    "urls_total": 2000
+    "fetched": "2026-09-25T15:26:04Z",
+    "urls_total": 2000,
+    "events_total": 2000
    },
    "https://www.aagrapevine.org/sitemap.xml?page=2": {
-    "lastmod": "2026-09-22T18:36:26-05:00",
+    "lastmod": "2026-09-24T18:37:52-05:00",
     "events": [
      "https://www.aagrapevine.org/get-involved/events/2026-09-18/9th-keys-serenity-roundup",
      "https://www.aagrapevine.org/get-involved/events/2026-10-02/79th-powell-river-rally-2026",
@@ -392,8 +354,9 @@
      "https://www.aalavina.org/get-involved/events/2026-10-30/iii-convencion-hispana-del-estado-de-alabama",
      "https://www.aalavina.org/get-involved/events/2027-06-11/14a-convencion-nacional-11-12-y-13-de-junio-de-2027-ciudad-de-mexico"
     ],
-    "fetched": "2026-09-23T16:42:48Z",
-    "urls_total": 1089
+    "fetched": "2026-09-25T15:26:09Z",
+    "urls_total": 1089,
+    "events_total": 939
    }
   }
  }

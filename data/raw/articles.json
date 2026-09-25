@@ -1,22 +1,22 @@
 {
  "source": "articles",
- "updated": "2026-09-24T15:20:45Z",
- "attempted": "2026-09-24T15:20:45Z",
+ "updated": "2026-09-25T15:23:10Z",
+ "attempted": "2026-09-25T15:23:10Z",
  "ok": true,
  "error": null,
  "stats": {
   "hub_articles": 56,
-  "details_fetched": 40,
+  "details_fetched": 6,
   "details_failed": 0,
   "thumbs": 0,
   "archive_pages": 14,
-  "archive_new": 2,
-  "details_pending": 46,
+  "archive_new": 0,
+  "details_pending": 6,
   "byline_pending": 0,
-  "details_left": 6,
-  "new": 2,
+  "details_left": 0,
+  "new": 0,
   "total": 226,
-  "requests": 56
+  "requests": 22
  },
  "items": [
   {
@@ -7285,7 +7285,7 @@
    "kind": "article",
    "url": "https://www.aagrapevine.org/magazine/2026/jun/if-you-build-it-they-will-come",
    "title": "If You Build It, They Will Come",
-   "summary": "",
+   "summary": "I moved to Saint Paul, Minnesota in 2022 to attend treatment after yet another slip. I had entered the rooms of AA after finding recovery in an Alaskan prison at age 17.",
    "lang": "en",
    "date": "2026-06-01",
    "first_seen": "2026-09-23T23:13:14Z",
@@ -7302,12 +7302,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Young & Sober",
-    "section": null,
+    "section": "Featured Section",
     "author": "H.A.",
     "author_location": "Saint Paul, Minnesota",
     "subtitle": null,
-    "teaser": null,
-    "free": null,
+    "teaser": "I moved to Saint Paul, Minnesota in 2022 to attend treatment after yet another slip. I had entered the rooms of AA after finding recovery in an Alaskan prison at age 17.",
+    "free": false,
     "online_exclusive": false,
     "department": false
    }
@@ -7339,8 +7339,8 @@
     "author": "Denise P.",
     "author_location": "West Milford, N.J.",
     "subtitle": "She became one of the “old friends” she saw at her home group when she first arrived",
-    "teaser": null,
-    "free": null,
+    "teaser": "After struggling for 30 years on my own, I finally decided that I needed to stop drinking. There had been too many close calls, too many broken promises to myself.",
+    "free": false,
     "online_exclusive": true,
     "department": false
    }
@@ -7351,7 +7351,7 @@
    "kind": "article",
    "url": "https://www.aagrapevine.org/magazine/2026/jun/yets-agains",
    "title": "Yets & Agains",
-   "summary": "",
+   "summary": "I grew up in Shreveport, Louisiana. Just across the Red River was Bossier City, a place where you could get most anything you wanted. I had my first drink there at age 14.",
    "lang": "en",
    "date": "2026-06-01",
    "first_seen": "2026-09-23T23:13:14Z",
@@ -7368,12 +7368,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Young & Sober",
-    "section": null,
+    "section": "Our Personal Stories",
     "author": "Tom M.",
     "author_location": "Woodstock, Georgia",
     "subtitle": null,
-    "teaser": null,
-    "free": null,
+    "teaser": "I grew up in Shreveport, Louisiana. Just across the Red River was Bossier City, a place where you could get most anything you wanted. I had my first drink there at age 14.",
+    "free": false,
     "online_exclusive": false,
     "department": false
    }
@@ -7401,12 +7401,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Young & Sober",
-    "section": null,
+    "section": "Gratitude",
     "author": "Definitely Steve",
     "author_location": "Nashville, Tennessee",
     "subtitle": "A longtimer recalls the time he had four months sober and was rescued by AA on a Caribbean cruise",
-    "teaser": null,
-    "free": null,
+    "teaser": "There I was, 48 years old, four months sober and ready to take on the world.",
+    "free": false,
     "online_exclusive": false,
     "department": false
    }
@@ -7434,12 +7434,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Young & Sober",
-    "section": null,
+    "section": "Step Six",
     "author": "Mike W.",
     "author_location": "Spring Hill, Florida",
     "subtitle": "Wow, the instructions for Step Six were in the Big Book all along. Now for his next epiphany",
-    "teaser": null,
-    "free": null,
+    "teaser": "For many years I didn’t feel comfortable with Step Six. The first time I approached it all my sponsor would say was, “Remember, it says ‘were entirely ready.’” His advice was not much help.",
+    "free": false,
     "online_exclusive": false,
     "department": false
    }
@@ -7467,12 +7467,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Young & Sober",
-    "section": null,
+    "section": "In Every Issue",
     "author": null,
     "author_location": null,
     "subtitle": "Searching & spirituality",
-    "teaser": null,
-    "free": null,
+    "teaser": "The writer of “Always With Me” shares how she was angry with God for not making her stop drinking. But she finally went to AA and started to listen.",
+    "free": false,
     "online_exclusive": false,
     "department": true
    }
@@ -7489,7 +7489,7 @@
    "key": "2026-10",
    "publication": "gv",
    "hub": "https://www.aagrapevine.org/magazine",
-   "seen": "2026-09-24T15:15:05Z",
+   "seen": "2026-09-25T15:21:04Z",
    "cover": "/assets/cache/articles/4af15bfa155b69a0.webp"
   },
   "lv:2026-09": {
@@ -7501,7 +7501,7 @@
    "key": "2026-09",
    "publication": "lv",
    "hub": "https://www.aalavina.org/la-revista",
-   "seen": "2026-09-24T15:15:15Z",
+   "seen": "2026-09-25T15:21:14Z",
    "cover": "/assets/cache/articles/5f6983cc446a5d6a.webp"
   }
  },
@@ -7527,15 +7527,15 @@
  },
  "archive_state": {
   "gv": {
-   "last_run": "2026-09-24T15:15:57Z",
+   "last_run": "2026-09-25T15:21:50Z",
    "pages_last_run": 7,
-   "new_last_run": 2,
+   "new_last_run": 0,
    "oldest_seen": "2026-08",
    "backfilled": "2026-09-23T23:07:47Z",
    "backfill_days": 120
   },
   "lv": {
-   "last_run": "2026-09-24T15:16:41Z",
+   "last_run": "2026-09-25T15:22:34Z",
    "pages_last_run": 7,
    "new_last_run": 0,
    "oldest_seen": "2026-05",

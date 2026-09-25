@@ -1,59 +1,7 @@
 {
- "updated": "2026-09-25T08:54:02Z",
+ "updated": "2026-09-25T15:30:13Z",
  "fixture": false,
  "items": [
-  {
-   "id": "ev:lvcal:82a64d52e47d",
-   "source": "calendar",
-   "kind": "event",
-   "url": "https://www.aalavina.org/get-involved/events/2026-09-24/taller-mensual",
-   "title": "Taller Mensual",
-   "summary": "",
-   "lang": "es",
-   "date": "2026-09-24",
-   "first_seen": "2026-09-23T16:43:55Z",
-   "image": null,
-   "tags": [
-    "online"
-   ],
-   "category": "lv-calendar",
-   "status": "ok",
-   "extra": {
-    "start": "2026-09-24",
-    "end": null,
-    "all_day": true,
-    "location": "Zoom",
-    "city": null,
-    "state": null,
-    "country": null,
-    "region": null,
-    "online_url": "https://us06web.zoom.us/j/81595931777",
-    "platform": "Zoom",
-    "website": null,
-    "organizer": null,
-    "flyer_url": null,
-    "flyer_thumb": null,
-    "scope": "online",
-    "online": true,
-    "site": "lavina",
-    "date_text": "Septiembre 24, 2026",
-    "past": false
-   },
-   "i18n": {
-    "title": {
-     "en": "Monthly Workshop",
-     "es": "Taller Mensual"
-    },
-    "summary": {
-     "en": "",
-     "es": ""
-    }
-   },
-   "machine": [
-    "en"
-   ],
-   "is_new": false
-  },
   {
    "id": "ev:manual:2026-09-26-lv-writing-workshop-fort-worth",
    "source": "committee",

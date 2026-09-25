@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-24T15:44:02Z",
+ "updated": "2026-09-25T15:24:53Z",
  "fixture": false,
  "botm": [
   {
@@ -242,7 +242,7 @@
      "currency": "USD",
      "sku": "GO1M",
      "url": "https://www.aagrapevine.org/store/grapevine-digital-subscription-1-month",
-     "image": null,
+     "image": "/assets/cache/shop/7622944ef45fbb93.webp",
      "volume": []
     },
     {
@@ -253,7 +253,7 @@
      "currency": "USD",
      "sku": "GO1Y",
      "url": "https://www.aagrapevine.org/store/grapevine-digital-subscription-1-year",
-     "image": null,
+     "image": "/assets/cache/shop/7622944ef45fbb93.webp",
      "volume": []
     },
     {
@@ -264,7 +264,7 @@
      "currency": "USD",
      "sku": "GO2Y",
      "url": "https://www.aagrapevine.org/store/grapevine-digital-subscription-2-year",
-     "image": null,
+     "image": "/assets/cache/shop/7622944ef45fbb93.webp",
      "volume": []
     },
     {
@@ -275,7 +275,7 @@
      "currency": "USD",
      "sku": "GO3Y",
      "url": "https://www.aagrapevine.org/store/grapevine-digital-subscription-3-year",
-     "image": null,
+     "image": "/assets/cache/shop/7622944ef45fbb93.webp",
      "volume": []
     }
    ]
@@ -418,7 +418,7 @@
      "currency": "USD",
      "sku": "GOCA1M",
      "url": "https://www.aagrapevine.org/store/canada-grapevine-digital-subscription-1-month",
-     "image": null,
+     "image": "/assets/cache/shop/7622944ef45fbb93.webp",
      "volume": []
     },
     {
@@ -429,7 +429,7 @@
      "currency": "USD",
      "sku": "GOCA1Y",
      "url": "https://www.aagrapevine.org/store/canada-grapevine-digital-subscription-1-year",
-     "image": null,
+     "image": "/assets/cache/shop/7622944ef45fbb93.webp",
      "volume": []
     },
     {
@@ -440,7 +440,7 @@
      "currency": "USD",
      "sku": "GOCA2Y",
      "url": "https://www.aagrapevine.org/store/canada-grapevine-digital-subscription-2-year",
-     "image": null,
+     "image": "/assets/cache/shop/7622944ef45fbb93.webp",
      "volume": []
     },
     {
@@ -451,7 +451,7 @@
      "currency": "USD",
      "sku": "GOCA3Y",
      "url": "https://www.aagrapevine.org/store/canada-grapevine-digital-subscription-3-year",
-     "image": null,
+     "image": "/assets/cache/shop/7622944ef45fbb93.webp",
      "volume": []
     }
    ]
@@ -469,7 +469,7 @@
      "currency": "USD",
      "sku": "GOINTL1M",
      "url": "https://www.aagrapevine.org/store/international-grapevine-digital-subscription-1-month",
-     "image": null,
+     "image": "/assets/cache/shop/828da78c40d51e2c.webp",
      "volume": []
     },
     {
@@ -480,7 +480,7 @@
      "currency": "USD",
      "sku": "GOINTL1",
      "url": "https://www.aagrapevine.org/store/international-grapevine-digital-subscription-1-year",
-     "image": null,
+     "image": "/assets/cache/shop/828da78c40d51e2c.webp",
      "volume": []
     },
     {
@@ -491,7 +491,7 @@
      "currency": "USD",
      "sku": "GOINTL2",
      "url": "https://www.aagrapevine.org/store/international-grapevine-digital-subscription-2-year",
-     "image": null,
+     "image": "/assets/cache/shop/828da78c40d51e2c.webp",
      "volume": []
     },
     {
@@ -502,7 +502,7 @@
      "currency": "USD",
      "sku": "GOINTL3",
      "url": "https://www.aagrapevine.org/store/international-grapevine-digital-subscription-3-year",
-     "image": null,
+     "image": "/assets/cache/shop/828da78c40d51e2c.webp",
      "volume": []
     }
    ]
@@ -520,7 +520,7 @@
      "currency": "USD",
      "sku": "LVUS1",
      "url": "https://www.aalavina.org/tienda/suscripcion-revista-impresa-de-la-vina-1-ano",
-     "image": null,
+     "image": "/assets/cache/shop/dff8fe476e868d1b.webp",
      "volume": [
       {
        "min": 2,
@@ -547,7 +547,7 @@
      "currency": "USD",
      "sku": "LVUS2",
      "url": "https://www.aalavina.org/tienda/suscripcion-revista-impresa-de-la-vina-2-anos",
-     "image": null,
+     "image": "/assets/cache/shop/dff8fe476e868d1b.webp",
      "volume": [
       {
        "min": 2,
@@ -574,7 +574,7 @@
      "currency": "USD",
      "sku": "LVUS3",
      "url": "https://www.aalavina.org/tienda/suscripcion-revista-impresa-de-la-vina-3-anos",
-     "image": null,
+     "image": "/assets/cache/shop/dff8fe476e868d1b.webp",
      "volume": [
       {
        "min": 2,
@@ -601,7 +601,7 @@
      "currency": "USD",
      "sku": "LVV1M",
      "url": "https://www.aalavina.org/tienda/suscripcion-completa-la-vina-1-mes",
-     "image": null,
+     "image": "/assets/cache/shop/a337de6501ef9fc7.webp",
      "volume": []
     },
     {
@@ -612,7 +612,7 @@
      "currency": "USD",
      "sku": "LVV1",
      "url": "https://www.aalavina.org/tienda/suscripcion-completa-la-vina-1-ano",
-     "image": null,
+     "image": "/assets/cache/shop/a337de6501ef9fc7.webp",
      "volume": []
     },
     {
@@ -623,7 +623,7 @@
      "currency": "USD",
      "sku": "LVV2",
      "url": "https://www.aalavina.org/tienda/suscripcion-completa-la-vina-2-anos",
-     "image": null,
+     "image": "/assets/cache/shop/a337de6501ef9fc7.webp",
      "volume": []
     },
     {
@@ -634,7 +634,7 @@
      "currency": "USD",
      "sku": "LVV3",
      "url": "https://www.aalavina.org/tienda/suscripcion-completa-la-vina-3-anos",
-     "image": null,
+     "image": "/assets/cache/shop/a337de6501ef9fc7.webp",
      "volume": []
     },
     {
@@ -696,7 +696,7 @@
      "currency": "USD",
      "sku": "LVCN1",
      "url": "https://www.aalavina.org/tienda/canada-suscribase-la-vina-por-1-ano",
-     "image": null,
+     "image": "/assets/cache/shop/dff8fe476e868d1b.webp",
      "volume": [
       {
        "min": 2,
@@ -723,7 +723,7 @@
      "currency": "USD",
      "sku": "LVCN2",
      "url": "https://www.aalavina.org/tienda/canada-suscribase-la-vina-por-2-anos",
-     "image": null,
+     "image": "/assets/cache/shop/dff8fe476e868d1b.webp",
      "volume": [
       {
        "min": 2,
@@ -750,7 +750,7 @@
      "currency": "USD",
      "sku": "LVCN3",
      "url": "https://www.aalavina.org/tienda/canada-suscribase-la-vina-por-3-anos",
-     "image": null,
+     "image": "/assets/cache/shop/dff8fe476e868d1b.webp",
      "volume": [
       {
        "min": 2,
@@ -777,7 +777,7 @@
      "currency": "USD",
      "sku": "LVV1MCA",
      "url": "https://www.aalavina.org/tienda/canada-suscripcion-completa-1-mes",
-     "image": null,
+     "image": "/assets/cache/shop/a337de6501ef9fc7.webp",
      "volume": []
     },
     {
@@ -788,7 +788,7 @@
      "currency": "USD",
      "sku": "LVV1CA",
      "url": "https://www.aalavina.org/tienda/canada-suscripcion-completa-1-ano",
-     "image": null,
+     "image": "/assets/cache/shop/a337de6501ef9fc7.webp",
      "volume": []
     },
     {
@@ -799,7 +799,7 @@
      "currency": "USD",
      "sku": "LVV2CA",
      "url": "https://www.aalavina.org/tienda/canada-suscripcion-completa-la-vina-2-anos",
-     "image": null,
+     "image": "/assets/cache/shop/a337de6501ef9fc7.webp",
      "volume": []
     },
     {
@@ -810,7 +810,7 @@
      "currency": "USD",
      "sku": "LVV3CA",
      "url": "https://www.aalavina.org/tienda/canada-suscripcion-completa-la-vina-3-anos",
-     "image": null,
+     "image": "/assets/cache/shop/a337de6501ef9fc7.webp",
      "volume": []
     },
     {

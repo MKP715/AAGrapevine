@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-24T15:20:45Z",
+ "updated": "2026-09-25T15:23:10Z",
  "fixture": false,
  "issues": [
   {
@@ -14023,7 +14023,7 @@
    "kind": "article",
    "url": "https://www.aagrapevine.org/magazine/2026/jun/yets-agains",
    "title": "Yets & Agains",
-   "summary": "",
+   "summary": "I grew up in Shreveport, Louisiana. Just across the Red River was Bossier City, a place where you could get most anything you wanted. I had my first drink there at age 14.",
    "lang": "en",
    "date": "2026-06-01",
    "first_seen": "2026-09-23T23:13:14Z",
@@ -14039,12 +14039,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Young & Sober",
-    "section": null,
+    "section": "Our Personal Stories",
     "author": "Tom M.",
     "author_location": "Woodstock, Georgia",
     "subtitle": null,
-    "teaser": null,
-    "free": null,
+    "teaser": "I grew up in Shreveport, Louisiana. Just across the Red River was Bossier City, a place where you could get most anything you wanted. I had my first drink there at age 14.",
+    "free": false,
     "online_exclusive": false,
     "department": false,
     "geo": {
@@ -14065,8 +14065,12 @@
      "es": "Los «todavía» y los «otra vez»"
     },
     "summary": {
-     "en": "",
-     "es": ""
+     "en": "I grew up in Shreveport, Louisiana. Just across the Red River was Bossier City, a place where you could get most anything you wanted. I had my first drink there at age 14.",
+     "es": "Crecí en Shreveport, Louisiana. Justo al otro lado del Río Rojo estaba Bossier City, un lugar donde podrías conseguir la mayor parte de lo que querías. Tomé mi primer trago allí a los 14 años."
+    },
+    "section": {
+     "en": "Our Personal Stories",
+     "es": "Nuestras historias personales"
     },
     "topic": {
      "en": "Young & Sober",
@@ -14534,12 +14538,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Young & Sober",
-    "section": null,
+    "section": "Step Six",
     "author": "Mike W.",
     "author_location": "Spring Hill, Florida",
     "subtitle": "Wow, the instructions for Step Six were in the Big Book all along. Now for his next epiphany",
-    "teaser": null,
-    "free": null,
+    "teaser": "For many years I didn’t feel comfortable with Step Six. The first time I approached it all my sponsor would say was, “Remember, it says ‘were entirely ready.’” His advice was not much help.",
+    "free": false,
     "online_exclusive": false,
     "department": false,
     "geo": {
@@ -14562,6 +14566,10 @@
     "summary": {
      "en": "Wow, the instructions for Step Six were in the Big Book all along. Now for his next epiphany",
      "es": "Wow, las instrucciones para Paso Seis estaban en el Libro Grande todo el tiempo. Ahora por su próxima epifanía"
+    },
+    "section": {
+     "en": "Step Six",
+     "es": "Paso Seis"
     },
     "topic": {
      "en": "Young & Sober",
@@ -15354,7 +15362,7 @@
    "kind": "article",
    "url": "https://www.aagrapevine.org/magazine/2026/jun/if-you-build-it-they-will-come",
    "title": "If You Build It, They Will Come",
-   "summary": "",
+   "summary": "I moved to Saint Paul, Minnesota in 2022 to attend treatment after yet another slip. I had entered the rooms of AA after finding recovery in an Alaskan prison at age 17.",
    "lang": "en",
    "date": "2026-06-01",
    "first_seen": "2026-09-23T23:13:14Z",
@@ -15370,12 +15378,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Young & Sober",
-    "section": null,
+    "section": "Featured Section",
     "author": "H.A.",
     "author_location": "Saint Paul, Minnesota",
     "subtitle": null,
-    "teaser": null,
-    "free": null,
+    "teaser": "I moved to Saint Paul, Minnesota in 2022 to attend treatment after yet another slip. I had entered the rooms of AA after finding recovery in an Alaskan prison at age 17.",
+    "free": false,
     "online_exclusive": false,
     "department": false,
     "geo": {
@@ -15396,8 +15404,12 @@
      "es": "Si lo construyes, vendrán"
     },
     "summary": {
-     "en": "",
-     "es": ""
+     "en": "I moved to Saint Paul, Minnesota in 2022 to attend treatment after yet another slip. I had entered the rooms of AA after finding recovery in an Alaskan prison at age 17.",
+     "es": "Me mudé a Saint Paul, Minnesota en 2022 para asistir al tratamiento después de otro resbalón. Había entrado en las reuniones del AA después de encontrar la recuperación en una prisión de Alaska a los 17 años."
+    },
+    "section": {
+     "en": "Featured Section",
+     "es": "Sección destacada"
     },
     "topic": {
      "en": "Young & Sober",
@@ -15869,12 +15881,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Young & Sober",
-    "section": null,
+    "section": "In Every Issue",
     "author": null,
     "author_location": null,
     "subtitle": "Searching & spirituality",
-    "teaser": null,
-    "free": null,
+    "teaser": "The writer of “Always With Me” shares how she was angry with God for not making her stop drinking. But she finally went to AA and started to listen.",
+    "free": false,
     "online_exclusive": false,
     "department": true,
     "geo": {
@@ -15897,6 +15909,10 @@
     "summary": {
      "en": "Searching & spirituality",
      "es": "Búsqueda y espiritualidad"
+    },
+    "section": {
+     "en": "In Every Issue",
+     "es": "En cada edición"
     },
     "topic": {
      "en": "Young & Sober",
@@ -16007,8 +16023,8 @@
     "author": "Denise P.",
     "author_location": "West Milford, N.J.",
     "subtitle": "She became one of the “old friends” she saw at her home group when she first arrived",
-    "teaser": null,
-    "free": null,
+    "teaser": "After struggling for 30 years on my own, I finally decided that I needed to stop drinking. There had been too many close calls, too many broken promises to myself.",
+    "free": false,
     "online_exclusive": true,
     "department": false,
     "geo": {
@@ -16219,12 +16235,12 @@
     "issue_theme": null,
     "issue_url": null,
     "topic": "Young & Sober",
-    "section": null,
+    "section": "Gratitude",
     "author": "Definitely Steve",
     "author_location": "Nashville, Tennessee",
     "subtitle": "A longtimer recalls the time he had four months sober and was rescued by AA on a Caribbean cruise",
-    "teaser": null,
-    "free": null,
+    "teaser": "There I was, 48 years old, four months sober and ready to take on the world.",
+    "free": false,
     "online_exclusive": false,
     "department": false,
     "geo": {
@@ -16247,6 +16263,10 @@
     "summary": {
      "en": "A longtimer recalls the time he had four months sober and was rescued by AA on a Caribbean cruise",
      "es": "Un veterano recuerda el tiempo que tenía cuatro meses sobrio y fue rescatado por AA en un crucero caribeño"
+    },
+    "section": {
+     "en": "Gratitude",
+     "es": "Gratitud"
     },
     "topic": {
      "en": "Young & Sober",

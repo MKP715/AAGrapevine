@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-24T15:15:00Z",
+ "updated": "2026-09-25T15:20:59Z",
  "fixture": false,
  "profiles": {
   "gv": {
@@ -7,10 +7,10 @@
    "name": "AA Grapevine",
    "url": "https://www.instagram.com/alcoholicsanonymous_gv/",
    "full_name": "AA Grapevine Magazine",
-   "followers": 16867,
-   "posts": 3898,
+   "followers": 16871,
+   "posts": 3900,
    "owner_id": "48108439509",
-   "checked": "2026-09-24T15:14:55Z",
+   "checked": "2026-09-25T15:20:55Z",
    "avatar": "/assets/cache/ig/_avatar_gv.webp"
   },
   "lv": {
@@ -19,13 +19,185 @@
    "url": "https://www.instagram.com/alcoholicosanonimos_lv/",
    "full_name": "Revista La Viña",
    "followers": 2418,
-   "posts": 2938,
+   "posts": 2940,
    "owner_id": "48275839129",
-   "checked": "2026-09-24T15:14:58Z",
+   "checked": "2026-09-25T15:20:58Z",
    "avatar": "/assets/cache/ig/_avatar_lv.webp"
   }
  },
  "items": [
+  {
+   "id": "ig:Ddtu0JsFzEt",
+   "source": "instagram",
+   "kind": "post",
+   "url": "https://www.instagram.com/p/Ddtu0JsFzEt/",
+   "title": "Del artículo “El vacío detrás de la fiesta\", edición de septiembre/octubre de 2026.",
+   "summary": "Del artículo “El vacío detrás de la fiesta\", edición de septiembre/octubre de 2026. Para leer más visite www.aalavina.org/revista",
+   "lang": "es",
+   "date": "2026-09-25T15:00:15Z",
+   "first_seen": "2026-09-25T15:20:59Z",
+   "image": "/assets/cache/ig/Ddtu0JsFzEt.webp",
+   "tags": [],
+   "category": "lv",
+   "status": "ok",
+   "extra": {
+    "shortcode": "Ddtu0JsFzEt",
+    "account": "lv",
+    "username": "alcoholicosanonimos_lv",
+    "media_type": "image",
+    "thumb": "/assets/cache/ig/Ddtu0JsFzEt.webp",
+    "embed_url": "https://www.instagram.com/p/Ddtu0JsFzEt/embed/captioned/",
+    "permalink": "https://www.instagram.com/p/Ddtu0JsFzEt/",
+    "is_reel": false,
+    "manual": false,
+    "strategy": "profile_embed",
+    "caption_known": true,
+    "embed_checked": null
+   },
+   "i18n": {
+    "title": {
+     "en": "From the article “the emptiness behind the party”, September / October 2026 edition.",
+     "es": "Del artículo “El vacío detrás de la fiesta\", edición de septiembre/octubre de 2026."
+    },
+    "summary": {
+     "en": "From the article “the emptiness behind the party”, September / October 2026 edition. To read more visit www.aalavina.org/revista",
+     "es": "Del artículo “El vacío detrás de la fiesta\", edición de septiembre/octubre de 2026. Para leer más visite www.aalavina.org/revista"
+    }
+   },
+   "machine": [
+    "en"
+   ],
+   "is_new": true
+  },
+  {
+   "id": "ig:Ddtu0IQl4Ys",
+   "source": "instagram",
+   "kind": "post",
+   "url": "https://www.instagram.com/p/Ddtu0IQl4Ys/",
+   "title": "From the article “Never Too Young\", September 2026 issue.",
+   "summary": "From the article “Never Too Young\", September 2026 issue. To read more, visit www.aagrapevine.org/magazine",
+   "lang": "en",
+   "date": "2026-09-25T15:00:14Z",
+   "first_seen": "2026-09-25T15:20:59Z",
+   "image": "/assets/cache/ig/Ddtu0IQl4Ys.webp",
+   "tags": [],
+   "category": "gv",
+   "status": "ok",
+   "extra": {
+    "shortcode": "Ddtu0IQl4Ys",
+    "account": "gv",
+    "username": "alcoholicsanonymous_gv",
+    "media_type": "image",
+    "thumb": "/assets/cache/ig/Ddtu0IQl4Ys.webp",
+    "embed_url": "https://www.instagram.com/p/Ddtu0IQl4Ys/embed/captioned/",
+    "permalink": "https://www.instagram.com/p/Ddtu0IQl4Ys/",
+    "is_reel": false,
+    "manual": false,
+    "strategy": "profile_embed",
+    "caption_known": true,
+    "embed_checked": null
+   },
+   "i18n": {
+    "title": {
+     "en": "From the article “Never Too Young\", September 2026 issue.",
+     "es": "Del artículo “Never Too Young”, edición de septiembre de 2026."
+    },
+    "summary": {
+     "en": "From the article “Never Too Young\", September 2026 issue. To read more, visit www.aagrapevine.org/magazine",
+     "es": "Del artículo “Never Too Young”, edición de septiembre de 2026. Para leer más, visite www.aagrapevine.org/magazine"
+    }
+   },
+   "machine": [
+    "es"
+   ],
+   "is_new": true
+  },
+  {
+   "id": "ig:DdtWyE6F-w4",
+   "source": "instagram",
+   "kind": "post",
+   "url": "https://www.instagram.com/p/DdtWyE6F-w4/",
+   "title": "“During his first AA years every AA has had plenty of the urge to revolt against…",
+   "summary": "“During his first AA years every AA has had plenty of the urge to revolt against authority. I know I did, and can’t claim to be over it yet. I’ve also served my time as a maker of rules, a regulator of other people’s conduct ... I can now look back upon such experiences with much amusement. And gratitude as well.” AA Co-Founder, Bill W., September 1945, From: “’Rules’ Dangerous but Unity Vital”…",
+   "lang": "en",
+   "date": "2026-09-25T11:30:15Z",
+   "first_seen": "2026-09-25T15:20:59Z",
+   "image": "/assets/cache/ig/DdtWyE6F-w4.webp",
+   "tags": [],
+   "category": "gv",
+   "status": "ok",
+   "extra": {
+    "shortcode": "DdtWyE6F-w4",
+    "account": "gv",
+    "username": "alcoholicsanonymous_gv",
+    "media_type": "image",
+    "thumb": "/assets/cache/ig/DdtWyE6F-w4.webp",
+    "embed_url": "https://www.instagram.com/p/DdtWyE6F-w4/embed/captioned/",
+    "permalink": "https://www.instagram.com/p/DdtWyE6F-w4/",
+    "is_reel": false,
+    "manual": false,
+    "strategy": "profile_embed",
+    "caption_known": true,
+    "embed_checked": null
+   },
+   "i18n": {
+    "title": {
+     "en": "“During his first AA years every AA has had plenty of the urge to revolt against…",
+     "es": "“Durante sus primeros AA años cada AA ha tenido un gran impulso para rebelarse contra …"
+    },
+    "summary": {
+     "en": "“During his first AA years every AA has had plenty of the urge to revolt against authority. I know I did, and can’t claim to be over it yet. I’ve also served my time as a maker of rules, a regulator of other people’s conduct ... I can now look back upon such experiences with much amusement. And gratitude as well.” AA Co-Founder, Bill W., September 1945, From: “’Rules’ Dangerous but Unity Vital”…",
+     "es": "“Durante sus primeros AA años cada AA ha tenido un gran impulso para rebelarse contra la autoridad. Sé que lo hice, y no puedo alegar que lo superó todavía. También he servido mi tiempo como fabricante de reglas, un regulador de la conducta de otras personas ... Ahora puedo mirar atrás sobre tales experiencias con mucha diversión. Y gratitud también”. AA cofundador, Bill W., septiembre de 1945, de: “’rules’ peligroso pero de unidad Vital” …"
+    }
+   },
+   "machine": [
+    "es"
+   ],
+   "is_new": true
+  },
+  {
+   "id": "ig:DdtWyC6Fyfe",
+   "source": "instagram",
+   "kind": "post",
+   "url": "https://www.instagram.com/p/DdtWyC6Fyfe/",
+   "title": "“Mi nuevo amigo me preguntó cuándo había bebido por última vez, si había comido y si…",
+   "summary": "“Mi nuevo amigo me preguntó cuándo había bebido por última vez, si había comido y si dormí bajo techo esa noche. Me contó su historia… Mis esperanzas se fortalecieron aún más; supe que había hallado una forma de vivir sin la bebida”. \"“La novia de nadie” MORENO VALLEY, CALIFORNIA, DICIEMBRE DE 1992 De I Am Responsible\" Cita Diaria en www.aalavina.org",
+   "lang": "es",
+   "date": "2026-09-25T11:30:15Z",
+   "first_seen": "2026-09-25T15:20:59Z",
+   "image": "/assets/cache/ig/DdtWyC6Fyfe.webp",
+   "tags": [],
+   "category": "lv",
+   "status": "ok",
+   "extra": {
+    "shortcode": "DdtWyC6Fyfe",
+    "account": "lv",
+    "username": "alcoholicosanonimos_lv",
+    "media_type": "image",
+    "thumb": "/assets/cache/ig/DdtWyC6Fyfe.webp",
+    "embed_url": "https://www.instagram.com/p/DdtWyC6Fyfe/embed/captioned/",
+    "permalink": "https://www.instagram.com/p/DdtWyC6Fyfe/",
+    "is_reel": false,
+    "manual": false,
+    "strategy": "profile_embed",
+    "caption_known": true,
+    "embed_checked": null
+   },
+   "i18n": {
+    "title": {
+     "en": "“My new friend asked me when I had last drunk, whether I had eaten and if …",
+     "es": "“Mi nuevo amigo me preguntó cuándo había bebido por última vez, si había comido y si…"
+    },
+    "summary": {
+     "en": "“My new friend asked me when I had last drunk, whether I had eaten, and if I slept under the roof that night. He told me his story … My hopes were further strengthened; I knew I had found a way of living without the drink.” \"Nobody's Bride\" MORENO VALLEY, CALIFORNIA, 1992 I Am Responsible Daily Quote in www.aalavina.org",
+     "es": "“Mi nuevo amigo me preguntó cuándo había bebido por última vez, si había comido y si dormí bajo techo esa noche. Me contó su historia… Mis esperanzas se fortalecieron aún más; supe que había hallado una forma de vivir sin la bebida”. \"“La novia de nadie” MORENO VALLEY, CALIFORNIA, DICIEMBRE DE 1992 De I Am Responsible\" Cita Diaria en www.aalavina.org"
+    }
+   },
+   "machine": [
+    "en"
+   ],
+   "is_new": true
+  },
   {
    "id": "ig:DdrKBZ_l5JQ",
    "source": "instagram",
