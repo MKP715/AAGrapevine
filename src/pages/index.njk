@@ -37,7 +37,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
   <span class="font-display text-2xl font-semibold italic leading-none">{{ "La Viña" if tone == "lv" else "Grapevine" }}</span>
   {% if item.extra and item.extra.issue_label %}<span class="text-[0.7rem] font-semibold uppercase tracking-[0.14em] opacity-80">{{ item.extra.issue_label | homeIssueLabel(L) }}</span>{% endif %}
   {% elif item.kind == "pdf" %}
-  <span class="home-sheet"><span class="home-sheet-tag">PDF</span></span>
+  <span class="home-sheet"><span class="home-sheet-tag">{% icon "file-down", "my-0.5 block size-3" %}</span></span>
   {% else %}
   <span class="grid size-14 place-items-center rounded-2xl bg-surface/70 shadow-sm">{% icon item.kind | homeKindIcon, "size-7" %}</span>
   {% endif %}
@@ -50,7 +50,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
 {#- Compact "next committee meeting" card with a live countdown (home.js → homeMeeting).
     v = "hero": dark glass, in the hero's right column (1024px and up);
     v = "page": light card right below the hero (below 1024px). Only one of the two is
-    ever displayed, so each has its own heading id. Meeting ID and passcode are on /meeting/
+    ever displayed, so each has its own heading id. Meeting ID and passcode are on /meetings/
     ("Details"); the Zoom link carries the passcode. -#}
 {% macro meetingCard(v, L, meeting, mt) %}
 {%- set dark = v == "hero" -%}
@@ -80,7 +80,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
   <div class="home-meet-actions">
     <a class="{{ 'btn-light' if dark else 'btn-primary' }} home-meet-join" href="{{ mt.zoom_url }}" target="_blank" rel="noopener">{% icon "video", "size-4" %} {{ "home.meeting_join" | t(L) }}<span class="sr-only"> {{ "home.opens_new_tab" | t(L) }}</span></a>
     <button type="button" class="{{ 'btn-on-dark' if dark else 'btn-secondary' }} btn-sm" x-show="ready" x-cloak @click="addToCalendar()" title="{{ 'common.add_to_calendar' | t(L) }}">{% icon "calendar-plus", "size-4" %} {{ "home.meeting_add_cal" | t(L) }}</button>
-    <a class="{{ 'btn-on-dark' if dark else 'btn-secondary' }} btn-sm home-meet-more" href="{{ '/meeting/' | lurl(L) }}">{{ "home.meeting_details_short" | t(L) }} {% icon "arrow-right", "size-3.5" %}<span class="sr-only"> — {{ "home.meeting_eyebrow" | t(L) }}</span></a>
+    <a class="{{ 'btn-on-dark' if dark else 'btn-secondary' }} btn-sm home-meet-more" href="{{ '/meetings/' | lurl(L) }}">{{ "home.meeting_details_short" | t(L) }} {% icon "arrow-right", "size-3.5" %}<span class="sr-only"> — {{ "home.meeting_eyebrow" | t(L) }}</span></a>
   </div>
 </div>
 {% endmacro %}
@@ -694,9 +694,9 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
         </ul>
         <a href="{{ '/listen/' | lurl(L) }}" class="btn-secondary mt-auto w-full">{% icon "headphones", "size-4" %} {{ "home.all_episodes" | t(L) }}</a>
         {% if wo and wo.extra %}
-        {#- both weekly open meetings in one line (as on /listen/ and /watch/); details on /meeting/ -#}
+        {#- both weekly open meetings in one line (as on /listen/ and /watch/); details on /meetings/ -#}
         {%- set woWhen = D.weekly_open.items | mediaWeeklyDays(L) -%}
-        <a href="{{ '/meeting/#weekly-open' | lurl(L) }}" class="group mt-4 flex items-start gap-3 rounded-xl border border-line bg-gv-soft/60 p-3.5 no-underline transition hover:border-gv">
+        <a href="{{ '/meetings/#weekly-open' | lurl(L) }}" class="group mt-4 flex items-start gap-3 rounded-xl border border-line bg-gv-soft/60 p-3.5 no-underline transition hover:border-gv">
           <span class="grid size-10 shrink-0 place-items-center rounded-lg bg-surface text-gv">{% icon "video", "size-5" %}</span>
           <span class="min-w-0">
             <span class="block text-sm font-semibold text-ink group-hover:text-gv">{{ ("home.weekly_opens" if D.weekly_open.items.length > 1 else "home.weekly_open") | t(L) }}</span>
@@ -822,6 +822,18 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
     </ul>
     {% else %}
     {{ ui.emptyState("calendar-days", "home.events_empty_title" | t(L), "home.events_empty_text" | t(L), "/events/" | lurl(L), "home.events_all" | t(L)) }}
+    {% endif %}
+    {#- One line pointing to the Grapevine meetings of local groups — their ONE home is /meetings/ -#}
+    {%- set gvmHome = db.meetings | cmGvMeetings(L, site) -%}
+    {% if gvmHome.inArea %}
+    <a href="{{ '/meetings/#grapevine-meetings' | lurl(L) }}" class="group mt-5 flex items-start gap-3 rounded-xl border border-line bg-gv-soft/60 p-3.5 no-underline transition hover:border-gv sm:max-w-xl">
+      <span class="grid size-10 shrink-0 place-items-center rounded-lg bg-surface text-gv">{% icon "map-pin", "size-5" %}</span>
+      <span class="min-w-0">
+        <span class="block text-sm font-semibold text-ink group-hover:text-gv">{{ "committee.gvm.home_title" | t(L) }}</span>
+        <span class="block text-xs leading-snug text-muted">{{ ("committee.gvm.home_text" if gvmHome.nearby else "committee.gvm.home_text_area") | t(L, { ours: gvmHome.inArea, nearby: gvmHome.nearby }) }}</span>
+      </span>
+      <span class="ml-auto self-center text-faint transition group-hover:translate-x-0.5 group-hover:text-gv">{% icon "arrow-right", "size-4" %}</span>
+    </a>
     {% endif %}
   </div>
 </section>
@@ -955,13 +967,13 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
 </section>
 
 {#- =====================================================================
-    10. FOR GVRs, RLVs & DISTRICTS — call-to-action band
+    10. FOR GVRs, RLVs & DISTRICTS — call-to-action band (the monthly GV/LV report lives on /monthly/#report)
     ===================================================================== -#}
 {%- set svcLinks = [
   { url: "/gvr/", icon: "badge-check", key: "nav.gvr", desc: "home.svc_corner_desc" },
   { url: "/share/", icon: "qr-code", key: "nav.share", desc: "home.svc_share_desc" },
   { url: "/digest/", icon: "mail-open", key: "nav.digest", desc: "home.svc_digest_desc" },
-  { url: "/districts/", icon: "map", key: "nav.districts", desc: "home.svc_districts_desc" },
+  { url: "/monthly/#report", icon: "clipboard-list", key: "home.svc_report", desc: "home.svc_report_desc" },
   { url: "/feed.xml", icon: "rss", key: "feeds.rss", desc: "home.svc_rss_desc" },
   { url: "/events.ics", icon: "calendar-plus", key: "feeds.ics", desc: "home.svc_ics_desc" }
 ] %}
@@ -1054,7 +1066,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
           <p class="mt-3 text-sm text-muted">{% icon "folder-up", "size-4 inline-block align-[-3px] text-faint" %} {{ "home.drive_empty_members" | t(L) }} <a href="{{ '/documents/#how-docs' | lurl(L) }}" class="link font-semibold whitespace-nowrap">{{ "home.drive_empty_how" | t(L) }} →</a></p>
         </div>
         <div class="flex flex-wrap gap-2 md:flex-col">
-          <a href="{{ '/meeting/' | lurl(L) }}" class="btn-primary md:w-full">{% icon "calendar-days", "size-4" %} {{ "home.drive_empty_meeting" | t(L) }}</a>
+          <a href="{{ '/meetings/' | lurl(L) }}" class="btn-primary md:w-full">{% icon "calendar-days", "size-4" %} {{ "home.drive_empty_meeting" | t(L) }}</a>
           <a href="mailto:{{ site.contact_email }}" class="btn-secondary md:w-full">{% icon "mail", "size-4" %} {{ "home.drive_empty_email" | t(L) }}</a>
         </div>
       </div>

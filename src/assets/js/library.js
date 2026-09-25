@@ -1,10 +1,11 @@
 /* NETA 65 Grapevine / La Viña — Library page (/library/).
    ------------------------------------------------------------------
    The page is server-rendered with the newest documents (works without JS).
-   This script loads /library-index.json (every PDF + committee document,
+   This script loads /library-index.json (every official document + committee document,
    see src/pages/library-index.11ty.js) and adds:
      - instant search (MiniSearch via GV.searchKit: accent-insensitive, prefix, fuzzy)
-     - facets with live counts (source / language / category / year, multi-select)
+     - facets with live counts (source / language / category / year, multi-select;
+       a document with editions in several languages (`ls`) counts in each of them)
      - quick collections, sort, card/list view, "Load more" paging
      - shareable URLs: ?q=&src=&lang=&cat=&year=&col=&sort=&view=
        (view= is only written when it differs from the screen's default)
@@ -123,6 +124,14 @@
   var list = [], shown = CFG.pageSize, termsById = null, partial = false, hydrated = false;
 
   function val(f, d) { return f === "src" ? d.s : f === "lang" ? d.l : f === "cat" ? d.c : d.d ? d.d.slice(0, 4) : ""; }
+  // Facet values of a document: one each, except the languages of all its editions.
+  function vals(f, d) { return f === "lang" && d.ls && d.ls.length ? d.ls : [val(f, d)]; }
+  function passes(f, d) {
+    if (!state[f].size) return true;
+    var v = vals(f, d);
+    for (var i = 0; i < v.length; i++) if (state[f].has(v[i])) return true;
+    return false;
+  }
   function filtered() { return !!(state.q.trim() || state.col || FACETS.some(function (f) { return state[f].size; })); }
   function effectiveSort() { return state.sort || (state.q.trim() ? "rel" : "new"); }
 
@@ -217,13 +226,12 @@
     // Faceted counts: each facet counts over items matching every OTHER facet.
     var counts = { src: {}, lang: {}, cat: {}, year: {} }, out = [];
     base.forEach(function (d) {
-      var pass = FACETS.map(function (f) { return !state[f].size || state[f].has(val(f, d)); });
+      var pass = FACETS.map(function (f) { return passes(f, d); });
       var all = pass[0] && pass[1] && pass[2] && pass[3];
       if (all) out.push(d);
       FACETS.forEach(function (f, i) {
         for (var j = 0; j < 4; j++) if (j !== i && !pass[j]) return;
-        var v = val(f, d);
-        counts[f][v] = (counts[f][v] || 0) + 1;
+        vals(f, d).forEach(function (v) { counts[f][v] = (counts[f][v] || 0) + 1; });
       });
     });
     var sort = effectiveSort();
@@ -246,6 +254,18 @@
     var u = ["B", "KB", "MB", "GB"], i = 0;
     while (b >= 1024 && i < u.length - 1) { b /= 1024; i++; }
     return b.toFixed(i ? 1 : 0) + " " + u[i];
+  }
+
+  // Language names in their own language, for the edition links ("English · Español").
+  var ENDONYMS = { en: "English", es: "Español", fr: "Français" };
+  function versionsRow(d) {
+    if (!d.vs || d.vs.length < 2) return "";
+    return '<p class="lib-versions">' + icon("languages", "size-3.5") + "<span>" + esc(S.versions) + "</span>" +
+      d.vs.map(function (v) {
+        var l = String(v[0] || "");
+        return '<a href="' + esc(kit.href(v[1])) + '" hreflang="' + esc(l) + '" target="_blank" rel="noopener"><span lang="' + esc(l) + '">' +
+          esc(ENDONYMS[l] || l.toUpperCase()) + "</span>" + (l !== LANG ? '<span class="sr-only"> (' + esc(CFG.langs[l] || l) + ")</span>" : "") + "</a>";
+      }).join("") + "</p>";
   }
 
   function renderCard(d) {
@@ -273,7 +293,7 @@
 
     return '<article class="lib-card is-fresh' + (d.or ? " is-orphan" : "") + '" id="doc-' + esc(String(d.id).replace(/:/g, "-")) + '">' +
       '<div class="lib-media"><div class="lib-tile" data-tone="' + esc(d.s) + '" aria-hidden="true"><span class="lib-sheet"><span class="lib-sheet-icon">' +
-      icon(CFG.catIcons[d.c] || "file-text", "size-6") + '</span><span class="lib-sheet-lines"></span><span class="lib-sheet-ft">' + esc(CFG.ft[ft] || ft) + "</span></span></div>" +
+      icon(CFG.catIcons[d.c] || "file-text", "size-6") + '</span><span class="lib-sheet-lines"></span>' + (ft !== "pdf" ? '<span class="lib-sheet-ft">' + esc(CFG.ft[ft] || ft) + "</span>" : "") + "</span></div>" +
       (th && d.tf ? '<img class="lib-th-blur" src="' + th + '" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.remove()">' : "") +
       (th ? "<img" + (d.tf ? ' class="lib-th-fit"' : "") + ' src="' + th + '" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.remove()">' : "") +
       (d.n && !d.or ? '<span class="badge-new lib-new">' + esc(S.isNew) + "</span>" : "") + "</div>" +
@@ -283,6 +303,7 @@
       (d.o ? '<p class="lib-orig"><span class="sr-only">' + esc(S.original) + ": </span><span" + (tl ? ' lang="' + esc(tl) + '"' : "") + ">" + kit.highlight(d.o, terms) + "</span></p>" : "") +
       (d.ev ? '<p class="lib-event">' + icon("calendar-days", "size-3.5") + '<time datetime="' + esc(d.ev) + '">' + esc(kit.fill(S.eventOn, { date: kit.fmtYmd(d.ev, "long") })) + "</time></p>" : "") +
       (meta.length ? '<p class="lib-meta">' + meta.join("") + "</p>" : "") +
+      versionsRow(d) +
       (ref ? '<p class="lib-ref">' + esc(S.foundOn) + ' <a href="' + esc(kit.href(ref[0])) + '" target="_blank" rel="noopener">' + esc(ref[1]) + "</a></p>" : "") +
       (d.or ? '<p class="lib-orphan">' + icon("unlink", "size-3.5") + "<span>" + esc(S.orphan) + "</span></p>" : "") +
       (d.m ? '<p class="lib-auto"><span class="auto-note" title="' + esc(S.autoHelp) + '">' + icon("languages", "size-3") + " " + esc(S.auto) + "</span></p>" : "") +

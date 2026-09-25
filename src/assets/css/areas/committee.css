@@ -1,5 +1,5 @@
 /* Area styles: committee — owned by the committee page agent.
-   Pages: /meeting/ /events/ /documents/ /photos/ /announcements/
+   Pages: /meetings/ /events/ /documents/ /photos/ /announcements/
    Prefer Tailwind utilities in templates; put only what utilities cannot
    express here (pseudo-elements, dialog/backdrop, animations, tone variables,
    complex grids). Everything uses theme tokens so dark mode just works.
@@ -37,19 +37,7 @@
      white pill with white text was 4.1:1 at 11px, below WCAG AA. */
   .cm-subnav-link.is-current .cm-subnav-count { background: var(--c-surface); color: var(--c-gv); }
 
-  /* ---------- /meeting/ hero: one line for the next meeting (a link to the countdown) ---------- */
-  .cm-hero-next {
-    display: inline-flex; align-items: center; gap: 0.6rem; min-height: 2.75rem; max-width: 100%;
-    padding: 0.45rem 1.1rem; border-radius: 1.375rem; font-size: 0.875rem; line-height: 1.35;
-    color: #fff; text-decoration: none; background: rgb(255 255 255 / 0.1);
-    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.22);
-    -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); transition: background-color 0.15s;
-  }
-  .cm-hero-next:hover { background: rgb(255 255 255 / 0.18); }
-  .cm-hero-next strong { font-weight: 600; }
-  .cm-hero-next-label { margin-right: 0.4rem; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: rgb(255 255 255 / 0.85); }
-
-  /* ---------- /meeting/ board below the hero (one grid, so the cards line up) ----------
+  /* ---------- /meetings/ board (the committee meeting) (one grid, so the cards line up) ----------
      countdown · how to join (.cm-join) · next dates (lg:row-span-2) · who · chair · feed.
      One column → two from 1024px → three from 1440px, where how to join spans columns 2–3
      and the feed sits under who | chair. */
@@ -432,6 +420,115 @@
     color: var(--c-lv); background: var(--c-lv-soft);
     box-shadow: 0 0 0 10px color-mix(in srgb, var(--c-lv-soft) 55%, transparent), 0 0 0 22px color-mix(in srgb, var(--c-lv-soft) 25%, transparent);
   }
+
+  /* ---------- /meetings/: in-page nav count (on the hero's glass button) ---------- */
+  .cm-jump-count {
+    display: inline-grid; place-items: center; min-width: 1.35rem; height: 1.35rem; padding: 0 0.4rem; border-radius: 9999px;
+    font-size: 0.7rem; font-weight: 700; background: #fff; color: #07457c;
+  }
+
+  /* ---------- /meetings/#grapevine-meetings ----------
+     A full-width band (tinted, so the white cards stand out), then per group: a header, and the
+     weekdays — stacked on phones; from 1024px the day name sits in a left column (it stays in
+     view while its cards scroll) and the cards fill the right one. */
+  .cm-gvm-band {
+    padding-block: 3rem; border-block: 1px solid var(--c-line);
+    background: color-mix(in srgb, var(--c-surface-2) 55%, var(--c-paper));
+  }
+  @media (width >= 40rem) { .cm-gvm-band { padding-block: 4rem; } }
+
+  .cm-gvm-filters {
+    display: grid; gap: 1rem; margin-top: 1.75rem; padding: 1rem;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  @media (width >= 40rem) {
+    .cm-gvm-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 1.25rem; }
+    .cm-gvm-field--q { grid-column: 1 / -1; }
+  }
+  @media (width >= 64rem) {
+    .cm-gvm-filters { grid-template-columns: minmax(14rem, 1.6fr) minmax(10rem, 0.8fr) minmax(11rem, 0.9fr) auto; align-items: end; }
+    .cm-gvm-field--q { grid-column: auto; }
+  }
+  .cm-gvm-label { display: block; margin-bottom: 0.4rem; font-size: 0.8rem; font-weight: 600; color: var(--c-ink); }
+  .cm-gvm-select { appearance: none; -webkit-appearance: none; cursor: pointer; padding-right: 2.5rem; background-image: none; }
+  .cm-gvm-chev { position: absolute; right: 0.9rem; top: 50%; transform: translateY(-50%); pointer-events: none; color: var(--c-muted); display: grid; }
+  .cm-gvm-toggle {
+    display: inline-flex; align-items: center; gap: 0.75rem; min-height: 2.75rem; cursor: pointer;
+    font-size: 0.875rem; font-weight: 600; color: var(--c-ink);
+  }
+  @media (width >= 40rem) and (width < 64rem) { .cm-gvm-toggle { grid-column: 1 / -1; } }
+  .cm-gvm-toggle > span { display: inline-flex; align-items: center; gap: 0.5rem; }
+  .cm-gvm-status { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem 1rem; min-height: 2.75rem; margin-top: 0.75rem; }
+
+  .cm-gvm-group { margin-top: 2.25rem; }
+  .cm-gvm-group-head { display: flex; align-items: center; gap: 0.85rem; margin-bottom: 1.25rem; }
+  .cm-gvm-group-icon {
+    display: grid; place-items: center; flex-shrink: 0; width: 2.75rem; height: 2.75rem; border-radius: 0.85rem;
+    background: var(--c-gv-soft); color: var(--c-gv);
+  }
+  .cm-gvm-group.is-nearby .cm-gvm-group-icon { background: var(--c-vine-soft); color: var(--c-vine); }
+  .cm-gvm-group-title { font-family: var(--font-display); font-size: 1.5rem; font-weight: 600; line-height: 1.2; color: var(--c-ink); }
+  .cm-gvm-nearby { margin-top: 3rem; padding-top: 2.5rem; border-top: 1px dashed color-mix(in srgb, var(--c-vine) 35%, var(--c-line)); }
+  .cm-gvm-nearby > .cm-gvm-group { margin-top: 1.75rem; }
+
+  /* One card per weekday; inside, one row per meeting. The rows lay out by the CARD's width
+     (container query): stacked below 46rem; from there a table-like row — time | name + types |
+     place + attendance | links. */
+  .cm-gvm-days { display: grid; gap: 1rem; }
+  /* very wide screens: the weekday cards in two columns (Sunday → Saturday read down the first column,
+     then the second — no gaps under short cards), so a row's time, name, place and links stay close */
+  @media (width >= 112.5rem) {
+    .cm-gvm-days { display: block; columns: 2; column-gap: 1rem; }
+    .cm-gvm-days > .cm-gvm-day { break-inside: avoid; margin-bottom: 1rem; }
+  }
+  .cm-gvm-day { container-type: inline-size; overflow: hidden; }
+  .cm-gvm-day-name {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; padding: 0.7rem 1.15rem;
+    border-bottom: 1px solid var(--c-line); background: var(--c-surface-2);
+    font-family: var(--font-sans); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--c-muted);
+  }
+  .cm-gvm-day.is-today { border-color: color-mix(in srgb, var(--c-gv) 45%, var(--c-line)); }
+  .cm-gvm-day.is-today .cm-gvm-day-name { color: var(--c-gv); background: var(--c-gv-soft); }
+  .cm-gvm-today {
+    display: inline-flex; align-items: center; padding: 0.1rem 0.55rem; border-radius: 9999px;
+    font-size: 0.68rem; letter-spacing: 0.06em; background: var(--c-gv); color: #fff;
+  }
+  .cm-gvm-list > li + li { border-top: 1px solid var(--c-line); }
+
+  .cm-gvm-row { display: grid; gap: 0.75rem; padding: 1rem 1.15rem 1.1rem; scroll-margin-top: 7rem; }
+  .cm-gvm-row:target { background: var(--c-gv-soft); box-shadow: inset 4px 0 0 var(--c-gv); }
+  .cm-gvm-time { order: -1; display: flex; align-items: baseline; gap: 0.45rem; font-weight: 700; font-size: 0.95rem; line-height: 1.35; color: var(--c-gv); }
+  .cm-gvm-time > .icon { align-self: center; }
+  .cm-gvm-row.is-nearby .cm-gvm-time { color: var(--c-vine); }
+  .cm-gvm-end { font-weight: 500; color: var(--c-muted); }
+  .cm-gvm-name { font-family: var(--font-display); font-size: 1.15rem; font-weight: 600; line-height: 1.3; color: var(--c-ink); overflow-wrap: anywhere; }
+  .cm-gvm-meta { display: grid; gap: 0.45rem; font-size: 0.875rem; line-height: 1.45; color: var(--c-muted); }
+  .cm-gvm-meta > li { display: flex; gap: 0.55rem; }
+  .cm-gvm-meta > li > .icon { margin-top: 0.15rem; }
+  .cm-gvm-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem 1rem; }
+  .cm-gvm-details {
+    display: inline-flex; align-items: center; gap: 0.35rem; min-height: 2.25rem; font-size: 0.8rem; font-weight: 600; overflow-wrap: anywhere;
+    color: var(--c-gv); text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--c-gv) 35%, transparent); text-underline-offset: 3px;
+  }
+  .cm-gvm-details:hover { text-decoration-color: currentColor; }
+  @media (width < 40rem) { .cm-gvm-details { min-height: 2.75rem; } }
+  .cm-gvm-src { margin-top: 0.5rem; font-size: 0.75rem; line-height: 1.4; color: var(--c-faint); }
+  /* (after the base rules above, so these win) */
+  @container (width >= 46rem) {
+    .cm-gvm-row {
+      grid-template-columns: 11.25rem minmax(0, 1.1fr) minmax(0, 1fr) 13.5rem;
+      gap: 1.25rem; align-items: start; padding: 1.1rem 1.35rem;
+    }
+    .cm-gvm-time { padding-top: 0.15rem; }
+    .cm-gvm-actions { flex-direction: column; align-items: flex-start; }
+  }
+
+  .cm-gvm-about { font-size: 0.875rem; line-height: 1.6; color: var(--c-muted); align-self: center; }
+  .cm-gvm-cta {
+    display: flex; gap: 0.9rem; padding: 1.25rem; border-radius: var(--radius-card);
+    border: 1px solid color-mix(in srgb, var(--c-gv) 25%, var(--c-line)); background: var(--c-surface);
+  }
+  .cm-gvm-cta-icon { display: grid; place-items: center; flex-shrink: 0; width: 2.5rem; height: 2.5rem; border-radius: 0.75rem; background: var(--c-gv-soft); color: var(--c-gv); }
 }
 
 /* ---------- (unlayered) rules that must beat utilities ---------- */
@@ -450,6 +547,7 @@ html:not(.cm-js) [data-cm-js] { display: none !important; }
 
 /* Dark mode: white text on light accent fills → use the page color instead. */
 [data-theme="dark"] .cm-subnav-link.is-current,
+[data-theme="dark"] .cm-gvm-today,
 [data-theme="dark"] .is-next .cm-mini-tile span,
 [data-theme="dark"] .is-next .cm-mini-tile strong { color: var(--c-paper); }
 [data-theme="dark"] .cm-join-live { color: var(--c-paper) !important; }

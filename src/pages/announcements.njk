@@ -94,7 +94,7 @@ pageScripts: ["/assets/js/committee.js"]
       <h2 class="eyebrow mb-4 font-sans">{{ "committee.ann.meanwhile" | t(lang) }}</h2>
       <div class="grid gap-4 sm:grid-cols-2 min-[96rem]:grid-cols-1">
         {% if nm %}
-        <a href="{{ '/meeting/' | lurl(lang) }}" class="card card-link cm-mini-card group">
+        <a href="{{ '/meetings/' | lurl(lang) }}" class="card card-link cm-mini-card group">
           <span class="cm-date-tile cm-tone-gv" aria-hidden="true"><span class="cm-tile-mon">{{ nm.tile.mon }}</span><span class="cm-tile-day">{{ nm.tile.day }}</span><span class="cm-tile-wd">{{ nm.tile.wd }}</span></span>
           <span class="min-w-0">
             <span class="eyebrow block">{{ "committee.events.stat_next_meeting" | t(lang) }}</span>

@@ -38,7 +38,7 @@ source drops old items.
 
 Source file names: `drive.json`, `youtube.json`, `podcasts.json`, `instagram.json`,
 `articles.json`, `pdfs.json`, `events_external.json`, `editorial.json`,
-`weekly_open.json`, `announcements.json`, `shop.json`.
+`weekly_open.json`, `announcements.json`, `shop.json`, `meetings.json`.
 
 ## 2. Item (common shape for every piece of content)
 
@@ -147,13 +147,67 @@ Files: `episodes.json`, `videos.json`, `instagram.json`, `articles.json`, `pdfs.
 `sources.ics_feeds` calendars — each real event ONCE, see *Events from several places* in §5), `announcements.json`, `editorial.json`, `weekly_open.json`,
 `whatsnew.json` (newest 150 across all sources, sorted by date desc),
 `spotlight.json` (published-writers spotlight, below), `status.json` (below),
-`districts.json` (from `content/districts.yml`), `shop.json` (official store data, below — no `items`).
+`shop.json` (official store data, below — no `items`), `meetings.json` (Grapevine meetings, below).
 
 Each site file is `{ "updated": "...", "fixture": false, <extra top-level keys>, "items": [...] }`,
 items sorted newest first (events: soonest first). Extra top-level keys: `instagram.profiles`,
 `videos.playlists`, `episodes.shows`, `articles.issues` (§5). `drive.json` never contains a Google
 Form whose `extra.form_closed` is `true`. Output is deterministic: a re-run with the same raw data
 changes only `status.json` (and `updated` stamps).
+
+### pdfs.json — the Library (official documents, each once)
+
+`build_data.py` passes the crawler's documents through `scripts/sync/pdf_curate.py`, so every consumer
+(/library/, search, What's New, the digest, the home counters, /gvr/ and /shop/) sees the same list:
+
+1. **Official sources only.** A document is kept only when its *file* is on a host listed in
+   `config/site.yml` → `library.official_hosts` (default `aagrapevine.org`, `aalavina.org`, `aa.org`,
+   `aaws.widen.net`; subdomains such as `www.` included). Local event flyers that a Grapevine event page
+   links on other sites are left out (logged with their hosts), and the crawler no longer records them
+   (`crawl_rules.pdf_url_from_href`, `OFFICIAL_DOC_HOSTS`).
+2. **The same file twice** — the same address (the two magazine sites share one files directory; case and
+   %-encoding ignored), or the same `size_bytes` + `pages` and the same title / the same file name apart
+   from Drupal's `_0` suffix / an identical first-page thumbnail. Copies in the same document language:
+   one stays (a live one; the magazine whose language is the document's; a real title over a file name;
+   the newest upload; a rep-kit copy) and takes over the others' `referrers` (max 5) and kits;
+   `extra.duplicates` lists the other addresses. Copies filed under different languages by the two sites
+   (a bilingual file, e.g. the joint catalog) become one entry with `extra.same_file: true` (rule 4).
+3. **Superseded versions** — the same original title, document language, category and type (e.g. a 2019
+   "YouTube Channel" postcard and its 2026 replacement): only the newest stays. The title is compared without
+   a leading publication name ("Grapevine", "AA Grapevine", "AAGV" — not "La Viña"), a trailing edition code
+   ("EE", "Rev 2", "v2") and language markers: the 2013 "Copyright and Reprints Policy" gives way to the 2024
+   "Grapevine Copyright and Reprints Policy", the 2023 price-increase release "(English)" to its "EE"
+   re-issue. The publication does not count (the two sites share one files directory).
+4. **Language editions** — an English and a Spanish (French…) edition of one document (a compatible type
+   and a different `doc_lang`, plus one of: the same English title once "(English)" / "(Spa.)" markers and
+   edition codes are removed — word order and small words ignored — and dates within 45 days, file names
+   that differ only by the language word, or the GVR-kit / RLV-kit counterparts with the same type and page
+   count; or, when the titles differ, file names that differ only by the language word AND dates within 45
+   days — a French flyer whose French title was never translated —, or dates within 45 days + the same page
+   count + a "found on" page in common + one title's words inside the other's once publication names are
+   dropped, the title and every link text tried — "Privacy Policy" ⊆ "Privacy and Security Policy") become
+   ONE item (chains join: FR ↔ ES ↔ EN): the English edition (else the Spanish one) is the item and
+   `extra.versions` lists every edition. A French title the language detector took for English
+   (`lang: "en"`, `doc_lang: "fr"`) is not used as the English title:
+
+```json
+"extra": { "versions": [
+  { "lang": "en", "id": "pdf:98c45b8072b5", "url": "https://www.aagrapevine.org/…/Audio_download_GV_2026.pdf.pdf",
+    "title": "Audio Downloads", "title_lang": "en", "i18n_title": { "en": "…", "es": "…" }, "machine": ["es"],
+    "source": "gv", "date": "2026-01-08", "first_seen": "…", "category": "gvr", "tags": ["postcard"], "is_new": false,
+    "host": "…", "file_url": "…", "filename": "…", "size_bytes": 97595, "pages": 1, "thumb": "…",
+    "upload_month": "2026-01", "referrers": [ … ] },
+  { "lang": "es", "id": "pdf:12db76ab9b4b", "url": "https://www.aalavina.org/…/Descarga_de_audios_2026.pdf", … }
+], "kits": ["gvr", "rlv"] }
+```
+
+   `lang` = the edition's document language; order en, es, fr. The item's `i18n.title.<lang>` is the
+   title of that language's edition (its original title when written in that language), language markers
+   and edition codes removed; `machine` / `is_new` follow. `extra.kits` = every rep kit the document is in when that is more
+   than its own `category` says. The Library shows one card per item: the edition in the page language
+   (else the item's own), with links to every edition ("English · Español"; none for `same_file`), and the
+   language filter counts every edition's language. /gvr/ and /shop/ (eleventy/filters/read.js
+   `pdfEditions`) list each edition in its own kit. Every collapse is logged by the build.
 
 ### spotlight.json — published writers (home page + /published/)
 Grapevine and La Viña stories published in the last 60/90 days, with where each writer is from.
@@ -248,6 +302,83 @@ hard-code a price, percent or date; other pages show at most a compact teaser th
 * Without data (never synced) the file is `{updated: null, botm: [], bulk_discounts: {source_url: null,
   tiers: []}, subscriptions: [], types: {}}` — pages must show a graceful "see the official store" state.
 
+### meetings.json — Grapevine meetings in our Area and nearby (the Meetings page)
+Read once a day by `scripts/sync/meetings.py` from the public "12 Step Meeting List" lists of the offices in
+`config/site.yml` → `meetings.feeds` (the same eight lists the Rowlett Group's meetings.html combines: Dallas,
+Fort Worth, Tyler, the Spanish-speaking Dallas office, District 71 — and next to our Area the Arkansas Central
+Office, OKC Intergroup and NWTA 66), then `build_data.py` (`meetings.build_site`). Only meetings whose types
+include `meetings.type` ("GR") and that are not inactive. **ONE canonical home**: other pages link to the
+Meetings page (at most a compact teaser); each meeting links to its page on the office's own site, which has
+the joining details (Zoom links, phones and contacts are never copied).
+```json
+{
+  "updated": "2026-09-24T22:38:35Z", "fixture": false, "type": "GR",
+  "sources": [                                   // every office in config order (no keys, no feed addresses)
+    { "id": "aadallas", "name": "Dallas Intergroup", "url": "https://www.aadallas.org", "in_area": true,
+      "area_label": { "en": "Dallas area", "es": "Zona de Dallas" },   // config region_label
+      "ok": true, "updated": "2026-09-24T22:37:36Z", "count": 5, "error": null } ],   // ok null = never read
+  "groups": [                                    // our Area first, then nearby regions (config order); only groups with meetings
+    { "id": "neta65", "in_area": true, "label": { "en": "Our Area (NETA 65)", "es": "Nuestra Área (NETA 65)" }, "count": 13 },
+    { "id": "okcintergroup", "in_area": false, "label": { "en": "Oklahoma City area", "es": "Zona de Oklahoma City" }, "count": 8 } ],
+  "items": [                                     // sorted by day, then time, then name
+    { "id": "mtg:24f82f418540", "kind": "meeting", "name": "Richardson Group",
+      "day": 3,                                  // 0 = Sunday … 6 = Saturday
+      "time": "20:00", "end_time": null,         // local (Central) time as the office gives it; end may be null
+      "location": "1144 N Plano Road, Suite 246 (Bus Route Access)",   // the place's own name; null when it only repeats the name/address
+      "address": "1144 N Plano Rd, Richardson, TX 75081", "city": "Richardson", "county": "Dallas", "state": "TX",
+      "lat": 32.961562, "lng": -96.699295, "approximate": false,       // approximate = the office only gives a city
+      "region": "Richardson", "district": null,  // the office's own region / district names (may be null)
+      "types": ["C", "D", "GR"],                 // codes → type_labels
+      "attendance": "in_person",                 // in_person | online | hybrid
+      "lang": "en",                              // "es" for type S or a Spanish-speaking office
+      "url": "https://www.aadallas.org/meetings/richardson-group-15/", // the meeting's page on the office's site
+      "sources": ["aadallas"],                   // every office that lists it (config order) — shown ONCE
+      "directions_url": "https://www.google.com/maps/dir/?api=1&destination=32.961562,-96.699295",   // null: online / approximate
+      "in_area": true,                           // city in an Area 65 county (spotlight.neta65_counties)
+      "nearby": null,                            // out of our Area: { "id": office id, "label": {en, es} } = its group
+      "i18n": {} } ],                            // meeting names are proper names: never translated
+  "type_labels": { "C": { "en": "Closed", "es": "Cerrada" }, "GR": { "en": "Grapevine", "es": "Grapevine" } }  // codes in use only
+}
+```
+* `in_area`: the city of the address is matched to its county with `scripts/sync/geo.py`
+  (`data/geo/texas_places.json`; the office's region name when the city is not in the gazetteer — "Brazos Bend",
+  region "Granbury" → Hood). A Texas city that cannot be matched counts as ours only when its office says
+  `in_area: true`. Everything else is "nearby", grouped under its office's `region_label`.
+* The same meeting in two lists (same day + time + street address — "Road"/"Rd", suite numbers ignored — or
+  ≤ 60 m apart) is ONE item; `sources` names both offices and the id does not depend on which one answered.
+  Two records of ONE office with their own meeting pages are never merged (two groups in two rooms of one
+  club). `id` = hash of day | time | street address — else the meeting's own page (online meetings), else the
+  name; two meetings of one office at one address and time also add their page, so ids are unique.
+* `location` = the place's own name ("Serenity Club"); none when it only repeats the meeting's name or the
+  address, and a place written as the street again plus a detail keeps only the detail
+  ("1144 N Plano Road, Suite 246 (Bus Route Access)" → "Suite 246 (Bus Route Access)" — build_site applies
+  this again, so older raw data is fixed without a new sync). A place name with a phone number or an e-mail
+  address is dropped, and such a part of a meeting name is cut off.
+* How each office is read (`methods`, in order): `feed` = the JSON list (`…/admin-ajax.php?action=meetings`);
+  `page` = its public meeting-list page filtered to GR (classic page: `var locations` + table; "TSML UI" page:
+  its public `tsml-cache-….json`). robots.txt is obeyed (tyler-aa.org: page only).
+* Keys (Dallas, Fort Worth), tried in this order (`key_candidates`): env `TSML_KEY_AADALLAS` /
+  `TSML_KEY_FORTWORTHAA` (GitHub secrets, optional) → `feed_obf` in config/site.yml (the full address with
+  its key, reversed + base64 exactly like RowlettAA's meetings.html — obfuscation, not encryption;
+  regenerate with `python -m scripts.sync.meetings --obfuscate "<address>"`) → RowlettAA's meetings.html
+  (`key_source`, constant `key_const`, read only when needed). A key the office refuses (HTTP 401 / 403 →
+  `KeyRejected`) moves on to the next source; `feeds[].key_from` names the one that worked and
+  `stats.warnings` the refused one. A key is only sent to its own office's host: the keyed request follows
+  redirects by hand, on that host only and when robots.txt allows (otherwise the list is not read), and
+  robots.txt is checked against the full address with its query. A key is never written in plain text: not
+  in data/raw, data/site, status.json or the logs (`redact()` on every address and message).
+* An office that cannot be read keeps its previous meetings (`sources[].ok: false`, a note in the run
+  summary); the source fails on /status/ only when no list at all could be read. An empty full list (feed or
+  TSML UI cache) and a classic page with a meeting table but no `var locations` count as "cannot be read".
+* `build_site` follows the settings at once (no new sync needed): `meetings.enabled: false` → the empty file;
+  meetings of an office that is switched off (`enabled: false`) or removed are left out.
+* Without data the file is `{updated: null, fixture: false, type: "GR", sources: [], groups: [], items: [],
+  type_labels: {}}` — the page must show a graceful "see the intergroup websites" state.
+* Where it shows: `/meetings/#grapevine-meetings` (`cmGvMeetings` → `gvMeetings()` in
+  `eleventy/filters/committee.js`; each meeting's anchor is `#mtg-<hash>`). Elsewhere only pointers: one line
+  on the home page (counts) and the site search — one `meeting` entry per group and place (`meeting:<id>`,
+  a group that meets several times a week is one result), linking to its row.
+
 ### status.json
 ```json
 {
@@ -261,17 +392,19 @@ hard-code a price, percent or date; other pages show at most a compact teaser th
   ],
   "crawl": { "known_pages": 3162, "crawled_pages": 52, "never_crawled": 3110, "never_crawled_events": 2939,
              "queue_remaining": 3110, "est_days_to_full": 9.6, "last_run_pages": 0, "page_errors": 0, "new": 0,
-             "pdfs": 106, "pdfs_gone": 0, "pdfs_with_details": 14, "pdfs_with_thumbs": 14,
-             "updated": "…", "attempted": "…" },
+             "pdfs": 92,               // the Library's entries (curated: official, each once) — as sources[pdfs].count (its new_7d counts the same entries)
+             "pdfs_gone": 0, "pdfs_with_details": 14,
+             "pdfs_with_thumbs": 92,   // Library entries with a first-page preview
+             "updated": "…", "attempted": "…" },   // the crawler's page counters: for the run summary / maintainers
   "translations": { "cached": 1620, "engine": "argos1.0-ct2/v5", "model_enabled": true,
                     "translated_this_run": 0, "from_cache": 1620, "pending": 0, "rejected_by_guard": 0,
                     "seconds": 0.1, "model_seconds": 0.0, "texts_per_second": null, "glossary_entries": 162 },
-  "counts": { "videos": 528, "episodes": 295, "…": 0, "whatsnew": 150, "districts": 2 },
+  "counts": { "videos": 528, "episodes": 295, "…": 0, "whatsnew": 150 },
   "spotlight": { "today": "2026-09-23", "home_days": 60, "list_days": [60, 90],
                  "counts": { "60": { "neta65": 2, "texas": 8, "all": 100 }, "90": { … } }, "items": 156 },
   "problems": { },         // raw files that were missing/unreadable ("missing" = module never ran), and settings
                            // build_data could not use: "meeting" (also a skip_dates value that is not a meeting
-                           // day), "recurring_events", "ics_feeds", "districts" (text says what); and
+                           // day), "recurring_events", "ics_feeds" (text says what); and
                            // "content_events": slips in content/events files that were worked around (a
                            // `location_es` still saying "Lugar por anunciarse" next to a real `location` …)
   "feeds": [               // the optional outside calendars (config sources.ics_feeds) — NOT content sources:
@@ -337,6 +470,7 @@ field also gets `i18n.<name> = {en, es}` in the site file.
 | `instagram.json` | `profiles` {gv/lv: {`username`, `name`, `full_name`, `url`, `followers`, `posts`, `owner_id`, `checked`, `avatar`}} |
 | `pdfs.json` | `crawl` {`known_pages`, `crawled_pages`, `pdfs`, `last_run_pages`}; crawler counters are in `stats` |
 | `events_external.json` | `cache`, `sitemap` (module bookkeeping — not used by the site) |
+| `meetings.json` | `feeds` [{`id`, `name`, `url`, `lang`, `ok`, `count`, `method` (feed/page), `key_from` (secret/config/key_source — never the key), `error`, `note`, `updated`, `attempted`}], `type_labels` {code: {en, es}}. Items: `mtg:<hash>` (kind `meeting`, `title` = name, `url` = the meeting's page; `extra` = `day`, `time`, `end_time`, `location`, `address`, `street`, `zip`, `city`, `county`, `state`, `lat`, `lng`, `approximate`, `region`, `district`, `types`, `attendance`, `in_area`, `sources`) |
 | `shop.json` | `bulk_discounts` {`source_url`, `tiers`, `note` {en?, es?}}, `types` {gv/lv: {print/digital/complete: {`text`, `lang`, `url`}}}, `listings` [{`pub`, `region`, `url`}], `types_checked` (ISO; type descriptions are re-read every 30 days). Items: `botm:gv` / `botm:lv` (kind `botm`; `extra` = `pub`, `page_url`, `price`, `sale_price`, `discount_pct`, `currency`, `sku`, `starts`, `ends`, `month`, `month_label`, `offer_text`, `product_name`, `image_src`) and `sub:<pub>:<region>:<sku>` (kind `subscription`; `extra` = `pub`, `region`, `listing_url`, `type`, `term_months`, `price`, `currency`, `sku`, `volume`, `position`, `image_src`) |
 
 `articles.json` → `archive_state` — the archive listings (aagrapevine.org/archive, aalavina.org/archivo):
@@ -381,13 +515,12 @@ it is read once.
 | video (`videos`) | `video_id`, `channel_id`, `duration_sec`, `playlists` [names], `is_short`, `views`, `is_live_recording`, `date_approx`, `season`, `episode` (podcast videos only) | — |
 | post (`instagram`) | `shortcode`, `account`, `username`, `media_type`, `thumb`, `embed_url`, `permalink`, `is_reel`, `manual`, `strategy`, `caption_known`, `embed_checked` | — |
 | article (`articles`, `spotlight`) | `publication`, `issue_key`, `issue_label`, `issue_date` (cover date), `issue_theme`, `issue_url`, `topic`, `section`, `author`, `author_location`, `subtitle`, `teaser`, `free`, `online_exclusive`, `department` (bool); written by build_data: `geo`, `pub_date` (below) | `section`, `topic`, `issue_theme` (machine); `issue_label`, `author_location` (rules — from `geo.label_en/label_es`, only when a place is known) |
-| pdf (`pdfs`) | `host`, `file_url`, `filename`, `size_bytes`, `pages`, `thumb`, `referrers` [{url, title}], `upload_month`, `link_texts`, `event_date`, `doc_lang`, `multilingual` (`true` when one file holds several languages — two or more page languages, language-only links for 2+ languages, or a heading such as "Catalog • Catálogo • Catalogue"; otherwise `null`: such a file takes the host site's language and gets no "(Spanish)" title suffix), `section` (heading on the referring page), `external`, `orphan` | — |
+| pdf (`pdfs`) | `host`, `file_url`, `filename`, `size_bytes`, `pages`, `thumb`, `referrers` [{url, title}], `upload_month`, `link_texts`, `event_date`, `doc_lang`, `multilingual` (`true` when one file holds several languages — two or more page languages, language-only links for 2+ languages, or a heading such as "Catalog • Catálogo • Catalogue"; otherwise `null`: such a file takes the host site's language and gets no "(Spanish)" title suffix), `section` (heading on the referring page), `external`, `orphan`; after the Library rules (§3 *pdfs.json*): `duplicates` (other addresses of the same file), `kits` (every rep kit it is in), `versions` (language editions), `same_file` | `versions[].i18n_title` |
 | topic (`editorial`) | `publication`, `theme`, `evergreen`, and for dated GV themes `issue_key`, `issue_label`, `deadline`, `due_text`, `pdf_url`, `submit_url`, `guidelines_url` | `issue_label` (rules); `theme` when it differs from the title |
 | meeting (`weekly_open`) | `zoom_id`, `zoom_url`, `passcode`, `day`, `time`, `time_central`, `sentence`, `weekday`, `start_local`, `timezone`, `next_start`, `url`, `player_url`; La Viña item (`weekly_open_lv`, §2): no `sentence`/`player_url`, plus `starts`, `source_note`, `own_i18n` | written by rules from weekday/start_local/timezone: `day` ("Wednesdays"/"Miércoles"), `time` ("Noon Eastern"/"mediodía (hora del Este)"), `time_central` ("11:00 AM Central"/"11:00 a. m. (hora del Centro)"), `when` ("Wednesdays at 11:00 AM Central"/"Miércoles a las 11:00 a. m. (hora del Centro)"), `sentence` (join line with Zoom ID + passcode). Machine-translated only if those fields are missing |
 | event (`events`) | common: `start`, `end`, `all_day`, `location`, `online_url`, `flyer_url`, `flyer_thumb`, `city`, `state`, `past`; `tentative` (`true` only: details to be confirmed), `location_tba` (`true` only: the place is not known yet — "Venue to be announced"; decided by the item's own `location`, by `location_es` / `location_en` only when there is no `location`). Committee: `meeting_id`, `passcode`, `recurring`. Recurring (category `recurring`, below): `recurring` (`true`), `series`, `rule`, `recurrence_label`. External calendar: `platform`, `online`, `scope`, `site`, `country`, `website`, `organizer`, `date_text`. Drive flyer: `drive_id`, `is_pdf`, `is_image`. Manual: `body_md`, `slug`, `file`, `own_i18n`; `also_in_feed` (the key of an .ics feed that lists the same event — also on a flyer, committee or recurring event) + `feed_match` (`url` / `title`). .ics feed (category `neta65` / `ics` / `gv-calendar` / `lv-calendar`, source `calendar`): `feed` (the feed's key), `uid` | committee meetings and recurring events: fixed human `title`/`summary` in both languages; recurring: `recurrence_label` (rules); manual: `body_md` (+ the file's own `title_es` / `summary_es`, never machine-translated); `location` (the file's `location_es` / `location_en`, or the site's own words for a place not known yet — never machine-translated) |
 | document / slides / photo / video_file / form (`drive`) | `file_id`, `mime`, `name`, `panel`, `panel_label`, `path`, `album`, `view_url`, `preview_url`, `download_url`, `thumb_url`, `image_url`, `is_image`, `is_video`, `is_pdf`, `file_type`, `folder_id`, `folder_url`, `folder_chain`, `modified_text`, `size_bytes`, `duration_sec`, `shortcut_id`, `generic_name`, flyers: `event_date`, `event_title`, `event_time`, `event_end_time`, `event_location` / `event_month`, forms: `form_closed`, `form_signin_required` | `album` (photos in a sub-folder) |
 | announcement (`announcements`) | `body_md`, `expires`, `pinned`, `slug`, `file`, `link`, `own_i18n` | `body_md` (+ the file's own `title_es` / `summary_es`) |
-| district (`districts`) | top-level `number`, `name`, `language`, `website`, `gvr_contact`, `meets` (+ any extra YAML keys) | `name`, `meets` |
 
 #### Recurring events (category `recurring`; build_data.recurring_events)
 One item per date of each `recurring_events:` entry in `config/site.yml` — the next `months_ahead` (default 6;

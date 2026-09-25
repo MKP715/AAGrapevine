@@ -29,7 +29,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
 {%- set plTotal = (pls | where("kind", false)).length -%}
 {%- set ssr = vids | limit(24) -%}
 {#- The weekly open meetings in one short line ("Wednesdays (English) and Thursdays (Spanish)"), linking
-    to their one home, /meeting/#weekly-open, where the times and Zoom details are -#}
+    to their one home, /meetings/#weekly-open, where the times and Zoom details are -#}
 {%- set woWhen = (db.weekly_open.items | mediaWeeklyDays(lang)) if db.weekly_open else "" -%}
 
 {#- One video card. srv=true: static (first 24) bound to vidAt(i); srv=false: x-for `v`. -#}
@@ -176,7 +176,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
         copies is displayed at a time, so the link's accessible name always contains
         the visible words. -#}
     <div class="watch-paths">
-      <a class="card group flex items-center gap-4 p-4 no-underline transition hover:-translate-y-0.5 hover:shadow-[var(--shadow-lift)] sm:p-5 min-[90rem]:p-6" href="{{ '/meeting/#weekly-open' | lurl(lang) }}">
+      <a class="card group flex items-center gap-4 p-4 no-underline transition hover:-translate-y-0.5 hover:shadow-[var(--shadow-lift)] sm:p-5 min-[90rem]:p-6" href="{{ '/meetings/#weekly-open' | lurl(lang) }}">
         <span class="grid size-12 shrink-0 place-items-center rounded-2xl bg-grape-soft text-grape">{% icon "users", "size-6" %}</span>
         <span class="min-w-0 flex-1">
           <span class="block font-display text-lg font-semibold text-ink">{{ "media.weekly_title" | t(lang) }}</span>
@@ -302,7 +302,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
 <section class="container-page page-start">
   {{ ui.emptyState("circle-play", "media.empty_videos_title" | t(lang), "media.empty_videos_text" | t(lang), channelUrl, "media.watch_on_yt" | t(lang)) }}
   <div class="mt-8 grid gap-4 md:grid-cols-2">
-    <a class="card flex items-center gap-4 p-5 no-underline hover:shadow-[var(--shadow-lift)]" href="{{ '/meeting/#weekly-open' | lurl(lang) }}">
+    <a class="card flex items-center gap-4 p-5 no-underline hover:shadow-[var(--shadow-lift)]" href="{{ '/meetings/#weekly-open' | lurl(lang) }}">
       <span class="grid size-12 shrink-0 place-items-center rounded-2xl bg-grape-soft text-grape">{% icon "users", "size-6" %}</span>
       <span><span class="block font-display text-lg font-semibold text-ink">{{ "media.weekly_title" | t(lang) }}</span><span class="block text-sm text-muted">{{ "media.weekly_text" | t(lang) }}</span></span>
     </a>

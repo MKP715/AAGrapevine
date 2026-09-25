@@ -4,7 +4,7 @@
 // A page opts out with `sitemap: false` in its front matter.
 // Pages that must always be listed (both languages) are checked at build time: if one is
 // missing (renamed, excluded by mistake) the build log says so. Not checked in ONLY= dev builds.
-const REQUIRED = ["/", "/whats-new/", "/published/", "/read/", "/districts/", "/digest/"];
+const REQUIRED = ["/", "/whats-new/", "/published/", "/read/", "/monthly/", "/digest/"];
 
 export const data = {
   permalink: "/sitemap.xml",

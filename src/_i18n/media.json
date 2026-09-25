@@ -126,8 +126,8 @@
   "media.share_page": { "en": "Share this page", "es": "Compartir esta página" },
   "media.empty_eps_title": { "en": "Episodes are on their way", "es": "Los episodios vienen en camino" },
   "media.empty_eps_text": {
-    "en": "New podcast episodes appear here automatically — we check every day. In the meantime, you can listen on the AA Grapevine website or in your podcast app.",
-    "es": "Los episodios nuevos del podcast aparecen aquí automáticamente — revisamos todos los días. Mientras tanto, puedes escucharlos en el sitio de AA Grapevine o en tu app de podcasts."
+    "en": "New podcast episodes appear here automatically — we keep this page updated regularly. In the meantime, you can listen on the AA Grapevine website or in your podcast app.",
+    "es": "Los episodios nuevos del podcast aparecen aquí automáticamente; mantenemos esta página actualizada con regularidad. Mientras tanto, puedes escucharlos en el sitio de AA Grapevine o en tu app de podcasts."
   },
 
   "media.watch_eyebrow": { "en": "AA Grapevine & La Viña on YouTube", "es": "La Viña y AA Grapevine en YouTube" },
@@ -146,6 +146,10 @@
   "media.stat_weekly_open": { "en": "Weekly Open recordings", "es": "reuniones abiertas grabadas" },
   "media.stat_playlists": { "en": "playlists", "es": "listas" },
   "media.latest_video": { "en": "Latest video", "es": "Video más reciente" },
+  "media.short_eyebrow": { "en": "Official YouTube Short", "es": "Short oficial de YouTube" },
+  "media.short_text": { "en": "Get the Grapevine app — every issue, the audio and the archive on your phone.", "es": "Descarga la app de Grapevine: cada edición, el audio y el archivo en tu teléfono." },
+  "media.short_gv_app": { "en": "Grapevine app", "es": "App de Grapevine" },
+  "media.short_lv_app": { "en": "La Viña app", "es": "App de La Viña" },
   "media.watch_on_yt": { "en": "Watch on YouTube", "es": "Ver en YouTube" },
   "media.all_videos": { "en": "All videos", "es": "Todos los videos" },
   "media.all_videos_sub": {
@@ -185,8 +189,8 @@
   "media.podcast_cta": { "en": "Go to the podcasts", "es": "Ir a los podcasts" },
   "media.empty_videos_title": { "en": "Videos are on their way", "es": "Los videos vienen en camino" },
   "media.empty_videos_text": {
-    "en": "New videos from the AA Grapevine & La Viña YouTube channel appear here automatically — we check every day. Meanwhile, visit the channel directly.",
-    "es": "Los videos nuevos del canal de YouTube de La Viña y AA Grapevine aparecen aquí automáticamente — revisamos todos los días. Mientras tanto, visita el canal directamente."
+    "en": "New videos from the AA Grapevine & La Viña YouTube channel appear here automatically — we keep this page updated regularly. Meanwhile, visit the channel directly.",
+    "es": "Los videos nuevos del canal de YouTube de La Viña y AA Grapevine aparecen aquí automáticamente; mantenemos esta página actualizada con regularidad. Mientras tanto, visita el canal directamente."
   },
 
   "media.ig_eyebrow": { "en": "AA Grapevine & La Viña", "es": "La Viña y AA Grapevine" },
@@ -228,8 +232,8 @@
   "media.ig_see_all": { "en": "See everything on Instagram", "es": "Ver todo en Instagram" },
   "media.ig_empty_title": { "en": "New posts appear here automatically", "es": "Las publicaciones nuevas aparecen aquí automáticamente" },
   "media.ig_empty_text": {
-    "en": "We check Instagram every day. When new posts are available they'll show up here on their own — until then, follow the account for the latest.",
-    "es": "Revisamos Instagram todos los días. Cuando haya publicaciones nuevas aparecerán aquí solas — mientras tanto, sigue la cuenta para ver lo más reciente."
+    "en": "We keep this page updated regularly. When new posts are available they'll show up here on their own — until then, follow the account for the latest.",
+    "es": "Mantenemos esta página actualizada con regularidad. Cuando haya publicaciones nuevas aparecerán aquí solas — mientras tanto, sigue la cuenta para ver lo más reciente."
   },
   "media.ig_share_title": { "en": "Tell your group", "es": "Cuéntale a tu grupo" },
   "media.ig_share_text": {

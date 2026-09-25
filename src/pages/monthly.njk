@@ -6,23 +6,30 @@ pageKey: monthly
 titleKey: monthly.title
 descKey: monthly.meta_desc
 bodyClass: mp-hub
-pageScripts: ["/assets/js/monthly.js"]
+pageScripts: ["/assets/js/monthly.js", "/assets/js/community.js"]
 ---
 {#- /monthly/ — "Monthly toolkit & posters". The canonical home of the district guide
     "how each month's magazine can be useful in carrying the message" (config/carry.yml: intro,
     the 10 ways, story note, quote, source). This month and next month are short teasers, and the
     coming months' posters link to their own page (monthly-month.njk), where the full toolkit, the
-    poster downloads and the print layout live. Prices stay in the shop. -#}
+    poster downloads and the print layout live. Prices stay in the shop.
+    #report is the one home of the self-filling GV/LV report a GVR / RLV reads at the district
+    meeting (eleventy/filters/community.js reportData / reportText; the old /districts/ page
+    redirects here), with the tips and the Area's published writers beside it. -#}
 {% import "macros/ui.njk" as ui with context %}
 {% import "macros/monthly.njk" as mp with context %}
 {%- set months = db | mpMonths(carry, site, lang) -%}
 {%- set m = months[0] -%}
 {%- set nx = months[1] -%}
+{%- set other = lang | otherLang -%}
+{%- set rd = db | cmReport(meeting) -%}
+{%- set W = rd.writers -%}
 
 {% call ui.pageHero(lang, "monthly.title" | t(lang), "monthly.hero_sub" | t(lang), "calendar-heart", "monthly.eyebrow" | t(lang)) %}
 <div class="hero-actions">
   <a class="btn-light" href="{{ ('/monthly/' + m.key + '/') | lurl(lang) }}">{% icon "image", "size-4" %} {{ "monthly.see_poster" | t(lang) }}</a>
-  <a class="btn-on-dark" href="#ways">{% icon "list-checks", "size-4" %} {{ "monthly.ways_link" | t(lang) }}</a>
+  <a class="btn-on-dark" href="#report">{% icon "clipboard-list", "size-4" %} {{ "community.report.hero_btn" | t(lang) }}</a>
+  <a class="btn-on-dark max-md:hidden" href="#ways">{% icon "list-checks", "size-4" %} {{ "monthly.ways_link" | t(lang) }}</a>
 </div>
 {% endcall %}
 
@@ -88,6 +95,94 @@ pageScripts: ["/assets/js/monthly.js"]
   </a>
 </section>
 {% endif %}
+
+{#- ============ Your GV/LV report (the one home of the district report) ============ -#}
+{#- Report + a sidebar (tips, published writers): 20rem from 1024px, 22rem from 1536px; from
+    1800px the sidebar's two cards sit side by side so the report keeps a comfortable width
+    (areas/community.css .cm-rp-layout). -#}
+<section id="report" class="container-page scroll-mt-20 pb-12 sm:pb-16" aria-labelledby="report-title" x-data="reportBox('{{ lang }}')">
+  {#- the heading sits above both columns, so the report card and the sidebar start at the same height -#}
+  <div>
+    <p class="eyebrow text-gv">{{ "community.report.eyebrow" | t(lang) }}</p>
+    <h2 id="report-title" class="h-section mt-1 flex items-center gap-2.5"><span class="text-gv">{% icon "clipboard-list", "size-6" %}</span>{{ "community.report.title" | t(lang) }}</h2>
+    <p class="mt-1.5 max-w-2xl text-muted">{{ "community.report.sub" | t(lang) }}</p>
+  </div>
+  <div class="cm-rp-layout mt-6">
+    <div class="min-w-0">
+      <div class="card overflow-hidden">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-line bg-surface-2/60 px-4 py-3 sm:px-5">
+          <fieldset class="min-w-0" x-cloak>
+            <legend class="sr-only">{{ "community.report.lang" | t(lang) }}</legend>
+            <div class="grid grid-cols-2 gap-1 rounded-full border border-line bg-surface p-1">
+              <label class="cm-seg"><input type="radio" name="report-lang" class="sr-only" :checked="rl === 'en'" @change="rl = 'en'" {% if lang == 'en' %}checked{% endif %}><span lang="en">{{ "community.lang_name_en" | t(lang) }}</span></label>
+              <label class="cm-seg"><input type="radio" name="report-lang" class="sr-only" :checked="rl === 'es'" @change="rl = 'es'" {% if lang == 'es' %}checked{% endif %}><span lang="es">{{ "community.lang_name_es" | t(lang) }}</span></label>
+            </div>
+          </fieldset>
+          <button type="button" class="btn-primary btn-sm" data-copy-from="#report-{{ lang }}" :data-copy-from="'#report-' + rl">{% icon "copy", "size-4" %} {{ "community.report.copy" | t(lang) }}</button>
+        </div>
+        {% for l in [lang, other] %}
+        <pre id="report-{{ l }}" class="cm-report m-0 px-4 py-4 font-sans sm:px-6 sm:py-5" x-show="rl === '{{ l }}'"{% if l != lang %} x-cloak{% endif %} role="region" aria-label="{{ 'community.report.label' | t(lang) }} ({{ ('community.lang_name_' + l) | t(lang) }})"><span lang="{{ l }}">{{ rd | cmReportText(l, site) }}</span></pre>
+        {% endfor %}
+        <p class="flex items-center gap-2 border-t border-line px-4 py-3 text-xs text-muted sm:px-6">{% icon "info", "size-4 shrink-0" %} {{ "community.report.note" | t(lang) }}</p>
+      </div>
+    </div>
+
+    <div class="cm-rp-side">
+    <aside class="rounded-2xl border border-line p-5" aria-labelledby="tips-title">
+      <h3 id="tips-title" class="h-card flex items-center gap-2">{% icon "lightbulb", "size-5 text-lv" %} {{ "community.report.tips_title" | t(lang) }}</h3>
+      <ul class="mt-3 space-y-3 text-sm leading-relaxed text-muted" role="list">
+        {% for k in ["tip1", "tip2", "tip3", "tip4", "tip5"] %}
+        <li class="flex gap-2.5">{% icon "check", "size-4 mt-0.5 shrink-0 text-vine" %}<span>{{ ("community.report." + k) | t(lang) }}</span></li>
+        {% endfor %}
+      </ul>
+      <div class="mt-5 flex flex-wrap gap-2 border-t border-line pt-4">
+        <a class="btn-secondary btn-sm" href="{{ site.links.carry_the_message }}" target="_blank" rel="noopener">{% icon "gift", "size-4" %} {{ "community.report.ctm" | t(lang) }}<span class="sr-only"> {{ "community.new_tab" | t(lang) }}</span></a>
+        <a class="btn-secondary btn-sm" href="{{ '/gvr/' | lurl(lang) }}">{% icon "badge-check", "size-4" %} {{ "nav.gvr" | t(lang) }}</a>
+      </div>
+    </aside>
+
+    {#- Published writers from our Area — the same list as the report's item, with links -#}
+    {% if W %}
+    <div class="card card-pad">
+      <h3 id="writers-title" class="h-card flex items-center gap-2">{% icon "award", "size-5 text-lv" %} {{ "community.writers.card_title" | t(lang) }}</h3>
+      <p class="mt-1 text-sm leading-relaxed text-muted">{{ "community.writers.card_sub" | t(lang, { n: W.days }) }}</p>
+      <h4 class="eyebrow mt-4 flex items-center gap-1.5">{% icon "map-pin", "size-3.5" %} {{ "community.writers.group_neta65" | t(lang) }}</h4>
+      {% if W.neta65 | length %}
+      <ul class="mt-2 space-y-3" role="list">
+        {% for it in W.neta65 | limit(6) %}
+        {%- set isLv = it.source == "lavina" or it.extra.publication == "lv" -%}
+        {%- set place = it | cmWriterPlace(lang) -%}
+        <li class="text-sm">
+          <a class="font-semibold leading-snug text-ink no-underline hover:text-gv hover:underline" href="{{ it.url }}" target="_blank" rel="noopener">{{ it | tx("title", lang) }}<span class="sr-only"> {{ "community.new_tab" | t(lang) }}</span></a>
+          <p class="text-ink">{{ it | cmWriterName(lang) }}{% if place %}<span class="text-muted"> · {{ place }}</span>{% endif %}</p>
+          <p class="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-muted"><span class="{{ 'badge-lv' if isLv else 'badge-gv' }}">{{ "La Viña" if isLv else "Grapevine" }}</span>{% if it.extra.issue_label %}<span>{{ it | cmItemIssue(lang) }}</span>{% endif %}{{ ui.autoNote(it, lang) }}</p>
+        </li>
+        {% endfor %}
+      </ul>
+      {% if (W.neta65 | length) > 6 %}<p class="mt-2 text-sm text-muted">{{ "community.digest.and_more" | t(lang, { n: (W.neta65 | length) - 6 }) }}</p>{% endif %}
+      {% else %}
+      <p class="mt-2 text-sm leading-relaxed text-muted">{{ ("community.writers.card_none" if W.texas | length else "community.writers.card_empty") | t(lang) }}</p>
+      {% endif %}
+      {% if W.texas | length %}
+      <h4 class="eyebrow mt-5 flex items-center gap-1.5">{% icon "map-pin", "size-3.5" %} {{ "community.writers.group_texas" | t(lang) }}</h4>
+      <ul class="mt-2 space-y-1.5 text-sm" role="list">
+        {% for it in W.texas | limit(5) %}
+        {%- set place = it | cmWriterPlace(lang) -%}
+        <li class="leading-snug"><a class="font-medium text-ink no-underline hover:text-gv hover:underline" href="{{ it.url }}" target="_blank" rel="noopener">{{ it | tx("title", lang) }}<span class="sr-only"> {{ "community.new_tab" | t(lang) }}</span></a> <span class="text-muted">— {{ it | cmWriterName(lang) }}{% if place %}, {{ place }}{% endif %}</span></li>
+        {% endfor %}
+      </ul>
+      {% if (W.texas | length) > 5 %}<p class="mt-2 text-sm text-muted">{{ "community.digest.and_more" | t(lang, { n: (W.texas | length) - 5 }) }}</p>{% endif %}
+      {% endif %}
+      {#- Full-width buttons: the card is narrow (20–22rem), so the labels get the whole row. -#}
+      <div class="mt-5 flex flex-wrap gap-2 border-t border-line pt-4">
+        <a class="btn-secondary btn-sm w-full text-center" href="{{ '/published/' | lurl(lang) }}">{% icon "award", "size-4 shrink-0" %} {{ "community.writers.see_all" | t(lang, { n: W.allDays }) }}</a>
+        {% if not (W.neta65 | length) %}<a class="btn-secondary btn-sm w-full text-center" href="{{ '/contribute/' | lurl(lang) }}">{% icon "pen-line", "size-4 shrink-0" %} {{ "community.writers.write_cta" | t(lang) }}</a>{% endif %}
+      </div>
+    </div>
+    {% endif %}
+    </div>
+  </div>
+</section>
 
 {#- ============ All posters ============ -#}
 <section class="bg-surface-2/60 py-12 sm:py-16" aria-labelledby="mp-all-title">

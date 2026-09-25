@@ -7,7 +7,9 @@
 //   ev (event date of a flyer), th (thumbnail), u (open URL), dl (download URL if different),
 //   pv (Drive preview URL), sz (bytes), pg (pages), hx (file lives on another site, e.g. aa.org),
 //   r (index into refs), n (new), m (title machine-translated), or (no page links to it any more),
-//   k (kind if not pdf), ft (file type if not pdf), co (collection codes), x (extra search words)
+//   k (kind if not pdf), ft (file type if not pdf), co (collection codes), x (extra search words:
+//   file name, the other language editions' titles), ls (languages of all its editions, when 2+:
+//   the language facet), vs ([[lang, url], …] links to each language edition, this page's first)
 // Built by the libIndexJson filter in eleventy/filters/library.js.
 export default class LibraryIndex {
   data() {

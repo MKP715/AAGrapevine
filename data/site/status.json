@@ -1,6 +1,6 @@
 {
- "generated": "2026-09-24T17:35:32Z",
- "updated": "2026-09-24T17:35:32Z",
+ "generated": "2026-09-24T22:41:23Z",
+ "updated": "2026-09-24T22:41:23Z",
  "fixture": false,
  "sources": [
   {
@@ -150,13 +150,13 @@
   },
   {
    "source": "pdfs",
-   "label": "PDF library (crawl of both sites)",
-   "label_es": "Biblioteca de PDF (rastreo de ambos sitios)",
+   "label": "Document library (Grapevine, La Viña and AA)",
+   "label_es": "Biblioteca de documentos (La Viña, Grapevine y AA)",
    "ok": true,
    "updated": "2026-09-24T15:25:03Z",
    "attempted": "2026-09-24T15:25:03Z",
-   "count": 130,
-   "new_7d": 130,
+   "count": 92,
+   "new_7d": 92,
    "error": null,
    "stats": {
     "known_pages": 3429,
@@ -359,6 +359,31 @@
     "requests": 0,
     "images_downloaded": 0
    }
+  },
+  {
+   "source": "meetings",
+   "label": "Grapevine meetings (our Area and nearby)",
+   "label_es": "Reuniones de Grapevine (nuestra Área y cercanas)",
+   "ok": true,
+   "updated": "2026-09-24T22:38:35Z",
+   "attempted": "2026-09-24T22:38:35Z",
+   "count": 23,
+   "new_7d": 23,
+   "error": null,
+   "stats": {
+    "offices": 8,
+    "offices_ok": 8,
+    "listed": 5899,
+    "grapevine": 24,
+    "meetings": 23,
+    "in_area": 13,
+    "nearby": 10,
+    "inactive": 0,
+    "incomplete": 0,
+    "duplicates_merged": 1,
+    "kept_from_before": 0,
+    "requests": 8
+   }
   }
  ],
  "crawl": {
@@ -371,19 +396,19 @@
   "never_crawled_events": 0,
   "new": 0,
   "page_errors": 0,
-  "pdfs": 130,
+  "pdfs": 92,
   "pdfs_gone": 12,
   "pdfs_with_details": 129,
-  "pdfs_with_thumbs": 129,
+  "pdfs_with_thumbs": 92,
   "queue_remaining": 0,
   "updated": "2026-09-24T15:25:03Z"
  },
  "translations": {
-  "cached": 1869,
+  "cached": 1867,
   "engine": "argos1.0-ct2/v5",
   "model_enabled": true,
   "translated_this_run": 0,
-  "from_cache": 1869,
+  "from_cache": 1867,
   "pending": 0,
   "rejected_by_guard": 0,
   "seconds": 0.1,
@@ -396,15 +421,15 @@
   "episodes": 295,
   "instagram": 28,
   "articles": 226,
-  "pdfs": 130,
+  "pdfs": 92,
   "drive": 0,
   "editorial": 37,
   "weekly_open": 2,
   "announcements": 0,
   "events": 31,
   "whatsnew": 150,
-  "districts": 2,
-  "shop": 54
+  "shop": 54,
+  "meetings": 23
  },
  "problems": {},
  "feeds": [

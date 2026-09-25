@@ -1,0 +1,999 @@
+{
+ "updated": "2026-09-24T22:38:35Z",
+ "fixture": false,
+ "type": "GR",
+ "sources": [
+  {
+   "id": "aadallas",
+   "name": "Dallas Intergroup",
+   "url": "https://www.aadallas.org",
+   "in_area": true,
+   "area_label": {
+    "en": "Dallas area",
+    "es": "Zona de Dallas"
+   },
+   "ok": true,
+   "updated": "2026-09-24T22:37:36Z",
+   "count": 5,
+   "error": null
+  },
+  {
+   "id": "fortworthaa",
+   "name": "Fort Worth AA Central Office",
+   "url": "https://fortworthaa.org",
+   "in_area": true,
+   "area_label": {
+    "en": "Fort Worth area",
+    "es": "Zona de Fort Worth"
+   },
+   "ok": true,
+   "updated": "2026-09-24T22:37:36Z",
+   "count": 5,
+   "error": null
+  },
+  {
+   "id": "tyleraa",
+   "name": "AA Central Service Office, Tyler",
+   "url": "https://www.tyler-aa.org",
+   "in_area": true,
+   "area_label": {
+    "en": "East Texas (Tyler)",
+    "es": "Este de Texas (Tyler)"
+   },
+   "ok": true,
+   "updated": "2026-09-24T22:37:36Z",
+   "count": 3,
+   "error": null
+  },
+  {
+   "id": "aaespanoldallas",
+   "name": "Alcohólicos Anónimos Dallas",
+   "url": "https://alcoholicosanonimosdallas.org",
+   "in_area": true,
+   "area_label": {
+    "en": "Dallas area (Spanish-speaking)",
+    "es": "Zona de Dallas (en español)"
+   },
+   "ok": true,
+   "updated": "2026-09-24T22:37:36Z",
+   "count": 0,
+   "error": null
+  },
+  {
+   "id": "district71",
+   "name": "District 71 AA",
+   "url": "https://district71.org",
+   "in_area": true,
+   "area_label": {
+    "en": "Abilene (District 71)",
+    "es": "Abilene (Distrito 71)"
+   },
+   "ok": true,
+   "updated": "2026-09-24T22:37:36Z",
+   "count": 1,
+   "error": null
+  },
+  {
+   "id": "arkansascentraloffice",
+   "name": "Arkansas Central Office",
+   "url": "https://arkansascentraloffice.org",
+   "in_area": false,
+   "area_label": {
+    "en": "Arkansas & the Fort Smith area",
+    "es": "Arkansas y la zona de Fort Smith"
+   },
+   "ok": true,
+   "updated": "2026-09-24T22:37:36Z",
+   "count": 2,
+   "error": null
+  },
+  {
+   "id": "okcintergroup",
+   "name": "OKC Intergroup",
+   "url": "https://okcintergroup.org",
+   "in_area": false,
+   "area_label": {
+    "en": "Oklahoma City area",
+    "es": "Zona de Oklahoma City"
+   },
+   "ok": true,
+   "updated": "2026-09-24T22:37:36Z",
+   "count": 8,
+   "error": null
+  },
+  {
+   "id": "nwta66",
+   "name": "Northwest Texas Area 66",
+   "url": "https://nwta66.org",
+   "in_area": false,
+   "area_label": {
+    "en": "Northwest Texas (Area 66)",
+    "es": "Noroeste de Texas (Área 66)"
+   },
+   "ok": true,
+   "updated": "2026-09-24T22:37:36Z",
+   "count": 0,
+   "error": null
+  }
+ ],
+ "groups": [
+  {
+   "id": "neta65",
+   "in_area": true,
+   "label": {
+    "en": "Our Area (NETA 65)",
+    "es": "Nuestra Área (NETA 65)"
+   },
+   "count": 13
+  },
+  {
+   "id": "arkansascentraloffice",
+   "in_area": false,
+   "label": {
+    "en": "Arkansas & the Fort Smith area",
+    "es": "Arkansas y la zona de Fort Smith"
+   },
+   "count": 2
+  },
+  {
+   "id": "okcintergroup",
+   "in_area": false,
+   "label": {
+    "en": "Oklahoma City area",
+    "es": "Zona de Oklahoma City"
+   },
+   "count": 8
+  }
+ ],
+ "items": [
+  {
+   "id": "mtg:ac2eea4e7e6d",
+   "kind": "meeting",
+   "name": "Norman Original Group",
+   "day": 0,
+   "time": "06:30",
+   "end_time": "07:30",
+   "location": "White metal building, front faces Tecumseh",
+   "address": "3565 Macdonnell Dr, Norman, OK 73069",
+   "city": "Norman",
+   "county": null,
+   "state": "OK",
+   "lat": 35.261607,
+   "lng": -97.464344,
+   "approximate": false,
+   "region": "Norman",
+   "district": "District 10",
+   "types": [
+    "GR",
+    "O"
+   ],
+   "attendance": "in_person",
+   "lang": "en",
+   "url": "https://okcintergroup.org/meetings/norman-original-group-42/",
+   "sources": [
+    "okcintergroup"
+   ],
+   "directions_url": "https://www.google.com/maps/dir/?api=1&destination=35.261607,-97.464344",
+   "in_area": false,
+   "nearby": {
+    "id": "okcintergroup",
+    "label": {
+     "en": "Oklahoma City area",
+     "es": "Zona de Oklahoma City"
+    }
+   },
+   "i18n": {}
+  },
+  {
+   "id": "mtg:d7e27ec7a6d0",
+   "kind": "meeting",
+   "name": "Norman Original Group",
+   "day": 0,
+   "time": "10:30",
+   "end_time": "11:30",
+   "location": "White metal building, front faces Tecumseh",
+   "address": "3565 Macdonnell Dr, Norman, OK 73069",
+   "city": "Norman",
+   "county": null,
+   "state": "OK",
+   "lat": 35.261607,
+   "lng": -97.464344,
+   "approximate": false,
+   "region": "Norman",
+   "district": "District 10",
+   "types": [
+    "A",
+    "GR",
+    "O"
+   ],
+   "attendance": "in_person",
+   "lang": "en",
+   "url": "https://okcintergroup.org/meetings/norman-original-group-44/",
+   "sources": [
+    "okcintergroup"
+   ],
+   "directions_url": "https://www.google.com/maps/dir/?api=1&destination=35.261607,-97.464344",
+   "in_area": false,
+   "nearby": {
+    "id": "okcintergroup",
+    "label": {
+     "en": "Oklahoma City area",
+     "es": "Zona de Oklahoma City"
+    }
+   },
+   "i18n": {}
+  },
+  {
+   "id": "mtg:b831b551fb84",
+   "kind": "meeting",
+   "name": "Norman Original Group",
+   "day": 0,
+   "time": "12:00",
+   "end_time": "13:00",
+   "location": "White metal building, front faces Tecumseh",
+   "address": "3565 Macdonnell Dr, Norman, OK 73069",
+   "city": "Norman",
+   "county": null,
+   "state": "OK",
+   "lat": 35.261607,
+   "lng": -97.464344,
+   "approximate": false,
+   "region": "Norman",
+   "district": "District 10",
+   "types": [
+    "GR",
+    "O"
+   ],
+   "attendance": "in_person",
+   "lang": "en",
+   "url": "https://okcintergroup.org/meetings/norman-original-group-43/",
+   "sources": [
+    "okcintergroup"
+   ],
+   "directions_url": "https://www.google.com/maps/dir/?api=1&destination=35.261607,-97.464344",
+   "in_area": false,
+   "nearby": {
+    "id": "okcintergroup",
+    "label": {
+     "en": "Oklahoma City area",
+     "es": "Zona de Oklahoma City"
+    }
+   },
+   "i18n": {}
+  },
+  {
+   "id": "mtg:a59511e04f45",
+   "kind": "meeting",
+   "name": "Any Lengths Group",
+   "day": 0,
+   "time": "17:30",
+   "end_time": null,
+   "location": "Serenity Club",
+   "address": "2013 S Ann St, Texarkana, TX 75501",
+   "city": "Texarkana",
+   "county": "Bowie",
+   "state": "TX",
+   "lat": 33.400427,
+   "lng": -94.06727,
+   "approximate": false,
+   "region": "Texarkana",
+   "district": null,
+   "types": [
+    "GR",
+    "O"
+   ],
+   "attendance": "in_person",
+   "lang": "en",
+   "url": "https://www.tyler-aa.org/meetings/any-lengths-group-7/",
+   "sources": [
+    "tyleraa"
+   ],
+   "directions_url": "https://www.google.com/maps/dir/?api=1&destination=33.400427,-94.06727",
+   "in_area": true,
+   "nearby": null,
+   "i18n": {}
+  },
+  {
+   "id": "mtg:eda22df87b19",
+   "kind": "meeting",
+   "name": "Mid-Cities",
+   "day": 0,
+   "time": "18:00",
+   "end_time": "19:00",
+   "location": null,
+   "address": "300 W Pipeline Rd, Hurst, TX 76053",
+   "city": "Hurst",
+   "county": "Tarrant",
+   "state": "TX",
+   "lat": 32.823981,
+   "lng": -97.172502,
+   "approximate": false,
+   "region": "Hurst",
+   "district": "District 61",
+   "types": [
+    "C",
+    "GR"
+   ],
+   "attendance": "in_person",
+   "lang": "en",
+   "url": "https://fortworthaa.org/meetings/mid-cities-group-15/",
+   "sources": [
+    "fortworthaa"
+   ],
+   "directions_url": "https://www.google.com/maps/dir/?api=1&destination=32.823981,-97.172502",
+   "in_area": true,
+   "nearby": null,
+   "i18n": {}
+  },
+  {
+   "id": "mtg:4c3790ab4cbc",
+   "kind": "meeting",
+   "name": "Big Book (Rockwall) Group",
+   "day": 1,
+   "time": "18:00",
+   "end_time": null,
+   "location": null,
+   "address": "190 Shenandoah Ln, Rockwall, TX 75087",
+   "city": "Rockwall",
+   "county": "Rockwall",
+   "state": "TX",
+   "lat": 32.971092,
+   "lng": -96.46448,
+   "approximate": false,
+   "region": "Rockwall",
+   "district": null,
+   "types": [
+    "D",
+    "GR",
+    "O"
+   ],
+   "attendance": "in_person",
+   "lang": "en",
+   "url": "https://www.aadallas.org/meetings/big-book-rockwall-group-5/",
+   "sources": [
+    "aadallas"
+   ],
+   "directions_url": "https://www.google.com/maps/dir/?api=1&destination=32.971092,-96.46448",
+   "in_area": true,
+   "nearby": null,
+   "i18n": {}
+  },
+  {
+   "id": "mtg:51ca12687dee",
+   "kind": "meeting",
+   "name": "Norman Original Group",
+   "day": 2,
+   "time": "06:30",
+   "end_time": "07:30",
+   "location": "White metal building, front faces Tecumseh",
+   "address": "3565 Macdonnell Dr, Norman, OK 73069",
+   "city": "Norman",
+   "county": null,
+   "state": "OK",
+   "lat": 35.261607,
+   "lng": -97.464344,
+   "approximate": false,
+   "region": "Norman",
+   "district": "District 10",
+   "types": [
+    "CF",
+    "GR",
+    "O"
+   ],
+   "attendance": "in_person",
+   "lang": "en",
+   "url": "https://okcintergroup.org/meetings/norman-original-group-13/",
+   "sources": [
+    "okcintergroup"
+   ],
+   "directions_url": "https://www.google.com/maps/dir/?api=1&destination=35.261607,-97.464344",
+   "in_area": false,
+   "nearby": {
+    "id": "okcintergroup",
+    "label": {
+     "en": "Oklahoma City area",
+     "es": "Zona de Oklahoma City"
+    }
+   },
+   "i18n": {}
+  },
+  {
+   "id": "mtg:f8890a5558fa",
+   "kind": "meeting",
+   "name": "Granbury Serenity",
+   "day": 2,
+   "time": "19:00",
+   "end_time": "20:00",
+   "location": null,
+   "address": "1205 Lipan Hwy, Brazos Bend, TX 76048",
+   "city": "Brazos Bend",
+   "county": "Hood",
+   "state": "TX",
+   "lat": 32.453186,
+   "lng": -97.793114,
+   "approximate": false,
+   "region": "Granbury",
+   "district": "District 65",
+   "types": [
+    "C",
+    "GR"
+   ],
+   "attendance": "in_person",
+   "lang": "en",
+   "url": "https://fortworthaa.org/meetings/granbury-serenity-17/",
+   "sources": [
+    "fortworthaa"
+   ],
+   "directions_url": "https://www.google.com/maps/dir/?api=1&destination=32.453186,-97.793114",
+   "in_area": true,
+   "nearby": null,
+   "i18n": {}
+  },
+  {
+   "id": "mtg:21e6c6ea93b1",
+   "kind": "meeting",
+   "name": "Norman Original Group",
+   "day": 3,
+   "time": "06:30",
+   "end_time": "07:30",
+   "location": "White metal building, front faces Tecumseh",
+   "address": "3565 Macdonnell Dr, Norman, OK 73069",
+   "city": "Norman",
+   "county": null,
+   "state": "OK",
+   "lat": 35.261607,
+   "lng": -97.464344,
+   "approximate": false,
+   "region": "Norman",
+   "district": "District 10",
+   "types": [
+    "GR",
+    "O"
+   ],
+   "attendance": "in_person",
+   "lang": "en",
+   "url": "https://okcintergroup.org/meetings/norman-original-group-19/",
+   "sources": [
+    "okcintergroup"
+   ],
+   "directions_url": "https://www.google.com/maps/dir/?api=1&destination=35.261607,-97.464344",
+   "in_area": false,
+   "nearby": {
+    "id": "okcintergroup",
+    "label": {
+     "en": "Oklahoma City area",
+     "es": "Zona de Oklahoma City"
+    }
+   },
+   "i18n": {}
+  },
+  {
+   "id": "mtg:a0ec2f3b764a",
+   "kind": "meeting",
+   "name": "Downtown Suburban Group",
+   "day": 3,
+   "time": "12:00",
+   "end_time": null,
+   "location": null,
+   "address": "1700 E Front St, Tyler, TX 75702",
+   "city": "Tyler",
+   "county": "Smith",
+   "state": "TX",
+   "lat": 32.346723,
+   "lng": -95.2801,
+   "approximate": false,
+   "region": "Tyler",
+   "district": null,
+   "types": [
+    "C",
+    "GR",
+    "X"
+   ],
+   "attendance": "in_person",
+   "lang": "en",
+   "url": "https://www.tyler-aa.org/meetings/downtown-suburban-group-11/",
+   "sources": [
+    "tyleraa"
+   ],
+   "directions_url": "https://www.google.com/maps/dir/?api=1&destination=32.346723,-95.2801",
+   "in_area": true,
+   "nearby": null,
+   "i18n": {}
+  },
+  {
+   "id": "mtg:24f82f418540",
+   "kind": "meeting",
+   "name": "Richardson Group",
+   "day": 3,
+   "time": "20:00",
+   "end_time": null,
+   "location": "Suite 246 (Bus Route Access)",
+   "address": "1144 N Plano Rd, Richardson, TX 75081",
+   "city": "Richardson",
+   "county": "Dallas",
+   "state": "TX",
+   "lat": 32.961562,
+   "lng": -96.699295,
+   "approximate": false,
+   "region": "Richardson",
+   "district": null,
+   "types": [
+    "C",
+    "D",
+    "GR"
+   ],
+   "attendance": "in_person",
+   "lang": "en",
+   "url": "https://www.aadallas.org/meetings/richardson-group-15/",
+   "sources": [
+    "aadallas"
+   ],
+   "directions_url": "https://www.google.com/maps/dir/?api=1&destination=32.961562,-96.699295",
+   "in_area": true,
+   "nearby": null,
+   "i18n": {}
+  },
+  {
+   "id": "mtg:042ebb277473",
+   "kind": "meeting",
+   "name": "Norman Original Group",
+   "day": 4,
+   "time": "06:30",
+   "end_time": "07:30",
+   "location": "White metal building, front faces Tecumseh",
+   "address": "3565 Macdonnell Dr, Norman, OK 73069",
+   "city": "Norman",
+   "county": null,
+   "state": "OK",
+   "lat": 35.261607,
+   "lng": -97.464344,
+   "approximate": false,
+   "region": "Norman",
+   "district": "District 10",
+   "types": [
+    "GR",
+    "O"
+   ],
+   "attendance": "in_person",
+   "lang": "en",
+   "url": "https://okcintergroup.org/meetings/norman-original-group-25/",
+   "sources": [
+    "okcintergroup"
+   ],
+   "directions_url": "https://www.google.com/maps/dir/?api=1&destination=35.261607,-97.464344",
+   "in_area": false,
+   "nearby": {
+    "id": "okcintergroup",
+    "label": {
+     "en": "Oklahoma City area",
+     "es": "Zona de Oklahoma City"
+    }
+   },
+   "i18n": {}
+  },
+  {
+   "id": "mtg:5681a010cf33",
+   "kind": "meeting",
+   "name": "Poteau Unity Group",
+   "day": 4,
+   "time": "12:00",
+   "end_time": "13:00",
+   "location": "First Church of The Nazarene",
+   "address": "411 Clayton Ave, Poteau, OK 74953",
+   "city": "Poteau",
+   "county": null,
+   "state": "OK",
+   "lat": 35.051873,
+   "lng": -94.61909,
+   "approximate": false,
+   "region": "Poteau, OK",
+   "district": null,
+   "types": [
+    "GR",
+    "O"
+   ],
+   "attendance": "in_person",
+   "lang": "en",
+   "url": "https://arkansascentraloffice.org/meetings/poteau-unity-group-3/",
+   "sources": [
+    "arkansascentraloffice"
+   ],
+   "directions_url": "https://www.google.com/maps/dir/?api=1&destination=35.051873,-94.61909",
+   "in_area": false,
+   "nearby": {
+    "id": "arkansascentraloffice",
+    "label": {
+     "en": "Arkansas & the Fort Smith area",
+     "es": "Arkansas y la zona de Fort Smith"
+    }
+   },
+   "i18n": {}
+  },
+  {
+   "id": "mtg:8c3f43a11015",
+   "kind": "meeting",
+   "name": "Sunshine",
+   "day": 4,
+   "time": "12:15",
+   "end_time": "13:15",
+   "location": "Alexander Building",
+   "address": "104 Pine St #102, Abilene, TX 79601",
+   "city": "Abilene",
+   "county": "Taylor",
+   "state": "TX",
+   "lat": 32.449757,
+   "lng": -99.733156,
+   "approximate": false,
+   "region": null,
+   "district": null,
+   "types": [
+    "C",
+    "GR",
+    "ONL"
+   ],
+   "attendance": "hybrid",
+   "lang": "en",
+   "url": "https://district71.org/?tsml_meeting=sunshine-4",
+   "sources": [
+    "district71"
+   ],
+   "directions_url": "https://www.google.com/maps/dir/?api=1&destination=32.449757,-99.733156",
+   "in_area": true,
+   "nearby": null,
+   "i18n": {}
+  },
+  {
+   "id": "mtg:cfa9d72259eb",
+   "kind": "meeting",
+   "name": "Poteau Unity Group",
+   "day": 4,
+   "time": "18:30",
+   "end_time": "19:30",
+   "location": "First Church of The Nazarene",
+   "address": "411 Clayton Ave, Poteau, OK 74953",
+   "city": "Poteau",
+   "county": null,
+   "state": "OK",
+   "lat": 35.051873,
+   "lng": -94.61909,
+   "approximate": false,
+   "region": "Poteau, OK",
+   "district": null,
+   "types": [
+    "GR",
+    "O"
+   ],
+   "attendance": "in_person",
+   "lang": "en",
+   "url": "https://arkansascentraloffice.org/meetings/poteau-unity-group-4/",
+   "sources": [
+    "arkansascentraloffice"
+   ],
+   "directions_url": "https://www.google.com/maps/dir/?api=1&destination=35.051873,-94.61909",
+   "in_area": false,
+   "nearby": {
+    "id": "arkansascentraloffice",
+    "label": {
+     "en": "Arkansas & the Fort Smith area",
+     "es": "Arkansas y la zona de Fort Smith"
+    }
+   },
+   "i18n": {}
+  },
+  {
+   "id": "mtg:2d16a7eda488",
+   "kind": "meeting",
+   "name": "Duncan Group",
+   "day": 4,
+   "time": "19:00",
+   "end_time": "20:00",
+   "location": null,
+   "address": "806 Chestnut Ave, Duncan, OK 73533",
+   "city": "Duncan",
+   "county": null,
+   "state": "OK",
+   "lat": 34.506984,
+   "lng": -97.956775,
+   "approximate": false,
+   "region": "Duncan",
+   "district": null,
+   "types": [
+    "GR",
+    "O"
+   ],
+   "attendance": "in_person",
+   "lang": "en",
+   "url": "https://okcintergroup.org/meetings/duncan-group-3/",
+   "sources": [
+    "okcintergroup"
+   ],
+   "directions_url": "https://www.google.com/maps/dir/?api=1&destination=34.506984,-97.956775",
+   "in_area": false,
+   "nearby": {
+    "id": "okcintergroup",
+    "label": {
+     "en": "Oklahoma City area",
+     "es": "Zona de Oklahoma City"
+    }
+   },
+   "i18n": {}
+  },
+  {
+   "id": "mtg:4a7a93dafcdc",
+   "kind": "meeting",
+   "name": "Norman Original Group",
+   "day": 5,
+   "time": "06:30",
+   "end_time": "07:30",
+   "location": "White metal building, front faces Tecumseh",
+   "address": "3565 Macdonnell Dr, Norman, OK 73069",
+   "city": "Norman",
+   "county": null,
+   "state": "OK",
+   "lat": 35.261607,
+   "lng": -97.464344,
+   "approximate": false,
+   "region": "Norman",
+   "district": "District 10",
+   "types": [
+    "GR",
+    "O"
+   ],
+   "attendance": "in_person",
+   "lang": "en",
+   "url": "https://okcintergroup.org/meetings/norman-original-group-31/",
+   "sources": [
+    "okcintergroup"
+   ],
+   "directions_url": "https://www.google.com/maps/dir/?api=1&destination=35.261607,-97.464344",
+   "in_area": false,
+   "nearby": {
+    "id": "okcintergroup",
+    "label": {
+     "en": "Oklahoma City area",
+     "es": "Zona de Oklahoma City"
+    }
+   },
+   "i18n": {}
+  },
+  {
+   "id": "mtg:d3c0619e7365",
+   "kind": "meeting",
+   "name": "Downtown Suburban Group",
+   "day": 5,
+   "time": "19:00",
+   "end_time": null,
+   "location": null,
+   "address": "1700 E Front St, Tyler, TX 75702",
+   "city": "Tyler",
+   "county": "Smith",
+   "state": "TX",
+   "lat": 32.346723,
+   "lng": -95.2801,
+   "approximate": false,
+   "region": "Tyler",
+   "district": null,
+   "types": [
+    "GR",
+    "O",
+    "X"
+   ],
+   "attendance": "in_person",
+   "lang": "en",
+   "url": "https://www.tyler-aa.org/meetings/downtown-suburban-group-20/",
+   "sources": [
+    "tyleraa"
+   ],
+   "directions_url": "https://www.google.com/maps/dir/?api=1&destination=32.346723,-95.2801",
+   "in_area": true,
+   "nearby": null,
+   "i18n": {}
+  },
+  {
+   "id": "mtg:c9e4ab813d2f",
+   "kind": "meeting",
+   "name": "Grand Prairie Group",
+   "day": 6,
+   "time": "11:00",
+   "end_time": null,
+   "location": "Suite O",
+   "address": "921 W Pioneer Pkwy, Grand Prairie, TX 75052",
+   "city": "Grand Prairie",
+   "county": "Dallas",
+   "state": "TX",
+   "lat": 32.708949,
+   "lng": -97.017714,
+   "approximate": false,
+   "region": "Grand Prairie",
+   "district": "District 61",
+   "types": [
+    "C",
+    "GR"
+   ],
+   "attendance": "in_person",
+   "lang": "en",
+   "url": "https://www.aadallas.org/meetings/grand-prairie-group-28/",
+   "sources": [
+    "aadallas",
+    "fortworthaa"
+   ],
+   "directions_url": "https://www.google.com/maps/dir/?api=1&destination=32.708949,-97.017714",
+   "in_area": true,
+   "nearby": null,
+   "i18n": {}
+  },
+  {
+   "id": "mtg:fec207ad8230",
+   "kind": "meeting",
+   "name": "Carrollton Group",
+   "day": 6,
+   "time": "12:00",
+   "end_time": null,
+   "location": "Two story building with Blue Awning",
+   "address": "1039 N Interstate 35E # 303, Carrollton, TX 75006",
+   "city": "Carrollton",
+   "county": "Dallas",
+   "state": "TX",
+   "lat": 32.954464,
+   "lng": -96.913887,
+   "approximate": false,
+   "region": "Carrollton",
+   "district": null,
+   "types": [
+    "C",
+    "GR",
+    "LIT",
+    "X",
+    "XB"
+   ],
+   "attendance": "in_person",
+   "lang": "en",
+   "url": "https://www.aadallas.org/meetings/carrollton-group-22/",
+   "sources": [
+    "aadallas"
+   ],
+   "directions_url": "https://www.google.com/maps/dir/?api=1&destination=32.954464,-96.913887",
+   "in_area": true,
+   "nearby": null,
+   "i18n": {}
+  },
+  {
+   "id": "mtg:dbfec78c1b54",
+   "kind": "meeting",
+   "name": "Serenity",
+   "day": 6,
+   "time": "12:00",
+   "end_time": "13:00",
+   "location": "Strip Center",
+   "address": "6101 Watauga Rd e, Watauga, TX 76148",
+   "city": "Watauga",
+   "county": "Tarrant",
+   "state": "TX",
+   "lat": 32.860959,
+   "lng": -97.250525,
+   "approximate": false,
+   "region": "Watauga",
+   "district": "District 61",
+   "types": [
+    "C",
+    "GR"
+   ],
+   "attendance": "in_person",
+   "lang": "en",
+   "url": "https://fortworthaa.org/meetings/serenity-9/",
+   "sources": [
+    "fortworthaa"
+   ],
+   "directions_url": "https://www.google.com/maps/dir/?api=1&destination=32.860959,-97.250525",
+   "in_area": true,
+   "nearby": null,
+   "i18n": {}
+  },
+  {
+   "id": "mtg:3ce5ee0cf34b",
+   "kind": "meeting",
+   "name": "Serenity Group",
+   "day": 6,
+   "time": "12:00",
+   "end_time": null,
+   "location": null,
+   "address": "120 E Mulberry St, Sherman, TX 75090",
+   "city": "Sherman",
+   "county": "Grayson",
+   "state": "TX",
+   "lat": 33.639601,
+   "lng": -96.609249,
+   "approximate": false,
+   "region": "Sherman",
+   "district": null,
+   "types": [
+    "GR",
+    "O"
+   ],
+   "attendance": "in_person",
+   "lang": "en",
+   "url": "https://www.aadallas.org/meetings/serenity-group-22/",
+   "sources": [
+    "aadallas"
+   ],
+   "directions_url": "https://www.google.com/maps/dir/?api=1&destination=33.639601,-96.609249",
+   "in_area": true,
+   "nearby": null,
+   "i18n": {}
+  },
+  {
+   "id": "mtg:fd469abe1bf9",
+   "kind": "meeting",
+   "name": "Southwest Group",
+   "day": 6,
+   "time": "13:00",
+   "end_time": "14:00",
+   "location": null,
+   "address": "3145 Townsend Dr, Fort Worth, TX 76110",
+   "city": "Fort Worth",
+   "county": "Tarrant",
+   "state": "TX",
+   "lat": 32.704304,
+   "lng": -97.348898,
+   "approximate": false,
+   "region": "Fort Worth",
+   "district": null,
+   "types": [
+    "GR",
+    "O"
+   ],
+   "attendance": "in_person",
+   "lang": "en",
+   "url": "https://fortworthaa.org/meetings/southwest-group-14/",
+   "sources": [
+    "fortworthaa"
+   ],
+   "directions_url": "https://www.google.com/maps/dir/?api=1&destination=32.704304,-97.348898",
+   "in_area": true,
+   "nearby": null,
+   "i18n": {}
+  }
+ ],
+ "type_labels": {
+  "A": {
+   "en": "Secular",
+   "es": "Secular"
+  },
+  "C": {
+   "en": "Closed",
+   "es": "Cerrada"
+  },
+  "CF": {
+   "en": "Child-Friendly",
+   "es": "Se admiten niños"
+  },
+  "D": {
+   "en": "Discussion",
+   "es": "De discusión"
+  },
+  "GR": {
+   "en": "Grapevine",
+   "es": "Grapevine"
+  },
+  "LIT": {
+   "en": "Literature",
+   "es": "Literatura"
+  },
+  "O": {
+   "en": "Open",
+   "es": "Abierta"
+  },
+  "ONL": {
+   "en": "Online",
+   "es": "En línea"
+  },
+  "X": {
+   "en": "Wheelchair Access",
+   "es": "Acceso para silla de ruedas"
+  },
+  "XB": {
+   "en": "Wheelchair-Accessible Bathroom",
+   "es": "Baño accesible para silla de ruedas"
+  }
+ }
+}

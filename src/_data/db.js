@@ -3,8 +3,7 @@
 //
 // Link safety: every URL field is passed through safeUrl() (eleventy.config.js) here, once, so
 // no page, filter or JSON index can print a "javascript:" link or a broken "www.example.org"
-// one. Hand-edited content is the realistic source (content/districts.yml `website`,
-// content/events/*.md `url` / `online_url` / `flyer`, announcements `url` / `image`).
+// one. Hand-edited content is the realistic source (content/events/*.md `url` / `online_url` / `flyer`, announcements `url` / `image`).
 // "www.x.org" and "zoom.us/j/1" are repaired to https://…; unusable values become "" (the
 // templates hide empty links). An item whose own `url` is unusable points to its anchor on our
 // page (committee event / announcement) or is left out. Every repaired or dropped value is
@@ -20,14 +19,17 @@ import { safeUrl } from "../../eleventy.config.js";
 // "shop" = the official stores' Book of the Month offers, bulk-book discounts and subscription prices
 // (scripts/sync/shop.py → build_data; docs/DATA_SCHEMA.md → "shop.json"): db.shop.botm, db.shop.bulk_discounts,
 // db.shop.subscriptions, db.shop.types. It has no `items` list of its own (db.js adds an empty one).
+// "meetings" = Grapevine meetings (TSML type "GR") of the intergroups in and next to our Area
+// (scripts/sync/meetings.py → build_data; docs/DATA_SCHEMA.md → "meetings.json"): db.meetings.items,
+// db.meetings.groups, db.meetings.sources, db.meetings.type_labels.
 const FILES = [
   "episodes", "videos", "instagram", "articles", "pdfs", "drive", "events",
-  "announcements", "editorial", "weekly_open", "whatsnew", "status", "districts",
-  "spotlight", "shop",
+  "announcements", "editorial", "weekly_open", "whatsnew", "status",
+  "spotlight", "shop", "meetings",
 ];
 
 // Field names that hold a link or an image address: url, image, extra.online_url, extra.thumbs[],
-// referrers[].url, shows[].apple, issues[].cover, profiles.gv.avatar, district website …
+// referrers[].url, shows[].apple, issues[].cover, profiles.gv.avatar …
 // Only string values are touched (extra.is_image is a boolean); extra.host (a bare host name),
 // extra.file (a repository path) and extra.link_texts do not match.
 const URL_KEY = /(?:^|_)(?:url|link|image|website|thumbs?|cover|avatar|feed|web|hub|apple|spotify|amazon|permalink)$/i;

@@ -1,4 +1,4 @@
-/* Community pages: What's New, Weekly Digest, Districts, Share Kit, Status, 404.
+/* Community pages: What's New, Weekly Digest, the GV/LV report (/monthly/#report), Share Kit, Status, 404.
    Loaded (defer) before Alpine, so components register on "alpine:init".
    Everything here is a progressive enhancement: pages are fully readable
    without JavaScript. User-visible strings come from data-* attributes
@@ -128,7 +128,7 @@
       };
     });
 
-    /* ---------------- District report (language toggle) ---------------- */
+    /* ---------------- GV/LV report on /monthly/ (language toggle) ---------------- */
     Alpine.data("reportBox", function (lang) {
       return { rl: lang || "en" };
     });

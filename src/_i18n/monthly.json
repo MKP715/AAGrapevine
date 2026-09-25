@@ -1,6 +1,6 @@
 {
   "monthly.title": { "en": "Monthly toolkit & posters", "es": "Kit del mes y carteles" },
-  "monthly.meta_desc": { "en": "This month's Grapevine and La Viña, how to put the issue to work, story deadlines, committee dates and a free poster for every month — in English and Spanish.", "es": "La Viña y la Grapevine de este mes, cómo poner la revista a trabajar, fechas límite para historias, fechas del comité y un cartel gratis para cada mes, en español y en inglés." },
+  "monthly.meta_desc": { "en": "This month's Grapevine and La Viña, how to put the issue to work, a ready-to-read GV/LV report for your district meeting, story deadlines and a free poster for every month — in English and Spanish.", "es": "La Viña y la Grapevine de este mes, cómo poner la revista a trabajar, un informe de GV/LV listo para leer en la reunión de tu distrito, fechas límite para historias y un cartel gratis para cada mes, en español y en inglés." },
   "monthly.eyebrow": { "en": "Carry the message this month", "es": "Lleva el mensaje este mes" },
   "monthly.hero_sub": { "en": "Each issue is a Twelfth Step tool. Here is this month's theme, where to place it, the stories the magazines are asking for — and a poster to share with your group.", "es": "Cada edición es una herramienta del Paso Doce. Aquí tienes el tema del mes, dónde dejar la revista, las historias que buscan las revistas y un cartel para compartir con tu grupo." },
   "monthly.see_poster": { "en": "This month's poster", "es": "El cartel de este mes" },
@@ -47,10 +47,10 @@
   "monthly.source": { "en": "Source", "es": "Fuente" },
   "monthly.download": { "en": "Download image (PNG)", "es": "Descargar imagen (PNG)" },
   "monthly.share": { "en": "Share", "es": "Compartir" },
-  "monthly.print": { "en": "Print / Save as PDF", "es": "Imprimir / Guardar como PDF" },
+  "monthly.print": { "en": "Print / save a copy", "es": "Imprimir / guardar una copia" },
   "monthly.working": { "en": "Preparing the image…", "es": "Preparando la imagen…" },
   "monthly.saved": { "en": "Image saved", "es": "Imagen guardada" },
-  "monthly.failed": { "en": "Sorry, the image could not be made in this browser. Try Print / Save as PDF.", "es": "Lo sentimos, este navegador no pudo crear la imagen. Prueba con Imprimir / Guardar como PDF." },
+  "monthly.failed": { "en": "Sorry, the image could not be made in this browser. Try Print / save a copy.", "es": "Lo sentimos, este navegador no pudo crear la imagen. Prueba con Imprimir / guardar una copia." },
   "monthly.link_copied": { "en": "Link copied — paste it into your chat", "es": "Enlace copiado: pégalo en tu chat" },
   "monthly.share_text": { "en": "Carry the message in {month}: this month's Grapevine & La Viña toolkit and poster — {url}", "es": "Lleva el mensaje en {month}: el kit del mes de La Viña y Grapevine y su cartel — {url}" },
   "monthly.poster_hint": { "en": "Sized for WhatsApp and Instagram (1080 × 1350). Prints on one letter-size page.", "es": "Tamaño ideal para WhatsApp e Instagram (1080 × 1350). Se imprime en una hoja tamaño carta." },
@@ -77,5 +77,6 @@
   "monthly.stories_wanted": { "en": "Stories wanted", "es": "Se buscan historias" },
   "monthly.machine": { "en": "Automatic translation", "es": "Traducción automática" },
   "monthly.tips_more": { "en": "{n} more ideas on the website", "es": "{n} ideas más en el sitio web" },
-  "search.kw.monthly": { "en": "monthly poster posters flyer whatsapp instagram print carry the message twelfth step tool put it to work editorial calendar theme story deadline book of the month", "es": "cartel carteles volante mensual whatsapp instagram imprimir llevar el mensaje herramienta paso doce ponla a trabajar calendario editorial tema fecha límite historia libro del mes" }
+  "search.kw.monthly": { "en": "monthly poster posters flyer whatsapp instagram print carry the message twelfth step tool put it to work editorial calendar theme story deadline book of the month district report districts dcm gvr report rlv report district meeting group report", "es": "cartel carteles volante mensual whatsapp instagram imprimir llevar el mensaje herramienta paso doce ponla a trabajar calendario editorial tema fecha límite historia libro del mes informe distrito distritos reporte mcd informe de gvr informe de rlv reunión del distrito informe para el grupo" },
+  "search.kw.report": { "en": "gv lv report grapevine report district report district meeting dcm gvr rlv group report read aloud two minutes", "es": "informe de gv lv informe de grapevine informe para el distrito reunión del distrito mcd gvr rlv informe para el grupo leer en voz alta dos minutos" }
 }

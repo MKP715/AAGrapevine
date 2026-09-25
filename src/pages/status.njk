@@ -17,7 +17,7 @@ pageScripts: ["/assets/js/community.js"]
 {%- set actionsUrl = "https://github.com/MKP715/AAGrapevine/actions" -%}
 {#- how the committee adds an event by hand (content/events/README.md) — linked from a blocked calendar feed -#}
 {%- set eventsHowtoUrl = "https://github.com/MKP715/AAGrapevine/blob/main/content/events/README.md" -%}
-{%- set srcIcons = { drive: "folder-open", articles: "newspaper", pdfs: "file-text", youtube: "youtube", podcasts: "headphones", instagram: "instagram", editorial: "pen-line", events_external: "calendar-days", announcements: "megaphone", manual_events: "calendar-plus", weekly_open: "video", shop: "shopping-bag", translations: "languages" } -%}
+{%- set srcIcons = { drive: "folder-open", articles: "newspaper", pdfs: "file-text", youtube: "youtube", podcasts: "headphones", instagram: "instagram", editorial: "pen-line", events_external: "calendar-days", announcements: "megaphone", manual_events: "calendar-plus", weekly_open: "video", shop: "shopping-bag", meetings: "map-pin", translations: "languages" } -%}
 
 {% call ui.pageHero(lang, "nav.status" | t(lang), "community.status.hero_sub" | t(lang), "activity", "community.status.eyebrow" | t(lang)) %}
 <div class="hero-actions cm-hero-tight">
@@ -187,41 +187,17 @@ pageScripts: ["/assets/js/community.js"]
   {% endif %}
   </div>
 
-  {#- ============ Crawl coverage + translations ============ -#}
+  {#- ============ Document library + translations ============ -#}
   <div class="cm-st-side grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]" role="group" aria-label="{{ 'community.status.crawl_title' | t(lang) }}">
     <article class="card card-pad sm:p-8">
       <h2 class="h-card flex items-center gap-2 text-xl">{% icon "scan-search", "size-5 text-gv" %} {{ "community.status.crawl_title" | t(lang) }}</h2>
       <p class="measure mt-2 text-sm leading-relaxed text-muted">{{ "community.status.crawl_sub" | t(lang) }}</p>
       {% if sv.crawl.hasData %}
-      <div class="mt-6">
-        <div class="flex flex-wrap items-baseline justify-between gap-2">
-          <p class="text-4xl font-semibold text-ink">{{ sv.crawl.pct | cmPct(lang) }}</p>
-          <p class="text-sm text-muted">{{ "community.status.crawl_progress" | t(lang, { done: sv.crawl.crawled | cmNum(lang), total: sv.crawl.known | cmNum(lang) }) }}</p>
-        </div>
-        <div class="mt-3 h-3 overflow-hidden rounded-full bg-gv-soft" role="progressbar" aria-label="{{ 'community.status.crawl_meter' | t(lang) }}"
-             aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ sv.crawl.pct }}" aria-valuetext="{{ sv.crawl.pct | cmPct(lang) }}">
-          <div class="cm-meter-fill h-full rounded-full bg-gv" style="width: {{ sv.crawl.pct }}%"></div>
-        </div>
-        <p class="mt-3 flex items-center gap-2 text-sm font-semibold text-ink">
-          {% icon "hourglass", "size-4 shrink-0 text-gv" %}
-          <span>
-          {%- if sv.crawl.daysLeft === 0 %}{{ ("community.status.crawl_eta_done_open" if sv.crawl.failing else "community.status.crawl_eta_done") | t(lang, { n: crawler.recheck_days or 21 }) }}
-          {%- elif sv.crawl.daysLeft == 1 %}{{ "community.status.crawl_eta_one" | t(lang) }}
-          {%- elif sv.crawl.daysLeft %}{{ "community.status.crawl_eta" | t(lang, { n: sv.crawl.daysLeft | cmNum(lang) }) }}
-          {%- else %}{{ "community.status.crawl_eta_unknown" | t(lang) }}{% endif -%}
-          </span>
-        </p>
-        <dl class="mt-6 grid grid-cols-2 gap-x-3 gap-y-4 border-t border-line pt-5 sm:grid-cols-4 2xl:grid-cols-2">
-          <div class="flex flex-col"><dt class="flex-1 text-xs text-muted">{{ "community.status.crawl_pdfs" | t(lang) }}</dt><dd class="text-xl font-semibold tabular-nums text-ink">{{ sv.crawl.pdfs | cmNum(lang) }}</dd></div>
-          <div class="flex flex-col"><dt class="flex-1 text-xs text-muted">{{ "community.status.crawl_thumbs" | t(lang) }}</dt><dd class="text-xl font-semibold tabular-nums text-ink">{{ sv.crawl.thumbs | cmNum(lang) }}</dd></div>
-          <div class="flex flex-col"><dt class="flex-1 text-xs text-muted">{{ "community.status.crawl_left" | t(lang) }}</dt><dd class="text-xl font-semibold tabular-nums text-ink">{{ sv.crawl.remaining | cmNum(lang) }}</dd></div>
-          <div class="flex flex-col"><dt class="flex-1 text-xs text-muted">{{ "community.status.crawl_perrun" | t(lang) }}</dt><dd class="text-xl font-semibold tabular-nums text-ink">{{ sv.crawl.perRun | cmNum(lang) }}</dd></div>
-        </dl>
-        {#- Links that answer with an error (e.g. an e-mail address written as a link): not "left to check" — the robot retries them now and then. -#}
-        {% if sv.crawl.failing %}<p class="mt-4 flex gap-2 text-xs leading-relaxed text-muted">{% icon "link-2-off", "size-4 shrink-0" %} {{ ("community.status.crawl_failing_one" if sv.crawl.failing == 1 else "community.status.crawl_failing") | t(lang, { n: sv.crawl.failing | cmNum(lang) }) }}</p>{% endif %}
-        {% if sv.crawl.errors %}<p class="mt-4 flex gap-2 text-xs leading-relaxed text-muted">{% icon "info", "size-4 shrink-0" %} {{ ("community.status.crawl_errors_one" if sv.crawl.errors == 1 else "community.status.crawl_errors") | t(lang, { n: sv.crawl.errors | cmNum(lang) }) }}</p>{% endif %}
-        <p class="mt-4 text-xs leading-relaxed text-muted">{{ "community.status.crawl_note" | t(lang) }}{% if sv.crawl.updated %} · {{ "community.status.crawl_last" | t(lang) }}: <time datetime="{{ sv.crawl.updated | isoDate }}" data-local-time>{{ sv.crawl.updated | fmtDate(lang, "datetime") }}</time>{% endif %}</p>
-      </div>
+      {#- Document facts only (the wording rule: no talk of how the sites are read). The Library's own
+          count is on its row above; here: how many have a preview, and when the library last changed. -#}
+      <p class="mt-6 text-4xl font-semibold tabular-nums text-ink">{{ sv.crawl.thumbs | cmNum(lang) }}</p>
+      <p class="text-sm text-muted">{{ "community.status.crawl_thumbs" | t(lang, { total: sv.crawl.pdfs | cmNum(lang) }) }}</p>
+      {% if sv.crawl.updated %}<p class="mt-4 flex items-center gap-2 border-t border-line pt-4 text-xs leading-relaxed text-muted">{% icon "clock", "size-4 shrink-0" %} <span>{{ "community.status.crawl_last" | t(lang) }}: <time datetime="{{ sv.crawl.updated | isoDate }}" data-local-time>{{ sv.crawl.updated | fmtDate(lang, "datetime") }}</time></span></p>{% endif %}
       {% else %}
       <p class="mt-6 rounded-xl border border-dashed border-line p-4 text-sm text-muted">{{ "community.status.crawl_empty" | t(lang) }}</p>
       {% endif %}

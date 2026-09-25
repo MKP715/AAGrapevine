@@ -104,8 +104,8 @@ export function esMeridiem(s) {
 /* ------------------------------------------------------------------ */
 /*  Links from data                                                    */
 /* ------------------------------------------------------------------ */
-// Every link that comes from synced data or hand-edited content (content/districts.yml,
-// content/events/*.md, content/announcements/*.md → data/site/*.json) passes through safeUrl()
+// Every link that comes from synced data or hand-edited content (content/events/*.md,
+// content/announcements/*.md → data/site/*.json) passes through safeUrl()
 // before a template writes it into href/src:
 //   * http(s)://…, mailto:…, tel:…, "#fragment" and site-relative "/path" are kept;
 //   * "//host/…", "www.district5.org" or "zoom.us/j/123" (scheme forgotten) become "https://…";

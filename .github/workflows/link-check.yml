@@ -199,7 +199,7 @@ jobs:
           if [ "$problems" = "1" ]; then
             mkdir -p lychee
             {
-              echo "The weekly link check found problems. Most can be fixed in **config/site.yml** or **content/districts.yml**;"
+              echo "The weekly link check found problems. Most can be fixed in **config/site.yml** or the files in **content/**;"
               echo "links inside synced content fix themselves when the source site is corrected."
               echo
               echo "Run: ${RUN_URL}"

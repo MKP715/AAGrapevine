@@ -1,4 +1,4 @@
-/* Area styles: community — What's New, Digest, Districts, Share Kit, Status, 404,
+/* Area styles: community — What's New, Digest, GV/LV report (/monthly/), Share Kit, Status, 404,
    language banner. Owned by the community page agent. Prefer Tailwind utilities
    in templates; this file holds what utilities cannot express (timeline rail,
    print layouts, poster scaling, responsive table). All classes are prefixed
@@ -150,19 +150,8 @@
 }
 
 /* ------------------------------------------------------------------ */
-/*  Districts                                                          */
+/*  GV/LV report on the Monthly toolkit (/monthly/#report)             */
 /* ------------------------------------------------------------------ */
-/* Spanish-language districts get a warm La Viña accent. */
-.cm-district-es { border-color: color-mix(in srgb, var(--c-lv) 35%, var(--c-line)); background:
-  linear-gradient(160deg, color-mix(in srgb, var(--c-lv-soft) 85%, transparent) 0%, var(--c-surface) 55%); }
-.cm-district-es::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 4px; background: var(--c-lv); }
-/* Service kit: 2 × 2; from 1536px three columns — feed | calendar | digest + poster stacked. */
-.cm-kit-stack { display: contents; }
-@media (width >= 96rem) {
-  .cm-kit { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .cm-kit-stack { display: flex; min-width: 0; flex-direction: column; gap: 1.25rem; }
-  .cm-kit-stack > * { flex: 1; }
-}
 /* Report + sidebar (tips, published writers). The sidebar is 20rem from 1024px, 22rem from
    1536px; from 1800px its two cards sit side by side (44rem) and the report keeps ~1000px.
    (Plain CSS on purpose: Tailwind emits min-[1800px]: rules BEFORE 2xl: rules, so the two

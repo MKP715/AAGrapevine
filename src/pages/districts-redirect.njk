@@ -1,28 +1,29 @@
 ---
-# The old /meeting/ address (and /es/meeting/) → the Meetings page, /meetings/. A tiny stand-alone
-# page (the same pattern as subscribe-redirect.njk): JavaScript keeps the #anchor (#weekly-open,
-# #next-meeting …) and any ?query; without JavaScript the meta refresh goes to the top of the page.
-# noindex + canonical point search engines at /meetings/, and the stub is kept out of the sitemap,
-# the search index and page lists.
+# The old /districts/ address (and /es/districts/) → the GV/LV report on the Monthly toolkit
+# (/monthly/#report), its one home now. A tiny stand-alone page like subscribe-redirect.njk:
+# JavaScript keeps an anchor that still exists on /monthly/ (#report, #ways …) and any ?query,
+# and sends every other old anchor (#kit, #dir-title …) to #report; without JavaScript the meta
+# refresh goes to /monthly/#report. noindex + canonical point search engines at /monthly/, and
+# the stub is kept out of the sitemap, the search index and page lists.
 pagination: { data: languages, size: 1, alias: lang }
-permalink: "{{ '/' if lang == 'en' else '/es/' }}meeting/index.html"
+permalink: "{{ '/' if lang == 'en' else '/es/' }}districts/index.html"
 layout: false
 sitemap: false
 eleventyExcludeFromCollections: true
 ---
-{%- set target = "/meetings/" | lurl(lang) -%}
+{%- set target = "/monthly/" | lurl(lang) -%}
 <!doctype html>
 <html lang="{{ lang }}">
 <head>
 <meta charset="utf-8">
 {#- the base plugin does not rewrite script text, so the url filter adds the path prefix -#}
-<script>location.replace({{ (target | url) | dump | safe }} + location.search + location.hash);</script>
-<meta http-equiv="refresh" content="0; url={{ target }}">{#- the HTML base plugin adds the path prefix here -#}
+<script>var h = /^#(report|ways|mp-)/.test(location.hash) ? location.hash : "#report"; location.replace({{ (target | url) | dump | safe }} + location.search + h);</script>
+<meta http-equiv="refresh" content="0; url={{ target }}#report">{#- the HTML base plugin adds the path prefix here -#}
 <meta name="robots" content="noindex">
 <link rel="canonical" href="{{ target | siteUrl(site) }}">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="/favicon.ico" sizes="any">
-<title>{{ "nav.meetings" | t(lang) }} · {{ site | pick(lang, "title") }}</title>
+<title>{{ "community.report.title" | t(lang) }} · {{ site | pick(lang, "title") }}</title>
 <style>
   :root { color-scheme: light dark; --paper: #fbf8f2; --ink: #1d1a26; --muted: #57526a; --link: #0a5fa8; }
   @media (prefers-color-scheme: dark) { :root { --paper: #121019; --ink: #eeeaf6; --muted: #b3adc4; --link: #8cc2f2; } }
@@ -36,10 +37,9 @@ eleventyExcludeFromCollections: true
 </head>
 <body>
 <main>
-  <h1>{{ "read.subs.moved_title" | t(lang) }}</h1>
-  <p>{{ "committee.meetings.moved_text" | t(lang) }}</p>
-  <p><a id="go" href="{{ target }}">{{ "nav.meetings" | t(lang) }} →</a></p>
+  <h1>{{ "community.report.moved_title" | t(lang) }}</h1>
+  <p>{{ "community.report.moved_text" | t(lang) }}</p>
+  <p><a href="{{ target }}#report">{{ "community.report.title" | t(lang) }} →</a></p>
 </main>
-<script>document.getElementById("go").href += location.hash;</script>
 </body>
 </html>

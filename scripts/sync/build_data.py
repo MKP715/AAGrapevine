@@ -1,6 +1,6 @@
 """Assemble the site data — data/site/*.json, the ONLY files the templates read — from the raw
 source files (data/raw/*.json). Adds English ⇄ Spanish translations, "new" flags, the events
-calendar, What's New, districts, the published-writers spotlight (spotlight.json: where each
+calendar, What's New, the published-writers spotlight (spotlight.json: where each
 Grapevine / La Viña writer is from, Area 65 first) and the /status/ page.
 Contract: docs/DATA_SCHEMA.md §3 + §5.
 
@@ -27,10 +27,10 @@ from typing import Any, Callable, Iterable
 from urllib.parse import unquote, urlsplit
 from zoneinfo import ZoneInfo
 
-import yaml
-
+from . import meetings as MTG
+from . import pdf_curate as PDF
 from . import translate as T
-from .common import (CONTENT_DIR, RAW_DIR, SITE_DIR, STATE_DIR, clean_text, get_logger, load_config, now_iso,
+from .common import (RAW_DIR, SITE_DIR, STATE_DIR, clean_text, get_logger, load_config, now_iso,
                      parse_iso, read_json, short_hash, slugify, strip_html, to_iso, truncate, write_json)
 from .geo import SCOPES, classify_location, fold
 from .meeting import (MonthlyRule, check_skip_dates, meeting_skip_notes, parse_hhmm, upcoming_meetings,
@@ -66,13 +66,14 @@ SOURCES: list[tuple[str, str, str]] = [
     ("manual_events", "Events (content/events)", "Eventos (content/events)"),
     ("articles", "Grapevine & La Viña articles", "Artículos de Grapevine y La Viña"),
     ("editorial", "Editorial themes (upcoming issues)", "Temas editoriales (próximos números)"),
-    ("pdfs", "PDF library (crawl of both sites)", "Biblioteca de PDF (rastreo de ambos sitios)"),
+    ("pdfs", "Document library (Grapevine, La Viña and AA)", "Biblioteca de documentos (La Viña, Grapevine y AA)"),
     ("youtube", "YouTube videos", "Videos de YouTube"),
     ("podcasts", "Podcasts", "Pódcasts"),
     ("instagram", "Instagram posts", "Publicaciones de Instagram"),
     ("weekly_open", "Grapevine Weekly Open meeting", "Reunión Grapevine Weekly Open"),
     ("events_external", "GV/LV event calendars", "Calendarios de eventos de GV/LV"),
     ("shop", "Book of the Month & subscription prices", "Libro del mes y precios de suscripción"),
+    ("meetings", "Grapevine meetings (our Area and nearby)", "Reuniones de Grapevine (nuestra Área y cercanas)"),
 ]
 
 # Canonical key order of a site item. `last_seen` is deliberately NOT here: it only serves the sync
@@ -368,7 +369,7 @@ def committee_meetings(ctx: Ctx, count: int = 12) -> list[dict]:
     out = []
     for m in upcoming_meetings(count):
         out.append({
-            "id": f"ev:committee:{m['ymd']}", "source": "committee", "kind": "event", "url": "/meeting/",
+            "id": f"ev:committee:{m['ymd']}", "source": "committee", "kind": "event", "url": "/meetings/",
             "title": title["en"], "summary": summary["en"], "lang": "en", "date": m["start"],
             "first_seen": None, "image": None, "tags": ["committee"],
             "category": "committee", "status": "ok",
@@ -1945,63 +1946,6 @@ def build_spotlight(ctx: Ctx, items: list[dict], counts: dict, now: str) -> dict
             "items": [clean_private(copy.deepcopy(i)) for i in items]}
 
 
-# =========================================================================== districts
-def json_safe(v: Any) -> Any:
-    """Hand-written YAML values → JSON types (dates → 'YYYY-MM-DD', anything odd → text)."""
-    if v is None or isinstance(v, (str, int, float, bool)):
-        return v
-    if isinstance(v, (datetime, date)):
-        return v.isoformat()
-    if isinstance(v, dict):
-        return {str(k): json_safe(x) for k, x in v.items()}
-    if isinstance(v, (list, tuple, set)):
-        return [json_safe(x) for x in v]
-    return str(v)
-
-
-def build_districts(ctx: Ctx, i18n: I18n) -> list[dict]:
-    path = CONTENT_DIR / "districts.yml"
-    try:
-        data = yaml.safe_load(path.read_text(encoding="utf-8")) if path.exists() else {}
-    except Exception as e:
-        log.error("content/districts.yml has a formatting problem (%s) — districts page left empty", e)
-        ctx.raw_problems["districts"] = f"content/districts.yml: {e}"[:200]
-        return []
-    rows = (data or {}).get("districts") or [] if isinstance(data, dict) else []
-    items = []
-    for r in rows:
-        if not isinstance(r, dict) or r.get("number") in (None, ""):
-            continue
-        num = r["number"]
-        num = int(num) if str(num).strip().isdigit() else clean_text(num)
-        it = {"id": f"district:{num}", "number": num, "name": clean_text(r.get("name")),
-              "language": str(r.get("language") or "en").lower(), "website": clean_text(r.get("website")),
-              "gvr_contact": clean_text(r.get("gvr_contact")), "meets": clean_text(r.get("meets"))}
-        for k, v in r.items():
-            if k not in it and v is not None:
-                it[str(k)] = json_safe(v)      # e.g. "updated: 2026-09-01" is a date for YAML
-        prior = "es" if it["language"] == "es" else "en"
-        it["_langs"] = {"name": T.detect_language(it["name"], prior) if T.needs_translation(it["name"]) else None,
-                        "meets": T.detect_language(it["meets"], prior) if T.needs_translation(it["meets"]) else None}
-        for field in ("name", "meets"):
-            i18n.want(it[field], it["_langs"][field], (0, 0.0))
-        items.append(it)
-    items.sort(key=lambda d: (0, d["number"], "") if isinstance(d["number"], int) else (1, 0, str(d["number"])))
-    return items
-
-
-def finish_district(it: dict, i18n: I18n) -> None:
-    langs = it.pop("_langs", {})
-    i18n_out, machine = {}, set()
-    for field in ("name", "meets"):
-        src = langs.get(field)
-        i18n_out[field], m = i18n.pair(it[field], src)
-        if m:
-            machine.add(other(src))
-    it["i18n"] = i18n_out
-    it["machine"] = sorted(machine)
-
-
 # =========================================================================== shop (official store data)
 # data/raw/shop.json (scripts/sync/shop.py) → data/site/shop.json: the Book of the Month offers, the
 # bulk-book discount tiers, the subscription prices per publication × region and short descriptions of
@@ -2277,7 +2221,8 @@ def main(argv: list[str] | None = None) -> int:
             "episodes": simple(ctx, "podcasts", ("episode",)),
             "instagram": simple(ctx, "instagram", ("post",)),
             "articles": simple(ctx, "articles", ("article",)),
-            "pdfs": simple(ctx, "pdfs", ("pdf",)),
+            # official AA sources only (config library.official_hosts) — see pdf_curate.py
+            "pdfs": PDF.official_only(simple(ctx, "pdfs", ("pdf",)), PDF.official_hosts(ctx.cfg)),
             "drive": simple(ctx, "drive", exclude=("announcement",), skip=closed_form),
             "editorial": simple(ctx, "editorial"),
             "weekly_open": weekly_open_items(ctx),
@@ -2291,9 +2236,13 @@ def main(argv: list[str] | None = None) -> int:
         except Exception as e:  # the store data never breaks the build
             log.error("shop.json could not be built (%s: %s) — writing an empty one", type(e).__name__, e)
             shop, shop_wanted = empty_shop(), []
+        try:   # Grapevine meetings (scripts/sync/meetings.py → build_site): proper names, nothing to translate
+            meetings = MTG.build_site(ctx.raw.get("meetings") or {}, ctx.cfg)
+        except Exception as e:  # never breaks the build
+            log.error("meetings.json could not be built (%s: %s) — writing an empty one", type(e).__name__, e)
+            meetings = MTG.empty_site()
         wn_plan = plan_whatsnew(ctx, cols)
         spot_items, spot_counts = plan_spotlight(ctx, cols["articles"])
-        districts = build_districts(ctx, i18n)
         # What's New and the spotlight (home page) are translated first
         plan_translations(ctx, cols, {id(it) for _, it in wn_plan} | {id(it) for it in spot_items}, i18n)
         for _, it in wn_plan:
@@ -2313,20 +2262,22 @@ def main(argv: list[str] | None = None) -> int:
                 except Exception as e:
                     log.warning("skipped %s: %s: %s", it.get("id"), type(e).__name__, e)
             cols[name] = kept
+        # Library: each document once (same file / superseded / language editions → one entry);
+        # What's New follows (an entry of a merged document points at the entry that took it over).
+        cols["pdfs"], pdf_swaps = PDF.curate(cols["pdfs"])
+        wn_plan = PDF.remap_plan(wn_plan, pdf_swaps)
         finish_meta(meta, meta_wanted, i18n)
         finish_shop(shop, shop_wanted, i18n)
         for _, it in wn_plan:
             if "_album" in it:
                 finish_group(ctx, it, i18n)
                 it["is_new"] = True
-        for d in districts:
-            finish_district(d, i18n)
         whatsnew = materialize_whatsnew([(wn, it) for wn, it in wn_plan])
         for it in whatsnew:
             it.setdefault("is_new", ctx.is_new(it, raw_source(it)))
 
         counts = {name: len(items) for name, items in cols.items()}
-        counts.update({"whatsnew": len(whatsnew), "districts": len(districts), "shop": shop_count(shop)})
+        counts.update({"whatsnew": len(whatsnew), "shop": shop_count(shop)})
         now = now_iso()
         for name in SITE_FILES:
             src = SINGLE_SOURCE.get(name)
@@ -2337,13 +2288,20 @@ def main(argv: list[str] | None = None) -> int:
             write_json(out_dir / f"{name}.json", doc)
         write_json(out_dir / "whatsnew.json", {"updated": now, "fixture": False,
                                               "items": [clean_private(i) for i in whatsnew]})
-        write_json(out_dir / "districts.json", {"updated": now, "fixture": False,
-                                               "items": [clean_private(d) for d in districts]})
         spot_items, spot_counts = plan_spotlight(ctx, cols["articles"])     # again: translated + kept items
         spotlight = build_spotlight(ctx, spot_items, spot_counts, now)
         write_json(out_dir / "spotlight.json", spotlight)
         write_json(out_dir / "shop.json", {**shop, "updated": shop.get("updated") or now})
+        counts["meetings"] = len(meetings["items"])
+        write_json(out_dir / "meetings.json", {**meetings, "updated": meetings.get("updated") or now})
         status = build_status(ctx, translator, i18n, counts, not a.no_translate, i18n.seconds)
+        for s in status["sources"]:     # the Library's count: official documents, each once (pdf_curate.py)
+            if s["source"] == "pdfs":
+                s["count"] = counts["pdfs"]
+                s["new_7d"] = sum(1 for i in cols["pdfs"] if (ts(i.get("first_seen")) or 0) >= ctx.now_ts - 7 * 86400)
+        # the Status page's library panel counts the same curated entries (not the files before merging)
+        status["crawl"]["pdfs"] = counts["pdfs"]
+        status["crawl"]["pdfs_with_thumbs"] = sum(1 for i in cols["pdfs"] if (i.get("extra") or {}).get("thumb"))
         status["spotlight"] = {"today": spotlight["today"], "home_days": spotlight["home_days"],
                                "list_days": spotlight["list_days"], "counts": spotlight["counts"],
                                "items": len(spotlight["items"])}

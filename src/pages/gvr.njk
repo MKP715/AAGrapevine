@@ -46,7 +46,7 @@ pageScripts: ["/assets/js/read.js"]
         {% if ex.pages %}<span>· {{ ("read.one_page" if ex.pages == 1 else "common.pages") | t(lang, {n: ex.pages}) }}</span>{% endif %}
       </span>
     </span>
-    <span class="sr-only">(PDF, {{ "common.external" | t(lang) }})</span>
+    <span class="sr-only">({{ "kind.pdf" | t(lang) | lower }}, {{ "common.external" | t(lang) }})</span>
   </a>
 </li>
 {% endmacro %}
@@ -222,9 +222,9 @@ pageScripts: ["/assets/js/read.js"]
                 <a class="link" href="{{ L.rlv_register if k == 'rlv' else L.gvr_register }}" target="_blank" rel="noopener">{{ ("read.gvr.register_" + k) | t(lang) }}</a>
                 {% endfor %}
               {% elif s.id == "handbook" %}
-                {% for h in handbooks %}<a class="link" href="{{ h.url }}" target="_blank" rel="noopener" lang="{{ h.lang }}">{{ h | readPdfTitle(lang) }} (PDF)</a>{% else %}<a class="link" href="#kits">{{ "read.gvr.see_kits" | t(lang) }}</a>{% endfor %}
+                {% for h in handbooks %}<a class="link" href="{{ h.url }}" target="_blank" rel="noopener" lang="{{ h.lang }}">{{ h | readPdfTitle(lang) }} ({{ "kind.pdf" | t(lang) | lower }})</a>{% else %}<a class="link" href="#kits">{{ "read.gvr.see_kits" | t(lang) }}</a>{% endfor %}
               {% elif s.id == "meeting" %}
-                <a class="link" href="{{ '/meeting/' | lurl(lang) }}">{% if meeting.next %}{{ "read.gvr.next_meeting" | t(lang, {date: meeting.next.start | fmtDate(lang, "medium")}) }}{% else %}{{ "nav.meeting" | t(lang) }}{% endif %}</a>
+                <a class="link" href="{{ '/meetings/' | lurl(lang) }}#committee-meeting">{% if meeting.next %}{{ "read.gvr.next_meeting" | t(lang, {date: meeting.next.start | fmtDate(lang, "medium")}) }}{% else %}{{ "nav.meeting" | t(lang) }}{% endif %}</a>
               {% elif s.id == "table" %}
                 <a class="link" href="{{ '/shop/' | lurl(lang) }}#cat-title">{{ "read.subs.cat_title" | t(lang) }}</a>
                 <a class="link" href="#kit-{{ 'rlv' if lang == 'es' else 'gvr' }}">{{ "read.gvr.g_flyers" | t(lang) }}</a>
@@ -238,7 +238,7 @@ pageScripts: ["/assets/js/read.js"]
                 <a class="link" href="{{ '/digest/' | lurl(lang) }}">{{ "nav.digest" | t(lang) }}</a>
                 <a class="link" href="{{ '/feed.xml' | lurl(lang) }}">{{ "feeds.rss" | t(lang) }}</a>
               {% elif s.id == "district" %}
-                <a class="link" href="{{ '/districts/' | lurl(lang) }}">{{ "nav.districts" | t(lang) }}</a>
+                <a class="link" href="{{ '/monthly/' | lurl(lang) }}#report">{{ "community.report.hero_btn" | t(lang) }}</a>
                 <a class="link" href="{{ '/share/' | lurl(lang) }}">{{ "nav.share" | t(lang) }}</a>
               {% endif %}
             </p>
@@ -262,7 +262,7 @@ pageScripts: ["/assets/js/read.js"]
           <span class="text-muted">{{ meeting.next.start | fmtDate(lang, "time") }} · {{ site.meeting.platform }}</span>
         </p>
         {% endif %}
-        <a class="btn-primary mt-4" href="{{ '/meeting/' | lurl(lang) }}">{{ "read.gvr.help_btn" | t(lang) }} {% icon "arrow-right", "size-4" %}</a>
+        <a class="btn-primary mt-4" href="{{ '/meetings/' | lurl(lang) }}">{{ "read.gvr.help_btn" | t(lang) }} {% icon "arrow-right", "size-4" %}</a>
       </div>
       <div class="card card-pad">
         <p class="font-display text-lg font-semibold">{{ "read.gvr.contact_title" | t(lang) }}</p>
@@ -331,7 +331,7 @@ pageScripts: ["/assets/js/read.js"]
 <section class="section container-page pt-0" aria-labelledby="connect-title">
   <h2 id="connect-title" class="h-section mb-6">{{ "read.gvr.connect_title" | t(lang) }}</h2>
   <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-    {% for c in [["video", "/meeting/", "nav.meeting", "nav.meeting_desc"], ["calendar-days", "/events/", "nav.events", "nav.events_desc"], ["share-2", "/share/", "nav.share", "read.gvr.c_share"], ["mail", "/digest/", "nav.digest", "read.gvr.c_digest"], ["map", "/districts/", "nav.districts", "nav.districts_desc"], ["sparkles", "/whats-new/", "nav.whats_new", "read.gvr.c_new"]] %}
+    {% for c in [["calendar-clock", "/meetings/", "nav.meetings", "nav.meetings_desc"], ["calendar-days", "/events/", "nav.events", "nav.events_desc"], ["share-2", "/share/", "nav.share", "read.gvr.c_share"], ["mail", "/digest/", "nav.digest", "read.gvr.c_digest"], ["clipboard-list", "/monthly/#report", "home.svc_report", "home.svc_report_desc"], ["sparkles", "/whats-new/", "nav.whats_new", "read.gvr.c_new"]] %}
     <a href="{{ c[1] | lurl(lang) }}" class="card card-link group flex items-center gap-4 p-4 no-underline">
       <span class="grid size-11 shrink-0 place-items-center rounded-xl bg-gv-soft text-gv">{% icon c[0], "size-5" %}</span>
       <span class="min-w-0 flex-1"><span class="block font-semibold text-ink group-hover:text-gv">{{ c[2] | t(lang) }}</span><span class="block text-sm text-muted">{{ c[3] | t(lang) }}</span></span>

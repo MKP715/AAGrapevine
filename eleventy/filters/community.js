@@ -1,5 +1,5 @@
-// Filters for the "community" pages: What's New, Weekly Digest, Districts,
-// Share Kit (QR), Status, RSS feeds and sitemap.
+// Filters for the "community" pages: What's New, Weekly Digest, the GV/LV report (on the
+// Monthly toolkit, /monthly/#report), Share Kit (QR), Status, RSS feeds and sitemap.
 //
 // Everything here is pure data shaping (no network), so the pages keep
 // working with empty data and the build never fails because a source was
@@ -767,7 +767,7 @@ export function digestText(dg, langs, style, site, t, media = {}) {
     out.push(wa ? `🗓️ ${head(label)}` : head(label));
     out.push(`${when} — Zoom`);
     out.push(both("community.digest.text_all_welcome"));
-    out.push(absUrl(langPath("/meeting/", main), site));
+    out.push(absUrl(langPath("/meetings/", main), site));
     out.push("");
   }
 
@@ -803,7 +803,7 @@ function uniqByTitle(items, lang) {
 }
 
 /* ------------------------------------------------------------------ */
-/*  District report template                                           */
+/*  GV/LV report template (/monthly/#report)                           */
 /* ------------------------------------------------------------------ */
 /**
  * Newest issue of a publication: articles.json `issues` (newest first, with
@@ -855,7 +855,7 @@ export function reportText(rd, lang, site, t) {
   let n = 0;
   const num = () => `${++n}.`;
 
-  // "56 articles, 8 podcast episodes, 10 videos and 1 service PDF" — zero counts are left out.
+  // "56 articles, 8 podcast episodes, 10 videos and 1 service document" — zero counts are left out.
   const counts = [["article", rd.articles], ["episode", rd.episodes], ["video", rd.videos], ["pdf", rd.pdfs]]
     .filter(([, n]) => n > 0)
     .map(([k, n]) => T(n === 1 ? `n_${k}_one` : `n_${k}`, { n }));
@@ -924,7 +924,7 @@ export function reportText(rd, lang, site, t) {
 
   if (rd.next) {
     out.push(`${num()} ${T("t_meeting", { date: fmtShortDayMid(rd.next.start, lang), time: fmtTime(rd.next.start, lang) })}`);
-    out.push(`   ${url("/meeting/")}`);
+    out.push(`   ${url("/meetings/")}`);
   }
   out.push(`${num()} ${T("t_ask")}`);
   out.push("");
@@ -963,23 +963,6 @@ export function statusView(status, now = Date.now()) {
     };
   });
   const c = status?.crawl || {};
-  const known = num(c.known_pages) || 0;
-  const crawled = Math.min(num(c.crawled_pages) || 0, known || Infinity);
-  const perRun = num(c.last_run_pages) || 0;
-  // Pages never read successfully. Some of them are not "left to check" but links that answer
-  // with an error (e.g. an e-mail address written as a link → HTTP 400): the robot retries those
-  // with a growing pause, so they are NOT in the queue (queue_remaining). Counting them as "left
-  // to check" would show "4 left · about 1 day" for ever. `never_crawled_failing` is used when the
-  // pipeline provides it; otherwise the never-read pages that are not queued are the failing ones.
-  const never = num(c.never_crawled) ?? Math.max(0, known - crawled);
-  const queued = num(c.queue_remaining);
-  const failing = Math.min(never, num(c.never_crawled_failing) ?? (queued !== null ? Math.max(0, never - queued) : 0));
-  const remaining = Math.max(0, never - failing);
-  const est = num(c.est_days_to_full);
-  let daysLeft = null;
-  if (known > 0 && remaining === 0) daysLeft = 0;
-  else if (est !== null && est > 0) daysLeft = Math.max(1, Math.ceil(est));
-  else if (perRun > 0) daysLeft = Math.ceil(remaining / perRun);
   const tr = status?.translations || {};
   // Optional outside calendars (config/site.yml sources.ics_feeds) — build_data's status.json `feeds`.
   // Kept apart from the content sources: a feed blocked by a site's bot protection is an extra that
@@ -1012,19 +995,12 @@ export function statusView(status, now = Date.now()) {
     // says so, so the big number is not read as "1,240 new things this week". From the second
     // week on this is false by itself — no date to update by hand.
     allFound7d: totalItems > 0 && found7d >= totalItems,
+    // The Status page's library panel: document facts only (curated entries, build_data.py).
     crawl: {
-      known,
-      crawled: known ? crawled : num(c.crawled_pages) || 0,
-      pct: known ? Math.round((crawled / known) * 1000) / 10 : 0,   // one decimal
       pdfs: num(c.pdfs) || 0,
       thumbs: num(c.pdfs_with_thumbs) || 0,
-      perRun,
-      remaining,
-      failing,
-      daysLeft,
-      errors: num(c.page_errors) || 0,
       updated: c.updated || null,
-      hasData: known > 0 || crawled > 0,
+      hasData: (num(c.pdfs) || 0) > 0,
     },
     translations: {
       cached: num(tr.cached) || 0,
@@ -1160,11 +1136,6 @@ export default function (eleventyConfig, helpers) {
     }
     return [...m.entries()].map(([key, list]) => ({ key, items: list }));
   });
-
-  // Districts sorted by number; entries without a number are dropped.
-  eleventyConfig.addFilter("cmDistricts", (items) =>
-    (items || []).filter((d) => d && d.number !== undefined && d.number !== null && d.number !== "")
-      .sort((a, b) => (Number(a.number) || 0) - (Number(b.number) || 0) || String(a.number).localeCompare(String(b.number))));
 
   // mailto: with subject AND body (the shared `mailto` filter only takes a subject)
   eleventyConfig.addFilter("cmMailto", (email, subject = "", body = "") => {

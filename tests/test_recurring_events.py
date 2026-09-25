@@ -223,7 +223,7 @@ class RecurringEventsBuild(unittest.TestCase):
 
     def test_words_match_the_committee_meeting_line(self):
         """The rule words are the site's own (src/_i18n/committee.json), so the booth's line and the
-        committee meeting's line on /meeting/ can never be worded differently."""
+        committee meeting's line on /meetings/ can never be worded differently."""
         strings = json.loads((ROOT / "src" / "_i18n" / "committee.json").read_text(encoding="utf-8"))
         for lang in ("en", "es"):
             self.assertEqual(B._RULE[lang], strings["committee.rule"][lang], lang)
