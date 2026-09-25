@@ -25,7 +25,9 @@ const nav = {
         // weekly open meetings. It stays under Committee: it is the first tab of the committee sub-nav.
         { key: "nav.meetings", url: "/meetings/", icon: "calendar-clock", page: "meetings", descKey: "nav.meetings_desc" },
         { key: "nav.events", url: "/events/", icon: "calendar-days", page: "events", descKey: "nav.events_desc" },
-        { key: "nav.documents", url: "/documents/", icon: "folder-open", page: "documents", descKey: "nav.documents_desc" },
+        // Portfolio: the committee's own files (reports, notes, slides, workshops) from its Google Drive.
+        // (It was /documents/ — documents-redirect.njk keeps that address working.)
+        { key: "nav.portfolio", url: "/portfolio/", icon: "folder-open", page: "portfolio", descKey: "nav.portfolio_desc" },
         { key: "nav.photos", url: "/photos/", icon: "images", page: "photos", descKey: "nav.photos_desc" },
         { key: "nav.announcements", url: "/announcements/", icon: "megaphone", page: "announcements", descKey: "nav.announcements_desc" },
       ],

@@ -1,4 +1,4 @@
-// Committee area filters — Meeting, Events (+ .ics feeds), Documents, Photos, Announcements.
+// Committee area filters — Meeting, Events (+ .ics feeds), Portfolio (Drive documents), Photos, Announcements.
 //
 // Everything here is PURE data shaping: it turns the synced data files
 // (data/site/events.json, drive.json, announcements.json, weekly_open.json)
@@ -717,7 +717,7 @@ export function buildIcs(events, o = {}) {
 /* ------------------------------------------------------------------ */
 /*  Drive: documents & photos                                          */
 /* ------------------------------------------------------------------ */
-// Category tabs on /documents/ (fixed order; unknown folders follow by name)
+// Category tabs on the Portfolio page, /portfolio/ (fixed order; unknown folders follow by name)
 export const DOC_TABS = [
   { key: "reports", icon: "file-bar-chart" },
   { key: "notes", icon: "notebook-pen" },
@@ -1064,7 +1064,7 @@ export function digestShop(shop, lang = "en", now = new Date()) {
     // the page language's magazine first
     .sort((a, b) => ((a.isLv ? "es" : "en") === lang ? 0 : 1) - ((b.isLv ? "es" : "en") === lang ? 0 : 1));
   const pcts = [...new Set(offers.map((o) => o.pct).filter(Boolean))];
-  // This month's poster & toolkit: /monthly/YYYY-MM/ (America/Chicago)
+  // This month's Monthly toolkit page: /monthly/YYYY-MM/ (America/Chicago)
   const ym = today.slice(0, 7);
   const monthLabel = fmt(parseInstant(`${ym}-15`), lang, { month: "long", year: "numeric" }); // "September 2026" / "septiembre de 2026"
   return { offers, pct: pcts.length === 1 ? pcts[0] : null, month: { key: ym, path: `/monthly/${ym}/`, label: monthLabel } };
@@ -1639,14 +1639,14 @@ export default function (eleventyConfig, helpers) {
         return normalizeEvents(db?.events?.items || [], {}, L, { monthsBack: 0, monthsAhead: 0 })
           .filter((e) => !e.past && !e.committee && !(e.recurring && e.series && (seen.has(e.series) || !seen.add(e.series)))).length;
       })(),
-      documents: documentTabs(EMPTY ? [] : db?.drive?.items, L).total,
+      portfolio: documentTabs(EMPTY ? [] : db?.drive?.items, L).total,
       photos: photoAlbums(EMPTY ? [] : db?.drive?.items, L).reduce((s, a) => s + a.count, 0),
       announcements: announcementList(EMPTY ? [] : db?.announcements?.items).length,
     };
     const pages = [
       { key: "meetings", url: "/meetings/", icon: "calendar-clock" },
       { key: "events", url: "/events/", icon: "calendar-days" },
-      { key: "documents", url: "/documents/", icon: "folder-open" },
+      { key: "portfolio", url: "/portfolio/", icon: "folder-open" },
       { key: "photos", url: "/photos/", icon: "images" },
       { key: "announcements", url: "/announcements/", icon: "megaphone" },
     ];

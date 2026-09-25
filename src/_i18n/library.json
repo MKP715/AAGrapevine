@@ -1,7 +1,7 @@
 {
   "library.meta_desc": {
-    "en": "Official documents from AA Grapevine, La Viña and AA World Services plus NETA 65 committee documents — GVR and RLV kits, catalogs, flyers and order forms. Searchable and kept up to date.",
-    "es": "Documentos oficiales de La Viña, AA Grapevine y AA World Services, y del comité de NETA 65: kits para RLV y GVR, catálogos, volantes y formularios. Puedes buscarlos y los mantenemos al día."
+    "en": "Official documents from AA Grapevine, La Viña and AA World Services plus the NETA 65 committee's portfolio — GVR and RLV kits, catalogs, flyers and order forms. Searchable and kept up to date.",
+    "es": "Documentos oficiales de La Viña, AA Grapevine y AA World Services, y el portafolio del comité de NETA 65: kits para RLV y GVR, catálogos, volantes y formularios. Puedes buscarlos y los mantenemos al día."
   },
   "library.eyebrow": {
     "en": "Library · Documents",
@@ -664,8 +664,8 @@
     "es": "Videos de La Viña y Grapevine en YouTube."
   },
   "search.page_desc.library": {
-    "en": "Every official Grapevine, La Viña and AA document plus committee documents.",
-    "es": "Todos los documentos oficiales de La Viña, Grapevine y AA, más los documentos del comité."
+    "en": "Every official Grapevine, La Viña and AA document, plus the committee's portfolio.",
+    "es": "Todos los documentos oficiales de La Viña, Grapevine y AA, más el portafolio del comité."
   },
   "search.page_desc.about": {
     "en": "Who we are and how this self-updating site works.",
@@ -716,9 +716,9 @@
     "en": "events calendar workshop booth assembly conference ics",
     "es": "eventos calendario taller mesa asamblea conferencia"
   },
-  "search.kw.documents": {
-    "en": "committee documents reports minutes notes slides workshops drive",
-    "es": "documentos del comité informes actas notas presentaciones talleres drive"
+  "search.kw.portfolio": {
+    "en": "portfolio committee documents files reports minutes notes slides workshops drive",
+    "es": "portafolio documentos del comité archivos informes actas notas presentaciones talleres drive"
   },
   "search.kw.photos": {
     "en": "photos pictures albums gallery booth",
@@ -813,8 +813,8 @@
     "es": "Todavía no se ha subido nada en este panel; los primeros archivos aparecerán aquí en cuanto se compartan."
   },
   "library.col_empty_reports_cta": {
-    "en": "Committee documents",
-    "es": "Documentos del comité"
+    "en": "Committee portfolio",
+    "es": "Portafolio del comité"
   },
   "search.topic_open": {
     "en": "Open topic — send your story any time",

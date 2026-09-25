@@ -446,6 +446,8 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
       </button>
       {% endif %}
       {% if site.links.podcasts_page %}<a class="link inline-flex min-h-11 items-center text-sm" href="{{ site.links.podcasts_page }}" target="_blank" rel="noopener">{{ "media.full_archive" | t(lang) }}</a>{% endif %}
+      {#- one-line pointer: the story lines live on /contribute/#record -#}
+      <a class="link inline-flex min-h-11 items-center gap-1.5 text-sm" href="{{ '/contribute/' | lurl(lang) }}#record">{% icon "mic", "size-4 shrink-0" %}{{ "media.record_own" | t(lang) }}</a>
     </div>
   </section>
 

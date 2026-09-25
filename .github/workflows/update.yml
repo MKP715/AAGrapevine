@@ -21,7 +21,16 @@ on:
     # GitHub cron is always UTC: 10:17 UTC = 5:17 AM Central in summer
     # (CDT) and 4:17 AM in winter (CST). Minute 17 avoids the top-of-the-
     # hour rush, when GitHub delays scheduled jobs the most.
+    # The FULL daily run (every source + the PDF crawl).
     - cron: "17 10 * * *"
+    # A second, QUICK run for the Grapevine / La Viña daily quote, which is
+    # out before 6 AM Texas time: 12:07 UTC = 7:07 AM CDT (summer) and
+    # 6:07 AM CST (winter), so it is always after 6 AM in Texas — the 10:17
+    # run can be too early for it in winter. "Decide what to sync" below
+    # recognises this exact string (github.event.schedule) and runs
+    # `run_all --quick` (Drive, announcements, podcasts, the daily quote;
+    # QUICK_MODULES in scripts/sync/run_all.py). Keep the two equal.
+    - cron: "7 12 * * *"
 
   workflow_dispatch:
     inputs:
@@ -30,7 +39,7 @@ on:
         type: string
         default: ""
       skip_crawl:
-        description: "Quick refresh only: Google Drive, announcements and podcasts (about 10–20 minutes). Videos, magazine stories, Instagram and PDFs wait for the next daily run."
+        description: "Quick refresh only: Google Drive, announcements, podcasts and the daily quote (about 10–20 minutes). Videos, magazine stories, Instagram and PDFs wait for the next daily run."
         type: boolean
         default: false
 
@@ -157,6 +166,8 @@ jobs:
         id: plan
         env:
           EVENT: ${{ github.event_name }}
+          # The cron string that started a scheduled run ("17 10 * * *" or "7 12 * * *").
+          SCHEDULE: ${{ github.event.schedule }}
           INPUT_MINUTES: ${{ inputs.crawl_minutes }}
           INPUT_SKIP: ${{ inputs.skip_crawl }}
         run: |
@@ -166,10 +177,14 @@ jobs:
           CONFIG_MINUTES="$(python -c "from scripts.sync.common import load_config as c; v=((c().get('sources') or {}).get('crawler') or {}).get('minutes_per_run'); print(40 if v in (None, '') else max(0, int(float(v))))" 2>/dev/null || echo 40)"
           if ! [[ "$CONFIG_MINUTES" =~ ^[0-9]+$ ]]; then CONFIG_MINUTES=40; fi
 
-          if [ "$EVENT" = "push" ] || [ "${INPUT_SKIP:-false}" = "true" ]; then
-            # Settings/content/template edit, or "skip_crawl" ticked: quick refresh
-            # (only Google Drive, announcements and podcasts; see QUICK_MODULES in
-            # scripts/sync/run_all.py) and rebuild. The daily run does the rest.
+          # The 12:07 UTC schedule (the daily quote, after 6 AM Texas time) is a quick run;
+          # the 10:17 UTC schedule stays the full daily run. Same string as `cron:` above.
+          QUOTE_CRON="7 12 * * *"
+          if [ "$EVENT" = "push" ] || [ "${INPUT_SKIP:-false}" = "true" ] \
+             || { [ "$EVENT" = "schedule" ] && [ "${SCHEDULE:-}" = "$QUOTE_CRON" ]; }; then
+            # Settings/content/template edit, "skip_crawl" ticked, or the morning quote run:
+            # quick refresh (only Google Drive, announcements, podcasts and the daily quote;
+            # see QUICK_MODULES in scripts/sync/run_all.py) and rebuild. The daily run does the rest.
             mode=quick
             minutes=0
           else
@@ -205,7 +220,7 @@ jobs:
           budget=$(( minutes + 30 + translate + 20 ))
           if [ "$budget" -gt 345 ]; then budget=345; fi
 
-          echo "Sync plan: event=$EVENT mode=$mode crawl=${minutes} min, translation ≤ ${translate} min, step budget ${budget} min"
+          echo "Sync plan: event=$EVENT${SCHEDULE:+ ($SCHEDULE)} mode=$mode crawl=${minutes} min, translation ≤ ${translate} min, step budget ${budget} min"
           {
             echo "mode=$mode"
             echo "minutes=$minutes"
@@ -281,6 +296,7 @@ jobs:
         if: ${{ always() }}
         env:
           EVENT: ${{ github.event_name }}
+          SCHEDULE: ${{ github.event.schedule }}
           BRANCH: ${{ github.ref_name }}
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -310,6 +326,8 @@ jobs:
           day="$(TZ=America/Chicago date +%F)"
           if [ "$EVENT" = "push" ]; then
             msg="chore(data): content sync after settings/content change ${day} [skip ci]"
+          elif [ "$EVENT" = "schedule" ] && [ "${SCHEDULE:-}" = "7 12 * * *" ]; then
+            msg="chore(data): morning refresh with the daily quote ${day} [skip ci]"
           else
             msg="chore(data): daily content sync ${day} [skip ci]"
           fi

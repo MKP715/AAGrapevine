@@ -14,7 +14,8 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
     Every section opens with ui.sectionHead (eyebrow form, its tone colour, the "all" link on
     the right) and is left out when it has no data — Home never shows an empty section.
     Section order: hero (the shared ui.pageHero, with the next-meeting card on the
-    right from 1024px) · meeting card (below 1024px) + site counters · FRESH (what no other
+    right from 1024px) · meeting card (below 1024px) + site counters · the Grapevine / La Viña
+    daily quote (a second card in the same page-overlap block) · FRESH (what no other
     section shows) · announcements · magazines (+ write for the magazines, + this month in the
     Shop: Book of the Month · subscriptions · monthly toolkit) · listen & watch · PUBLISHED
     WRITERS · events · library · instagram · committee uploads · the service band.
@@ -239,7 +240,14 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
 {#- Right below the hero, tucked into its faded edge (page-overlap): the next-meeting card
     (below 1024px — from 1024px it is inside the hero) and the site counters (from 640px;
     on phones the same sections are in the menu and further down the page). The counters
-    link to their pages, so the strip doubles as a quick way in. -#}
+    link to their pages, so the strip doubles as a quick way in.
+    Then the DAILY QUOTE card (db.quote ← scripts/sync/quote.py; homeDailyQuotes): Grapevine's Daily
+    Quote and La Viña's Cita Diaria exactly as published, each in its own language (lang set, never
+    translated), the page language's magazine first — side by side from 1024px, stacked below.
+    Each quote shows ITS day; home.js adds "Today" in the visitor's browser when that day is today in
+    Central time. Links: the quote on the official home page and the official e-mail sign-up. No other
+    page repeats it; left out when there is no quote from the last 7 days. -#}
+{%- set quotes = D.quote | homeDailyQuotes(L) -%}
 {%- set stats = [
   { n: D.pdfs.items.length, key: "home.stat_pdfs", url: "/library/", icon: "file-text", tone: "gv" },
   { n: D.episodes.items.length, key: "home.stat_episodes", url: "/listen/", icon: "headphones", tone: "grape" },
@@ -247,9 +255,10 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
   { n: D.articles.items.length, key: "home.stat_articles", url: "/read/", icon: "book-open-text", tone: "lv" }
 ] %}
 {%- set statCount = 0 %}{% for s in stats %}{% if s.n %}{% set statCount = statCount + 1 %}{% endif %}{% endfor %}
-{% if meeting.next or statCount %}
-<div class="container-page page-overlap home-under{{ ' max-sm:hidden' if not meeting.next }}{{ ' lg:hidden' if not statCount }}">
-  <div class="card home-under-card">
+{% if meeting.next or statCount or quotes.length %}
+<div class="container-page page-overlap home-under">
+  {% if meeting.next or statCount %}
+  <div class="card home-under-card{{ ' max-sm:hidden' if not meeting.next }}{{ ' lg:hidden' if not statCount }}">
     {% if meeting.next %}<div class="home-under-meet lg:hidden">{{ meetingCard("page", L, meeting, mt) }}</div>{% endif %}
     {% if statCount %}
     <div class="home-under-stats">
@@ -265,6 +274,37 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
     </div>
     {% endif %}
   </div>
+  {% endif %}
+  {% if quotes.length %}
+  <section class="card home-quote" aria-labelledby="quote-title">
+    <h2 id="quote-title" class="home-under-label">{% icon "quote", "size-4 shrink-0" %} {{ "home.quote_title" | t(L) }}</h2>
+    <div class="home-quote-grid{{ ' is-single' if quotes.length == 1 }}">
+      {% for q in quotes %}
+      {%- set isLv = q.pub == "lv" -%}
+      <article class="home-q home-tone-{{ q.pub }}" aria-labelledby="quote-{{ q.pub }}-mag" data-quote-day="{{ q.date }}">
+        <div class="home-q-head">
+          <h3 id="quote-{{ q.pub }}-mag" class="home-q-mag"{% if isLv and L != "es" %} lang="es"{% endif %}>{{ "La Viña" if isLv else "Grapevine" }}</h3>
+          <p class="home-q-when"><span class="badge-new" data-quote-today hidden>{{ "home.quote_today" | t(L) }}</span><time datetime="{{ q.date }}">{{ q.day }}</time></p>
+          {% if q.lang != L %}<span class="badge-muted"><span class="uppercase" aria-hidden="true">{{ q.lang }}</span><span class="sr-only">{{ ('lang.' ~ q.lang) | t(L) }}</span></span>{% endif %}
+        </div>
+        <figure class="home-q-fig">
+          <blockquote class="home-q-text" lang="{{ q.lang }}" cite="{{ q.url }}"><p>{{ q.text }}</p></blockquote>
+          {% if q.attribution or q.source %}
+          <figcaption class="home-q-by">
+            {% if q.attribution %}<span class="block" lang="{{ q.lang }}">— {{ q.attribution }}</span>{% endif %}
+            {% if q.source %}<span class="block">{{ "home.quote_from" | t(L) }} <cite{% if (q.source_lang or q.lang) != L %} lang="{{ q.source_lang or q.lang }}"{% endif %}>{{ q.source }}</cite></span>{% endif %}
+          </figcaption>
+          {% endif %}
+        </figure>
+        <p class="home-q-links">
+          <a class="link tap-link" href="{{ q.url }}" target="_blank" rel="noopener">{{ "home.quote_more" | t(L, { host: q.host }) }}<span class="sr-only"> {{ "home.opens_new_tab" | t(L) }}</span></a>
+          {% if q.signup_url %}<a class="link tap-link" href="{{ q.signup_url }}" target="_blank" rel="noopener">{% icon "mail", "size-4 shrink-0" %}{{ "home.quote_email" | t(L) }}<span class="sr-only"> {{ "home.opens_new_tab" | t(L) }}</span></a>{% endif %}
+        </p>
+      </article>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
 </div>
 {% endif %}
 
@@ -884,14 +924,14 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
 {% if driveItems.length %}
 <section class="section{{ ' pt-0' if posts.length }}" aria-labelledby="drive-title">
   <div class="container-page">
-    {% call ui.sectionHead("home.drive_title" | t(L), "home.drive_sub" | t(L), "/documents/" | lurl(L), "home.drive_all" | t(L), "folder-open", { eyebrow: "home.drive_eyebrow" | t(L), tone: "text-vine", id: "drive-title", lang: L }) %}
+    {% call ui.sectionHead("home.drive_title" | t(L), "home.drive_sub" | t(L), "/portfolio/" | lurl(L), "home.drive_all" | t(L), "folder-open", { eyebrow: "home.drive_eyebrow" | t(L), tone: "text-vine", id: "drive-title", lang: L }) %}
     <a href="{{ '/photos/' | lurl(L) }}" class="btn-ghost btn-sm">{% icon "images", "size-4" %} {{ "nav.photos" | t(L) }}</a>
     {% endcall %}
     <ul class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6" role="list">
       {% for f in driveItems %}
       {%- set pic = f | homeImage -%}
       {%- set isPhoto = f.kind == "photo" or (f.extra and f.extra.is_image) -%}
-      {%- set fHref = (f.url or (f.extra.view_url if f.extra else "") or ("/photos/" if isPhoto else "/documents/")) | lurl(L) -%}
+      {%- set fHref = (f.url or (f.extra.view_url if f.extra else "") or ("/photos/" if isPhoto else "/portfolio/")) | lurl(L) -%}
       <li>
         <article class="card card-link group relative flex h-full flex-col overflow-hidden">
           <div class="relative aspect-[4/3] overflow-hidden rounded-t-[var(--radius-card)] bg-surface-2">

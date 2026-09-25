@@ -22,10 +22,17 @@ import { safeUrl } from "../../eleventy.config.js";
 // "meetings" = Grapevine meetings (TSML type "GR") of the intergroups in and next to our Area
 // (scripts/sync/meetings.py → build_data; docs/DATA_SCHEMA.md → "meetings.json"): db.meetings.items,
 // db.meetings.groups, db.meetings.sources, db.meetings.type_labels.
+// "audio_project" = the record-your-story phone lines of Grapevine (Audio Project) and La Viña
+// ("Graba tu historia") as their official pages give them (scripts/sync/audio_project.py → build_data;
+// docs/DATA_SCHEMA.md → "audio_project.json"): db.audio_project.gv / .lv (null when unknown), read by
+// /contribute/#record. No `items` list of its own (an empty one is added here).
+// "quote" = Grapevine's Daily Quote and La Viña's Cita Diaria as published on their home pages
+// (scripts/sync/quote.py → build_data; docs/DATA_SCHEMA.md → "quote.json"): db.quote.items (the newest
+// quote of each, Grapevine first; url + signup_url cleaned below) and db.quote.history, read by the home page.
 const FILES = [
   "episodes", "videos", "instagram", "articles", "pdfs", "drive", "events",
   "announcements", "editorial", "weekly_open", "whatsnew", "status",
-  "spotlight", "shop", "meetings",
+  "spotlight", "shop", "meetings", "audio_project", "quote",
 ];
 
 // Field names that hold a link or an image address: url, image, extra.online_url, extra.thumbs[],

@@ -1,6 +1,6 @@
 {
- "generated": "2026-09-25T08:54:02Z",
- "updated": "2026-09-25T08:54:02Z",
+ "generated": "2026-09-25T14:14:44Z",
+ "updated": "2026-09-25T14:14:44Z",
  "fixture": false,
  "sources": [
   {
@@ -361,6 +361,25 @@
    }
   },
   {
+   "source": "audio_project",
+   "label": "Record your story by phone (Grapevine & La Viña)",
+   "label_es": "Graba tu historia por teléfono (La Viña y Grapevine)",
+   "ok": true,
+   "updated": "2026-09-25T14:09:42Z",
+   "attempted": "2026-09-25T14:09:42Z",
+   "count": 2,
+   "new_7d": 2,
+   "error": null,
+   "stats": {
+    "parts": 2,
+    "fresh": [
+     "gv",
+     "lv"
+    ],
+    "requests": 3
+   }
+  },
+  {
    "source": "meetings",
    "label": "Grapevine meetings (our Area and nearby)",
    "label_es": "Reuniones de Grapevine (nuestra Área y cercanas)",
@@ -383,6 +402,24 @@
     "duplicates_merged": 1,
     "kept_from_before": 0,
     "requests": 8
+   }
+  },
+  {
+   "source": "quote",
+   "label": "Daily quote",
+   "label_es": "Cita del día",
+   "ok": true,
+   "updated": "2026-09-25T14:14:34Z",
+   "attempted": "2026-09-25T14:14:34Z",
+   "count": 2,
+   "new_7d": 2,
+   "error": null,
+   "stats": {
+    "fetched": 2,
+    "parsed": 2,
+    "requests": 2,
+    "today": "2026-09-25",
+    "new": 2
    }
   }
  ],
@@ -429,7 +466,9 @@
   "events": 31,
   "whatsnew": 150,
   "shop": 54,
-  "meetings": 23
+  "meetings": 23,
+  "audio_project": 2,
+  "quote": 2
  },
  "problems": {},
  "feeds": [
@@ -445,7 +484,7 @@
    "error": "HTTP 403: the site's bot protection (Cloudflare “Just a moment…” check) turned the robot away",
    "last_success": null,
    "last_attempt": "2026-09-25T08:54:01Z",
-   "checked_this_run": true,
+   "checked_this_run": false,
    "from_copy": false,
    "events_count": 0,
    "duplicates": 0,

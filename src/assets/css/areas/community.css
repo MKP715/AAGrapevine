@@ -324,3 +324,35 @@
   .cm-st-side { grid-template-columns: minmax(0, 1fr); }
 }
 @media (width >= 112.5rem) { .cm-st-layout { grid-template-columns: minmax(0, 1fr) 34rem; } }
+
+/* ------------------------------------------------------------------ */
+/*  Record your story by phone (/contribute/#record)                    */
+/* ------------------------------------------------------------------ */
+/* The story line: ONE big tel: link (at least 64px tall, the number in large type) in the magazine's
+   soft tone; the caption above the number uses the strong tone (small text on a soft fill). */
+.cm-rec-phone {
+  display: flex; align-items: center; gap: 0.875rem; min-height: 4rem; padding: 0.75rem 1.125rem 0.75rem 0.75rem;
+  border-radius: 1rem; color: var(--c-ink); text-decoration: none;
+  transition: box-shadow 0.15s ease, background-color 0.15s ease;
+}
+.cm-rec-phone--gv { background: var(--c-gv-soft); }
+.cm-rec-phone--lv { background: var(--c-lv-soft); }
+.cm-rec-phone:hover { box-shadow: var(--shadow-card); }
+.cm-rec-phone:focus-visible { outline: 3px solid var(--c-gv); outline-offset: 2px; }
+.cm-rec-phone-icon {
+  display: grid; place-items: center; flex-shrink: 0; width: 2.75rem; height: 2.75rem; border-radius: 9999px;
+  color: #fff;
+}
+.cm-rec-phone--gv .cm-rec-phone-icon { background: var(--c-gv); }
+.cm-rec-phone--lv .cm-rec-phone-icon { background: var(--c-lv); }
+:root[data-theme="dark"] .cm-rec-phone-icon { color: var(--c-paper); }
+.cm-rec-num {
+  display: block; font-family: var(--font-display); font-size: clamp(1.5rem, 1.25rem + 1vw, 1.875rem);
+  font-weight: 600; line-height: 1.15; font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+/* A key to press on the keypad (1, #, 2 …): a small key cap inside the sentence. */
+.cm-rec-key {
+  display: inline-grid; place-items: center; min-width: 1.6em; height: 1.6em; padding: 0 0.3em; margin-inline: 0.1em;
+  border: 1px solid var(--c-line); border-bottom-width: 2px; border-radius: 0.45rem; background: var(--c-surface-2);
+  color: var(--c-ink); font-family: inherit; font-size: 0.95em; font-weight: 700; line-height: 1; vertical-align: 0.05em;
+}

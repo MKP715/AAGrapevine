@@ -72,11 +72,11 @@
     "en": "Workshops, booths, assemblies & calendar",
     "es": "Talleres, mesas, asambleas y calendario"
   },
-  "nav.documents": {
-    "en": "Committee documents",
-    "es": "Documentos del comité"
+  "nav.portfolio": {
+    "en": "Portfolio",
+    "es": "Portafolio"
   },
-  "nav.documents_desc": {
+  "nav.portfolio_desc": {
     "en": "Reports, notes, slides & workshop files",
     "es": "Informes, notas, presentaciones y talleres"
   },
@@ -125,8 +125,8 @@
     "es": "Participa"
   },
   "nav.monthly": {
-    "en": "Monthly toolkit & posters",
-    "es": "Kit del mes y carteles"
+    "en": "Monthly toolkit",
+    "es": "Kit del mes"
   },
   "nav.monthly_desc": {
     "en": "This month's issue, your GV/LV report, printable posters",

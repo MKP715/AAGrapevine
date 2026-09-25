@@ -10,7 +10,7 @@ pageScripts: ["/assets/js/shop.js"]
 {#- SHOP — the ONE page for buying and subscribing. Order (docs: ui.njk): hero → page nav →
     Book of the Month + bulk discounts (db.shop — eleventy/filters/shop.js) → the two magazines →
     subscription prices → Carry the Message (the one feature band) → home groups + order forms →
-    catalogs (db.pdfs) → customer service. Every purchase links to the official stores
+    catalogs (db.pdfs) with customer service beside them (one band). Every purchase links to the official stores
     (aagrapevine.org / aalavina.org); prices and dates only ever come from synced data, never typed
     here. Other pages show at most a one-line link here (keep it that way). The old /subscribe/
     address is a redirect stub (subscribe-redirect.njk) that keeps its #anchors (#carry,
@@ -486,51 +486,65 @@ pageScripts: ["/assets/js/shop.js"]
   </div>
 </section>
 
-{#- ---------- 6. Catalogs (db.pdfs) ----------
-    1–3 catalogs (the usual case): horizontal cards (cover left, text right) under the heading.
-    More: a cover grid that gains columns on wide screens (up to 8), older ones in a list. -#}
+{#- ---------- 6. Catalogs (db.pdfs) + 7. customer service: one band ----------
+    From 1024px the customer service card sits on the RIGHT of the catalogs: two equal columns with
+    1–3 catalogs (the usual case), or a 20rem / 24rem column beside the cover grid when there are
+    more. It is a sticky-aside, so it stays in view beside a taller catalog column. Below 1024px it
+    comes after the catalogs and the store links (DOM order = phone order).
+    Catalogs: 1–3 are horizontal cards (cover left, text right); more are a cover grid, older ones
+    in a list. -#}
 {%- set fewCats = catalogs.length and catalogs.length <= 3 -%}
-<section id="catalogs" class="section section-band" aria-labelledby="cat-title">
-  <div class="container-page">
-    {% call ui.sectionHead("read.subs.cat_title" | t(lang), "read.subs.cat_sub" | t(lang), "", "", "book-open", { eyebrow: "shop.cat_eyebrow" | t(lang), id: "cat-title", lang: lang }) %}{% if catalogs.length %}{{ ui.freshness(db.pdfs.updated, lang) }}{% endif %}{% endcall %}
-    {% if fewCats %}
-    <div class="grid grid-cols-1 gap-5 {{ 'max-w-2xl' if catalogs.length == 1 else 'md:grid-cols-2' }} {{ 'xl:grid-cols-3' if catalogs.length == 3 }}">
-      {% for p in catalogs %}{{ pdfCoverRow(p, lang) }}{% endfor %}
-    </div>
-    {% elif catalogs.length %}
-    <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4 xl:grid-cols-6 min-[1800px]:grid-cols-8">
-      {% for p in catalogs | limit(8) %}{{ pdfCover(p, lang) }}{% endfor %}
-    </div>
-    {% if catalogs.length > 8 %}
-    <details class="read-faq group/cat mt-5">
-      <summary class="btn-secondary btn-sm cursor-pointer">{{ ("read.subs.older_catalogs_one" if catalogs.length == 9 else "read.subs.older_catalogs") | t(lang, {n: catalogs.length - 8}) }} {% icon "chevron-down", "size-4 transition group-open/cat:rotate-180" %}</summary>
-      <ul class="card mt-3 p-2">{% for p in catalogs | offset(8) %}{{ pdfRow(p, lang) }}{% endfor %}</ul>
-    </details>
-    {% endif %}
-    {% else %}
-    {{ ui.emptyState("book-open", "read.subs.cat_empty" | t(lang), "read.subs.cat_empty_text" | t(lang)) }}
-    {% endif %}
-    <div class="mt-6 flex flex-wrap items-center gap-2 sm:gap-3">
-      {% for pub in pubOrder %}<a class="btn-secondary" href="{{ L.lv_store if pub == 'lv' else L.gv_store }}" target="_blank" rel="noopener">{% icon "store", "size-4" %} {{ ("read.subs.lv_store" if pub == "lv" else "read.subs.gv_store") | t(lang) }}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a>{% endfor %}
-    </div>
-  </div>
-</section>
+<div class="section section-band">
+  <div class="container-page {{ 'layout-aside' if catalogs.length > 3 else 'shop-cat-help' }}">
+    <section id="catalogs" class="min-w-0" aria-labelledby="cat-title">
+      {% call ui.sectionHead("read.subs.cat_title" | t(lang), "read.subs.cat_sub" | t(lang), "", "", "book-open", { eyebrow: "shop.cat_eyebrow" | t(lang), id: "cat-title", lang: lang }) %}{% if catalogs.length %}{{ ui.freshness(db.pdfs.updated, lang) }}{% endif %}{% endcall %}
+      {% if fewCats %}
+      {#- one: the card fills its column from 1024px · two: side by side on tablets and from 1536px ·
+          three: one per row (no orphan on a last row) -#}
+      <div class="grid grid-cols-1 gap-5 {{ 'max-w-2xl lg:max-w-none' if catalogs.length == 1 else ('md:grid-cols-2 lg:grid-cols-1 2xl:grid-cols-2' if catalogs.length == 2) }}">
+        {% for p in catalogs %}{{ pdfCoverRow(p, lang) }}{% endfor %}
+      </div>
+      {% elif catalogs.length %}
+      <div class="grid grid-cols-2 gap-4 sm:grid-cols-4 sm:gap-5 min-[1800px]:grid-cols-8">
+        {% for p in catalogs | limit(8) %}{{ pdfCover(p, lang) }}{% endfor %}
+      </div>
+      {% if catalogs.length > 8 %}
+      <details class="read-faq group/cat mt-5">
+        <summary class="btn-secondary btn-sm cursor-pointer">{{ ("read.subs.older_catalogs_one" if catalogs.length == 9 else "read.subs.older_catalogs") | t(lang, {n: catalogs.length - 8}) }} {% icon "chevron-down", "size-4 transition group-open/cat:rotate-180" %}</summary>
+        <ul class="card mt-3 p-2">{% for p in catalogs | offset(8) %}{{ pdfRow(p, lang) }}{% endfor %}</ul>
+      </details>
+      {% endif %}
+      {% else %}
+      {{ ui.emptyState("book-open", "read.subs.cat_empty" | t(lang), "read.subs.cat_empty_text" | t(lang)) }}
+      {% endif %}
+      <div class="mt-6 flex flex-wrap items-center gap-2 sm:gap-3">
+        {% for pub in pubOrder %}<a class="btn-secondary" href="{{ L.lv_store if pub == 'lv' else L.gv_store }}" target="_blank" rel="noopener">{% icon "store", "size-4" %} {{ ("read.subs.lv_store" if pub == "lv" else "read.subs.gv_store") | t(lang) }}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a>{% endfor %}
+      </div>
+    </section>
 
-{#- ---------- 7. Customer service ---------- -#}
-<section id="help" class="section container-page" aria-labelledby="help-title">
-  {{ ui.sectionHead("read.subs.help_title" | t(lang), "read.subs.help_text" | t(lang), "", "", "phone", { eyebrow: "shop.nav_help" | t(lang), id: "help-title", lang: lang }) }}
-  <ul class="card grid grid-cols-1 divide-y divide-line overflow-hidden sm:grid-cols-3 sm:divide-x sm:divide-y-0" role="list">
-    {#- pick(): the page language's number when config/site.yml has one (support_phone_intl_es:
-        the Spanish international desk on /es/), else the plain key. support_phone_es is the
-        Spanish toll-free line and is shown on both pages. -#}
-    {% for ph in [["support_phone_us", "help_us"], ["support_phone_es", "help_es"], ["support_phone_intl", "help_intl"]] %}
-    {%- set num = L | pick(lang, ph[0]) -%}
-    {% if num %}
-    <li class="flex flex-col justify-start px-5 py-4 sm:p-6">
-      <p class="text-xs font-semibold uppercase tracking-wider text-muted">{{ ("read.subs." + ph[1]) | t(lang) }}</p>
-      <a class="tap-link mt-1 items-center gap-2 self-start font-display text-xl font-semibold whitespace-nowrap text-ink no-underline hover:text-gv" href="{{ num | readTel }}">{{ num }}</a>
-    </li>
-    {% endif %}
-    {% endfor %}
-  </ul>
-</section>
+    {#- Customer service: a panel card (card-h heading); its phone list is laid out in shop.css
+        (.shop-help-list: label over number on phones, one row each once the card is 24rem wide,
+        three columns while the card spans the page at 768–1023px) -#}
+    <section id="help" class="sticky-aside" aria-labelledby="help-title">
+      <div class="card card-pad shop-help">
+        <p class="eyebrow flex items-center gap-2 text-gv">{% icon "phone", "size-4 shrink-0" %}<span>{{ "shop.nav_help" | t(lang) }}</span></p>
+        <h2 id="help-title" class="card-h mt-2">{{ "read.subs.help_title" | t(lang) }}</h2>
+        <p class="mt-2 max-w-2xl text-sm leading-relaxed text-muted">{{ "read.subs.help_text" | t(lang) }}</p>
+        <ul class="shop-help-list mt-4" role="list">
+          {#- pick(): the page language's number when config/site.yml has one (support_phone_intl_es:
+              the Spanish international desk on /es/), else the plain key. support_phone_es is the
+              Spanish toll-free line and is shown on both pages. -#}
+          {% for ph in [["support_phone_us", "help_us"], ["support_phone_es", "help_es"], ["support_phone_intl", "help_intl"]] %}
+          {%- set num = L | pick(lang, ph[0]) -%}
+          {% if num %}
+          <li>
+            <p class="min-w-0 text-xs font-semibold uppercase tracking-wider text-muted">{{ ("read.subs." + ph[1]) | t(lang) }}</p>
+            <a class="tap-link shrink-0 items-center font-display text-xl font-semibold whitespace-nowrap text-ink no-underline hover:text-gv" href="{{ num | readTel }}">{{ num }}</a>
+          </li>
+          {% endif %}
+          {% endfor %}
+        </ul>
+      </div>
+    </section>
+  </div>
+</div>

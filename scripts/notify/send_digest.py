@@ -10,7 +10,7 @@ announcements.json — and sends ONE clean e-mail (HTML + plain text) with:
     articles, podcast episodes, videos, Instagram, PDFs, committee uploads
   * a compact Book of the Month teaser (data/site/shop.json → botm: title, sale price, last
     day, the official store link + the site's /shop/#botm) and one line to this month's
-    poster & toolkit (/monthly/YYYY-MM/) — never counted as news on their own
+    Monthly toolkit page (/monthly/YYYY-MM/) — never counted as news on their own
   * each section in English first, then in Spanish (titles are already translated)
 
 Standard library only (smtplib + email.mime) so it runs anywhere without installing
@@ -127,7 +127,7 @@ T = {
         "botm_regular": "(regular {price})",
         "botm_until": "until {date}",
         "botm_more": "Book of the Month details on our shop page",
-        "toolkit": "This month's poster & toolkit ({month})",
+        "toolkit": "This month's toolkit ({month})",
     },
     "es": {
         "lang_name": "Español",
@@ -176,7 +176,7 @@ T = {
         "botm_regular": "(precio regular {price})",
         "botm_until": "hasta el {date}",
         "botm_more": "Detalles del libro del mes en nuestra página de la tienda",
-        "toolkit": "El cartel y el kit de este mes ({month})",
+        "toolkit": "El kit de este mes ({month})",
     },
 }
 
@@ -207,7 +207,7 @@ GROUPS = [
     ("videos", "/watch/"),
     ("instagram", "/instagram/"),
     ("pdfs", "/library/"),
-    ("drive", "/documents/"),
+    ("drive", "/portfolio/"),
 ]
 
 
@@ -682,7 +682,7 @@ def collect(now: datetime, days: int, event_days: int, max_per: int) -> dict:
     data["botm"] = [b for b in load_botm()
                     if b.get("url") and isinstance(b.get("sale_price"), (int, float))
                     and not (is_date_only(b.get("ends")) and str(b["ends"]) < today)]
-    # This month's poster & toolkit page: /monthly/YYYY-MM/ (Central time)
+    # This month's Monthly toolkit page: /monthly/YYYY-MM/ (Central time)
     data["month"] = to_central(now).strftime("%Y-%m")
 
     # which languages carry machine translations (for the small footnote)
@@ -998,7 +998,7 @@ def render_lang_html(lang: str, data: dict, cfg: dict, links: Links, max_per: in
     if not total_count(data):     # (a monthly recurring event alone is not news)
         parts.append(f'<tr><td style="padding:16px 32px;font-size:14px;color:{C["muted"]};">{_esc(t["nothing"])}</td></tr>')
 
-    # ---- Book of the Month (compact) + this month's poster & toolkit
+    # ---- Book of the Month (compact) + this month's toolkit
     bm = botm_block(data, lang, links)
     month_line = (f'<p style="margin:{12 if bm["rows"] else 0}px 0 0;font-size:14px;">'
                   f'<a href="{_esc(bm["month_url"])}" style="color:{C["gv"]};font-weight:bold;">{_esc(bm["month_label"])} →</a></p>')

@@ -9,6 +9,7 @@
    - Published-writers spotlight: recounts the "last 60 days" window with the visitor's own
      date (plain JS, no Alpine needed), so stories drop out on time between daily builds,
      and re-sizes the "see the full list" tile that closes the grid's last row.
+   - Daily quote: shows "Today" next to a quote whose day is today in Central time.
    The hero art (hero-canvas.js, loaded by base.njk) sizes itself; nothing to do here. */
 (function () {
   "use strict";
@@ -243,4 +244,17 @@
     }
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initSpotlights); else initSpotlights();
+
+  /* Daily quote card: the "Today" badge of a quote whose day (data-quote-day) is today in Central time.
+     The server never says "today" (the page may be read the next morning, before the new quote is on
+     the site); a tab left open overnight is re-checked when it comes back into view. */
+  function markQuoteToday() {
+    var today = ymdToday(), quotes = document.querySelectorAll("[data-quote-day]");
+    for (var i = 0; i < quotes.length; i++) {
+      var badge = quotes[i].querySelector("[data-quote-today]");
+      if (badge) badge.hidden = quotes[i].getAttribute("data-quote-day") !== today;
+    }
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", markQuoteToday); else markQuoteToday();
+  document.addEventListener("visibilitychange", function () { if (!document.hidden) markQuoteToday(); });
 })();

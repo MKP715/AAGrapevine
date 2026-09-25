@@ -1,6 +1,6 @@
 /* =====================================================================
    Area styles — Shop (/shop/: Book of the Month, bulk discounts, subscription
-   price table) and the home page's Book of the Month / shop teaser.
+   price table, catalogs + customer service) and the home page's Book of the Month / shop teaser.
    Templates use Tailwind utilities first; only what utilities can't express
    lives here. Colors come from theme tokens (var(--c-*)), so dark mode works.
    ===================================================================== */
@@ -122,6 +122,31 @@
 .shop-table thead th.text-right { text-align: right; }
 .shop-table tbody th { font-weight: 500; color: var(--c-ink); text-align: left; }
 .shop-table tbody tr:last-child > * { border-bottom: 0; }
+
+/* ---------- Catalogs + customer service (one band) ----------
+   Stacked below 1024px (catalogs, then customer service); from 1024px two equal columns, so the
+   customer service card sits on the right of the catalogs with no empty half. (More than three
+   catalogs use layout-aside instead: the cover grid gets the width, the card a 20rem / 24rem column.) */
+.shop-cat-help { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2.5rem; }
+@media (width >= 64rem) { .shop-cat-help { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 3rem; } }
+@media (width >= 96rem) { .shop-cat-help { gap: 4rem; } }
+
+/* The phone list: label over number on phones; one row each (label left, number right) once the
+   card is 24rem wide; three columns while the card spans the page (768–1023px). */
+.shop-help { container-type: inline-size; }
+.shop-help-list > li { display: flex; flex-direction: column; gap: 0.125rem; padding-block: 0.75rem; border-top: 1px solid var(--c-line); }
+.shop-help-list > li:last-child { padding-bottom: 0; }
+@container (width >= 24rem) {
+  .shop-help-list > li { flex-direction: row; align-items: center; justify-content: space-between; gap: 0.5rem 1rem; }
+}
+@media (48rem <= width < 64rem) {
+  .shop-help-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--c-line); }
+  /* a label on two lines keeps the three numbers on one line: each number sits at the bottom */
+  .shop-help-list > li { flex-direction: column; align-items: flex-start; justify-content: space-between; padding: 0.75rem 1.25rem 0; border-top: 0; }
+  .shop-help-list > li + li { border-left: 1px solid var(--c-line); }
+  .shop-help-list > li:first-child { padding-left: 0; }
+  .shop-help-list > li:last-child { padding-right: 0; }
+}
 
 /* ---------- Home page teaser (index.njk: Book of the Month + subscriptions + monthly kit) ---------- */
 .shop-teaser {

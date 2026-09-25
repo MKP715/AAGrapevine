@@ -749,6 +749,30 @@ export default function (eleventyConfig, helpers) {
     return all ? src : "";
   });
 
+  /* DAILY QUOTE card (db.quote ← scripts/sync/quote.py): the newest Grapevine Daily Quote and Cita Diaria
+     de La Viña, the page language's magazine first (La Viña first on /es/). Adds `day` — the quote's OWN
+     day in the page language ("September 25" / "25 de septiembre"; never "today": the
+     page may be a day old when it is read, so home.js adds "Today" in the browser) — and `host`
+     ("aagrapevine.org") for the "More on …" link. A quote more than `maxAgeDays` days old (its source
+     stopped updating) is left out, so the card goes away instead of showing a stale "daily" quote. */
+  eleventyConfig.addFilter("homeDailyQuotes", (quote, lang = "en", maxAgeDays = 7) => {
+    const cutoff = ymdMinus(ymdCentral(Date.now()), maxAgeDays);
+    const order = lang === "es" ? ["lv", "gv"] : ["gv", "lv"];
+    const loc = LOCALES[lang] || "en-US";
+    return arr(quote && quote.items)
+      .filter((q) => q && order.includes(q.pub) && String(q.text || "").trim() && /^https?:\/\//.test(String(q.url || ""))
+        && /^\d{4}-\d{2}-\d{2}$/.test(String(q.date || "").slice(0, 10)) && String(q.date).slice(0, 10) >= cutoff)
+      .sort((a, b) => order.indexOf(a.pub) - order.indexOf(b.pub))
+      .map((q) => {
+        const ymd = String(q.date).slice(0, 10);
+        let day = ymd;
+        try { day = new Intl.DateTimeFormat(loc, { month: "long", day: "numeric", timeZone: "UTC" }).format(new Date(`${ymd}T12:00:00Z`)); } catch { /* keep the ISO day */ }
+        let host = "";
+        try { host = new URL(q.url).hostname.replace(/^www\./, ""); } catch { /* no host */ }
+        return { ...q, date: ymd, day, host };
+      });
+  });
+
   /* Wrap a caption in curly quotes — without doubling quotes it already has
      ("“Faith is…”" stays as is instead of becoming "““Faith is…””"). */
   eleventyConfig.addFilter("homeQuote", (s) => {
