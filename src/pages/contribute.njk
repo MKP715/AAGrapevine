@@ -7,9 +7,9 @@ titleKey: nav.contribute
 descKey: read.contrib.meta_desc
 pageScripts: ["/assets/js/read.js"]
 ---
-{#- SHARE YOUR STORY — why write, what to send, how to submit to Grapevine and
-    La Viña, upcoming editorial themes & deadlines (db.editorial, synced daily),
-    writing tips, anonymity, writing workshops. -#}
+{#- SHARE YOUR STORY. Flow (docs: ui.njk): hero → page nav → why write (+ who from our Area got
+    published) → what you can send → how to submit → upcoming themes & deadlines (db.editorial,
+    band) → tips + anonymity → writing workshop (the feature band) → FAQ → closing call to action. -#}
 {% import "macros/ui.njk" as ui with context %}
 {%- set L = site.links -%}
 {%- set gvEd = db.editorial.items | readEditorial("gv", lang) -%}
@@ -37,6 +37,21 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
 {%- else %}{{ "read.contrib.due_in" | t(lang, {n: r.days}) }}{% endif -%}
 {%- endmacro %}
 
+{#- One upcoming deadline (after the next one) -#}
+{% macro dlRow(r, lang, isLv) %}
+<div class="read-deadline-row flex items-start gap-3 rounded-xl px-2 py-2" data-deadline-row {% if r.deadline %}{{ dlAttrs(r, lang) }}{% endif %}>
+  <span class="read-num grid w-14 shrink-0 place-items-center rounded-xl bg-surface-2 py-1.5 text-center leading-tight">
+    {% if r.deadline %}<span class="text-[0.65rem] font-semibold uppercase {{ 'text-lv-strong' if isLv else 'text-gv-strong' }}">{{ r.deadline | fmtDate(lang, "monthShort") }}</span><span class="font-display text-xl font-semibold text-ink">{{ r.deadline | fmtDate(lang, "day") }}</span>
+    {% else %}<span class="py-1.5 text-muted">{% icon "calendar-range", "size-5" %}</span>{% endif %}
+  </span>
+  <div class="min-w-0 flex-1">
+    <p class="font-semibold leading-snug text-ink"><span lang="{{ r.themeLang }}">{{ r.theme }}</span>{% if r.machine %} <span class="auto-note align-middle" title="{{ 'common.auto_translated' | t(lang) }} — {{ 'common.auto_translated_help' | t(lang) }}">{% icon "languages", "size-3" %}<span class="sr-only">{{ "common.auto_translated" | t(lang) }}</span></span>{% endif %}</p>
+    {% if r.original %}<p class="text-xs italic text-muted" lang="{{ r.origLang }}">{{ r.original }}</p>{% endif %}
+    <p class="text-xs text-muted">{% if r.issueLabel %}{{ "read.contrib.for_issue" | t(lang, {issue: r.issueLabel}) }} · {% endif %}<span data-days-label>{{ dueText(r, lang) }}</span></p>
+  </div>
+</div>
+{% endmacro %}
+
 {#- One publication's editorial calendar: dated themes (Grapevine) and/or
     open-ended suggested topics (La Viña), plus recently closed deadlines. -#}
 {% macro themeList(ed, pub, lang, calUrl, calPdf) %}
@@ -51,13 +66,13 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
       {{ "La Viña" if isLv else "Grapevine" }}
     </h3>
     <p class="flex flex-wrap items-center gap-x-4 text-sm font-semibold {{ 'text-lv' if isLv else 'text-gv' }}">
-      {% if calPdf %}<a class="inline-flex min-h-10 items-center gap-1 hover:underline" href="{{ calPdf }}" target="_blank" rel="noopener">{% icon "file-down", "size-4" %} {{ ("read.contrib.lv_topics_pdf" if isLv else "read.contrib.calendar_pdf") | t(lang) }}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a>{% endif %}
-      <a class="inline-flex min-h-10 items-center gap-1 hover:underline" href="{{ calUrl }}" target="_blank" rel="noopener">{{ ("read.contrib.lv_list" if isLv else "read.contrib.full_calendar") | t(lang) }} {% icon "arrow-up-right", "size-4" %}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a>
+      {% if calPdf %}<a class="tap-link inline-flex items-center gap-1 hover:underline" href="{{ calPdf }}" target="_blank" rel="noopener">{% icon "file-down", "size-4" %} {{ ("read.contrib.lv_topics_pdf" if isLv else "read.contrib.calendar_pdf") | t(lang) }}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a>{% endif %}
+      <a class="tap-link inline-flex items-center gap-1 hover:underline" href="{{ calUrl }}" target="_blank" rel="noopener">{{ ("read.contrib.lv_list" if isLv else "read.contrib.full_calendar") | t(lang) }} {% icon "arrow-up-right", "size-4" %}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a>
     </p>
   </div>
   <div class="flex flex-1 flex-col gap-3 p-4 sm:p-5">
     {% for r in nextRows %}
-      <div class="read-deadline-next read-deadline-row rounded-2xl border border-line bg-surface-2 p-4 pl-5 sm:p-5 sm:pl-6" data-deadline-row {{ dlAttrs(r, lang) }}>
+      <div class="read-deadline-next read-deadline-row rounded-2xl bg-surface-2 p-4 pl-5 sm:p-5 sm:pl-6" data-deadline-row {{ dlAttrs(r, lang) }}>
         <p class="eyebrow {{ 'text-lv' if isLv else 'text-gv' }}">{{ "read.contrib.next_deadline" | t(lang) }}</p>
         <div class="mt-2 flex items-start gap-4">
           <div class="read-num grid min-w-[4.75rem] shrink-0 place-items-center rounded-2xl px-2 py-2.5 text-center {{ 'bg-lv text-white dark:text-paper' if isLv else 'bg-gv text-white dark:text-paper' }}">
@@ -71,45 +86,50 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
             <p class="mt-1 text-sm font-semibold text-ink"><time datetime="{{ r.deadline }}" class="read-deadline-date">{{ r.deadline | fmtDate(lang, "medium") }}</time> · <span data-days-label>{{ dueText(r, lang) }}</span></p>
           </div>
         </div>
-        {% if r.summary %}<p class="mt-3 line-clamp-4 text-sm leading-relaxed text-muted" lang="{{ r.summaryLang }}">{{ r.summary }}</p>{% endif %}
+        {% if r.summary %}<p class="mt-3 line-clamp-3 text-sm leading-relaxed text-muted" lang="{{ r.summaryLang }}">{{ r.summary }}</p>{% endif %}
         {% if r.summaryMachine %}<p class="auto-note mt-2" title="{{ 'common.auto_translated_help' | t(lang) }}">{% icon "languages", "size-3" %} {{ "common.auto_translated" | t(lang) }}</p>{% endif %}
       </div>
     {% endfor %}
     {% if restRows.length %}
+    {#- the next deadline + 3 more; the rest behind "Show all N deadlines" (so the Grapevine card
+        ends close to La Viña's beside it) -#}
     <div class="grid grid-cols-1 gap-x-4 gap-y-1 @2xl:grid-cols-2">
-      {% for r in restRows %}
-      <div class="read-deadline-row flex items-start gap-3 rounded-xl px-2 py-2" data-deadline-row {% if r.deadline %}{{ dlAttrs(r, lang) }}{% endif %}>
-        <span class="read-num grid w-14 shrink-0 place-items-center rounded-xl border border-line bg-surface py-1.5 text-center leading-tight">
-          {% if r.deadline %}<span class="text-[0.65rem] font-semibold uppercase {{ 'text-lv' if isLv else 'text-gv' }}">{{ r.deadline | fmtDate(lang, "monthShort") }}</span><span class="font-display text-xl font-semibold text-ink">{{ r.deadline | fmtDate(lang, "day") }}</span>
-          {% else %}<span class="py-1.5 text-muted">{% icon "calendar-range", "size-5" %}</span>{% endif %}
-        </span>
-        <div class="min-w-0 flex-1">
-          <p class="font-semibold leading-snug text-ink"><span lang="{{ r.themeLang }}">{{ r.theme }}</span>{% if r.machine %} <span class="auto-note align-middle" title="{{ 'common.auto_translated' | t(lang) }} — {{ 'common.auto_translated_help' | t(lang) }}">{% icon "languages", "size-3" %}<span class="sr-only">{{ "common.auto_translated" | t(lang) }}</span></span>{% endif %}</p>
-          {% if r.original %}<p class="text-xs italic text-muted" lang="{{ r.origLang }}">{{ r.original }}</p>{% endif %}
-          <p class="text-xs text-muted">{% if r.issueLabel %}{{ "read.contrib.for_issue" | t(lang, {issue: r.issueLabel}) }} · {% endif %}<span data-days-label>{{ dueText(r, lang) }}</span></p>
-        </div>
-      </div>
-      {% endfor %}
+      {% for r in restRows | limit(3) %}{{ dlRow(r, lang, isLv) }}{% endfor %}
     </div>
+    {% if restRows.length > 3 %}
+    <details class="read-more group/dl">
+      <summary class="btn-ghost btn-sm cursor-pointer {{ 'text-lv' if isLv else 'text-gv' }}">
+        <span class="group-open/dl:hidden">{{ "read.contrib.all_deadlines" | t(lang, {n: ed.upcoming.length}) }}</span>
+        <span class="hidden group-open/dl:inline">{{ "common.show_less" | t(lang) }}</span>
+        {% icon "chevron-down", "size-4 transition group-open/dl:rotate-180" %}
+      </summary>
+      <div class="mt-1 grid grid-cols-1 gap-x-4 gap-y-1 @2xl:grid-cols-2">
+        {% for r in restRows | offset(3) %}{{ dlRow(r, lang, isLv) }}{% endfor %}
+      </div>
+    </details>
+    {% endif %}
     {% endif %}
 
     {% if ed.evergreen.length %}
-    {%- set EV_SHOW = 8 -%}
+    {#- 8 topics on phones and tablets; 12 from 1024px, where the card sits beside Grapevine's
+        deadlines (topics 9–12 are in both lists: shown in this one from 1024px, in "Show all"
+        below that) -#}
+    {%- set EV_SHOW = 8 -%}{%- set EV_WIDE = 12 -%}
     <div class="{{ 'mt-1 border-t border-line pt-4' if ed.upcoming.length }}">
       <p class="flex items-center gap-2 font-semibold text-ink"><span class="{{ 'text-lv' if isLv else 'text-gv' }}">{% icon "feather", "size-5" %}</span>{{ "read.contrib.evergreen_title" | t(lang) }}</p>
       <p class="mt-0.5 text-sm text-muted">{{ ("read.contrib.evergreen_sub_lv" if isLv else "read.contrib.evergreen_sub_gv") | t(lang) }}</p>
       <ul class="mt-3 grid grid-cols-1 gap-2 @md:grid-cols-2 @4xl:grid-cols-3">
-        {% for r in ed.evergreen | limit(EV_SHOW) %}{{ topicChip(r, lang, isLv) }}{% endfor %}
+        {% for r in ed.evergreen | limit(EV_WIDE) %}{{ topicChip(r, lang, isLv, "hidden lg:flex" if loop.index > EV_SHOW else "") }}{% endfor %}
       </ul>
       {% if ed.evergreen.length > EV_SHOW %}
-      <details class="read-more group/ev mt-2">
+      <details class="read-more group/ev mt-2{{ ' lg:hidden' if ed.evergreen.length <= EV_WIDE }}">
         <summary class="btn-ghost btn-sm cursor-pointer {{ 'text-lv' if isLv else 'text-gv' }}">
           <span class="group-open/ev:hidden">{{ "read.contrib.all_topics" | t(lang, {n: ed.evergreen.length}) }}</span>
           <span class="hidden group-open/ev:inline">{{ "common.show_less" | t(lang) }}</span>
           {% icon "chevron-down", "size-4 transition group-open/ev:rotate-180" %}
         </summary>
         <ul class="mt-1 grid grid-cols-1 gap-2 @md:grid-cols-2 @4xl:grid-cols-3">
-          {% for r in ed.evergreen | offset(EV_SHOW) %}{{ topicChip(r, lang, isLv) }}{% endfor %}
+          {% for r in ed.evergreen | offset(EV_SHOW) %}{{ topicChip(r, lang, isLv, "flex lg:hidden" if loop.index <= EV_WIDE - EV_SHOW else "") }}{% endfor %}
         </ul>
       </details>
       {% endif %}
@@ -126,8 +146,8 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
     {% endif %}
 
     {% if ed.past.length %}
-    <div class="mt-auto border-t border-line pt-3">
-      <p class="flex items-center gap-1.5 px-2 text-xs font-semibold uppercase tracking-wider text-muted">{% icon "history", "size-3.5" %} {{ "read.contrib.recent_past" | t(lang) }}</p>
+    <details class="read-more group/past mt-auto border-t border-line pt-2">
+      <summary class="flex min-h-11 cursor-pointer items-center gap-1.5 px-2 text-xs font-semibold uppercase tracking-wider text-muted">{% icon "history", "size-3.5" %} {{ "read.contrib.recent_past" | t(lang) }} <span class="badge-muted normal-case tracking-normal">{{ ed.past.length }}</span>{% icon "chevron-down", "ml-auto size-4 transition group-open/past:rotate-180" %}</summary>
       <div class="mt-1 space-y-0.5">
         {% for r in ed.past %}
         <div class="read-deadline-row is-past flex items-center justify-between gap-3 rounded-lg px-2 py-1.5 text-sm" data-deadline-row>
@@ -136,7 +156,7 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
         </div>
         {% endfor %}
       </div>
-    </div>
+    </details>
     {% endif %}
   </div>
   <p class="border-t border-line bg-surface-2 px-5 py-3 text-xs leading-relaxed text-muted sm:px-6">{{ ("read.contrib.lv_note" if isLv else "read.contrib.gv_note") | t(lang) }}</p>
@@ -144,8 +164,8 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
 {% endmacro %}
 
 {#- One open-ended suggested topic -#}
-{% macro topicChip(r, lang, isLv) %}
-<li class="flex items-start gap-2.5 rounded-xl border border-line bg-surface px-3 py-2.5">
+{% macro topicChip(r, lang, isLv, show="") %}
+<li class="{{ show or 'flex' }} items-start gap-2.5 rounded-xl bg-surface-2 px-3 py-2.5">
   <span class="mt-0.5 shrink-0 {{ 'text-lv' if isLv else 'text-gv' }}">{% icon "pen-line", "size-4" %}</span>
   <span class="min-w-0">
     <span class="block text-sm font-semibold leading-snug text-ink" lang="{{ r.themeLang }}">{{ r.theme }}{% if r.machine %} <span class="auto-note align-middle" title="{{ 'common.auto_translated' | t(lang) }} — {{ 'common.auto_translated_help' | t(lang) }}">{% icon "languages", "size-3" %}<span class="sr-only">{{ "common.auto_translated" | t(lang) }}</span></span>{% endif %}</span>
@@ -172,8 +192,8 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
       <dd class="min-w-0 flex-1">
         <p class="text-xs font-semibold uppercase tracking-wider text-muted">{{ "read.contrib.by_email" | t(lang) }}</p>
         <div class="mt-1 flex items-center justify-between gap-2">
-          <a class="link min-w-0 break-all" href="mailto:{{ email }}">{{ email }}</a>
-          <button type="button" class="btn-ghost btn-sm -my-1 min-h-9! shrink-0 px-2.5!" data-copy="{{ email }}" aria-label="{{ 'common.copy' | t(lang) }}: {{ email }}">{% icon "copy", "size-4" %}</button>
+          <a class="link tap-link min-w-0 break-all" href="mailto:{{ email }}">{{ email }}</a>
+          <button type="button" class="btn-ghost btn-sm -my-1 min-w-11 shrink-0 px-2.5!" data-copy="{{ email }}" aria-label="{{ 'common.copy' | t(lang) }}: {{ email }}">{% icon "copy", "size-4" %}</button>
         </div>
       </dd>
     </div>
@@ -183,16 +203,16 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
         <p class="text-xs font-semibold uppercase tracking-wider text-muted">{{ "read.contrib.by_mail" | t(lang) }}</p>
         <div class="mt-1 flex items-start justify-between gap-2">
           <address class="min-w-0 not-italic text-ink">{{ mail }}</address>
-          <button type="button" class="btn-ghost btn-sm -my-1 min-h-9! shrink-0 px-2.5!" data-copy="{{ mail }}" aria-label="{{ 'common.copy' | t(lang) }}: {{ mail }}">{% icon "copy", "size-4" %}</button>
+          <button type="button" class="btn-ghost btn-sm -my-1 min-w-11 shrink-0 px-2.5!" data-copy="{{ mail }}" aria-label="{{ 'common.copy' | t(lang) }}: {{ mail }}">{% icon "copy", "size-4" %}</button>
         </div>
       </dd>
     </div>
     <div class="flex items-start gap-3 px-6 py-4 sm:px-7">
       <dt class="mt-0.5 {{ 'text-lv' if isLv else 'text-gv' }}">{% icon "book-marked", "size-5" %}<span class="sr-only">{{ "read.contrib.guidelines" | t(lang) }}</span></dt>
       <dd class="flex flex-wrap gap-x-4 gap-y-1">
-        <a class="link" href="{{ L.lv_guidelines if isLv else L.gv_guidelines }}" target="_blank" rel="noopener">{{ "read.contrib.guidelines" | t(lang) }}</a>
-        <a class="link" href="{{ lvCalendar if isLv else gvCalendar }}" target="_blank" rel="noopener">{{ "read.contrib.themes_link" | t(lang) }}</a>
-        {% if not isLv %}<a class="link" href="{{ gvAudio }}" target="_blank" rel="noopener">{{ "read.contrib.audio_project" | t(lang) }}</a>{% endif %}
+        <a class="link tap-link" href="{{ L.lv_guidelines if isLv else L.gv_guidelines }}" target="_blank" rel="noopener">{{ "read.contrib.guidelines" | t(lang) }}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a>
+        <a class="link tap-link" href="{{ lvCalendar if isLv else gvCalendar }}" target="_blank" rel="noopener">{{ "read.contrib.themes_link" | t(lang) }}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a>
+        {% if not isLv %}<a class="link tap-link" href="{{ gvAudio }}" target="_blank" rel="noopener">{{ "read.contrib.audio_project" | t(lang) }}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a>{% endif %}
       </dd>
     </div>
   </dl>
@@ -213,7 +233,7 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
   <div class="grid flex-1 content-start gap-5 p-6 sm:p-7 @4xl:grid-cols-[minmax(0,1.2fr)_auto] @4xl:items-center @4xl:gap-x-10 @6xl:grid-cols-[minmax(0,1.2fr)_auto_minmax(0,1fr)]">
     <div class="min-w-0">
       <p class="eyebrow flex items-center gap-2.5 text-vine"><span class="grid size-9 shrink-0 place-items-center rounded-xl bg-vine-soft">{% icon "award", "size-5" %}</span>{{ "read.spot.eyebrow" | t(lang) }}</p>
-      <h2 id="spot-title" class="mt-3 font-display text-2xl font-semibold leading-tight text-ink"><a href="{{ '/published/' | lurl(lang) }}" class="no-underline after:absolute after:inset-0 after:content-[''] group-hover:text-gv">{{ "read.spot.title" | t(lang) }}</a></h2>
+      <h3 id="spot-title" class="mt-3 font-display text-2xl font-semibold leading-tight text-ink"><a href="{{ '/published/' | lurl(lang) }}" class="no-underline after:absolute after:inset-0 after:content-[''] group-hover:text-gv">{{ "read.spot.title" | t(lang) }}</a></h3>
       <p class="mt-2 text-sm leading-relaxed text-muted">
         {%- if not hasTexas %}{{ "read.spot.nodata" | t(lang) }}
         {%- else -%}
@@ -250,132 +270,128 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
 </article>
 {% endmacro %}
 
-{#- The shared hero (same height on every page). Its buttons are the standard 44px / 14px size
-    at every width, like every other page; "read-hero" (read.css) keeps phone heroes within
-    24–28rem (both buttons on one row, like the home page). The in-page "Upcoming themes"
-    jump shows from 768px, so the row does not wrap on small tablets. -#}
+{#- Hero: send to each magazine (the page-language magazine first). The sections are in the page
+    nav below, so the hero has no jump buttons. "read-hero" (read.css) keeps both buttons on one
+    row on a 390px phone. -#}
 {% call ui.pageHero(lang, "read.contrib.title" | t(lang), "read.contrib.subtitle" | t(lang), "pen-line", "read.contrib.eyebrow" | t(lang), { class: "read-hero" }) %}
   <div class="hero-actions">
     {% for p in pubOrder %}
     <a class="{{ 'btn-light' if loop.first else 'btn-on-dark' }}" href="{{ L.lv_share_story if p == 'lv' else L.gv_share_story }}" target="_blank" rel="noopener">{% icon "send", "size-4" %} {{ ("read.contrib.send_lv" if p == "lv" else "read.contrib.send_gv") | t(lang) }}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a>
     {% endfor %}
-    <a class="btn-on-dark max-md:hidden" href="#deadlines">{% icon "calendar-clock", "size-4" %} {{ "read.contrib.see_themes" | t(lang) }}</a>
   </div>
 {% endcall %}
 
-{#- ---------- Who from our Area got published (→ /published/) ---------- -#}
-<section class="container-page page-overlap" aria-label="{{ 'read.spot.eyebrow' | t(lang) }}">
-  {{ spotCard(db.spotlight | readSpotlight, lang, "contrib") }}
-</section>
+<div class="container-page page-overlap">{{ ui.pageNav([
+  { href: "#why", label: "read.contrib.nav_why" | t(lang), icon: "heart-handshake" },
+  { href: "#what", label: "read.contrib.nav_what" | t(lang), icon: "feather" },
+  { href: "#submit", label: "read.contrib.nav_submit" | t(lang), icon: "send" },
+  { href: "#deadlines", label: "read.contrib.nav_deadlines" | t(lang), icon: "calendar-clock" },
+  { href: "#tips", label: "read.contrib.nav_tips" | t(lang), icon: "lightbulb" },
+  { href: "#workshop", label: "read.contrib.nav_workshop" | t(lang), icon: "users" },
+  { href: "#faq", label: "read.contrib.nav_faq" | t(lang), icon: "circle-help" }
+], lang) }}</div>
 
-{#- ---------- Why write ---------- -#}
-<section class="section container-page" aria-label="{{ 'read.contrib.why_title' | t(lang) }}">
-  {{ ui.sectionHead("read.contrib.why_title" | t(lang), "read.contrib.why_sub" | t(lang), "", "", "heart-handshake") }}
+{#- ---------- Why write (+ who from our Area got published → /published/) ---------- -#}
+<section id="why" class="section container-page pt-10 sm:pt-12" aria-labelledby="why-title">
+  {{ ui.sectionHead("read.contrib.why_title" | t(lang), "read.contrib.why_sub" | t(lang), "", "", "heart-handshake", { eyebrow: "read.contrib.why_eyebrow" | t(lang), tone: "text-vine", id: "why-title", lang: lang }) }}
   <div class="grid grid-cols-1 gap-5 md:grid-cols-3">
     {% for w in [["message-circle-heart", "bg-gv-soft text-gv", "why1"], ["sprout", "bg-vine-soft text-vine", "why2"], ["globe", "bg-lv-soft text-lv", "why3"]] %}
     <div class="card card-pad">
-      <span class="grid size-12 place-items-center rounded-2xl {{ w[1] }}">{% icon w[0], "size-6" %}</span>
-      <h3 class="h-card mt-4 text-xl">{{ ("read.contrib." + w[2] + "_t") | t(lang) }}</h3>
+      <span class="grid size-11 place-items-center rounded-xl {{ w[1] }}">{% icon w[0], "size-5" %}</span>
+      <h3 class="h-card mt-3 text-xl">{{ ("read.contrib." + w[2] + "_t") | t(lang) }}</h3>
       <p class="mt-2 leading-relaxed text-muted">{{ ("read.contrib." + w[2]) | t(lang) }}</p>
     </div>
     {% endfor %}
   </div>
+  <div class="mt-5">{{ spotCard(db.spotlight | readSpotlight, lang, "contrib") }}</div>
 </section>
 
-{#- ---------- What you can send ---------- -#}
-<section class="section container-page pt-0" aria-labelledby="what-title">
-  <h2 id="what-title" class="h-section">{{ "read.contrib.what_title" | t(lang) }}</h2>
-  <p class="mt-1.5 mb-6 max-w-2xl text-muted">{{ "read.contrib.what_sub" | t(lang) }}</p>
-  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-6">
-    <div class="card card-pad lg:col-span-3 lg:row-span-2 flex flex-col">
-      <span class="grid size-12 place-items-center rounded-2xl bg-gv-soft text-gv">{% icon "feather", "size-6" %}</span>
-      <h3 class="h-card mt-4 text-2xl">{{ "read.contrib.k_story_t" | t(lang) }}</h3>
+{#- ---------- What you can send: your story across the row, then the other four ways ---------- -#}
+<section id="what" class="section container-page pt-0" aria-labelledby="what-title">
+  {{ ui.sectionHead("read.contrib.what_title" | t(lang), "read.contrib.what_sub" | t(lang), "", "", "feather", { eyebrow: "read.contrib.what_eyebrow" | t(lang), id: "what-title", lang: lang }) }}
+  <div class="card card-pad grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:items-center lg:gap-10">
+    <div>
+      <span class="grid size-11 place-items-center rounded-xl bg-gv-soft text-gv">{% icon "feather", "size-5" %}</span>
+      <h3 class="h-card mt-3 text-2xl">{{ "read.contrib.k_story_t" | t(lang) }}</h3>
       <p class="mt-2 leading-relaxed text-muted">{{ "read.contrib.k_story" | t(lang) }}</p>
-      <ul class="mt-4 flex flex-wrap gap-2" aria-label="{{ 'read.contrib.k_story_ideas' | t(lang) }}">
+    </div>
+    <div>
+      <ul class="flex flex-wrap gap-2" aria-label="{{ 'read.contrib.k_story_ideas' | t(lang) }}">
         {% for k in ["d1", "d2", "d3", "d4", "d5", "d6", "d7", "d8"] %}<li class="badge-muted text-xs! py-1!">{{ ("read.contrib.dept_" + k) | t(lang) }}</li>{% endfor %}
       </ul>
-      <p class="mt-auto pt-5 text-sm text-muted">{% icon "lightbulb", "size-4 inline -mt-0.5 text-lv" %} {{ "read.contrib.k_story_tip" | t(lang) }}</p>
+      <p class="mt-4 flex items-start gap-2 text-sm text-muted">{% icon "lightbulb", "mt-0.5 size-4 shrink-0 text-lv" %}<span>{{ "read.contrib.k_story_tip" | t(lang) }}</span></p>
     </div>
-    <div class="card card-pad lg:col-span-3">
-      <div class="flex items-start gap-4">
-        <span class="grid size-11 shrink-0 place-items-center rounded-xl bg-lv-soft text-lv">{% icon "mail", "size-5" %}</span>
-        <div><h3 class="h-card">{{ "read.contrib.k_letter_t" | t(lang) }}</h3><p class="mt-1 text-sm leading-relaxed text-muted">{{ "read.contrib.k_letter" | t(lang) }}</p></div>
-      </div>
+  </div>
+  <div class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
+    <div class="card card-pad">
+      <span class="grid size-11 place-items-center rounded-xl bg-lv-soft text-lv">{% icon "mail", "size-5" %}</span>
+      <h3 class="h-card mt-3">{{ "read.contrib.k_letter_t" | t(lang) }}</h3>
+      <p class="mt-1 text-sm leading-relaxed text-muted">{{ "read.contrib.k_letter" | t(lang) }}</p>
     </div>
-    <div class="card card-pad lg:col-span-3">
-      <div class="flex items-start gap-4">
-        <span class="grid size-11 shrink-0 place-items-center rounded-xl bg-vine-soft text-vine">{% icon "laugh", "size-5" %}</span>
-        <div><h3 class="h-card">{{ "read.contrib.k_humor_t" | t(lang) }}</h3><p class="mt-1 text-sm leading-relaxed text-muted">{{ "read.contrib.k_humor" | t(lang) }}</p></div>
-      </div>
+    <div class="card card-pad">
+      <span class="grid size-11 place-items-center rounded-xl bg-vine-soft text-vine">{% icon "laugh", "size-5" %}</span>
+      <h3 class="h-card mt-3">{{ "read.contrib.k_humor_t" | t(lang) }}</h3>
+      <p class="mt-1 text-sm leading-relaxed text-muted">{{ "read.contrib.k_humor" | t(lang) }}</p>
     </div>
-    <div class="card card-pad lg:col-span-3">
-      <div class="flex items-start gap-4">
-        <span class="grid size-11 shrink-0 place-items-center rounded-xl bg-grape-soft text-grape">{% icon "palette", "size-5" %}</span>
-        <div><h3 class="h-card">{{ "read.contrib.k_art_t" | t(lang) }}</h3><p class="mt-1 text-sm leading-relaxed text-muted">{{ "read.contrib.k_art" | t(lang) }}</p>
-          <a class="link mt-2 inline-block text-sm" href="{{ gvPhoto }}" target="_blank" rel="noopener">{{ "read.contrib.photo_contest" | t(lang) }}</a></div>
-      </div>
+    <div class="card card-pad">
+      <span class="grid size-11 place-items-center rounded-xl bg-grape-soft text-grape">{% icon "palette", "size-5" %}</span>
+      <h3 class="h-card mt-3">{{ "read.contrib.k_art_t" | t(lang) }}</h3>
+      <p class="mt-1 text-sm leading-relaxed text-muted">{{ "read.contrib.k_art" | t(lang) }}</p>
+      <p class="mt-2 text-sm"><a class="link tap-link" href="{{ gvPhoto }}" target="_blank" rel="noopener">{{ "read.contrib.photo_contest" | t(lang) }}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a></p>
     </div>
-    <div class="card card-pad lg:col-span-3">
-      <div class="flex items-start gap-4">
-        <span class="grid size-11 shrink-0 place-items-center rounded-xl bg-gv-soft text-gv">{% icon "mic", "size-5" %}</span>
-        <div><h3 class="h-card">{{ "read.contrib.k_audio_t" | t(lang) }}</h3><p class="mt-1 text-sm leading-relaxed text-muted">{{ "read.contrib.k_audio" | t(lang) }}</p>
-          <p class="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm"><a class="link" href="{{ gvAudio }}" target="_blank" rel="noopener">{{ "read.contrib.audio_project" | t(lang) }}</a><a class="link" href="{{ lvRecord }}" target="_blank" rel="noopener" lang="es">Graba tu historia</a></p></div>
-      </div>
+    <div class="card card-pad">
+      <span class="grid size-11 place-items-center rounded-xl bg-gv-soft text-gv">{% icon "mic", "size-5" %}</span>
+      <h3 class="h-card mt-3">{{ "read.contrib.k_audio_t" | t(lang) }}</h3>
+      <p class="mt-1 text-sm leading-relaxed text-muted">{{ "read.contrib.k_audio" | t(lang) }}</p>
+      <p class="mt-2 flex flex-wrap gap-x-4 text-sm"><a class="link tap-link" href="{{ gvAudio }}" target="_blank" rel="noopener">{{ "read.contrib.audio_project" | t(lang) }}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a><a class="link tap-link" href="{{ lvRecord }}" target="_blank" rel="noopener" lang="es">Graba tu historia<span class="sr-only" lang="{{ lang }}"> ({{ "common.external" | t(lang) }})</span></a></p>
     </div>
   </div>
 </section>
 
 {#- ---------- How to submit ---------- -#}
-<section class="section container-page pt-0" aria-label="{{ 'read.contrib.how_title' | t(lang) }}" id="submit">
-  {{ ui.sectionHead("read.contrib.how_title" | t(lang), "read.contrib.how_sub" | t(lang), "", "", "send") }}
-  <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+<section id="submit" class="section container-page pt-0" aria-labelledby="submit-title">
+  {{ ui.sectionHead("read.contrib.how_title" | t(lang), "read.contrib.how_sub" | t(lang), "", "", "send", { eyebrow: "read.contrib.how_eyebrow" | t(lang), id: "submit-title", lang: lang }) }}
+  <div class="grid grid-cols-1 gap-5 lg:grid-cols-2 lg:gap-6">
     {% for p in pubOrder %}{{ submitPanel(p, lang) }}{% endfor %}
   </div>
 </section>
 
-{#- ---------- Editorial themes & deadlines (auto-synced) ---------- -#}
-<section class="section scroll-mt-20 border-y border-line bg-surface-2/60" id="deadlines" aria-labelledby="deadlines-title">
+{#- ---------- Editorial themes & deadlines (db.editorial; a band) ---------- -#}
+<section id="deadlines" class="section section-band" aria-labelledby="deadlines-title">
   <div class="container-page">
-    <div class="mb-6 flex flex-wrap items-end justify-between gap-4">
-      <div>
-        <h2 id="deadlines-title" class="h-section flex items-center gap-2.5"><span class="text-gv">{% icon "calendar-clock", "size-6" %}</span>{{ "read.contrib.deadlines_title" | t(lang) }}</h2>
-        <p class="mt-1.5 max-w-2xl text-muted">{{ "read.contrib.deadlines_sub" | t(lang) }}</p>
-      </div>
-      <span class="badge-vine py-1!">{% icon "refresh-cw", "size-3" %} {{ "common.updates_daily" | t(lang) }}</span>
-    </div>
+    {% call ui.sectionHead("read.contrib.deadlines_title" | t(lang), "read.contrib.deadlines_sub" | t(lang), "", "", "calendar-clock", { eyebrow: "read.contrib.deadlines_eyebrow" | t(lang), id: "deadlines-title", lang: lang }) %}{% if gvEd.total or lvEd.total %}{{ ui.freshness(db.editorial.updated, lang) }}{% endif %}{% endcall %}
     {% if gvEd.total or lvEd.total %}
-    <div class="grid grid-cols-1 items-start gap-6 lg:grid-cols-2">
+    <div class="grid grid-cols-1 items-start gap-5 lg:grid-cols-2 lg:gap-6">
       {% for p in pubOrder %}
         {% if p == "lv" %}{{ themeList(lvEd, "lv", lang, lvCalendar, lvEd.calendarPdf or (lvTopicsPdf.url if lvTopicsPdf else "")) }}{% else %}{{ themeList(gvEd, "gv", lang, gvCalendar, gvEd.calendarPdf) }}{% endif %}
       {% endfor %}
     </div>
     {% else %}
       {{ ui.emptyState("calendar-clock", "read.contrib.no_themes" | t(lang), "read.contrib.no_themes_text" | t(lang), gvCalendar, "read.contrib.gv_calendar" | t(lang)) }}
-      <p class="mt-3 text-center text-sm"><a class="link" href="{{ lvCalendar }}" target="_blank" rel="noopener">{{ "read.contrib.lv_calendar" | t(lang) }}</a></p>
+      <p class="mt-3 text-center text-sm"><a class="link tap-link" href="{{ lvCalendar }}" target="_blank" rel="noopener">{{ "read.contrib.lv_calendar" | t(lang) }}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a></p>
     {% endif %}
   </div>
 </section>
 
-{#- ---------- Tips + anonymity ---------- -#}
-<section class="section container-page" aria-label="{{ 'read.contrib.tips_title' | t(lang) }}">
-  <div class="grid grid-cols-1 gap-8 lg:grid-cols-[1.35fr_1fr] 2xl:grid-cols-[minmax(0,1fr)_30rem] 2xl:gap-12">
+{#- ---------- Tips + anonymity (a short companion that sticks beside the tips from 1024px) ---------- -#}
+<section id="tips" class="section container-page" aria-labelledby="tips-title">
+  <div class="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:gap-10 2xl:grid-cols-[minmax(0,1fr)_30rem] 2xl:gap-12">
     <div class="@container">
-      {{ ui.sectionHead("read.contrib.tips_title" | t(lang), "read.contrib.tips_sub" | t(lang), "", "", "lightbulb") }}
-      <ol class="grid grid-cols-1 gap-3 @lg:grid-cols-2 @6xl:grid-cols-4">
+      {{ ui.sectionHead("read.contrib.tips_title" | t(lang), "read.contrib.tips_sub" | t(lang), "", "", "lightbulb", { eyebrow: "read.contrib.tips_eyebrow" | t(lang), tone: "text-lv", id: "tips-title", lang: lang }) }}
+      <ol class="grid grid-cols-1 gap-3 @lg:grid-cols-2 @6xl:grid-cols-4" role="list">
         {% for n in range(1, 9) %}
         <li class="card flex gap-3 p-4">
-          <span class="read-num grid size-8 shrink-0 place-items-center rounded-full bg-gv-soft font-display text-sm font-semibold text-gv">{{ n }}</span>
-          <div><p class="font-semibold leading-snug text-ink">{{ ("read.contrib.tip" + n + "_t") | t(lang) }}</p><p class="mt-1 text-sm leading-relaxed text-muted">{{ ("read.contrib.tip" + n) | t(lang) }}</p></div>
+          <span class="step-num" aria-hidden="true">{{ n }}</span>
+          <div><p class="font-semibold leading-snug text-ink"><span class="sr-only">{{ n }}. </span>{{ ("read.contrib.tip" + n + "_t") | t(lang) }}</p><p class="mt-1 text-sm leading-relaxed text-muted">{{ ("read.contrib.tip" + n) | t(lang) }}</p></div>
         </li>
         {% endfor %}
       </ol>
     </div>
-    <aside class="lg:pt-2" aria-labelledby="anon-title">
-      <div class="card card-pad sticky top-24 border-vine/30">
-        <span class="grid size-12 place-items-center rounded-2xl bg-vine-soft text-vine">{% icon "shield-check", "size-6" %}</span>
-        <h2 id="anon-title" class="mt-4 font-display text-2xl font-semibold">{{ "read.contrib.anon_title" | t(lang) }}</h2>
+    <aside class="sticky-aside" aria-labelledby="anon-title">
+      <div class="card card-pad border-vine/30">
+        <h2 id="anon-title" class="card-h"><span class="text-vine">{% icon "shield-check", "size-5" %}</span>{{ "read.contrib.anon_title" | t(lang) }}</h2>
         <p class="mt-2 leading-relaxed text-muted">{{ "read.contrib.anon_text" | t(lang) }}</p>
-        <ul class="mt-4 space-y-3 text-sm">
+        <ul class="mt-4 space-y-3 text-sm" role="list">
           {% for n in range(1, 5) %}
           <li class="flex gap-2.5"><span class="mt-0.5 text-vine">{% icon "circle-check", "size-4" %}</span><span class="leading-relaxed text-ink">{{ ("read.contrib.anon" + n) | t(lang) }}</span></li>
           {% endfor %}
@@ -389,8 +405,8 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
   </div>
 </section>
 
-{#- ---------- Writing workshop invitation ---------- -#}
-<section class="container-page pb-4" aria-labelledby="workshop-title">
+{#- ---------- Writing workshop invitation (the page's one feature band) ---------- -#}
+<section id="workshop" class="section container-page pt-0" aria-labelledby="workshop-title">
   <div class="read-cover--gv relative isolate overflow-hidden rounded-[1.5rem] px-6 py-10 text-white sm:px-10 sm:py-12">
     <svg class="page-hero-vine top-4!" viewBox="0 0 400 260" fill="none" aria-hidden="true">
       <path d="M-10 60 C 80 20, 150 110, 240 70 S 380 40, 420 90" stroke="#c9a57a" stroke-width="5" stroke-linecap="round"/>
@@ -398,10 +414,10 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
     </svg>
     <div class="relative z-10 grid grid-cols-1 items-center gap-8 lg:grid-cols-[1.3fr_1fr]">
       <div>
-        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-white/70">{{ "read.contrib.ws_eyebrow" | t(lang) }}</p>
-        <h2 id="workshop-title" class="mt-2 font-display text-3xl font-semibold leading-tight sm:text-4xl">{{ "read.contrib.ws_title" | t(lang) }}</h2>
+        <p class="eyebrow flex items-center gap-2 text-white/75">{% icon "users", "size-4 shrink-0" %}<span>{{ "read.contrib.ws_eyebrow" | t(lang) }}</span></p>
+        <h2 id="workshop-title" class="h-display mt-2 text-3xl text-balance text-white sm:text-4xl">{{ "read.contrib.ws_title" | t(lang) }}</h2>
         <p class="mt-3 max-w-xl text-lg leading-relaxed text-white/85">{{ "read.contrib.ws_text" | t(lang) }}</p>
-        <div class="mt-6 flex flex-wrap gap-2.5">
+        <div class="mt-6 flex flex-wrap gap-2 sm:gap-3">
           <a class="btn-light" href="{{ '/events/' | lurl(lang) }}">{% icon "calendar-days", "size-4" %} {{ "read.contrib.ws_events" | t(lang) }}</a>
           <a class="btn-on-dark" href="{{ '/meetings/' | lurl(lang) }}">{% icon "video", "size-4" %} {{ "read.contrib.ws_meeting" | t(lang) }}</a>
         </div>
@@ -426,7 +442,7 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
         </ul>
         {% else %}
         <p class="mt-2 text-sm text-white/75">{{ "read.contrib.ws_kit_empty" | t(lang) }}</p>
-        <a class="btn-on-dark btn-sm mt-3" href="{{ L.gvr_resources }}" target="_blank" rel="noopener">{{ "read.contrib.ws_kit_link" | t(lang) }}</a>
+        <a class="btn-on-dark btn-sm mt-3" href="{{ L.gvr_resources }}" target="_blank" rel="noopener">{{ "read.contrib.ws_kit_link" | t(lang) }}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a>
         {% endif %}
       </div>
     </div>
@@ -434,17 +450,31 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
 </section>
 
 {#- ---------- FAQ ---------- -#}
-<section class="section container-page" aria-labelledby="faq-title">
-  <h2 id="faq-title" class="h-section mb-6">{{ "read.contrib.faq_title" | t(lang) }}</h2>
+<section id="faq" class="section container-page pt-0" aria-labelledby="faq-title">
+  {{ ui.sectionHead("read.contrib.faq_title" | t(lang), "read.contrib.faq_sub" | t(lang), "", "", "circle-help", { eyebrow: "read.contrib.nav_faq" | t(lang), id: "faq-title", lang: lang }) }}
   <div class="grid grid-cols-1 items-start gap-3 lg:grid-cols-2 2xl:grid-cols-3">
     {% for n in range(1, 7) %}
     <details class="read-faq card group/faq">
-      <summary class="flex min-h-14 cursor-pointer items-center justify-between gap-3 px-5 py-4 font-semibold text-ink">
+      <summary class="flex min-h-14 cursor-pointer items-center justify-between gap-3 rounded-[var(--radius-card)] px-5 py-4 font-semibold text-ink">
         <span>{{ ("read.contrib.faq" + n + "_q") | t(lang) }}</span>
         <span class="grid size-8 shrink-0 place-items-center rounded-full bg-surface-2 text-muted transition group-open/faq:rotate-45">{% icon "plus", "size-4" %}</span>
       </summary>
       <p class="px-5 pb-5 leading-relaxed text-muted">{{ ("read.contrib.faq" + n + "_a") | t(lang) }}</p>
     </details>
     {% endfor %}
+  </div>
+</section>
+
+{#- ---------- Closing call to action: send it (the page-language magazine first) ---------- -#}
+<section class="section container-page pt-0" aria-labelledby="cta-title">
+  <div class="read-cta rounded-[1.5rem] border border-line px-6 py-10 text-center sm:px-10 sm:py-12">
+    <p class="eyebrow flex items-center justify-center gap-2 text-gv">{% icon "send", "size-4 shrink-0" %}<span>{{ "read.contrib.cta_eyebrow" | t(lang) }}</span></p>
+    <h2 id="cta-title" class="h-section mt-2 text-balance">{{ "read.contrib.cta_title" | t(lang) }}</h2>
+    <p class="mx-auto mt-2 max-w-xl leading-relaxed text-muted">{{ "read.contrib.cta_text" | t(lang) }}</p>
+    <div class="mx-auto mt-6 grid max-w-md grid-cols-1 gap-2 sm:flex sm:max-w-none sm:justify-center sm:gap-3">
+      {% for p in pubOrder %}
+      <a class="{{ 'btn-lv' if p == 'lv' else 'btn-primary' }}" href="{{ L.lv_share_story if p == 'lv' else L.gv_share_story }}" target="_blank" rel="noopener">{% icon "send", "size-4" %} {{ ("read.contrib.send_lv" if p == "lv" else "read.contrib.send_gv") | t(lang) }}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a>
+      {% endfor %}
+    </div>
   </div>
 </section>

@@ -10,9 +10,11 @@ pageScripts: ["/assets/js/committee.js"]
 {#- Committee announcements (Google Docs in the Drive "announcements" folder or
     content/announcements/*.md). Pinned first, full body, auto-translated,
     each with a deep-link anchor (#ann-…) and share buttons.
-    Below the shared page hero: the announcements next to a sidebar (layout-aside, from
-    1024px). Two announcements per row from 1536px (each keeps a readable line length);
-    with none, the empty state and "Coming up" side by side from 1536px. -#}
+    Below the shared page hero and the committee sub-nav: the announcements (two per row from
+    1280px when there are several — each keeps a readable line length); with none, one solid card
+    written for visitors next to "Coming up" (the next committee meeting + the next event). Then,
+    collapsed, "For committee members · Post an announcement" (ui.memberHelp, #how-to-post). The
+    ways to keep up (digest, RSS, calendar) are in the footer. -#}
 {% import "macros/ui.njk" as ui with context %}
 {%- set anns = db.announcements.items | cmAnnouncements -%}
 {%- set pageAbs = page.url | siteUrl(site) -%}
@@ -21,78 +23,71 @@ pageScripts: ["/assets/js/committee.js"]
 {% call ui.pageHero(lang, "nav.announcements" | t(lang), "committee.ann.hero_sub" | t(lang), "megaphone", "committee.ann.eyebrow" | t(lang)) %}
   <div class="hero-actions">
     <a class="btn-light" href="{{ '/digest/' | lurl(lang) }}">{% icon "mail-plus", "size-4" %} {{ "committee.ann.get_digest" | t(lang) }}</a>
-    <a class="btn-on-dark" href="#how-to-post">{% icon "pen-line", "size-4" %} {{ "committee.ann.how_btn" | t(lang) }}</a>
   </div>
 {% endcall %}
 
 {% committeeNav lang, "announcements", db %}
 
-<section class="page-start container-page">
-  <div class="layout-aside">
-    <div class="min-w-0">
-      {% if anns | length %}
-      <ol class="cm-ann-list{{ ' is-multi' if anns | length > 1 }}">
-        {% for a in anns %}
-        {%- set title = a | tx("title", lang) -%}
-        {%- set body = a | tx("body_md", lang) or (a | tx("summary", lang)) -%}
-        {%- set when = a.date or a.first_seen -%}
-        <li class="min-w-0">
-          <article id="{{ a._anchor }}" class="card cm-ann flex h-full flex-col scroll-mt-28{{ ' is-pinned' if a._pinned }}" aria-labelledby="{{ a._anchor }}-h">
-            <div class="flex-1 p-5 sm:p-7">
-              <div class="flex flex-wrap items-center gap-2 text-sm">
-                {% if a._pinned %}<span class="badge-lv">{% icon "pin", "size-3" %} {{ "committee.ann.pinned" | t(lang) }}</span>{% endif %}
-                {% if a.is_new %}<span class="badge-new">{{ "common.new" | t(lang) }}</span>{% endif %}
-                {% if when %}<time class="text-muted" datetime="{{ when | isoDate }}">{{ when | fmtDate(lang, "long") }}</time>{% endif %}
-                {% if a.extra and a.extra.expires %}<span class="text-xs text-faint">· {{ "committee.ann.until" | t(lang, { date: (a.extra.expires | fmtDate(lang, "medium")) }) }}</span>{% endif %}
-              </div>
-              <h2 id="{{ a._anchor }}-h" class="mt-3 font-display text-2xl font-semibold leading-tight text-ink sm:text-[1.75rem]">
-                <a href="#{{ a._anchor }}" class="cm-anchor-link hover:text-gv">{{ title }}<span class="cm-hash" aria-hidden="true">#</span></a>
-              </h2>
-              {#- lang="…" only when the text shown IS the original: not machine-translated, not the committee's own summary_es -#}
-              <div class="prose-site mt-4 max-w-none"{% if a.lang and a.lang != lang and not (a | machineFor(lang)) and body == ((a.extra.body_md if a.extra) or a.summary) %} lang="{{ a.lang }}"{% endif %}>
-                {{ body | md | safe }}
-              </div>
-              {% if a | machineFor(lang) %}
-              <details class="cm-original mt-5">
-                <summary>{% icon "languages", "size-4" %} {{ "committee.ann.show_original" | t(lang) }} <span class="text-faint">· {{ ("lang." + a.lang) | t(lang) }}</span></summary>
-                <div class="prose-site mt-3 text-[0.95rem]" lang="{{ a.lang }}">
-                  <p class="font-semibold">{{ a.title }}</p>
-                  {{ ((a.extra.body_md if a.extra) or a.summary) | md | safe }}
-                </div>
-              </details>
-              {% endif %}
+<section class="container-page section pt-10 sm:pt-12" aria-label="{{ 'nav.announcements' | t(lang) }}">
+  {% if anns | length %}
+  <ol class="cm-ann-list{{ ' is-multi' if anns | length > 1 }}">
+    {% for a in anns %}
+    {%- set title = a | tx("title", lang) -%}
+    {%- set body = a | tx("body_md", lang) or (a | tx("summary", lang)) -%}
+    {%- set when = a.date or a.first_seen -%}
+    <li class="min-w-0">
+      <article id="{{ a._anchor }}" class="card cm-ann flex h-full flex-col{{ ' is-pinned' if a._pinned }}" aria-labelledby="{{ a._anchor }}-h">
+        <div class="flex-1 p-5 sm:p-7">
+          <div class="flex flex-wrap items-center gap-2 text-sm">
+            {% if a._pinned %}<span class="badge-lv">{% icon "pin", "size-3" %} {{ "committee.ann.pinned" | t(lang) }}</span>{% endif %}
+            {% if a.is_new %}<span class="badge-new">{{ "common.new" | t(lang) }}</span>{% endif %}
+            <p class="meta-row text-muted">
+              {%- if when %}<time datetime="{{ when | isoDate }}">{{ when | fmtDate(lang, "long") }}</time>{% endif %}
+              {%- if a.extra and a.extra.expires %}<span class="text-xs text-faint">{{ "committee.ann.until" | t(lang, { date: (a.extra.expires | fmtDate(lang, "medium")) }) }}</span>{% endif %}
+            </p>
+          </div>
+          <h2 id="{{ a._anchor }}-h" class="mt-3 font-display text-2xl font-semibold leading-tight text-ink sm:text-[1.75rem]">
+            <a href="#{{ a._anchor }}" class="cm-anchor-link hover:text-gv">{{ title }}<span class="cm-hash" aria-hidden="true">#</span></a>
+          </h2>
+          {#- lang="…" only when the text shown IS the original: not machine-translated, not the committee's own summary_es -#}
+          <div class="prose-site mt-4 max-w-none"{% if a.lang and a.lang != lang and not (a | machineFor(lang)) and body == ((a.extra.body_md if a.extra) or a.summary) %} lang="{{ a.lang }}"{% endif %}>
+            {{ body | md | safe }}
+          </div>
+          {% if a | machineFor(lang) %}
+          <details class="cm-original mt-5">
+            <summary>{% icon "languages", "size-4" %} {{ "committee.ann.show_original" | t(lang) }} <span class="text-faint">· {{ ("lang." + a.lang) | t(lang) }}</span></summary>
+            <div class="prose-site mt-3 text-[0.95rem]" lang="{{ a.lang }}">
+              <p class="font-semibold">{{ a.title }}</p>
+              {{ ((a.extra.body_md if a.extra) or a.summary) | md | safe }}
             </div>
-            <div class="flex flex-wrap items-center gap-2 border-t border-line px-5 py-3 sm:px-7">
-              {%- set more = a.extra.link if (a.extra and a.extra.link) else (a.url if (a.source == "drive" and a.url) else "") -%}
-              {%- set isDoc = a.source == "drive" and not (a.extra and a.extra.link) -%}
-              {%- set moreIcon = "file-text" if isDoc else "arrow-up-right" -%}
-              {% if more %}<a class="btn-primary btn-sm" href="{{ more | lurl(lang) }}"{% if more.startsWith("http") %} target="_blank" rel="noopener"{% endif %}>{% icon moreIcon, "size-4" %} {{ ("committee.ann.open_doc" if isDoc else "committee.ann.more_info") | t(lang) }}</a>{% endif %}
-              {{ ui.autoNote(a, lang) }}
-              <span class="flex-1"></span>
-              <button type="button" class="btn-ghost btn-sm" data-copy="{{ pageAbs }}#{{ a._anchor }}">{% icon "link", "size-4" %} {{ "common.copy_link" | t(lang) }}</button>
-              <button type="button" class="btn-secondary btn-sm" data-share="{{ pageAbs }}#{{ a._anchor }}" data-share-title="{{ title }}" data-share-text="{{ (a | tx('summary', lang)) | excerpt(140) }}">{% icon "share-2", "size-4" %} {{ "common.share" | t(lang) }}</button>
-            </div>
-          </article>
-        </li>
-        {% endfor %}
-      </ol>
-      {% else %}
-      <div class="cm-ann-empty">
-      <div class="cm-empty-hero flex flex-col justify-center">
-        <div class="cm-megaphone" aria-hidden="true">{% icon "megaphone", "size-10" %}</div>
-        <h2 class="h-section mt-6 text-center">{{ "committee.ann.empty_title" | t(lang) }}</h2>
-        <p class="mx-auto mt-3 max-w-lg text-center leading-relaxed text-muted">{{ "committee.ann.empty_text" | t(lang) }}</p>
-        <div class="mt-5 flex justify-center">{% cmDriveChecked lang, di %}</div>
-      </div>
+          </details>
+          {% endif %}
+        </div>
+        <div class="flex flex-wrap items-center gap-2 border-t border-line px-5 py-3 sm:px-7">
+          {%- set more = a.extra.link if (a.extra and a.extra.link) else (a.url if (a.source == "drive" and a.url) else "") -%}
+          {%- set isDoc = a.source == "drive" and not (a.extra and a.extra.link) -%}
+          {%- set moreIcon = "file-text" if isDoc else "arrow-up-right" -%}
+          {% if more %}<a class="btn-primary btn-sm" href="{{ more | lurl(lang) }}"{% if more.startsWith("http") %} target="_blank" rel="noopener"{% endif %}>{% icon moreIcon, "size-4" %} {{ ("committee.ann.open_doc" if isDoc else "committee.ann.more_info") | t(lang) }}</a>{% endif %}
+          {{ ui.autoNote(a, lang) }}
+          <span class="flex-1"></span>
+          <button type="button" class="btn-ghost btn-sm" data-copy="{{ pageAbs }}#{{ a._anchor }}">{% icon "link", "size-4" %} {{ "common.copy_link" | t(lang) }}</button>
+          <button type="button" class="btn-secondary btn-sm" data-share="{{ pageAbs }}#{{ a._anchor }}" data-share-title="{{ title }}" data-share-text="{{ (a | tx('summary', lang)) | excerpt(140) }}">{% icon "share-2", "size-4" %} {{ "common.share" | t(lang) }}</button>
+        </div>
+      </article>
+    </li>
+    {% endfor %}
+  </ol>
+  {% else %}
+  {#- Nothing posted: one solid card for visitors | "Coming up" (so the page is still useful), side by side from 1280px -#}
+  {%- set nm = site | cmNextMeeting(lang) -%}
+  {%- set ne = (db.events.items | cmEvents(site, lang)) | where("past", false) | whereNot("committee", true) | first -%}
+  <div class="cm-ann-empty{{ ' is-solo' if not (nm or ne) }}">
+    {{ ui.pageEmpty("megaphone", "committee.ann.empty_title" | t(lang), "committee.ann.empty_text" | t(lang), { id: "ann-empty-h" }) }}
 
-      <div class="min-w-0">
-
-      {#- Meanwhile: the next committee meeting + the next event, so the page is still useful -#}
-      {%- set nm = site | cmNextMeeting(lang) -%}
-      {%- set ne = (db.events.items | cmEvents(site, lang)) | where("past", false) | whereNot("committee", true) | first -%}
-      {% if nm or ne %}
-      <h2 class="eyebrow mb-4 font-sans">{{ "committee.ann.meanwhile" | t(lang) }}</h2>
-      <div class="grid gap-4 sm:grid-cols-2 min-[96rem]:grid-cols-1">
+    {% if nm or ne %}
+    <section class="min-w-0" aria-labelledby="ann-soon-h">
+      {{ ui.sectionHead("committee.ann.meanwhile" | t(lang), "committee.ann.meanwhile_sub" | t(lang), '/events/' | lurl(lang), "committee.ann.all_events" | t(lang), "calendar-days", { eyebrow: "nav.events" | t(lang), tone: "text-vine", id: "ann-soon-h", lang: lang }) }}
+      <div class="grid gap-4">
         {% if nm %}
         <a href="{{ '/meetings/' | lurl(lang) }}" class="card card-link cm-mini-card group">
           <span class="cm-date-tile cm-tone-gv" aria-hidden="true"><span class="cm-tile-mon">{{ nm.tile.mon }}</span><span class="cm-tile-day">{{ nm.tile.day }}</span><span class="cm-tile-wd">{{ nm.tile.wd }}</span></span>
@@ -113,55 +108,37 @@ pageScripts: ["/assets/js/committee.js"]
             {% if ne.tentative %}<span class="mt-1.5 block">{{ ui.tentativeBadge(lang) }}</span>{% endif %}
           </span>
         </a>
-        {% else %}
-        <a href="{{ '/events/' | lurl(lang) }}" class="card card-link cm-mini-card group">
-          <span class="grid size-14 shrink-0 place-items-center rounded-2xl bg-vine-soft text-vine" aria-hidden="true">{% icon "calendar-days", "size-6" %}</span>
-          <span class="min-w-0">
-            <span class="mt-1 block font-display text-lg font-semibold leading-snug text-ink group-hover:text-gv">{{ "committee.ann.see_events" | t(lang) }}</span>
-          </span>
-        </a>
         {% endif %}
       </div>
-      {% endif %}
-      <div class="mt-6 flex flex-wrap gap-2.5">
-        <a class="btn-secondary" href="{{ '/events/' | lurl(lang) }}">{% icon "calendar-days", "size-4" %} {{ "committee.ann.see_events" | t(lang) }}</a>
-        <a class="btn-ghost" href="{{ '/whats-new/' | lurl(lang) }}">{% icon "sparkles", "size-4" %} {{ "nav.whats_new" | t(lang) }}</a>
-      </div>
-      </div>
-      </div>
-      {% endif %}
-    </div>
-
-    {#- ---------- Sidebar ---------- -#}
-    <aside class="cm-ann-aside space-y-6">
-      <div id="how-to-post" class="card card-pad scroll-mt-24">
-        <span class="grid size-11 place-items-center rounded-xl bg-lv-soft text-lv">{% icon "pen-line", "size-5" %}</span>
-        <h2 class="h-card mt-4 text-xl">{{ "committee.ann.how_title" | t(lang) }}</h2>
-        <p class="mt-1.5 text-sm text-muted">{{ "committee.ann.how_intro" | t(lang) }}</p>
-        <ol class="mt-4 space-y-4 text-sm">
-          <li>
-            <p class="font-semibold text-ink">{% icon "folder-open", "size-4 mr-1 inline text-gv" %}{{ "committee.ann.how_drive_title" | t(lang) }}</p>
-            <p class="mt-1 leading-relaxed text-muted">{{ "committee.ann.how_drive" | t(lang) }}</p>
-            {% cmDrivePath lang, di, "announcements", ("committee.ann.example_name" | t(lang)) %}
-          </li>
-          <li>
-            <p class="font-semibold text-ink">{% icon "file-code", "size-4 mr-1 inline text-gv" %}{{ "committee.ann.how_git_title" | t(lang) }}</p>
-            <p class="mt-1 leading-relaxed text-muted">{{ "committee.ann.how_git" | t(lang) }}</p>
-          </li>
-        </ol>
-        <p class="mt-4 flex gap-2 text-xs leading-relaxed text-faint">{% icon "languages", "size-4 shrink-0" %} {{ "committee.ann.how_translate" | t(lang) }}</p>
-        {% if di.url %}<a class="btn-secondary btn-sm mt-4 w-full" href="{{ di.url }}" target="_blank" rel="noopener">{% icon "folder-open", "size-4" %} {{ "committee.drive.open_folder" | t(lang) }}</a>{% endif %}
-      </div>
-
-      <div class="card card-pad">
-        <h2 class="h-card text-lg">{{ "committee.ann.stay_title" | t(lang) }}</h2>
-        <ul class="mt-3 space-y-1">
-          <li><a class="flex min-h-11 items-center gap-3 rounded-xl px-2 text-sm font-medium hover:bg-surface-2" href="{{ '/digest/' | lurl(lang) }}">{% icon "mail-plus", "size-4 text-gv" %} {{ "nav.digest" | t(lang) }}</a></li>
-          <li><a class="flex min-h-11 items-center gap-3 rounded-xl px-2 text-sm font-medium hover:bg-surface-2" href="{{ '/feed.xml' | lurl(lang) }}">{% icon "rss", "size-4 text-lv" %} {{ "feeds.rss" | t(lang) }}</a></li>
-          <li><a class="flex min-h-11 items-center gap-3 rounded-xl px-2 text-sm font-medium hover:bg-surface-2" href="{{ '/events/' | lurl(lang) }}#subscribe">{% icon "calendar-sync", "size-4 text-vine" %} {{ "feeds.ics" | t(lang) }}</a></li>
-          <li><a class="flex min-h-11 items-center gap-3 rounded-xl px-2 text-sm font-medium hover:bg-surface-2" href="{{ '/share/' | lurl(lang) }}">{% icon "qr-code", "size-4 text-grape" %} {{ "nav.share" | t(lang) }}</a></li>
-        </ul>
-      </div>
-    </aside>
+    </section>
+    {% endif %}
   </div>
+  {% endif %}
 </section>
+
+{#- ---------- For committee members (collapsed): how to post an announcement ---------- -#}
+<div class="container-page">
+  {% call ui.memberHelp(lang, "committee.ann.how_title" | t(lang), { id: "how-to-post" }) %}
+  <div class="grid gap-8 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:gap-10">
+    <div>
+      <ol class="space-y-4">
+        {% for k in ["1", "2", "3"] %}
+        <li class="flex gap-3.5">
+          <span class="step-num" aria-hidden="true">{{ k }}</span>
+          <p class="leading-relaxed text-muted">{{ ("committee.ann.how_" + k) | t(lang, { panel: (di.panel.label if di.panel else "Panel") }) }}</p>
+        </li>
+        {% endfor %}
+      </ol>
+      <div class="mt-6 flex flex-wrap gap-2.5">
+        {% if di.url %}<a class="btn-primary" href="{{ di.url }}" target="_blank" rel="noopener">{% icon "folder-open", "size-4" %} {{ "committee.drive.open_folder" | t(lang) }}</a>{% endif %}
+        <a class="btn-secondary" href="mailto:{{ site.contact_email }}?subject={{ 'committee.docs.mail_subject' | t(lang) | urlencode }}">{% icon "mail", "size-4" %} {{ "committee.docs.ask_access" | t(lang) }}</a>
+      </div>
+    </div>
+    <div class="panel-muted">
+      <p class="eyebrow">{{ "committee.ann.where" | t(lang) }}</p>
+      {% cmDrivePath lang, di, "announcements", ("committee.ann.example_name" | t(lang)) %}
+      {% if not (anns | length) %}{% cmDriveChecked lang, di %}{% endif %}
+    </div>
+  </div>
+  {% endcall %}
+</div>

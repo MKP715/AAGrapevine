@@ -13,6 +13,15 @@
   GV.url = function (p) { return GV.base.replace(/\/$/, "") + (p.charAt(0) === "/" ? p : "/" + p); };
   GV.t = function (en, es) { return LANG === "es" ? es : en; };
 
+  /* Chip rows (chip-row / chip-row-nowrap, main.css) that scroll sideways: once scrolled, the
+     left edge fades too (.is-scrolled), so a chip cut at the left never looks like a hard edge.
+     (Element scroll events don't bubble — listen in the capture phase.) */
+  document.addEventListener("scroll", function (e) {
+    var t = e.target;
+    if (!t || !t.classList || !(t.classList.contains("chip-row") || t.classList.contains("chip-row-nowrap"))) return;
+    t.classList.toggle("is-scrolled", t.scrollLeft > 4);
+  }, { capture: true, passive: true });
+
   /* One shared, visually hidden live region: status messages (e.g. "Copied") are read out by
      screen readers even when a button's own label does not change (WCAG 4.1.3). */
   var liveEl = null, liveTimer = 0;

@@ -46,7 +46,9 @@
   <link rel="preload" href="/assets/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/assets/fonts/fraunces-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
   <script>
-    // Theme before paint (no flash): saved choice → OS preference.
+    // Theme before paint (no flash): saved choice → OS preference. html.js: JS is on, so CSS can
+    // draw JS-folded blocks (digest tools, report box, kit groups) folded from the first paint.
+    document.documentElement.classList.add("js");
     (function () {
       try {
         var t = localStorage.getItem("theme");

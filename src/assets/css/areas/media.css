@@ -8,82 +8,73 @@
    ===================================================================== */
 
 @layer components {
-  /* ------------------------------------------------ shared: chip rows */
-  /* One-line, horizontally scrollable chip row on phones; wraps on desktop. */
-  .media-chips {
-    @apply flex min-w-0 flex-1 gap-2 overflow-x-auto py-0.5;
-    scroll-snap-type: x proximity;
-    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 2rem), transparent);
-    mask-image: linear-gradient(to right, #000 calc(100% - 2rem), transparent);
-    padding-right: 2rem;
-  }
-  .media-chips > * { flex-shrink: 0; scroll-snap-align: start; }
-  @media (width >= 64rem) {
-    .media-chips { flex-wrap: wrap; overflow: visible; -webkit-mask-image: none; mask-image: none; padding-right: 0; }
-  }
+  /* (filter chip rows use the shared chip-row utility: one scrolling line on phones, wraps from 1024px) */
 
   /* ------------------------------------------------ LISTEN: page layout
-     One container below the hero, three blocks (DOM order = reading order):
-     .listen-side (page-overlap: the latest-episode player .listen-feature + the YouTube Short
-     .listen-short), .listen-shows, .listen-episodes.
-     < 1440px: stacked, full width; the Short's second copy (.listen-short--end) comes after the
-     episodes, so the shows and episodes come first.
-     ≥ 1440px: shows + episodes in the growing left column; the player in a fixed-width
-     right column, sticky under the header while the episode list scrolls by (it is
-     ~32rem tall, so it always fits the window); the Short under it scrolls normally. */
+     One container below the hero, four blocks (DOM order = phone order = Tab order):
+     .listen-feature (page-overlap: the latest-episode player), .listen-short (the official
+     YouTube Short), .listen-shows, .listen-episodes.
+     < 1440px: stacked, full width — player, Short (a slim band), shows, episodes.
+     ≥ 1440px: the Short, the shows and the episodes in the growing left column; the player ALONE
+     is the fixed-width right column ("feature" spans all three rows). The Short is pulled into the
+     hero fade like the player, so both columns start on the same line. In windows at least 36rem
+     tall the player is sticky (the unlayered rule at the end of this file) all the way down the
+     episode list — nothing sits under it, so nothing can ever slide under it. No JS involved. */
   .listen-layout { display: grid; grid-template-columns: minmax(0, 1fr); padding-bottom: 3rem; }
+  .listen-short { margin-top: 1rem; }
   .listen-shows { padding-top: 2.5rem; }
-  .listen-episodes { padding-top: 2.5rem; }
+  .listen-episodes { padding-top: 3rem; }
   @media (width >= 40rem) {
     .listen-layout { padding-bottom: 4rem; }
-    .listen-shows { padding-top: 3.5rem; }
+    .listen-shows { padding-top: 3rem; }
+    .listen-episodes { padding-top: 4rem; }
   }
+  @media (width >= 48rem) { .listen-short { margin-top: 1.25rem; } }
   @media (width >= 90rem) {
     .listen-layout {
       grid-template-columns: minmax(0, 1fr) 27rem;
-      grid-template-areas: "shows feature" "episodes feature";
+      grid-template-areas: "short feature" "shows feature" "episodes feature";
       column-gap: 3rem;
     }
-    /* The side column spans both rows so the player can stay in view (sticky) while the
-       episodes scroll by; the Short below it then slides under the player. */
-    .listen-side { grid-area: feature; }
-    .listen-feature { position: sticky; top: calc(var(--header-h) + 1.25rem); z-index: 1; }
-    .listen-shows { grid-area: shows; padding-top: 3rem; }
-    .listen-episodes { grid-area: episodes; padding-top: 3rem; }
+    .listen-feature { grid-area: feature; align-self: start; }
+    /* level with the player (page-overlap: 2.5rem into the hero fade, above it) */
+    .listen-short { grid-area: short; position: relative; z-index: 10; margin-top: -2.5rem; }
+    .listen-shows { grid-area: shows; }
+    .listen-episodes { grid-area: episodes; }
   }
   @media (width >= 112.5rem) {
     .listen-layout { grid-template-columns: minmax(0, 1fr) 31rem; column-gap: 4rem; }
   }
 
-  /* LISTEN sidebar: player + an official YouTube Short. The narrow vertical video sits beside
-     its text, the app links under the text; 768–1439px (full width under the player) the links
-     move to a third column at the right. From 1440px it is the side column under the player. */
-  .listen-side { display: grid; grid-template-columns: minmax(0, 1fr); align-content: start; gap: 1rem; }
+  /* LISTEN: an official YouTube Short. The narrow vertical video sits beside its text, the app
+     links under the text (phones < 480px: under the video and the text, side by side). From 768px
+     it is a band: video · text (up to 36rem) · the app links right after the text (not pushed to the
+     far edge, so no empty middle on wide screens) — and the card is as wide as that content
+     (justify-self: start), so where the column is wider there is no empty tail inside the card. */
   .listen-short { display: grid; grid-template-columns: 6.5rem minmax(0, 1fr); column-gap: 1rem; row-gap: 0.75rem; padding: 0.875rem; }
   .listen-short-video { grid-row: span 2; align-self: center; overflow: hidden; border-radius: 0.875rem; background: #000;
     box-shadow: 0 1px 2px rgb(0 0 0 / 0.1), 0 8px 20px -10px rgb(0 0 0 / 0.45); }
   .listen-short-body { align-self: end; }
   .listen-short-links { display: flex; flex-wrap: wrap; align-self: start; gap: 0.5rem; }
-  .listen-short--end { margin-top: 2.5rem; }
   .listen-short-links .media-plat { white-space: nowrap; }
-  /* narrow phones: the two app buttons go under the video and the text, side by side */
   @media (width < 30rem) {
     .listen-short-video { grid-row: auto; }
     .listen-short-body { align-self: center; }
     .listen-short-links { grid-column: 1 / -1; }
   }
+  /* the narrowest phones (< 368px): a slimmer video leaves the caption room to breathe */
+  @media (width < 23rem) { .listen-short { grid-template-columns: 5.5rem minmax(0, 1fr); column-gap: 0.875rem; } }
   @media (width >= 30rem) { .listen-short { grid-template-columns: 7.5rem minmax(0, 1fr); column-gap: 1.25rem; padding: 1rem; } }
-  @media (width >= 48rem) { .listen-side { gap: 1.25rem; } }
-  @media (width >= 48rem) and (width < 90rem) {
-    .listen-short { grid-template-columns: 7.5rem minmax(0, 1fr) auto; align-items: center; padding: 1rem 1.5rem 1rem 1rem; }
+  @media (width >= 48rem) {
+    .listen-short { grid-template-columns: 6.5rem fit-content(36rem) auto; justify-content: start; justify-self: start; max-width: 100%; align-items: center; column-gap: 1.5rem; padding: 1rem 1.5rem 1rem 1rem; }
     .listen-short-video { grid-row: auto; }
     .listen-short-body { align-self: center; }
-    .listen-short-links { flex-direction: column; align-items: stretch; align-self: center; justify-self: end; }
+    .listen-short-links { flex-direction: column; align-items: stretch; align-self: center; }
   }
 
-  /* "Tell your group" card (listen + instagram): icon · text, the announcement under the
-     text; from 1280px three columns (icon · text · announcement) so the quote never runs
-     across the whole screen. */
+  /* "Tell your group" card (macros/media.njk shareBlock — Listen, Watch, Instagram): icon · text,
+     the announcement under the text; from 1280px three columns (icon · text · announcement) so
+     the quote never runs across the whole screen. */
   .media-share { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.5rem; }
   @media (width >= 48rem) {
     .media-share { grid-template-columns: auto minmax(0, 1fr); align-items: center; row-gap: 1.25rem; }
@@ -157,6 +148,11 @@
   .media-range-mini::-webkit-slider-runnable-track { height: 4px; }
   .media-range-mini::-moz-range-track, .media-range-mini::-moz-range-progress { height: 4px; }
   .media-range-mini::-webkit-slider-thumb { width: 12px; height: 12px; margin-top: -4px; }
+  /* touch screens: a taller hit area around the same thin track (44px; the mini-player's 24px) */
+  @media (pointer: coarse) {
+    .media-range { height: 2.75rem; }
+    .media-range-mini { height: 1.5rem; }
+  }
 
   /* ------------------------------------------------ LISTEN: mini-player */
   .media-mini {
@@ -169,10 +165,23 @@
     box-shadow: 0 -2px 6px rgb(20 16 40 / 0.05), 0 18px 40px -12px rgb(20 16 40 / 0.35);
     -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
   }
+  /* From 1440px the mini-player sits under the left column (same grid as .listen-layout), so it
+     never covers the right-hand column's player. */
+  @media (width >= 90rem) {
+    .media-mini {
+      display: grid; grid-template-columns: minmax(0, 1fr) 27rem; column-gap: 3rem;
+      max-width: var(--container-page); margin-inline: auto; padding-inline: var(--gutter);
+    }
+    .media-mini-card { width: 100%; }
+  }
+  @media (width >= 112.5rem) { .media-mini { grid-template-columns: minmax(0, 1fr) 31rem; column-gap: 4rem; } }
 
   /* ------------------------------------------------ LISTEN: episode rows */
   .ep-list { @apply divide-y divide-line overflow-hidden; }
   .ep-row { @apply relative flex items-start gap-3 p-3 transition-colors sm:gap-4 sm:p-4; }
+  /* From 640px: artwork · text (a readable 72ch column) · the play pill, kept together at the start
+     of the row — on wide screens the pill sits right after the text, not at the far edge. */
+  @media (width >= 40rem) { .ep-row { display: grid; grid-template-columns: auto minmax(0, 72ch) auto; justify-content: start; } }
   .ep-row:hover { background: color-mix(in srgb, var(--c-surface-2) 55%, transparent); }
   .ep-row.is-current { background: var(--c-gv-soft); box-shadow: inset 3px 0 0 var(--c-gv); }
 
@@ -193,7 +202,7 @@
   .ep-progress > span { display: block; height: 100%; background: var(--c-lv); border-radius: 0 2px 2px 0; }
 
   .ep-pill {
-    @apply inline-flex min-h-10 items-center gap-1.5 rounded-full border border-line bg-surface px-3.5 text-xs font-semibold whitespace-nowrap text-ink transition;
+    @apply inline-flex min-h-11 items-center gap-1.5 rounded-full border border-line bg-surface px-3.5 text-xs font-semibold whitespace-nowrap text-ink transition;
   }
   .ep-pill:hover { border-color: var(--c-gv); color: var(--c-gv); }
   .ep-row.is-playing .ep-pill { @apply border-gv bg-gv text-white dark:text-paper; }
@@ -218,7 +227,7 @@
   }
   /* "Follow in your app" pills (links + the copy-RSS button) */
   .media-plat {
-    @apply inline-flex min-h-10 items-center gap-2 rounded-full border border-line bg-surface py-1.5 pr-3.5 pl-1.5 text-sm font-medium text-ink no-underline transition;
+    @apply inline-flex min-h-11 items-center gap-2 rounded-full border border-line bg-surface py-1.5 pr-3.5 pl-1.5 text-sm font-medium text-ink no-underline transition;
   }
   .media-plat:hover { border-color: var(--c-gv); color: var(--c-gv); }
   .media-plat.is-active { border-color: var(--c-vine); color: var(--c-vine); }
@@ -239,13 +248,17 @@
   /* First block below the hero: the latest video + two "helpful path" cards.
      < 1440px: video card, then the two cards (side by side from 768px).
      ≥ 1440px: video card on the left, the two cards stacked in a fixed-width column on
-     the right, stretched to the video card's height (half each). */
+     the right. Both columns keep their own height (top-aligned): stretching the video card to
+     the two stacked cards left a tall empty band under the 16:9 player. */
   .watch-top { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.25rem; }
+  /* the featured player: 16:9 at the top of its column (from 1024px the text column beside it
+     may be taller — then the card's surface shows below the video, never black bars) */
+  .watch-feature-video { display: flex; background: #000; }
   .watch-paths { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem; }
   @media (width >= 48rem) { .watch-paths { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   @media (width >= 90rem) {
-    .watch-top { grid-template-columns: minmax(0, 1fr) 24rem; }
-    .watch-paths { grid-template-columns: minmax(0, 1fr); grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 1.25rem; }
+    .watch-top { grid-template-columns: minmax(0, 1fr) 24rem; align-items: start; }
+    .watch-paths { grid-template-columns: minmax(0, 1fr); gap: 1.25rem; }
   }
   @media (width >= 112.5rem) { .watch-top { grid-template-columns: minmax(0, 1fr) 28rem; gap: 1.5rem; } }
 
@@ -254,6 +267,15 @@
      never fade them with opacity */
   .media-chip-n { font-size: 0.75rem; font-weight: 700; font-variant-numeric: tabular-nums; }
 
+  /* Video cards (Watch grid). Phones (< 640px): compact list rows — the thumbnail (40% wide, 16:9)
+     on the left, badges · title · meta on the right; the whole row stays one link. */
+  @media (width < 40rem) {
+    .vid-card { flex-direction: row; align-items: flex-start; gap: 0.75rem; padding: 0.625rem; }
+    .vid-card > .vid-thumb { width: 40%; flex-shrink: 0; border-radius: 0.75rem; }
+    .vid-card > .vid-body { padding: 0; gap: 0.375rem; }
+    .vid-card .vid-play { width: 2.25rem; height: 2.25rem; }
+    .vid-card .vid-dur { right: 0.25rem; bottom: 0.25rem; }
+  }
   .vid-thumb > img { transition: transform 0.4s ease; }
   .group:hover .vid-thumb > img { transform: scale(1.04); }
   .vid-dur {
@@ -330,10 +352,23 @@ lite-youtube.media-lyt { width: 100%; max-width: none; border-radius: inherit; }
 lite-youtube.media-lyt::before { display: none; } /* title overlay: the title is shown next to the player */
 lite-youtube.media-lyt > .lyt-playbtn { filter: none; }
 lite-youtube.media-lyt > .lyt-playbtn:focus-visible { outline: 3px solid #fff; outline-offset: -6px; }
-/* LISTEN: one copy of the Short at a time (unlayered, so it beats .listen-short's display: grid). */
-@media (width < 90rem) { .listen-short--side { display: none; } }
-@media (width >= 90rem) { .listen-short--end { display: none; } }
-/* LISTEN: the sidebar's YouTube Short is vertical (9:16). */
+/* LISTEN, from 1440px in windows at least 36rem (576px) tall: the player — alone in the right
+   column — sticks under the header (--sticky-top) all the way down the episode list. The compact
+   card is ~330–400px, so it always fits; max-height + its own scroll + the bottom fade (the
+   sticky-aside recipe in main.css) are the safety net. Pure CSS, so nothing shifts while you
+   scroll. Unlayered: .listen-feature is also .page-overlap, whose position: relative and
+   margin-top are utilities (a later layer than components). margin-top = page-overlap's -2.5rem
+   minus the 0.25rem padding that leaves room for the card's shadow and focus rings. */
+@media (width >= 90rem) and (height >= 36rem) {
+  .listen-feature {
+    position: sticky; top: var(--sticky-top);
+    max-height: calc(100dvh - var(--sticky-top) - 1rem - var(--sticky-bottom, 0px)); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin;
+    padding: 0.25rem 0.5rem 1.5rem; margin: -2.75rem -0.5rem 0;
+    -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 1.5rem), transparent);
+            mask-image: linear-gradient(to bottom, #000 calc(100% - 1.5rem), transparent);
+  }
+}
+/* LISTEN: the YouTube Short is vertical (9:16). */
 lite-youtube.listen-lyt::after { padding-bottom: calc(100% * 16 / 9); }
 lite-youtube.listen-lyt > .lyt-playbtn { background-size: 52px 37px; }
 

@@ -265,10 +265,20 @@ export default function (eleventyConfig, helpers) {
 
   /* "Fresh" strip: the newest items across all sources, mixed round-robin by source
      (GV stories, LV stories, posts, videos, episodes, PDFs, committee files) so one busy
-     source — a new magazine issue with 30 stories — can't take over the row. */
-  eleventyConfig.addFilter("homeFresh", (items, n = 8) => {
+     source — a new magazine issue with 30 stories — can't take over the row.
+     `shown` (extra arguments: single items or arrays) = everything the home page already shows in
+     its own sections (Listen & watch, New on YouTube, the magazines, published writers, newest
+     documents, Instagram, committee uploads): those are left out, and so is a podcast episode's
+     YouTube copy (same title), so no item appears twice on the page. */
+  eleventyConfig.addFilter("homeFresh", (items, n = 8, ...shown) => {
     const now = Date.now();
-    const list = [...arr(items)].filter(alive).sort((a, b) => newsTime(b) - newsTime(a));
+    const shownItems = shown.flat(2).filter(Boolean);
+    const shownIds = new Set(shownItems.map((i) => i.id).filter(Boolean));
+    const shownUrls = new Set(shownItems.map((i) => i.url).filter(Boolean));
+    const shownMedia = new Set(shownItems.filter((i) => i.kind === "episode" || i.kind === "video").map(titleKey).filter(Boolean));
+    const isShown = (i) => shownIds.has(i.id) || (i.url && shownUrls.has(i.url))
+      || ((i.kind === "episode" || i.kind === "video") && shownMedia.has(titleKey(i)));
+    const list = [...arr(items)].filter((i) => alive(i) && !isShown(i)).sort((a, b) => newsTime(b) - newsTime(a));
     // A podcast episode and its YouTube upload share a title: keep the episode
     // (the podcast player page), so the video slot goes to a different video.
     const epKeys = new Set(list.filter((i) => i.kind === "episode").map(titleKey).filter(Boolean));

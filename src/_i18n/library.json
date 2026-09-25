@@ -4,21 +4,18 @@
     "es": "Documentos oficiales de La Viña, AA Grapevine y AA World Services, y del comité de NETA 65: kits para RLV y GVR, catálogos, volantes y formularios. Puedes buscarlos y los mantenemos al día."
   },
   "library.eyebrow": {
-    "en": "Grapevine · La Viña · NETA 65",
-    "es": "La Viña · Grapevine · NETA 65"
+    "en": "Library · Documents",
+    "es": "Biblioteca · Documentos"
   },
   "library.subtitle": {
-    "en": "Every official document from Grapevine, La Viña and AA, plus our committee's own — each one once, in one searchable place.",
-    "es": "Todos los documentos oficiales de La Viña, Grapevine y AA, más los de nuestro comité — cada uno una sola vez, en un solo lugar donde puedes buscar."
+    "en": "Official Grapevine, La Viña and AA documents, plus our committee's own — each once, in one searchable place.",
+    "es": "Documentos oficiales de La Viña, Grapevine y AA, más los de nuestro comité: cada uno una vez, en un solo lugar para buscar."
   },
   "library.search_label": {
     "en": "Search the library",
     "es": "Buscar en la biblioteca"
   },
-  "library.search_placeholder": {
-    "en": "Search titles, e.g. “workbook”",
-    "es": "Busca títulos, p. ej. “catálogo”"
-  },
+  "library.search_placeholder": { "en": "Search titles, e.g. “workbook”", "es": "Busca títulos: “catálogo”" },
   "library.search_submit": {
     "en": "Search",
     "es": "Buscar"
@@ -28,36 +25,16 @@
     "es": "Borrar búsqueda"
   },
   "library.stat_total": {
-    "en": "Documents",
-    "es": "Documentos"
+    "en": "documents",
+    "es": "documentos"
   },
   "library.stat_new": {
-    "en": "New this month",
-    "es": "Nuevos este mes"
-  },
-  "library.stat_src.gv": {
-    "en": "From Grapevine",
-    "es": "De Grapevine"
-  },
-  "library.stat_src.lv": {
-    "en": "From La Viña",
-    "es": "De La Viña"
-  },
-  "library.stat_src.neta": {
-    "en": "From our committee",
-    "es": "De nuestro comité"
-  },
-  "library.stat_daily": {
-    "en": "We keep this library updated regularly",
-    "es": "Mantenemos esta biblioteca actualizada con regularidad"
+    "en": "new this month",
+    "es": "nuevos este mes"
   },
   "library.collections_title": {
     "en": "Quick collections",
     "es": "Colecciones rápidas"
-  },
-  "library.collections_sub": {
-    "en": "One tap to the kits and files people ask for most.",
-    "es": "Con un toque, los kits y archivos que más se piden."
   },
   "library.col.gvr-kit": {
     "en": "GVR kit",
@@ -116,8 +93,8 @@
     "es": "Los documentos nuevos aparecen aquí en cuanto se publican; mantenemos esta biblioteca actualizada con regularidad. ¡Vuelve pronto!"
   },
   "library.col_empty_reports": {
-    "en": "Reports and meeting notes appear here automatically after the committee uploads them to its shared Drive folder.",
-    "es": "Los informes y las notas de reunión aparecen aquí automáticamente cuando el comité los sube a su carpeta compartida de Drive."
+    "en": "Reports and meeting notes appear here once the committee adds them to its shared Drive folder.",
+    "es": "Los informes y las notas de reunión aparecen aquí en cuanto el comité los agrega a su carpeta compartida de Drive."
   },
   "library.filters": {
     "en": "Filters",
@@ -415,25 +392,27 @@
     "en": "Showing the {shown} newest documents. Turn on JavaScript to search and filter all {n}.",
     "es": "Se muestran los {shown} documentos más recientes. Activa JavaScript para buscar y filtrar los {n}."
   },
-  "library.how_title": {
-    "en": "How this library stays up to date",
-    "es": "Cómo se mantiene al día esta biblioteca"
+  "library.how_title": { "en": "How this library works", "es": "Cómo funciona esta biblioteca" },
+  "library.how_eyebrow": { "en": "About this library", "es": "Sobre esta biblioteca" },
+  "library.how_sub": {
+    "en": "Where the documents come from, and how to find one in English or Spanish.",
+    "es": "De dónde vienen los documentos y cómo encontrar uno en español o en inglés."
   },
   "library.how_official_title": {
     "en": "Official sources only",
     "es": "Solo fuentes oficiales"
   },
   "library.how_official": {
-    "en": "Only documents published by Grapevine, La Viña and AA World Services — each one once. We keep this library updated regularly, so new flyers, order forms and news sheets show up here on their own.",
-    "es": "Solo documentos que publican La Viña, Grapevine y AA World Services, cada uno una sola vez. Mantenemos esta biblioteca actualizada con regularidad, así que los volantes, formularios y hojas de noticias nuevos aparecen aquí solos."
+    "en": "Only documents published by Grapevine, La Viña and AA World Services — each one once, with its language editions on one card.",
+    "es": "Solo documentos que publican La Viña, Grapevine y AA World Services, cada uno una sola vez, con sus ediciones en cada idioma en la misma tarjeta."
   },
   "library.how_drive_title": {
     "en": "Committee uploads",
     "es": "Archivos del comité"
   },
   "library.how_drive": {
-    "en": "Reports, notes, slides and workshop files the committee saves to its shared Google Drive folder are added automatically.",
-    "es": "Los informes, notas, presentaciones y archivos de talleres que el comité guarda en su carpeta compartida de Google Drive se agregan automáticamente."
+    "en": "Reports, notes, slides and workshop files the committee saves to its shared Google Drive folder are added here too.",
+    "es": "Los informes, notas, presentaciones y archivos de talleres que el comité guarda en su carpeta compartida de Google Drive también se agregan aquí."
   },
   "library.how_lang_title": {
     "en": "English & Spanish",
@@ -443,10 +422,7 @@
     "en": "Titles are translated automatically, so you can search in either language. When a document comes in English and Spanish, both editions are on one card.",
     "es": "Los títulos se traducen automáticamente, así que puedes buscar en cualquiera de los dos idiomas. Cuando un documento existe en español y en inglés, las dos versiones están en la misma tarjeta."
   },
-  "library.how_status": {
-    "en": "See today's update status",
-    "es": "Ver el estado de la actualización de hoy"
-  },
+  "library.how_status": { "en": "See the update status", "es": "Ver el estado de las actualizaciones" },
   "library.ask": {
     "en": "Looking for something that isn't here? Write to the committee and we'll help you find it.",
     "es": "¿Buscas algo que no está aquí? Escríbele al comité y te ayudamos a encontrarlo."
@@ -463,13 +439,14 @@
     "en": "All documents",
     "es": "Todos los documentos"
   },
+  "library.results_eyebrow": { "en": "Browse the library", "es": "Explora la biblioteca" },
   "search.meta_desc": {
     "en": "Search the NETA 65 Grapevine / La Viña site — articles, documents, podcasts, videos, Instagram posts and committee files — in English and Spanish.",
     "es": "Busca en el sitio de La Viña / Grapevine de NETA 65: artículos, documentos, podcasts, videos, Instagram y archivos del comité, en español e inglés."
   },
   "search.eyebrow": {
-    "en": "Everything on this site",
-    "es": "Todo el sitio"
+    "en": "Site · Search",
+    "es": "Sitio · Búsqueda"
   },
   "search.subtitle": {
     "en": "Articles, documents, podcasts, videos, Instagram posts, committee files and pages — in English and Spanish.",
@@ -479,10 +456,7 @@
     "en": "Search the site",
     "es": "Buscar en el sitio"
   },
-  "search.placeholder": {
-    "en": "Stories, documents, podcasts, Zoom…",
-    "es": "Historias, documentos, podcasts, Zoom…"
-  },
+  "search.placeholder": { "en": "Stories, documents, podcasts, Zoom…", "es": "Busca historias, documentos…" },
   "search.clear": {
     "en": "Clear search",
     "es": "Borrar búsqueda"
@@ -599,6 +573,7 @@
     "en": "Type a few words — a story topic, a document name, a podcast guest, “Zoom”… Spanish and English both work.",
     "es": "Escribe unas palabras — un tema, el nombre de un documento, un invitado del podcast, “Zoom”… Funciona en español y en inglés."
   },
+  "search.tips_eyebrow": { "en": "Search tips", "es": "Consejos para buscar" },
   "search.try": {
     "en": "Popular searches",
     "es": "Búsquedas populares"
@@ -611,10 +586,15 @@
     "en": "Or browse everything",
     "es": "O explora todo"
   },
+  "search.browse_eyebrow": { "en": "Browse", "es": "Explora" },
+  "search.browse_sub": { "en": "Every part of the site, and what's in it.", "es": "Cada parte del sitio y lo que contiene." },
   "search.browse_n": {
     "en": "{n} items",
     "es": "{n} elementos"
   },
+  "search.browse_meetings": { "en": "Committee, Grapevine & weekly open meetings", "es": "Del comité, de Grapevine y abiertas semanales" },
+  "search.browse_wn": { "en": "{n} updates in the last 30 days", "es": "{n} novedades en los últimos 30 días" },
+  "search.browse_wn_one": { "en": "1 update in the last 30 days", "es": "1 novedad en los últimos 30 días" },
   "search.none_title": {
     "en": "No results for “{q}”",
     "es": "No hay resultados para “{q}”"
@@ -663,13 +643,9 @@
     "en": "Opens the official source in a new tab",
     "es": "Abre la fuente oficial en una pestaña nueva"
   },
-  "search.index_note": {
-    "en": "The search index is rebuilt automatically every day with everything new.",
-    "es": "El índice de búsqueda se reconstruye automáticamente cada día con todo lo nuevo."
-  },
   "search.page_desc.home": {
-    "en": "The newest Grapevine and La Viña stories, podcasts, videos and service resources — updated every day.",
-    "es": "Lo más reciente de La Viña y Grapevine: historias, podcasts, videos y recursos de servicio — actualizado cada día."
+    "en": "The newest Grapevine and La Viña stories, podcasts, videos and service resources — in English and Spanish.",
+    "es": "Lo más reciente de La Viña y Grapevine: historias, podcasts, videos y recursos de servicio — en español e inglés."
   },
   "search.page_desc.whats-new": {
     "en": "Everything new from every source, newest first.",
@@ -707,10 +683,7 @@
     "en": "Search everything on this site.",
     "es": "Busca todo en este sitio."
   },
-  "search.page_desc.status": {
-    "en": "When each source was last updated automatically.",
-    "es": "Cuándo se actualizó automáticamente cada fuente por última vez."
-  },
+  "search.page_desc.status": { "en": "When each source was last updated.", "es": "Cuándo se actualizó cada fuente por última vez." },
   "search.kw.home": {
     "en": "home start welcome grapevine la vina committee neta 65 area",
     "es": "inicio bienvenida comité área"
@@ -836,8 +809,8 @@
     "es": "Se abre en {host}"
   },
   "library.how_drive_empty": {
-    "en": "Nothing has been uploaded for this panel yet — the first files will show up here on their own.",
-    "es": "Todavía no se ha subido nada en este panel; los primeros archivos aparecerán aquí solos."
+    "en": "Nothing has been uploaded for this panel yet — the first files will appear here once they're shared.",
+    "es": "Todavía no se ha subido nada en este panel; los primeros archivos aparecerán aquí en cuanto se compartan."
   },
   "library.col_empty_reports_cta": {
     "en": "Committee documents",

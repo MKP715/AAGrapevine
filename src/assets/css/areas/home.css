@@ -140,10 +140,16 @@
 .home-stat:hover .home-stat-l { color: var(--c-ink); text-decoration: underline; }
 
 /* ---------- 2. Published writers spotlight ---------- */
-.home-spot {
+/* A soft vine / amber glow behind the section that fades out INSIDE it (the mask), so there is
+   no hard seam where the section meets its neighbours. */
+.home-spot { position: relative; isolation: isolate; }
+.home-spot::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
   background:
-    radial-gradient(55% 60% at 100% 0%, color-mix(in srgb, var(--c-vine) 8%, transparent), transparent 70%),
-    radial-gradient(45% 55% at 0% 100%, color-mix(in srgb, var(--c-lv) 6%, transparent), transparent 70%);
+    radial-gradient(55% 60% at 100% 20%, color-mix(in srgb, var(--c-vine) 8%, transparent), transparent 65%),
+    radial-gradient(45% 55% at 0% 80%, color-mix(in srgb, var(--c-lv) 6%, transparent), transparent 65%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 12%, #000 88%, transparent);
+          mask-image: linear-gradient(to bottom, transparent, #000 12%, #000 88%, transparent);
 }
 /* Phones: Area 65 cards stacked, then the Texas cards in a swipe row (the `rail` utility).
    From 640px ONE grid holds both lists (display: contents): Area 65 cards span two columns,
@@ -162,13 +168,13 @@
 @media (width >= 112.5rem) { .home-spot-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
 .home-spot-item { min-width: 0; }
 
-/* "See the full list" tile: closes the grid's last row, so no row ends in empty columns,
+/* "See the full list" link card: closes the grid's last row, so no row ends in empty columns,
    whatever the number of stories. Its width at 2 / 3 / 4 / 5 columns is data-f2…data-f5
    (eleventy/filters/home.js homeSpotFill → index.njk; home.js redoes it in the browser);
    0 = that row is already full, so no tile. data-full on the grid = the column counts at which
    each Area 65 card takes a whole row (only when too few Texas cards are left to sit beside
    them, which would leave gaps higher up). The ranges below MUST match the column counts above.
-   Phones: no tile (the same two links are right above the list). */
+   Phones: no card (the same link is in the section header). */
 .home-spot-fill { display: none; }
 @media (width >= 40rem) { .home-spot-fill { display: flex; min-width: 0; container-type: inline-size; } }
 @media (40rem <= width < 64rem) {
@@ -195,31 +201,28 @@
   .home-spot-grid[data-full~="5"] .home-spot-item.is-featured { grid-column: 1 / -1; }
   .home-spot-grid[data-full~="5"] .home-spot-card.is-featured .home-spot-media { width: min(38%, 30rem); }
 }
+/* A compact link card (icon · text · arrow), centred in the row's height; the whole card is the link. */
 .home-spot-fill {
-  border: 1.5px dashed color-mix(in srgb, var(--c-vine) 45%, var(--c-line));
-  border-radius: var(--radius-card);
   background:
     radial-gradient(90% 70% at 100% 0%, color-mix(in srgb, var(--c-vine) 10%, transparent), transparent 70%),
     color-mix(in srgb, var(--c-vine-soft) 45%, var(--c-surface));
 }
-/* One column wide: stacked, centred in the row's height. Wider (≥ 34rem): icon · text · buttons. */
-.home-spot-fill-in { display: flex; flex-direction: column; justify-content: center; gap: 1rem; width: 100%; padding: 1.5rem; }
+.home-spot-fill-in { position: relative; display: flex; align-items: center; gap: 1rem; width: 100%; padding: 1.25rem 1.5rem; }
+/* a large, faint grape cluster fills the tile's corner (decoration: the card is often a whole row tall) */
+.home-spot-fill-art { position: absolute; right: -1.5rem; bottom: -2rem; width: min(55%, 14rem); height: auto; color: var(--c-vine); opacity: 0.1; transform: rotate(-12deg); pointer-events: none; }
 .home-spot-fill-icon {
   display: grid; place-items: center; flex-shrink: 0;
   width: 3rem; height: 3rem; border-radius: 1rem;
   color: var(--c-vine); background: var(--c-vine-soft);
 }
-.home-spot-fill-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-.home-spot-fill-actions > a { flex: 1 1 auto; }
-@container (width >= 34rem) {
-  .home-spot-fill-in { flex-direction: row; align-items: center; gap: 1.25rem 1.75rem; padding: 1.5rem 2rem; }
-  .home-spot-fill-text { flex: 1 1 0%; min-width: 0; max-width: 40rem; }
-  .home-spot-fill-actions { flex-direction: column; flex-shrink: 0; margin-left: auto; }
-}
+.home-spot-fill-text { flex: 1 1 0%; min-width: 0; max-width: 40rem; }
+.home-spot-fill-arrow { flex-shrink: 0; margin-left: auto; color: var(--c-vine); transition: transform 0.2s ease; }
+.home-spot-fill:hover .home-spot-fill-arrow { transform: translateX(2px); }
 
 .home-spot-card { flex-direction: column; }
 .home-spot-media { position: relative; flex-shrink: 0; aspect-ratio: 5 / 2; overflow: hidden; background: var(--tone-soft); }
 .is-featured .home-spot-media { aspect-ratio: 16 / 9; }
+@media (width < 40rem) { .is-featured .home-spot-media { aspect-ratio: 5 / 2; } } /* phones: a shorter picture */
 .home-spot-body { display: flex; flex: 1 1 auto; flex-direction: column; min-width: 0; padding: 1rem 1.125rem 1.125rem; }
 @media (width >= 40rem) {
   /* Area 65: picture on the left, the story on the right */
@@ -296,31 +299,10 @@
 }
 
 /* ---------- 3. Fresh strip ---------- */
-.home-trust {
-  display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem 0.6rem;
-  width: fit-content; max-width: 100%;
-  border: 1px solid var(--c-line);
-  background: var(--c-surface);
-  border-radius: 9999px;
-  padding: 0.45rem 1rem;
-  font-size: 0.85rem;
-  color: var(--c-muted);
-}
-@media (width < 40rem) { .home-trust { border-radius: 1rem; } }
-.home-trust-dot {
-  width: 0.5rem; height: 0.5rem; border-radius: 9999px; flex-shrink: 0;
-  background: var(--c-vine);
-  animation: home-pulse-vine 2.4s ease-out infinite;
-}
-@keyframes home-pulse-vine {
-  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--c-vine) 55%, transparent); }
-  70%, 100% { box-shadow: 0 0 0 0.5rem transparent; }
-}
-
 /* Mobile: horizontal scroll-snap row that bleeds to the screen edges (all items).
    ≥ 40rem: a grid that always shows FULL rows of the 10 "fresh" items:
    2 columns × 3 rows · 3 × 2 from 1024px (cards ≥ 300px) · 4 × 2 from 1280px · 5 × 2 from 1800px.
-   Videos (.home-rail--videos, 5 items): 2 × 2 · 4 × 1 from 1024px · 5 × 1 from 1800px. */
+   Videos (.home-rail--videos, 5 cards): 2 × 2 · 4 × 1 from 1024px · 5 × 1 from 1800px. */
 .home-rail {
   display: grid;
   grid-auto-flow: column;
@@ -404,18 +386,18 @@
 }
 
 /* ---------- 5. Magazines ---------- */
-/* From 1536px the "Write for the magazines" panel is a third column next to the two magazines */
-@media (width >= 96rem) {
-  .home-mags.has-write { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(22rem, 0.72fr); }
-  /* The panel is as tall as its own themes — not stretched down beside the taller magazine
-     columns, which left an empty tinted lower third. */
-  .home-mags.has-write > .home-write { align-self: start; }
-}
-/* …and on screens tall enough to show all of it, it stays in view (below the fixed header)
-   while the magazine columns scroll past. */
+/* On screens at least 1536px wide AND 896px tall (the tall-2xl variant in main.css) the "Write for
+   the magazines" panel is a third column next to the two magazines, as tall as its own themes, and it
+   stays in view (below the fixed header) while the magazine columns scroll past. On shorter windows
+   it can't stick, so it stays the full-width row under both magazines — never a short column beside
+   an empty space. */
 @media (width >= 96rem) and (height >= 56rem) {
-  .home-mags.has-write > .home-write { position: sticky; top: 6rem; }
+  .home-mags.has-write { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(22rem, 0.72fr); }
+  .home-mags.has-write > .home-write { align-self: start; position: sticky; top: var(--sticky-top); }
 }
+/* This month in the Shop (the closing row of the magazines section): compact covers */
+.home-shop .shop-teaser-covers { padding: 0.25rem 0.375rem 0.25rem 0.125rem; }
+.home-shop .shop-teaser-covers img { width: 2.75rem; }
 .home-mag-head {
   color: var(--tone);
   background:
@@ -454,6 +436,7 @@
 .home-mag-cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .home-mag-cover:hover, .home-mag-cover:focus-visible { transform: rotate(0deg) translateY(-3px) scale(1.03); box-shadow: 0 2px 4px rgb(0 0 0 / 0.14), 0 22px 38px -14px rgb(0 0 0 / 0.5); }
 @media (width >= 40rem) { .home-mag-cover { width: 7.25rem; } }
+@media (48rem <= width < 64rem) { .home-mag-cover { width: 5.25rem; } } /* two magazines side by side on tablets */
 /* "Auto-translated from …" note above a magazine's story list */
 .home-mag-mt { background: color-mix(in srgb, var(--c-surface-2) 60%, transparent); }
 @media (width >= 80rem) { .home-mag-cover { width: 8rem; } }
@@ -468,15 +451,13 @@
 .home-play:hover, .home-play.is-playing { background: var(--c-grape); color: #fff; }
 [data-theme="dark"] .home-play:hover, [data-theme="dark"] .home-play.is-playing { color: var(--c-paper); }
 
+/* New on YouTube: the video is the card's picture (plays inline, privacy-enhanced) */
 lite-youtube.home-yt {
   max-width: none;
   width: 100%;
-  border-radius: 1rem;
+  border-radius: var(--radius-card) var(--radius-card) 0 0;
   overflow: hidden;
-  box-shadow: var(--shadow-card);
-  transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
-lite-youtube.home-yt:hover { box-shadow: var(--shadow-lift); transform: translateY(-2px); }
 lite-youtube.home-yt::before { display: none; } /* title is shown under the video instead */
 lite-youtube.home-yt > .lyt-playbtn:focus-visible { outline: 3px solid #fff; outline-offset: -6px; }
 
@@ -508,11 +489,7 @@ lite-youtube.home-yt > .lyt-playbtn:focus-visible { outline: 3px solid #fff; out
 }
 
 /* ---------- 8. Library band ---------- */
-/* Newest PDFs: 6 (3 × 2); from 1800px 4 columns × 2 rows, with the 7th and 8th.
-   (Plain CSS on purpose: a Tailwind `min-[1800px]:` class sorts BEFORE `sm:` in the built CSS —
-   px vs the rem breakpoints — so `sm:grid-cols-3` would win over it.) */
-@media (width < 112.5rem) { .home-pdfs > li:nth-child(n+7) { display: none; } }
-@media (width >= 112.5rem) { .home-pdfs { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+/* Newest documents: 6 — 2 on phones, 3 × 2 from 640px, one row of 6 from 1280px (index.njk). */
 .home-lib {
   background:
     radial-gradient(60% 80% at 0% 0%, color-mix(in srgb, var(--c-gv) 7%, transparent), transparent 70%),
@@ -521,6 +498,18 @@ lite-youtube.home-yt > .lyt-playbtn:focus-visible { outline: 3px solid #fff; out
 }
 
 /* ---------- 9. Instagram ---------- */
+/* Phones: one row of square posts that swipes sideways (bleeds to the screen edges);
+   3 columns from 640px, 6 from 1024px. */
+.home-ig-grid {
+  display: grid; grid-auto-flow: column; grid-auto-columns: 44%; gap: 0.75rem;
+  overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scroll-padding-inline: var(--gutter);
+  margin-inline: calc(-1 * var(--gutter)); padding: 0.25rem var(--gutter) 0.75rem;
+}
+.home-ig-grid > li { scroll-snap-align: start; min-width: 0; }
+@media (width >= 40rem) {
+  .home-ig-grid { grid-auto-flow: row; grid-auto-columns: auto; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; overflow: visible; margin-inline: 0; padding: 0; }
+}
+@media (width >= 64rem) { .home-ig-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
 .home-ig-ph {
   color: var(--tone);
   background:
@@ -568,24 +557,7 @@ lite-youtube.home-yt > .lyt-playbtn:focus-visible { outline: 3px solid #fff; out
   border-style: dashed;
 }
 
-/* ---------- 11. Drive (empty state) ---------- */
-.home-drive-empty::before {
-  content: ""; position: absolute; inset: 0; pointer-events: none;
-  background:
-    radial-gradient(40% 80% at 100% 0%, color-mix(in srgb, var(--c-vine) 9%, transparent), transparent 70%),
-    radial-gradient(30% 70% at 0% 100%, color-mix(in srgb, var(--c-gv) 6%, transparent), transparent 70%);
-}
-/* A faint hand-drawn vine in the corner: decoration only */
-.home-drive-vine {
-  position: absolute; right: -1.5rem; bottom: -1rem;
-  width: 15rem; height: 10rem;
-  color: var(--c-vine);
-  opacity: 0.1;
-  pointer-events: none;
-}
-@media (width < 48rem) { .home-drive-vine { width: 10rem; height: 7rem; opacity: 0.08; } }
-
 @media (prefers-reduced-motion: reduce) {
-  .home-live-pill::before, .home-trust-dot { animation: none; }
-  .home-sheet, lite-youtube.home-yt, .home-mag-cover, .home-stat { transition: none; }
+  .home-live-pill::before { animation: none; }
+  .home-sheet, .home-mag-cover, .home-stat, .home-spot-fill-arrow { transition: none; }
 }

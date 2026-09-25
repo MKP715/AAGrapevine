@@ -82,22 +82,16 @@ pageScripts: ["/assets/vendor/minisearch.js", "/assets/js/search.js", "/assets/j
 {%- endmacro %}
 
 {#- ---------- hero (the shared ui.pageHero: same height as every page) ----------
-    Only compact numbers go in the hero. The search box, the "checked daily" note and the
-    quick collections sit in the block right below it (page-overlap). Phones show the
-    first two numbers only (library.css: .lib-hero-stats) so the hero stays short. -#}
+    Only two compact numbers go in the hero (shown from 768px): the total and new this month —
+    the per-source counts are on the Source filter chips. The search box, how fresh the library
+    is (ui.freshness) and the quick collections sit in the block right below it (page-overlap). -#}
 <div id="library" class="lib-page">
 {% call ui.pageHero(lang, "nav.library" | t(lang), "library.subtitle" | t(lang), "library", "library.eyebrow" | t(lang)) %}
   {%- if stats.total %}
-  <div class="lib-hero-stats">
-  {#- A source with nothing yet (the committee Drive before its first upload) is left out (no value → skipped). -#}
   {{ ui.heroStats([
     { value: stats.total | libNum(lang), label: "library.stat_total" | t(lang) },
-    { value: stats.recent | libNum(lang), label: "library.stat_new" | t(lang) },
-    { value: (stats.bySrc.gv | libNum(lang)) if stats.bySrc.gv else "", label: "library.stat_src.gv" | t(lang) },
-    { value: (stats.bySrc.lv | libNum(lang)) if stats.bySrc.lv else "", label: "library.stat_src.lv" | t(lang) },
-    { value: (stats.bySrc.neta | libNum(lang)) if stats.bySrc.neta else "", label: "library.stat_src.neta" | t(lang) }
+    { value: stats.recent | libNum(lang), label: "library.stat_new" | t(lang) }
   ]) }}
-  </div>
   {%- endif %}
 {% endcall %}
 
@@ -116,18 +110,17 @@ pageScripts: ["/assets/vendor/minisearch.js", "/assets/js/search.js", "/assets/j
         <kbd id="lib-kbd" class="lib-find-kbd" aria-hidden="true">/</kbd>
       </div>
     </form>
-    <p class="lib-find-note">
-      {% icon "refresh-cw", "size-4 mt-0.5 shrink-0" %}<span>{{ "library.stat_daily" | t(lang) }}{% if updated %} · <time datetime="{{ updated }}" data-relative>{{ updated | fmtDate(lang, "short") }}</time>{% endif %}</span>
-    </p>
+    {{ ui.freshness(updated, lang, { note: true, class: "lib-find-note" }) }}
   </div>
 
-  {#- quick collections -#}
-  {% if docs.length %}
+  {#- quick collections — only the ones that have documents (an empty one is left out) -#}
+  {%- set liveCols = cols | selectattr("count") %}
+  {% if docs.length and liveCols.length %}
   <section class="mt-4" aria-labelledby="lib-cols-h">
     <h2 id="lib-cols-h" class="sr-only">{{ "library.collections_title" | t(lang) }}</h2>
-    <div class="lib-cols">
-      {% for c in cols %}
-      <button type="button" class="lib-col" data-col="{{ c.key }}" data-tone="{{ c.tone }}" aria-pressed="false"{% if not c.count %} data-zero{% endif %}>
+    <div class="lib-cols" style="--lib-cols-n: {{ liveCols.length }}">
+      {% for c in liveCols %}
+      <button type="button" class="lib-col" data-col="{{ c.key }}" data-tone="{{ c.tone }}" aria-pressed="false">
         <span class="lib-col-icon">{% icon c.icon, "size-5" %}</span>
         <span class="lib-col-text">
           <span class="lib-col-label">{{ c.label }}</span>
@@ -142,7 +135,7 @@ pageScripts: ["/assets/vendor/minisearch.js", "/assets/js/search.js", "/assets/j
 </div>
 
 {#- ---------- browse: facets (fixed-width sidebar) + results (grow with the screen) ---------- -#}
-<section class="container-page section-tight" id="lib-main" aria-labelledby="lib-results-h">
+<section class="container-page pt-10 pb-12 sm:pt-12 sm:pb-16" id="lib-main" aria-labelledby="lib-results-h">
   {% if not docs.length %}
     <h2 id="lib-results-h" class="sr-only">{{ "library.results_title" | t(lang) }}</h2>
     {{ ui.emptyState("library", "library.empty_title" | t(lang), "library.empty_text" | t(lang), "/status/" | lurl(lang), "library.how_status" | t(lang)) }}
@@ -169,10 +162,8 @@ pageScripts: ["/assets/vendor/minisearch.js", "/assets/js/search.js", "/assets/j
 
     {#- results -#}
     <div class="min-w-0">
-      <div class="flex flex-wrap items-center justify-between gap-3">
-        <h2 id="lib-results-h" class="font-display text-xl font-semibold sm:text-2xl">{{ "library.results_title" | t(lang) }}
-          <span id="lib-status" class="mt-0.5 block font-sans text-sm font-normal text-muted" role="status" aria-live="polite">{{ ("library.count_one" | t(lang)) if docs.length == 1 else ("library.count_all" | t(lang, {n: docs.length | libNum(lang)})) }}</span>
-        </h2>
+      {%- set libStatus -%}<span id="lib-status" role="status" aria-live="polite">{{ ("library.count_one" | t(lang)) if docs.length == 1 else ("library.count_all" | t(lang, {n: docs.length | libNum(lang)})) }}</span>{%- endset %}
+      {% call ui.sectionHead("library.results_title" | t(lang), libStatus, "", "", "files", { eyebrow: "library.results_eyebrow" | t(lang), tone: "text-gv", id: "lib-results-h", lang: lang, class: "mb-0! sm:mb-0!" }) %}
         <div class="flex items-center gap-2">
           <label class="sr-only" for="lib-sort">{{ "library.sort_label" | t(lang) }}</label>
           <div class="relative">
@@ -189,7 +180,7 @@ pageScripts: ["/assets/vendor/minisearch.js", "/assets/js/search.js", "/assets/j
             <button type="button" data-view="list" aria-pressed="false" title="{{ 'library.view_list' | t(lang) }}"><span class="sr-only">{{ "library.view_list" | t(lang) }}</span>{% icon "list", "size-[1.1rem]" %}</button>
           </div>
         </div>
-      </div>
+      {% endcall %}
 
       <div id="lib-active" class="mt-4 flex flex-wrap items-center gap-2" hidden></div>
       <p id="lib-partial" class="mt-4 flex items-start gap-2 rounded-xl bg-lv-soft px-4 py-3 text-sm text-lv-strong" hidden>{% icon "info", "size-4 mt-0.5" %}<span>{{ "library.partial" | t(lang) }}</span></p>
@@ -198,7 +189,7 @@ pageScripts: ["/assets/vendor/minisearch.js", "/assets/js/search.js", "/assets/j
         <button type="button" id="lib-retry" class="btn-secondary btn-sm">{% icon "refresh-cw", "size-4" %} {{ "library.retry" | t(lang) }}</button>
       </div>
 
-      <div id="lib-results" class="lib-results mt-5" data-view="grid">
+      <div id="lib-results" class="lib-results mt-6 sm:mt-8" data-view="grid">
         {#- Pick the saved / URL / phone-default layout before the cards paint (no flash). Removed by library.js on re-render. -#}
         <script>(function(e){try{var v=new URLSearchParams(location.search).get("view");try{v=v||localStorage.getItem("lib-view")}catch(x){}v=v||(innerWidth<640?"list":"grid");e.parentNode.setAttribute("data-view",v==="list"?"list":"grid")}catch(x){}})(document.currentScript)</script>
         {%- for d in docs | limit(SSR_COUNT) %}
@@ -228,37 +219,29 @@ pageScripts: ["/assets/vendor/minisearch.js", "/assets/js/search.js", "/assets/j
   {% endif %}
 </section>
 
-{#- ---------- how it works (wide screens: heading + "ask us" on the left, the three cards on the right) ---------- -#}
-<section class="container-page pb-4" aria-labelledby="lib-how-h">
-  <div class="lib-how">
-    <h2 id="lib-how-h" class="lib-how-head h-section text-2xl">{{ "library.how_title" | t(lang) }}</h2>
-    <div class="lib-how-items">
-      <div class="lib-how-item">
-        <span class="lib-how-icon" data-tone="gv">{% icon "badge-check", "size-5" %}</span>
-        <h3 class="h-card">{{ "library.how_official_title" | t(lang) }}</h3>
-        <p>{{ "library.how_official" | t(lang) }}</p>
-      </div>
-      <div class="lib-how-item">
-        <span class="lib-how-icon" data-tone="neta">{% icon "folder-open", "size-5" %}</span>
-        <h3 class="h-card">{{ "library.how_drive_title" | t(lang) }}</h3>
-        <p>{{ "library.how_drive" | t(lang) }}</p>
-        {% if docs.length and not stats.bySrc.neta %}<p class="lib-how-note">{% icon "hourglass", "size-3.5" %}<span>{{ "library.how_drive_empty" | t(lang) }}</span></p>{% endif %}
-      </div>
-      <div class="lib-how-item">
-        <span class="lib-how-icon" data-tone="lv">{% icon "languages", "size-5" %}</span>
-        <h3 class="h-card">{{ "library.how_lang_title" | t(lang) }}</h3>
-        <p>{{ "library.how_lang" | t(lang) }}</p>
-      </div>
-    </div>
-    <div class="lib-how-foot">
-      <p class="text-sm text-muted">{{ "library.ask" | t(lang) }}</p>
-      <div class="flex flex-wrap gap-2">
-        <a class="btn-secondary btn-sm" href="mailto:{{ site.contact_email }}">{% icon "mail", "size-4" %} {{ "library.ask_cta" | t(lang) }}</a>
-        <a class="btn-ghost btn-sm" href="{{ '/status/' | lurl(lang) }}">{% icon "activity", "size-4" %} {{ "library.how_status" | t(lang) }}</a>
-      </div>
-    </div>
-    <p class="lib-how-copy text-xs text-faint">{{ "library.copyright" | t(lang) }}</p>
+{#- ---------- how it works: three short points, then "ask us" (the copyright line closes it) ---------- -#}
+<section class="container-page" aria-labelledby="lib-how-h">
+  {{ ui.sectionHead("library.how_title" | t(lang), "library.how_sub" | t(lang), "", "", "info", { eyebrow: "library.how_eyebrow" | t(lang), tone: "text-gv", id: "lib-how-h", lang: lang }) }}
+  <ul class="grid grid-cols-1 gap-5 md:grid-cols-3" role="list">
+    <li class="panel-muted">
+      <h3 class="card-h"><span>{% icon "badge-check", "size-5" %}</span>{{ "library.how_official_title" | t(lang) }}</h3>
+      <p class="mt-2 text-sm leading-relaxed text-muted">{{ "library.how_official" | t(lang) }}</p>
+    </li>
+    <li class="panel-muted">
+      <h3 class="card-h"><span class="text-vine!">{% icon "folder-open", "size-5" %}</span>{{ "library.how_drive_title" | t(lang) }}</h3>
+      <p class="mt-2 text-sm leading-relaxed text-muted">{{ "library.how_drive" | t(lang) }}</p>
+      {% if docs.length and not stats.bySrc.neta %}<p class="mt-3 flex items-start gap-1.5 border-t border-line pt-3 text-xs leading-relaxed text-muted">{% icon "hourglass", "mt-0.5 size-3.5 shrink-0 text-vine" %}<span>{{ "library.how_drive_empty" | t(lang) }}</span></p>{% endif %}
+    </li>
+    <li class="panel-muted">
+      <h3 class="card-h"><span class="text-lv!">{% icon "languages", "size-5" %}</span>{{ "library.how_lang_title" | t(lang) }}</h3>
+      <p class="mt-2 text-sm leading-relaxed text-muted">{{ "library.how_lang" | t(lang) }}</p>
+    </li>
+  </ul>
+  <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <p class="text-sm text-muted">{{ "library.ask" | t(lang) }}</p>
+    <a class="btn-secondary btn-sm self-start sm:self-auto" href="mailto:{{ site.contact_email }}">{% icon "mail", "size-4" %} {{ "library.ask_cta" | t(lang) }}</a>
   </div>
+  <p class="mt-4 text-xs text-faint">{{ "library.copyright" | t(lang) }}</p>
 </section>
 </div>
 

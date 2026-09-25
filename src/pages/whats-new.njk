@@ -56,51 +56,44 @@ pageScripts: ["/assets/js/community.js"]
 
 {{ cmWnIcons | cmIconSprite | safe }}
 
-{#- Hero: the shared ui.pageHero. From 1024px the three numbers sit in the hero (ui.heroStats
-    design); on smaller screens they would make the hero taller than the standard height, so
-    they move to a one-line summary right below it (.cm-wn-strip). -#}
-{%- set updatedTime -%}<time datetime="{{ updated | isoDate }}" data-relative title="{{ updated | fmtDate(lang, 'datetime') }}">{{ updated | fmtDate(lang, "datetime") }}</time>{%- endset -%}
+{#- Hero: the shared ui.pageHero — one actions row + two numbers (ui.heroStats, shown from 768px).
+    How fresh the list is ("Updated 2 hours ago") is said once, by the feed (ui.freshness). -#}
 {% call ui.pageHero(lang, "nav.whats_new" | t(lang), "community.wn.hero_sub" | t(lang), "sparkles", "community.wn.eyebrow" | t(lang)) %}
 <div class="hero-actions cm-hero-tight">
   <a class="btn-light" href="#subscribe">{% icon "rss", "size-4" %} {{ "community.wn.btn_subscribe" | t(lang) }}</a>
   <a class="btn-on-dark" href="{{ '/digest/' | lurl(lang) }}">{% icon "newspaper", "size-4" %} {{ "community.wn.btn_digest" | t(lang) }}</a>
 </div>
-<dl class="hero-stats max-lg:hidden">
-  <div class="hero-stat"><dt>{{ "community.wn.stat_week" | t(lang) }}</dt><dd>{{ week | cmNum(lang) }}</dd></div>
-  <div class="hero-stat"><dt>{{ "community.wn.stat_month" | t(lang) }}</dt><dd>{{ month | cmNum(lang) }}</dd></div>
-  <div class="hero-stat"><dt>{{ "community.wn.stat_updated" | t(lang) }}</dt><dd>{{ updatedTime | safe }}</dd></div>
-</dl>
+{{ ui.heroStats([
+  { value: week | cmNum(lang), label: "community.wn.stat_week" | t(lang) },
+  { value: month | cmNum(lang), label: "community.wn.stat_month" | t(lang) }
+]) }}
 {% endcall %}
 
 <div class="container-page page-start">
   <div class="cm-wn-layout">
 
     {#- ============ Timeline ============
-        ≥1536px: the filter chips become a sticky column on the left of the timeline.
-        Summary and issue-title lines keep a readable measure (72ch) however wide the column. -#}
+        < 1536px: the filter chips are ONE line (chip-row-nowrap: it scrolls sideways) that sticks
+        under the header in windows at least 40rem tall (community.css .cm-chipbar);
+        ≥ 1536px: they become a sticky column on the left of the timeline.
+        Each entry: icon · text (a readable 72ch column) · a fixed thumbnail slot. -#}
     <div class="cm-wn-main min-w-0"
          x-data="whatsNew({ cap: {{ CAP }}, days: {{ DAYS_INITIAL }} })"
          data-today="{{ 'common.today' | t(lang) }}" data-yesterday="{{ 'community.yesterday' | t(lang) }}"
          data-showing="{{ 'community.wn.showing' | t(lang) }}" data-more="{{ 'community.wn.more_in_day' | t(lang) }}"
          data-day-one="{{ 'community.wn.day_items_one' | t(lang) }}" data-day-many="{{ 'community.wn.day_items' | t(lang) }}">
 
-      {#- The hero's numbers, for screens where the hero shows none (< 1024px) -#}
-      <dl class="cm-wn-strip mb-3 flex flex-wrap gap-x-5 gap-y-1 text-sm text-muted lg:hidden">
-        <div class="flex flex-row-reverse justify-end gap-1.5"><dt>{{ "community.wn.stat_week" | t(lang) }}</dt><dd class="font-semibold text-ink tabular-nums">{{ week | cmNum(lang) }}</dd></div>
-        <div class="flex flex-row-reverse justify-end gap-1.5"><dt>{{ "community.wn.stat_month" | t(lang) }}</dt><dd class="font-semibold text-ink tabular-nums">{{ month | cmNum(lang) }}</dd></div>
-        <div class="flex gap-1.5"><dt>{{ "community.wn.stat_updated" | t(lang) }}:</dt><dd class="font-semibold text-ink">{{ updatedTime | safe }}</dd></div>
-      </dl>
-
       {% if days | length %}
-      {#- Filter chips (JS only — hidden without JS since they would do nothing) -#}
-      <div class="cm-chipbar sticky top-16 z-20 -mx-4 mb-6 bg-paper/90 px-4 py-3 backdrop-blur sm:mx-0 sm:rounded-2xl sm:px-0 2xl:mb-0 2xl:bg-transparent 2xl:py-0 2xl:backdrop-blur-none" x-cloak>
+      {#- Filter chips (JS only — hidden without JS since they would do nothing; community.css keys
+          that on html.js, so the bar is there from the first paint and the feed never jumps) -#}
+      <div class="cm-chipbar -mx-4 mb-4 bg-paper/90 px-4 py-2.5 backdrop-blur sm:mx-0 sm:px-0 2xl:mb-0 2xl:bg-transparent 2xl:py-0 2xl:backdrop-blur-none">
         <p id="wn-filter-title" class="eyebrow mb-3 hidden 2xl:block">{{ "community.wn.filter_aria" | t(lang) }}</p>
-        <div class="cm-chips no-scrollbar -my-1 flex gap-2 overflow-x-auto py-1 lg:flex-wrap lg:overflow-visible" role="group" aria-labelledby="wn-filter-title">
-          <button type="button" class="chip shrink-0" :aria-pressed="(filter === '').toString()" aria-pressed="true" @click="setFilter('')">
-            {{ "community.wn.all" | t(lang) }} <span class="cm-wn-count">{{ items | length }}</span>
+        <div class="cm-chips chip-row-nowrap" role="group" aria-labelledby="wn-filter-title">
+          <button type="button" class="chip" :aria-pressed="(filter === '').toString()" aria-pressed="true" @click="setFilter('')">
+            {{ "common.all" | t(lang) }} <span class="cm-wn-count">{{ items | length }}</span>
           </button>
           {% for c in chips %}
-          <button type="button" class="chip shrink-0" :aria-pressed="(filter === '{{ c.key }}').toString()" aria-pressed="false" @click="setFilter('{{ c.key }}')">
+          <button type="button" class="chip" :aria-pressed="(filter === '{{ c.key }}').toString()" aria-pressed="false" @click="setFilter('{{ c.key }}')">
             {{ ic(c.icon, "size-4") }} {{ ("community.group." + c.key) | t(lang) }} <span class="cm-wn-count">{{ c.count }}</span>
           </button>
           {% endfor %}
@@ -110,6 +103,7 @@ pageScripts: ["/assets/js/community.js"]
 
       <div class="cm-wn-feed min-w-0">
       {% if days | length %}
+      {{ ui.freshness(updated, lang, { note: true, class: "mb-5" }) }}
       <p class="sr-only" aria-live="polite" x-text="status"></p>
 
       <ol class="cm-days space-y-10" role="list">
@@ -117,9 +111,10 @@ pageScripts: ["/assets/js/community.js"]
         <li class="cm-day" data-day="{{ day.ymd }}" data-counts="{{ day.counts | json }}" data-total="{{ day.total }}" data-icounts="{{ day.itemCounts | json }}" data-itotal="{{ day.itemTotal }}"
             x-show="dayShown('{{ day.ymd }}')"{% if loop.index0 >= DAYS_INITIAL %} x-cloak{% endif %}>
           <h2 class="cm-day-head mb-3 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-            <span class="font-display text-xl font-semibold text-ink sm:text-2xl">
-              <span class="cm-rel text-gv" data-rel-day="{{ day.ymd }}"></span>{{ day.label or ("community.wn.undated" | t(lang)) }}
-            </span>
+            <span class="font-display text-xl font-semibold text-ink sm:text-2xl">{{ day.label or ("community.wn.undated" | t(lang)) }}</span>
+            {#- "Today" / "Yesterday" (community.js, the visitor's own date): a small badge beside the
+                count, so filling it in never re-wraps the heading (no layout shift) -#}
+            <span class="cm-rel badge-gv self-center py-0" data-rel-day="{{ day.ymd }}"></span>
             {#- follows the type filter (e.g. "1 update" when only podcasts are shown); the build-time text is the unfiltered count -#}
             <span class="text-sm text-muted" x-text="dayLabel('{{ day.ymd }}')">{{ ("community.wn.day_items_one" if day.itemTotal == 1 else "community.wn.day_items") | t(lang, { n: day.itemTotal }) }}</span>
           </h2>
@@ -139,8 +134,7 @@ pageScripts: ["/assets/js/community.js"]
               <div class="min-w-0 flex-1">
                 <div class="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted">
                   {{ badge(it, lang) }}
-                  <span>{{ issueLabel }}</span>
-                  {% if themeOk %}<span class="inline-flex gap-x-2"><span aria-hidden="true">·</span><span>{{ "community.wn.issue_theme" | t(lang, { theme: theme }) }}</span></span>{% endif %}
+                  <span class="meta-row min-w-0"><span>{{ issueLabel }}</span>{% if themeOk %}<span class="min-w-0 whitespace-normal!">{{ "community.wn.issue_theme" | t(lang, { theme: theme }) }}</span>{% endif %}</span>
                 </div>
                 <h3 class="mt-1 text-[0.98rem] font-semibold leading-snug text-ink">
                   <a href="{{ '/read/' | lurl(lang) }}" class="cm-entry-link no-underline hover:text-gv">{{ "community.wn.bundle_title" | t(lang, { n: it._items | length, issue: issueLabel | cmIssueInSentence(lang) }) }}</a>
@@ -178,17 +172,18 @@ pageScripts: ["/assets/js/community.js"]
             {%- else -%}{%- set kindLabel = ("kind." + it.kind) | cmTOr(lang, "") -%}{%- endif -%}
             {%- if it._isGroup -%}{%- set thumb = "group" -%}
             {%- elif it._group in ["video", "post", "article", "pdf"] or it.kind == "photo" -%}{%- set thumb = ex.thumb or it.image -%}
+            {%- elif it._twin -%}{%- set thumb = it._twin.image -%}{#- an episode + its YouTube upload: the video's picture -#}
             {%- else -%}{%- set thumb = "" -%}{%- endif -%}
             <li class="cm-entry group relative" data-kind="{{ it._group }}" data-rank="{{ it._rankKind }}" data-rank-all="{{ it._rankAll }}"
                 x-show="entryShown($el)"{% if it._rankAll >= CAP %} x-cloak{% endif %}>
               <span class="cm-entry-icon grid size-10 shrink-0 place-items-center rounded-xl {{ toneCls[it._tone] or toneCls.muted }}">{{ ic(it._icon) }}</span>
               <div class="min-w-0 flex-1">
                 <div class="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted">
-                  {{ badge(it, lang) }}
+                  {{ badge(it, lang) }}{% if it._twin %}
+                  {{ badge(it._twin, lang) }}{% endif %}
                   {% if se %}<span class="badge-gv">{{ se }}</span>{% endif %}
-                  {% if kindLabel %}<span>{{ kindLabel }}</span>{% endif %}
-                  {#- separator + value in one unbreakable item: a wrap never leaves a dangling "·" -#}
-                  {% if it._hasTime %}<span class="inline-flex gap-x-2 whitespace-nowrap"><span aria-hidden="true">·</span><time datetime="{{ it.date | isoDate }}">{{ it.date | fmtDate(lang, "time") }}</time></span>{% endif %}
+                  {#- kind · time: a meta-row (the "·" is drawn by CSS and never starts a line) -#}
+                  {% if kindLabel or it._hasTime %}<span class="meta-row min-w-0">{% if kindLabel %}<span class="min-w-0 whitespace-normal!">{{ kindLabel }}</span>{% endif %}{% if it._hasTime %}<time datetime="{{ it.date | isoDate }}">{{ it.date | fmtDate(lang, "time") }}</time>{% endif %}</span>{% endif %}
                   {{ langPill(it, lang) }}
                 </div>
                 <h3 class="mt-1 text-[0.98rem] font-semibold leading-snug text-ink">
@@ -210,13 +205,21 @@ pageScripts: ["/assets/js/community.js"]
                   {{ autoNote(it, lang) }}
                 {%- endset %}
                 {% if meta | trim %}<p class="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted">{{ meta | safe }}</p>{% endif %}
+                {% if it._twin %}
+                {#- one entry for the episode and its YouTube upload: listen or watch -#}
+                {%- set vHref = it._twin | cmHref(lang) -%}
+                <p class="mt-1 flex flex-wrap items-center gap-x-4 text-xs font-semibold">
+                  {% if href %}<a class="relative z-10 inline-flex min-h-11 min-w-11 items-center gap-1.5 text-gv hover:underline sm:min-h-8" href="{{ href }}"{% if it._ext %} target="_blank" rel="noopener"{% endif %}>{{ ic("headphones", "size-3.5") }} {{ "nav.listen" | t(lang) }}{% if it._ext %}<span class="sr-only"> {{ "community.new_tab" | t(lang) }}</span>{% endif %}</a>{% endif %}
+                  {% if vHref %}<a class="relative z-10 inline-flex min-h-11 min-w-11 items-center gap-1.5 text-gv hover:underline sm:min-h-8" href="{{ vHref }}" target="_blank" rel="noopener">{{ ic("youtube", "size-3.5") }} {{ "nav.watch" | t(lang) }}<span class="sr-only"> {{ "community.new_tab" | t(lang) }}</span></a>{% endif %}
+                </p>
+                {% endif %}
               </div>
               {% if thumb == "group" and ex.thumbs and ex.thumbs | length %}
               <span class="cm-thumb cm-wn-mosaic aspect-square w-16 sm:w-20" data-n="{{ 4 if (ex.thumbs | length) > 4 else (ex.thumbs | length) }}">
                 {%- for src in ex.thumbs | limit(4) %}<img src="{{ src | cmListThumb }}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.remove()">{% endfor -%}
               </span>
               {% elif thumb and thumb != "group" %}
-              <span class="cm-thumb {{ 'aspect-video w-24 sm:w-32' if it._group == 'video' or it._group == 'article' else ('aspect-[3/4] w-12 sm:w-14' if it.kind == 'pdf' else 'aspect-square w-16 sm:w-20') }}">
+              <span class="cm-thumb {{ 'aspect-video w-24 sm:w-32' if it._group == 'video' or it._group == 'article' or it._twin else ('aspect-[3/4] w-12 sm:w-14' if it.kind == 'pdf' else 'aspect-square w-16 sm:w-20') }}">
                 <img src="{{ thumb | cmListThumb }}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.parentNode.remove()">
               </span>
               {% endif %}
@@ -236,7 +239,7 @@ pageScripts: ["/assets/js/community.js"]
       <div class="mt-10 flex flex-col items-center gap-4 text-center">
         <button type="button" class="btn-secondary" x-show="moreDays()" x-cloak @click="showOlder()">{% icon "chevrons-down", "size-4" %} {{ "community.wn.older" | t(lang) }}</button>
         <p class="max-w-lg text-sm text-muted" x-show="!moreDays()">{{ "community.wn.end" | t(lang) }}</p>
-        <nav class="flex flex-wrap justify-center gap-2" aria-label="{{ 'footer.explore' | t(lang) }}">
+        <nav class="grid w-full grid-cols-2 gap-2 min-[30rem]:flex min-[30rem]:w-auto min-[30rem]:flex-wrap min-[30rem]:justify-center sm:gap-3" aria-label="{{ 'footer.explore' | t(lang) }}">
           <a class="btn-secondary btn-sm" href="{{ '/read/' | lurl(lang) }}">{{ ic("book-open", "size-4") }} {{ "nav.read" | t(lang) }}</a>
           <a class="btn-secondary btn-sm" href="{{ '/listen/' | lurl(lang) }}">{{ ic("headphones", "size-4") }} {{ "nav.listen" | t(lang) }}</a>
           <a class="btn-secondary btn-sm" href="{{ '/watch/' | lurl(lang) }}">{{ ic("circle-play", "size-4") }} {{ "nav.watch" | t(lang) }}</a>
@@ -260,56 +263,48 @@ pageScripts: ["/assets/js/community.js"]
     </div>
 
     {#- ============ Subscribe sidebar ============
-        ≥1280px: a sticky column next to the timeline; 768–1279px: below it, two cards side by side. -#}
+        ≥1280px: a sticky column next to the timeline (sticky-aside-xl: never taller than the window);
+        768–1279px: below the timeline, the card in two columns (community.css .cm-wn-sub). -#}
     {%- set rssEn = "/feed.xml" | siteUrl(site) -%}
     {%- set rssEs = "/es/feed.xml" | siteUrl(site) -%}
     {%- set ics = "/events.ics" | lurl(lang) | siteUrl(site) -%}
-    <aside id="subscribe" class="cm-wn-aside scroll-mt-24 md:grid md:grid-cols-2 md:items-start md:gap-5 xl:sticky xl:top-24 xl:block xl:self-start" aria-labelledby="subscribe-title">
-      <div class="card overflow-hidden">
-        <div class="cm-sub-head px-5 pb-4 pt-5">
-          <h2 id="subscribe-title" class="flex items-center gap-2 font-display text-xl font-semibold text-ink">{% icon "bell", "size-5 text-gv" %} {{ "community.sub.title" | t(lang) }}</h2>
+    <aside id="subscribe" class="cm-wn-aside sticky-aside-xl" aria-labelledby="subscribe-title">
+      <div class="cm-wn-sub card overflow-hidden">
+        <div class="cm-wn-sub-head px-5 pb-3 pt-4">
+          <h2 id="subscribe-title" class="card-h"><span>{% icon "bell", "size-5" %}</span>{{ "community.sub.title" | t(lang) }}</h2>
           <p class="mt-1 text-sm text-muted">{{ "community.sub.text" | t(lang) }}</p>
         </div>
-        <ul class="divide-y divide-line border-t border-line" role="list">
+        <ul class="cm-wn-sub-list divide-y divide-line border-t border-line" role="list">
           {% for f in [{ href: rssEn, label: "community.sub.rss_en", hl: "en" }, { href: rssEs, label: "community.sub.rss_es", hl: "es" }] %}
-          <li class="flex items-center gap-3 px-5 py-3">
+          <li class="flex items-center gap-3 px-5 py-2">
             <span class="grid size-9 shrink-0 place-items-center rounded-lg bg-lv-soft text-lv">{% icon "rss", "size-4" %}</span>
-            <a class="min-w-0 flex-1 text-sm font-semibold text-ink no-underline hover:text-gv" href="{{ f.href }}" hreflang="{{ f.hl }}">{{ f.label | t(lang) }}</a>
-            <button type="button" class="grid size-10 shrink-0 place-items-center rounded-full text-muted hover:bg-surface-2 hover:text-gv" data-copy="{{ f.href }}" aria-label="{{ 'community.sub.copy_rss' | t(lang) }} — {{ f.label | t(lang) }}" title="{{ 'community.sub.copy_rss' | t(lang) }}">{% icon "copy", "size-4" %}</button>
+            <a class="tap-link min-w-0 flex-1 text-sm font-semibold text-ink no-underline hover:text-gv" href="{{ f.href }}" hreflang="{{ f.hl }}">{{ f.label | t(lang) }}</a>
+            <button type="button" class="grid size-11 shrink-0 place-items-center rounded-full text-muted hover:bg-surface-2 hover:text-gv" data-copy="{{ f.href }}" aria-label="{{ 'community.sub.copy_rss' | t(lang) }} — {{ f.label | t(lang) }}" title="{{ 'community.sub.copy_rss' | t(lang) }}">{% icon "copy", "size-4" %}</button>
           </li>
           {% endfor %}
-          <li class="px-5 pb-3 pt-0 text-xs leading-relaxed text-muted">{{ "community.sub.rss_help" | t(lang) }}</li>
-          <li class="flex items-center gap-3 px-5 py-3">
+          <li class="px-5 pb-2.5 pt-0 text-xs leading-relaxed text-muted">{{ "community.sub.rss_help" | t(lang) }}</li>
+          <li class="flex items-center gap-3 px-5 py-2">
             <span class="grid size-9 shrink-0 place-items-center rounded-lg bg-vine-soft text-vine">{% icon "calendar-plus", "size-4" %}</span>
             <span class="min-w-0 flex-1">
-              <a class="block text-sm font-semibold text-ink no-underline hover:text-gv" href="{{ ics | cmWebcal }}">{{ "community.sub.ics" | t(lang) }}</a>
+              <a class="tap-link block text-sm font-semibold text-ink no-underline hover:text-gv" href="{{ ics | cmWebcal }}">{{ "community.sub.ics" | t(lang) }}</a>
               <span class="block text-xs leading-relaxed text-muted">{{ "community.sub.ics_help" | t(lang) }}</span>
             </span>
-            <button type="button" class="grid size-10 shrink-0 place-items-center rounded-full text-muted hover:bg-surface-2 hover:text-gv" data-copy="{{ ics }}" aria-label="{{ 'community.sub.copy_ics' | t(lang) }}" title="{{ 'community.sub.copy_ics' | t(lang) }}">{% icon "copy", "size-4" %}</button>
+            <button type="button" class="grid size-11 shrink-0 place-items-center rounded-full text-muted hover:bg-surface-2 hover:text-gv" data-copy="{{ ics }}" aria-label="{{ 'community.sub.copy_ics' | t(lang) }}" title="{{ 'community.sub.copy_ics' | t(lang) }}">{% icon "copy", "size-4" %}</button>
           </li>
-          <li class="flex items-center gap-3 px-5 py-3">
+          <li class="flex items-center gap-3 px-5 py-2">
             <span class="grid size-9 shrink-0 place-items-center rounded-lg bg-gv-soft text-gv">{% icon "newspaper", "size-4" %}</span>
             <span class="min-w-0 flex-1">
-              <a class="block text-sm font-semibold text-ink no-underline hover:text-gv" href="{{ '/digest/' | lurl(lang) }}">{{ "community.sub.digest" | t(lang) }}</a>
+              <a class="tap-link block text-sm font-semibold text-ink no-underline hover:text-gv" href="{{ '/digest/' | lurl(lang) }}">{{ "community.sub.digest" | t(lang) }}</a>
               <span class="block text-xs leading-relaxed text-muted">{{ "community.sub.digest_help" | t(lang) }}</span>
             </span>
             {% icon "arrow-right", "size-4 text-faint" %}
           </li>
         </ul>
-        <div class="border-t border-line bg-surface-2/60 px-5 py-4">
+        <div class="cm-wn-sub-mail border-t border-line bg-surface-2/60 px-5 py-3.5">
           <p class="text-sm font-semibold text-ink">{{ "community.sub.email_title" | t(lang) }}</p>
           <p class="mt-0.5 text-xs leading-relaxed text-muted">{{ "community.sub.email_text" | t(lang) }}</p>
-          <a class="btn-secondary btn-sm mt-3" href="{{ (site.meeting.chair_email or site.contact_email) | cmMailto('community.sub.email_subject' | t(lang)) }}">{% icon "mail", "size-4" %} {{ "community.sub.email_btn" | t(lang) }}</a>
+          <a class="btn-secondary btn-sm mt-2.5" href="{{ (site.meeting.chair_email or site.contact_email) | cmMailto('community.sub.email_subject' | t(lang)) }}">{% icon "mail", "size-4" %} {{ "community.sub.email_btn" | t(lang) }}</a>
         </div>
-      </div>
-
-      <div class="mt-5 rounded-2xl border border-line p-5 text-sm md:mt-0 xl:mt-5">
-        <h2 class="eyebrow font-sans">{{ "community.sub.sources_title" | t(lang) }}</h2>
-        <p class="mt-2 leading-relaxed text-muted">{{ "community.sub.sources_text" | t(lang) }}</p>
-        <a class="mt-3 inline-flex min-h-10 items-center gap-2 font-semibold text-gv hover:underline" href="{{ '/status/' | lurl(lang) }}">
-          <span class="relative flex size-2"><span class="relative inline-flex size-2 rounded-full bg-vine"></span></span>
-          {{ "community.sub.status_link" | t(lang) }}
-        </a>
       </div>
     </aside>
   </div>

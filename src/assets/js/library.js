@@ -478,7 +478,8 @@
   });
   document.addEventListener("click", function (e) {
     var rm = e.target.closest("[data-rm]"), rs = e.target.closest("[data-lib-reset]");
-    if (rs || (e.target.closest("#lib-clear-all"))) { e.preventDefault(); reset(); return; }
+    // (the pressed "Clear all" hides itself: keep keyboard focus in the search box, not on <body>)
+    if (rs || (e.target.closest("#lib-clear-all"))) { e.preventDefault(); reset(); input.focus({ preventScroll: true }); return; }
     if (!rm) return;
     var k = rm.getAttribute("data-rm");
     if (k === "q") { state.q = ""; input.value = ""; if (state.sort === "rel") state.sort = ""; }

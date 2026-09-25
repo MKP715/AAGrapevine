@@ -14,21 +14,31 @@
 @media (width >= 64rem) {
   .mp-layout { grid-template-columns: minmax(0, 32rem) minmax(0, 1fr); align-items: start; gap: 2.5rem; }
 }
-/* The pinned poster column fits the window, so Download / Share / Print stay in view on laptop
-   screens (1280 × 720, 1366 × 768, 1536 × 864): the poster's width follows the window height
-   (0.8 = 1080 / 1350); on very short windows the column simply scrolls with the page. */
+/* The pinned poster column fits the window, so Download / Share / Print and the hint stay in view
+   on laptop screens (1024 × 640, 1280 × 720, 1440 × 700, 1536 × 730): the poster's width follows
+   the window height (0.8 = 1080 / 1350). 16rem is what sits around the poster: the sticky top
+   offset (1.25rem), the two button rows (Download · Share | Print, one line each) and the hint
+   (up to 4 lines in the narrow column), plus a small bottom margin — and the language banner while
+   it is shown (--sticky-bottom). Below 40rem of window height the column scrolls with the page. */
 @media screen and (width >= 64rem) {
-  .mp-poster-col .mp-stage { max-width: max(22rem, min(100%, calc((100dvh - var(--header-h) - 13rem) * 0.8))); margin-inline: auto; }
+  .mp-poster-col :is(.mp-stage, .mp-actions, .mp-hint) { max-width: max(16rem, min(100%, calc((100dvh - var(--header-h) - 16rem - var(--sticky-bottom, 0px)) * 0.8))); margin-inline: auto; }
 }
 @media screen and (width >= 64rem) and (height >= 40rem) {
   .mp-poster-col { position: sticky; top: calc(var(--header-h) + 1.25rem); }
 }
+/* A window under 45rem tall with the language banner up has no room for the whole column above the
+   banner (the poster can't shrink below 16rem): it scrolls with the page until the banner goes. */
+@media screen and (width >= 64rem) and (height < 45rem) { :root.has-lang-banner .mp-poster-col { position: static; } }
 @media (width >= 96rem) { .mp-layout { grid-template-columns: minmax(0, 38rem) minmax(0, 1fr); } }
 .mp-poster-col { width: 100%; max-width: 38rem; margin-inline: auto; min-width: 0; }
 .mp-toolkit { display: flex; flex-direction: column; gap: 1.25rem; min-width: 0; }
-.mp-actions { display: flex; flex-wrap: wrap; gap: 0.625rem; margin-top: 1.25rem; }
+/* Download across the full width, Share | Print below it: equal buttons at every width (no ragged
+   row). Print takes the whole second row when there is no Share (without JavaScript). */
+.mp-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem; margin-top: 1.25rem; }
+.mp-actions > * { width: 100%; }
+.mp-actions > [data-mp-download] { grid-column: 1 / -1; }
+.mp-actions > [data-mp-share][hidden] + * { grid-column: 1 / -1; }
 .mp-actions [aria-busy="true"] { cursor: progress; opacity: 0.75; }
-@media (width < 40rem) { .mp-actions .btn-primary, .mp-actions .btn-secondary { min-height: 2.75rem; } }
 .mp-hint { display: flex; gap: 0.5rem; margin-top: 0.875rem; font-size: 0.8125rem; line-height: 1.45; color: var(--c-muted); }
 
 .mp-tiplist { display: grid; gap: 1rem; }
@@ -50,17 +60,21 @@
 .mp-now-poster { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.5rem; background: var(--c-surface-2); text-decoration: none; }
 .mp-now-poster .mp-stage { max-width: 20rem; }
 
-.mp-next { display: flex; align-items: center; gap: 1.5rem; padding: 1.5rem 1.75rem; }
-.mp-next-go { margin-left: auto; flex: none; display: grid; place-items: center; width: 3rem; height: 3rem; border-radius: 999px; background: var(--c-grape-soft); color: var(--c-grape); }
-
-.mp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 13rem), 1fr)); gap: 2rem 1.25rem; }
-@media (width < 30rem) { .mp-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem 0.875rem; } }
+/* The coming 12 posters: 2 → 3 (640px) → 4 (1024px) → 6 (1440px) columns — each divides 12, so no
+   orphan on the last row. */
+.mp-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem 0.875rem; }
+@media (width >= 40rem) { .mp-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2rem 1.25rem; } }
+@media (width >= 64rem) { .mp-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (width >= 90rem) { .mp-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
 .mp-thumb { display: block; text-decoration: none; }
 .mp-thumb .mp-fit { transition: transform 0.2s, box-shadow 0.2s; }
 .mp-thumb:hover .mp-fit, .mp-thumb:focus-visible .mp-fit { transform: translateY(-3px); box-shadow: var(--shadow-lift); }
 .mp-thumb-label { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin-top: 0.75rem; }
 
-.mp-ways { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr)); }
+/* The 10 ways: 1 → 2 (640px) → 5 (1280px) columns (10 = 2 × 5, no orphan) */
+.mp-ways { display: grid; gap: 1rem; grid-template-columns: minmax(0, 1fr); }
+@media (width >= 40rem) { .mp-ways { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (width >= 80rem) { .mp-ways { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
 .mp-ways > li { position: relative; }
 .mp-way-n { position: absolute; top: 1rem; right: 1.25rem; font-family: var(--font-display); font-size: 1.75rem; font-weight: 600; line-height: 1; color: var(--c-faint); }
 

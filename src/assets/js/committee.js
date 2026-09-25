@@ -187,6 +187,9 @@
         filter: "all", showAll: false, labels: { many: "{n}", one: "{n}" },
         init: function () {
           this.labels = countLabels(this.$root);
+          this.recount();
+          // x-show now owns what is hidden: drop the first-paint rule (committee.css [data-dflt-hidden])
+          this.$nextTick(function () { document.documentElement.classList.add("cm-ev-ready"); });
           try {
             var p = new URLSearchParams(location.search).get("filter");
             if (p && ["all", "committee", "neta", "calendar"].indexOf(p) !== -1) this.filter = p;
@@ -196,7 +199,7 @@
           var id = "";
           try { id = location.hash ? decodeURIComponent(location.hash.slice(1)) : ""; } catch (e) {}
           var el = id && document.getElementById(id);
-          if (el && el.getAttribute("data-committee") === "1") {
+          if (el && (el.getAttribute("data-committee") === "1" || el.hasAttribute("data-later"))) {
             this.showAll = true;
             this.$nextTick(function () { el.scrollIntoView({ block: "start" }); });
           } else if (el && el.closest && el.closest("details[data-cm-past]")) {
@@ -206,8 +209,27 @@
           }
         },
         set: function (f) { this.filter = f; },
+        /* The chip counts are what each filter shows: events whose time has passed (hidden by
+           expire() between builds) and the later dates of a monthly series don't count; a chip
+           that reaches 0 hides (and "All" takes over if it was the one picked). */
+        recount: function () {
+          var root = this.$root, self = this;
+          root.querySelectorAll("[data-cm-filter]").forEach(function (chip) {
+            var f = chip.getAttribute("data-cm-filter");
+            if (f === "all") return;
+            var n = Array.prototype.filter.call(root.querySelectorAll('li[data-group="' + f + '"]'), function (li) {
+              return !li.hasAttribute("data-cm-expired") && !li.hasAttribute("data-later");
+            }).length;
+            var c = chip.querySelector(".cm-chip-count");
+            if (c) c.textContent = n;
+            chip.hidden = !n;
+            if (!n && self.filter === f) self.filter = "all";
+          });
+        },
         show: function (el) {
           if (el.hasAttribute("data-cm-expired")) return false;
+          // a later date of a monthly series (its first date lists it): only with "Show every monthly date"
+          if (el.hasAttribute("data-later") && !this.showAll) return false;
           var c = el.getAttribute("data-committee") === "1";
           if (this.filter === "all") return !c || this.showAll;
           return el.getAttribute("data-group") === this.filter;
@@ -224,76 +246,181 @@
       };
     });
 
-    /* /meetings/#grapevine-meetings: filters for the Grapevine meetings list (day, city / county /
-       group, in person / online, nearby areas on or off) and today's weekday (Central time).
-       Cards carry data-day / data-area / data-att / data-q (folded text); empty weekday blocks,
-       region groups and the whole "Nearby areas" block hide with their cards. Without JavaScript
-       the filters stay hidden (x-cloak) and every meeting shows. */
+    /* /meetings/#grapevine-meetings: filters for the Grapevine meetings (city / county / group, day,
+       in person / online, nearby areas on or off) and "Meets today" (Central time).
+       One card per group (li[data-gvg]: data-area, data-days, data-q = folded text); inside, rows of
+       weekdays (data-days) with time chips ([data-slot]: data-att, data-n = how many meetings the
+       chip stands for — one per weekday of its row). A card shows when its text and area match and
+       at least one of its times matches the day and in person / online; those rows and times are
+       highlighted. Empty regions and the whole "Nearby areas" block hide with their cards.
+       Phones (< 640px, committee.css): "Filters" (moreOpen) folds the day / in person / nearby
+       controls; each region shows 3 cards (data-fold on the others) + "Show all N groups"
+       (toggleRegion); the nearby areas fold behind one button (nearOpen). While searching or
+       filtering by day / in person nothing is folded, so every match shows.
+       Without JavaScript the filters stay hidden (committee.css, html.js) and every group shows. */
     Alpine.data("cmGvMeetings", function () {
       function fold(s) {
         return String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/\s+/g, " ").trim();
       }
+      function days(el) { return (el.getAttribute("data-days") || "").split(" ").filter(Boolean); }
+      function plural(el, pre, n) { return String(el.getAttribute(pre + (n === 1 ? "-one" : "-many")) || "{n}").replace("{n}", n); }
+      // today's weekday in Central time, 0 = Sunday
+      function weekday() {
+        try {
+          return ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].indexOf(new Intl.DateTimeFormat("en-US", { timeZone: TZ, weekday: "short" }).format(new Date()));
+        } catch (e) { return new Date().getDay(); }
+      }
       return {
-        day: "", q: "", how: "", nearby: true, today: -1, shown: 0, total: 0, labels: { many: "{n}", one: "{n}" },
+        day: "", q: "", how: "", nearby: true, today: -1, shown: 0, groups: 0, total: 0, labels: { many: "{n}", one: "{n}" },
+        moreOpen: false, nearOpen: false, open: {}, regionN: {},
         init: function () {
-          this.labels = countLabels(this.$root);
-          this.total = Number(this.$root.getAttribute("data-total")) || 0;
+          var root = this.$root, self = this;
+          this.labels = countLabels(root);
+          this.total = Number(root.getAttribute("data-total")) || 0;
           this.shown = this.total;
-          try {
-            var wd = new Intl.DateTimeFormat("en-US", { timeZone: TZ, weekday: "short" }).format(new Date());
-            this.today = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].indexOf(wd);
-          } catch (e) { this.today = new Date().getDay(); }
-          var self = this;
+          this.groups = root.querySelectorAll("li[data-gvg]").length;
+          this.today = weekday();
+          this.markToday();
+          this.fold();
+          // a page left open past midnight moves "Meets today" to the new day
+          this._t = setInterval(function () { var d = weekday(); if (d !== self.today) { self.today = d; self.markToday(); } }, 60000);
           this.$watch("day", function () { self.apply(); });
           this.$watch("q", function () { self.apply(); });
           this.$watch("how", function () { self.apply(); });
           this.$watch("nearby", function () { self.apply(); });
-          // A link to one meeting (#mtg-…, e.g. from the site search): make sure it is visible
+          // A link to one group (#gvg-…, the site search) or to one of its meetings (#mtg-…, older
+          // links): bring the group's card into view and outline it
           var id = "";
           try { id = location.hash ? decodeURIComponent(location.hash.slice(1)) : ""; } catch (e) {}
-          var el = id && id.indexOf("mtg-") === 0 && document.getElementById(id);
-          if (el && this.$root.contains(el)) this.$nextTick(function () { el.scrollIntoView({ block: "center" }); });
+          var card = null;
+          if (id.indexOf("gvg-") === 0) card = document.getElementById(id);
+          else if (/^mtg-[a-z0-9-]+$/i.test(id)) card = root.querySelector('li[data-mtg~="' + id + '"]');
+          if (card && root.contains(card)) {
+            if (id.indexOf("mtg-") === 0) card.classList.add("is-target");
+            // on a phone the card may be folded away (a region's 4th card on, or the nearby areas):
+            // unfold its region / the nearby block first
+            if (card.getAttribute("data-area") === "nearby") this.nearOpen = true;
+            var rid = this.regionOf(card);
+            if (rid) this.open[rid] = true;
+            this.fold();
+            this.$nextTick(function () { card.scrollIntoView({ block: "center" }); });
+          }
+        },
+        destroy: function () { clearInterval(this._t); },
+        // "Meets today" on the cards of the groups that meet today, today's row in blue, and
+        // "(today)" after today's name in the Day list
+        markToday: function () {
+          var t = String(this.today), root = this.$root;
+          root.querySelectorAll("li[data-gvg]").forEach(function (card) {
+            var on = days(card).indexOf(t) !== -1;
+            card.classList.toggle("is-today", on);
+            var b = card.querySelector("[data-gvm-today]");
+            if (b) b.hidden = !on;
+          });
+          root.querySelectorAll(".cm-gvg-row").forEach(function (row) { row.classList.toggle("is-today", days(row).indexOf(t) !== -1); });
+          var tpl = root.getAttribute("data-today-label") || "{day}";
+          root.querySelectorAll('select[x-model="day"] option[data-name]').forEach(function (o) {
+            var name = o.getAttribute("data-name");
+            o.textContent = o.value === t ? tpl.replace("{day}", name) : name;
+          });
         },
         get filtered() { return this.day !== "" || this.q.trim() !== "" || this.how !== "" || !this.nearby; },
-        get statusText() { return countText(this.labels, this.shown); },
+        // a search or a day / in person filter: every match shows (nothing folded on phones)
+        get searching() { return this.day !== "" || this.q.trim() !== "" || this.how !== ""; },
+        // how many of the folded filters (behind "Filters" on phones) are set
+        get moreCount() { return (this.day !== "" ? 1 : 0) + (this.how !== "" ? 1 : 0) + (this.nearby ? 0 : 1); },
+        regionOf: function (el) { var r = el && el.closest ? el.closest("[data-gvm-group]") : null; return r ? r.getAttribute("data-gvm-group") : ""; },
+        isOpen: function (el) { return !!this.open[this.regionOf(el)]; },
+        foldable: function (el) { return !this.searching && (this.regionN[this.regionOf(el)] || 0) > 3; },
+        foldLabel: function (el) {
+          var id = this.regionOf(el), b = el && el.closest ? el.closest("[data-more]") : null;
+          if (!b) return "";
+          return this.open[id] ? b.getAttribute("data-less") : String(b.getAttribute("data-more") || "").replace("{n}", this.regionN[id] || 0);
+        },
+        toggleRegion: function (el) {
+          var id = this.regionOf(el);
+          if (!id) return;
+          this.open[id] = !this.open[id];
+          this.fold();
+        },
+        // Phones: a region shows its first 3 visible cards (the rest get data-fold, hidden by
+        // committee.css below 640px) unless it is open or a search / filter is on.
+        fold: function () {
+          var self = this, all = this.searching;
+          this.$root.querySelectorAll(".cm-gvg-region").forEach(function (reg) {
+            var id = reg.getAttribute("data-gvm-group"), k = 0, open = all || !!self.open[id];
+            reg.querySelectorAll("li[data-gvg]").forEach(function (li) {
+              var vis = !li.hidden;
+              li.toggleAttribute("data-fold", vis && !open && k >= 3);
+              if (vis) k++;
+            });
+            self.regionN[id] = k;
+          });
+        },
+        get statusText() { return countText(this.labels, this.shown).replace("{groups}", plural(this.$root, "data-groups", this.groups)); },
         reset: function () {
           this.day = ""; this.q = ""; this.how = ""; this.nearby = true;
           // the pressed button hides itself: keep keyboard focus in the filters, not on <body>
           var f = this.$root.querySelector("input[type=search]");
           if (f) this.$nextTick(function () { f.focus(); });
         },
-        match: function (li, terms) {
-          if (this.day !== "" && li.getAttribute("data-day") !== String(this.day)) return false;
-          if (!this.nearby && li.getAttribute("data-area") !== "ours") return false;
-          var att = li.getAttribute("data-att");
-          if (this.how === "in_person" && att === "online") return false;
-          if (this.how === "online" && att === "in_person") return false;
-          var text = li.getAttribute("data-q") || "";
-          for (var i = 0; i < terms.length; i++) if (text.indexOf(terms[i]) === -1) return false;
-          return true;
-        },
         apply: function () {
-          var root = this.$root, self = this, n = 0;
+          var root = this.$root, self = this, shown = 0, groups = 0;
           var terms = fold(this.q).split(" ").filter(Boolean);
-          var cards = root.querySelectorAll("li[data-day]");
-          for (var i = 0; i < cards.length; i++) {
-            var ok = self.match(cards[i], terms);
-            cards[i].hidden = !ok;
-            if (ok) n++;
-          }
-          function hideEmpty(sel) {
-            var els = root.querySelectorAll(sel);
-            for (var j = 0; j < els.length; j++) {
-              var v = els[j].querySelectorAll("li[data-day]:not([hidden])").length;
-              els[j].hidden = !v;
-              var c = els[j].querySelector(":scope > .cm-gvm-group-head [data-gvm-count]");
-              if (c) c.textContent = (v === 1 ? c.getAttribute("data-one") : c.getAttribute("data-many")).replace("{n}", v);
-            }
-          }
-          hideEmpty("[data-gvm-dayg]");
-          hideEmpty("[data-gvm-group]");
-          hideEmpty("[data-gvm-nearby]");
-          this.shown = n;
+          var day = String(this.day), how = this.how, slotFilter = day !== "" || how !== "";
+          root.querySelectorAll("li[data-gvg]").forEach(function (card) {
+            var ok = self.nearby || card.getAttribute("data-area") === "ours";
+            var text = card.getAttribute("data-q") || "";
+            for (var i = 0; ok && i < terms.length; i++) if (text.indexOf(terms[i]) === -1) ok = false;
+            var n = 0;
+            card.querySelectorAll(".cm-gvg-row").forEach(function (row) {
+              var dayOk = day === "" || days(row).indexOf(day) !== -1, rowHit = false;
+              row.querySelectorAll("[data-slot]").forEach(function (chip) {
+                var att = chip.getAttribute("data-att");
+                var hit = dayOk && !(how === "in_person" && att === "online") && !(how === "online" && att === "in_person");
+                chip.classList.toggle("is-match", slotFilter && hit);
+                if (hit) { rowHit = true; n += day === "" ? Number(chip.getAttribute("data-n")) || 1 : 1; }
+              });
+              row.classList.toggle("is-match", slotFilter && rowHit);
+            });
+            ok = ok && n > 0;
+            card.hidden = !ok;
+            if (ok) { shown += n; groups++; }
+            card._gvN = ok ? n : 0;
+          });
+          // regions (and our Area): hide when empty, say what is left
+          root.querySelectorAll("[data-gvm-group]").forEach(function (g) {
+            var cards = g.querySelectorAll("li[data-gvg]:not([hidden])"), m = 0;
+            for (var j = 0; j < cards.length; j++) m += cards[j]._gvN;
+            g.hidden = !cards.length;
+            var c = g.querySelector("[data-gvm-count]");
+            if (c) c.textContent = plural(root, "data-groups", cards.length) + " · " + plural(root, "data-meetings", m);
+          });
+          // the regions left share the rows again (the same rules as packRegions in eleventy/filters/committee.js)
+          root.querySelectorAll("[data-gvm-regions]").forEach(function (grid) {
+            var regions = [];
+            Array.prototype.forEach.call(grid.children, function (r) {
+              if (!r.hidden) regions.push({ el: r, cards: r.querySelectorAll("li[data-gvg]:not([hidden])") });
+            });
+            // the grid rows a region takes: its head + 4 per row of cards
+            regions.forEach(function (x) {
+              var n = x.cards.length;
+              for (var C = 1; C <= 4; C++) x.el.style.setProperty("--h" + C, 1 + 4 * (n >= C ? Math.ceil(n / C) : 1));
+            });
+            // every card is one column wide (committee.css); a region spans the whole row when it has a
+            // row of cards or more, else just its cards, so small regions sit side by side
+            [2, 3, 4].forEach(function (C) {
+              regions.forEach(function (x) {
+                var n = x.cards.length;
+                x.el.style.setProperty("--r" + C, n && n < C ? (n * 12) / C : 12);
+              });
+            });
+          });
+          var nb = root.querySelector("[data-gvm-nearby]");
+          if (nb) nb.hidden = !nb.querySelector("li[data-gvg]:not([hidden])");
+          this.shown = shown;
+          this.groups = groups;
+          this.fold();
         },
       };
     });
@@ -605,19 +732,46 @@
      scrolls sideways and the current tab can start off-screen. Center it inside the
      bar. Only the bar's own scrollLeft changes (scrollIntoView would also move the page). */
   function centerSubnav() {
-    var nav = document.querySelector(".cm-subnav");
+    var nav = document.querySelector(".cm-subnav-scroll");
     var cur = nav && nav.querySelector(".is-current");
-    if (!cur || nav.scrollWidth <= nav.clientWidth + 1) return;
-    var n = nav.getBoundingClientRect(), c = cur.getBoundingClientRect();
-    var x = nav.scrollLeft + (c.left - n.left - nav.clientLeft) - (nav.clientWidth - c.width) / 2;
-    nav.scrollLeft = Math.max(0, Math.min(x, nav.scrollWidth - nav.clientWidth));
+    if (cur && nav.scrollWidth > nav.clientWidth + 1) {
+      var n = nav.getBoundingClientRect(), c = cur.getBoundingClientRect();
+      var x = nav.scrollLeft + (c.left - n.left - nav.clientLeft) - (nav.clientWidth - c.width) / 2;
+      nav.scrollLeft = Math.max(0, Math.min(x, nav.scrollWidth - nav.clientWidth));
+    }
+    if (nav) subnavEdges(nav);
   }
+  /* The bar fades out on the side(s) that still have tabs to scroll to (committee.css .cm-subnav-scroll) */
+  function subnavEdges(nav) {
+    function mark() {
+      var over = nav.scrollWidth > nav.clientWidth + 1;
+      nav.classList.toggle("is-overflow", over);
+      nav.classList.toggle("at-start", nav.scrollLeft <= 1);
+      nav.classList.toggle("at-end", nav.scrollLeft + nav.clientWidth >= nav.scrollWidth - 1);
+    }
+    mark();
+    nav.addEventListener("scroll", mark, { passive: true });
+    window.addEventListener("resize", mark);
+  }
+
+  /* ---------------- a link to a collapsed disclosure (#how-docs, #share-photos, #how-to-post …) ----------------
+     opens it (and the <details> it is in), then brings it into view */
+  function openTarget() {
+    var id = "";
+    try { id = location.hash ? decodeURIComponent(location.hash.slice(1)) : ""; } catch (e) {}
+    var el = id && document.getElementById(id);
+    var d = el && el.closest && el.closest("details");
+    if (!d || d.open) return;
+    for (var x = d; x; x = x.parentElement && x.parentElement.closest("details")) x.open = true;
+    el.scrollIntoView({ block: "start" });
+  }
+  window.addEventListener("hashchange", openTarget);
 
   /* ---------------- boot ---------------- */
   // Deferred script: the DOM is parsed already; Alpine starts right after us.
   expire();
   weekly();
   setInterval(function () { expire(); weekly(); }, 60000);
-  function ready() { centerSubnav(); bindIcsButtons(); wireDialog(); initLightbox(); }
+  function ready() { centerSubnav(); bindIcsButtons(); wireDialog(); initLightbox(); openTarget(); }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", ready); else ready();
 })();

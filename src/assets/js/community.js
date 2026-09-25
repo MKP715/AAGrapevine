@@ -120,6 +120,7 @@
     Alpine.data("digestPage", function () {
       return {
         bi: false,
+        more: false,   // phones: "More options" (e-mail, print, steps, previews) — always shown from 1024px
         init: function () {
           try { this.bi = localStorage.getItem("gv-digest-bi") === "1"; } catch (e) { /* ignore */ }
           this.$watch("bi", function (v) { try { localStorage.setItem("gv-digest-bi", v ? "1" : "0"); } catch (e) { /* ignore */ } });
@@ -130,7 +131,8 @@
 
     /* ---------------- GV/LV report on /monthly/ (language toggle) ---------------- */
     Alpine.data("reportBox", function (lang) {
-      return { rl: lang || "en" };
+      // full: the report box is folded to a readable height until "Show the full report"
+      return { rl: lang || "en", full: false };
     });
 
     /* ---------------- Share kit ---------------- */
@@ -152,7 +154,7 @@
 
   /* ---------------- enhancements (no Alpine needed) ---------------- */
   function enhance() {
-    // "Today" / "Yesterday" prefixes on What's New day headings (computed in
+    // "Today" / "Yesterday" badges on What's New day headings (computed in
     // the browser so a page built yesterday still reads correctly today).
     var wrap = document.querySelector("[data-today]");
     if (wrap) {
@@ -161,7 +163,7 @@
       document.querySelectorAll("[data-rel-day]").forEach(function (el) {
         var d = el.getAttribute("data-rel-day");
         var label = d === today ? wrap.getAttribute("data-today") : d === yest ? wrap.getAttribute("data-yesterday") : "";
-        if (label) el.textContent = label + " · ";
+        if (label) el.textContent = label;
       });
     }
 

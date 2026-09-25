@@ -27,6 +27,8 @@ pageScripts: ["/assets/vendor/minisearch.js", "/assets/js/search.js"]
     default (Area 65 writers, first window) unless that is empty; same counts as the page itself
     (pwView, eleventy/filters/published.js). spot = { n, scope, days, query } (library.js). -#}
 {%- set spot = (db | pwView(lang)) | searchSpotlightTile(db) -%}
+{#- What's New tile: the updates of the last 30 days, counted like the page itself (media twins merged) -#}
+{%- set wnMonth = db.whatsnew.items | cmWnPrepare | cmWnCountRecent(30) -%}
 
 {{ ui.pageHero(lang, "nav.search" | t(lang), "search.subtitle" | t(lang), "search", "search.eyebrow" | t(lang)) }}
 
@@ -97,23 +99,24 @@ pageScripts: ["/assets/vendor/minisearch.js", "/assets/js/search.js"]
     </div>
   </div>
 
-  {#- start state (no query yet) -#}
+  {#- start state (no query yet): tips + popular searches | browse everything. Both columns open
+      with the same ui.sectionHead (same heading size). -#}
   <div id="ss-start">
     <div class="ss-start-grid">
       <div>
-        <h2 class="h-section">{{ "search.start_title" | t(lang) }}</h2>
-        <p class="mt-2 max-w-xl text-muted">{{ "search.start_text" | t(lang) }}</p>
-        <h3 class="eyebrow mt-6 mb-3 font-sans">{{ "search.try" | t(lang) }}</h3>
-        <div class="flex flex-wrap gap-2">
+        {{ ui.sectionHead("search.start_title" | t(lang), "search.start_text" | t(lang), "", "", "lightbulb", { eyebrow: "search.tips_eyebrow" | t(lang), tone: "text-gv", lang: lang, class: "mb-5! sm:mb-6!" }) }}
+        <h3 class="eyebrow mb-3 font-sans">{{ "search.try" | t(lang) }}</h3>
+        <div class="chip-row">
           {%- for s in ("search.suggestions" | t(lang)).split("|") %}
           <a class="chip" href="{{ '/search/' | lurl(lang) }}?q={{ s | urlencode }}" data-q="{{ s }}">{% icon "search", "size-3.5" %}{{ s }}</a>
           {%- endfor %}
         </div>
-        <p class="mt-6 inline-flex items-center gap-2 text-xs text-faint">{% icon "refresh-cw", "size-3.5" %} {{ "search.index_note" | t(lang) }}</p>
+        {{ ui.freshness(site.built, lang, { note: true, class: "mt-6" }) }}
       </div>
       <div>
-        <h2 class="h-section text-2xl sm:text-2xl">{{ "search.browse_title" | t(lang) }}</h2>
-        {#- [path, nav key, icon, tone, count, count label key, {days}, query string after the path].
+        {{ ui.sectionHead("search.browse_title" | t(lang), "search.browse_sub" | t(lang), "", "", "compass", { eyebrow: "search.browse_eyebrow" | t(lang), tone: "text-gv", lang: lang, class: "mb-5! sm:mb-6!" }) }}
+        {#- [path, nav key, icon, tone, count, count label key, {days}, query string after the path, fixed label key].
+            Every tile says what is in it: a count, or (Meetings) what kind of meetings.
             Published Writers is last: its label is the longest, and on phones (2 columns) the last
             odd tile spans the full row (.ss-browse in areas/library.css). -#}
         {%- set browse = [
@@ -123,16 +126,17 @@ pageScripts: ["/assets/vendor/minisearch.js", "/assets/js/search.js"]
           ["/watch/", "nav.watch", "circle-play", "grape", counts.video or 0],
           ["/instagram/", "nav.instagram", "instagram", "grape", counts.post or 0],
           ["/events/", "nav.events", "calendar-days", "vine", nEvents],
-          ["/meetings/", "nav.meetings", "calendar-clock", "gv", 0],
-          ["/whats-new/", "nav.whats_new", "sparkles", "vine", 0],
-          ["/published/", "nav.published", "award", "lv", spot.n, "search.browse_pw." + spot.scope, spot.days, spot.query]
+          ["/meetings/", "nav.meetings", "calendar-clock", "gv", 0, "", "", "", "search.browse_meetings"],
+          ["/whats-new/", "nav.whats_new", "sparkles", "vine", wnMonth, "search.browse_wn" if wnMonth else "", 0],
+          ["/published/", "nav.published", "award", "lv", spot.n, ("search.browse_pw." + spot.scope) if spot.n else "", spot.days, spot.query]
         ] -%}
-        <div class="ss-browse mt-4">
+        <div class="ss-browse">
           {%- for b in browse %}
           <a href="{{ b[0] | lurl(lang) }}{{ b[7] or '' }}" data-tone="{{ b[3] }}">
             <span class="ss-b-icon">{% icon b[2], "size-5" %}</span>
             <span class="min-w-0"><span class="ss-b-t">{{ b[1] | t(lang) }}</span><span class="ss-b-n">
-              {%- if b[5] and b[4] == 1 %}{{ (b[5] + "_one") | t(lang, {days: b[6]}) }}
+              {%- if b[8] %}{{ b[8] | t(lang) }}
+              {%- elif b[5] and b[4] == 1 %}{{ (b[5] + "_one") | t(lang, {days: b[6]}) }}
               {%- elif b[5] and b[4] %}{{ b[5] | t(lang, {n: b[4] | libNum(lang), days: b[6]}) }}
               {%- elif b[4] == 1 %}{{ "search.browse_one" | t(lang) }}
               {%- elif b[4] %}{{ "search.browse_n" | t(lang, {n: b[4] | libNum(lang)}) }}

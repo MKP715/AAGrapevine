@@ -8,19 +8,22 @@ descKey: committee.events.meta_desc
 pageScripts: ["/assets/js/committee.js"]
 ---
 {#- Events: committee meetings (computed), monthly recurring events (config/site.yml
-    `recurring_events:` — every date is listed, with an "Every month" badge), Drive flyers with
-    dated names, manual events, Texas GV/LV calendar events. Grouped by month, filterable,
-    with per-event calendar buttons. Below the shared page hero: the agenda on the left and,
-    from 1024px, a sidebar with the .ics subscription card and "how events get here". -#}
+    `recurring_events:` — the next date is shown, with the following ones listed on it; "Show every
+    monthly date" shows them all), Drive flyers with dated names, manual events, Texas GV/LV calendar
+    events. Grouped by month, filterable, with a row of month chips and per-event calendar buttons.
+    Below the shared page hero: the agenda (then "how events get here") and, from 1024px, a sticky
+    sidebar with the .ics subscription card (#subscribe); below 1024px the card follows the agenda. -#}
 {% import "macros/ui.njk" as ui with context %}
-{%- set all = db.events.items | cmEvents(site, lang) -%}
+{%- set all = db.events.items | cmEvents(site, lang) | cmCollapseRecurring -%}
 {%- set upcoming = all | where("past", false) -%}
 {#- Past list: real one-off events only (a monthly meeting / booth date that has passed is not news) -#}
 {%- set past = all | where("past", true) | whereNot("committee", true) | whereNot("recurring", true) | reverse -%}
 {%- set meetings = upcoming | where("committee", true) -%}
 {%- set next = meetings[0] -%}
-{%- set nNeta = upcoming | where("group", "neta") | length -%}
-{%- set nCal = upcoming | where("group", "calendar") | length -%}
+{#- Counts = what each filter shows: a monthly series counts once (its later dates are hidden
+    until "Show every monthly date"); committee.js recounts after hiding events that have passed -#}
+{%- set nNeta = upcoming | where("group", "neta") | whereNot("later", true) | length -%}
+{%- set nCal = upcoming | where("group", "calendar") | whereNot("later", true) | length -%}
 {%- set nOther = nNeta + nCal -%}
 {%- set pageAbs = page.url | siteUrl(site) -%}
 {%- set m = site.meeting -%}
@@ -37,7 +40,8 @@ pageScripts: ["/assets/js/committee.js"]
 {#- "Add to calendar" dropdown (Google / Outlook links work without JS; .ics download needs JS) -#}
 {% macro calMenu(ev, dark=false) %}
 <details class="cm-menu">
-  <summary class="{{ 'btn-on-dark' if dark else 'btn-secondary' }} btn-sm">{% icon "calendar-plus", "size-4" %} {{ "common.add_to_calendar" | t(lang) }}</summary>
+  {#- phones: the short visible label ("Calendar"), the full one for screen readers -#}
+  <summary class="{{ 'btn-on-dark' if dark else 'btn-secondary' }} btn-sm">{% icon "calendar-plus", "size-4" %} <span class="sm:hidden" aria-hidden="true">{{ "committee.events.cal_short" | t(lang) }}</span><span class="max-sm:sr-only">{{ "common.add_to_calendar" | t(lang) }}</span></summary>
   <div class="cm-menu-panel">
     <a href="{{ ev.gcal }}" target="_blank" rel="noopener">{% icon "calendar", "size-4" %} Google Calendar</a>
     <a href="{{ ev.outlook }}" target="_blank" rel="noopener">{% icon "calendar", "size-4" %} Outlook.com</a>
@@ -51,37 +55,51 @@ pageScripts: ["/assets/js/committee.js"]
     <a class="btn-light" href="#subscribe">{% icon "calendar-sync", "size-4" %} {{ "committee.events.subscribe_btn" | t(lang) }}</a>
     <a class="btn-on-dark" href="{{ '/meetings/' | lurl(lang) }}#committee-meeting">{% icon "video", "size-4" %} {{ "nav.meeting" | t(lang) }}</a>
   </div>
-  {#- The same numbers are on the filter chips below, so phones skip them (shorter hero) -#}
-  {% if nOther or next %}
-  <div class="max-sm:hidden">
-    {{ ui.heroStats([
-      { value: (nOther if nOther else null), label: "committee.events.stat_upcoming" | t(lang) },
-      { value: (next.shortLabel if next else null), label: "committee.events.stat_next_meeting" | t(lang) }
-    ]) }}
-  </div>
-  {% endif %}
+  {#- No hero stat: the number of upcoming events is on the committee sub-nav's Events tab (one
+      place), and the filter chips say how many of each kind -#}
 {% endcall %}
 
 {% committeeNav lang, "events", db %}
 
-<div class="page-start container-page">
+<div class="container-page section pt-10 pb-0 sm:pt-12">
 <div class="layout-aside">
 <section class="min-w-0" x-data="cmEvents()" data-count-label="{{ 'committee.events.showing' | t(lang) }}" data-count-label-one="{{ 'committee.events.showing_one' | t(lang) }}" aria-labelledby="ev-upcoming-title">
-  <h2 id="ev-upcoming-title" class="sr-only">{{ "committee.events.upcoming" | t(lang) }}</h2>
+  {{ ui.sectionHead("committee.events.upcoming" | t(lang), "committee.events.list_sub" | t(lang), "", "", "calendar-days", { eyebrow: "committee.events.list_eyebrow" | t(lang), tone: "text-vine", id: "ev-upcoming-title", lang: lang }) }}
 
-  {#- ---------- Filter bar ---------- -#}
-  <div class="mb-8 flex flex-wrap items-center justify-between gap-x-6 gap-y-4">
-    <div class="flex flex-wrap gap-2" role="group" aria-label="{{ 'committee.events.filter_aria' | t(lang) }}">
-      {% for f in [["all", "common.all", "", "layout-grid"], ["committee", "committee.events.f_committee", meetings.length, "users"], ["neta", "committee.events.f_neta", nNeta, "map-pin"], ["calendar", "committee.events.f_calendar", nCal, "grapes"]] %}
+  {#- ---------- Filter bar: one line of chips (it scrolls sideways on a phone); under it the months as
+       jump chips (only the months with something showing) and the "Show every monthly date" switch ---------- -#}
+  {%- set months = upcoming | groupBy("monthKey") %}
+  {#- What the default view ("All", monthly dates folded) hides — committee meetings and the later
+      dates of a monthly series, and months with nothing else — carries data-dflt-hidden: committee.css
+      hides it from the first paint (with JavaScript), so nothing jumps when cmEvents starts. -#}
+  {%- set dfltMonths = [] -%}
+  {%- for grp in months %}{% if (grp.items | whereNot("committee", true) | whereNot("later", true) | length) and dfltMonths.push(grp.key) %}{% endif %}{% endfor -%}
+  <div class="mb-8 grid grid-cols-1 gap-3">
+    <div class="chip-row" role="group" aria-label="{{ 'committee.events.filter_aria' | t(lang) }}">
+      {%- for f in [["all", "common.all", "", "layout-grid"], ["committee", "committee.events.f_committee", meetings.length, "users"], ["neta", "committee.events.f_neta", nNeta, "map-pin"], ["calendar", "committee.events.f_calendar", nCal, "grapes"]] %}
+      {%- if f[0] == "all" or f[2] %}
       <button type="button" class="chip" data-cm-filter="{{ f[0] }}" @click="set('{{ f[0] }}')" :aria-pressed="(filter === '{{ f[0] }}').toString()" aria-pressed="{{ 'true' if f[0] == 'all' else 'false' }}">
         {% icon f[3], "size-4" %} {{ f[1] | t(lang) }}{% if f[2] !== "" %} <span class="cm-chip-count">{{ f[2] }}</span>{% endif %}
       </button>
-      {% endfor %}
+      {%- endif %}
+      {%- endfor %}
     </div>
-    <label class="inline-flex min-h-11 cursor-pointer items-center gap-3 text-sm font-medium text-muted" x-show="filter === 'all'" x-cloak>
-      <input type="checkbox" class="cm-switch" x-model="showAll">
-      {{ "committee.events.show_all_meetings" | t(lang) }}
-    </label>
+    <div class="flex min-w-0 flex-wrap items-center justify-between gap-x-6 gap-y-2">
+      {% if months | length > 1 %}
+      <nav class="flex min-w-0 max-w-full items-center gap-2.5" aria-label="{{ 'committee.events.months_aria' | t(lang) }}">
+        <span class="shrink-0 text-faint" aria-hidden="true">{% icon "calendar-range", "size-4" %}</span>
+        <ul class="chip-row min-w-0" role="list">
+          {%- for grp in months %}
+          <li x-show="monthVisible($refs['m{{ grp.key }}'])"{% if grp.key not in dfltMonths %} data-dflt-hidden{% endif %}><a class="chip" href="#month-{{ grp.key }}">{{ grp.items[0].monthShort }}</a></li>
+          {%- endfor %}
+        </ul>
+      </nav>
+      {% endif %}
+      <label class="inline-flex min-h-11 cursor-pointer items-center gap-3 text-sm font-medium text-muted" x-show="filter === 'all' || filter === 'neta'" data-js-only>
+        <input type="checkbox" class="cm-switch" x-model="showAll">
+        {{ "committee.events.show_all_meetings" | t(lang) }}
+      </label>
+    </div>
   </div>
   <p class="sr-only" aria-live="polite" x-text="countText()"></p>
 
@@ -109,7 +127,7 @@ pageScripts: ["/assets/js/committee.js"]
         </p>
         <p class="mt-1 text-xs text-white/65" x-show="localLabel" x-text="localLabel" x-cloak></p>
       </div>
-      <div class="cm-pinned-actions flex flex-wrap items-center gap-2">
+      <div class="cm-pinned-actions">
         <a href="{{ m.zoom_url }}" target="_blank" rel="noopener" class="btn-light btn-sm" :class="phase !== 'upcoming' && 'cm-join-live'">{% icon "video", "size-4" %} <span x-text="joinText">{{ "committee.meeting.join" | t(lang) }}</span></a>
         <details class="cm-menu">
           <summary class="btn-on-dark btn-sm">{% icon "calendar-plus", "size-4" %} {{ "common.add_to_calendar" | t(lang) }}</summary>
@@ -126,19 +144,25 @@ pageScripts: ["/assets/js/committee.js"]
   {% endif %}
 
   {#- ---------- Upcoming, grouped by month ---------- -#}
-  {% for grp in upcoming | groupBy("monthKey") %}
-  <section class="cm-month" data-cm-month x-show="monthVisible($el)" aria-labelledby="month-{{ grp.key }}">
+  {% for grp in months %}
+  <section class="cm-month" data-cm-month x-ref="m{{ grp.key }}" x-show="monthVisible($el)"{% if grp.key not in dfltMonths %} data-dflt-hidden{% endif %} aria-labelledby="month-{{ grp.key }}">
     <h2 id="month-{{ grp.key }}" class="cm-month-title">{{ grp.items[0].monthLabel }}</h2>
     <ol class="grid gap-4">
       {% for ev in grp.items %}
-      <li id="{{ ev.anchor }}" class="scroll-mt-28" data-group="{{ ev.group }}" data-committee="{{ '1' if ev.committee else '0' }}" data-cm-expire="{{ ev.expireIso }}" x-show="show($el)">
+      {%- set tone = 'gv' if ev.committee or ev.category == 'gv-calendar' else ('lv' if ev.category == 'lv-calendar' else 'vine') %}
+      <li id="{{ ev.anchor }}" data-group="{{ ev.group }}" data-committee="{{ '1' if ev.committee else '0' }}"{% if ev.later %} data-later{% endif %}{% if ev.committee or ev.later %} data-dflt-hidden{% endif %} data-cm-expire="{{ ev.expireIso }}" x-show="show($el)">
         <article class="card cm-event">
-          <div class="cm-date-tile cm-tone-{{ 'gv' if ev.committee or ev.category == 'gv-calendar' else ('lv' if ev.category == 'lv-calendar' else 'vine') }}{{ ' cm-tile-range' if ev.tile.range }}" aria-hidden="true">
+          {#- the date: a tile column from 640px; on a phone a strip above the title (+ Share as an icon) -#}
+          <div class="cm-date-tile cm-tone-{{ tone }}{{ ' cm-tile-range' if ev.tile.range }} max-sm:hidden" aria-hidden="true">
             <span class="cm-tile-mon">{{ ev.tile.mon }}</span>
             <span class="cm-tile-day">{{ ev.tile.day }}</span>
             <span class="cm-tile-wd">{{ ev.tile.wd }}</span>
           </div>
           <div class="min-w-0 flex-1">
+            <div class="mb-2.5 flex items-center justify-between gap-3 sm:hidden">
+              <p class="cm-date-strip cm-tone-{{ tone }}" aria-hidden="true">{% icon "calendar", "size-3.5" %}<span>{{ ev.tile.wd }} · {{ ev.tile.mon }} {{ ev.tile.day }}</span></p>
+              <button type="button" class="btn-ghost -my-1 -mr-2 size-11 shrink-0 p-0" data-share="{{ pageAbs }}#{{ ev.anchor }}" data-share-title="{{ ev.title }}" data-share-text="{{ ev.shareWhen }}" aria-label="{{ 'common.share' | t(lang) }}: {{ ev.title }}">{% icon "share-2", "size-4" %}</button>
+            </div>
             <div class="flex flex-wrap items-center gap-1.5">
               {{ groupBadge(ev) }}
               {% if ev.tentative %}{{ ui.tentativeBadge(lang) }}{% endif %}
@@ -148,7 +172,7 @@ pageScripts: ["/assets/js/committee.js"]
             </div>
             <h3 class="h-card mt-2 text-lg sm:text-xl">
               {%- if ev.link and ev.link != (ev.flyer.view if ev.flyer else "") -%}
-              <a href="{{ ev.link }}" class="hover:text-gv"{% if ev.linkExternal %} target="_blank" rel="noopener"{% endif %}>{{ ev.title }}</a>
+              <a href="{{ ev.link }}" class="-my-3 inline-block py-3 hover:text-gv"{% if ev.linkExternal %} target="_blank" rel="noopener"{% endif %}>{{ ev.title }}</a>
               {%- else -%}{{ ev.title }}{%- endif -%}
             </h3>
             {#- the tile is hidden from screen readers: the date is read here (a range is in the list below) -#}
@@ -162,6 +186,8 @@ pageScripts: ["/assets/js/committee.js"]
               {% elif ev.location %}<li class="inline-flex items-center gap-1.5">{% set locIcon = "video" if ev.committee else "map-pin" %}{% icon locIcon, "size-4 text-faint" %} {{ ev.location }}</li>{% endif %}
               {% if ev.isOnline %}<li class="inline-flex items-center gap-1.5">{% icon "video", "size-4 text-faint" %} {{ ("committee.events.online_on" | t(lang, { platform: ev.platform })) if ev.platform else ("committee.events.online" | t(lang)) }}</li>{% endif %}
               {% if ev.recurrenceDay %}<li class="inline-flex items-center gap-1.5">{% icon "repeat", "size-4 text-faint" %} {{ ev.recurrenceDay }}</li>{% endif %}
+              {#- a monthly series: its next dates after this one (they show with "Show every monthly date") -#}
+              {% if ev.moreDates and ev.moreDates | length %}<li class="inline-flex items-center gap-1.5">{% icon "calendar-days", "size-4 text-faint" %} {{ "committee.events.then_dates" | t(lang, { dates: ev.moreDates | join(", ") }) }}</li>{% endif %}
             </ul>
             {% if not ev.committee %}
             {%- set foreign = not ev.ownWords and ev.item.lang and ev.item.lang != lang and ev.item.lang != "und" and not (ev.item | machineFor(lang)) -%}
@@ -172,20 +198,25 @@ pageScripts: ["/assets/js/committee.js"]
             {% endif %}
             {% if ev.item | machineFor(lang) %}<p class="mt-1.5">{{ ui.autoNote(ev.item, lang) }}</p>{% endif %}
             {% endif %}
-            <div class="mt-4 flex flex-wrap items-center gap-2">
+            {#- phones: a two-column grid of equal buttons (an odd last one spans both); from 640px one row,
+                with Share. "Event details" is a button only when there is no flyer — otherwise the title
+                is that link, so the actions stay two. -#}
+            <div class="cm-ev-actions">
+              <div class="cm-ev-btns">
               {% if ev.committee %}
               <a class="btn-primary btn-sm" href="{{ ev.online }}" target="_blank" rel="noopener">{% icon "video", "size-4" %} {{ "committee.meeting.join" | t(lang) }}</a>
               {% elif ev.online %}
-              <a class="btn-primary btn-sm" href="{{ ev.online }}" target="_blank" rel="noopener">{% icon "globe", "size-4" %} {{ "committee.events.join_online" | t(lang) }}</a>
+              <a class="btn-primary btn-sm" href="{{ ev.online }}" target="_blank" rel="noopener">{% icon "globe", "size-4" %} <span class="sm:hidden" aria-hidden="true">{{ "committee.events.join_short" | t(lang) }}</span><span class="max-sm:sr-only">{{ "committee.events.join_online" | t(lang) }}</span></a>
               {% endif %}
               {{ calMenu(ev) }}
               {% if ev.flyer %}
               <a class="btn-secondary btn-sm" href="{{ ev.flyer.view }}" target="_blank" rel="noopener" data-cm-preview="{{ ev.flyer.preview }}" data-cm-title="{{ ev.title }}" data-cm-open="{{ ev.flyer.view }}">{% icon "eye", "size-4" %} {{ "committee.events.view_flyer" | t(lang) }}</a>
               {% endif %}
-              {% if ev.link and ev.linkExternal and ev.link != (ev.flyer.view if ev.flyer else "") %}
-              <a class="btn-ghost btn-sm" href="{{ ev.link }}" target="_blank" rel="noopener">{% icon "external-link", "size-4" %} {{ "committee.events.details" | t(lang) }}</a>
+              {% if ev.link and ev.linkExternal and not ev.flyer %}
+              <a class="btn-secondary btn-sm" href="{{ ev.link }}" target="_blank" rel="noopener">{% icon "external-link", "size-4" %} <span class="sm:hidden" aria-hidden="true">{{ "committee.events.details_short" | t(lang) }}</span><span class="max-sm:sr-only">{{ "committee.events.details" | t(lang) }}</span><span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a>
               {% endif %}
-              <button type="button" class="btn-ghost btn-sm" data-share="{{ pageAbs }}#{{ ev.anchor }}" data-share-title="{{ ev.title }}" data-share-text="{{ ev.shareWhen }}">{% icon "share-2", "size-4" %} <span class="sr-only sm:not-sr-only">{{ "common.share" | t(lang) }}</span></button>
+              </div>
+              <button type="button" class="btn-ghost btn-sm max-xl:px-2.5 max-sm:hidden" data-share="{{ pageAbs }}#{{ ev.anchor }}" data-share-title="{{ ev.title }}" data-share-text="{{ ev.shareWhen }}">{% icon "share-2", "size-4" %}<span class="max-xl:sr-only">{{ "common.share" | t(lang) }}</span></button>
             </div>
           </div>
           {% if ev.flyer and ev.flyer.thumb %}
@@ -255,7 +286,7 @@ pageScripts: ["/assets/js/committee.js"]
     </summary>
     <ol class="divide-y divide-line border-t border-line">
       {% for ev in past | limit(40) %}
-      <li id="{{ ev.anchor }}" class="flex scroll-mt-28 flex-wrap items-center gap-x-4 gap-y-1 px-5 py-3.5 sm:px-6">
+      <li id="{{ ev.anchor }}" class="flex flex-wrap items-center gap-x-4 gap-y-1 px-5 py-3.5 sm:px-6">
         <time class="w-32 shrink-0 text-sm font-semibold text-muted" datetime="{{ ev.startIso }}">{{ ev.startIso | fmtDate(lang, "short") }}</time>
         <span class="min-w-[11rem] flex-1 break-words font-medium text-ink">{{ ev.title }}{% if ev.location and not ev.locationTba %} <span class="text-sm font-normal text-muted">· {{ ev.location }}</span>{% endif %}</span>
         {% if ev.flyer %}<a class="btn-ghost btn-sm" href="{{ ev.flyer.view }}" target="_blank" rel="noopener" data-cm-preview="{{ ev.flyer.preview }}" data-cm-title="{{ ev.title }}" data-cm-open="{{ ev.flyer.view }}">{% icon "eye", "size-4" %} {{ "committee.events.view_flyer" | t(lang) }}</a>
@@ -265,19 +296,12 @@ pageScripts: ["/assets/js/committee.js"]
     </ol>
   </details>
   {% endif %}
-</section>
 
-{#- ---------- Sidebar: subscribe (.ics) + how events get here ----------
-     Next to the agenda from 1024px (layout-aside: 20rem, 24rem from 1536px); below it on
-     smaller screens, where "how events get here" shows its three sources side by side. -#}
-<aside class="space-y-6" aria-label="{{ 'committee.events.aside_aria' | t(lang) }}">
-  <div id="subscribe" class="scroll-mt-24">
-    {% cmSubscribe lang, site, false %}
-  </div>
-  <section class="card card-pad" aria-labelledby="ev-src-title">
-    <h2 id="ev-src-title" class="h-card flex items-center gap-2 text-xl"><span class="text-gv">{% icon "sparkles", "size-5" %}</span>{{ "committee.events.sources_title" | t(lang) }}</h2>
+  {#- ---------- How events get here (the three kinds of events) ---------- -#}
+  <section class="panel-muted mt-12" aria-labelledby="ev-src-title">
+    <h2 id="ev-src-title" class="card-h"><span>{% icon "sparkles", "size-5" %}</span>{{ "committee.events.sources_title" | t(lang) }}</h2>
     <p class="mt-1.5 text-sm text-muted">{{ "committee.events.sources_sub" | t(lang) }}</p>
-    <ul class="mt-5 grid gap-5 md:grid-cols-3 lg:grid-cols-1">
+    <ul class="mt-5 grid gap-5 md:grid-cols-3">
       {% for s in [["meetings", "users", "bg-gv-soft text-gv"], ["flyers", "folder-up", "bg-vine-soft text-vine"], ["calendars", "grapes", "bg-lv-soft text-lv"]] %}
       <li class="flex gap-3.5">
         <span class="grid size-10 shrink-0 place-items-center rounded-xl {{ s[2] }}">{% icon s[1], "size-5" %}</span>
@@ -289,6 +313,14 @@ pageScripts: ["/assets/js/committee.js"]
       {% endfor %}
     </ul>
   </section>
+</section>
+
+{#- ---------- Sidebar: the calendar subscription (sticky from 1024px when the window is tall
+     enough; below 1024px it follows the agenda) ---------- -#}
+<aside class="sticky-aside" aria-label="{{ 'committee.events.aside_aria' | t(lang) }}">
+  <div id="subscribe">
+    {% cmSubscribe lang, site %}
+  </div>
 </aside>
 </div>
 </div>

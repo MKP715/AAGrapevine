@@ -8,13 +8,16 @@
         :class="solid ? 'bg-surface/92! text-ink! border-line! shadow-sm backdrop-blur-md' : 'bg-transparent text-white border-transparent'"
         class="site-header fixed inset-x-0 top-0 z-50 border-b bg-transparent text-white transition-colors duration-300"
         style="padding-top: env(safe-area-inset-top)">
-  <div class="container-page flex h-16 items-center gap-3">
-    <a href="{{ '/' | lurl(L) }}" class="group flex min-w-0 items-center gap-2.5 no-underline" aria-label="{{ 'nav.home_aria' | t(L) }}">
-      <span class="grid h-9 shrink-0 place-items-center rounded-lg bg-white px-1 shadow-sm ring-1 ring-black/5 transition group-hover:scale-[1.03] min-[390px]:h-10 min-[390px]:px-1.5">
-        <img src="/assets/img/logo-wide.png" alt="NETA 65" width="128" height="63" class="h-7 w-auto min-[390px]:h-8">
+  <div class="container-page flex h-16 items-center gap-2 min-[360px]:gap-3">
+    <a href="{{ '/' | lurl(L) }}" class="group flex min-h-11 min-w-0 items-center gap-2 no-underline min-[390px]:gap-2.5" aria-label="{{ 'nav.home_aria' | t(L) }}">
+      {#- Phones (with search, language and menu on the right): the name sits on two lines,
+          "Grapevine /" over "La Viña" — never truncated; the logo is a little smaller below 360px.
+          From 640px: one line + the committee line under it. -#}
+      <span class="grid h-8 shrink-0 place-items-center rounded-lg bg-white px-1 shadow-sm ring-1 ring-black/5 transition group-hover:scale-[1.03] min-[360px]:h-9 min-[390px]:h-10 min-[390px]:px-1.5">
+        <img src="/assets/img/logo-wide.png" alt="NETA 65" width="128" height="63" class="h-6 w-auto min-[360px]:h-7 min-[390px]:h-8">
       </span>
       <span class="min-w-0 leading-tight">
-        <span class="block font-display text-[0.92rem] font-semibold leading-[1.05] max-[389px]:whitespace-normal min-[390px]:truncate min-[390px]:text-[0.98rem] min-[390px]:leading-tight sm:text-[1.05rem]">Grapevine <span class="opacity-60">/</span> <span class="whitespace-nowrap">La Viña</span></span>
+        <span class="block font-display text-[0.875rem] font-semibold leading-[1.1] min-[360px]:text-[0.92rem] min-[390px]:text-[0.98rem] sm:truncate sm:text-[1.05rem] sm:leading-tight">Grapevine&nbsp;<span class="opacity-60">/</span> <span class="whitespace-nowrap">La Viña</span></span>
         <span class="hidden truncate text-[0.66rem] font-semibold uppercase tracking-[0.16em] opacity-70 sm:block">{{ "site.committee_short" | t(L) }}</span>
       </span>
     </a>
@@ -32,7 +35,7 @@
             {{ item.key | t(L) }}{% if here %}<span class="sr-only"> {{ "nav.current_section" | t(L) }}</span>{% endif %} {% icon "chevron-down", "size-4 transition" %}
           </button>
           <div x-show="open" x-cloak x-transition.origin.top
-               class="absolute right-0 top-full mt-2 w-80 rounded-2xl border border-line bg-surface p-2 text-ink shadow-[var(--shadow-lift)]">
+               class="absolute right-0 top-full mt-2 w-[22rem] rounded-2xl border border-line bg-surface p-2 text-ink shadow-[var(--shadow-lift)]">
             {%- for c in item.children %}
             <a href="{{ c.url | lurl(L) }}" class="flex items-start gap-3 rounded-xl p-3 no-underline transition hover:bg-surface-2 {{ 'bg-gv-soft' if pageKey == c.page }}"{% if pageKey == c.page %} aria-current="page"{% endif %}>
               <span class="mt-0.5 grid size-9 shrink-0 place-items-center rounded-lg bg-gv-soft text-gv">{% icon c.icon, "size-[1.1rem]" %}</span>
@@ -49,19 +52,22 @@
       {%- endfor %}
     </nav>
 
+    {#- Phones: search, language and menu are 44px touch targets (40px from 640px, with a mouse
+        in mind); the language pill drops its icon below 390px so everything fits at 320px. The
+        theme toggle lives in the drawer below 640px. Search opens /search/ (no overlay). -#}
     <div class="ml-auto flex shrink-0 items-center gap-0.5 min-[390px]:gap-1 xl:ml-2">
-      <a href="{{ '/search/' | lurl(L) }}" class="hidden size-10 place-items-center sm:grid rounded-full transition hover:bg-white/10" :class="solid && 'hover:bg-surface-2'" aria-label="{{ 'nav.search' | t(L) }}">{% icon "search", "size-5" %}</a>
+      <a href="{{ '/search/' | lurl(L) }}" class="grid size-11 place-items-center rounded-full transition hover:bg-white/10 sm:size-10" :class="solid && 'hover:bg-surface-2'" aria-label="{{ 'nav.search' | t(L) }}"{% if pageKey == 'search' %} aria-current="page"{% endif %}>{% icon "search", "size-5" %}</a>
       <a href="{{ alt }}" hreflang="{{ L | otherLang }}" lang="{{ L | otherLang }}"
-         class="inline-flex min-h-10 items-center gap-1.5 rounded-full border px-2.5 text-xs font-bold tracking-wide no-underline transition min-[390px]:px-3"
+         class="inline-flex min-h-11 min-w-11 items-center justify-center gap-1.5 rounded-full border px-2.5 text-xs font-bold tracking-wide no-underline transition min-[390px]:px-3 sm:min-h-10"
          :class="solid ? 'border-line hover:border-gv hover:text-gv' : 'border-white/30 hover:bg-white/10'"
          aria-label="{{ 'nav.switch_lang_aria' | t(L) }}" data-lang-switch>
-        {% icon "languages", "size-4" %}<span>{{ "ES" if L == "en" else "EN" }}</span>
+        {% icon "languages", "size-4 max-[389px]:hidden" %}<span>{{ "ES" if L == "en" else "EN" }}</span>
       </a>
       <button type="button" @click="toggleTheme()" class="hidden size-10 place-items-center sm:grid rounded-full transition hover:bg-white/10" :class="solid && 'hover:bg-surface-2'" aria-label="{{ 'nav.theme_aria' | t(L) }}">
         <span x-show="theme === 'dark'" x-cloak>{% icon "sun", "size-5" %}</span>
         <span x-show="theme !== 'dark'">{% icon "moon", "size-5" %}</span>
       </button>
-      <button type="button" x-ref="menuBtn" @click="drawer = true" class="grid size-10 place-items-center rounded-full transition hover:bg-white/10 xl:hidden" :class="solid && 'hover:bg-surface-2'" aria-label="{{ 'nav.menu' | t(L) }}" :aria-expanded="drawer" aria-controls="mobile-drawer">
+      <button type="button" x-ref="menuBtn" @click="drawer = true" class="grid size-11 place-items-center rounded-full transition hover:bg-white/10 sm:size-10 xl:hidden" :class="solid && 'hover:bg-surface-2'" aria-label="{{ 'nav.menu' | t(L) }}" :aria-expanded="drawer" aria-controls="mobile-drawer">
         {% icon "menu", "size-6" %}
       </button>
     </div>
@@ -78,8 +84,12 @@
     <div class="absolute inset-y-0 right-0 flex w-[min(24rem,88vw)] flex-col overflow-y-auto bg-surface text-ink shadow-2xl"
          x-show="drawer" x-transition:enter="transition duration-200" x-transition:enter-start="translate-x-full" x-transition:leave="transition duration-150" x-transition:leave-end="translate-x-full"
          style="padding-bottom: env(safe-area-inset-bottom)">
-      <div class="flex items-center justify-between border-b border-line px-5 py-4">
-        <span class="font-display text-lg font-semibold">{{ "nav.menu" | t(L) }}</span>
+      <div class="flex items-center gap-1 border-b border-line py-2.5 pl-5 pr-3">
+        <span class="mr-auto font-display text-lg font-semibold">{{ "nav.menu" | t(L) }}</span>
+        <button type="button" @click="toggleTheme()" class="grid size-11 place-items-center rounded-full text-muted hover:bg-surface-2 hover:text-ink" aria-label="{{ 'nav.theme_aria' | t(L) }}">
+          <span x-show="theme === 'dark'" x-cloak>{% icon "sun", "size-5" %}</span>
+          <span x-show="theme !== 'dark'">{% icon "moon", "size-5" %}</span>
+        </button>
         <button type="button" x-ref="drawerClose" @click="drawer = false" class="grid size-11 place-items-center rounded-full hover:bg-surface-2" aria-label="{{ 'common.close' | t(L) }}">{% icon "x", "size-6" %}</button>
       </div>
       <nav class="flex-1 px-3 py-3" aria-label="{{ 'nav.drawer_aria' | t(L) }}">
@@ -95,16 +105,13 @@
           {%- endif %}
         {%- endfor %}
         <p class="eyebrow mt-4 mb-1 px-3">{{ "nav.more" | t(L) }}</p>
-        {%- for f in nav.footer %}
-        <a href="{{ f.url | lurl(L) }}" class="flex min-h-11 items-center rounded-xl px-3 font-medium no-underline hover:bg-surface-2 {{ 'bg-gv-soft text-gv' if pageKey == f.page }}"{% if pageKey == f.page %} aria-current="page"{% endif %}>{{ f.key | t(L) }}</a>
-        {%- endfor %}
+        {#- Search has its own button at the bottom of the drawer, so it is not repeated here. -#}
+        {%- for f in nav.footer %}{% if f.page != "search" %}
+        <a href="{{ f.url | lurl(L) }}" class="flex min-h-11 items-center gap-3 rounded-xl px-3 font-medium no-underline hover:bg-surface-2 {{ 'bg-gv-soft text-gv' if pageKey == f.page }}"{% if pageKey == f.page %} aria-current="page"{% endif %}>{% if f.icon %}{% icon f.icon, "size-5 text-muted" %}{% endif %} {{ f.key | t(L) }}</a>
+        {%- endif %}{% endfor %}
       </nav>
       <div class="grid gap-2 border-t border-line p-4">
-        <a href="{{ '/search/' | lurl(L) }}" class="btn-secondary w-full">{% icon "search", "size-4" %} {{ "nav.search" | t(L) }}</a>
-        <button type="button" @click="toggleTheme()" class="btn-secondary w-full">
-          <span x-show="theme === 'dark'" x-cloak class="inline-flex items-center gap-2">{% icon "sun", "size-4" %} {{ "nav.light_mode" | t(L) }}</span>
-          <span x-show="theme !== 'dark'" class="inline-flex items-center gap-2">{% icon "moon", "size-4" %} {{ "nav.dark_mode" | t(L) }}</span>
-        </button>
+        <a href="{{ '/search/' | lurl(L) }}" class="btn-secondary w-full"{% if pageKey == 'search' %} aria-current="page"{% endif %}>{% icon "search", "size-4" %} {{ "nav.search" | t(L) }}</a>
         <a href="{{ alt }}" hreflang="{{ L | otherLang }}" lang="{{ L | otherLang }}" class="btn-primary w-full" data-lang-switch>{% icon "languages", "size-4" %} {{ "nav.switch_lang" | t(L) }}</a>
       </div>
     </div>

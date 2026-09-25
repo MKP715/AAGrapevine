@@ -35,13 +35,13 @@ pageScripts: ["/assets/js/community.js"]
 </div>
 {% endcall %}
 
-{#- ============ Search + the same message in the other language (tucks into the hero's edge) ============ -#}
+{#- ============ The same message in the other language | search (tucks into the hero's edge) ============ -#}
 <section class="container-page page-overlap" data-nf aria-label="{{ 'community.nf.search_label' | t(lang) }}">
   <div class="card grid overflow-hidden lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]">
     <div class="p-6 sm:p-8" lang="{{ other }}">
       <p class="font-display text-2xl font-semibold leading-tight text-ink sm:text-3xl">{{ "community.nf.title" | t(other) }}</p>
       <p class="mt-2 max-w-xl leading-relaxed text-muted">{{ "community.nf.text" | t(other) }}</p>
-      <p class="mt-4"><a class="btn-secondary btn-sm" href="{{ '/' | lurl(other) }}" hreflang="{{ other }}">{% icon "languages", "size-4" %} {{ "community.nf.home" | t(other) }}</a></p>
+      <p class="mt-4"><a class="btn-secondary btn-sm" href="{{ '/' | lurl(other) }}" hreflang="{{ other }}">{% icon "house", "size-4" %} {{ "community.nf.home" | t(other) }}</a></p>
     </div>
     <div class="border-t border-line bg-surface-2/60 p-6 sm:p-8 lg:border-l lg:border-t-0">
       <form action="{{ '/search/' | lurl(lang) }}" method="get" role="search">
@@ -52,26 +52,27 @@ pageScripts: ["/assets/js/community.js"]
         </div>
       </form>
       <p class="mt-3 text-xs text-muted"><code class="break-all" data-nf-path></code></p>
+      <p class="mt-4 flex flex-wrap items-center gap-x-1.5 border-t border-line pt-4 text-sm text-muted">{% icon "mail", "size-4 shrink-0" %} <span>{{ "community.nf.still_lost" | t(lang) }}</span> <a class="link tap-link" href="mailto:{{ site.contact_email }}">{{ site.contact_email }}</a></p>
     </div>
   </div>
 </section>
 
-<section class="section container-page scroll-mt-20" aria-labelledby="nf-popular">
-  <h2 id="nf-popular" class="h-section">{{ "community.nf.popular" | t(lang) }} <span class="font-normal text-muted" lang="{{ other }}">· {{ "community.nf.popular" | t(other) }}</span></h2>
+<section class="section container-page pb-0" aria-labelledby="nf-popular-h">
+  <div id="nf-popular">{{ ui.sectionHead("community.nf.popular" | t(lang), '<span lang="' + other + '">' + ("community.nf.popular" | t(other)) + '</span>', "", "", "compass", { eyebrow: "Grapevine · La Viña", id: "nf-popular-h", lang: lang }) }}</div>
   {#- 9 links: three even rows of 3 on every wide screen -#}
-  <ul class="mt-6 grid-cards-4 [--cards-max:3] [--cards-gap:0.75rem]" role="list">
+  <ul class="grid-cards-4 [--cards-max:3] [--cards-gap:0.75rem]" role="list">
     {% for p in popular %}
     <li class="card card-link relative flex items-center gap-4 p-4">
       <span class="grid size-11 shrink-0 place-items-center rounded-xl bg-gv-soft text-gv">{% icon p.icon, "size-5" %}</span>
       <span class="min-w-0 flex-1">
         <a class="block font-semibold text-ink no-underline after:absolute after:inset-0 hover:text-gv" href="{{ p.url | lurl(lang) }}">{{ p.key | t(lang) }}</a>
-        <a class="relative z-10 text-sm text-muted hover:text-gv hover:underline" href="{{ p.url | lurl(other) }}" hreflang="{{ other }}" lang="{{ other }}">{{ p.key | t(other) }}</a>
+        {#- the page in the other language: a small link of its own from 640px; on a phone (too small to
+            tap) just the name — the whole card opens the page -#}
+        <a class="relative z-10 text-sm text-muted hover:text-gv hover:underline max-sm:hidden" href="{{ p.url | lurl(other) }}" hreflang="{{ other }}" lang="{{ other }}">{{ p.key | t(other) }}</a>
+        <span class="block text-sm text-muted sm:hidden" lang="{{ other }}">{{ p.key | t(other) }}</span>
       </span>
       {% icon "arrow-right", "size-4 text-faint" %}
     </li>
     {% endfor %}
   </ul>
-  <p class="mt-8 text-sm text-muted">
-    {% icon "mail", "size-4 inline -mt-0.5" %} <a class="link" href="mailto:{{ site.contact_email }}">{{ site.contact_email }}</a>
-  </p>
 </section>
