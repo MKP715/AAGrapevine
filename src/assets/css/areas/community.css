@@ -14,10 +14,18 @@
   width: 2px; background: linear-gradient(to bottom, var(--c-line), color-mix(in srgb, var(--c-line) 30%, transparent));
   border-radius: 2px;
 }
+/* One entry: icon bubble · text · thumbnail. From 640px the thumbnail has a FIXED 8rem slot
+   (left edges line up down the feed; an entry without a picture leaves it empty) and the text
+   column stops at 72ch, so on wide screens the thumbnail stays next to its text instead of
+   drifting to the far edge (justify-content: start). Phones: the thumbnail keeps its own width. */
 .cm-entry {
-  display: flex; align-items: flex-start; gap: 0.875rem;
+  display: grid; grid-template-columns: 2.5rem minmax(0, 1fr) auto; align-items: start; column-gap: 0.875rem;
   margin-inline: -0.75rem; padding: 0.75rem; border-radius: 0.9rem;
   transition: background-color 0.15s ease, box-shadow 0.15s ease;
+}
+@media (width >= 40rem) {
+  .cm-entry { grid-template-columns: 2.5rem minmax(0, 72ch) 8rem; justify-content: start; }
+  .cm-entry > .cm-thumb { justify-self: start; }
 }
 .cm-entry:hover, .cm-entry:focus-within { background: var(--c-surface); box-shadow: var(--shadow-card); }
 .cm-entry-icon { position: relative; z-index: 1; box-shadow: 0 0 0 4px var(--c-paper); }
@@ -44,21 +52,34 @@
 [aria-pressed="true"] > .cm-wn-count { background: var(--c-surface); color: var(--c-gv); }
 .cm-rel:empty { display: none; }
 @media (width < 40rem) {
-  .cm-entry { gap: 0.75rem; }
+  .cm-entry { column-gap: 0.75rem; }
+}
+/* The filter bar (< 1536px): ONE line of chips (chip-row-nowrap) under the header, sticky only in
+   windows at least 40rem tall (a shorter window keeps all of its height for the feed). Entries and
+   day headings that get focus or a jump land below it (scroll-padding-top covers the header only). */
+@media (height >= 40rem) { .cm-chipbar { position: sticky; top: var(--header-h); z-index: 20; } }
+.cm-wn-main .cm-entry, .cm-wn-main .cm-day-head { scroll-margin-top: 4.5rem; }
+/* The subscribe card, 768–1279px (under the timeline): two columns — title + e-mail | the feeds. */
+@media (width >= 48rem) and (width < 80rem) {
+  .cm-wn-sub { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); grid-template-rows: auto 1fr; }
+  .cm-wn-sub-head { grid-column: 1; grid-row: 1; }
+  .cm-wn-sub-mail { grid-column: 1; grid-row: 2; }
+  .cm-wn-sub-list { grid-column: 2; grid-row: 1 / span 2; border-top: 0; border-left: 1px solid var(--c-line); }
 }
 /* Page layout (full width on desktop):
-   < 1280px   one column — timeline, then the subscribe cards (side by side from 768px);
-   ≥ 1280px   timeline + sticky subscribe column (20rem; 22rem from 1536px);
+   < 1280px   one column — timeline, then the subscribe card (two columns inside from 768px);
+   ≥ 1280px   timeline + sticky subscribe column (sticky-aside-xl, 22rem — it fits a 720px-tall window);
    ≥ 1536px   the filter chips become a sticky list on the left of the timeline, so the
               timeline keeps a readable width on wide screens instead of one giant column. */
 .cm-wn-layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2.5rem; }
-@media (width >= 80rem) { .cm-wn-layout { grid-template-columns: minmax(0, 1fr) 20rem; gap: 3rem; } }
+@media (width >= 80rem) { .cm-wn-layout { grid-template-columns: minmax(0, 1fr) 22rem; gap: 3rem; } }
 @media (width >= 96rem) {
   .cm-wn-layout { grid-template-columns: minmax(0, 1fr) 22rem; gap: 3.5rem; }
   .cm-wn-main { display: grid; grid-template-columns: 14rem minmax(0, 1fr); column-gap: 2.5rem; align-items: start; }
   .cm-wn-main > .cm-chipbar { grid-column: 1; grid-row: 1; top: calc(var(--header-h) + 1.5rem); }
   .cm-wn-main > .cm-wn-feed { grid-column: 2; grid-row: 1; }
-  .cm-chipbar .cm-chips { flex-direction: column; flex-wrap: nowrap; gap: 0.375rem; overflow: visible; }
+  .cm-chipbar .cm-chips { flex-direction: column; flex-wrap: nowrap; gap: 0.375rem; overflow: visible; margin: 0; padding: 0;
+    -webkit-mask-image: none; mask-image: none; }
   .cm-chipbar .chip { width: 100%; }
   .cm-chipbar .cm-wn-count { margin-left: auto; }
 }
@@ -84,7 +105,7 @@
 /* ------------------------------------------------------------------ */
 .cm-seg { display: block; }
 .cm-seg > span {
-  display: flex; min-height: 2.5rem; align-items: center; justify-content: center; padding: 0.25rem 0.6rem;
+  display: flex; min-height: 2.75rem; align-items: center; justify-content: center; padding: 0.25rem 0.6rem;
   border-radius: 9999px; font-size: 0.8rem; font-weight: 600; line-height: 1.15; text-align: center;
   color: var(--c-muted); cursor: pointer; transition: background-color 0.15s, color 0.15s;
 }
@@ -127,16 +148,39 @@
   .cm-avoid-break { break-inside: avoid; }
 }
 
-/* Digest newsletter body: one column (next meeting first) below 1536px; from 1536px two
-   columns — the week's news (writers spotlight + new items) | meeting, coming up, deadlines. */
+/* Digest page layout (digest.njk). Phones and tablets: one column in DOM order — the compact tool
+   card ("More" folds e-mail, print and the steps once JS runs), the newsletter, the text previews.
+   From 1024px: the newsletter on the left; on the right the tool card (sticky-aside, row 1, which
+   stretches to the newsletter's height) and the previews at the end of the column (row 2) —
+   outside the sticky part, so it never covers them and always fits the window. */
+.cm-dg-layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.25rem;
+  grid-template-areas: "tools" "digest" "previews"; }
+.cm-dg-tools { grid-area: tools; }
+.cm-dg-previews { grid-area: previews; align-self: end; }
+.cm-digest { grid-area: digest; }
+@media (width < 64rem) {
+  .cm-dg-layout.is-js:not(.is-more) .cm-dg-more { display: none; }
+  .cm-dg-layout.is-more [aria-controls="dg-more"] .icon { transform: rotate(180deg); }
+}
+@media (width >= 64rem) {
+  .cm-dg-layout { grid-template-columns: minmax(0, 1fr) 21rem; grid-template-rows: minmax(0, 1fr) auto;
+    grid-template-areas: "digest tools" "digest previews"; column-gap: 2rem; row-gap: 1.25rem; }
+}
+@media (width >= 80rem) { .cm-dg-layout { column-gap: 3rem; } }
+@media (width >= 96rem) { .cm-dg-layout { grid-template-columns: minmax(0, 1fr) 22rem; } }
+
+/* Digest newsletter body: one column below 1280px (next meeting first — it is first in the DOM);
+   from 1280px two newspaper columns that balance themselves (CSS columns): each block stays whole
+   and the reading order is the DOM order (next meeting, the week's news, what's coming up).
+   .cm-dg-2col lists (article titles, deadlines) go back to one column while the columns are narrow. */
 .cm-dg-body { display: flex; flex-direction: column; gap: 2.25rem; }
 .cm-dg-news, .cm-dg-side { display: contents; }
-.cm-dg-next { order: -1; }
-@media screen and (width >= 96rem) {
-  .cm-dg-body { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); column-gap: 3rem; align-items: start; }
-  .cm-dg-news, .cm-dg-side { display: flex; min-width: 0; flex-direction: column; gap: 2.25rem; }
-  .cm-dg-next { order: 0; }
+@media screen and (width >= 80rem) {
+  .cm-dg-body { display: block; columns: 2; column-gap: 2.5rem; }
+  .cm-dg-body :is(.cm-dg-next, .cm-digest-group, .cm-dg-month, .empty-state) { break-inside: avoid; margin-bottom: 2.25rem; }
 }
+@media screen and (80rem <= width < 112.5rem) { .cm-dg-2col { grid-template-columns: minmax(0, 1fr); } }
+@media screen and (width >= 96rem) { .cm-dg-body { column-gap: 3rem; } }
 
 /* Digest print: the newsletter card becomes the page. */
 @media print {
@@ -152,21 +196,35 @@
 /* ------------------------------------------------------------------ */
 /*  GV/LV report on the Monthly toolkit (/monthly/#report)             */
 /* ------------------------------------------------------------------ */
-/* Report + sidebar (tips, published writers). The sidebar is 20rem from 1024px, 22rem from
-   1536px; from 1800px its two cards sit side by side (44rem) and the report keeps ~1000px.
-   (Plain CSS on purpose: Tailwind emits min-[1800px]: rules BEFORE 2xl: rules, so the two
-   cannot be combined on one property.) */
-.cm-rp-layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2rem; }
-.cm-rp-side { display: grid; grid-template-columns: minmax(0, 1fr); align-content: start; gap: 1.25rem; }
-@media (width >= 64rem) { .cm-rp-layout { grid-template-columns: minmax(0, 1fr) 20rem; } }
-@media (width >= 80rem) { .cm-rp-layout { gap: 3rem; } }
+/* Report, tips and the published-writers strip (monthly.njk). Phones / tablets: one column in DOM
+   order (report, tips, writers). From 1024px: the report with the writers strip under it, and the
+   tips beside both (20rem; 22rem from 1536px) — the two columns end close together. From 1800px:
+   three columns — the report keeps ~1000px, tips and writers 21rem each.
+   (Plain CSS on purpose: Tailwind emits min-[1800px]: rules BEFORE 2xl: rules.) */
+.cm-rp-layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.25rem; }
+.cm-rp-report { grid-area: report; } .cm-rp-tips { grid-area: tips; } .cm-rp-writers { grid-area: writers; }
+.cm-rp-layout { grid-template-areas: "report" "tips" "writers"; }
+@media (width >= 64rem) {
+  .cm-rp-layout { grid-template-columns: minmax(0, 1fr) 20rem; grid-template-rows: auto 1fr;
+    grid-template-areas: "report tips" "writers tips"; column-gap: 2rem; }
+  .cm-rp-tips, .cm-rp-writers { align-self: start; }
+}
+@media (width >= 80rem) { .cm-rp-layout { column-gap: 3rem; } }
 @media (width >= 96rem) { .cm-rp-layout { grid-template-columns: minmax(0, 1fr) 22rem; } }
 @media (width >= 112.5rem) {
-  .cm-rp-layout { grid-template-columns: minmax(0, 1fr) 44rem; }
-  .cm-rp-side { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+  .cm-rp-layout { grid-template-columns: minmax(0, 1fr) 21rem 21rem; grid-template-rows: auto;
+    grid-template-areas: "report tips writers"; column-gap: 2rem; }
 }
 /* Narrow screens: let long URLs wrap without leaving orphaned indentation. */
 @media (width < 40rem) { .cm-report { white-space: pre-line; } }
+/* The report box is folded to a readable height (26rem; 20rem on phones) with a fade at the
+   bottom until "Show the full report" (.is-open). Needs JS (.is-js), so without it the whole
+   report shows. "Copy report" copies the full text either way. */
+.cm-report-box.is-js:not(.is-open) { max-height: 26rem; overflow: hidden;
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 4rem), transparent);
+          mask-image: linear-gradient(to bottom, #000 calc(100% - 4rem), transparent); }
+@media (width < 40rem) { .cm-report-box.is-js:not(.is-open) { max-height: 20rem; } }
+.cm-report-box + div [aria-expanded="true"] .icon { transform: rotate(180deg); }
 
 /* ------------------------------------------------------------------ */
 /*  Share kit: poster + table tent                                     */
@@ -238,7 +296,7 @@
 
 @page cm-letter { size: letter portrait; margin: 0.35in; }
 @media print {
-  .cm-page-share .cm-print-root { padding: 0 !important; background: none !important; }
+  .cm-page-share .cm-print-root { padding: 0 !important; background: none !important; border: 0 !important; }
   .cm-page-share .cm-print-flat { display: block !important; max-width: none !important; margin: 0 !important; padding: 0 !important; }
   .cm-page-share .cm-frame { page: cm-letter; width: 7.8in; max-width: none; height: 10.25in; aspect-ratio: auto; margin: 0; border-radius: 0; box-shadow: none; }
   /* Ctrl+P prints the poster; the "Print table tent" button sets html[data-print="tent"]. */
@@ -249,21 +307,11 @@
 /* ------------------------------------------------------------------ */
 /*  Status                                                             */
 /* ------------------------------------------------------------------ */
-.cm-meter-fill { min-width: 0.75rem; transition: width 0.6s ease; }
-/* Sources table, then the crawl / translation cards; from 1536px the cards are a column beside it. */
+/* The sources (a table from 768px, compact rows on a phone — status.njk), then the document library
+   and translation cards; from 1536px the cards are a column beside the sources. */
 .cm-st-layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2.5rem; }
 @media (width >= 96rem) {
   .cm-st-layout { grid-template-columns: minmax(0, 1fr) 30rem; gap: 3rem; align-items: start; }
   .cm-st-side { grid-template-columns: minmax(0, 1fr); }
 }
 @media (width >= 112.5rem) { .cm-st-layout { grid-template-columns: minmax(0, 1fr) 34rem; } }
-/* Sources table → stacked cards on narrow screens (labels from data-label). */
-@media (width < 48rem) {
-  .cm-st-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
-  .cm-st-table, .cm-st-table tbody, .cm-st-table tr { display: block; width: 100%; }
-  .cm-st-table tr { display: grid; grid-template-columns: 1fr 1fr; gap: 0.35rem 1rem; padding: 1rem 1.25rem; }
-  .cm-st-table tr.cm-st-err { display: block; padding-top: 0; }
-  .cm-st-table th[scope="row"], .cm-st-table td { display: block; padding: 0 !important; text-align: left !important; }
-  .cm-st-table th[scope="row"] { grid-column: 1 / -1; margin-bottom: 0.35rem; }
-  .cm-st-table td[data-label]::before { content: attr(data-label); display: block; margin-bottom: 0.1rem; font-size: 0.68rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--c-faint); }
-}

@@ -2,6 +2,24 @@
    NETA 65 Grapevine / La Viña — design system (Tailwind CSS v4)
    Tokens → base → shared components. Page-area styles live in
    ./areas/*.css (one file per area, imported at the bottom).
+
+   Shared components (usable as classes and with @apply), in file order:
+     layout      container-page · section / section-tight · page-overlap / page-start (after the hero)
+     type        eyebrow · h-display (full-bleed feature bands only) · h-section · h-card · lead
+     cards       card · card-pad · card-link (only link cards lift) · card-media · card-h (panel
+                 title with icon) · panel-muted (flat note panel) · section-band (tinted band)
+     buttons     btn-primary (one per section) · btn-secondary (other actions + every "all"
+                 link) · btn-ghost · btn-lv · btn-light / btn-on-dark (hero) · btn-sm
+     badges      badge-gv/-lv/-grape/-vine/-muted/-new/-tbc — never interactive
+     chips       chip (a filter or jump; aria-pressed) · chip-row · chip-row-nowrap
+     text        meta-row (date · show · time) · link (in a sentence) · tap-link (standalone)
+                 · freshness (ui.freshness) · step-num
+     grids       grid-cards · grid-cards-4 · grid-cards-fit · rail / rail-item
+     layouts     measure · layout-aside · layout-sidebar · sticky-aside / sticky-aside-xl
+     other       input · empty-state · auto-note · section-head (ui.sectionHead) · page-nav (ui.pageNav)
+   Touch sizes: btn is 44px everywhere; btn-sm and chip are 36px with a mouse on desktop and
+   44px below 640px and on any touch screen (pointer: coarse). Never override with min-h-9!.
+   Sticky rules and the z-index scale: see "Sticky rules" below (nothing may cover content).
    ===================================================================== */
 @import "tailwindcss";
 
@@ -72,6 +90,7 @@
   /* Layout (same in both themes) */
   --gutter: clamp(1rem, 3.5vw, 4.5rem);  /* container-page side padding: 16px phone → 72px max */
   --header-h: 4rem;                        /* the fixed site header (partials/header.njk, h-16) */
+  --sticky-top: calc(var(--header-h) + 1.5rem); /* where sticky asides stop (sticky-aside), = the anchor offset */
 
   --c-paper: #fbf8f2;
   --c-surface: #ffffff;
@@ -112,6 +131,10 @@
   --c-vine: #8fd08a;
   --c-vine-soft: #16281a;
   --c-danger: #f97066;
+  /* Deeper shadows: the light-theme ones vanish on the dark page (the 1px line border still
+     carries each card's edge). */
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.35), 0 6px 18px -8px rgb(0 0 0 / 0.55);
+  --shadow-lift: 0 2px 4px rgb(0 0 0 / 0.4), 0 18px 34px -12px rgb(0 0 0 / 0.65);
   color-scheme: dark;
 }
 
@@ -156,7 +179,10 @@
 @utility btn-lv { @apply btn bg-lv text-white hover:bg-lv-strong dark:text-paper; }
 @utility btn-secondary { @apply btn border border-line bg-surface text-ink hover:border-gv hover:text-gv; }
 @utility btn-ghost { @apply btn text-ink hover:bg-surface-2; }
-@utility btn-sm { @apply min-h-9 px-3.5 py-1.5 text-xs; }
+/* Small buttons (and chips below): 36px with a mouse on desktop, 44px on phones and on touch
+   screens (WCAG 2.5.8 + the site's 44px touch rule). Never override with min-h-9!. */
+@utility btn-sm { @apply min-h-9 px-3.5 py-1.5 text-xs;
+  @media (width < 40rem), (pointer: coarse) { min-height: 2.75rem; } }
 @utility btn-on-dark { @apply btn border border-white/25 bg-white/10 text-white backdrop-blur hover:bg-white/20; }
 @utility btn-light { @apply btn bg-white text-[#07457c] hover:bg-white/90; }
 
@@ -172,7 +198,40 @@
 @utility badge-tbc { @apply badge border border-dashed border-lv bg-lv-soft text-lv-strong; }
 
 @utility chip { @apply inline-flex min-h-9 cursor-pointer items-center gap-1.5 rounded-full border border-line bg-surface px-3.5 text-sm font-medium text-muted transition hover:border-gv hover:text-ink;
+  @media (width < 40rem), (pointer: coarse) { min-height: 2.75rem; }
   &[aria-pressed="true"], &.is-active { @apply border-gv bg-gv text-white dark:text-paper; } }
+
+/* ---------- Chip rows (a row of chip filters / jumps) ----------
+   chip-row         one line that scrolls sideways (right-edge fade, snapping) on phones and
+                    tablets; wraps onto more lines from 1024px. For filter rows.
+   chip-row-nowrap  never wraps, at any width. For sticky filter bars and ui.pageNav.
+   <div class="chip-row" role="group" aria-label="…"><button class="chip" aria-pressed="true">…</button>…</div>
+   The row keeps 0.25rem of room around the chips (focus rings, the 2px lift) and 2rem at the
+   right end for the fade, so the last chip is never hidden under it when everything fits. */
+@utility chip-row { display: flex; gap: 0.5rem; min-width: 0; overflow-x: auto; overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity; scrollbar-width: none; margin: -0.25rem; padding: 0.25rem 2rem 0.25rem 0.25rem;
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 2rem), transparent);
+          mask-image: linear-gradient(to right, #000 calc(100% - 2rem), transparent);
+  &::-webkit-scrollbar { display: none; }
+  & > * { flex-shrink: 0; scroll-snap-align: start; }
+  @media (width >= 64rem) { flex-wrap: wrap; overflow: visible; -webkit-mask-image: none; mask-image: none; padding-right: 0.25rem; } }
+@utility chip-row-nowrap { display: flex; gap: 0.5rem; min-width: 0; overflow-x: auto; overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity; scrollbar-width: none; margin: -0.25rem; padding: 0.25rem 2rem 0.25rem 0.25rem;
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 2rem), transparent);
+          mask-image: linear-gradient(to right, #000 calc(100% - 2rem), transparent);
+  &::-webkit-scrollbar { display: none; }
+  & > * { flex-shrink: 0; scroll-snap-align: start; } }
+
+/* ---------- Meta row: date · show · time · language ----------
+   <p class="meta-row text-xs text-faint"><time …>Sep 24</time><span>Grapevine</span><span>7 p.m.</span></p>
+   The "·" separators are drawn by CSS and are never at the start of a line: every item carries
+   its dot on the left, and the row is shifted left by one dot width and clipped there, so an item
+   that starts a line has its dot in the hidden strip. Items never break inside. Screen readers
+   skip the dots. Only for rows of short, NON-focusable items (a row with links: gap only, no dots). */
+@utility meta-row { display: flex; flex-wrap: wrap; align-items: baseline; row-gap: 0.125rem;
+  margin-left: -1.1em; clip-path: inset(-0.5rem -0.5rem -0.5rem 1.1em);
+  & > * { white-space: nowrap; }
+  & > *::before { content: "·"; content: "·" / ""; display: inline-block; width: 1.1em; text-align: center; color: var(--c-faint); } }
 
 @utility input { @apply min-h-11 w-full rounded-xl border border-line bg-surface px-4 text-ink placeholder:text-faint focus:border-gv focus:ring-2 focus:ring-gv/30 focus:outline-none; }
 
@@ -240,8 +299,68 @@
   @media (width >= 64rem) { grid-template-columns: 16.5rem minmax(0, 1fr); gap: 2.5rem; }
   @media (width >= 96rem) { grid-template-columns: 18rem minmax(0, 1fr); gap: 3rem; } }
 
+/* ---------- Sticky rules: NOTHING may cover content ----------
+   What may stick: the site header (fixed, z-50) · the podcast mini-player and the language
+   banner (fixed bottom, z-40; they reserve --player-h / --banner-h at the page end) · a side
+   tool, aside or facet column (sticky-aside / sticky-aside-xl below) · the Listen player
+   (≥1440) · the month poster · the What's New filter bar (one line, z-20). Nothing else:
+   no sticky page nav, no sticky section headers, no floating buttons. JS never switches sticky
+   on and off (that shifts the layout): width AND height media queries decide it.
+   z-index scale: content 0–10 · sticky bars and asides 20 · banner + mini-player 40 ·
+   header 50 · phone drawer 60 · skip link 100.
+   Anchors: html { scroll-padding-top } (header + 1.5rem) is the ONLY offset — never add
+   scroll-mt-* to a section (it adds up). Exception: targets under a sticky filter bar get
+   scroll-mt-[4.5rem] (the bar's height only).
+
+   sticky-aside     a right (or left) column that sticks from 1024px, when the window is at least
+                    40rem (640px) tall. It never grows taller than the window: it scrolls on its
+                    own with a fade at the bottom. Put it on the aside (a grid item of layout-aside
+                    / layout-sidebar), not on a card inside it:
+                      <div class="layout-aside"><div>main…</div><aside class="sticky-aside space-y-5">…</aside></div>
+   sticky-aside-xl  the same from 1280px (when the aside sits under the main column below that). */
+@utility sticky-aside {
+  @media (width >= 64rem) and (height >= 40rem) {
+    position: sticky; top: var(--sticky-top); align-self: start;
+    max-height: calc(100dvh - var(--sticky-top) - 1rem); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin;
+    padding: 0.25rem 0.5rem 1.5rem; margin: -0.25rem -0.5rem 0;   /* room for card shadows + focus rings */
+    -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 1.5rem), transparent);
+            mask-image: linear-gradient(to bottom, #000 calc(100% - 1.5rem), transparent); } }
+@utility sticky-aside-xl {
+  @media (width >= 80rem) and (height >= 40rem) {
+    position: sticky; top: var(--sticky-top); align-self: start;
+    max-height: calc(100dvh - var(--sticky-top) - 1rem); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin;
+    padding: 0.25rem 0.5rem 1.5rem; margin: -0.25rem -0.5rem 0;
+    -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 1.5rem), transparent);
+            mask-image: linear-gradient(to bottom, #000 calc(100% - 1.5rem), transparent); } }
+
 @utility empty-state { @apply rounded-[var(--radius-card)] border border-dashed border-line bg-surface/60 p-8 text-center text-muted; }
 @utility auto-note { @apply inline-flex items-center gap-1 text-[0.7rem] text-faint; }
+
+/* ---------- Small shared components ----------
+   section-head / section-head-actions  the layout of ui.sectionHead (text left, actions right,
+                  wrapping under the text on phones; 24px → 32px from 640px to the content).
+   card-h         a panel card's title: inline icon + 20/22px display title.
+                    <h3 class="card-h"><span>{% icon "video", "size-5" %}</span>How to join</h3>
+                  The icon span is gv-blue by default; give it text-vine / text-lv … to change it.
+                  (Content cards in grids keep h-card, with no icon.)
+   step-num       a 28px numbered circle for steps: <span class="step-num" aria-hidden="true">1</span>
+   panel-muted    a flat surface-2 panel with no border or shadow: notes, sources, legends,
+                  "about this list". Never a card inside a card.
+   section-band   a full-width tinted band: <section class="section section-band">…
+   tap-link       a standalone text link (in a list or panel, not in a sentence): 44px tall on
+                  phones and touch screens. Inline links in a paragraph use "link".
+   freshness      the small "Updated 2 hours ago" line — render it with ui.freshness. */
+@utility section-head { @apply mb-6 flex flex-wrap items-end justify-between gap-x-6 gap-y-4 sm:mb-8; }
+@utility section-head-actions { @apply flex flex-wrap items-center gap-2; }
+@utility card-h { display: flex; align-items: flex-start; gap: 0.6rem; font-family: var(--font-display);
+  font-size: 1.25rem; font-weight: 600; line-height: 1.25; color: var(--c-ink); text-wrap: balance;
+  & > span:first-child:not(:only-child) { display: grid; place-items: center; flex-shrink: 0; height: 1.25em; color: var(--c-gv); }
+  @media (width >= 40rem) { font-size: 1.375rem; } }
+@utility step-num { @apply grid size-7 shrink-0 place-items-center rounded-full bg-gv text-sm font-semibold text-white tabular-nums dark:text-paper; }
+@utility panel-muted { @apply rounded-[var(--radius-card)] bg-surface-2 p-5 sm:p-6; }
+@utility section-band { @apply border-y border-line bg-surface-2/60; }
+@utility tap-link { @media (width < 40rem), (pointer: coarse) { display: inline-flex; min-height: 2.75rem; align-items: center; } }
+@utility freshness { @apply inline-flex items-center gap-1.5 text-xs font-medium text-muted; }
 
 /* Long-form text (announcements, about). Paragraphs, lists and headings keep a readable
    measure (72ch) however wide the box is — put wide text next to an aside (layout-aside)
@@ -390,6 +509,14 @@
   /* White focus ring on the dark hero */
   .gv-hero :focus-visible, .page-hero :focus-visible { outline-color: #fff; }
 
+  /* In-page navigation — ui.pageNav(): a card with "On this page" (label shown from 1280px) and
+     ONE row of chip links that never wraps (chip-row-nowrap scrolls sideways with a fade).
+     It is the page-overlap block under the hero; it never sticks. */
+  .page-nav { display: flex; align-items: center; gap: 0.75rem 1rem; padding: 0.5rem 0.75rem; }
+  .page-nav-label { display: none; align-items: center; gap: 0.5rem; flex-shrink: 0; padding-left: 0.25rem;
+    font-size: 0.72rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--c-muted); }
+  @media (width >= 80rem) { .page-nav-label { display: inline-flex; } }
+
   @media print {
     .gv-hero-canvas { display: none !important; }
     .gv-hero, .page-hero { min-height: 0; padding: 0 0 1rem; background: none; color: #000; }
@@ -404,8 +531,10 @@
 /* Hero actions row — for inside pageHero's caller(): <div class="hero-actions">buttons…</div> */
 @utility hero-actions { @apply flex flex-wrap items-center gap-2.5 sm:gap-3; }
 
-/* Hero stats — ui.heroStats(): compact number (display serif) over label, same on every page */
-@utility hero-stats { @apply flex flex-wrap gap-x-8 gap-y-3 text-white; }
+/* Hero stats — ui.heroStats(): compact number (display serif) over label, same on every page.
+   Shown from 768px only (phones keep the hero short), so pages need no max-sm/max-md wrappers. */
+@utility hero-stats { @apply flex flex-wrap gap-x-8 gap-y-3 text-white;
+  @media (width < 48rem) { display: none; } }
 @utility hero-stat { @apply flex flex-col-reverse gap-1;
   & > dt { @apply text-xs leading-snug text-white/80 sm:text-sm; }
   & > dd { @apply font-display text-2xl leading-none font-semibold text-white tabular-nums lg:text-[1.75rem]; } }
@@ -416,6 +545,13 @@
    page-start:   a normal section (use it INSTEAD of "section", it keeps the bottom padding). */
 @utility page-overlap { @apply relative z-10 -mt-6 sm:-mt-10; }
 @utility page-start { @apply pt-8 pb-12 sm:pt-10 sm:pb-16; }
+
+/* Language banner (partials/lang-banner.njk, a fixed bottom toast, z-40): while it is shown,
+   <html> has class has-lang-banner and --banner-h (its height), and the page reserves that
+   room — plus the podcast mini-player's --player-h when both are up — so the footer's last
+   line can always be scrolled into view above them. :root.x (0,2,1) beats media.css's
+   html.has-player rule (0,1,2), which still applies when there is no banner. */
+:root.has-lang-banner body { padding-bottom: calc(var(--banner-h, 4.5rem) + var(--player-h, 0px) + env(safe-area-inset-bottom, 0px) + 1.25rem); }
 
 /* Print: the site header prints once at the top (logo + name), not fixed over the content */
 @media print {

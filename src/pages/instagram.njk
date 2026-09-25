@@ -15,8 +15,11 @@ pageScripts: ["/assets/js/media.js"]
     from instagram.com until a visitor presses "Show post here" (official
     embed, per post) — privacy + speed. -#}
 {% import "macros/ui.njk" as ui with context %}
+{% import "macros/media.njk" as media with context %}
 {% mediaSprite %}
-{%- set accounts = (site.sources.instagram and site.sources.instagram.accounts) or [] -%}
+{#- On /es/ La Viña comes first (the hero buttons, the columns and the phone tab), like Read and Home. -#}
+{%- set cfgAccounts = (site.sources.instagram and site.sources.instagram.accounts) or [] -%}
+{%- set accounts = (cfgAccounts | reverse) if lang == "es" else cfgAccounts -%}
 {%- set posts = db.instagram | mediaItems("instagram") -%}
 {%- set INITIAL_SHOWN = 12 -%}{#- keep in sync with igCard (idx >= 12) and igPage.shown in media.js -#}
 {%- set MAX_POSTS = 48 -%}
@@ -77,37 +80,46 @@ pageScripts: ["/assets/js/media.js"]
   {% endif %}
   <div class="flex flex-1 flex-col gap-2 p-3">
     {% if img and cap %}<p class="line-clamp-3 text-sm leading-relaxed text-ink">{{ cap }}</p>{% endif %}
-    <div class="mt-auto flex flex-wrap items-center justify-between gap-x-2 gap-y-1 text-xs text-faint">
-      {% if p.date and (img or cap) %}<time datetime="{{ p.date | isoDate }}">{{ p.date | fmtDate(lang, "short") }}</time>{% else %}<span></span>{% endif %}
-      {% if p.is_new %}<span class="badge-new">{{ "common.new" | t(lang) }}</span>{% endif %}
-      {% if cap %}{{ ui.autoNote(p, lang) }}{% endif %}
+    {#- Meta: the date on the left, the badges grouped on the right; the translation note on its own line -#}
+    {%- set showDate = p.date and (img or cap) -%}
+    {%- set showAuto = cap and (p | machineFor(lang)) -%}
+    {% if showDate or p.is_new or showAuto %}
+    <div class="mt-auto flex flex-col gap-1 text-xs text-faint">
+      {% if showDate or p.is_new %}
+      <p class="flex items-center gap-2">
+        {% if showDate %}<time datetime="{{ p.date | isoDate }}">{{ p.date | fmtDate(lang, "short") }}</time>{% endif %}
+        {% if p.is_new %}<span class="ml-auto flex items-center gap-1"><span class="badge-new">{{ "common.new" | t(lang) }}</span></span>{% endif %}
+      </p>
+      {% endif %}
+      {% if showAuto %}<p>{{ ui.autoNote(p, lang) }}</p>{% endif %}
     </div>
+    {% endif %}
     {% if embed %}
-    <button type="button" class="-mx-1 inline-flex min-h-9 items-center gap-1.5 self-start rounded-lg px-1 text-xs font-semibold text-gv hover:underline" x-cloak x-show="!embed" @click="embed = true" aria-label="{{ 'media.ig_load_embed_aria' | t(lang) }}">{% micon "square-play", "size-4" %} {{ "media.ig_load_embed" | t(lang) }}</button>
-    <button type="button" class="-mx-1 inline-flex min-h-9 items-center gap-1.5 self-start rounded-lg px-1 text-xs font-semibold text-muted hover:underline" x-cloak x-show="embed" @click="embed = false">{% micon "x", "size-4" %} {{ "media.ig_hide_embed" | t(lang) }}</button>
+    <button type="button" class="-mx-1 inline-flex min-h-11 items-center gap-1.5 self-start rounded-lg px-1 text-xs font-semibold text-gv hover:underline" x-cloak x-show="!embed" @click="embed = true" aria-label="{{ 'media.ig_load_embed_aria' | t(lang) }}">{% micon "square-play", "size-4" %} {{ "media.ig_load_embed" | t(lang) }}</button>
+    <button type="button" class="-mx-1 inline-flex min-h-11 items-center gap-1.5 self-start rounded-lg px-1 text-xs font-semibold text-muted hover:underline" x-cloak x-show="embed" @click="embed = false">{% micon "x", "size-4" %} {{ "media.ig_hide_embed" | t(lang) }}</button>
     {% endif %}
   </div>
 </article>
 {% endmacro %}
 
 {#- ------------------------------------------------------------------ hero
-    The shared hero (same height as every page): short lead + ONE row of follow
-    buttons. The privacy note is the first line below the hero. -#}
+    The shared hero (same height as every page): short lead + ONE actions row — a jump to each
+    account's posts (the page language's account first; on phones it also picks that account's
+    tab, media.js igPage). Each account's Follow button is on its profile card, once. -#}
 {% call ui.pageHero(lang, "media.ig_title" | t(lang), "media.ig_sub" | t(lang), "instagram", "media.ig_eyebrow" | t(lang)) %}
   {% if accounts.length %}
   <div class="hero-actions">
     {% for acc in accounts %}
-    {#- < 360px: a bit tighter so "@alcoholicsanonymous_gv" stays on one line -#}
-    <a class="{{ 'btn-light' if loop.first else 'btn-on-dark' }} max-w-full max-[359px]:px-4 max-[359px]:text-[0.8125rem]" href="https://www.instagram.com/{{ acc.username }}/" target="_blank" rel="noopener">{% icon "instagram", "size-4" %} {{ "media.ig_follow" | t(lang, { u: acc.username }) }}</a>
+    <a class="{{ 'btn-light' if loop.first else 'btn-on-dark' }}" href="#ig-{{ acc.key }}">{% icon "grapes", "size-4" %} {{ "media.ig_jump" | t(lang, { name: acc.name }) }}</a>
     {% endfor %}
   </div>
   {% endif %}
 {% endcall %}
 
-{#- Both accounts side by side from 1024px (EN left, ES right); each account's posts in
-    2 columns, 3 from 1800px (6 across at 1920). Phones/tablets: one account at a time
-    (tabs) with 2 columns, 3 from 768px. -#}
-<section class="container-page page-start" x-data="igPage" aria-label="{{ 'media.ig_title' | t(lang) }}">
+{#- Both accounts side by side from 1024px (the page language's account on the left); each
+    account's posts in 2 columns, 3 from 1800px (6 across at 1920). Phones/tablets: one account
+    at a time (tabs) with 2 columns, 3 from 768px. -#}
+<section class="container-page page-start" x-data="igPage('{{ accounts[0].key if accounts.length else 'gv' }}')" aria-label="{{ 'media.ig_title' | t(lang) }}">
   <div class="mb-6 flex flex-col gap-4 lg:mb-8">
     {#- Phone: pick an account (both columns show side by side on large screens) -#}
     {% if accounts.length > 1 %}
@@ -128,7 +140,7 @@ pageScripts: ["/assets/js/media.js"]
     {%- set prof = db.instagram | mediaIgProfile(acc) -%}
     {%- set profile = prof.url -%}
     {%- set isLv = acc.key == "lv" -%}
-    <section aria-labelledby="ig-{{ acc.key }}-title" {% if accounts.length > 1 %}:class="tab === '{{ acc.key }}' ? '' : 'max-lg:hidden'"{% endif %}>
+    <section id="ig-{{ acc.key }}" aria-labelledby="ig-{{ acc.key }}-title"{% if accounts.length > 1 %} :class="tab === '{{ acc.key }}' ? '' : 'max-lg:hidden'"{% endif %}>
       <div class="card overflow-hidden">
         <div class="ig-profile-band is-{{ acc.key }} relative overflow-hidden text-white">
           {{ grapeArt("absolute -right-4 -top-6 h-40 w-auto opacity-15") }}
@@ -140,7 +152,7 @@ pageScripts: ["/assets/js/media.js"]
           </div>
           <h2 id="ig-{{ acc.key }}-title" class="mt-3 font-display text-2xl font-semibold">{{ acc.name }}</h2>
           <p class="mt-0.5 flex flex-wrap items-center gap-2 text-sm text-muted">
-            <a class="font-medium hover:text-gv" href="{{ profile }}" target="_blank" rel="noopener">@{{ prof.username }}</a>
+            <a class="tap-link font-medium hover:text-gv" href="{{ profile }}" target="_blank" rel="noopener">@{{ prof.username }}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a>
             <span class="{{ 'badge-lv' if isLv else 'badge-gv' }}">{{ ("media.ig_in_spanish" if isLv else "media.ig_in_english") | t(lang) }}</span>
           </p>
           {% if prof.posts or prof.followers %}
@@ -150,7 +162,6 @@ pageScripts: ["/assets/js/media.js"]
           </p>
           {% endif %}
           <p class="mt-2 text-sm leading-relaxed text-muted">{{ ("media.ig_lv_desc" if isLv else "media.ig_gv_desc") | t(lang) }}</p>
-          {% if accPosts.length %}<p class="mt-2 text-xs text-faint">{{ "media.ig_posts_n" | t(lang, { n: accPosts.length }) }}</p>{% endif %}
         </div>
       </div>
 
@@ -159,10 +170,13 @@ pageScripts: ["/assets/js/media.js"]
         {% for p in accPosts %}{{ igCard(p, lang, acc, loop.index0) }}{% endfor %}
       </div>
       <div class="mt-5 flex flex-col items-center gap-3">
+        {#- "Showing 12 of 14" — follows "Show more posts" -#}
+        {%- set nFirst = INITIAL_SHOWN if accPosts.length > INITIAL_SHOWN else accPosts.length %}
+        <p class="text-sm text-muted" aria-live="polite" data-t="{{ 'media.showing' | t(lang) }}" x-text="$el.dataset.t.replace('{n}', Math.min(shown.{{ acc.key }}, {{ accPosts.length }})).replace('{total}', {{ accPosts.length }})">{{ "media.showing" | t(lang, { n: nFirst, total: accPosts.length }) }}</p>
         {% if accPosts.length > INITIAL_SHOWN %}
         <button type="button" class="btn-secondary" x-cloak x-show="shown.{{ acc.key }} < {{ accPosts.length }}" @click="more('{{ acc.key }}')">{% icon "arrow-down", "size-4" %} {{ "media.ig_show_more" | t(lang) }}</button>
         {% endif %}
-        <a class="link inline-flex items-center gap-1 text-sm" href="{{ profile }}" target="_blank" rel="noopener">{{ "media.ig_see_all" | t(lang) }} {% icon "arrow-up-right", "size-4" %}</a>
+        <a class="link inline-flex min-h-11 items-center gap-1 text-sm" href="{{ profile }}" target="_blank" rel="noopener">{{ "media.ig_see_all" | t(lang) }} {% icon "arrow-up-right", "size-4" %}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a>
       </div>
       {% else %}
       <div class="mt-4">
@@ -175,19 +189,4 @@ pageScripts: ["/assets/js/media.js"]
 </section>
 
 {#- ------------------------------------------------------------------ tell your group -#}
-<section class="section-tight container-page" aria-labelledby="ig-share-title">
-  <div class="card media-anywhere media-share p-6 sm:p-8">
-    <span class="grid size-14 place-items-center rounded-2xl bg-grape-soft text-grape">{% icon "megaphone", "size-7" %}</span>
-    <div>
-      <h2 id="ig-share-title" class="h-section">{{ "media.ig_share_title" | t(lang) }}</h2>
-      <p class="measure mt-1 text-muted">{{ "media.ig_share_text" | t(lang) }}</p>
-    </div>
-    <div class="media-share-quote">
-      <blockquote class="rounded-2xl border border-line bg-surface p-4 font-display text-lg leading-snug text-ink [overflow-wrap:anywhere]">{{ "media.ig_announcement" | t(lang) }}</blockquote>
-      <div class="mt-4 flex flex-wrap gap-2">
-        <button type="button" class="btn-primary btn-sm" data-copy="{{ 'media.ig_announcement' | t(lang) }}">{% icon "copy", "size-4" %} {{ "media.copy_announcement" | t(lang) }}</button>
-        <button type="button" class="btn-secondary btn-sm" data-share="{{ page.url | siteUrl(site) }}" data-share-title="{{ 'media.ig_title' | t(lang) }} — {{ 'media.ig_eyebrow' | t(lang) }}">{% icon "share-2", "size-4" %} {{ "common.share" | t(lang) }}</button>
-      </div>
-    </div>
-  </div>
-</section>
+{{ media.shareBlock(lang, "ig-share-title", "media.ig_share_text" | t(lang), "media.ig_announcement" | t(lang), page.url | siteUrl(site), ("media.ig_title" | t(lang)) + " — " + ("media.ig_eyebrow" | t(lang))) }}

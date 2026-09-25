@@ -186,22 +186,20 @@
   .pw-tell-mail { text-align: center; }
 }
 
-/* ---------- explainer (right column from 1280px, full width under the results below) ---------- */
-.pw-aside { min-width: 0; }
-/* full width (below 1280px): the points in two columns from 768px */
-@media (48rem <= width < 80rem) { .pw-how { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 2.5rem; } }
-.pw-aside-title { display: flex; align-items: center; gap: 0.6rem; font-family: var(--font-display); font-size: 1.25rem; font-weight: 600; line-height: 1.25; color: var(--c-ink); }
-.pw-how { margin-top: 1rem; display: grid; gap: 0.9rem; font-size: 0.875rem; line-height: 1.55; color: var(--c-muted); }
+/* ---------- explainer ("How we find these writers": a muted panel under the results) ----------
+   The points in 1 → 2 (768px) → 3 (1280px) columns. */
+.pw-how { display: grid; gap: 0.9rem 2.5rem; font-size: 0.875rem; line-height: 1.55; color: var(--c-muted); }
+@media (width >= 48rem) { .pw-how { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (width >= 80rem) { .pw-how { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 .pw-how > li { display: grid; grid-template-columns: 1rem minmax(0, 1fr); gap: 0.7rem; }
 .pw-how > li > .icon { margin-top: 0.2rem; color: var(--c-gv); }
 .pw-counties { margin-top: 0.5rem; }
 .pw-counties > summary {
-  display: inline-flex; align-items: center; min-height: 2.25rem; cursor: pointer;
+  display: inline-flex; align-items: center; min-height: 2.75rem; cursor: pointer;
   font-weight: 600; color: var(--c-gv); text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--c-gv) 35%, transparent); text-underline-offset: 2px;
 }
 .pw-county-list { margin-top: 0.35rem; columns: 6.25rem 4; column-gap: 1rem; font-size: 0.8rem; line-height: 1.6; color: var(--c-ink); }
 .pw-county-list > li { break-inside: avoid; }
-.pw-updated { display: flex; align-items: center; gap: 0.4rem; margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--c-line); font-size: 0.78rem; color: var(--c-muted); }
 
 @media print {
   .pw-filters, .pw-nudge, .pw-showall, .pw-empty-actions, .pw-tell-actions { display: none !important; }

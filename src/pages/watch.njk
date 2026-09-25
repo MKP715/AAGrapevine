@@ -14,6 +14,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
     loads the rest from /videos-index.json. Cards are real YouTube links (no-JS,
     middle-click) that open an accessible <dialog> player instead. -#}
 {% import "macros/ui.njk" as ui with context %}
+{% import "macros/media.njk" as media with context %}
 {% mediaSprite %}
 {%- set ch = (site.sources.youtube.channels[0] if (site.sources.youtube and site.sources.youtube.channels and site.sources.youtube.channels.length) else {}) -%}
 {%- set channelUrl = site.links.youtube_channel or ("https://www.youtube.com/channel/" + ch.id) -%}
@@ -24,10 +25,12 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
 {%- set vlangs = vids | mediaCount("videoLang") -%}
 {#- channel playlists (videos.json `playlists`, titles in the page language; Spanish ones = La Viña) -#}
 {%- set pls = db.videos | mediaPlaylists(vids, lang) -%}
-{%- set plChips = pls | mediaPlaylistChips(lang, 4) -%}
 {%- set plGroups = pls | mediaPlaylistGroups(lang) -%}
 {%- set plTotal = (pls | where("kind", false)).length -%}
-{%- set ssr = vids | limit(24) -%}
+{#- The grid skips the featured video (it is right above it); media.js videoPage skips it too. -#}
+{%- set fid0 = (featured.extra.video_id or (featured.id | replace("yt:", ""))) if featured else "" -%}
+{%- set gridVids = vids | mediaWithout(featured) -%}
+{%- set ssr = gridVids | limit(24) -%}
 {#- The weekly open meetings in one short line ("Wednesdays (English) and Thursdays (Spanish)"), linking
     to their one home, /meetings/#weekly-open, where the times and Zoom details are -#}
 {%- set woWhen = (db.weekly_open.items | mediaWeeklyDays(lang)) if db.weekly_open else "" -%}
@@ -44,7 +47,9 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
   {%- set vl = item | mediaVideoLang -%}
   {%- set cp = item | mediaCardPlaylist(pls) -%}
 {%- endif %}
-<article class="card group relative flex flex-col overflow-hidden transition duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-lift)] focus-within:shadow-[var(--shadow-lift)]"
+{#- Phones (< 640px): a compact list row — the thumbnail (40%) on the left, the text on the right
+    (areas/media.css .vid-card). From 640px: a card with the picture on top. -#}
+<article class="vid-card card card-link group relative flex flex-col overflow-hidden"
          {% if srv %}x-data="{ v: vidAt({{ i }}) }"{% endif %}>
   <div class="vid-thumb card-media">
     {#- broken thumbnail (deleted/private video) → just the tinted box + play icon -#}
@@ -59,7 +64,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
       <span class="badge absolute top-2 left-2 bg-black/70 text-white" x-show="v.k === 'short'">{% micon "smartphone", "size-3" %} {{ "media.kind_short_badge" | t(lang) }}</span>
     {% endif %}
   </div>
-  <div class="flex flex-1 flex-col gap-2 p-4">
+  <div class="vid-body flex min-w-0 flex-1 flex-col gap-2 p-4">
     <div class="flex flex-wrap items-center gap-1.5">
       {% if srv %}
         {% if vl == "lv" %}<span class="badge-lv">{% micon "grapes", "size-3" %} La Viña</span>{% else %}<span class="badge-gv">{% micon "grapes", "size-3" %} Grapevine</span>{% endif %}
@@ -107,11 +112,11 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
     {% if vids.length %}<a class="btn-on-dark max-sm:hidden" href="#videos">{% icon "layout-grid", "size-4" %} {{ "media.browse_videos" | t(lang) }}</a>{% endif %}
   </div>
   {% if vids.length %}
-  <div class="max-md:hidden">{{ ui.heroStats([
+  {{ ui.heroStats([
     { value: vids.length | mediaNumber(lang), label: "media.stat_videos" | t(lang) },
     { value: kinds.weekly or "", label: "media.stat_weekly_open" | t(lang) },
     { value: plTotal if plTotal > 1 else "", label: "media.stat_playlists" | t(lang) }
-  ]) }}</div>
+  ]) }}
   {% endif %}
 {% endcall %}
 
@@ -119,7 +124,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
 <script type="application/json" id="media-initial">{{ ssr | mediaInitialJson("videos", lang, pls) | safe }}</script>
 <script type="application/json" id="media-i18n">{{ ["media.showing", "media.se_short", "media.ep_short"] | mediaI18n(lang) | safe }}</script>
 
-<div x-data="videoPage" data-index="{{ '/videos-index.json' | lurl(lang) }}" data-total="{{ vids.length }}">
+<div x-data="videoPage" data-index="{{ '/videos-index.json' | lurl(lang) }}" data-total="{{ gridVids.length }}" data-skip="{{ fid0 }}">
 
   {#- ------------------------------------------------------------ featured -#}
   {%- set f = featured -%}
@@ -132,11 +137,13 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
   {%- set fPl = f | mediaCardPlaylist(pls) -%}
   {#- < 1440px: the latest video, then the two path cards side by side (md+).
       ≥ 1440px: the latest video on the left, the two path cards stacked in a
-      fixed-width column on the right, each half the video card's height. -#}
+      fixed-width column on the right (both top-aligned, each its own height). -#}
   <section class="container-page page-overlap watch-top" aria-labelledby="featured-video-title">
+    {#- lg: the video keeps its own 16:9 height at the top of its column (no black bars when the
+        text beside it is taller). -#}
     <div class="card overflow-hidden">
-      <div class="grid h-full grid-cols-1 lg:grid-cols-[minmax(0,1.65fr)_minmax(0,1fr)]">
-        <div class="flex items-center bg-black">
+      <div class="grid h-full grid-cols-1 lg:grid-cols-[minmax(0,1.65fr)_minmax(0,1fr)] lg:items-start">
+        <div class="watch-feature-video">
           <lite-youtube videoid="{{ fid }}" class="media-lyt" params="rel=0&amp;enablejsapi=1&amp;hl={{ lang }}"
                         style="background-image: url('{{ fid | ytThumb('hqdefault') }}');" playlabel="{{ 'media.play' | t(lang) }}: {{ fTitle }}">
             <a href="{{ fUrl }}" class="lyt-playbtn" title="{{ 'media.play' | t(lang) }}: {{ fTitle }}" target="_blank" rel="noopener">
@@ -176,7 +183,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
         copies is displayed at a time, so the link's accessible name always contains
         the visible words. -#}
     <div class="watch-paths">
-      <a class="card group flex items-center gap-4 p-4 no-underline transition hover:-translate-y-0.5 hover:shadow-[var(--shadow-lift)] sm:p-5 min-[90rem]:p-6" href="{{ '/meetings/#weekly-open' | lurl(lang) }}">
+      <a class="card card-link group flex items-start gap-4 p-4 no-underline sm:p-5 min-[90rem]:p-6" href="{{ '/meetings/#weekly-open' | lurl(lang) }}">
         <span class="grid size-12 shrink-0 place-items-center rounded-2xl bg-grape-soft text-grape">{% icon "users", "size-6" %}</span>
         <span class="min-w-0 flex-1">
           <span class="block font-display text-lg font-semibold text-ink">{{ "media.weekly_title" | t(lang) }}</span>
@@ -184,23 +191,25 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
           {% if woWhen %}<span class="mt-1 block text-xs font-semibold text-grape">{{ "media.wo_live" | t(lang, { when: woWhen }) }}</span>{% endif %}
           <span class="mt-2.5 hidden items-center gap-1 text-sm font-semibold text-gv md:inline-flex">{{ "media.wo_join" | t(lang) }} {% icon "arrow-right", "size-4" %}</span>
         </span>
-        <span class="hidden shrink-0 items-center gap-1 text-sm font-semibold text-gv sm:inline-flex md:hidden">{{ "media.wo_join" | t(lang) }} {% icon "arrow-right", "size-4" %}</span>
+        <span class="hidden shrink-0 items-center gap-1 self-center text-sm font-semibold text-gv sm:inline-flex md:hidden">{{ "media.wo_join" | t(lang) }} {% icon "arrow-right", "size-4" %}</span>
+        <span class="shrink-0 self-center text-faint sm:hidden" aria-hidden="true">{% icon "chevron-right", "size-5" %}</span>
       </a>
-      <a class="card group flex items-center gap-4 p-4 no-underline transition hover:-translate-y-0.5 hover:shadow-[var(--shadow-lift)] sm:p-5 min-[90rem]:p-6" href="{{ '/listen/' | lurl(lang) }}">
+      <a class="card card-link group flex items-start gap-4 p-4 no-underline sm:p-5 min-[90rem]:p-6" href="{{ '/listen/' | lurl(lang) }}">
         <span class="grid size-12 shrink-0 place-items-center rounded-2xl bg-lv-soft text-lv">{% icon "headphones", "size-6" %}</span>
         <span class="min-w-0 flex-1">
           <span class="block font-display text-lg font-semibold text-ink">{{ "media.podcast_title" | t(lang) }}</span>
           <span class="block text-sm text-muted">{{ "media.podcast_text" | t(lang) }}</span>
           <span class="mt-2.5 hidden items-center gap-1 text-sm font-semibold text-gv md:inline-flex">{{ "media.podcast_cta" | t(lang) }} {% icon "arrow-right", "size-4" %}</span>
         </span>
-        <span class="hidden shrink-0 items-center gap-1 text-sm font-semibold text-gv sm:inline-flex md:hidden">{{ "media.podcast_cta" | t(lang) }} {% icon "arrow-right", "size-4" %}</span>
+        <span class="hidden shrink-0 items-center gap-1 self-center text-sm font-semibold text-gv sm:inline-flex md:hidden">{{ "media.podcast_cta" | t(lang) }} {% icon "arrow-right", "size-4" %}</span>
+        <span class="shrink-0 self-center text-faint sm:hidden" aria-hidden="true">{% icon "chevron-right", "size-5" %}</span>
       </a>
     </div>
   </section>
 
   {#- ------------------------------------------------------------ grid -#}
-  <section id="videos" class="section container-page scroll-mt-20" aria-labelledby="videos-title">
-    {{ ui.sectionHead("media.all_videos" | t(lang), "media.all_videos_sub" | t(lang), "", "", "layout-grid") }}
+  <section id="videos" class="container-page pt-10 pb-12 sm:pt-12 sm:pb-16" aria-labelledby="videos-title">
+    {{ ui.sectionHead("media.all_videos" | t(lang), "media.all_videos_sub" | t(lang), "", "", "layout-grid", { eyebrow: "media.videos_eyebrow" | t(lang), tone: "text-grape", id: "videos-title", lang: lang }) }}
 
     <div class="card mb-4 flex flex-col gap-3 p-3 sm:p-4">
       <div class="flex flex-col gap-3 md:flex-row md:items-center">
@@ -217,17 +226,15 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
         </div>
         {% endif %}
       </div>
-      {% if kinds.weekly or kinds.podcast or kinds.short or plChips.length %}
+      {% if kinds.weekly or kinds.podcast or kinds.short %}
+      {#- Type: kinds only; the playlists are in the select below -#}
       <div class="flex min-w-0 items-center gap-2" role="group" aria-label="{{ 'media.filter_collection' | t(lang) }}">
         <span class="hidden w-16 shrink-0 text-xs font-semibold tracking-wider text-faint uppercase md:inline">{{ "media.filter_collection" | t(lang) }}</span>
-        <div class="media-chips no-scrollbar">
+        <div class="chip-row flex-1">
           <button type="button" class="chip" :aria-pressed="(coll === '').toString()" aria-pressed="true" @click="coll = ''">{{ "media.all_collections" | t(lang) }}</button>
           {% if kinds.weekly %}<button type="button" class="chip" :aria-pressed="(coll === 'weekly').toString()" aria-pressed="false" @click="setColl('weekly')">{% icon "users", "size-4" %}{{ "media.kind_weekly" | t(lang) }} <span class="media-chip-n">{{ kinds.weekly }}</span></button>{% endif %}
           {% if kinds.podcast %}<button type="button" class="chip" :aria-pressed="(coll === 'podcast').toString()" aria-pressed="false" @click="setColl('podcast')">{% icon "headphones", "size-4" %}{{ "media.kind_podcast" | t(lang) }} <span class="media-chip-n">{{ kinds.podcast }}</span></button>{% endif %}
           {% if kinds.short %}<button type="button" class="chip" :aria-pressed="(coll === 'short').toString()" aria-pressed="false" @click="setColl('short')">{% icon "smartphone", "size-4" %}{{ "media.kind_short" | t(lang) }} <span class="media-chip-n">{{ kinds.short }}</span></button>{% endif %}
-          {% for p in plChips %}
-          <button type="button" class="chip" :aria-pressed="(coll === 'pl:{{ p.i }}').toString()" aria-pressed="false" @click="setColl('pl:{{ p.i }}')"{% if p.lang != lang %} title="{{ ('media.pl_group_' + p.lang) | t(lang) }}"{% endif %}>{% icon "list-video", "size-4" %}{{ p.title }} <span class="media-chip-n">{{ p.count }}</span></button>
-          {% endfor %}
         </div>
       </div>
       {% endif %}
@@ -252,15 +259,16 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
 
     <div class="mb-3 flex min-h-6 flex-wrap items-center justify-between gap-2 text-sm text-muted">
       <p aria-live="polite" aria-atomic="true"><span x-text="statusText">{{ "media.showing" | t(lang, { n: ssr.length, total: vids.length }) }}</span><span x-show="loading" x-cloak> · {{ "common.loading" | t(lang) }}</span></p>
-      <button type="button" class="inline-flex min-h-8 items-center gap-1 font-semibold text-gv hover:underline" x-show="filtering" x-cloak @click="clear()">{% icon "x", "size-4" %}{{ "media.clear_filters" | t(lang) }}</button>
+      <button type="button" class="-my-1.5 inline-flex min-h-11 items-center gap-1 font-semibold text-gv hover:underline" x-show="filtering" x-cloak @click="clear()">{% icon "x", "size-4" %}{{ "media.clear_filters" | t(lang) }}</button>
     </div>
     <p class="mb-3 rounded-xl bg-lv-soft px-4 py-2 text-sm text-lv-strong" x-show="failed" x-cloak role="status">{{ "media.index_error" | t(lang) }} <button type="button" class="font-semibold underline" @click="retryIndex()">{{ "media.retry" | t(lang) }}</button></p>
 
-    <div class="grid-cards" x-show="!client">
+    {#- 1 column (list rows) on phones · 2 from 640px · 3 from 1024px · 4 from 1280px · 5 from 1800px -#}
+    <div class="grid-cards watch-cards [--cards-min:15rem] xl:[--cards-max:4] min-[112.5rem]:[--cards-max:5] max-sm:[--cards-gap:0.75rem]" x-show="!client">
       {% for v in ssr %}{{ vCard(v, lang, loop.index0, true) }}{% endfor %}
     </div>
     <template x-if="client">
-      <div class="grid-cards" x-show="visible.length">
+      <div class="grid-cards watch-cards [--cards-min:15rem] xl:[--cards-max:4] min-[112.5rem]:[--cards-max:5] max-sm:[--cards-gap:0.75rem]" x-show="visible.length">
         <template x-for="v in visible" :key="v.id">{{ vCard(null, lang, 0, false) }}</template>
       </div>
     </template>
@@ -277,7 +285,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
         {{ "media.load_more" | t(lang) }}
       </button>
       {% endif %}
-      <a class="link text-sm" href="{{ channelUrl }}" target="_blank" rel="noopener">{{ "media.watch_on_yt" | t(lang) }} · {{ ch.handle or "@AAGrapevine" }}</a>
+      <a class="link inline-flex min-h-11 items-center text-sm" href="{{ channelUrl }}" target="_blank" rel="noopener">{{ "media.watch_on_yt" | t(lang) }} · {{ ch.handle or "@AAGrapevine" }}</a>
     </div>
   </section>
 
@@ -298,6 +306,9 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
     </div>
   </dialog>
 </div>
+
+{#- ------------------------------------------------------------ tell your group -#}
+{{ media.shareBlock(lang, "watch-share-title", "media.share_watch_text" | t(lang), "media.watch_announcement" | t(lang, { url: page.url | siteUrl(site) }), page.url | siteUrl(site), "media.watch_eyebrow" | t(lang), "media.watch_sub" | t(lang)) }}
 {% else %}
 <section class="container-page page-start">
   {{ ui.emptyState("circle-play", "media.empty_videos_title" | t(lang), "media.empty_videos_text" | t(lang), channelUrl, "media.watch_on_yt" | t(lang)) }}

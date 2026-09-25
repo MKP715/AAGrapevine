@@ -7,9 +7,10 @@ titleKey: read.title
 descKey: read.meta_desc
 pageScripts: ["/assets/js/read.js"]
 ---
-{#- READ — the two magazines. Current issue of each (newest issue key: cover,
-    theme, description and table of contents), then the archive of earlier
-    issues collected by the daily sync. Data: db.articles (items + issues, see
+{#- READ — the two magazines. Flow (every section opens with ui.sectionHead): the current issue
+    of each (newest issue key: cover, theme, description and table of contents) + the paywall
+    note (the ONE Subscribe) → the archive of earlier issues → why it matters (+ who from our
+    Area got published) → next steps. Data: db.articles (items + issues, see
     docs/DATA_SCHEMA.md §5). View models come from eleventy/filters/read.js.
     Wide screens: the two current issues sit side by side from 1440px (90rem) and
     the archive becomes two columns; the issue cards lay themselves out by their
@@ -29,6 +30,7 @@ pageScripts: ["/assets/js/read.js"]
 {%- if remaining < 0 %}{% set remaining = 0 %}{% endif -%}
 {%- set gvHub = site.sources.grapevine.base + site.sources.grapevine.magazine_hub -%}
 {%- set lvHub = site.sources.lavina.base + site.sources.lavina.magazine_hub -%}
+{%- set updated = db.articles.updated or site.built -%}
 
 {#- One story in a table of contents -#}
 {% macro articleRow(a, lang, compact=false, showSection=false, showNew=true, cls="") %}
@@ -65,7 +67,7 @@ pageScripts: ["/assets/js/read.js"]
 {%- set pubName = "La Viña" if isLv else "Grapevine" -%}
 {%- set issueUrl = v.url or hub -%}
 {%- set site_ = issueUrl | hostname -%}
-<article id="{{ v.pub }}-current" class="read-issue card @container scroll-mt-24 overflow-hidden" data-pub="{{ v.pub }}" x-show="show('{{ v.pub }}')" aria-labelledby="{{ v.pub }}-current-title">
+<article id="{{ v.pub }}-current" class="read-issue card @container overflow-hidden" data-pub="{{ v.pub }}" x-show="show('{{ v.pub }}')" aria-labelledby="{{ v.pub }}-current-title">
   <div class="grid grid-cols-1 @4xl:grid-cols-[21rem_minmax(0,1fr)] @6xl:grid-cols-[23rem_minmax(0,1fr)]">
     <header class="read-cover {{ 'read-cover--lv' if isLv else 'read-cover--gv' }}{{ ' has-cover' if v.cover }} relative isolate overflow-hidden p-6 text-white @lg:p-8">
       {% if v.cover %}<img class="read-cover-blur" src="{{ v.cover }}" alt="" aria-hidden="true">
@@ -105,7 +107,6 @@ pageScripts: ["/assets/js/read.js"]
       {% endif %}
       <div class="mt-6 flex flex-wrap gap-2">
         <a class="btn-light" href="{{ issueUrl }}" target="_blank" rel="noopener">{% icon "book-open", "size-4" %} {{ "read.read_on" | t(lang, {site: site_}) }}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a>
-        <a class="btn-on-dark" href="{{ '/shop/' | lurl(lang) }}?pub={{ v.pub }}#subscriptions">{% icon "shopping-bag", "size-4" %} {{ "read.subscribe" | t(lang) }}</a>
       </div>
     </header>
 
@@ -185,8 +186,8 @@ pageScripts: ["/assets/js/read.js"]
 {#- The shared hero (same height on every page). Its buttons are the standard 44px / 14px size
     at every width, like every other page; "read-hero" (read.css) keeps phone heroes within
     24–28rem: both buttons on one row (no icon, a little less padding, like the home page) and
-    no eyebrow below 360px. Phones get no stats. The "updates daily" note lives by the
-    Current issues heading. -#}
+    no eyebrow below 360px. Stats show from 768px (the shared hero-stats rule). How fresh the
+    list is — ui.freshness — is said once, under the Current issues heading. -#}
 {% call ui.pageHero(lang, "read.title" | t(lang), "read.subtitle" | t(lang), "book-open", "read.eyebrow" | t(lang), { class: "read-hero" }) %}
   <div class="hero-actions">
     {% for p in order %}
@@ -197,60 +198,39 @@ pageScripts: ["/assets/js/read.js"]
     {% endfor %}
   </div>
   {% if stories.length %}
-  <div class="max-sm:hidden">{{ ui.heroStats([
+  {{ ui.heroStats([
     { value: stories.length, label: "read.hero_stories" | t(lang) },
     { value: gvIssues.length + lvIssues.length, label: "read.hero_issues" | t(lang) }
-  ]) }}</div>
+  ]) }}
   {% endif %}
 {% endcall %}
 
-{#- Link card to the /published/ page — writers from our Area (and all of Texas) in the magazines.
-    Lays itself out by its own width: stacked in a column, in a row when it spans the page. -#}
-{% macro spotCard(sp, lang, variant="read") %}
+{#- Compact link card to the /published/ page — writers from our Area (and all of Texas) in the
+    magazines: the title, one line, the two counts and the link (the names are on /published/). -#}
+{% macro spotCard(sp, lang) %}
 {#- The page is built once a day: read.js (recountSpot) recounts the "last N days" window with
     the visitor's own date — the same rule as the home page and /published/ — using the dates
-    below (data-dates: one per writer counted; data-date: a writer's newest story), and swaps
-    the text / numbers / list that no longer apply. Writers can only leave the window. -#}
+    below (data-dates: one per writer counted), and swaps the text / numbers that no longer apply.
+    Writers can only leave the window. -#}
 {%- set hasTexas = sp and sp.texas.writers > 0 -%}
 {%- set hasArea = hasTexas and sp.area.writers > 0 -%}
-<article class="read-spot card card-link group @container relative flex h-full flex-col overflow-hidden" aria-labelledby="spot-title"{% if hasTexas %} data-spot-days="{{ sp.days }}"{% endif %}>
-  <div class="grid flex-1 content-start gap-5 p-6 sm:p-7 @4xl:grid-cols-[minmax(0,1.2fr)_auto] @4xl:items-center @4xl:gap-x-10 @6xl:grid-cols-[minmax(0,1.2fr)_auto_minmax(0,1fr)]">
-    <div class="min-w-0">
-      <p class="eyebrow flex items-center gap-2.5 text-vine"><span class="grid size-9 shrink-0 place-items-center rounded-xl bg-vine-soft">{% icon "award", "size-5" %}</span>{{ "read.spot.eyebrow" | t(lang) }}</p>
-      <h2 id="spot-title" class="mt-3 font-display text-2xl font-semibold leading-tight text-ink"><a href="{{ '/published/' | lurl(lang) }}" class="no-underline after:absolute after:inset-0 after:content-[''] group-hover:text-gv">{{ "read.spot.title" | t(lang) }}</a></h2>
-      <p class="mt-2 text-sm leading-relaxed text-muted">
-        {%- if not hasTexas %}{{ "read.spot.nodata" | t(lang) }}
-        {%- else -%}
-        <span data-spot-text="main"{% if not hasArea %} hidden{% endif %}>{{ ("read.spot.text_contrib" if variant == "contrib" else "read.spot.text") | t(lang, {days: sp.days}) }}</span>
-        <span data-spot-text="none_area"{% if hasArea %} hidden{% endif %}>{{ "read.spot.none_area" | t(lang, {days: sp.days}) }}</span>
-        <span data-spot-text="nodata" hidden>{{ "read.spot.nodata" | t(lang) }}</span>
-        {%- endif -%}
-      </p>
-    </div>
-    {% if hasTexas %}
-    <div data-spot-nums>
-      <p class="text-xs font-semibold uppercase tracking-wider text-muted">{{ "read.spot.window" | t(lang, {days: sp.days}) }}</p>
-      <dl class="mt-2 flex flex-wrap gap-x-8 gap-y-3">
-        <div class="flex flex-col-reverse gap-1"{% if not hasArea %} hidden{% endif %}><dt class="text-sm text-muted" data-one="{{ 'read.spot.area_one' | t(lang) }}" data-many="{{ 'read.spot.area' | t(lang) }}">{{ ("read.spot.area_one" if sp.area.writers == 1 else "read.spot.area") | t(lang) }}</dt><dd class="read-num font-display text-4xl font-semibold leading-none text-vine" data-spot-n="area" data-dates="{{ sp.area.dates | join(' ') }}">{{ sp.area.writers }}</dd></div>
-        <div class="flex flex-col-reverse gap-1"><dt class="text-sm text-muted" data-one="{{ 'read.spot.texas_one' | t(lang) }}" data-many="{{ 'read.spot.texas' | t(lang) }}">{{ ("read.spot.texas_one" if sp.texas.writers == 1 else "read.spot.texas") | t(lang) }}</dt><dd class="read-num font-display text-4xl font-semibold leading-none text-ink" data-spot-n="texas" data-dates="{{ sp.texas.dates | join(' ') }}">{{ sp.texas.writers }}</dd></div>
-      </dl>
-    </div>
-    {% endif %}
-    <div class="flex min-w-0 flex-col gap-4 @4xl:col-span-2 @6xl:col-span-1">
-      {% if hasTexas %}
-      {#- Newest writers from our Area; the Texas list stands in when no Area 65 writer is in the window -#}
-      {% for scope in ["area", "texas"] %}{% if sp[scope].list.length %}
-      <div data-spot-list="{{ scope }}"{% if (scope == "area") != hasArea %} hidden{% endif %}>
-        <p class="text-xs font-semibold text-muted">{{ ("read.spot.newest_area" if scope == "area" else "read.spot.newest_texas") | t(lang) }}</p>
-        <ul class="mt-1.5 flex flex-wrap gap-1.5">
-          {% for w in sp[scope].list %}<li class="inline-flex max-w-full items-center gap-1.5 rounded-full border border-line bg-surface px-2.5 py-1 text-xs" data-date="{{ w.date }}"><span class="size-2 shrink-0 rounded-full {{ 'bg-lv' if w.pub == 'lv' else 'bg-gv' }}" aria-hidden="true"></span><span class="font-semibold text-ink">{{ w.name }}</span>{% if w.place[lang] %}<span class="min-w-0 truncate text-muted">· {{ w.place[lang] }}</span>{% endif %}<span class="sr-only"> ({{ "La Viña" if w.pub == "lv" else "Grapevine" }})</span></li>{% endfor %}
-        </ul>
-      </div>
-      {% endif %}{% endfor %}
-      {% endif %}
-      <span class="mt-auto inline-flex items-center gap-1 text-sm font-semibold text-gv" aria-hidden="true">{{ "read.spot.cta" | t(lang) }} {% icon "arrow-right", "size-4 transition group-hover:translate-x-0.5" %}</span>
-    </div>
-  </div>
+<article class="read-spot card card-link group relative flex h-full flex-col overflow-hidden p-5 sm:p-6" aria-labelledby="spot-title"{% if hasTexas %} data-spot-days="{{ sp.days }}"{% endif %}>
+  <h3 id="spot-title" class="card-h"><span class="text-vine!">{% icon "award", "size-5" %}</span><a href="{{ '/published/' | lurl(lang) }}" class="no-underline after:absolute after:inset-0 after:content-[''] group-hover:text-gv">{{ "read.spot.title" | t(lang) }}</a></h3>
+  <p class="mt-2 text-sm leading-relaxed text-muted">
+    {%- if not hasTexas %}{{ "read.spot.nodata" | t(lang) }}
+    {%- else -%}
+    <span data-spot-text="main"{% if not hasArea %} hidden{% endif %}>{{ "read.spot.text" | t(lang, {days: sp.days}) }}</span>
+    <span data-spot-text="none_area"{% if hasArea %} hidden{% endif %}>{{ "read.spot.none_area" | t(lang, {days: sp.days}) }}</span>
+    <span data-spot-text="nodata" hidden>{{ "read.spot.nodata" | t(lang) }}</span>
+    {%- endif -%}
+  </p>
+  {% if hasTexas %}
+  <dl class="mt-4 flex flex-wrap gap-x-8 gap-y-3" data-spot-nums>
+    <div class="flex flex-col-reverse gap-1"{% if not hasArea %} hidden{% endif %}><dt class="text-sm text-muted" data-one="{{ 'read.spot.area_one' | t(lang) }}" data-many="{{ 'read.spot.area' | t(lang) }}">{{ ("read.spot.area_one" if sp.area.writers == 1 else "read.spot.area") | t(lang) }}</dt><dd class="read-num font-display text-3xl font-semibold leading-none text-vine" data-spot-n="area" data-dates="{{ sp.area.dates | join(' ') }}">{{ sp.area.writers }}</dd></div>
+    <div class="flex flex-col-reverse gap-1"><dt class="text-sm text-muted" data-one="{{ 'read.spot.texas_one' | t(lang) }}" data-many="{{ 'read.spot.texas' | t(lang) }}">{{ ("read.spot.texas_one" if sp.texas.writers == 1 else "read.spot.texas") | t(lang) }}</dt><dd class="read-num font-display text-3xl font-semibold leading-none text-ink" data-spot-n="texas" data-dates="{{ sp.texas.dates | join(' ') }}">{{ sp.texas.writers }}</dd></div>
+  </dl>
+  {% endif %}
+  <span class="mt-auto inline-flex items-center gap-1 pt-4 text-sm font-semibold text-gv" aria-hidden="true">{{ "read.spot.cta" | t(lang) }} {% icon "arrow-right", "size-4 transition group-hover:translate-x-0.5" %}</span>
 </article>
 {% endmacro %}
 
@@ -258,35 +238,9 @@ pageScripts: ["/assets/js/read.js"]
 {% readSprite %}
 <div x-data="readPage({ json:'{{ '/read-archive.json' | lurl(lang) }}', remaining: {{ remaining }}, chips: {{ 'true' if (gvCur and lvCur) else 'false' }}, counts: {{ archive | limit(SSR_ARCHIVE) | pluck('pub') | json }} })">
 
-  {#- ---------- Our meeting in print + who from our Area got published ---------- -#}
-  <section class="container-page page-overlap" aria-labelledby="print-title">
-    <div class="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1.55fr)_minmax(0,1fr)] 2xl:grid-cols-[minmax(0,1.8fr)_minmax(0,1fr)]">
-    <div class="read-print card @container relative flex flex-col justify-center overflow-hidden p-6 sm:p-8 xl:p-10">
-      <div class="grid grid-cols-1 items-center gap-8 @3xl:grid-cols-[1.1fr_1fr]">
-        <div>
-          <p class="eyebrow">{{ "read.print_eyebrow" | t(lang) }}</p>
-          <h2 id="print-title" class="h-section mt-2">{{ "read.print_title" | t(lang) }}</h2>
-          <p class="lead mt-3">{{ "read.print_text" | t(lang) }}</p>
-        </div>
-        <ul class="grid grid-cols-1 gap-3 @2xl:grid-cols-3 @3xl:grid-cols-1">
-          <li class="flex items-start gap-3"><span class="grid size-10 shrink-0 place-items-center rounded-xl bg-gv-soft text-gv">{% icon "users-round", "size-5" %}</span><span><strong class="block text-ink">{{ "read.print_p1_t" | t(lang) }}</strong><span class="text-sm text-muted">{{ "read.print_p1" | t(lang) }}</span></span></li>
-          <li class="flex items-start gap-3"><span class="grid size-10 shrink-0 place-items-center rounded-xl bg-lv-soft text-lv">{% icon "calendar-range", "size-5" %}</span><span><strong class="block text-ink">{{ "read.print_p2_t" | t(lang) }}</strong><span class="text-sm text-muted">{{ "read.print_p2" | t(lang) }}</span></span></li>
-          <li class="flex items-start gap-3"><span class="grid size-10 shrink-0 place-items-center rounded-xl bg-vine-soft text-vine">{% icon "refresh-cw", "size-5" %}</span><span><strong class="block text-ink">{{ "read.print_p3_t" | t(lang) }}</strong><span class="text-sm text-muted">{{ "read.print_p3" | t(lang) }}</span></span></li>
-        </ul>
-      </div>
-    </div>
-    {{ spotCard(spot, lang, "read") }}
-    </div>
-  </section>
-
-  {#- ---------- Current issues (side by side from 1440px) ---------- -#}
-  <section class="section container-page" aria-labelledby="current-title">
-    <div class="mb-6 flex flex-wrap items-end justify-between gap-4">
-      <div>
-        <h2 id="current-title" class="h-section flex items-center gap-2.5"><span class="text-gv">{% icon "sparkles", "size-6" %}</span>{{ "read.current_title" | t(lang) }}</h2>
-        <p class="mt-1.5 max-w-2xl text-muted">{{ "read.current_sub" | t(lang) }}</p>
-        {% if gvCur or lvCur %}<p class="mt-2.5"><span class="badge-vine py-1!">{% icon "refresh-cw", "size-3" %} {{ "common.updates_daily" | t(lang) }}</span></p>{% endif %}
-      </div>
+  {#- ---------- Current issues (side by side from 1440px) — the page start ---------- -#}
+  <section class="container-page page-start" aria-labelledby="current-title">
+    {% call ui.sectionHead("read.current_title" | t(lang), "read.current_sub" | t(lang), "", "", "sparkles", { eyebrow: "read.current_eyebrow" | t(lang), tone: "text-gv", id: "current-title", lang: lang }) %}
       {% if gvCur and lvCur %}
       <div class="flex flex-wrap gap-2" role="group" aria-label="{{ 'read.filter_label' | t(lang) }}">
         <button type="button" class="chip" aria-pressed="true" :aria-pressed="(pub === 'all').toString()" @click="setPub('all')">{{ "common.all" | t(lang) }}</button>
@@ -295,7 +249,8 @@ pageScripts: ["/assets/js/read.js"]
         {% endfor %}
       </div>
       {% endif %}
-    </div>
+    {% endcall %}
+    {% if gvCur or lvCur %}{{ ui.freshness(updated, lang, { note: true, class: "-mt-3 mb-5 sm:-mt-4 sm:mb-6" }) }}{% endif %}
 
     {% if gvCur or lvCur %}
     {#- is-single: one magazine filtered → it takes the full width (read.css) -#}
@@ -322,29 +277,27 @@ pageScripts: ["/assets/js/read.js"]
   </section>
 
   {#- ---------- Archive ---------- -#}
-  <section class="section container-page border-t border-line" aria-labelledby="archive-title">
-    <div class="mb-6">
-      <h2 id="archive-title" class="h-section flex items-center gap-2.5"><span class="text-gv">{% icon "archive", "size-6" %}</span>{{ "read.archive_title" | t(lang) }}</h2>
-      <p class="mt-1.5 max-w-2xl text-muted">{{ "read.archive_sub" | t(lang) }}</p>
-    </div>
+  <section class="section container-page pt-0" aria-labelledby="archive-title">
+    {{ ui.sectionHead("read.archive_title" | t(lang), "read.archive_sub" | t(lang), "", "", "archive", { eyebrow: "read.archive_eyebrow" | t(lang), tone: "text-gv", id: "archive-title", lang: lang }) }}
     {% if archive.length %}
     <p class="sr-only" aria-live="polite" data-t1="{{ 'read.archive_count_one' | t(lang) }}" data-t="{{ 'read.archive_count' | t(lang) }}" x-text="visibleCount() === 1 ? $el.dataset.t1 : $el.dataset.t.replace('{n}', visibleCount())"></p>
     <div class="read-archive-list">
       {% for is in archive | limit(SSR_ARCHIVE) %}{% set v = is | readIssueView(lang) %}
       <details class="read-past card @container group/past" data-pub="{{ v.pub }}" x-show="show('{{ v.pub }}')">
-        <summary class="flex min-h-16 cursor-pointer list-none flex-wrap items-center gap-x-3 gap-y-1 px-4 py-3 sm:px-5">
+        <summary class="flex min-h-16 cursor-pointer list-none items-center gap-3 px-4 py-3 sm:px-5">
           {{ miniCover(v) }}
-          {% if v.pub == "lv" %}<span class="badge-lv">La Viña</span>{% else %}<span class="badge-gv">Grapevine</span>{% endif %}
-          <span class="font-display text-lg font-semibold text-ink">{{ v.label or ("read.undated" | t(lang)) }}</span>
-          {% if v.topic %}<span class="text-sm text-muted">· <span lang="{{ v.topicLang }}">{{ v.topic }}</span></span>{% endif %}
-          <span class="ml-auto flex items-center gap-2 text-sm text-muted">{{ ("read.n_stories_one" if v.count == 1 else "read.n_stories") | t(lang, {n: v.count}) }} {% icon "chevron-down", "size-5 transition group-open/past:rotate-180" %}</span>
+          <span class="min-w-0 flex-1">
+            <span class="flex flex-wrap items-center gap-x-2 gap-y-1">{% if v.pub == "lv" %}<span class="badge-lv">La Viña</span>{% else %}<span class="badge-gv">Grapevine</span>{% endif %}<span class="font-display text-lg font-semibold text-ink">{{ v.label or ("read.undated" | t(lang)) }}</span></span>
+            <span class="meta-row mt-0.5 text-sm text-muted">{% if v.topic %}<span lang="{{ v.topicLang }}">{{ v.topic }}</span>{% endif %}<span>{{ ("read.n_stories_one" if v.count == 1 else "read.n_stories") | t(lang, {n: v.count}) }}</span></span>
+          </span>
+          {% icon "chevron-down", "size-5 shrink-0 text-muted transition group-open/past:rotate-180" %}
         </summary>
         <div class="border-t border-line p-2 sm:p-3">
           <ul class="grid grid-cols-1 gap-x-3 @xl:grid-cols-2 @5xl:grid-cols-3">
             {% for a in v.articles %}{{ articleRow(a, lang, true, false, false) }}{% endfor %}
           </ul>
           {%- set aHub = v.url or (lvHub if v.pub == 'lv' else gvHub) -%}
-          <p class="px-3 pb-1 pt-2"><a class="link text-sm" href="{{ aHub }}" target="_blank" rel="noopener">{{ "read.read_on" | t(lang, {site: aHub | hostname}) }}</a></p>
+          <p class="px-3 pb-1 pt-2"><a class="link tap-link text-sm" href="{{ aHub }}" target="_blank" rel="noopener">{{ "read.read_on" | t(lang, {site: aHub | hostname}) }}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a></p>
         </div>
       </details>
       {% endfor %}
@@ -352,13 +305,14 @@ pageScripts: ["/assets/js/read.js"]
       {#- Older issues, loaded on demand from /read-archive.json -#}
       <template x-for="is in older" :key="is.id">
         <details class="read-past card @container group/past" x-show="show(is.pub)">
-          <summary class="flex min-h-16 cursor-pointer list-none flex-wrap items-center gap-x-3 gap-y-1 px-4 py-3 sm:px-5">
+          <summary class="flex min-h-16 cursor-pointer list-none items-center gap-3 px-4 py-3 sm:px-5">
             <template x-if="is.c"><img :src="assetUrl(is.c)" width="48" height="69" alt="" loading="lazy" decoding="async" class="read-mini-cover"></template>
             <template x-if="!is.c"><span class="read-past-bar" :class="is.pub === 'lv' ? 'bg-lv' : 'bg-gv'" aria-hidden="true"></span></template>
-            <span :class="is.pub === 'lv' ? 'badge-lv' : 'badge-gv'" x-text="is.pub === 'lv' ? 'La Viña' : 'Grapevine'"></span>
-            <span class="font-display text-lg font-semibold text-ink" x-text="is.label"></span>
-            <span class="text-sm text-muted" x-show="is.topic">· <span :lang="is.tl" x-text="is.topic"></span></span>
-            <span class="ml-auto flex items-center gap-2 text-sm text-muted"><span data-t1="{{ 'read.n_stories_one' | t(lang) }}" data-t="{{ 'read.n_stories' | t(lang) }}" x-text="is.count === 1 ? $el.dataset.t1 : $el.dataset.t.replace('{n}', is.count)"></span> {% icon "chevron-down", "size-5 transition group-open/past:rotate-180" %}</span>
+            <span class="min-w-0 flex-1">
+              <span class="flex flex-wrap items-center gap-x-2 gap-y-1"><span :class="is.pub === 'lv' ? 'badge-lv' : 'badge-gv'" x-text="is.pub === 'lv' ? 'La Viña' : 'Grapevine'"></span><span class="font-display text-lg font-semibold text-ink" x-text="is.label"></span></span>
+              <span class="meta-row mt-0.5 text-sm text-muted"><template x-if="is.topic"><span :lang="is.tl" x-text="is.topic"></span></template><span data-t1="{{ 'read.n_stories_one' | t(lang) }}" data-t="{{ 'read.n_stories' | t(lang) }}" x-text="is.count === 1 ? $el.dataset.t1 : $el.dataset.t.replace('{n}', is.count)"></span></span>
+            </span>
+            {% icon "chevron-down", "size-5 shrink-0 text-muted transition group-open/past:rotate-180" %}
           </summary>
           <div class="border-t border-line p-2 sm:p-3">
             <ul class="grid grid-cols-1 gap-x-3 @xl:grid-cols-2 @5xl:grid-cols-3">
@@ -379,7 +333,7 @@ pageScripts: ["/assets/js/read.js"]
                 </li>
               </template>
             </ul>
-            <p class="px-3 pb-1 pt-2"><a class="link text-sm" :href="is.u" target="_blank" rel="noopener" data-t="{{ 'read.read_on' | t(lang) }}" x-text="$el.dataset.t.replace('{site}', is.h)"></a></p>
+            <p class="px-3 pb-1 pt-2"><a class="link tap-link text-sm" :href="is.u" target="_blank" rel="noopener" data-t="{{ 'read.read_on' | t(lang) }}" x-text="$el.dataset.t.replace('{site}', is.h)"></a></p>
           </div>
         </details>
       </template>
@@ -421,23 +375,32 @@ pageScripts: ["/assets/js/read.js"]
   </section>
 </div>
 
-{#- ---------- More ways to read & take part ---------- -#}
-<section class="section container-page pt-0" aria-labelledby="more-title">
-  <h2 id="more-title" class="h-section mb-6">{{ "read.more_title" | t(lang) }}</h2>
-  <div class="grid-cards-4">
-    {% set tiles = [
-      { href: "/shop/" | lurl(lang), icon: "shopping-bag", t: "read.more_sub_t", d: "read.more_sub", c: "bg-gv-soft text-gv" },
-      { href: "/contribute/" | lurl(lang), icon: "pen-line", t: "read.more_write_t", d: "read.more_write", c: "bg-lv-soft text-lv" },
-      { href: "/listen/" | lurl(lang), icon: "headphones", t: "read.more_listen_t", d: "read.more_listen", c: "bg-grape-soft text-grape" },
-      { href: "/library/" | lurl(lang), icon: "library", t: "read.more_library_t", d: "read.more_library", c: "bg-vine-soft text-vine" }
-    ] %}
-    {% for tl in tiles %}
-    <a href="{{ tl.href }}" class="card card-link card-pad group flex flex-col gap-3 no-underline">
-      <span class="grid size-11 place-items-center rounded-xl {{ tl.c }}">{% icon tl.icon, "size-5" %}</span>
-      <span class="h-card">{{ tl.t | t(lang) }}</span>
-      <span class="text-sm leading-relaxed text-muted">{{ tl.d | t(lang) }}</span>
-      <span class="mt-auto inline-flex items-center gap-1 text-sm font-semibold text-gv">{{ "common.open" | t(lang) }} {% icon "arrow-right", "size-4 transition group-hover:translate-x-0.5" %}</span>
-    </a>
-    {% endfor %}
+{#- ---------- Why it matters: our meeting in print (+ who from our Area got published) ---------- -#}
+<section class="section container-page pt-0" aria-labelledby="print-title">
+  {{ ui.sectionHead("read.print_title" | t(lang), "read.print_text" | t(lang), "", "", "heart-handshake", { eyebrow: "read.print_eyebrow" | t(lang), tone: "text-gv", id: "print-title", lang: lang }) }}
+  {#- two short points in one flat panel, beside the "who got published" link card (similar heights) -#}
+  <div class="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
+    <ul class="panel-muted grid content-center gap-5" role="list">
+      <li>
+        <h3 class="card-h"><span>{% icon "users-round", "size-5" %}</span>{{ "read.print_p1_t" | t(lang) }}</h3>
+        <p class="mt-1.5 text-sm leading-relaxed text-muted">{{ "read.print_p1" | t(lang) }}</p>
+      </li>
+      <li class="border-t border-line pt-5">
+        <h3 class="card-h"><span class="text-lv!">{% icon "calendar-range", "size-5" %}</span>{{ "read.print_p2_t" | t(lang) }}</h3>
+        <p class="mt-1.5 text-sm leading-relaxed text-muted">{{ "read.print_p2" | t(lang) }}</p>
+      </li>
+    </ul>
+    {{ spotCard(spot, lang) }}
   </div>
+</section>
+
+{#- ---------- Next steps (the Subscribe link is the paywall note's, above — not repeated here) ---------- -#}
+<section class="section container-page pt-0" aria-labelledby="more-title">
+  {{ ui.sectionHead("read.more_title" | t(lang), "read.more_sub_line" | t(lang), "", "", "compass", { eyebrow: "common.next_steps" | t(lang), tone: "text-gv", id: "more-title", lang: lang }) }}
+  {{ ui.nextSteps([
+    { href: "/contribute/" | lurl(lang), title: "read.more_write_t" | t(lang), text: "read.more_write" | t(lang), cta: "read.more_write_cta" | t(lang), icon: "pen-line", tone: "lv" },
+    { href: "/listen/" | lurl(lang), title: "read.more_listen_t" | t(lang), text: "read.more_listen" | t(lang), cta: "read.more_listen_cta" | t(lang), icon: "headphones", tone: "grape" },
+    { href: "/watch/" | lurl(lang), title: "read.more_watch_t" | t(lang), text: "read.more_watch" | t(lang), cta: "read.more_watch_cta" | t(lang), icon: "circle-play", tone: "grape" },
+    { href: "/library/" | lurl(lang), title: "read.more_library_t" | t(lang), text: "read.more_library" | t(lang), cta: "read.more_library_cta" | t(lang), icon: "library", tone: "vine" }
+  ], lang) }}
 </section>

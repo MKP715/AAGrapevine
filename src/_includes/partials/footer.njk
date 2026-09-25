@@ -2,62 +2,70 @@
 {%- set st = db.status -%}
 <footer class="mt-16 border-t border-line bg-surface text-sm text-muted" style="padding-bottom: env(safe-area-inset-bottom)">
   {#- The footer mirrors the header: "Explore" (the top-level pages), one list per dropdown group
-      (Get Involved, Committee — nav.primary items with children) and "Stay updated".
-      Phones: the groups sit two per row; sm: four across; lg+: the about blurb joins the row
-      (the wrapper becomes display:contents so the groups are items of the outer grid). -#}
+      (Get involved, Committee — nav.primary items with children) and "Stay updated" (the
+      nav.footer entries of group "stay" + the RSS and calendar feeds). The site pages of group
+      "site" (About, Share kit, Search, Update status) sit in the bottom bar with "Last updated".
+      Phones: the groups sit two per row and every link is a 44px touch target; sm: four across;
+      lg+: the about blurb joins the row (the wrapper becomes display:contents so the groups are
+      items of the outer grid). -#}
   <div class="container-page grid gap-8 py-10 md:py-12 lg:grid-cols-[minmax(0,1.4fr)_repeat(4,minmax(0,1fr))] lg:gap-8 xl:gap-12">
     <div>
       <a href="{{ '/' | lurl(L) }}" class="inline-flex items-center gap-3 no-underline">
         <span class="grid h-11 place-items-center rounded-lg bg-white px-1.5 ring-1 ring-black/5"><img src="/assets/img/logo-wide.png" alt="NETA 65" width="128" height="63" class="h-9 w-auto" loading="lazy"></span>
-        <span class="font-display text-lg font-semibold text-ink">Grapevine / La Viña</span>
+        <span class="font-display text-lg font-semibold text-ink">Grapevine / <span class="whitespace-nowrap">La Viña</span></span>
       </a>
       <p class="mt-4 max-w-sm leading-relaxed">{{ "footer.about" | t(L) }}</p>
       <p class="mt-4 flex flex-wrap gap-2">
         <a class="btn-secondary btn-sm" href="mailto:{{ site.contact_email }}">{% icon "mail", "size-4" %} {{ site.contact_email }}</a>
-        <a class="btn-secondary btn-sm" href="{{ site.area_website }}" rel="noopener" target="_blank">{% icon "globe", "size-4" %} neta65.org</a>
+        <a class="btn-secondary btn-sm" href="{{ site.area_website }}" rel="noopener" target="_blank">{% icon "globe", "size-4" %} neta65.org<span class="sr-only"> ({{ 'common.external' | t(L) }})</span></a>
       </p>
     </div>
     <div class="grid grid-cols-2 gap-x-6 gap-y-7 sm:grid-cols-4 lg:contents">
       <div>
-        <h2 class="eyebrow mb-3 font-sans">{{ "footer.explore" | t(L) }}</h2>
-        <ul class="grid gap-y-2">
+        <h2 class="eyebrow mb-2 font-sans sm:mb-3">{{ "footer.explore" | t(L) }}</h2>
+        <ul class="grid gap-y-0 sm:gap-y-2">
           {%- for item in nav.primary %}{% if not item.children %}
-          <li><a class="hover:text-gv" href="{{ item.url | lurl(L) }}">{{ item.key | t(L) }}</a></li>
+          <li class="flex"><a class="inline-flex min-h-11 items-center hover:text-gv sm:min-h-0" href="{{ item.url | lurl(L) }}"{% if pageKey == item.page %} aria-current="page"{% endif %}>{{ item.key | t(L) }}</a></li>
           {%- endif %}{% endfor %}
         </ul>
       </div>
       {%- for item in nav.primary %}{% if item.children %}
       <div>
-        <h2 class="eyebrow mb-3 font-sans">{{ item.key | t(L) }}</h2>
-        <ul class="grid gap-y-2">
+        <h2 class="eyebrow mb-2 font-sans sm:mb-3">{{ item.key | t(L) }}</h2>
+        <ul class="grid gap-y-0 sm:gap-y-2">
           {%- for c in item.children %}
-          <li><a class="hover:text-gv" href="{{ c.url | lurl(L) }}">{{ c.key | t(L) }}</a></li>
+          <li class="flex"><a class="inline-flex min-h-11 items-center hover:text-gv sm:min-h-0" href="{{ c.url | lurl(L) }}"{% if pageKey == c.page %} aria-current="page"{% endif %}>{{ c.key | t(L) }}</a></li>
           {%- endfor %}
         </ul>
       </div>
       {%- endif %}{% endfor %}
       <div>
-        <h2 class="eyebrow mb-3 font-sans">{{ "footer.stay_updated" | t(L) }}</h2>
-        <ul class="grid gap-y-2">
-          <li><a class="inline-flex items-center gap-2 hover:text-gv" href="{{ '/feed.xml' | lurl(L) }}">{% icon "rss", "size-4" %} {{ "feeds.rss" | t(L) }}</a></li>
-          <li><a class="inline-flex items-center gap-2 hover:text-gv" href="{{ '/events.ics' | lurl(L) }}">{% icon "calendar-plus", "size-4" %} {{ "feeds.ics" | t(L) }}</a></li>
-          {%- for f in nav.footer %}
-          <li><a class="hover:text-gv" href="{{ f.url | lurl(L) }}">{{ f.key | t(L) }}</a></li>
-          {%- endfor %}
+        <h2 class="eyebrow mb-2 font-sans sm:mb-3">{{ "footer.stay_updated" | t(L) }}</h2>
+        <ul class="grid gap-y-0 sm:gap-y-2">
+          {%- for f in nav.footer %}{% if f.group == "stay" %}
+          <li class="flex"><a class="inline-flex min-h-11 items-center gap-2 hover:text-gv sm:min-h-0" href="{{ f.url | lurl(L) }}"{% if pageKey == f.page %} aria-current="page"{% endif %}>{% icon f.icon, "size-4" %} {{ f.key | t(L) }}</a></li>
+          {%- endif %}{% endfor %}
+          <li class="flex"><a class="inline-flex min-h-11 items-center gap-2 hover:text-gv sm:min-h-0" href="{{ '/feed.xml' | lurl(L) }}">{% icon "rss", "size-4" %} {{ "feeds.rss" | t(L) }}</a></li>
+          <li class="flex"><a class="inline-flex min-h-11 items-center gap-2 hover:text-gv sm:min-h-0" href="{{ '/events.ics' | lurl(L) }}">{% icon "calendar-plus", "size-4" %} {{ "feeds.ics" | t(L) }}</a></li>
         </ul>
       </div>
     </div>
   </div>
+  {#- Bottom bar: the site pages (About, Share kit & QR, Search, Update status) · last updated · ©,
+      then the disclaimer. "Update status" is the link to /status/, so the time next to it is text. -#}
   <div class="border-t border-line">
-    <div class="container-page flex flex-col gap-3 py-6 text-xs leading-relaxed md:flex-row md:items-start md:justify-between">
-      <p class="max-w-3xl">{{ "footer.disclaimer" | t(L) }}</p>
-      <p class="shrink-0 md:text-right">
-        <a href="{{ '/status/' | lurl(L) }}" class="inline-flex items-center gap-1.5 hover:text-gv">
-          <span class="relative flex size-2"><span class="absolute inline-flex size-full animate-ping rounded-full bg-vine opacity-60"></span><span class="relative inline-flex size-2 rounded-full bg-vine"></span></span>
-          {{ "footer.last_updated" | t(L) }} <time datetime="{{ site.built }}" data-local-time>{{ site.built | fmtDate(L, "datetime") }}</time>
-        </a>
-        <br>© {{ site.built | year }} {{ site | pick(L, "committee") }}
-      </p>
+    <div class="container-page py-6 text-xs leading-relaxed">
+      <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between md:gap-6">
+        <ul class="grid grid-cols-2 gap-x-6 sm:flex sm:flex-wrap sm:gap-y-2">
+          {%- for f in nav.footer %}{% if f.group == "site" %}
+          <li class="flex"><a class="inline-flex min-h-11 items-center gap-1.5 font-medium hover:text-gv sm:min-h-0" href="{{ f.url | lurl(L) }}"{% if pageKey == f.page %} aria-current="page"{% endif %}>
+            {%- if f.page == "status" %}<span class="relative flex size-2 shrink-0" aria-hidden="true"><span class="absolute inline-flex size-full animate-ping rounded-full bg-vine opacity-60"></span><span class="relative inline-flex size-2 rounded-full bg-vine"></span></span>
+            {%- else %}{% icon f.icon, "size-3.5 shrink-0" %}{% endif %} {{ f.key | t(L) }}</a></li>
+          {%- endif %}{% endfor %}
+        </ul>
+        <p class="md:text-right">{{ "footer.last_updated" | t(L) }} <time datetime="{{ site.built }}" data-local-time>{{ site.built | fmtDate(L, "datetime") }}</time> <span aria-hidden="true">·</span> © {{ site.built | year }} {{ site | pick(L, "committee") }}</p>
+      </div>
+      <p class="mt-4 max-w-4xl text-faint">{{ "footer.disclaimer" | t(L) }}</p>
     </div>
   </div>
 </footer>

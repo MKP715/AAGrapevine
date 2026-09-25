@@ -9,18 +9,31 @@
 
 @layer components {
   /* ---------- tone variables (date tiles, document thumbnails) ---------- */
-  .cm-tone-gv { --tone: var(--c-gv); --tone-soft: var(--c-gv-soft); }
-  .cm-tone-lv { --tone: var(--c-lv); --tone-soft: var(--c-lv-soft); }
-  .cm-tone-vine { --tone: var(--c-vine); --tone-soft: var(--c-vine-soft); }
-  .cm-tone-grape { --tone: var(--c-grape); --tone-soft: var(--c-grape-soft); }
+  /* --tone-ink: the tone for small text on --tone-soft (the strong shade where there is one) */
+  .cm-tone-gv { --tone: var(--c-gv); --tone-soft: var(--c-gv-soft); --tone-ink: var(--c-gv-strong); }
+  .cm-tone-lv { --tone: var(--c-lv); --tone-soft: var(--c-lv-soft); --tone-ink: var(--c-lv-strong); }
+  .cm-tone-vine { --tone: var(--c-vine); --tone-soft: var(--c-vine-soft); --tone-ink: var(--c-vine); }
+  .cm-tone-grape { --tone: var(--c-grape); --tone-soft: var(--c-grape-soft); --tone-ink: var(--c-grape); }
 
   /* ---------- committee sub-navigation (pill bar under the hero) ---------- */
   .cm-subnav {
-    display: flex; gap: 0.25rem; width: max-content; max-width: 100%; overflow-x: auto;
-    padding: 0.375rem; border-radius: 1.25rem; background: var(--c-surface);
+    display: flex; width: max-content; max-width: 100%; border-radius: 1.25rem; background: var(--c-surface);
     border: 1px solid var(--c-line); box-shadow: var(--shadow-lift);
-    scroll-snap-type: x proximity;
   }
+  /* The tabs scroll sideways inside the frame when they don't fit (phones); the side that has more
+     tabs fades out (committee.js sets .is-overflow, .at-start, .at-end) */
+  .cm-subnav-scroll {
+    display: flex; gap: 0.25rem; min-width: 0; padding: 0.375rem; overflow-x: auto; overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity; scrollbar-width: none; border-radius: 1.2rem;
+  }
+  .cm-subnav-scroll::-webkit-scrollbar { display: none; }
+  .cm-subnav-scroll.is-overflow {
+    --fade-l: 2.5rem; --fade-r: 2.5rem;
+    -webkit-mask-image: linear-gradient(to right, transparent 0, #000 var(--fade-l), #000 calc(100% - var(--fade-r)), transparent 100%);
+            mask-image: linear-gradient(to right, transparent 0, #000 var(--fade-l), #000 calc(100% - var(--fade-r)), transparent 100%);
+  }
+  .cm-subnav-scroll.is-overflow.at-start { --fade-l: 0px; }
+  .cm-subnav-scroll.is-overflow.at-end { --fade-r: 0px; }
   .cm-subnav-link {
     display: inline-flex; align-items: center; gap: 0.5rem; min-height: 2.75rem; padding: 0 1rem;
     border-radius: 0.95rem; font-size: 0.875rem; font-weight: 600; white-space: nowrap;
@@ -38,11 +51,12 @@
   .cm-subnav-link.is-current .cm-subnav-count { background: var(--c-surface); color: var(--c-gv); }
 
   /* ---------- /meetings/ board (the committee meeting) (one grid, so the cards line up) ----------
-     Markup (= phone) order: countdown · how to join (.cm-join) · who (.cm-who) · chair (.cm-chair) ·
-     what happens (.cm-agenda) · next dates (.cm-dates-card); from 768px who | chair side by side.
-     From 1024px two columns:   countdown | how to join  /  who | chair  /  what happens | dates.
-     From 1440px three columns: the countdown and the dates (two rows tall) on the left; how to join,
-     who | chair and what happens on the right (columns 2–3) — both sides end together. */
+     Markup (= phone) order: countdown · how to join (.cm-join) · next dates (.cm-dates-card) ·
+     who (.cm-who) · chair (.cm-chair) · what happens (.cm-agenda); from 768px who | chair side by side.
+     1024–1279px, two columns:  countdown | how to join  /  who | chair  /  what happens (both
+       columns)  /  the dates (both columns; its rows sit three to a line, see .cm-dates).
+     From 1280px three columns: the countdown and the dates (two rows tall) on the left; how to join,
+       who | chair and what happens on the right (columns 2–3) — both sides end together. */
   .cm-board { display: grid; gap: 1.5rem; grid-template-columns: minmax(0, 1fr); }
   /* tablets: the two short cards (who | chair) side by side */
   @media (48rem <= width < 64rem) {
@@ -50,7 +64,7 @@
     .cm-board > :not(.cm-who, .cm-chair) { grid-column: 1 / -1; }
   }
   @media (width >= 64rem) {
-    .cm-board { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-areas: "count join" "who chair" "agenda dates"; }
+    .cm-board { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-areas: "count join" "who chair" "agenda agenda" "dates dates"; }
     .cm-board > .cm-count { grid-area: count; }
     .cm-board > .cm-join { grid-area: join; }
     .cm-board > .cm-who { grid-area: who; }
@@ -58,7 +72,7 @@
     .cm-board > .cm-agenda { grid-area: agenda; }
     .cm-board > .cm-dates-card { grid-area: dates; }
   }
-  @media (width >= 90rem) {
+  @media (width >= 80rem) {
     /* (1fr: when the dates are taller than who | chair + what happens, the extra height goes to what
        happens — its steps spread out — not to who | chair, which would get hollow) */
     .cm-board {
@@ -66,24 +80,13 @@
       grid-template-areas: "count join join" "dates who chair" "dates agenda agenda";
     }
   }
-  /* Every card on the board opens with the same heading: icon + title */
-  .cm-card-h {
-    display: flex; align-items: flex-start; gap: 0.6rem; font-family: var(--font-display);
-    font-size: 1.25rem; font-weight: 600; line-height: 1.25; color: var(--c-ink); text-wrap: balance;
-  }
-  /* the icon on the first line of a title that wraps */
-  .cm-card-h > span:first-child { display: grid; place-items: center; flex-shrink: 0; height: 1.25em; }
-  @media (width >= 40rem) { .cm-card-h { font-size: 1.4rem; } }
-  /* What happens: six numbered steps — one column (joined by a thin line), two from 36rem of card
-     width, three from 48rem (the card spans two columns from 1440px) */
+  /* What happens: six numbered steps (step-num) — one column (joined by a thin line), two from 36rem
+     of card width, three from 48rem (the card spans two columns from 1024px) */
   .cm-steps { display: grid; flex-grow: 1; gap: 1.1rem 1.5rem; grid-template-columns: minmax(0, 1fr); }
   /* (flex-grow: when the card is taller than its steps — its row's other card is taller — the
      rows share the extra height, so the steps spread out instead of leaving a gap at the bottom) */
   .cm-step { position: relative; display: flex; gap: 0.85rem; }
-  .cm-step-num {
-    display: grid; place-items: center; flex-shrink: 0; width: 2rem; height: 2rem; border-radius: 9999px;
-    background: var(--c-gv-soft); color: var(--c-gv); font-family: var(--font-display); font-size: 0.95rem; font-weight: 600;
-  }
+  .cm-step > .step-num { margin-top: -0.1rem; }
   /* side by side, each step is a small tile (tiles of a row share its height, so a spread-out
      row still looks even) */
   @container (width >= 36rem) {
@@ -93,39 +96,58 @@
       display: grid; grid-template-columns: auto minmax(0, 1fr); align-content: start; align-items: start; gap: 0.35rem 0.65rem;
       padding: 0.9rem 1rem 1rem; border-radius: 0.9rem; background: var(--c-surface-2);
     }
+    .cm-step > .step-num { margin-top: 0; }
     .cm-step > div { display: contents; }
     .cm-step > div > h4 { display: flex; align-items: center; min-height: 1.75rem; }
     .cm-step > div > p { grid-column: 1 / -1; }
-    .cm-step-num { width: 1.75rem; height: 1.75rem; font-size: 0.875rem; background: var(--c-surface); }
   }
   @container (width >= 48rem) { .cm-steps { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
   @container (width < 36rem) {
     .cm-step:not(:last-child)::before {
-      content: ""; position: absolute; left: calc(1rem - 0.5px); top: 2.35rem; bottom: -0.85rem; width: 1px; background: var(--c-line);
+      content: ""; position: absolute; left: calc(0.875rem - 0.5px); top: 2rem; bottom: -0.85rem; width: 1px; background: var(--c-line);
     }
   }
 
+  /* The next dates: one column in a narrow card; rows of cards (three to a line at 1024–1279px,
+     two on tablets) when the card spans the board. */
+  .cm-dates-card { container-type: inline-size; }
+  .cm-dates { display: grid; gap: 0.5rem; grid-template-columns: minmax(0, 1fr); }
+  @container (width >= 40rem) { .cm-dates { grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr)); } }
+
   /* The live countdown card: always dark (the hero's navy → NETA blue), in both themes. */
   .cm-count {
-    position: relative; display: flex; flex-direction: column; min-width: 0;
+    position: relative; display: flex; flex-direction: column; min-width: 0; container-type: inline-size;
     border-radius: 1.25rem; padding: 1.5rem; color: #fff;
     background: radial-gradient(120% 120% at 100% 0%, rgb(108 176 239 / 0.3), transparent 55%), linear-gradient(135deg, #0f172a 0%, #0b2f55 50%, #0a5fa8 100%);
     box-shadow: var(--shadow-lift);
+  }
+  /* Its buttons: Join on a row of its own, then Add to calendar + Share (an icon, its label for
+     screen readers) while the card is narrower than 30rem; one row when it is wider. */
+  .cm-count-actions { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0.625rem; }
+  .cm-count-actions > :first-child { grid-column: 1 / -1; }
+  .cm-count-actions > .cm-menu > summary { width: 100%; }
+  .cm-count-share { width: 2.75rem; padding-inline: 0; }
+  .cm-count-share-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  @container (width >= 30rem) {
+    .cm-count-actions { display: flex; flex-wrap: wrap; align-items: center; }
+    .cm-count-actions > .cm-menu > summary { width: auto; }
+    .cm-count-share { width: auto; padding-inline: 1.25rem; }
+    .cm-count-share-label { position: static; width: auto; height: auto; overflow: visible; clip-path: none; }
   }
   @media (width >= 40rem) { .cm-count { padding: 2rem; } }
   .cm-count-art { position: absolute; right: 1.5rem; top: 1.5rem; width: 6.5rem; height: 6.5rem; color: #fff; opacity: 0.08; pointer-events: none; }
   .cm-count > :not(.cm-count-art) { position: relative; }
   .cm-count :focus-visible { outline-color: #fff; }
+  /* The four tiles (days · hours · min · sec) always share one row: equal columns, up to 22rem */
+  .cm-tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.5rem; max-width: 22rem; }
+  @container (width >= 22rem) { .cm-tiles { gap: 0.75rem; } }
   .cm-tile {
-    display: flex; flex-direction: column; align-items: center; min-width: 4.4rem; padding: 0.8rem 0.5rem 0.65rem;
+    display: flex; flex-direction: column; align-items: center; min-width: 0; padding: 0.8rem 0.25rem 0.65rem;
     border-radius: 1rem; background: rgb(255 255 255 / 0.1); border: 1px solid rgb(255 255 255 / 0.16);
   }
-  .cm-tile-num { font-family: var(--font-display); font-size: 2.35rem; font-weight: 600; line-height: 1; font-variant-numeric: tabular-nums; color: #fff; }
-  .cm-tile-label { margin-top: 0.4rem; font-size: 0.62rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: rgb(255 255 255 / 0.82); }
-  @media (width < 26rem) {
-    .cm-tile { min-width: 3.55rem; padding-inline: 0.25rem; }
-    .cm-tile-num { font-size: 1.8rem; }
-  }
+  .cm-tile-num { font-family: var(--font-display); font-size: 2.1rem; font-weight: 600; line-height: 1; font-variant-numeric: tabular-nums; color: #fff; }
+  .cm-tile-label { margin-top: 0.4rem; font-size: 0.62rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: rgb(255 255 255 / 0.82); }
+  @container (width >= 20rem) { .cm-tile-num { font-size: 2.35rem; } }
   .cm-live-dot {
     display: inline-block; flex-shrink: 0; width: 0.6rem; height: 0.6rem; border-radius: 9999px;
     background: color-mix(in srgb, var(--c-vine) 45%, #fff);
@@ -164,10 +186,6 @@
   .cm-mini-tile strong { font-family: var(--font-display); font-size: 1.35rem; font-weight: 600; color: var(--c-ink); }
   .is-next .cm-mini-tile { background: var(--c-gv); }
   .is-next .cm-mini-tile span, .is-next .cm-mini-tile strong { color: #fff; }
-  /* Weekly Open card: stacked in a narrow column, side by side when the CARD is ≥ 48rem wide
-     (the card is an @container). */
-  .cm-weekly-art { background: radial-gradient(120% 100% at 0% 0%, var(--c-grape-soft), transparent 70%), var(--c-surface-2); border-bottom: 1px solid var(--c-line); }
-  @container (width >= 48rem) { .cm-weekly-art { border-bottom: 0; border-right: 1px solid var(--c-line); } }
 
   /* ---------- subscribe card ---------- */
   .cm-subscribe::before {
@@ -180,7 +198,15 @@
   .cm-howto > summary::-webkit-details-marker { display: none; }
   .cm-howto .cm-chev { transition: transform 0.2s; }
   .cm-howto[open] .cm-chev { transform: rotate(180deg); }
-  .cm-howto > p { padding: 0 0.9rem 0.9rem; font-size: 0.85rem; line-height: 1.6; color: var(--c-muted); }
+  .cm-howto-body { display: grid; gap: 0.6rem; padding: 0.15rem 0.9rem 0.9rem; }
+  .cm-howto-body > p { font-size: 0.85rem; line-height: 1.6; color: var(--c-muted); }
+  /* the calendar address: its own full-width line, wrapping anywhere (never wider than the card) */
+  .cm-feed-url {
+    padding: 0.55rem 0.75rem; border-radius: 0.7rem; background: var(--c-surface-2);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.75rem; line-height: 1.5;
+    color: var(--c-ink); overflow-wrap: anywhere;
+  }
+  .cm-feed-other { overflow-wrap: anywhere; }
 
   /* ---------- events ---------- */
   .cm-pinned {
@@ -192,6 +218,13 @@
   /* Pinned card in the agenda column (an @container): stacked when narrow → date tile | text
      from 30rem → tile | text | buttons in one row from 60rem. */
   .cm-pinned-grid { display: grid; gap: 1.25rem; grid-template-columns: minmax(0, 1fr); align-items: center; }
+  /* its buttons: one row; narrow (a phone): they grow to fill each row (two side by side when both
+     labels fit, else one per row), so no row is ragged */
+  .cm-pinned-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+  @container (width < 30rem) {
+    .cm-pinned-actions > * { flex: 1 1 auto; }
+    .cm-pinned-actions > a, .cm-pinned-actions > .cm-menu > summary { width: 100%; white-space: nowrap; }
+  }
   @container (width >= 30rem) {
     .cm-pinned-grid { grid-template-columns: auto minmax(0, 1fr); column-gap: 1.5rem; }
     .cm-pinned-actions { grid-column: 1 / -1; }
@@ -218,6 +251,25 @@
   .cm-tone-light { --tone: #fff; --tone-soft: rgb(255 255 255 / 0.12); border-color: rgb(255 255 255 / 0.2); }
   .cm-tone-light .cm-tile-day { color: #fff; }
   .cm-tone-light .cm-tile-wd { color: rgb(255 255 255 / 0.7); }
+
+  /* An event card on a phone: the date as a strip above the title (the tile column is hidden), the
+     buttons growing to fill each row (Share is an icon next to the strip). From 640px: tile | text, and
+     the buttons + Share in one row. */
+  .cm-date-strip {
+    display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.3rem 0.7rem; border-radius: 9999px;
+    background: var(--tone-soft); color: var(--tone-ink);
+    font-size: 0.75rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; white-space: nowrap;
+  }
+  .cm-ev-actions { margin-top: 1rem; }
+  .cm-ev-btns { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .cm-ev-btns > * { flex: 1 1 auto; }
+  .cm-ev-btns > a, .cm-ev-btns > .cm-menu > summary { width: 100%; white-space: nowrap; }
+  @media (width >= 40rem) {
+    .cm-ev-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+    .cm-ev-btns { display: contents; }
+    .cm-ev-btns > * { flex: none; }
+    .cm-ev-btns > a, .cm-ev-btns > .cm-menu > summary { width: auto; }
+  }
 
   .cm-month + .cm-month { margin-top: 2.75rem; }
   .cm-month-title { display: flex; align-items: center; gap: 0.9rem; margin-bottom: 1rem; font-family: var(--font-display); font-size: 1.4rem; font-weight: 600; color: var(--c-ink); }
@@ -328,17 +380,17 @@
   }
 
   /* ---------- documents ---------- */
-  /* Category chips: one scrolling row that bleeds to the screen edge (like a rail), wrapping from 1280px */
-  .cm-tabs {
-    display: flex; gap: 0.5rem; overflow-x: auto; scroll-snap-type: x proximity;
-    margin-inline: calc(-1 * var(--gutter)); padding: 0.15rem var(--gutter) 0.35rem; scroll-padding-inline: var(--gutter);
-  }
-  .cm-tabs > * { flex-shrink: 0; scroll-snap-align: start; min-height: 2.75rem; white-space: nowrap; }
-  @media (width >= 80rem) { .cm-tabs { flex-wrap: wrap; overflow: visible; margin-inline: 0; padding-inline: 0; } }
-  /* No files yet: the empty state | the how-to card, side by side from 1280px */
-  .cm-docs-start { display: grid; gap: 1.5rem; grid-template-columns: minmax(0, 1fr); }
-  @media (width >= 80rem) { .cm-docs-start { grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); } }
   .cm-doc-section + .cm-doc-section { margin-top: 3rem; }
+  /* "Nothing here yet" (documents, photos, announcements): one solid card written for visitors —
+     a picture, what will be here, one next step. Folder names as flat muted tiles (not chips). */
+  .cm-docs-empty { padding: 2.5rem 1.25rem; text-align: center; }
+  @media (width >= 40rem) { .cm-docs-empty { padding: 3rem 2rem; } }
+  .cm-folder-tiles { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; max-width: 34rem; margin: 0 auto; }
+  .cm-folder-tiles > li {
+    display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.45rem 0.8rem; border-radius: 0.7rem;
+    background: var(--c-surface-2); font-size: 0.8rem; font-weight: 600; color: var(--c-muted);
+  }
+  .cm-folder-tiles > li > svg { color: var(--c-gv); }
   .cm-doc-thumb { position: relative; aspect-ratio: 4 / 3; overflow: hidden; background: var(--tone-soft); border-bottom: 1px solid var(--c-line); }
   .cm-doc-thumb img { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; object-fit: cover; object-position: top; transition: transform 0.35s; }
   .cm-doc:hover .cm-doc-thumb img { transform: scale(1.035); }
@@ -353,23 +405,6 @@
     font-size: 0.66rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
     background: var(--c-surface); color: var(--tone); box-shadow: 0 1px 4px rgb(0 0 0 / 0.16);
   }
-  .cm-empty-hero {
-    position: relative; overflow: hidden; padding: 2.5rem 1.25rem; border-radius: 1.5rem; border: 1px dashed var(--c-line);
-    background: radial-gradient(90% 80% at 50% 0%, var(--c-gv-soft), transparent 70%), var(--c-surface);
-  }
-  @media (width >= 40rem) { .cm-empty-hero { padding: 3.5rem 2rem; } }
-  .cm-folder-illo { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.55rem; max-width: 36rem; margin: 0 auto; }
-  .cm-folder-chip {
-    display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.5rem 0.85rem; border-radius: 0.8rem;
-    background: var(--c-surface); border: 1px solid var(--c-line); box-shadow: var(--shadow-card);
-    font-size: 0.8rem; font-weight: 600; color: var(--c-muted);
-  }
-  .cm-folder-chip > svg { color: var(--c-gv); }
-  .cm-folder-chip:nth-child(odd) { transform: rotate(-2deg); }
-  .cm-folder-chip:nth-child(3n) { transform: rotate(1.5deg); }
-  /* How-to card (an @container): steps above the folder list, side by side from 56rem of card width */
-  .cm-howcard-side { background: var(--c-surface-2); border-top: 1px solid var(--c-line); }
-  @container (width >= 56rem) { .cm-howcard-side { border-top: 0; border-left: 1px solid var(--c-line); } }
 
   /* ---------- photos ---------- */
   .cm-mosaic { display: grid; gap: 2px; aspect-ratio: 16 / 10; overflow: hidden; background: var(--c-surface-2); }
@@ -416,15 +451,6 @@
     .cm-js .cm-photo-grid.has-feature:not(.is-all) > li:nth-child(n + 16) { display: none; }
     .cm-more.cm-more-6 { display: block; }
   }
-  /* No photos yet: the empty state | anonymity + how to add (stacked) from 1280px.
-     With albums (.cm-share-cards alone): the two cards side by side from 1024px. */
-  .cm-photos-start { display: grid; gap: 1.5rem; grid-template-columns: minmax(0, 1fr); }
-  .cm-share-cards { display: grid; gap: 1.5rem; grid-template-columns: minmax(0, 1fr); }
-  @media (width >= 64rem) { .cm-share-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-  @media (width >= 80rem) {
-    .cm-photos-start { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); }
-    .cm-photos-start .cm-share-cards { grid-template-columns: minmax(0, 1fr); }
-  }
   .cm-photo { position: relative; display: block; aspect-ratio: 1; overflow: hidden; border-radius: 0.9rem; background: var(--c-surface-2); }
   .cm-photo img { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s; }
   .cm-photo:hover img, .cm-photo:focus-visible img { transform: scale(1.05); }
@@ -441,7 +467,6 @@
     position: absolute; inset: 0; z-index: 2; display: grid; place-items: center; width: 3.25rem; height: 3.25rem; margin: auto;
     border-radius: 9999px; color: #fff; background: rgb(0 0 0 / 0.55); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
   }
-  .cm-empty-photos { background: radial-gradient(90% 80% at 50% 0%, var(--c-grape-soft), transparent 70%), var(--c-surface); }
   .cm-polaroids { display: flex; justify-content: center; padding-top: 0.5rem; }
   .cm-polaroid {
     display: grid; place-items: center; width: 6.25rem; height: 7.25rem; margin: 0 -0.55rem; padding: 0.5rem 0.5rem 1.6rem;
@@ -452,16 +477,13 @@
   .cm-polaroid:nth-child(3) { color: var(--c-gv); }
 
   /* ---------- announcements ----------
-     Next to the sidebar (layout-aside). Two per row from 1536px when there are several: each
-     card is then ~640px wide, so the text keeps a readable line length without leaving half
-     of every card empty. With none: the empty state | "Coming up", side by side from 1536px. */
+     Two per row from 1280px when there are several: each card is then ~600px wide, so the text
+     keeps a readable line length. With none: the visitors' card | "Coming up", side by side from
+     1280px (both about as tall). */
   .cm-ann-list { display: grid; gap: 1.5rem; grid-template-columns: minmax(0, 1fr); }
-  @media (width >= 96rem) { .cm-ann-list.is-multi { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-  .cm-ann-empty { display: grid; gap: 2.5rem 1.5rem; grid-template-columns: minmax(0, 1fr); }
-  @media (width >= 96rem) { .cm-ann-empty { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); align-items: start; } }
-  /* The sidebar is ~57–64rem tall: it stays in view while the announcements scroll only when the
-     whole of it fits on the screen (otherwise its last card could not be reached until the end). */
-  @media (width >= 64rem) and (height >= 72rem) { .cm-ann-aside { position: sticky; top: 6rem; align-self: start; } }
+  @media (width >= 80rem) { .cm-ann-list.is-multi { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .cm-ann-empty { display: grid; gap: 3rem 2.5rem; grid-template-columns: minmax(0, 1fr); }
+  @media (width >= 80rem) { .cm-ann-empty:not(.is-solo) { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; } }
   .cm-anchor-link { text-decoration: none; }
   .cm-hash { margin-left: 0.4rem; color: var(--c-faint); opacity: 0; transition: opacity 0.15s; }
   .cm-anchor-link:hover .cm-hash, .cm-anchor-link:focus-visible .cm-hash { opacity: 1; }
@@ -475,23 +497,12 @@
     box-shadow: 0 0 0 10px color-mix(in srgb, var(--c-lv-soft) 55%, transparent), 0 0 0 22px color-mix(in srgb, var(--c-lv-soft) 25%, transparent);
   }
 
-  /* ---------- /meetings/: in-page nav count (on the hero's glass button) ---------- */
-  .cm-jump-count {
-    display: inline-grid; place-items: center; min-width: 1.35rem; height: 1.35rem; padding: 0 0.4rem; border-radius: 9999px;
-    font-size: 0.7rem; font-weight: 700; background: #fff; color: #07457c;
-  }
-
   /* ---------- /meetings/#grapevine-meetings ----------
-     A full-width band (tinted, so the white cards stand out): the filters, our Area (a head and a
-     grid of group cards), then the nearby areas (one group of cards per region). */
-  .cm-gvm-band {
-    padding-block: 3rem; border-block: 1px solid var(--c-line);
-    background: color-mix(in srgb, var(--c-surface-2) 55%, var(--c-paper));
-  }
-  @media (width >= 40rem) { .cm-gvm-band { padding-block: 4rem; } }
-
+     A full-width band (section section-band, so the white cards stand out): the filters, a status
+     line, our Area (a head, then one block per office region), then the nearby areas (a head, then
+     one block per region). Every region block has the same head: icon · name · "N groups · M meetings". */
   .cm-gvm-filters {
-    display: grid; gap: 1rem; margin-top: 1.75rem; padding: 1rem;
+    display: grid; gap: 1rem; padding: 1rem;
     grid-template-columns: minmax(0, 1fr);
   }
   @media (width >= 40rem) {
@@ -511,43 +522,67 @@
   }
   @media (width >= 40rem) and (width < 64rem) { .cm-gvm-toggle { grid-column: 1 / -1; } }
   .cm-gvm-toggle > span { display: inline-flex; align-items: center; gap: 0.5rem; }
-  .cm-gvm-status { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem 1rem; min-height: 2.75rem; margin-top: 0.75rem; }
+  /* What is shown (+ Clear filters) | the "times are Central time" note, side by side from 1024px */
+  .cm-gvm-status { display: grid; gap: 0.25rem 2rem; margin-top: 0.75rem; }
+  @media (width >= 64rem) { .cm-gvm-status { grid-template-columns: auto minmax(0, 40rem); justify-content: space-between; align-items: center; } }
 
-  .cm-gvm-group { margin-top: 2.25rem; }
-  .cm-gvm-group-head { display: flex; align-items: center; gap: 0.85rem; margin-bottom: 1.25rem; }
+  .cm-gvm-group { margin-top: 2.5rem; }
+  .cm-gvm-group-head { display: flex; align-items: center; gap: 0.85rem; }
   .cm-gvm-group-icon {
     display: grid; place-items: center; flex-shrink: 0; width: 2.75rem; height: 2.75rem; border-radius: 0.85rem;
     background: var(--c-gv-soft); color: var(--c-gv);
   }
-  .cm-gvg-region .cm-gvm-group-icon { background: var(--c-vine-soft); color: var(--c-vine); }
-  .cm-gvm-group-title { font-family: var(--font-display); font-size: 1.5rem; font-weight: 600; line-height: 1.2; color: var(--c-ink); }
+  .cm-gvm-group-icon.is-vine { background: var(--c-vine-soft); color: var(--c-vine); }
+  .cm-gvm-group-title { font-family: var(--font-display); font-size: 1.5rem; font-weight: 600; line-height: 1.2; color: var(--c-ink); text-wrap: balance; }
   .cm-gvm-nearby { margin-top: 3rem; padding-top: 2.5rem; border-top: 1px dashed color-mix(in srgb, var(--c-vine) 35%, var(--c-line)); }
 
-  /* Group cards: 1 column → 2 from 640px → 3 from 1280px → 4 from 1800px. The cards of a row
-     stretch to the same height; their links sit at the bottom. */
-  .cm-gvg-grid { display: grid; gap: 1.25rem; grid-template-columns: minmax(0, 1fr); }
-  .cm-gvg-regions { display: grid; column-gap: 1.25rem; row-gap: 2.5rem; grid-template-columns: minmax(0, 1fr); margin-top: 1.75rem; }
-  @media (width >= 40rem) { .cm-gvg-grid, .cm-gvg-regions { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-  @media (width >= 80rem) { .cm-gvg-grid, .cm-gvg-regions { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-  @media (width >= 112.5rem) { .cm-gvg-grid, .cm-gvg-regions { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
-  /* Nearby: a region spans as many columns as it has cards (cm-n1 … cm-n4, at most the screen's),
-     its cards on the shared columns and its head on a shared row (subgrid) — so two small regions
-     sit side by side with their cards level instead of each leaving a half-empty row.
-     committee.js updates cm-nN while filtering. */
-  .cm-gvg-region { display: grid; grid-column: span 1; grid-row: span 2; grid-template-columns: subgrid; grid-template-rows: subgrid; row-gap: 1rem; min-width: 0; }
-  @media (width >= 40rem) { .cm-gvg-region:not(.cm-n1) { grid-column: span 2; } }
-  @media (width >= 80rem) { .cm-gvg-region.cm-n3, .cm-gvg-region.cm-n4 { grid-column: span 3; } }
-  @media (width >= 112.5rem) { .cm-gvg-region.cm-n4 { grid-column: span 4; } }
-  .cm-gvg-region-head { grid-column: 1 / -1; align-self: end; display: flex; align-items: center; gap: 0.85rem; min-width: 0; }
-  /* (a region's list is as tall as its row's tallest: the extra goes to the body of its cards,
-     so their links still sit at the bottom) */
-  .cm-gvg-grid.is-sub { grid-column: 1 / -1; grid-template-columns: subgrid; grid-auto-rows: auto auto auto 1fr; }
+  /* Regions share ONE grid of 12 sub-columns (so their cards line up across regions); the cards show
+     1 a row on phones → 2 from 640px → 3 from 1280px → 4 from 1800px. A region spans --r2/--r3/--r4
+     sub-columns and each card --c2/--c3/--c4 (inline, from packRegions in eleventy/filters/committee.js,
+     redone by committee.js while filtering): small regions sit side by side, and a row that is not
+     full is stretched — no row ever ends in an empty column. Rows are shared all the way down (subgrid):
+     a region takes its head row + 4 rows per row of cards (--h1…--h4), and every card's place ·
+     name · types · body sit on those rows, so cards side by side (in one region or two) line up and
+     each row of cards is exactly as tall as its tallest card. */
+  .cm-gvg-regions { display: grid; column-gap: 1.25rem; row-gap: 2.25rem; grid-template-columns: minmax(0, 1fr); margin-top: 1.5rem; }
+  @media (width >= 40rem) { .cm-gvg-regions { grid-template-columns: repeat(12, minmax(0, 1fr)); } }
+  .cm-gvg-region { display: grid; grid-column: 1 / -1; grid-row: span var(--h1, 5); grid-template-columns: subgrid; grid-template-rows: subgrid; row-gap: 1rem; min-width: 0; }
+  @media (40rem <= width < 80rem) {
+    .cm-gvg-region { grid-column: span var(--r2, 12); grid-row: span var(--h2, 5); }
+    .cm-gvg { grid-column: span var(--c2, 6); }
+  }
+  @media (80rem <= width < 112.5rem) {
+    .cm-gvg-region { grid-column: span var(--r3, 12); grid-row: span var(--h3, 5); }
+    .cm-gvg { grid-column: span var(--c3, 4); }
+  }
+  @media (width >= 112.5rem) {
+    .cm-gvg-region { grid-column: span var(--r4, 12); grid-row: span var(--h4, 5); }
+    .cm-gvg { grid-column: span var(--c4, 3); }
+  }
+  .cm-gvg-region-head { grid-column: 1 / -1; grid-row: 1; align-self: end; display: flex; align-items: center; gap: 0.75rem; min-width: 0; }
+  .cm-gvg-region-head .cm-gvm-group-icon { width: 2.25rem; height: 2.25rem; border-radius: 0.7rem; }
+  .cm-gvg-region-title { font-family: var(--font-display); font-size: 1.15rem; font-weight: 600; line-height: 1.25; color: var(--c-ink); text-wrap: balance; }
+  @media (width >= 40rem) { .cm-gvg-region-title { font-size: 1.25rem; } }
+  /* a region's cards: every row below its head (gap 1.25rem between rows of cards) */
+  .cm-gvg-grid { display: grid; grid-column: 1 / -1; grid-row: 2 / -1; grid-template-columns: subgrid; grid-template-rows: subgrid; gap: 1.25rem; }
 
   /* A card's place, name and types sit on rows shared with the other cards of its grid row
      (subgrid), so their weeks start level; the rest (week · address · links) flows, with the links
-     at the bottom */
-  .cm-gvg { display: grid; grid-row: span 4; grid-template-rows: subgrid; row-gap: 0; min-width: 0; padding: 1.1rem 1.15rem 1rem; scroll-margin-top: 7rem; }
-  .cm-gvg-body { display: flex; flex-direction: column; min-width: 0; }
+     at the bottom. A card that spans a whole row lays its body out in two columns (.cm-gvg-body is
+     a container): the week | the place and the links. */
+  .cm-gvg { display: grid; grid-row: span 4; grid-template-rows: subgrid; row-gap: 0; min-width: 0; padding: 1.1rem 1.15rem 1rem; }
+  .cm-gvg-body { display: flex; flex-direction: column; min-width: 0; container-type: inline-size; }
+  .cm-gvg-inner { display: flex; flex: 1; flex-direction: column; min-width: 0; }
+  @container (width >= 40rem) {
+    .cm-gvg-inner { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: auto 1fr; column-gap: 2rem; }
+    .cm-gvg-sched { grid-row: 1 / span 2; align-self: start; }
+    .cm-gvg-place, .cm-gvg-actions { grid-column: 2; }
+  }
+  @container (width >= 60rem) {
+    .cm-gvg-inner { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 22rem); grid-template-rows: auto; }
+    .cm-gvg-sched { grid-row: auto; }
+    .cm-gvg-actions { grid-column: 3; align-self: end; }
+  }
   @media (width >= 40rem) { .cm-gvg { padding: 1.25rem 1.35rem 1.1rem; } }
   .cm-gvg.is-today { border-color: color-mix(in srgb, var(--c-gv) 40%, var(--c-line)); }
   .cm-gvg:target, .cm-gvg.is-target { border-color: var(--c-gv); box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-gv) 28%, transparent), var(--shadow-card); }
@@ -580,31 +615,19 @@
   .cm-gvg-row.is-match { background: var(--c-gv-soft); box-shadow: inset 3px 0 0 var(--c-gv); }
   .cm-gvg-time.is-match { border-color: var(--c-gv); }
   .cm-gvg-place { margin-top: 0.9rem; }
-  .cm-gvg-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem 1rem; margin-top: auto; padding-top: 1rem; }
+  /* Directions | Details as two equal buttons, then the office's site on one line under them */
+  .cm-gvg-actions { margin-top: auto; padding-top: 1rem; }
+  .cm-gvg-btns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem; }
+  .cm-gvg-btns > a { width: 100%; padding-inline: 0.5rem; }
+  .cm-gvg-host { margin-top: 0.5rem; font-size: 0.75rem; line-height: 1.35; color: var(--c-faint); overflow-wrap: anywhere; }
 
   .cm-gvm-meta { display: grid; gap: 0.45rem; font-size: 0.875rem; line-height: 1.45; color: var(--c-muted); }
   .cm-gvm-meta > li { display: flex; gap: 0.55rem; }
   .cm-gvm-meta > li > .icon { margin-top: 0.15rem; }
-  .cm-gvm-details {
-    display: inline-flex; align-items: center; gap: 0.35rem; min-height: 2.25rem; font-size: 0.8rem; font-weight: 600; overflow-wrap: anywhere;
-    color: var(--c-gv); text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--c-gv) 35%, transparent); text-underline-offset: 3px;
-  }
-  .cm-gvm-details:hover { text-decoration-color: currentColor; }
-  @media (width < 40rem) { .cm-gvm-details { min-height: 2.75rem; } }
   .cm-gvm-src { margin-top: 0.6rem; font-size: 0.75rem; line-height: 1.4; color: var(--c-faint); }
-
-  .cm-gvm-about { font-size: 0.875rem; line-height: 1.6; color: var(--c-muted); align-self: center; }
-  .cm-gvm-cta {
-    display: flex; gap: 0.9rem; padding: 1.25rem; border-radius: var(--radius-card);
-    border: 1px solid color-mix(in srgb, var(--c-gv) 25%, var(--c-line)); background: var(--c-surface);
-  }
-  .cm-gvm-cta-icon { display: grid; place-items: center; flex-shrink: 0; width: 2.5rem; height: 2.5rem; border-radius: 0.75rem; background: var(--c-gv-soft); color: var(--c-gv); }
 }
 
 /* ---------- (unlayered) rules that must beat utilities ---------- */
-/* An empty document tab looks lighter (dashed, see-through — like the Library's zero chips)
-   without fading its text: the old opacity 0.8 took its count pill to 4.1:1 (below WCAG AA). */
-.cm-tab.is-empty:not([aria-pressed="true"]) { border-style: dashed; background: transparent; }
 /* Live meeting: the Join button turns green and glows. */
 .cm-join-live { background: var(--c-vine) !important; color: #fff !important; box-shadow: 0 0 0 4px color-mix(in srgb, var(--c-vine) 35%, transparent); }
 /* JS-only controls are hidden until committee.js runs. */

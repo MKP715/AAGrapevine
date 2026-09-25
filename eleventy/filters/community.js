@@ -416,6 +416,33 @@ export function prepareWhatsNew(items, now = Date.now()) {
     .sort((a, b) => ms(b._when) - ms(a._when));
 }
 
+/**
+ * A podcast episode and its YouTube upload come out on the same day with the same title
+ * ("Gated Communities [Season 11, Episode 12]") or the same season/episode numbers. On the
+ * What's New page they are ONE entry: the episode, carrying the video as `_twin` (both badges,
+ * "Listen · Watch" links, the video's thumbnail). The day, chip and hero counts are computed
+ * from this merged list, so they match what is shown. (The RSS feed keeps both items.)
+ */
+export function mergeMediaTwins(prepared) {
+  const list = prepared || [];
+  const norm = (s) => clean(s).toLowerCase();
+  const se = (i) => (i.extra && i.extra.season != null && i.extra.episode != null ? `${i.extra.season}|${i.extra.episode}` : "");
+  const eps = list.filter((i) => i.kind === "episode");
+  if (!eps.length) return list;
+  const twinOf = new Map(); // video → episode
+  const taken = new Set();
+  for (const v of list) {
+    if (v.kind !== "video" || v.source === "drive") continue;
+    const day = ymdChicago(v._when);
+    const t = norm(v.title), k = se(v);
+    const ep = eps.find((e) => !taken.has(e) && ymdChicago(e._when) === day && ((t && norm(e.title) === t) || (k && se(e) === k)));
+    if (ep) { twinOf.set(v, ep); taken.add(ep); }
+  }
+  if (!twinOf.size) return list;
+  const merged = new Map([...twinOf].map(([v, e]) => [e, { ...e, _twin: v }]));
+  return list.filter((i) => !twinOf.has(i)).map((i) => merged.get(i) || i);
+}
+
 /** Group prepared items by Central-time day, with per-kind counts and ranks. */
 export function whatsNewDays(prepared, lang) {
   const days = new Map();
@@ -1089,7 +1116,7 @@ export default function (eleventyConfig, helpers) {
   // Same SVG as a data: URI (download link). Encoded so it is safe in href="".
   eleventyConfig.addFilter("cmSvgDataUri", (svg) => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(String(svg || "")));
 
-  eleventyConfig.addFilter("cmWnPrepare", (items) => prepareWhatsNew(items));
+  eleventyConfig.addFilter("cmWnPrepare", (items) => mergeMediaTwins(prepareWhatsNew(items)));
   eleventyConfig.addFilter("cmWnDays", (prepared, lang) => whatsNewDays(prepared, lang));
   eleventyConfig.addFilter("cmWnChips", (prepared) => chipList(prepared));
   eleventyConfig.addFilter("cmWnCountRecent", (prepared, days = 7) => countRecent(prepared, days));

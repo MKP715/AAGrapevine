@@ -1,0 +1,30 @@
+{#- =========================================================================
+    Media-area macros (Listen, Watch, Instagram). Import with:
+      {% import "macros/media.njk" as media with context %}
+
+    media.shareBlock(lang, id, text, announcement, shareUrl, shareTitle, shareText="")
+      The closing "Tell your group" block of every media page: ONE title
+      ("media.share_title"), ONE tone (grape) — a megaphone tile, a line for GVRs/RLVs,
+      the announcement to read out or paste (with a Copy button) and "Share this page".
+      It is the page's last block: the footer's own top margin is the gap below it.
+        {{ media.shareBlock(lang, "listen-share-title", "media.share_listen_text" | t(lang), announcement,
+             page.url | siteUrl(site), "media.listen_eyebrow" | t(lang), "media.listen_sub" | t(lang)) }}
+    ========================================================================= -#}
+{% macro shareBlock(lang, id, text, announcement, shareUrl, shareTitle, shareText="") %}
+<section class="container-page" aria-labelledby="{{ id }}">
+  <div class="card media-anywhere media-share p-6 sm:p-8">
+    <span class="grid size-14 place-items-center rounded-2xl bg-grape-soft text-grape">{% icon "megaphone", "size-7" %}</span>
+    <div>
+      <h2 id="{{ id }}" class="h-section">{{ "media.share_title" | t(lang) }}</h2>
+      <p class="measure mt-2 text-muted">{{ text }}</p>
+    </div>
+    <div class="media-share-quote">
+      <blockquote class="rounded-2xl border border-line bg-surface p-4 font-display text-lg leading-snug text-ink [overflow-wrap:anywhere]">{{ announcement }}</blockquote>
+      <div class="mt-4 grid grid-cols-1 gap-2 min-[25rem]:flex min-[25rem]:flex-wrap sm:gap-3">
+        <button type="button" class="btn-primary btn-sm" data-copy="{{ announcement }}">{% icon "copy", "size-4" %} {{ "media.copy_announcement" | t(lang) }}</button>
+        <button type="button" class="btn-secondary btn-sm" data-share="{{ shareUrl }}" data-share-title="{{ shareTitle }}"{% if shareText %} data-share-text="{{ shareText }}"{% endif %}>{% icon "share-2", "size-4" %} {{ "media.share_page" | t(lang) }}</button>
+      </div>
+    </div>
+  </div>
+</section>
+{% endmacro %}

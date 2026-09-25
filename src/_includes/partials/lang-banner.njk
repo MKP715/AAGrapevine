@@ -6,7 +6,10 @@
     way — is remembered in localStorage ("gv-lang-banner"). The copy is in the
     SUGGESTED language, so it reads naturally to the person it is meant for.
     Sits ABOVE the podcast mini-player: media.js sets --player-h (px) on <html>
-    while the player is visible (see .cm-lang-banner in areas/community.css). -#}
+    while the player is visible (see .cm-lang-banner in areas/community.css).
+    While it is shown, <html> gets class "has-lang-banner" and --banner-h (its
+    height, kept current by a ResizeObserver), and main.css reserves that much room
+    at the end of the page, so the footer's last line is never hidden behind it. -#}
 {%- set L = lang or "en" -%}
 {%- set O = L | otherLang -%}
 <div x-data="langBanner('{{ L }}')" x-show="show" x-cloak
@@ -15,10 +18,10 @@
      class="cm-lang-banner pointer-events-none fixed inset-x-0 z-40 px-3 sm:px-4"
      role="region" aria-label="{{ 'community.banner.region' | t(O) }}" lang="{{ O }}">
   <div class="pointer-events-auto mx-auto flex max-w-lg items-center gap-3 rounded-2xl border border-line bg-surface/95 py-2 pl-4 pr-2 text-ink shadow-[var(--shadow-lift)] backdrop-blur-md">
-    <span class="grid size-9 shrink-0 place-items-center rounded-full bg-gv-soft text-gv">{% icon "languages", "size-5" %}</span>
+    <span class="grid size-9 shrink-0 place-items-center rounded-full bg-gv-soft text-gv max-[359px]:hidden">{% icon "languages", "size-5" %}</span>
     <p class="min-w-0 flex-1 text-sm font-semibold leading-snug">{{ "community.banner.q" | t(O) }}</p>
     <a href="{{ page.url | altLangUrl(L) }}" hreflang="{{ O }}" class="btn-primary btn-sm shrink-0" data-lang-switch @click="remember('switched')">{{ "community.banner.cta" | t(O) }}</a>
-    <button type="button" class="grid size-10 shrink-0 place-items-center rounded-full text-muted hover:bg-surface-2 hover:text-ink" @click="dismiss()" aria-label="{{ 'community.banner.dismiss' | t(O) }}" title="{{ 'community.banner.dismiss' | t(O) }}">{% icon "x", "size-5" %}</button>
+    <button type="button" class="grid size-11 shrink-0 place-items-center rounded-full text-muted hover:bg-surface-2 hover:text-ink sm:size-10" @click="dismiss()" aria-label="{{ 'community.banner.dismiss' | t(O) }}" title="{{ 'community.banner.dismiss' | t(O) }}">{% icon "x", "size-5" %}</button>
   </div>
 </div>
 <script>
@@ -31,7 +34,19 @@
         show: false,
         remember: store,
         init: function () {
-          var self = this;
+          var self = this, el = this.$el, root = document.documentElement, ro = null;
+          // Reserve room at the page end while the banner is shown (main.css: .has-lang-banner).
+          var measure = function () { var h = el.offsetHeight; if (h) root.style.setProperty("--banner-h", Math.ceil(h) + "px"); };
+          this.$watch("show", function (on) {
+            root.classList.toggle("has-lang-banner", on);
+            if (on) {
+              self.$nextTick(measure);
+              if (window.ResizeObserver && !ro) { ro = new ResizeObserver(measure); ro.observe(el); }
+            } else {
+              if (ro) { ro.disconnect(); ro = null; }
+              root.style.removeProperty("--banner-h");
+            }
+          });
           try {
             if (localStorage.getItem(KEY)) return;          // dismissed or switched before
           } catch (e) { return; }                          // can't remember a dismissal → don't nag

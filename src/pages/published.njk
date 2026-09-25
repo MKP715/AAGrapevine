@@ -126,10 +126,9 @@ pageScripts: ["/assets/js/published.js"]
   </form>
 </section>
 
-{#- ---------- results + explainer ---------- -#}
-<div class="container-page pt-8 pb-12 sm:pt-10 sm:pb-16">
-  <div class="grid gap-10 xl:grid-cols-[minmax(0,1fr)_20rem] xl:gap-12 2xl:grid-cols-[minmax(0,1fr)_24rem] 2xl:gap-16">
-    <div id="pw-results" class="pw-results">
+{#- ---------- results ---------- -#}
+<section class="section container-page pt-10 sm:pt-12" aria-label="{{ 'published.results_label' | t(lang) }}">
+  <div id="pw-results" class="pw-results">
       {{ CARD_ICONS | pwSprite | safe }}
       {%- for g in V.groups %}
       <section class="pw-group" data-group="{{ g.key }}" aria-labelledby="pw-g-{{ g.key }}"{% if not g.matchCount %} hidden{% endif %}>
@@ -176,9 +175,37 @@ pageScripts: ["/assets/js/published.js"]
         </button>
       </div>
 
-      {#- were you published? / write one — after the results, whatever the filters show -#}
-      <section class="pw-tell" aria-labelledby="pw-tell-title">
-        <span class="pw-tell-icon" aria-hidden="true">{% icon "award", "size-6" %}</span>
+  </div>
+</section>
+
+{#- ---------- how this list is made (under the results: an explanation, not sidebar material) ---------- -#}
+<section id="pw-how" class="section container-page pt-0" aria-labelledby="pw-how-title">
+  {% call ui.sectionHead("published.how.title" | t(lang), "", "", "", "info", { eyebrow: "published.aside_label" | t(lang), id: "pw-how-title", lang: lang }) %}{{ ui.freshness(V.updated, lang) }}{% endcall %}
+  <div class="panel-muted">
+    <ul class="pw-how" role="list">
+      <li>{% icon "newspaper", "size-4" %}<span>{{ "published.how.printed" | t(lang) }}</span></li>
+      <li>{% icon "refresh-cw", "size-4" %}<span>{{ "published.how.daily" | t(lang) }}</span></li>
+      {#- a <div>, not a <span>: it holds the <details> county list (block content) -#}
+      <li>{% icon "map", "size-4" %}<div>{{ "published.how.area" | t(lang, {n: V.countyCount}) }}
+        {%- if V.counties.length %}
+        <details class="pw-counties">
+          <summary>{{ "published.how.counties" | t(lang, {n: V.countyCount}) }}</summary>
+          <ul class="pw-county-list">
+            {%- for c in V.counties %}<li>{{ c }}</li>{% endfor %}
+          </ul>
+        </details>
+        {%- endif %}</div></li>
+      <li>{% icon "landmark", "size-4" %}<span>{{ "published.how.census" | t(lang) }}</span></li>
+      <li>{% icon "venetian-mask", "size-4" %}<span>{{ "published.how.unmatched" | t(lang) }}</span></li>
+      <li>{% icon "calendar-range", "size-4" %}<span>{{ "published.how.window" | t(lang) }}</span></li>
+    </ul>
+  </div>
+</section>
+
+{#- ---------- closing: were you published? / write one ---------- -#}
+<section class="section container-page pt-0" aria-labelledby="pw-tell-title">
+  <div class="pw-tell">
+    <span class="pw-tell-icon" aria-hidden="true">{% icon "award", "size-6" %}</span>
         <div class="pw-tell-copy">
           <h2 id="pw-tell-title" class="pw-tell-title">{{ "published.tell.title" | t(lang) }}</h2>
           <p class="pw-tell-text">{{ "published.tell.text" | t(lang) }}</p>
@@ -193,36 +220,8 @@ pageScripts: ["/assets/js/published.js"]
           <p class="pw-tell-mail">{{ site.contact_email }}</p>
           {%- endif %}
         </div>
-      </section>
-    </div>
-
-    <aside class="pw-aside" aria-label="{{ 'published.aside_label' | t(lang) }}">
-      <section id="pw-how" class="card card-pad" aria-labelledby="pw-how-title">
-        <h2 id="pw-how-title" class="pw-aside-title">{% icon "info", "size-5 text-gv" %}<span>{{ "published.how.title" | t(lang) }}</span></h2>
-        <ul class="pw-how">
-          <li>{% icon "newspaper", "size-4" %}<span>{{ "published.how.printed" | t(lang) }}</span></li>
-          <li>{% icon "refresh-cw", "size-4" %}<span>{{ "published.how.daily" | t(lang) }}</span></li>
-          {#- a <div>, not a <span>: it holds the <details> county list (block content) -#}
-          <li>{% icon "map", "size-4" %}<div>{{ "published.how.area" | t(lang, {n: V.countyCount}) }}
-            {%- if V.counties.length %}
-            <details class="pw-counties">
-              <summary>{{ "published.how.counties" | t(lang, {n: V.countyCount}) }}</summary>
-              <ul class="pw-county-list">
-                {%- for c in V.counties %}<li>{{ c }}</li>{% endfor %}
-              </ul>
-            </details>
-            {%- endif %}</div></li>
-          <li>{% icon "landmark", "size-4" %}<span>{{ "published.how.census" | t(lang) }}</span></li>
-          <li>{% icon "venetian-mask", "size-4" %}<span>{{ "published.how.unmatched" | t(lang) }}</span></li>
-          <li>{% icon "calendar-range", "size-4" %}<span>{{ "published.how.window" | t(lang) }}</span></li>
-        </ul>
-        {%- if V.updated %}
-        <p class="pw-updated">{% icon "clock", "size-3.5" %}<span>{{ "published.how.updated" | t(lang, {date: V.updated | fmtDate(lang, "medium")}) }}</span></p>
-        {%- endif %}
-      </section>
-    </aside>
   </div>
-</div>
+</section>
 
 {#- settings + strings for published.js -#}
 <script type="application/json" id="pw-config">{{ {

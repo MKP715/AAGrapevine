@@ -4,8 +4,8 @@
     "es": "Historias de escritores del Área 65 del noreste de Texas y de todo Texas publicadas en Grapevine y La Viña en los últimos 60 y 90 días."
   },
   "published.eyebrow": {
-    "en": "Grapevine & La Viña",
-    "es": "Grapevine y La Viña"
+    "en": "Get involved · Published writers",
+    "es": "Participa · Escritores publicados"
   },
   "published.hero_sub": {
     "en": "Celebrating Northeast Texas writers — and all of Texas — whose stories appear in Grapevine and La Viña.",
@@ -66,6 +66,10 @@
   "published.aside_label": {
     "en": "About this list",
     "es": "Sobre esta lista"
+  },
+  "published.results_label": {
+    "en": "Published stories",
+    "es": "Historias publicadas"
   },
   "published.search_clear": {
     "en": "Clear search",
@@ -268,8 +272,8 @@
     "es": "Grapevine y La Viña publican el nombre, la inicial del apellido y la ciudad de cada escritor junto a su historia. Aquí solo mostramos lo que las propias revistas publican."
   },
   "published.how.daily": {
-    "en": "Every day this site reads the newest stories on aagrapevine.org and aalavina.org.",
-    "es": "Cada día este sitio lee las historias más recientes de aagrapevine.org y aalavina.org."
+    "en": "We keep this list updated regularly from the stories published by Grapevine and La Viña.",
+    "es": "Mantenemos esta lista actualizada con regularidad a partir de las historias que publican La Viña y Grapevine."
   },
   "published.how.area": {
     "en": "Area 65 means the {n} counties on the official NETA 65 district map.",
@@ -290,10 +294,6 @@
   "published.how.window": {
     "en": "The 60- and 90-day windows count from the first day of each issue, or from the day a story went online when the issue comes out early.",
     "es": "Los periodos de 60 y 90 días se cuentan desde el primer día de cada edición, o desde el día en que la historia salió en línea si la edición se adelanta."
-  },
-  "published.how.updated": {
-    "en": "List updated {date}",
-    "es": "Lista actualizada el {date}"
   },
   "published.tell.title": {
     "en": "Were you published? Let us know",

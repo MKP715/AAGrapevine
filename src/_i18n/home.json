@@ -47,10 +47,6 @@
     "en": "On this site",
     "es": "En este sitio"
   },
-  "home.auto_updated": {
-    "en": "Updated automatically every day",
-    "es": "Se actualiza automáticamente cada día"
-  },
   "home.meeting_eyebrow": {
     "en": "Next committee meeting",
     "es": "Próxima reunión del comité"
@@ -163,10 +159,6 @@
     "en": "Browse the last {days} days and choose Area 65, all of Texas or every writer.",
     "es": "Consulta los últimos {days} días y elige entre el Área 65, todo Texas o todos los escritores."
   },
-  "home.spot_fill_cta": {
-    "en": "See the full list",
-    "es": "Ver la lista completa"
-  },
   "home.spot_share": {
     "en": "Share your story",
     "es": "Comparte tu historia"
@@ -244,32 +236,20 @@
     "es": "Lo más reciente"
   },
   "home.fresh_sub": {
-    "en": "The newest stories, episodes, videos, posts and documents — gathered from the official Grapevine and La Viña sources and kept up to date every day.",
-    "es": "Las historias, episodios, videos, publicaciones y documentos más nuevos — reunidos de las fuentes oficiales de La Viña y Grapevine y actualizados cada día."
+    "en": "The newest stories, episodes, videos, posts and documents from the official Grapevine and La Viña sources.",
+    "es": "Las historias, episodios, videos, publicaciones y documentos más nuevos de las fuentes oficiales de La Viña y Grapevine."
   },
   "home.fresh_all": {
     "en": "Everything new",
     "es": "Todas las novedades"
   },
-  "home.fresh_count": {
-    "en": "New this week: {n}",
-    "es": "Nuevos esta semana: {n}"
-  },
-  "home.last_update": {
-    "en": "last update",
-    "es": "última actualización"
-  },
-  "home.fresh_empty_title": {
-    "en": "The first daily update is on its way",
-    "es": "La primera actualización diaria ya viene en camino"
-  },
-  "home.fresh_empty_text": {
-    "en": "New articles, episodes, videos and documents appear here every day. Check back soon!",
-    "es": "Los nuevos artículos, episodios, videos y documentos aparecen aquí cada día. ¡Vuelve pronto!"
-  },
   "home.ann_title": {
     "en": "From the committee",
     "es": "Noticias del comité"
+  },
+  "home.ann_sub": {
+    "en": "News and notices from the NETA 65 Grapevine / La Viña committee.",
+    "es": "Noticias y avisos del Comité de Grapevine / La Viña de NETA 65."
   },
   "home.ann_all": {
     "en": "All announcements",
@@ -283,14 +263,12 @@
     "en": "From the magazines",
     "es": "De las revistas"
   },
-  "home.mag_title": {
-    "en": "The latest from Grapevine & La Viña",
-    "es": "Lo último de Grapevine y La Viña"
-  },
+  "home.mag_title": { "en": "The latest from Grapevine & La Viña", "es": "Lo último de La Viña y Grapevine" },
   "home.mag_sub": {
     "en": "Stories from the newest issues. Tap any title to read it on the official site.",
     "es": "Historias de las ediciones más recientes. Toca cualquier título para leerla en el sitio oficial."
   },
+  "home.mag_all": { "en": "Read both magazines", "es": "Lee las dos revistas" },
   "home.gv_tagline": {
     "en": "AA's international journal · in English",
     "es": "La revista internacional de AA · en inglés"
@@ -315,10 +293,6 @@
     "en": "Read the issue",
     "es": "Leer la edición"
   },
-  "home.subscribe": {
-    "en": "Subscribe",
-    "es": "Suscribirse"
-  },
   "home.subscriber_only": {
     "en": "Subscribers",
     "es": "Suscriptores"
@@ -328,12 +302,12 @@
     "es": "Lectura gratis"
   },
   "home.mag_empty_gv": {
-    "en": "New Grapevine stories appear here automatically as soon as the next issue is published.",
-    "es": "Las nuevas historias de Grapevine aparecen aquí automáticamente en cuanto se publica la siguiente edición."
+    "en": "New Grapevine stories appear here as soon as the next issue is published.",
+    "es": "Las nuevas historias de Grapevine aparecen aquí en cuanto se publica la siguiente edición."
   },
   "home.mag_empty_lv": {
-    "en": "New La Viña stories appear here automatically as soon as the next issue is published.",
-    "es": "Las nuevas historias de La Viña aparecen aquí automáticamente en cuanto se publica la siguiente edición."
+    "en": "New La Viña stories appear here as soon as the next issue is published.",
+    "es": "Las nuevas historias de La Viña aparecen aquí en cuanto se publica la siguiente edición."
   },
   "home.mag_empty_title": {
     "en": "The next issue is on its way",
@@ -359,6 +333,8 @@
     "en": "How to share your story",
     "es": "Cómo compartir tu historia"
   },
+  "home.write_themes_n": { "en": "See the {n} upcoming themes", "es": "Ver los {n} próximos temas" },
+  "home.write_themes_one": { "en": "See the upcoming theme", "es": "Ver el próximo tema" },
   "home.lw_eyebrow": {
     "en": "Listen & watch",
     "es": "Escucha y mira"
@@ -368,8 +344,8 @@
     "es": "Historias para escuchar y ver"
   },
   "home.lw_sub": {
-    "en": "The official AA Grapevine podcast and YouTube channel — new episodes and videos show up here on their own.",
-    "es": "El podcast oficial y el canal de YouTube de AA Grapevine — los nuevos episodios y videos aparecen aquí solos."
+    "en": "The official AA Grapevine podcast and YouTube channel — the newest episodes and videos.",
+    "es": "El podcast oficial y el canal de YouTube de AA Grapevine — los episodios y videos más recientes."
   },
   "home.latest_episode": {
     "en": "Latest episode",
@@ -435,22 +411,6 @@
     "en": "Subscribe on YouTube",
     "es": "Suscríbete en YouTube"
   },
-  "home.listen_empty_title": {
-    "en": "Episodes are on their way",
-    "es": "Los episodios vienen en camino"
-  },
-  "home.listen_empty_text": {
-    "en": "New AA Grapevine podcast episodes appear here automatically.",
-    "es": "Los nuevos episodios del podcast de AA Grapevine aparecen aquí automáticamente."
-  },
-  "home.watch_empty_title": {
-    "en": "Videos are on their way",
-    "es": "Los videos vienen en camino"
-  },
-  "home.watch_empty_text": {
-    "en": "New Grapevine and La Viña videos appear here automatically.",
-    "es": "Los nuevos videos de La Viña y Grapevine aparecen aquí automáticamente."
-  },
   "home.events_eyebrow": {
     "en": "Mark your calendar",
     "es": "Aparta la fecha"
@@ -467,21 +427,9 @@
     "en": "Full calendar",
     "es": "Calendario completo"
   },
-  "home.events_empty_title": {
-    "en": "No other events posted yet",
-    "es": "Aún no hay otros eventos publicados"
-  },
-  "home.events_empty_text": {
-    "en": "When the committee shares a dated flyer, the event shows up here automatically.",
-    "es": "Cuando el comité comparte un volante con fecha, el evento aparece aquí automáticamente."
-  },
   "home.all_day": {
     "en": "All day",
     "es": "Todo el día"
-  },
-  "home.subscribe_cal": {
-    "en": "Add the calendar to your phone",
-    "es": "Agrega el calendario a tu teléfono"
   },
   "home.evcat.committee": {
     "en": "Committee",
@@ -527,14 +475,6 @@
     "en": "Flyers, catalogs, workbooks and service guides from aagrapevine.org and aalavina.org, all in one place — we keep it updated regularly, so you never have to hunt for them.",
     "es": "Volantes, catálogos, cuadernos de trabajo y guías de servicio de aagrapevine.org y aalavina.org, todo en un solo lugar — lo mantenemos actualizado con regularidad para que nunca tengas que buscarlos."
   },
-  "home.lib_count": {
-    "en": "Documents and counting",
-    "es": "Documentos y contando"
-  },
-  "home.lib_sites": {
-    "en": "From 2 official sites · kept up to date",
-    "es": "De 2 sitios oficiales · siempre al día"
-  },
   "home.lib_search_label": {
     "en": "Search the library",
     "es": "Buscar en la biblioteca"
@@ -550,14 +490,6 @@
   "home.lib_newest": {
     "en": "Newest documents",
     "es": "Documentos más recientes"
-  },
-  "home.lib_empty_title": {
-    "en": "The library is being built",
-    "es": "La biblioteca se está armando"
-  },
-  "home.lib_empty_text": {
-    "en": "We keep the library updated regularly — documents appear here as they are added.",
-    "es": "Mantenemos la biblioteca actualizada con regularidad — los documentos aparecen aquí a medida que se agregan."
   },
   "home.pdfcat.gvr": {
     "en": "GVR resources",
@@ -627,14 +559,6 @@
     "en": "More posts",
     "es": "Más publicaciones"
   },
-  "home.ig_empty_title": {
-    "en": "Posts are on their way",
-    "es": "Las publicaciones vienen en camino"
-  },
-  "home.ig_empty_text": {
-    "en": "New Grapevine and La Viña posts appear here automatically. Follow along on Instagram in the meantime.",
-    "es": "Las nuevas publicaciones de La Viña y Grapevine aparecen aquí automáticamente. Mientras tanto, síguelas en Instagram."
-  },
   "home.svc_eyebrow": {
     "en": "For GVRs, RLVs & districts",
     "es": "Para RLV, GVR y distritos"
@@ -672,8 +596,8 @@
     "es": "Tu informe mensual de GV/LV"
   },
   "home.svc_report_desc": {
-    "en": "Ready to read at your district meeting — it fills itself in",
-    "es": "Listo para leer en la reunión de tu distrito — se llena solo"
+    "en": "Ready to read at your district meeting — already filled in",
+    "es": "Listo para leer en la reunión de tu distrito — ya viene completo"
   },
   "home.svc_rss_desc": {
     "en": "New content in any reader or newsletter",
@@ -683,6 +607,7 @@
     "en": "Meetings & events in your calendar app",
     "es": "Reuniones y eventos en tu calendario"
   },
+  "home.svc_more": { "en": "More for your group", "es": "Más para tu grupo" },
   "home.drive_eyebrow": {
     "en": "Committee uploads",
     "es": "Archivos del comité"
@@ -698,14 +623,6 @@
   "home.drive_all": {
     "en": "All committee documents",
     "es": "Todos los documentos del comité"
-  },
-  "home.drive_empty_title": {
-    "en": "The committee's first uploads are on their way",
-    "es": "Los primeros archivos del comité vienen en camino"
-  },
-  "home.drive_empty_text": {
-    "en": "Reports, meeting notes, workshop slides, flyers and photos from the NETA 65 Grapevine / La Viña committee will appear here as soon as they're shared. Want to help carry the message? Every AA member is welcome at our monthly meeting — or just drop us a line.",
-    "es": "Los informes, notas de reunión, presentaciones de talleres, volantes y fotos del Comité de Grapevine y La Viña de NETA 65 aparecerán aquí en cuanto se compartan. ¿Quieres ayudar a llevar el mensaje? Todo miembro de AA es bienvenido a nuestra reunión mensual — o simplemente escríbenos."
   },
   "home.opens_new_tab": {
     "en": "(opens a new tab)",
@@ -755,22 +672,6 @@
     "en": "{n} pages",
     "es": "{n} páginas"
   },
-  "home.drive_empty_members": {
-    "en": "On the committee?",
-    "es": "¿Eres parte del comité?"
-  },
-  "home.drive_empty_how": {
-    "en": "How to share files",
-    "es": "Cómo compartir archivos"
-  },
-  "home.drive_empty_meeting": {
-    "en": "Our next meeting",
-    "es": "Nuestra próxima reunión"
-  },
-  "home.drive_empty_email": {
-    "en": "Write to the committee",
-    "es": "Escribir al comité"
-  },
   "home.mag_mt_from_en": {
     "en": "Stories in English",
     "es": "Títulos traducidos automáticamente del inglés — las historias están en inglés"
@@ -786,10 +687,6 @@
   "home.botm_title_plain": {
     "en": "This month's books are on sale",
     "es": "Los libros del mes están en oferta"
-  },
-  "home.botm_cta": {
-    "en": "See the offer",
-    "es": "Ver la oferta"
   },
   "home.subs_desc": {
     "en": "Print, digital or both — compare the plans.",

@@ -1,15 +1,13 @@
 {
-  "shop.nav_label": { "en": "On this page", "es": "En esta página" },
   "shop.nav_botm": { "en": "Book of the Month", "es": "Libro del mes" },
-  "shop.nav_subs": { "en": "Subscriptions & prices", "es": "Suscripciones y precios" },
+  "shop.nav_subs": { "en": "Subscriptions", "es": "Suscripciones" },
   "shop.nav_bulk": { "en": "Bulk discounts", "es": "Descuentos por cantidad" },
   "shop.nav_mags": { "en": "The magazines", "es": "Las revistas" },
   "shop.nav_gift": { "en": "Gift subscriptions", "es": "Suscripciones de regalo" },
   "shop.nav_group": { "en": "Home groups", "es": "Grupos base" },
-  "shop.nav_free": { "en": "Free", "es": "Gratis" },
   "shop.nav_catalogs": { "en": "Catalogs", "es": "Catálogos" },
   "shop.nav_help": { "en": "Customer service", "es": "Servicio al cliente" },
-  "shop.hero_botm": { "en": "Book of the Month", "es": "Libro del mes" },
+  "shop.cat_eyebrow": { "en": "Books, audio & more", "es": "Libros, audio y más" },
   "shop.hero_subs": { "en": "Subscriptions", "es": "Suscripciones" },
 
   "shop.botm_eyebrow": { "en": "On sale this month", "es": "En oferta este mes" },

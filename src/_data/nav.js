@@ -1,7 +1,7 @@
 // Site navigation. `key` = i18n key (src/_i18n/common.json), `url` is
 // language-neutral (templates prefix /es/ via the lurl filter).
 // Each page lives in ONE place: Shop is top level (subscriptions, Book of the Month,
-// catalogs, order forms); "Get Involved" (like aagrapevine.org's own section) holds the
+// catalogs, order forms); "Get involved" (like aagrapevine.org's own section) holds the
 // service pages; "Committee" holds the committee's own pages.
 const nav = {
   primary: [
@@ -31,15 +31,19 @@ const nav = {
       ],
     },
   ],
+  // Pages outside the header menus. group "stay" → the footer's "Stay updated" column (next to the
+  // RSS and calendar feeds); group "site" → the footer's bottom bar. The phone drawer lists them
+  // all under "More" (except Search, which has its own button there). `icon`: a Lucide name, or a
+  // local icon from src/_includes/icons (instagram).
   footer: [
-    { key: "nav.about", url: "/about/", page: "about" },
-    { key: "nav.digest", url: "/digest/", page: "digest" },
+    { key: "nav.digest", url: "/digest/", page: "digest", icon: "newspaper", group: "stay" },
     // A media feed (like Listen / Watch), not a way to take part: footer + drawer "More", and linked
     // from the home page and /photos/.
-    { key: "nav.instagram", url: "/instagram/", page: "instagram" },
-    { key: "nav.share", url: "/share/", page: "share" },
-    { key: "nav.search", url: "/search/", page: "search" },
-    { key: "nav.status", url: "/status/", page: "status" },
+    { key: "nav.instagram", url: "/instagram/", page: "instagram", icon: "instagram", group: "stay" },
+    { key: "nav.about", url: "/about/", page: "about", icon: "info", group: "site" },
+    { key: "nav.share", url: "/share/", page: "share", icon: "qr-code", group: "site" },
+    { key: "nav.search", url: "/search/", page: "search", icon: "search", group: "site" },
+    { key: "nav.status", url: "/status/", page: "status", icon: "activity", group: "site" },
   ],
 };
 

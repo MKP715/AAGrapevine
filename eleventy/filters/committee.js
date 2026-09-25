@@ -541,6 +541,8 @@ function shapeEvent(it, site, lang, now, descOverride) {
   }
   const monthKey = startYmd.slice(0, 7);
   const monthLabel = cap(fmt(new Date(monthKey + "-15T12:00:00Z"), lang, { month: "long", year: "numeric", timeZone: "UTC" }));
+  // "Sep 2026" / "Sept 2026": the month jump chips on /events/
+  const monthShort = cap(fmt(new Date(monthKey + "-15T12:00:00Z"), lang, { month: "short", year: "numeric", timeZone: "UTC" })).replace(/\.(?=\s|$)/, "");
 
   let link = it.url ? localPath(it.url, lang) : "";
   const flyerView = x.flyer_url || (it.source === "drive" && /drive\.google\.com/.test(it.url || "") ? it.url : null);
@@ -603,7 +605,7 @@ function shapeEvent(it, site, lang, now, descOverride) {
     endIso: allDay ? endYmd : end.toISOString(),
     // stays listed through its last day (an all-day event until midnight Central after its last day)
     expireIso: end.toISOString(),
-    tile, dateLabel, timeLabel, rangeLabel, monthKey, monthLabel,
+    tile, dateLabel, timeLabel, rangeLabel, monthKey, monthLabel, monthShort,
     shareWhen: [dateLabel, timeLabel].filter(Boolean).join(" · "),
     tentative, locationTba,
     shortLabel: cap(fmt(tileSrc, lang, { month: "short", day: "numeric", ...tileOpts })).replace(/\.(?=\s|$)/, ""),
@@ -1197,10 +1199,55 @@ export function dayRunLabel(days, lang = "en") {
 }
 
 /**
+ * How the region blocks of /meetings/#grapevine-meetings share the card columns, so no row is left
+ * with an empty column. The regions grid has 12 sub-columns; the cards show 2, 3 or 4 per row
+ * (from 640 / 1280 / 1800px — committee.css .cm-gvg-regions). For each of those column counts C:
+ *  · a region with C or more cards fills whole rows (C cards of 12/C sub-columns); a last row that
+ *    is not full is stretched: its t cards get 12/t sub-columns each;
+ *  · smaller regions share a row, in order, while their cards fit; the cards of such a row
+ *    (k of them, k < C) are stretched to 12/k sub-columns each, so the row is always full.
+ * Sets region.span = { s2, s3, s4 } (sub-columns of the region) and place.span (of each card), and
+ * region.span.h1…h4: the grid rows the region takes (its head + 4 per row of cards: every card's
+ * place · name · types · body sit on rows shared across the regions grid, so cards side by side
+ * always line up). committee.js (cmGvMeetings) runs the same rules on the cards left after filtering.
+ */
+export function packRegions(regions) {
+  for (const r of regions) { r.span = {}; for (const p of r.places) p.span = {}; }
+  for (const r of regions) {
+    const n = r.places.length;
+    for (const C of [1, 2, 3, 4]) r.span["h" + C] = 1 + 4 * (n >= C ? Math.ceil(n / C) : 1);
+  }
+  for (const C of [2, 3, 4]) {
+    const key = "s" + C;
+    let row = [], k = 0;
+    const close = () => {
+      for (const r of row) { const w = 12 / k; r.span[key] = r.places.length * w; for (const p of r.places) p.span[key] = w; }
+      row = []; k = 0;
+    };
+    for (const r of regions) {
+      const n = r.places.length;
+      if (!n) continue;
+      if (n >= C) {
+        close();
+        const t = n % C;
+        r.span[key] = 12;
+        r.places.forEach((p, j) => { p.span[key] = t && j >= n - t ? 12 / t : 12 / C; });
+      } else {
+        if (k + n > C) close();
+        row.push(r); k += n;
+      }
+    }
+    close();
+  }
+  return regions;
+}
+
+/**
  * The Grapevine meetings of data/site/meetings.json, ready for /meetings/:
  * our Area first, then one group per nearby region. Each region lists its PLACES (`places`: one card
  * per group and address, with its whole week on it — see place() below) and, for the site search,
- * its meetings by weekday (`days`).
+ * its meetings by weekday (`days`). Our Area is also split by office region (`areaGroup.regions`:
+ * [{ id, label, places, placeCount, count, span }], see below), the way the nearby areas are.
  * Nothing here decides WHICH meetings exist — the data does; this only shapes and labels them.
  */
 export function gvMeetings(data, lang = "en", site = {}) {
@@ -1250,6 +1297,8 @@ export function gvMeetings(data, lang = "en", site = {}) {
       siteName: own ? own.name : "",
       listedBy: srcs.map((s) => s.name),
       inArea: !!it.in_area,
+      // the offices that list it (config/site.yml meetings.feeds ids): the first one decides its region
+      srcIds: (it.sources || []).map(String),
       // what the "City, county or group" box searches (accent- and case-insensitive)
       search: foldText([it.name, it.city, it.county, it.county ? countyWord(it.county) : "", it.region, it.district, it.state, it.address, it.location, groupLabel].filter(Boolean).join(" ")),
       // for sorting and grouping the places (place() below)
@@ -1315,6 +1364,7 @@ export function gvMeetings(data, lang = "en", site = {}) {
       approximate: list.every((c) => c.approximate),
       textLang: first.textLang,
       inArea: first.inArea,
+      srcId: list.map((c) => c.srcIds[0]).find(Boolean) || "",
       badges: common,
       access: allAccess,
       spanish: allSpanish,
@@ -1364,6 +1414,26 @@ export function gvMeetings(data, lang = "en", site = {}) {
     return { id, inArea, label, count: list.length, days: byDay(list), places, placeCount: places.length };
   };
   groups.push(region(areaGroup?.id || "neta65", true, pickL(areaGroup?.label, L) || pickL(site?.meetings?.area_label, L), ours));
+  // Our Area, by office region (config/site.yml meetings.feeds[].region_label, in config order — the
+  // sync copies it into meetings.json sources[].area_label): a place goes under the office of its
+  // first listed source; within a region, by city, then name. Places whose office is not an
+  // in-Area source go to a last region, "Other places in our Area".
+  const areaFeeds = (sources.length
+    ? sources.map((s) => s && { id: s.id, in_area: s.in_area, region_label: s.area_label, name: s.name })
+    : Array.isArray(site?.meetings?.feeds) ? site.meetings.feeds : []).filter((f) => f && f.id && f.in_area);
+  const byCity = (a, b) => foldText(a.city).localeCompare(foldText(b.city), L) || a.name.localeCompare(b.name, L);
+  const areaRegion = (id, label, places) => ({
+    id, label, places: [...places].sort(byCity), placeCount: places.length,
+    count: places.reduce((n, p) => n + p.count, 0),
+  });
+  const areaRegions = [];
+  for (const f of areaFeeds) {
+    const ps = groups[0].places.filter((p) => p.srcId === f.id);
+    if (ps.length) areaRegions.push(areaRegion("area-" + f.id, pickL(f.region_label, L) || f.name || f.id, ps));
+  }
+  const unmapped = groups[0].places.filter((p) => !areaFeeds.some((f) => f.id === p.srcId));
+  if (unmapped.length) areaRegions.push(areaRegion("area-other", t("committee.gvm.area_other", L), unmapped));
+  groups[0].regions = packRegions(areaRegions);
   const nearbyCards = all.filter((c) => !c.inArea);
   const placed = new Set();
   for (const g of groupList) {
@@ -1379,6 +1449,7 @@ export function gvMeetings(data, lang = "en", site = {}) {
     const lbl = pickL(items.find((it) => it.id === rest[0].id)?.nearby?.label, L) || t("committee.gvm.nearby_title", L);
     groups.push(region("nearby-other", false, lbl, rest));
   }
+  packRegions(groups.slice(1));
 
   const okSources = sources.filter((s) => s && s.ok === true).map((s) => ({ name: s.name, url: s.url, host: hostOf(s.url) }));
   const failed = sources.filter((s) => s && s.ok === false).map((s) => s.name);
@@ -1467,6 +1538,21 @@ export default function (eleventyConfig, helpers) {
     return `<p class="cm-checked${bad ? " is-warn" : ""}">${icon(bad ? "triangle-alert" : "circle-check", "size-4")}<span>${esc(t(bad ? "committee.drive.checked_problem" : "committee.drive.checked_empty", L, { date }))}</span></p>`;
   });
 
+  // /events/: a monthly series (the CityWide booth …) shows its next date only. Its later dates get
+  // `later: true` (hidden until "Show every monthly date", committee.js cmEvents) and its first date
+  // lists the next few (`moreDates`: "Nov 14", "Dec 12" …). Events must be in date order.
+  eleventyConfig.addFilter("cmCollapseRecurring", (events) => {
+    const first = new Map();
+    for (const e of events || []) {
+      if (!e || !e.recurring || e.past || !e.series) continue;
+      const f = first.get(e.series);
+      if (!f) { first.set(e.series, e); e.moreDates = []; continue; }
+      e.later = true;
+      if (f.moreDates.length < 3) f.moreDates.push(e.shortLabel);
+    }
+    return events;
+  });
+
   // The next date of each monthly recurring event (config/site.yml `recurring_events:`), soonest
   // first — the "Also every month" box on /meetings/.
   eleventyConfig.addFilter("cmRecurringNext", (items, site, lang) => {
@@ -1518,12 +1604,12 @@ export default function (eleventyConfig, helpers) {
 </dialog>`;
   });
 
-  // "Subscribe to the calendar" card (used on /meetings/ and /events/):
-  // {% cmSubscribe lang, site, compact %}
-  // The card lays itself out by its OWN width (container queries), not the screen's: two
-  // columns (buttons | feed address) when it is at least 48rem wide, stacked in a narrow
-  // column or sidebar. compact = no "how to set up" row.
-  eleventyConfig.addShortcode("cmSubscribe", function (lang, site, compact = false) {
+  // "Subscribe to the calendar" card (the /events/ sidebar, #subscribe; /meetings/ links to it):
+  // {% cmSubscribe lang, site %}
+  // One row per calendar app (a disclosure: its subscribe button + how to set it up), then the
+  // calendar address as its own full-width line with a "Copy calendar address" button, and the
+  // other language's address (it wraps at any character, so it never widens the sidebar).
+  eleventyConfig.addShortcode("cmSubscribe", function (lang, site) {
     const L = lang || "en";
     const other = L === "es" ? "en" : "es";
     const feed = siteAbs(site, localPath("/events.ics", L));
@@ -1532,39 +1618,34 @@ export default function (eleventyConfig, helpers) {
     const name = t("committee.ics.name", L);
     const gcal = "https://calendar.google.com/calendar/r?cid=" + encodeURIComponent(webcal);
     const outlook = "https://outlook.live.com/calendar/0/addfromweb?url=" + encodeURIComponent(feed) + "&name=" + encodeURIComponent(name);
-    const btn = (href, ic, label, cls = "btn-secondary") =>
-      `<a class="${cls}" href="${esc(href)}"${href.startsWith("http") ? ' target="_blank" rel="noopener"' : ""}>${icon(ic, "size-4")} ${esc(label)}</a>`;
-    const howto = compact ? "" : `
-      <div class="mt-6 grid gap-3 @3xl:grid-cols-3">
-        ${["google", "apple", "outlook"].map((k) => `
-        <details class="cm-howto">
-          <summary>${icon(k === "apple" ? "smartphone" : "calendar", "size-4 text-gv")} <span>${esc(t(`committee.sub.howto_${k}`, L))}</span>${icon("chevron-down", "size-4 ml-auto opacity-60 cm-chev")}</summary>
-          <p>${esc(t(`committee.sub.howto_${k}_text`, L))}</p>
-        </details>`).join("")}
-      </div>`;
+    const ext = `<span class="sr-only"> (${esc(t("common.external", L))})</span>`;
+    const rows = [
+      { k: "google", ic: "calendar-plus", href: gcal, label: "Google Calendar", cls: "btn-primary" },
+      { k: "apple", ic: "smartphone", href: webcal, label: t("committee.sub.apple", L), cls: "btn-secondary" },
+      { k: "outlook", ic: "calendar", href: outlook, label: "Outlook", cls: "btn-secondary" },
+    ];
     return `
-<div class="card cm-subscribe @container relative h-full overflow-hidden card-pad">
-  <div class="grid grid-cols-1 gap-6 @3xl:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] @3xl:items-center">
-    <div>
-      <p class="eyebrow flex items-center gap-2">${icon("calendar-sync", "size-4 text-gv")} ${esc(t("committee.sub.eyebrow", L))}</p>
-      <h2 class="mt-2 font-display text-2xl font-semibold leading-tight text-ink @xl:text-3xl">${esc(t("committee.sub.title", L))}</h2>
-      <p class="mt-2 max-w-xl leading-relaxed text-muted">${esc(t("committee.sub.text", L))}</p>
-      <div class="mt-5 flex flex-wrap gap-2">
-        ${btn(gcal, "calendar-plus", "Google Calendar", "btn-primary")}
-        ${btn(webcal, "smartphone", t("committee.sub.apple", L))}
-        ${btn(outlook, "calendar", "Outlook")}
+<div class="card cm-subscribe relative overflow-hidden card-pad">
+  <p class="eyebrow flex items-center gap-2 text-gv">${icon("calendar-sync", "size-4 shrink-0")}<span>${esc(t("committee.sub.eyebrow", L))}</span></p>
+  <h2 class="mt-2 font-display text-2xl font-semibold leading-tight text-ink text-balance">${esc(t("committee.sub.title", L))}</h2>
+  <p class="mt-2 text-sm leading-relaxed text-muted">${esc(t("committee.sub.text", L))}</p>
+  <div class="mt-5 grid gap-2">
+    ${rows.map((r) => `
+    <details class="cm-howto">
+      <summary>${icon(r.ic, "size-4 text-gv")} <span>${esc(t(`committee.sub.howto_${r.k}`, L))}</span>${icon("chevron-down", "size-4 ml-auto opacity-60 cm-chev")}</summary>
+      <div class="cm-howto-body">
+        <a class="${r.cls} btn-sm w-full" href="${esc(r.href)}"${r.href.startsWith("http") ? ' target="_blank" rel="noopener"' : ""}>${icon(r.ic, "size-4")} ${esc(r.label)}${r.href.startsWith("http") ? ext : ""}</a>
+        <p>${esc(t(`committee.sub.howto_${r.k}_text`, L))}</p>
       </div>
-    </div>
-    <div class="rounded-2xl border border-line bg-surface-2/60 p-4 sm:p-5">
-      <label class="eyebrow" for="cm-feed-${L}${compact ? "-c" : ""}">${esc(t("committee.sub.url_label", L))}</label>
-      <div class="mt-2 flex gap-2">
-        <input id="cm-feed-${L}${compact ? "-c" : ""}" class="input min-w-0 flex-1 font-mono text-xs sm:text-sm" type="text" readonly value="${esc(feed)}" onfocus="this.select()">
-        <button type="button" class="btn-secondary shrink-0" data-copy="${esc(feed)}" aria-label="${esc(t("committee.sub.copy_aria", L))}">${icon("copy", "size-4")}<span class="hidden sm:inline">${esc(t("common.copy", L))}</span></button>
-      </div>
-      <p class="mt-3 text-xs leading-relaxed text-muted">${esc(t("committee.sub.url_help", L))}</p>
-      <p class="mt-2 text-xs text-muted">${esc(t("committee.sub.other_lang", L))} <a class="link" href="${esc(otherFeed)}" hreflang="${other}">${esc(otherFeed.replace(/^https?:\/\//, ""))}</a></p>
-    </div>
-  </div>${howto}
+    </details>`).join("")}
+  </div>
+  <div class="mt-5 border-t border-line pt-5">
+    <p class="eyebrow">${esc(t("committee.sub.url_label", L))}</p>
+    <p class="cm-feed-url mt-2" translate="no">${esc(feed)}</p>
+    <button type="button" class="btn-secondary btn-sm mt-3 w-full" data-copy="${esc(feed)}">${icon("copy", "size-4")} ${esc(t("committee.sub.copy_aria", L))}</button>
+    <p class="mt-3 text-xs leading-relaxed text-muted">${esc(t("committee.sub.url_help", L))}</p>
+    <p class="mt-2 text-xs leading-relaxed text-muted">${esc(t("committee.sub.other_lang", L))} <a class="link cm-feed-other" href="${esc(otherFeed)}" hreflang="${other}" translate="no">${esc(otherFeed.replace(/^https?:\/\//, ""))}</a></p>
+  </div>
 </div>`;
   });
 
@@ -1590,7 +1671,9 @@ export default function (eleventyConfig, helpers) {
       return `<a href="${localPath(p.url, L)}" class="cm-subnav-link${on ? " is-current" : ""}"${on ? ' aria-current="page"' : ""}>${icon(p.icon, "size-4")}<span>${esc(t("committee.subnav." + p.key, L))}</span>${count}</a>`;
     });
     // page-overlap (main.css): the pill bar tucks into the hero's faded bottom edge — the
-    // shared "page start" for pages whose first block overlaps the hero.
-    return `<nav class="container-page page-overlap" aria-label="${esc(t("committee.subnav.aria", L))}"><div class="cm-subnav no-scrollbar">${links.join("")}</div></nav>`;
+    // shared "page start" for pages whose first block overlaps the hero. The bar (.cm-subnav) keeps
+    // its frame; its inside scrolls sideways on a phone, with a fade on the side that has more
+    // tabs (committee.js marks it .is-overflow / .at-start / .at-end).
+    return `<nav class="container-page page-overlap" aria-label="${esc(t("committee.subnav.aria", L))}"><div class="cm-subnav"><div class="cm-subnav-scroll">${links.join("")}</div></div></nav>`;
   });
 }

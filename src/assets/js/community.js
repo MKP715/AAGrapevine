@@ -120,6 +120,7 @@
     Alpine.data("digestPage", function () {
       return {
         bi: false,
+        more: false,   // phones: "More options" (e-mail, print, steps, previews) — always shown from 1024px
         init: function () {
           try { this.bi = localStorage.getItem("gv-digest-bi") === "1"; } catch (e) { /* ignore */ }
           this.$watch("bi", function (v) { try { localStorage.setItem("gv-digest-bi", v ? "1" : "0"); } catch (e) { /* ignore */ } });
@@ -130,7 +131,8 @@
 
     /* ---------------- GV/LV report on /monthly/ (language toggle) ---------------- */
     Alpine.data("reportBox", function (lang) {
-      return { rl: lang || "en" };
+      // full: the report box is folded to a readable height until "Show the full report"
+      return { rl: lang || "en", full: false };
     });
 
     /* ---------------- Share kit ---------------- */

@@ -14,6 +14,10 @@
       its text. The hero only grows when its content does not fit (desktop: 312px of room),
       so keep it short: eyebrow (a few words) · title · subtitle (1–2 lines on desktop) ·
       ONE actions row · optional compact stats (up to 4 short numbers).
+      Contract: eyebrow "<Area> · <topic>" (a label, never a status) · title ≤ 2 lines on a 390px
+      phone · subtitle ≤ 110 characters EN / 135 ES · actions: exactly one btn-light first (the
+      page's main task) + at most 2 btn-on-dark; phones show at most 2 (max-md:hidden on the 3rd);
+      no jump buttons when the page has a ui.pageNav · stats are hidden below 768px.
       An empty call body or aside slot renders nothing (no empty div, no empty right column).
       Anything bigger — search boxes, filters, long stat rows, countdown cards — goes in the
       first block BELOW the hero (see "Page start").
@@ -59,6 +63,49 @@
                      override per grid with [--cards-max:N] / [--cards-min:15rem].
       rail + rail-item   scroll-snap rows showing more items per view on wide screens ([--rail-n:N]).
       measure (72ch) · layout-aside (main + right sidebar) · layout-sidebar (left filters + results).
+      sticky-aside / sticky-aside-xl   the ONLY sticky side column (from 1024 / 1280px, windows ≥ 640px
+                     tall, never taller than the window). Nothing else sticks (main.css "Sticky rules").
+    ── Small components (main.css) ──
+      chip-row (scrolls on phones, wraps from 1024) · chip-row-nowrap (never wraps) · meta-row
+      (date · show · time, dots drawn by CSS) · card-h (panel title with icon) · step-num (28px
+      numbered circle) · panel-muted (flat note panel) · section-band (tinted full-width band, with
+      "section") · tap-link (44px standalone link on touch) · btn-sm and chip are 44px on phones.
+
+    ── Section header — ui.sectionHead(title, subtitle="", href="", linkLabel="", icon="", opts=null) ──
+      Eyebrow form (use it for every top-level section):
+        {{ ui.sectionHead("Upcoming events", "Workshops, booths and assemblies near you.", "/events/" | lurl(lang),
+             "common.view_all" | t(lang), "calendar-days",
+             { eyebrow: "Committee", tone: "text-vine", id: "events-title", lang: lang }) }}
+      opts: eyebrow (turns the eyebrow form on) · tone (a LITERAL class: text-gv default, text-lv,
+            text-grape, text-vine) · id (on the h2) · level: 3 (h3 instead of h2) · class (extra
+            classes on the wrapper) · lang (ALWAYS pass it: the external-link text needs it).
+      href + linkLabel → the right-hand "all" link (btn-secondary btn-sm + arrow). A call body adds
+      one more action in that slot, before the "all" link:
+        {% call ui.sectionHead(title, sub, href, label, "headphones", { eyebrow: "Media", tone: "text-grape", lang: lang }) %}
+          <button class="btn-ghost btn-sm" type="button">…</button>
+        {% endcall %}
+      Without opts.eyebrow it renders the legacy form (icon inside the h2) — migrate those callers.
+
+    ── In-page nav — ui.pageNav(items, lang, opts=null) — long pages only (5+ sections) ──
+        <div class="container-page page-overlap">{{ ui.pageNav([
+          { href: "#botm", label: "Book of the Month", icon: "book-open" },
+          { href: "#magazines", label: "Magazines" } ], lang) }}</div>
+      A card: "On this page" (from 1280px) + one row of chips that never wraps. opts: label, class.
+
+    ── Freshness — ui.freshness(date, lang, opts=null) — at most once per page, next to its list ──
+        {{ ui.freshness(site.built, lang) }}                  → "Updated 2 hours ago"
+        {{ ui.freshness(site.built, lang, { note: true }) }}  → "… · We keep it updated regularly"
+        {{ ui.freshness(null, lang, { note: true }) }}        → "We keep it updated regularly"
+
+    ── Next steps — ui.nextSteps(items, lang) — the closing block; up to 4 link cards ──
+        {{ ui.sectionHead(…, "", "", "", "compass", { eyebrow: "common.next_steps" | t(lang), lang: lang }) }}
+        {{ ui.nextSteps([{ href: "/shop/" | lurl(lang), title: "Subscribe", text: "Print or digital.",
+             cta: "See prices", icon: "shopping-bag", tone: "lv" }, …], lang) }}
+      Never repeat a link the page already gave as its main action, nor the footer lists.
+
+    ── For committee members — ui.memberHelp(lang, summary, opts=null) — collapsed disclosure ──
+        {% call ui.memberHelp(lang, "How to add documents", { id: "members" }) %}…how-to…{% endcall %}
+      Committee-only how-tos (Drive folders, access, posting) go here, just before the closing block.
     ========================================================================= -#}
 
 {% macro pageHero(lang, title, subtitle="", icon="", eyebrow="", opts=null) %}
@@ -88,8 +135,9 @@
 
 {#- Compact stat row for inside pageHero's call body: display-serif number over a short label —
     the one hero-stat design for every page. stats = [{ value: 56, label: "stories" }, …]
-    (or [[56, "stories"], …]); entries without a value are skipped. Keep it to ≤ 4 short items
-    so the hero keeps its height; longer stat rows belong below the hero. -#}
+    (or [[56, "stories"], …]); entries without a value are skipped. Shown from 768px (hidden on
+    phones by the hero-stats utility — no max-sm/max-md wrapper needed); keep ≤ 4 short numbers,
+    each shown only here on the page. Longer stat rows belong below the hero. -#}
 {% macro heroStats(stats) %}
 <dl class="hero-stats">
   {%- for s in stats %}
@@ -102,15 +150,89 @@
 </dl>
 {% endmacro %}
 
-{#- Section heading with optional "view all" link -#}
-{% macro sectionHead(title, subtitle="", href="", linkLabel="", icon="") %}
-<div class="mb-6 flex flex-wrap items-end justify-between gap-3">
-  <div>
-    <h2 class="h-section flex items-center gap-2.5">{% if icon %}<span class="text-gv">{% icon icon, "size-6" %}</span>{% endif %}{{ title }}</h2>
-    {% if subtitle %}<p class="mt-1.5 max-w-2xl text-muted">{{ subtitle | safe }}</p>{% endif %}
+{#- Section heading — the ONE header for every top-level section (see the doc block at the top).
+    Eyebrow form (opts.eyebrow): [icon] EYEBROW in the tone colour · h2 · one-line intro, with the
+    "all" link (href + linkLabel) as a right-hand btn-secondary btn-sm with a trailing arrow, and
+    an optional extra action from the call body. The legacy form (no opts.eyebrow) keeps the
+    icon inside the h2 — migrate those callers to the eyebrow form. -#}
+{% macro sectionHead(title, subtitle="", href="", linkLabel="", icon="", opts=null) %}
+{%- set o = opts or {} -%}
+{%- set tag = "h3" if o.level == 3 else "h2" -%}
+{%- set extra = (caller() | trim) if caller else "" -%}
+{%- set ext = href and href.startsWith("http") -%}
+<div class="section-head{{ (' ' ~ o.class) if o.class }}">
+  <div class="min-w-0 max-w-3xl">
+    {%- if o.eyebrow %}
+    <p class="eyebrow flex items-center gap-2 {{ o.tone or 'text-gv' }}">{% if icon %}{% icon icon, "size-4 shrink-0" %}{% endif %}<span>{{ o.eyebrow }}</span></p>
+    <{{ tag }}{% if o.id %} id="{{ o.id }}"{% endif %} class="h-section mt-2 text-balance">{{ title }}</{{ tag }}>
+    {%- else %}
+    <{{ tag }}{% if o.id %} id="{{ o.id }}"{% endif %} class="h-section flex items-center gap-2.5">{% if icon %}<span class="text-gv">{% icon icon, "size-6" %}</span>{% endif %}{{ title }}</{{ tag }}>
+    {%- endif %}
+    {% if subtitle %}<p class="mt-2 max-w-2xl leading-relaxed text-muted">{{ subtitle | safe }}</p>{% endif %}
   </div>
-  {% if href %}<a href="{{ href }}" class="inline-flex min-h-10 items-center gap-1.5 text-sm font-semibold text-gv hover:underline">{{ linkLabel }} {% icon "arrow-right", "size-4" %}</a>{% endif %}
+  {%- if href or (extra | length) %}
+  <div class="section-head-actions">{{ extra }}
+    {%- if href %}<a href="{{ href }}" class="btn-secondary btn-sm"{% if ext %} target="_blank" rel="noopener"{% endif %}>{{ linkLabel }} {% icon "arrow-right", "size-4" %}{% if ext %}<span class="sr-only"> ({{ 'common.external' | t(o.lang or 'en') }})</span>{% endif %}</a>{% endif %}
+  </div>
+  {%- endif %}
 </div>
+{% endmacro %}
+
+{#- In-page navigation for long pages: <div class="container-page page-overlap">{{ ui.pageNav(items, lang) }}</div>
+    items = [{ href: "#botm", label: "Book of the Month", icon: "book-open" }, …] (icon optional;
+    items without an href are skipped). opts: { label, class }. Never sticky. -#}
+{% macro pageNav(items, lang, opts=null) %}
+{%- set o = opts or {} -%}{%- set lbl = o.label or ("common.on_this_page" | t(lang)) -%}
+<nav class="page-nav card{{ (' ' ~ o.class) if o.class }}" aria-label="{{ lbl }}">
+  <p class="page-nav-label" aria-hidden="true">{% icon "list", "size-4 shrink-0" %} {{ lbl }}</p>
+  <ul class="chip-row-nowrap" role="list">
+    {%- for it in items %}{% if it.href %}
+    <li><a class="chip" href="{{ it.href }}">{% if it.icon %}{% icon it.icon, "size-4 shrink-0" %}{% endif %}{{ it.label }}</a></li>
+    {%- endif %}{% endfor %}
+  </ul>
+</nav>
+{% endmacro %}
+
+{#- How fresh a list is — the ONLY way to say it, at most once per page, next to the list it
+    describes: "Updated 2 hours ago" (app.js turns time[data-relative] into relative time; without
+    JS it shows the date). opts: { note: true } adds "· We keep it updated regularly"; class.
+    With no date and note: true it says only "We keep it updated regularly". -#}
+{% macro freshness(date, lang, opts=null) %}
+{%- set o = opts or {} -%}
+{%- if date %}<p class="freshness{{ (' ' ~ o.class) if o.class }}">{% icon "refresh-cw", "size-3.5 shrink-0" %}<span>{{ "common.updated" | t(lang) }} <time datetime="{{ date | isoDate }}" data-relative>{{ date | fmtDate(lang, "medium") }}</time>{% if o.note %} · {{ "common.kept_updated" | t(lang) }}{% endif %}</span></p>
+{%- elif o.note %}<p class="freshness{{ (' ' ~ o.class) if o.class }}">{% icon "refresh-cw", "size-3.5 shrink-0" %}<span>{{ "common.kept_updated" | t(lang) }}</span></p>{% endif -%}
+{% endmacro %}
+
+{#- Closing "Next steps": up to 4 link cards (grid only — put ui.sectionHead above it).
+    items = [{ href, title, text, cta, icon, tone: "gv"|"lv"|"grape"|"vine" }, …]
+    The whole card is the link; cta is a specific verb ("Subscribe", never "Open"). -#}
+{% macro nextSteps(items, lang) %}
+{%- set tones = { gv: "bg-gv-soft text-gv", lv: "bg-lv-soft text-lv", grape: "bg-grape-soft text-grape", vine: "bg-vine-soft text-vine" } -%}
+<ul class="grid-cards-4" role="list">
+  {%- for it in items %}{% if loop.index <= 4 and it.href %}{%- set ext = it.href.startsWith("http") -%}{%- set ic = it.icon or "arrow-right" -%}
+  <li class="card card-link relative flex flex-col gap-3 p-5">
+    <span class="grid size-11 place-items-center rounded-xl {{ tones[it.tone or 'gv'] or tones.gv }}">{% icon ic, "size-5" %}</span>
+    <h3 class="h-card"><a class="no-underline after:absolute after:inset-0 after:rounded-[var(--radius-card)] hover:text-gv" href="{{ it.href }}"{% if ext %} target="_blank" rel="noopener"{% endif %}>{{ it.title }}{% if ext %}<span class="sr-only"> ({{ 'common.external' | t(lang) }})</span>{% endif %}</a></h3>
+    {% if it.text %}<p class="text-sm leading-relaxed text-muted">{{ it.text }}</p>{% endif %}
+    {% if it.cta %}<span class="mt-auto inline-flex items-center gap-1.5 pt-1 text-sm font-semibold text-gv" aria-hidden="true">{{ it.cta }} {% icon "arrow-right", "size-4" %}</span>{% endif %}
+  </li>
+  {%- endif %}{% endfor %}
+</ul>
+{% endmacro %}
+
+{#- "For committee members" — a collapsed disclosure for committee-only how-tos (Drive folders,
+    access, posting). Goes just before the page's closing block. The call body is the content:
+      {% call ui.memberHelp(lang, "How to add documents", { id: "members" }) %}<ol>…</ol>{% endcall %} -#}
+{% macro memberHelp(lang, summary, opts=null) %}
+{%- set o = opts or {} -%}
+<details class="card group{{ (' ' ~ o.class) if o.class }}"{% if o.id %} id="{{ o.id }}"{% endif %}>
+  <summary class="flex min-h-14 cursor-pointer list-none items-center gap-3 rounded-[var(--radius-card)] px-5 py-3 sm:px-6 [&::-webkit-details-marker]:hidden">
+    <span class="grid size-9 shrink-0 place-items-center rounded-lg bg-vine-soft text-vine">{% icon "key-round", "size-5" %}</span>
+    <span class="min-w-0 flex-1"><span class="eyebrow block">{{ "common.for_members" | t(lang) }}</span><span class="block font-semibold text-ink">{{ summary }}</span></span>
+    {% icon "chevron-down", "size-5 shrink-0 text-muted transition group-open:rotate-180" %}
+  </summary>
+  <div class="border-t border-line px-5 py-5 sm:px-6">{{ caller() if caller }}</div>
+</details>
 {% endmacro %}
 
 {#- Empty state box -#}

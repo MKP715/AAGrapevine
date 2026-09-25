@@ -471,6 +471,9 @@ export default function (eleventyConfig, helpers) {
   /** Newest video that is not a Short (for the featured player). */
   eleventyConfig.addFilter("mediaFeaturedVideo", (items) => (items || []).find((i) => videoKind(i) !== "short") || (items || [])[0] || null);
 
+  /** The list without one item (Watch: the grid skips the featured video shown right above it). */
+  eleventyConfig.addFilter("mediaWithout", (items, item) => (items || []).filter((i) => !item || i !== item && i.id !== item.id));
+
   /** Playlists for the Watch filters: {{ db.videos | mediaPlaylists(vids, lang) }} */
   eleventyConfig.addFilter("mediaPlaylists", (vidFile, items, lang) => playlistList(vidFile, items, lang));
   /** Chips: up to n non-type playlists, the page's language first, biggest first. */

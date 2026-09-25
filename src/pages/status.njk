@@ -8,49 +8,66 @@ descKey: community.status.meta_desc
 pageScripts: ["/assets/js/community.js"]
 ---
 {% import "macros/ui.njk" as ui with context %}
-{#- Transparency dashboard built from db.status (written by build_data.py after
-    every daily run). States: ok (vine) · failed (danger) · never run (muted);
-    every state has an icon + label, never color alone. -#}
+{#- Transparency dashboard built from db.status (written by build_data.py after every run).
+    States: ok (vine) · failed (danger) · never run (muted); every state has an icon + label, never
+    colour alone. Order: the hero pill (how many sources are up to date) · three numbers · the sources
+    (a table from 768px, compact rows on a phone) · the optional outside calendars (collapsed) · the
+    document library and translations · how an update works · behind the scenes (the one GitHub
+    Actions button). Maintainer-only words live in the collapsed "Technical details" disclosures. -#}
 {%- set sv = db.status | cmStatus -%}
 {%- set total = sv.sources | length -%}
-{%- set crawler = site.sources.crawler or {} -%}
+{%- set feedsDown = sv.feeds | whereNot("state", "ok") | length -%}
 {%- set actionsUrl = "https://github.com/MKP715/AAGrapevine/actions" -%}
-{#- how the committee adds an event by hand (content/events/README.md) — linked from a blocked calendar feed -#}
+{#- how the committee adds an event by hand (content/events/README.md) — linked from a calendar we can't read -#}
 {%- set eventsHowtoUrl = "https://github.com/MKP715/AAGrapevine/blob/main/content/events/README.md" -%}
 {%- set srcIcons = { drive: "folder-open", articles: "newspaper", pdfs: "file-text", youtube: "youtube", podcasts: "headphones", instagram: "instagram", editorial: "pen-line", events_external: "calendar-days", announcements: "megaphone", manual_events: "calendar-plus", weekly_open: "video", shop: "shopping-bag", meetings: "map-pin", translations: "languages" } -%}
 
+{#- A source's status badge (the same in the table and the phone rows) -#}
+{% macro stateBadge(s) %}
+{%- if s.state == "ok" and not s.stale %}<span class="badge-vine">{% icon "circle-check", "size-3.5" %} {{ "community.status.state_ok" | t(lang) }}</span>
+{%- elif s.state == "ok" and s.stale %}<span class="badge-muted" title="{{ 'community.status.stale_help' | t(lang, { n: s.ageDays }) }}">{% icon "clock", "size-3.5" %} {{ "community.status.state_stale" | t(lang) }}</span>
+{%- elif s.state == "failed" %}<span class="badge bg-danger text-white dark:text-paper">{% icon "circle-x", "size-3.5" %} {{ "community.status.state_failed" | t(lang) }}</span>
+{%- else %}<span class="badge-muted">{% icon "circle-dashed", "size-3.5" %} {{ "community.status.state_never" | t(lang) }}</span>{% endif -%}
+{% endmacro %}
+
+{#- A failed source: the calm explanation first; the raw message tucked away for the maintainer -#}
+{% macro failedNote(s) %}
+<p class="flex max-w-3xl gap-2 text-sm leading-relaxed text-ink">{% icon "info", "size-4 mt-0.5 shrink-0 text-danger" %}<span>{{ "community.status.failed_calm" | t(lang) }}{% if s.updated and s.ageDays >= 3 %} {{ "community.status.failed_repeat" | t(lang, { n: s.ageDays }) }}{% endif %}</span></p>
+{% if s.updated %}<p class="mt-1 pl-6 text-xs text-muted">{{ "community.status.last_ok" | t(lang) }}: <time datetime="{{ s.updated | isoDate }}" data-local-time>{{ s.updated | fmtDate(lang, "datetime") }}</time></p>{% endif %}
+{% if s.error %}
+<details class="cm-preview mt-2 ml-6 rounded-lg border border-line bg-surface" data-tech>
+  <summary class="flex min-h-11 cursor-pointer items-center gap-2 px-3 text-xs font-semibold text-muted">{{ "community.status.tech_details" | t(lang) }}</summary>
+  <pre class="overflow-x-auto whitespace-pre-wrap border-t border-line p-3 font-mono text-xs text-ink">{{ s.error }}</pre>
+</details>
+{% endif %}
+{% endmacro %}
+
 {% call ui.pageHero(lang, "nav.status" | t(lang), "community.status.hero_sub" | t(lang), "activity", "community.status.eyebrow" | t(lang)) %}
-<div class="hero-actions cm-hero-tight">
+<div class="hero-actions">
+  {#- a status, not a button: how many sources are up to date (+ the optional calendars that can't be read) -#}
   {% if not total %}
-  <span class="inline-flex min-h-10 items-center gap-2 rounded-full bg-white/10 px-4 text-sm font-semibold text-white ring-1 ring-white/25">{% icon "circle-dashed", "size-4" %} {{ "community.status.not_run" | t(lang) }}</span>
+  <p class="inline-flex min-h-10 items-center gap-2 rounded-full bg-white/10 px-4 text-sm font-semibold text-white ring-1 ring-white/25">{% icon "circle-dashed", "size-4" %} {{ "community.status.not_run" | t(lang) }}</p>
   {% elif sv.failedCount %}
-  <span class="inline-flex min-h-10 items-center gap-2.5 rounded-full bg-white/10 py-1 pl-1.5 pr-4 text-sm font-semibold text-white ring-1 ring-white/25"><span class="grid size-7 place-items-center rounded-full bg-danger text-white">{% icon "circle-alert", "size-4" %}</span> {{ "community.status.some_failed" | t(lang, { n: sv.failedCount, total: total }) }}</span>
+  <p class="inline-flex min-h-10 flex-wrap items-center gap-x-2.5 gap-y-1 rounded-3xl bg-white/10 py-1 pl-1.5 pr-4 text-sm font-semibold text-white ring-1 ring-white/25"><span class="grid size-7 place-items-center rounded-full bg-danger text-white">{% icon "circle-alert", "size-4" %}</span> {{ "community.status.some_failed" | t(lang, { n: sv.failedCount, total: total }) }}</p>
   {% else %}
-  <span class="inline-flex min-h-10 items-center gap-2.5 rounded-full bg-white/10 py-1 pl-1.5 pr-4 text-sm font-semibold text-white ring-1 ring-white/25"><span class="grid size-7 place-items-center rounded-full bg-vine text-white dark:text-paper">{% icon "check", "size-4" %}</span> {{ "community.status.all_ok" | t(lang) }}</span>
+  <p class="inline-flex min-h-10 flex-wrap items-center gap-x-2.5 gap-y-1 rounded-3xl bg-white/10 py-1 pl-1.5 pr-4 text-sm font-semibold text-white ring-1 ring-white/25"><span class="grid size-7 shrink-0 place-items-center rounded-full bg-vine text-white dark:text-paper">{% icon "check", "size-4" %}</span> <span>{{ "community.status.pill_ok" | t(lang, { n: sv.okCount, total: total }) }}{% if feedsDown %}<span class="font-medium text-white/80 max-sm:hidden"> · {{ ("community.status.pill_feeds_one" if feedsDown == 1 else "community.status.pill_feeds") | t(lang, { n: feedsDown }) }}</span>{% endif %}</span></p>
   {% endif %}
-  {#- phones: this button is at the end of the page ("Behind the scenes"), so the hero keeps its height -#}
-  <a class="btn-on-dark btn-sm max-sm:hidden" href="{{ actionsUrl }}" target="_blank" rel="noopener">{% icon "git-branch", "size-4" %} {{ "community.status.actions_btn" | t(lang) }}</a>
 </div>
 {% endcall %}
 
-{#- ============ KPI row (tucks into the hero's faded edge) ============ -#}
+{#- ============ Three numbers (one card, tucked into the hero's faded edge) ============ -#}
 <section class="container-page page-overlap" aria-label="{{ 'nav.status' | t(lang) }}">
-  <dl class="grid grid-cols-2 gap-4 lg:grid-cols-4">
-    <div class="card card-pad">
+  <dl class="card grid divide-y divide-line sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+    <div class="px-5 py-4 sm:px-6 sm:py-5">
       <dt class="text-sm text-muted">{{ "community.status.kpi_build" | t(lang) }}</dt>
       <dd class="mt-1 text-2xl font-semibold text-ink"><time datetime="{{ site.built }}" data-relative>{{ site.built | fmtDate(lang, "datetime") }}</time></dd>
       <dd class="mt-0.5 text-xs text-muted"><time datetime="{{ site.built }}" data-local-time>{{ site.built | fmtDate(lang, "datetime") }}</time></dd>
     </div>
-    <div class="card card-pad">
-      <dt class="text-sm text-muted">{{ "community.status.kpi_sources" | t(lang) }}</dt>
-      <dd class="mt-1 flex items-baseline gap-1.5 text-2xl font-semibold text-ink">{{ sv.okCount }} <span class="text-base font-medium text-muted">{{ "community.status.of" | t(lang, { n: total }) }}</span></dd>
-      {% if sv.failedCount %}<dd class="mt-0.5 flex items-center gap-1 text-xs font-semibold text-danger">{% icon "circle-alert", "size-3.5" %} {{ sv.failedCount }} {{ "community.status.state_failed" | t(lang) | lower }}</dd>{% endif %}
-    </div>
-    <div class="card card-pad">
+    <div class="px-5 py-4 sm:px-6 sm:py-5">
       <dt class="text-sm text-muted">{{ "community.status.kpi_items" | t(lang) }}</dt>
       <dd class="mt-1 text-2xl font-semibold text-ink">{{ sv.totalItems | cmNum(lang) }}</dd>
     </div>
-    <div class="card card-pad">
+    <div class="px-5 py-4 sm:px-6 sm:py-5">
       <dt class="text-sm text-muted">{{ "community.status.kpi_new" | t(lang) }}</dt>
       <dd class="mt-1 text-2xl font-semibold text-ink">{{ sv.found7d | cmNum(lang) }}</dd>
       <dd class="mt-0.5 text-xs leading-snug text-muted">{{ ("community.status.found_help_all" if sv.allFound7d else "community.status.found_help") | t(lang) }}</dd>
@@ -58,19 +75,17 @@ pageScripts: ["/assets/js/community.js"]
   </dl>
 </section>
 
-{#- ============ Sources + crawl coverage / translations ============
-    Below 1536px: the table, then the two cards side by side (from 1024px). From 1536px the
-    two cards form a 30rem column next to the table. -#}
-<section class="section container-page" aria-labelledby="src-title">
-  <div class="mb-6">
-    <h2 id="src-title" class="h-section flex items-center gap-2.5"><span class="text-gv">{% icon "radio-tower", "size-6" %}</span>{{ "community.status.sources_title" | t(lang) }}</h2>
-    <p class="mt-1.5 max-w-2xl text-muted">{{ "community.status.sources_sub" | t(lang) }}</p>
-  </div>
+{#- ============ Sources + document library / translations ============
+    Below 1536px: the sources, then the two cards side by side (from 1024px). From 1536px the two
+    cards form a 30rem column next to the sources. -#}
+<section class="section container-page pt-10 sm:pt-12" aria-labelledby="src-title">
+  {{ ui.sectionHead("community.status.sources_title" | t(lang), "community.status.sources_sub" | t(lang), "", "", "radio-tower", { eyebrow: "community.status.sources_eyebrow" | t(lang), id: "src-title", lang: lang }) }}
   <div class="cm-st-layout">
   <div class="min-w-0">
   {% if total %}
-  <div class="card overflow-hidden">
-    <table class="cm-st-table w-full text-left text-sm">
+  {#- From 768px: a table -#}
+  <div class="card overflow-hidden max-md:hidden">
+    <table class="w-full text-left text-sm">
       <thead class="bg-surface-2/70 text-xs uppercase tracking-wider text-muted">
         <tr>
           <th scope="col" class="px-5 py-3 font-semibold">{{ "community.status.col_source" | t(lang) }}</th>
@@ -94,13 +109,8 @@ pageScripts: ["/assets/js/community.js"]
               </span>
             </span>
           </th>
-          <td class="whitespace-nowrap px-5 py-4" data-label="{{ 'community.status.col_status' | t(lang) }}">
-            {% if s.state == "ok" and not s.stale %}<span class="badge-vine">{% icon "circle-check", "size-3.5" %} {{ "community.status.state_ok" | t(lang) }}</span>
-            {% elif s.state == "ok" and s.stale %}<span class="badge-muted" title="{{ 'community.status.stale_help' | t(lang, { n: s.ageDays }) }}">{% icon "clock", "size-3.5" %} {{ "community.status.state_stale" | t(lang) }}</span>
-            {% elif s.state == "failed" %}<span class="badge bg-danger text-white dark:text-paper">{% icon "circle-x", "size-3.5" %} {{ "community.status.state_failed" | t(lang) }}</span>
-            {% else %}<span class="badge-muted">{% icon "circle-dashed", "size-3.5" %} {{ "community.status.state_never" | t(lang) }}</span>{% endif %}
-          </td>
-          <td class="px-5 py-4" data-label="{{ 'community.status.col_updated' | t(lang) }}">
+          <td class="whitespace-nowrap px-5 py-4">{{ stateBadge(s) }}</td>
+          <td class="px-5 py-4">
             {% if s.updated %}
             <time class="block font-medium text-ink" datetime="{{ s.updated | isoDate }}" data-relative>{{ s.updated | fmtDate(lang, "datetime") }}</time>
             <time class="block text-xs text-muted" datetime="{{ s.updated | isoDate }}" data-local-time>{{ s.updated | fmtDate(lang, "datetime") }}</time>
@@ -110,100 +120,120 @@ pageScripts: ["/assets/js/community.js"]
             <time class="block font-medium text-ink" datetime="{{ s.attempted | isoDate }}" data-local-time>{{ s.attempted | fmtDate(lang, "datetime") }}</time>
             {% else %}<span class="text-muted">{{ "community.status.never_help" | t(lang) }}</span>{% endif %}
           </td>
-          <td class="px-5 py-4 text-right tabular-nums text-ink" data-label="{{ 'community.status.col_count' | t(lang) }}">{{ (s.count or 0) | cmNum(lang) }}</td>
-          <td class="px-5 py-4 text-right tabular-nums" data-label="{{ 'community.status.col_new' | t(lang) }}">
+          <td class="px-5 py-4 text-right tabular-nums text-ink">{{ (s.count or 0) | cmNum(lang) }}</td>
+          <td class="px-5 py-4 text-right tabular-nums">
             {% if s.new_7d %}<span class="font-semibold text-vine">+{{ s.new_7d | cmNum(lang) }}</span>{% else %}<span class="text-muted">0</span>{% endif %}
           </td>
         </tr>
         {% if s.state == "failed" %}
-        {#- Calm, plain-language explanation first; the raw message is tucked away for the maintainer. -#}
-        <tr class="cm-st-err bg-[color-mix(in_srgb,var(--c-danger)_6%,transparent)]">
-          <td colspan="5" class="px-5 pb-4 pt-0">
-            <p class="flex max-w-3xl gap-2 text-sm leading-relaxed text-ink">{% icon "info", "size-4 mt-0.5 shrink-0 text-danger" %}<span>{{ "community.status.failed_calm" | t(lang) }}{% if s.updated and s.ageDays >= 3 %} {{ "community.status.failed_repeat" | t(lang, { n: s.ageDays }) }}{% endif %}</span></p>
-            {% if s.updated %}<p class="mt-1 pl-6 text-xs text-muted">{{ "community.status.last_ok" | t(lang) }}: <time datetime="{{ s.updated | isoDate }}" data-local-time>{{ s.updated | fmtDate(lang, "datetime") }}</time></p>{% endif %}
-            {% if s.error %}
-            <details class="cm-preview mt-2 ml-6 rounded-lg border border-line bg-surface">
-              <summary class="flex min-h-10 cursor-pointer items-center gap-2 px-3 text-xs font-semibold text-muted">{{ "community.status.tech_details" | t(lang) }}</summary>
-              <pre class="overflow-x-auto whitespace-pre-wrap border-t border-line p-3 font-mono text-xs text-ink">{{ s.error }}</pre>
-            </details>
-            {% endif %}
-          </td>
+        <tr class="bg-[color-mix(in_srgb,var(--c-danger)_6%,transparent)]">
+          <td colspan="5" class="px-5 pb-4 pt-0">{{ failedNote(s) }}</td>
         </tr>
         {% endif %}
         {% endfor %}
       </tbody>
     </table>
   </div>
+  {#- On a phone: compact rows — name + status on one line, the time and numbers as a second, muted line -#}
+  <ul class="card divide-y divide-line md:hidden" role="list">
+    {% for s in sv.sources %}
+    {%- set label = ("community.status.src." + s.source) | cmTOr(lang, (s.label_es if lang == "es" and s.label_es else s.label) or s.source) -%}
+    <li class="flex gap-3 px-4 py-3.5{{ ' bg-[color-mix(in_srgb,var(--c-danger)_6%,transparent)]' if s.state == 'failed' }}">
+      <span class="grid size-8 shrink-0 place-items-center rounded-lg bg-surface-2 text-muted">{% icon srcIcons[s.source] or "database", "size-4" %}</span>
+      <div class="min-w-0 flex-1">
+        <p class="flex items-start justify-between gap-2"><span class="font-semibold leading-snug text-ink">{{ label }}</span><span class="shrink-0">{{ stateBadge(s) }}</span></p>
+        <p class="meta-row mt-0.5 text-xs text-muted">
+          {%- if s.updated %}<time datetime="{{ s.updated | isoDate }}" data-relative>{{ s.updated | fmtDate(lang, "datetime") }}</time>
+          {%- elif s.state == "failed" and s.attempted %}<span>{{ "community.status.last_try" | t(lang) }}: <time datetime="{{ s.attempted | isoDate }}" data-local-time>{{ s.attempted | fmtDate(lang, "datetime") }}</time></span>
+          {%- else %}<span>{{ "community.status.never_help" | t(lang) }}</span>{% endif %}
+          <span>{{ "community.status.n_items" | t(lang, { n: (s.count or 0) | cmNum(lang) }) }}</span>
+          {%- if s.new_7d %}<span class="font-semibold text-vine">{{ "community.status.n_new" | t(lang, { n: s.new_7d | cmNum(lang) }) }}</span>{% endif %}
+        </p>
+        {% if s.hint %}<p class="mt-1 text-xs leading-snug text-muted">{{ ("community.status.hint." + s.hint) | t(lang, { panel: s.panel or ("community.status.hint.panel_generic" | t(lang)) }) }}</p>{% endif %}
+        {% if s.state == "failed" %}<div class="mt-2">{{ failedNote(s) }}</div>{% endif %}
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
   {% else %}
-  {{ ui.emptyState("circle-dashed", "community.status.no_sources_title" | t(lang), "community.status.no_sources_text" | t(lang), actionsUrl, "community.status.actions_btn" | t(lang)) }}
+  {{ ui.emptyState("circle-dashed", "community.status.no_sources_title" | t(lang), "community.status.no_sources_text" | t(lang)) }}
   {% endif %}
-  <p class="mt-3 text-xs text-muted">{{ "community.status.local_time" | t(lang) }}{% if sv.generated %} · {{ "community.status.data_generated" | t(lang) }}: <time datetime="{{ sv.generated | isoDate }}" data-local-time>{{ sv.generated | fmtDate(lang, "datetime") }}</time>{% endif %}</p>
+  <p class="mt-3 text-xs text-muted">{{ "community.status.local_time" | t(lang) }}{% if sv.generated %} · {{ "community.status.data_generated" | t(lang) }} <time datetime="{{ sv.generated | isoDate }}" data-local-time>{{ sv.generated | fmtDate(lang, "datetime") }}</time>{% endif %}</p>
 
-  {#- ============ Optional outside calendars (config/site.yml sources.ics_feeds) ============
-      Not content sources: a feed that a site's bot protection blocks is explained in plain words,
-      never counted as "failed" (and never opens the weekly "stopped updating" issue). -#}
+  {#- ============ Optional outside calendars (config/site.yml sources.ics_feeds), collapsed ============
+      Not content sources: a calendar we can't read is said in plain words (its events are added by
+      hand), never counted as "failed"; how to fix it is in its technical details. -#}
   {% if sv.feeds | length %}
-  <section class="mt-10" aria-labelledby="feeds-title">
-    <h3 id="feeds-title" class="h-card flex items-center gap-2 text-xl">{% icon "calendar-sync", "size-5 text-gv" %} {{ "community.status.feeds_title" | t(lang) }}</h3>
-    <p class="mt-1.5 max-w-2xl text-sm leading-relaxed text-muted">{{ "community.status.feeds_sub" | t(lang) }}</p>
-    <ul class="mt-4 grid gap-4" role="list">
-      {% for f in sv.feeds %}
-      {%- set flabel = (f.label_es if lang == "es" and f.label_es else f.label) or f.host -%}
-      <li class="card card-pad">
-        <div class="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
-          <div class="min-w-0">
-            <h4 class="font-semibold text-ink">{{ flabel }}</h4>
-            <p class="mt-0.5 break-all font-mono text-xs text-muted">{{ f.url | cmShortUrl }}</p>
+  <details class="card group/feeds mt-8" aria-labelledby="feeds-title">
+    <summary class="flex min-h-14 cursor-pointer list-none flex-wrap items-center gap-x-3 gap-y-1 px-5 py-3 sm:px-6 [&::-webkit-details-marker]:hidden">
+      <span class="grid size-9 shrink-0 place-items-center rounded-lg bg-surface-2 text-muted">{% icon "calendar-sync", "size-4" %}</span>
+      <span id="feeds-title" class="font-semibold text-ink">{{ "community.status.feeds_title" | t(lang) }}</span>
+      <span class="badge-muted">{{ "community.status.optional" | t(lang) }}</span>
+      {% if feedsDown %}<span class="text-sm text-muted">{{ ("community.status.pill_feeds_one" if feedsDown == 1 else "community.status.pill_feeds") | t(lang, { n: feedsDown }) }}</span>{% endif %}
+      {% icon "chevron-down", "size-5 ml-auto shrink-0 text-muted transition group-open/feeds:rotate-180" %}
+    </summary>
+    <div class="border-t border-line px-5 py-5 sm:px-6">
+      <p class="max-w-2xl text-sm leading-relaxed text-muted">{{ "community.status.feeds_sub" | t(lang) }}</p>
+      <ul class="mt-4 grid gap-4" role="list">
+        {% for f in sv.feeds %}
+        {%- set flabel = (f.label_es if lang == "es" and f.label_es else f.label) or f.host -%}
+        <li class="panel-muted">
+          <div class="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
+            <div class="min-w-0">
+              <h3 class="font-semibold text-ink">{{ flabel }}</h3>
+              <p class="mt-0.5 break-all font-mono text-xs text-muted">{{ f.url | cmShortUrl }}</p>
+            </div>
+            {% if f.state == "ok" %}<span class="badge-vine">{% icon "circle-check", "size-3.5" %} {{ "community.status.feed_state.ok" | t(lang) }}</span>
+            {% elif f.state == "blocked" %}<span class="badge-lv">{% icon "circle-slash", "size-3.5" %} {{ "community.status.feed_state.blocked" | t(lang) }}</span>
+            {% elif f.state == "error" %}<span class="badge-muted">{% icon "circle-x", "size-3.5" %} {{ "community.status.feed_state.error" | t(lang) }}</span>
+            {% else %}<span class="badge-muted">{% icon "circle-dashed", "size-3.5" %} {{ "community.status.feed_state.never" | t(lang) }}</span>{% endif %}
           </div>
-          {% if f.state == "ok" %}<span class="badge-vine">{% icon "circle-check", "size-3.5" %} {{ "community.status.feed_state.ok" | t(lang) }}</span>
-          {% elif f.state == "blocked" %}<span class="badge-lv">{% icon "shield-alert", "size-3.5" %} {{ "community.status.feed_state.blocked" | t(lang) }}</span>
-          {% elif f.state == "error" %}<span class="badge-muted">{% icon "circle-x", "size-3.5" %} {{ "community.status.feed_state.error" | t(lang) }}</span>
-          {% else %}<span class="badge-muted">{% icon "circle-dashed", "size-3.5" %} {{ "community.status.feed_state.never" | t(lang) }}</span>{% endif %}
-        </div>
-        <p class="mt-3 flex max-w-3xl gap-2 text-sm leading-relaxed text-ink">{% icon "info", "size-4 mt-0.5 shrink-0 text-muted" %}<span>
-          {%- if f.state == "ok" %}{{ ("community.status.feed_ok_one" if f.events == 1 else "community.status.feed_ok") | t(lang, { n: f.events | cmNum(lang) }) }}{% if f.dups %} {{ "community.status.feed_dups" | t(lang, { n: f.dups | cmNum(lang) }) }}{% endif %}
-          {%- elif f.state == "blocked" %}{{ "community.status.feed_blocked" | t(lang, { host: f.host }) }} <a class="link" href="{{ eventsHowtoUrl }}" target="_blank" rel="noopener">{{ "community.status.feed_howto" | t(lang) }}</a>
-          {%- elif f.state == "error" %}{{ "community.status.feed_error" | t(lang) }}
-          {%- else %}{{ "community.status.feed_never" | t(lang) }}{% endif -%}
-          {%- if f.state != "ok" and f.last_success %} {{ "community.status.feed_copy" | t(lang, { date: f.last_success | fmtDate(lang, "medium"), n: f.events | cmNum(lang) }) }}{% endif -%}
-        </span></p>
-        {% if f.state == "blocked" %}<p class="mt-2 max-w-3xl pl-6 text-sm leading-relaxed text-muted">{{ "community.status.feed_fix" | t(lang) }}</p>{% endif %}
-        <dl class="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 border-t border-line pt-4 text-xs sm:grid-cols-4">
-          <div><dt class="text-muted">{{ "community.status.feed_checked" | t(lang) }}</dt><dd class="mt-0.5 font-medium text-ink">{% if f.last_attempt %}<time datetime="{{ f.last_attempt | isoDate }}" data-local-time>{{ f.last_attempt | fmtDate(lang, "datetime") }}</time>{% else %}—{% endif %}</dd></div>
-          <div><dt class="text-muted">{{ "community.status.feed_worked" | t(lang) }}</dt><dd class="mt-0.5 font-medium text-ink">{% if f.last_success %}<time datetime="{{ f.last_success | isoDate }}" data-local-time>{{ f.last_success | fmtDate(lang, "datetime") }}</time>{% else %}{{ "community.status.feed_worked_never" | t(lang) }}{% endif %}</dd></div>
-          <div><dt class="text-muted">{{ "community.status.feed_events" | t(lang) }}</dt><dd class="mt-0.5 font-medium tabular-nums text-ink">{{ f.events | cmNum(lang) }}</dd></div>
-          <div><dt class="text-muted">{{ "community.status.feed_http" | t(lang) }}</dt><dd class="mt-0.5 font-medium tabular-nums text-ink">{{ f.http or "—" }}</dd></div>
-        </dl>
-        {% if f.error %}
-        <details class="cm-preview mt-3 rounded-lg border border-line bg-surface">
-          <summary class="flex min-h-10 cursor-pointer items-center gap-2 px-3 text-xs font-semibold text-muted">{{ "community.status.tech_details" | t(lang) }}</summary>
-          <pre class="overflow-x-auto whitespace-pre-wrap border-t border-line p-3 font-mono text-xs text-ink">{{ f.error }}</pre>
-        </details>
-        {% endif %}
-      </li>
-      {% endfor %}
-    </ul>
-  </section>
+          <p class="mt-3 flex max-w-3xl gap-2 text-sm leading-relaxed text-ink">{% icon "info", "size-4 mt-0.5 shrink-0 text-muted" %}<span>
+            {%- if f.state == "ok" %}{{ ("community.status.feed_ok_one" if f.events == 1 else "community.status.feed_ok") | t(lang, { n: f.events | cmNum(lang) }) }}{% if f.dups %} {{ "community.status.feed_dups" | t(lang, { n: f.dups | cmNum(lang) }) }}{% endif %}
+            {%- elif f.state == "blocked" %}{{ "community.status.feed_blocked" | t(lang, { host: f.host }) }} <a class="link" href="{{ eventsHowtoUrl }}" target="_blank" rel="noopener">{{ "community.status.feed_howto" | t(lang) }}</a>
+            {%- elif f.state == "error" %}{{ "community.status.feed_error" | t(lang) }}
+            {%- else %}{{ "community.status.feed_never" | t(lang) }}{% endif -%}
+            {%- if f.state != "ok" and f.last_success %} {{ "community.status.feed_copy" | t(lang, { date: f.last_success | fmtDate(lang, "medium"), n: f.events | cmNum(lang) }) }}{% endif -%}
+          </span></p>
+          <dl class="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 border-t border-line pt-4 text-xs sm:grid-cols-4">
+            <div><dt class="text-muted">{{ "community.status.feed_checked" | t(lang) }}</dt><dd class="mt-0.5 font-medium text-ink">{% if f.last_attempt %}<time datetime="{{ f.last_attempt | isoDate }}" data-local-time>{{ f.last_attempt | fmtDate(lang, "datetime") }}</time>{% else %}—{% endif %}</dd></div>
+            <div><dt class="text-muted">{{ "community.status.feed_worked" | t(lang) }}</dt><dd class="mt-0.5 font-medium text-ink">{% if f.last_success %}<time datetime="{{ f.last_success | isoDate }}" data-local-time>{{ f.last_success | fmtDate(lang, "datetime") }}</time>{% else %}{{ "community.status.feed_worked_never" | t(lang) }}{% endif %}</dd></div>
+            <div><dt class="text-muted">{{ "community.status.feed_events" | t(lang) }}</dt><dd class="mt-0.5 font-medium tabular-nums text-ink">{{ f.events | cmNum(lang) }}</dd></div>
+            <div><dt class="text-muted">{{ "community.status.feed_http" | t(lang) }}</dt><dd class="mt-0.5 font-medium tabular-nums text-ink">{{ f.http or "—" }}</dd></div>
+          </dl>
+          {% if f.error or f.state == "blocked" %}
+          <details class="cm-preview mt-3 rounded-lg border border-line bg-surface" data-tech>
+            <summary class="flex min-h-11 cursor-pointer items-center gap-2 px-3 text-xs font-semibold text-muted">{{ "community.status.tech_details" | t(lang) }}</summary>
+            <div class="border-t border-line p-3 text-xs leading-relaxed text-ink">
+              {% if f.state == "blocked" %}<p class="max-w-3xl">{{ "community.status.feed_fix" | t(lang) }}</p>{% endif %}
+              {% if f.error %}<pre class="mt-2 overflow-x-auto whitespace-pre-wrap font-mono">{{ f.error }}</pre>{% endif %}
+            </div>
+          </details>
+          {% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </details>
   {% endif %}
   </div>
 
   {#- ============ Document library + translations ============ -#}
   <div class="cm-st-side grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]" role="group" aria-label="{{ 'community.status.crawl_title' | t(lang) }}">
-    <article class="card card-pad sm:p-8">
-      <h2 class="h-card flex items-center gap-2 text-xl">{% icon "scan-search", "size-5 text-gv" %} {{ "community.status.crawl_title" | t(lang) }}</h2>
+    <article class="card card-pad flex flex-col">
+      <h2 class="card-h"><span>{% icon "scan-search", "size-5" %}</span>{{ "community.status.crawl_title" | t(lang) }}</h2>
       <p class="measure mt-2 text-sm leading-relaxed text-muted">{{ "community.status.crawl_sub" | t(lang) }}</p>
       {% if sv.crawl.hasData %}
-      {#- Document facts only (the wording rule: no talk of how the sites are read). The Library's own
-          count is on its row above; here: how many have a preview, and when the library last changed. -#}
-      <p class="mt-6 text-4xl font-semibold tabular-nums text-ink">{{ sv.crawl.thumbs | cmNum(lang) }}</p>
-      <p class="text-sm text-muted">{{ "community.status.crawl_thumbs" | t(lang, { total: sv.crawl.pdfs | cmNum(lang) }) }}</p>
-      {% if sv.crawl.updated %}<p class="mt-4 flex items-center gap-2 border-t border-line pt-4 text-xs leading-relaxed text-muted">{% icon "clock", "size-4 shrink-0" %} <span>{{ "community.status.crawl_last" | t(lang) }}: <time datetime="{{ sv.crawl.updated | isoDate }}" data-local-time>{{ sv.crawl.updated | fmtDate(lang, "datetime") }}</time></span></p>{% endif %}
+      {#- Document facts only: how many, and how many have a first-page preview -#}
+      <p class="mt-6 text-4xl font-semibold tabular-nums text-ink">{{ sv.crawl.pdfs | cmNum(lang) }}</p>
+      <p class="text-sm text-muted">{{ "community.status.crawl_docs" | t(lang) }} · {{ ("community.status.crawl_prev_all" if sv.crawl.thumbs >= sv.crawl.pdfs else "community.status.crawl_prev") | t(lang, { n: sv.crawl.thumbs | cmNum(lang) }) }}</p>
+      {% if sv.crawl.updated %}<p class="mt-auto flex items-center gap-2 border-t border-line pt-4 text-xs leading-relaxed text-muted">{% icon "clock", "size-4 shrink-0" %} <span>{{ "community.status.crawl_last" | t(lang) }}: <time datetime="{{ sv.crawl.updated | isoDate }}" data-local-time>{{ sv.crawl.updated | fmtDate(lang, "datetime") }}</time></span></p>{% endif %}
       {% else %}
-      <p class="mt-6 rounded-xl border border-dashed border-line p-4 text-sm text-muted">{{ "community.status.crawl_empty" | t(lang) }}</p>
+      <p class="mt-6 rounded-xl bg-surface-2 p-4 text-sm text-muted">{{ "community.status.crawl_empty" | t(lang) }}</p>
       {% endif %}
     </article>
-    <article class="card card-pad sm:p-8">
-      <h2 class="h-card flex items-center gap-2 text-xl">{% icon "languages", "size-5 text-grape" %} {{ "community.status.tr_title" | t(lang) }}</h2>
+    <article class="card card-pad">
+      <h2 class="card-h"><span class="text-grape!">{% icon "languages", "size-5" %}</span>{{ "community.status.tr_title" | t(lang) }}</h2>
       <p class="mt-4 text-4xl font-semibold tabular-nums text-ink">{{ sv.translations.cached | cmNum(lang) }}</p>
       <p class="text-sm text-muted">{{ "community.status.tr_count" | t(lang) }}</p>
       <p class="mt-4 text-sm leading-relaxed text-muted">{{ "community.status.tr_text" | t(lang) }}</p>
@@ -219,26 +249,22 @@ pageScripts: ["/assets/js/community.js"]
   </div>
 </section>
 
-{#- ============ Daily routine ============ -#}
-<section class="section container-page" aria-labelledby="sched-title">
-  <h2 id="sched-title" class="h-section flex items-center gap-2.5"><span class="text-gv">{% icon "calendar-clock", "size-6" %}</span>{{ "community.status.sched_title" | t(lang) }}</h2>
-  <ol class="cm-steps mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4" role="list">
-    {% for st in [{ k: "1", icon: "sunrise" }, { k: "2", icon: "cloud-download" }, { k: "3", icon: "languages" }, { k: "4", icon: "rocket" }] %}
-    <li class="card card-pad relative">
-      <span class="flex items-center gap-3">
-        <span class="grid size-10 place-items-center rounded-full bg-gv text-white dark:text-paper">{% icon st.icon, "size-5" %}</span>
-        <span class="text-xs font-bold uppercase tracking-wider text-muted">{{ loop.index }} / 4</span>
-      </span>
-      <h3 class="h-card mt-3">{{ ("community.status.sched_" + st.k + "_t") | t(lang) }}</h3>
-      <p class="mt-1 text-sm leading-relaxed text-muted">{{ ("community.status.sched_" + st.k + "_d") | t(lang) }}</p>
+{#- ============ How an update works + behind the scenes ============ -#}
+<section class="section container-page pt-0 pb-0" aria-labelledby="sched-title">
+  {{ ui.sectionHead("community.status.sched_title" | t(lang), "community.status.sched_sub" | t(lang), "", "", "calendar-clock", { eyebrow: "community.status.sched_eyebrow" | t(lang), id: "sched-title", lang: lang }) }}
+  <ol class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" role="list">
+    {% for k in ["1", "2", "3", "4"] %}
+    <li class="card card-pad">
+      <h3 class="h-card flex items-center gap-2.5"><span class="step-num" aria-hidden="true">{{ k }}</span>{{ ("community.status.sched_" + k + "_t") | t(lang) }}</h3>
+      <p class="mt-2 text-sm leading-relaxed text-muted">{{ ("community.status.sched_" + k + "_d") | t(lang) }}</p>
     </li>
     {% endfor %}
   </ol>
-  <div class="mt-8 flex flex-col gap-4 rounded-2xl border border-line bg-surface p-6 sm:flex-row sm:items-center sm:justify-between">
+  <div class="panel-muted mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
     <div>
       <h3 class="h-card">{{ "community.status.actions_title" | t(lang) }}</h3>
       <p class="mt-1 max-w-2xl text-sm leading-relaxed text-muted">{{ "community.status.actions_text" | t(lang) }}</p>
     </div>
-    <a class="btn-primary shrink-0" href="{{ actionsUrl }}" target="_blank" rel="noopener">{% icon "git-branch", "size-4" %} {{ "community.status.actions_btn" | t(lang) }}</a>
+    <a class="btn-secondary shrink-0" href="{{ actionsUrl }}" target="_blank" rel="noopener">{% icon "git-branch", "size-4" %} {{ "community.status.actions_btn" | t(lang) }}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a>
   </div>
 </section>

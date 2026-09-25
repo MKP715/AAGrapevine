@@ -196,7 +196,7 @@
           var id = "";
           try { id = location.hash ? decodeURIComponent(location.hash.slice(1)) : ""; } catch (e) {}
           var el = id && document.getElementById(id);
-          if (el && el.getAttribute("data-committee") === "1") {
+          if (el && (el.getAttribute("data-committee") === "1" || el.hasAttribute("data-later"))) {
             this.showAll = true;
             this.$nextTick(function () { el.scrollIntoView({ block: "start" }); });
           } else if (el && el.closest && el.closest("details[data-cm-past]")) {
@@ -208,6 +208,8 @@
         set: function (f) { this.filter = f; },
         show: function (el) {
           if (el.hasAttribute("data-cm-expired")) return false;
+          // a later date of a monthly series (its first date lists it): only with "Show every monthly date"
+          if (el.hasAttribute("data-later") && !this.showAll) return false;
           var c = el.getAttribute("data-committee") === "1";
           if (this.filter === "all") return !c || this.showAll;
           return el.getAttribute("data-group") === this.filter;
@@ -322,16 +324,48 @@
             if (ok) { shown += n; groups++; }
             card._gvN = ok ? n : 0;
           });
-          // regions (and our Area): hide when empty, say what is left, span as many columns as cards
+          // regions (and our Area): hide when empty, say what is left
           root.querySelectorAll("[data-gvm-group]").forEach(function (g) {
             var cards = g.querySelectorAll("li[data-gvg]:not([hidden])"), m = 0;
             for (var j = 0; j < cards.length; j++) m += cards[j]._gvN;
             g.hidden = !cards.length;
             var c = g.querySelector("[data-gvm-count]");
             if (c) c.textContent = plural(root, "data-groups", cards.length) + " · " + plural(root, "data-meetings", m);
-            if (g.classList.contains("cm-gvg-region")) {
-              for (var k = 1; k <= 4; k++) g.classList.toggle("cm-n" + k, k === Math.min(Math.max(cards.length, 1), 4));
-            }
+          });
+          // the regions left share the rows again (the same rules as packRegions in eleventy/filters/committee.js)
+          root.querySelectorAll("[data-gvm-regions]").forEach(function (grid) {
+            var regions = [];
+            Array.prototype.forEach.call(grid.children, function (r) {
+              if (!r.hidden) regions.push({ el: r, cards: r.querySelectorAll("li[data-gvg]:not([hidden])") });
+            });
+            // the grid rows a region takes: its head + 4 per row of cards
+            regions.forEach(function (x) {
+              var n = x.cards.length;
+              for (var C = 1; C <= 4; C++) x.el.style.setProperty("--h" + C, 1 + 4 * (n >= C ? Math.ceil(n / C) : 1));
+            });
+            [2, 3, 4].forEach(function (C) {
+              var row = [], k = 0;
+              function close() {
+                row.forEach(function (x) {
+                  var w = 12 / k;
+                  x.el.style.setProperty("--r" + C, x.cards.length * w);
+                  Array.prototype.forEach.call(x.cards, function (li) { li.style.setProperty("--c" + C, w); });
+                });
+                row = []; k = 0;
+              }
+              regions.forEach(function (x) {
+                var n = x.cards.length, t = n % C;
+                if (n >= C) {
+                  close();
+                  x.el.style.setProperty("--r" + C, 12);
+                  Array.prototype.forEach.call(x.cards, function (li, j) { li.style.setProperty("--c" + C, t && j >= n - t ? 12 / t : 12 / C); });
+                } else {
+                  if (k + n > C) close();
+                  row.push(x); k += n;
+                }
+              });
+              close();
+            });
           });
           var nb = root.querySelector("[data-gvm-nearby]");
           if (nb) nb.hidden = !nb.querySelector("li[data-gvg]:not([hidden])");
@@ -648,19 +682,46 @@
      scrolls sideways and the current tab can start off-screen. Center it inside the
      bar. Only the bar's own scrollLeft changes (scrollIntoView would also move the page). */
   function centerSubnav() {
-    var nav = document.querySelector(".cm-subnav");
+    var nav = document.querySelector(".cm-subnav-scroll");
     var cur = nav && nav.querySelector(".is-current");
-    if (!cur || nav.scrollWidth <= nav.clientWidth + 1) return;
-    var n = nav.getBoundingClientRect(), c = cur.getBoundingClientRect();
-    var x = nav.scrollLeft + (c.left - n.left - nav.clientLeft) - (nav.clientWidth - c.width) / 2;
-    nav.scrollLeft = Math.max(0, Math.min(x, nav.scrollWidth - nav.clientWidth));
+    if (cur && nav.scrollWidth > nav.clientWidth + 1) {
+      var n = nav.getBoundingClientRect(), c = cur.getBoundingClientRect();
+      var x = nav.scrollLeft + (c.left - n.left - nav.clientLeft) - (nav.clientWidth - c.width) / 2;
+      nav.scrollLeft = Math.max(0, Math.min(x, nav.scrollWidth - nav.clientWidth));
+    }
+    if (nav) subnavEdges(nav);
   }
+  /* The bar fades out on the side(s) that still have tabs to scroll to (committee.css .cm-subnav-scroll) */
+  function subnavEdges(nav) {
+    function mark() {
+      var over = nav.scrollWidth > nav.clientWidth + 1;
+      nav.classList.toggle("is-overflow", over);
+      nav.classList.toggle("at-start", nav.scrollLeft <= 1);
+      nav.classList.toggle("at-end", nav.scrollLeft + nav.clientWidth >= nav.scrollWidth - 1);
+    }
+    mark();
+    nav.addEventListener("scroll", mark, { passive: true });
+    window.addEventListener("resize", mark);
+  }
+
+  /* ---------------- a link to a collapsed disclosure (#how-docs, #share-photos, #how-to-post …) ----------------
+     opens it (and the <details> it is in), then brings it into view */
+  function openTarget() {
+    var id = "";
+    try { id = location.hash ? decodeURIComponent(location.hash.slice(1)) : ""; } catch (e) {}
+    var el = id && document.getElementById(id);
+    var d = el && el.closest && el.closest("details");
+    if (!d || d.open) return;
+    for (var x = d; x; x = x.parentElement && x.parentElement.closest("details")) x.open = true;
+    el.scrollIntoView({ block: "start" });
+  }
+  window.addEventListener("hashchange", openTarget);
 
   /* ---------------- boot ---------------- */
   // Deferred script: the DOM is parsed already; Alpine starts right after us.
   expire();
   weekly();
   setInterval(function () { expire(); weekly(); }, 60000);
-  function ready() { centerSubnav(); bindIcsButtons(); wireDialog(); initLightbox(); }
+  function ready() { centerSubnav(); bindIcsButtons(); wireDialog(); initLightbox(); openTarget(); }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", ready); else ready();
 })();

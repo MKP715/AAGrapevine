@@ -14,10 +14,12 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
     Server-renders the newest 24 episodes (no-JS / SEO); media.js loads the rest
     from /episodes-index.json for "Load more", search and filters, and drives one
     shared <audio> element (featured player, show cards, rows + sticky mini-player).
-    Top block (.listen-side): the latest-episode player and, right under it, an official AA
-    Grapevine YouTube Short (config/site.yml site.listen.sidebar_short) in a privacy-friendly
-    vertical lite-youtube — written once; from 1440px it is the right-hand column. -#}
+    Blocks, in DOM (= phone, = Tab) order: the latest-episode player (.listen-feature), an official
+    AA Grapevine YouTube Short (config/site.yml site.listen.sidebar_short) in a privacy-friendly
+    vertical lite-youtube (.listen-short), the shows, all episodes. From 1440px the player alone is
+    the sticky right-hand column and the Short is a band at the top of the left column. -#}
 {% import "macros/ui.njk" as ui with context %}
+{% import "macros/media.njk" as media with context %}
 {% mediaSprite %}
 {%- set cfgShows = site.sources.podcasts or [] -%}
 {%- set eps = db.episodes | mediaItems("episodes") -%}
@@ -93,7 +95,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
     <h3 class="mt-1 font-display text-[1.05rem] font-semibold leading-snug text-ink sm:text-lg"{% if not srv %} x-text="ep.t"{% endif %}>{% if srv %}{{ title }}{% endif %}</h3>
     <p class="measure mt-1 text-sm leading-relaxed text-muted" :class="!open && 'line-clamp-2'"{% if not srv %} x-text="ep.s"{% endif %}>{% if srv %}{{ summary }}{% endif %}</p>
     <div class="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1">
-      <button type="button" class="-my-1.5 inline-flex min-h-11 items-center gap-1 text-xs font-semibold text-gv hover:underline" x-show="long(ep)" x-cloak @click="open = !open" :aria-expanded="open"><span x-text="open ? T.show_less : T.show_more"></span>{% micon "chevron-down", "size-3.5" %}</button>
+      <button type="button" class="-my-1.5 hidden min-h-11 items-center gap-1 text-xs font-semibold text-gv hover:underline sm:inline-flex" x-show="long(ep)" x-cloak @click="open = !open" :aria-expanded="open"><span x-text="open ? T.show_less : T.show_more"></span>{% micon "chevron-down", "size-3.5" %}</button>
       {%- if srv %}{% if e | machineFor(lang) %}<span class="auto-note" title="{{ 'common.auto_translated_help' | t(lang) }}">{% micon "languages", "size-3" %} {{ "common.auto_translated" | t(lang) }}</span>{% endif %}
       {%- else %}<span class="auto-note" x-show="ep.m" title="{{ 'common.auto_translated_help' | t(lang) }}">{% micon "languages", "size-3" %} {{ "common.auto_translated" | t(lang) }}</span>{% endif %}
     </div>
@@ -125,7 +127,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
     {#- phones: one button row (the shows are the next block after the player anyway) -#}
     {% if shows.length %}<a class="btn-on-dark max-sm:hidden" href="#shows">{% icon "podcast", "size-4" %} {{ "media.meet_shows" | t(lang) }}</a>{% endif %}
   </div>
-  <div class="max-md:hidden">{{ ui.heroStats(heroNums) }}</div>
+  {{ ui.heroStats(heroNums) }}
   {% endif %}
 {% endcall %}
 
@@ -135,16 +137,13 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
 
 <div x-data="podcastPage" data-index="{{ '/episodes-index.json' | lurl(lang) }}" data-total="{{ eps.length }}" data-mixed="{{ 'true' if mixedLangs else 'false' }}">
 
-  {#- Layout (areas/media.css .listen-layout): below 1440px the three blocks stack —
-      .listen-side (the latest-episode player, tucked into the hero's fade, with the Short right
-      under it), the shows, all episodes. From 1440px: shows + episodes on the left, .listen-side
-      a fixed-width column on the right that stays in view as ONE stack while you browse the list
-      (media.js adds .is-sticky only while the whole stack fits the window, so the Short is never
-      covered or cut off; in a shorter window the column scrolls with the page). -#}
+  {#- Layout (areas/media.css .listen-layout): below 1440px the four blocks stack — the
+      latest-episode player (tucked into the hero's fade), the Short (a slim band), the shows, all
+      episodes. From 1440px: the Short, the shows and the episodes on the left; the player ALONE is
+      the fixed-width right-hand column, sticky (CSS only: windows at least 36rem tall) all the way
+      down the episode list. Nothing sits under it, so nothing can slide under it. -#}
   <div class="container-page listen-layout">
   {%- set shortId = site.listen.sidebar_short if site.listen else "" %}
-
-  <div class="listen-side page-overlap">
 
   {#- ------------------------------------------------------------ featured player -#}
   {%- set f = featured -%}
@@ -152,19 +151,18 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
   {%- set fSE = f | mediaSE(lang) -%}
   {%- set fArt = (f.extra.thumb or f.image) | mediaSafeUrl("") -%}
   {%- set fShow = f | mediaShowOf(shows) -%}
-  <section class="listen-feature" aria-labelledby="featured-ep-title">
+  <section class="listen-feature page-overlap" aria-labelledby="featured-ep-title">
     <div class="card media-feature overflow-hidden" x-data="{ ep: epAt(0) }">
       <div class="grid grid-cols-1 md:grid-cols-[minmax(0,15rem)_minmax(0,1fr)] lg:grid-cols-[minmax(0,19rem)_minmax(0,1fr)] min-[90rem]:grid-cols-1">
         <div class="media-feature-art hidden md:flex min-[90rem]:hidden">
           {% if fArt %}<img src="{{ fArt }}" alt="" width="304" height="304" decoding="async" referrerpolicy="no-referrer">{% else %}<span class="ep-art-ph size-full">{% icon "headphones", "size-16" %}</span>{% endif %}
         </div>
-        {#- From 1440px (the right-hand column) the card is compact, so the player and the Short fit
-            the window together: no artwork (the Short under it brings the picture), the short date,
-            a two-line summary (the full one is in the first row of the episode list), a slimmer
-            player and the keyboard hint alone. -#}
+        {#- From 1440px (the sticky right-hand column) the card is compact, so it always fits the
+            window: the small artwork beside the title, the short date, a two-line summary (the full
+            one is in the first row of the episode list), a slimmer player and the keyboard hint alone. -#}
         <div class="flex min-w-0 flex-col gap-3 p-4 min-[400px]:p-5 sm:p-7 min-[90rem]:p-5">
           <div class="flex items-start gap-4">
-            {% if fArt %}<img src="{{ fArt }}" alt="" width="88" height="88" class="size-[5.5rem] shrink-0 rounded-xl object-cover shadow-md ring-1 ring-black/5 md:hidden" decoding="async" referrerpolicy="no-referrer">{% endif %}
+            {% if fArt %}<img src="{{ fArt }}" alt="" width="88" height="88" class="size-[5.5rem] shrink-0 rounded-xl object-cover shadow-md ring-1 ring-black/5 md:hidden min-[90rem]:block" decoding="async" referrerpolicy="no-referrer">{% endif %}
             <div class="min-w-0">
               <p class="flex flex-wrap items-center gap-2">
                 <span class="eyebrow text-gv">{{ "media.latest_episode" | t(lang) }}</span>
@@ -233,8 +231,8 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
   </section>
 
   {#- ------------------------------------------------------------ the Short
-      One element: right under the player at every width (a band below 1440px, the lower half of
-      the right-hand column from 1440px). A 9:16 video beside its caption and the two app links. -#}
+      One element: a band right under the player below 1440px; from 1440px the band at the top of
+      the left column, level with the player. A 9:16 video beside its caption and the two app links. -#}
   {% if shortId %}
   {%- set shortTitle = site.listen.sidebar_short_title or "AA Grapevine" -%}
   {%- set shortUrl = "https://www.youtube.com/shorts/" + shortId -%}
@@ -260,14 +258,10 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
     </p>
   </aside>
   {% endif %}
-  </div>
 
   {#- ------------------------------------------------------------ the shows -#}
-  <section id="shows" class="listen-shows scroll-mt-20" aria-labelledby="shows-title">
-    <div class="mb-6">
-      <h2 id="shows-title" class="h-section flex items-center gap-2.5"><span class="text-gv">{% icon "podcast", "size-6" %}</span>{{ "media.shows_title" | t(lang) }}</h2>
-      <p class="mt-1.5 max-w-3xl text-muted">{{ "media.shows_sub" | t(lang) }}</p>
-    </div>
+  <section id="shows" class="listen-shows" aria-labelledby="shows-title">
+    {{ ui.sectionHead("media.shows_title" | t(lang), "media.shows_sub" | t(lang), "", "", "podcast", { eyebrow: "media.shows_eyebrow" | t(lang), tone: "text-grape", id: "shows-title", lang: lang }) }}
     <div class="grid grid-cols-1 gap-5 {{ 'lg:grid-cols-2' if multi }}">
       {% for s in shows %}
       {%- set latestPage = s.latest | mediaEpisodePage -%}
@@ -293,7 +287,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
         </div>
         {% if s.desc %}
         <div class="px-5 sm:px-6">
-          <p class="text-sm leading-relaxed text-muted">{{ s.desc }}</p>
+          <p class="text-sm leading-relaxed text-muted max-sm:line-clamp-3">{{ s.desc }}</p>
           {% if s.descMachine %}<span class="auto-note mt-1" title="{{ 'common.auto_translated_help' | t(lang) }}">{% icon "languages", "size-3" %} {{ "common.auto_translated" | t(lang) }}</span>{% endif %}
         </div>
         {% endif %}
@@ -309,7 +303,8 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
         <div class="mt-auto px-5 pt-5 pb-5 sm:px-6">
           <div class="border-t border-line pt-4">
             <p class="text-xs font-semibold tracking-wider text-faint uppercase">{{ "media.follow_in" | t(lang) }}</p>
-            <ul class="mt-2.5 flex flex-wrap gap-2">
+            {#- phones: one line that scrolls sideways; wraps from 1024px -#}
+            <ul class="chip-row mt-2.5" role="list">
               {% if s.apple %}<li><a class="media-plat" href="{{ s.apple }}" target="_blank" rel="noopener"><span class="media-plat-icon text-grape">{% icon "podcast", "size-4" %}</span>{{ "media.apple" | t(lang) }}</a></li>{% endif %}
               {% if s.spotify %}<li><a class="media-plat" href="{{ s.spotify }}" target="_blank" rel="noopener"><span class="media-plat-icon text-vine">{% icon "spotify", "size-4" %}</span>{{ "media.spotify" | t(lang) }}</a></li>{% endif %}
               {% if s.amazon %}<li><a class="media-plat" href="{{ s.amazon }}" target="_blank" rel="noopener"><span class="media-plat-icon text-gv">{% icon "music", "size-4" %}</span>{{ "media.amazon" | t(lang) }}</a></li>{% endif %}
@@ -324,14 +319,9 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
   </section>
 
   {#- ------------------------------------------------------------ episode list -#}
-  <section id="episodes" class="listen-episodes scroll-mt-20" aria-labelledby="episodes-title">
-    <div class="mb-6 flex flex-wrap items-end justify-between gap-3">
-      <div>
-        <h2 id="episodes-title" class="h-section flex items-center gap-2.5"><span class="text-gv">{% icon "list-music", "size-6" %}</span>{{ "media.all_episodes" | t(lang) }}</h2>
-        <p class="mt-1.5 max-w-2xl text-muted">{{ "media.episodes_sub" | t(lang) }}</p>
-        {% if lang == "es" and not langs.es %}<p class="mt-2 inline-flex items-center gap-1.5 text-sm text-muted">{% icon "languages", "size-4 text-lv" %}{{ "media.english_audio_note" | t(lang) }}</p>{% endif %}
-      </div>
-    </div>
+  <section id="episodes" class="listen-episodes" aria-labelledby="episodes-title">
+    {%- set epSub -%}{{ "media.episodes_sub" | t(lang) }}{% if lang == "es" and not langs.es %}<span class="mt-2 flex items-start gap-1.5 text-sm">{% icon "languages", "mt-0.5 size-4 shrink-0 text-lv" %}{{ "media.english_audio_note" | t(lang) }}</span>{% endif %}{%- endset %}
+    {{ ui.sectionHead("media.all_episodes" | t(lang), epSub, "", "", "list-music", { eyebrow: "media.episodes_eyebrow" | t(lang), tone: "text-grape", id: "episodes-title", lang: lang }) }}
 
     {#- Continue listening (from this device's history) -#}
     <div class="card mb-5 flex items-center gap-4 border-lv/40 bg-lv-soft/50 p-3 sm:p-4" x-show="resumeEp && !$store.audio.cur" x-cloak>
@@ -365,7 +355,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
       {% if multi %}
       <div class="flex min-w-0 items-center gap-2" role="group" aria-label="{{ 'media.filter_show' | t(lang) }}">
         <span class="hidden w-20 shrink-0 text-xs font-semibold tracking-wider text-faint uppercase md:inline">{{ "media.filter_show" | t(lang) }}</span>
-        <div class="media-chips no-scrollbar">
+        <div class="chip-row flex-1">
           <button type="button" class="chip" :aria-pressed="(show === '').toString()" aria-pressed="true" @click="setShow('')">{{ "media.all_shows" | t(lang) }}</button>
           {% for s in shows %}
           {%- set showIcon = "users" if s.weekly else "headphones" %}
@@ -377,7 +367,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
       {% for s in shows %}{% if s.seasons.length > 1 %}
       <div class="flex min-w-0 items-center gap-2" role="group" aria-label="{{ 'media.filter_season' | t(lang) }}{% if multi %} · {{ s.name }}{% endif %}"{% if multi %} x-show="show === '{{ s.key }}'" x-cloak{% endif %}>
         <span class="hidden w-20 shrink-0 text-xs font-semibold tracking-wider text-faint uppercase md:inline">{{ "media.filter_season" | t(lang) }}</span>
-        <div class="media-chips no-scrollbar">
+        <div class="chip-row flex-1">
           <button type="button" class="chip" :aria-pressed="(season === '').toString()" aria-pressed="true" @click="season = ''">{{ "media.all_seasons" | t(lang) }}</button>
           {% for se in s.seasons %}
           <button type="button" class="chip" :aria-pressed="(season === '{{ se.key }}').toString()" aria-pressed="false" @click="season = season === '{{ se.key }}' ? '' : '{{ se.key }}'">{{ "media.season_n" | t(lang, { n: se.key }) }} <span class="text-faint tabular-nums in-aria-pressed:text-current">{{ se.count }}</span></button>
@@ -388,7 +378,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
       {% if langs.en and langs.es %}
       <div class="flex min-w-0 items-center gap-2" role="group" aria-label="{{ 'media.filter_lang' | t(lang) }}">
         <span class="hidden w-20 shrink-0 text-xs font-semibold tracking-wider text-faint uppercase md:inline">{{ "media.filter_lang" | t(lang) }}</span>
-        <div class="media-chips no-scrollbar">
+        <div class="chip-row flex-1">
           <button type="button" class="chip" :aria-pressed="(elang === '').toString()" aria-pressed="true" @click="elang = ''">{{ "media.all_langs" | t(lang) }}</button>
           <button type="button" class="chip" :aria-pressed="(elang === 'en').toString()" aria-pressed="false" @click="elang = elang === 'en' ? '' : 'en'" lang="en">{{ "media.lang_en" | t(lang) }} <span class="text-faint tabular-nums in-aria-pressed:text-current">{{ langs.en }}</span></button>
           <button type="button" class="chip" :aria-pressed="(elang === 'es').toString()" aria-pressed="false" @click="elang = elang === 'es' ? '' : 'es'" lang="es">{{ "media.lang_es" | t(lang) }} <span class="text-faint tabular-nums in-aria-pressed:text-current">{{ langs.es }}</span></button>
@@ -470,22 +460,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
 
 {#- ------------------------------------------------------------ tell your group -#}
 {%- set announcement = "media.listen_announcement" | t(lang, { shows: shows | mediaListNames(lang), url: page.url | siteUrl(site) }) -%}
-<section class="section-tight container-page" aria-labelledby="listen-share-title">
-  <div class="card media-anywhere media-share p-6 sm:p-8">
-    <span class="grid size-14 place-items-center rounded-2xl bg-lv-soft text-lv">{% icon "megaphone", "size-7" %}</span>
-    <div>
-      <h2 id="listen-share-title" class="h-section">{{ "media.share_title" | t(lang) }}</h2>
-      <p class="measure mt-1 text-muted">{{ "media.share_listen_text" | t(lang) }}</p>
-    </div>
-    <div class="media-share-quote">
-      <blockquote class="rounded-2xl border border-line bg-surface p-4 font-display text-lg leading-snug text-ink [overflow-wrap:anywhere]">{{ announcement }}</blockquote>
-      <div class="mt-4 flex flex-wrap gap-2">
-        <button type="button" class="btn-primary btn-sm" data-copy="{{ announcement }}">{% icon "copy", "size-4" %} {{ "media.copy_announcement" | t(lang) }}</button>
-        <button type="button" class="btn-secondary btn-sm" data-share="{{ page.url | siteUrl(site) }}" data-share-title="{{ 'media.listen_eyebrow' | t(lang) }}" data-share-text="{{ 'media.listen_sub' | t(lang) }}">{% icon "share-2", "size-4" %} {{ "media.share_page" | t(lang) }}</button>
-      </div>
-    </div>
-  </div>
-</section>
+{{ media.shareBlock(lang, "listen-share-title", "media.share_listen_text" | t(lang), announcement, page.url | siteUrl(site), "media.listen_eyebrow" | t(lang), "media.listen_sub" | t(lang)) }}
 
 {% else %}
 {#- Nothing synced yet (first run / feed outage): still useful — the shows' own links. -#}

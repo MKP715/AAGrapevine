@@ -29,7 +29,7 @@
   },
   "nav.drawer_aria": { "en": "Site menu", "es": "Menú del sitio" },
   "nav.whats_new": {
-    "en": "What's New",
+    "en": "What's new",
     "es": "Novedades"
   },
   "nav.read": {
@@ -53,7 +53,7 @@
     "es": "Comité"
   },
   "nav.meeting": {
-    "en": "Committee Meeting",
+    "en": "Committee meeting",
     "es": "Reunión del comité"
   },
   "nav.meetings": {
@@ -73,7 +73,7 @@
     "es": "Talleres, mesas, asambleas y calendario"
   },
   "nav.documents": {
-    "en": "Committee Documents",
+    "en": "Committee documents",
     "es": "Documentos del comité"
   },
   "nav.documents_desc": {
@@ -97,7 +97,7 @@
     "es": "Noticias del comité"
   },
   "nav.gvr": {
-    "en": "GVR / RLV Corner",
+    "en": "GVR / RLV corner",
     "es": "Rincón del RLV / GVR"
   },
   "nav.gvr_desc": {
@@ -105,7 +105,7 @@
     "es": "Todo lo que necesita un representante de grupo"
   },
   "nav.contribute": {
-    "en": "Share Your Story",
+    "en": "Share your story",
     "es": "Comparte tu historia"
   },
   "nav.contribute_desc": {
@@ -121,7 +121,7 @@
     "es": "Libro del mes, suscripciones y precios, catálogos y formularios de pedido, de las tiendas oficiales"
   },
   "nav.get_involved": {
-    "en": "Get Involved",
+    "en": "Get involved",
     "es": "Participa"
   },
   "nav.monthly": {
@@ -145,11 +145,11 @@
     "es": "Acerca de"
   },
   "nav.digest": {
-    "en": "Weekly Digest",
+    "en": "Weekly digest",
     "es": "Resumen semanal"
   },
   "nav.share": {
-    "en": "Share Kit & QR",
+    "en": "Share kit & QR",
     "es": "Kit para compartir y QR"
   },
   "nav.search": {
@@ -157,7 +157,7 @@
     "es": "Buscar"
   },
   "nav.status": {
-    "en": "Update Status",
+    "en": "Update status",
     "es": "Estado de la actualización"
   },
   "nav.current_section": {
@@ -401,8 +401,8 @@
     "es": "Seg"
   },
   "common.updates_daily": {
-    "en": "Updates itself every day",
-    "es": "Se actualiza sola cada día"
+    "en": "Kept up to date",
+    "es": "Siempre al día"
   },
   "common.follow": {
     "en": "Follow",
@@ -411,6 +411,22 @@
   "common.external": {
     "en": "opens a new tab",
     "es": "abre una pestaña nueva"
+  },
+  "common.on_this_page": {
+    "en": "On this page",
+    "es": "En esta página"
+  },
+  "common.kept_updated": {
+    "en": "We keep it updated regularly",
+    "es": "Lo mantenemos al día con regularidad"
+  },
+  "common.for_members": {
+    "en": "For committee members",
+    "es": "Para los miembros del comité"
+  },
+  "common.next_steps": {
+    "en": "Next steps",
+    "es": "Siguientes pasos"
   },
   "kind.article": {
     "en": "Article",
@@ -480,16 +496,8 @@
     "en": "",
     "es": ""
   },
-  "nav.light_mode": {
-    "en": "Light mode",
-    "es": "Modo claro"
-  },
-  "nav.dark_mode": {
-    "en": "Dark mode",
-    "es": "Modo oscuro"
-  },
   "nav.published": {
-    "en": "Published Writers",
+    "en": "Published writers",
     "es": "Escritores publicados"
   },
   "nav.published_desc": {

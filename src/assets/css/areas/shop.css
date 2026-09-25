@@ -9,18 +9,6 @@
    keep it stronger than the display rules below. */
 [data-shop-live][hidden], [data-shop-ended][hidden] { display: none !important; }
 
-/* ---------- In-page navigation (chip row under the hero) ---------- */
-.shop-jump { display: flex; align-items: center; gap: 0.75rem 1rem; padding: 0.625rem 0.75rem; }
-.shop-jump-label {
-  display: none; align-items: center; gap: 0.5rem; flex-shrink: 0; padding-left: 0.25rem;
-  font-size: 0.72rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--c-muted);
-}
-@media (width >= 80rem) { .shop-jump-label { display: inline-flex; } }
-/* Phones: one row that scrolls sideways (padding keeps the focus ring inside the scroller) */
-.shop-jump-list { display: flex; gap: 0.5rem; min-width: 0; overflow-x: auto; margin: -0.25rem; padding: 0.25rem; }
-.shop-jump-list > li { flex-shrink: 0; }
-@media (width >= 40rem) { .shop-jump-list { flex-wrap: wrap; overflow: visible; } }
-
 /* ---------- Book of the Month panel ---------- */
 .shop-botm {
   border: 1px solid var(--c-line); border-radius: 1.75rem; padding: 1.25rem 1rem 1rem;
