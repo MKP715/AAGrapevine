@@ -7,10 +7,12 @@ titleKey: nav.contribute
 descKey: read.contrib.meta_desc
 pageScripts: ["/assets/js/read.js"]
 ---
-{#- SHARE YOUR STORY. Flow (docs: ui.njk): hero → page nav → why write (+ who from our Area got
-    published) → what you can send → how to submit → record your story by phone (db.audio_project)
-    → upcoming themes & deadlines (db.editorial, band) → tips + anonymity → writing workshop (the
-    feature band) → FAQ → closing call to action. -#}
+{#- SHARE YOUR STORY. Flow (docs: ui.njk): hero → page nav (in the order of the sections, #record
+    included) → why write (+ who from our Area got published) → what you can send → how to submit →
+    record your story by phone (db.audio_project) → upcoming themes & deadlines (db.editorial, band;
+    under the two cards, the committee's printable "Share your story" flyers from Drive) → tips +
+    anonymity → writing workshop (the feature band, with the next writing / recording workshops from
+    /events/: cmWorkshops) → FAQ → closing call to action. -#}
 {% import "macros/ui.njk" as ui with context %}
 {%- set L = site.links -%}
 {%- set gvEd = db.editorial.items | readEditorial("gv", lang) -%}
@@ -26,6 +28,10 @@ pageScripts: ["/assets/js/read.js"]
 {%- set pubOrder = ["lv", "gv"] if lang == "es" else ["gv", "lv"] -%}
 {#- The magazines' story lines, as their official pages give them today (scripts/sync/audio_project.py) -#}
 {%- set ap = db.audio_project or {} -%}
+{#- The next writing / recording workshops, from the same list /events/ shows (cmWorkshops) -#}
+{%- set workshops = db.events.items | cmWorkshops(site, lang, 3) -%}
+{#- Printable "Share your story" flyers from the committee's Drive (Portfolio › Flyers), at most 2 -#}
+{%- set storyFlyers = db.drive.items | driveMatch("share your story|comparte tu historia", "flyers", 2) -%}
 
 {#- Deadline attributes shared by every countdown element (live-updated by read.js) -#}
 {% macro dlAttrs(r, lang) -%}
@@ -116,13 +122,14 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
     {% if ed.evergreen.length %}
     {#- 8 topics on phones and tablets; 12 from 1024px, where the card sits beside Grapevine's
         deadlines (topics 9–12 are in both lists: shown in this one from 1024px, in "Show all"
-        below that) -#}
+        below that). When the card is stretched beside Grapevine's longer one, the rows of tiles share
+        the extra height (the list grows; a grid's rows stretch to fill it) instead of a blank band. -#}
     {%- set EV_SHOW = 8 -%}{%- set EV_WIDE = 12 -%}
-    <div class="{{ 'mt-1 border-t border-line pt-4' if ed.upcoming.length }}">
+    <div class="flex grow flex-col{{ ' mt-1 border-t border-line pt-4' if ed.upcoming.length }}">
       <p class="flex items-center gap-2 font-semibold text-ink"><span class="{{ 'text-lv' if isLv else 'text-gv' }}">{% icon "feather", "size-5" %}</span>{{ "read.contrib.evergreen_title" | t(lang) }}</p>
       <p class="mt-0.5 text-sm text-muted">{{ ("read.contrib.evergreen_sub_lv" if isLv else "read.contrib.evergreen_sub_gv") | t(lang) }}</p>
-      <ul class="mt-3 grid grid-cols-1 gap-2 @md:grid-cols-2 @4xl:grid-cols-3">
-        {% for r in ed.evergreen | limit(EV_WIDE) %}{{ topicChip(r, lang, isLv, "hidden lg:flex" if loop.index > EV_SHOW else "") }}{% endfor %}
+      <ul class="mt-3 grid grow grid-cols-1 gap-2 @md:grid-cols-2 @4xl:grid-cols-3">
+        {% for r in ed.evergreen | limit(EV_WIDE) %}{{ topicChip(r, lang, isLv, "hidden lg:grid" if loop.index > EV_SHOW else "") }}{% endfor %}
       </ul>
       {% if ed.evergreen.length > EV_SHOW %}
       <details class="read-more group/ev mt-2{{ ' lg:hidden' if ed.evergreen.length <= EV_WIDE }}">
@@ -132,7 +139,7 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
           {% icon "chevron-down", "size-4 transition group-open/ev:rotate-180" %}
         </summary>
         <ul class="mt-1 grid grid-cols-1 gap-2 @md:grid-cols-2 @4xl:grid-cols-3">
-          {% for r in ed.evergreen | offset(EV_SHOW) %}{{ topicChip(r, lang, isLv, "flex lg:hidden" if loop.index <= EV_WIDE - EV_SHOW else "") }}{% endfor %}
+          {% for r in ed.evergreen | offset(EV_SHOW) %}{{ topicChip(r, lang, isLv, "grid lg:hidden" if loop.index <= EV_WIDE - EV_SHOW else "") }}{% endfor %}
         </ul>
       </details>
       {% endif %}
@@ -166,9 +173,11 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
 </div>
 {% endmacro %}
 
-{#- One open-ended suggested topic -#}
+{#- One open-ended suggested topic. A grid (icon · words) whose one row sits in the middle of the
+    tile (content-center): tiles stretched to fill La Viña's card beside Grapevine's longer one —
+    or beside a two-line neighbour — keep their words centred, not stuck to the top. -#}
 {% macro topicChip(r, lang, isLv, show="") %}
-<li class="{{ show or 'flex' }} items-start gap-2.5 rounded-xl bg-surface-2 px-3 py-2.5">
+<li class="{{ show or 'grid' }} grid-cols-[auto_minmax(0,1fr)] content-center items-start gap-2.5 rounded-xl bg-surface-2 px-3 py-2.5">
   <span class="mt-0.5 shrink-0 {{ 'text-lv' if isLv else 'text-gv' }}">{% icon "pen-line", "size-4" %}</span>
   <span class="min-w-0">
     <span class="block text-sm font-semibold leading-snug text-ink" lang="{{ r.themeLang }}">{{ r.theme }}{% if r.machine %} <span class="auto-note align-middle" title="{{ 'common.auto_translated' | t(lang) }} — {{ 'common.auto_translated_help' | t(lang) }}">{% icon "languages", "size-3" %}<span class="sr-only">{{ "common.auto_translated" | t(lang) }}</span></span>{% endif %}</span>
@@ -254,53 +263,13 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
   </a>
   {% if isLv and d.long_distance %}<p class="mt-2 flex items-start gap-1.5 text-sm text-muted">{% icon "info", "mt-0.5 size-4 shrink-0" %}<span>{{ "community.rec.long_distance" | t(lang) }}</span></p>{% endif %}
 
-  {% if stepsOk %}
-  <h4 class="eyebrow mt-6">{{ "community.rec.steps" | t(lang) }}</h4>
-  <ol class="mt-3 space-y-3" role="list">
-    {% if isLv %}
-      {{ recStep(1, "community.rec.lv_s1" | t(lang)) }}
-      {{ recStep(2, "community.rec.lv_s2" | t(lang, {k: recKey(k.record)})) }}
-      {%- set example = '<q lang="es">' ~ ("community.rec.lv_example" | t(lang) | escape) ~ '</q>' %}
-      {% if d.permission_text %}
-      {{ recStep(3, ("community.rec.lv_s3" | t(lang, {example: example})) ~ '<blockquote class="mt-2 rounded-xl bg-surface-2 px-4 py-3 text-sm italic leading-relaxed text-ink" lang="es">“' ~ (d.permission_text | escape) ~ '”</blockquote>') }}
-      {% else %}
-      {{ recStep(3, "community.rec.lv_s3_short" | t(lang, {example: example})) }}
-      {% endif %}
-      {{ recStep(4, "community.rec.lv_s4" | t(lang)) }}
-    {% else %}
-      {{ recStep(1, "community.rec.gv_s1" | t(lang)) }}
-      {{ recStep(2, "community.rec.gv_s2" | t(lang, {k: recKey(k.record)})) }}
-      {{ recStep(3, "community.rec.gv_s3" | t(lang, {k1: recKey(k.finish), k2: recKey(k.save)})) }}
-      {{ recStep(4, "community.rec.gv_s4" | t(lang, {k: recKey(k.permission)})) }}
-    {% endif %}
-  </ol>
-  {% endif %}
-
-  {% if d.email %}
-  <div class="mt-5 rounded-xl bg-surface-2 p-4">
-    <p class="flex items-center gap-2 font-semibold text-ink"><span class="text-grape">{% icon "mic", "size-4 shrink-0" %}</span>{{ "community.rec.diy_title" | t(lang) }}</p>
-    <p class="mt-1 text-sm leading-relaxed text-muted">{{ "community.rec.diy_text" | t(lang, {formats: (d.formats | join(orWord)) or ("WAV" ~ orWord ~ "MP3")}) }}</p>
-    <div class="mt-2 flex items-center justify-start gap-2">
-      <a class="link tap-link min-w-0 break-all" href="mailto:{{ d.email }}">{{ d.email }}</a>
-      <button type="button" class="btn-ghost btn-sm -my-1 min-w-11 shrink-0 px-2.5!" data-js-only data-copy="{{ d.email }}" aria-label="{{ 'common.copy' | t(lang) }}: {{ d.email }}">{% icon "copy", "size-4" %}</button>
-    </div>
-  </div>
-  {% endif %}
-
-  <ul class="mt-5 space-y-2.5 text-sm" role="list">
-    {% if d.no_speakers %}<li class="flex gap-2.5"><span class="mt-0.5 text-muted">{% icon "mic-off", "size-4" %}</span><span class="leading-relaxed text-muted">{{ ("community.rec." + pub + "_no_speakers") | t(lang) }}</span></li>{% endif %}
-    <li class="flex gap-2.5"><span class="mt-0.5 text-vine">{% icon "sparkles", "size-4" %}</span><span class="leading-relaxed text-muted"><span class="font-semibold text-ink">{{ "community.rec.next" | t(lang) }}:</span> {{ ("community.rec." + pub + "_next") | t(lang) }}</span></li>
-  </ul>
-  {% else %}
-  <p class="panel-muted mt-5 text-sm leading-relaxed text-muted">{{ "community.rec.unavailable" | t(lang) }}</p>
-  {% endif %}
-
-  <div class="pt-5">
+  {#- the links at the foot of the card (the official page last): the same in both branches below -#}
+  {%- set recLinks %}
     <div class="border-t border-line pt-4">
       {% if d and not isLv and (d.playlists.length or d.channel_url) %}
       <p class="eyebrow">{{ "community.rec.gv_listen" | t(lang) }}</p>
       {#- one wrapping row on phones and tablets, like La Viña's "Before you call" links (short); a list
-          once the cards sit side by side (it balances La Viña's longer card beside it) -#}
+          from 1024px, where the cards sit side by side (it balances La Viña's longer card beside it) -#}
       <ul class="mt-1 flex flex-wrap gap-x-5 gap-y-1 text-sm lg:mt-2 lg:flex-col lg:items-start lg:gap-y-1.5" role="list">
         {% for pl in d.playlists %}<li><a class="link tap-link inline-flex items-center gap-1.5" href="{{ pl.url }}" target="_blank" rel="noopener"{% if lang != "en" %} lang="en"{% endif %}><span class="text-grape">{% icon "youtube", "size-4 shrink-0" %}</span>{{ pl.title }}<span class="sr-only" lang="{{ lang }}"> ({{ "common.external" | t(lang) }})</span></a></li>{% endfor %}
         {% if d.channel_url %}<li><a class="link tap-link inline-flex items-center gap-1.5" href="{{ d.channel_url }}" target="_blank" rel="noopener"><span class="text-grape">{% icon "youtube", "size-4 shrink-0" %}</span>{{ "community.rec.channel" | t(lang) }}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a></li>{% endif %}
@@ -315,7 +284,59 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
       {% endif %}
       <a class="btn-secondary btn-sm {{ 'mt-4' if d }}" href="{{ official }}" target="_blank" rel="noopener">{{ "community.rec.official" | t(lang) }} {% icon "arrow-up-right", "size-4" %}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a>
     </div>
+  {%- endset %}
+
+  {#- Steps · "Or record it yourself" + notes · links. Side by side the card is as tall as the other
+      one (the grid stretches it): in the shorter card the extra height is shared by the two gaps
+      between these three blocks (justify-between) — the steps stay at the top, the links at the
+      bottom (their official-page buttons line up), and no single blank band opens up. -#}
+  <div class="cm-rec-body flex grow flex-col justify-between">
+    {% if stepsOk %}
+    <div>
+      <h4 class="eyebrow mt-6">{{ "community.rec.steps" | t(lang) }}</h4>
+      <ol class="mt-3 space-y-3" role="list">
+        {% if isLv %}
+          {{ recStep(1, "community.rec.lv_s1" | t(lang)) }}
+          {{ recStep(2, "community.rec.lv_s2" | t(lang, {k: recKey(k.record)})) }}
+          {%- set example = '<q lang="es">' ~ ("community.rec.lv_example" | t(lang) | escape) ~ '</q>' %}
+          {% if d.permission_text %}
+          {{ recStep(3, ("community.rec.lv_s3" | t(lang, {example: example})) ~ '<blockquote class="mt-2 rounded-xl bg-surface-2 px-4 py-3 text-sm italic leading-relaxed text-ink" lang="es">“' ~ (d.permission_text | escape) ~ '”</blockquote>') }}
+          {% else %}
+          {{ recStep(3, "community.rec.lv_s3_short" | t(lang, {example: example})) }}
+          {% endif %}
+          {{ recStep(4, "community.rec.lv_s4" | t(lang)) }}
+        {% else %}
+          {{ recStep(1, "community.rec.gv_s1" | t(lang)) }}
+          {{ recStep(2, "community.rec.gv_s2" | t(lang, {k: recKey(k.record)})) }}
+          {{ recStep(3, "community.rec.gv_s3" | t(lang, {k1: recKey(k.finish), k2: recKey(k.save)})) }}
+          {{ recStep(4, "community.rec.gv_s4" | t(lang, {k: recKey(k.permission)})) }}
+        {% endif %}
+      </ol>
+    </div>
+    {% endif %}
+    <div class="cm-rec-foot">
+    {% if d.email %}
+    <div class="mt-5 rounded-xl bg-surface-2 p-4">
+      <p class="flex items-center gap-2 font-semibold text-ink"><span class="text-grape">{% icon "mic", "size-4 shrink-0" %}</span>{{ "community.rec.diy_title" | t(lang) }}</p>
+      <p class="mt-1 text-sm leading-relaxed text-muted">{{ "community.rec.diy_text" | t(lang, {formats: (d.formats | join(orWord)) or ("WAV" ~ orWord ~ "MP3")}) }}</p>
+      <div class="mt-2 flex items-center justify-start gap-2">
+        <a class="link tap-link min-w-0 break-all" href="mailto:{{ d.email }}">{{ d.email }}</a>
+        <button type="button" class="btn-ghost btn-sm -my-1 min-w-11 shrink-0 px-2.5!" data-js-only data-copy="{{ d.email }}" aria-label="{{ 'common.copy' | t(lang) }}: {{ d.email }}">{% icon "copy", "size-4" %}</button>
+      </div>
+    </div>
+    {% endif %}
+
+    <ul class="mt-5 space-y-2.5 text-sm" role="list">
+      {% if d.no_speakers %}<li class="flex gap-2.5"><span class="mt-0.5 text-muted">{% icon "mic-off", "size-4" %}</span><span class="leading-relaxed text-muted">{{ ("community.rec." + pub + "_no_speakers") | t(lang) }}</span></li>{% endif %}
+      <li class="flex gap-2.5"><span class="mt-0.5 text-vine">{% icon "sparkles", "size-4" %}</span><span class="leading-relaxed text-muted"><span class="font-semibold text-ink">{{ "community.rec.next" | t(lang) }}:</span> {{ ("community.rec." + pub + "_next") | t(lang) }}</span></li>
+    </ul>
+    </div>
+    <div class="pt-5">{{ recLinks | safe }}</div>
   </div>
+  {% else %}
+  <p class="panel-muted mt-5 text-sm leading-relaxed text-muted">{{ "community.rec.unavailable" | t(lang) }}</p>
+  <div class="mt-auto pt-5">{{ recLinks | safe }}</div>
+  {% endif %}
 </article>
 {% endmacro %}
 
@@ -385,6 +406,7 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
   { href: "#why", label: "read.contrib.nav_why" | t(lang), icon: "heart-handshake" },
   { href: "#what", label: "read.contrib.nav_what" | t(lang), icon: "feather" },
   { href: "#submit", label: "read.contrib.nav_submit" | t(lang), icon: "send" },
+  { href: "#record", label: "read.contrib.nav_record" | t(lang), icon: "mic" },
   { href: "#deadlines", label: "read.contrib.nav_deadlines" | t(lang), icon: "calendar-clock" },
   { href: "#tips", label: "read.contrib.nav_tips" | t(lang), icon: "lightbulb" },
   { href: "#workshop", label: "read.contrib.nav_workshop" | t(lang), icon: "users" },
@@ -457,21 +479,28 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
 </section>
 
 {#- ---------- Record your story by phone: the ONE home of the story lines (db.audio_project) ----------
-    The two cards keep their own heights (items-start): La Viña's has the sentence to say, so stretching
-    Grapevine's to match would leave a blank band in it. -#}
-<section id="record" class="section container-page pt-0" aria-labelledby="record-title">
+    Side by side the two cards are the same height (the grid stretches them; one column where they
+    would be narrow — below 1024px, and on larger screens at large text: community.css .cm-rec-pair).
+    La Viña's is the longer one (it has the sentence to say): in Grapevine's the steps stay at the
+    top, the links at the bottom (the official-page buttons line up) and the extra height is shared
+    by the gaps around its "Or record it yourself" box and notes (recordCard, .cm-rec-body). -#}
+<section id="record" class="section container-page cm-pairs pt-0" aria-labelledby="record-title">
   {{ ui.sectionHead("community.rec.title" | t(lang), "community.rec.sub" | t(lang), "", "", "mic", { eyebrow: "community.rec.eyebrow" | t(lang), tone: "text-grape", id: "record-title", lang: lang }) }}
-  <div class="grid grid-cols-1 items-start gap-5 lg:grid-cols-2 lg:gap-6">
+  <div class="cm-rec-pair">
     {% for p in pubOrder %}{{ recordCard(p, ap[p], lang) }}{% endfor %}
   </div>
 </section>
 
 {#- ---------- Editorial themes & deadlines (db.editorial; a band) ---------- -#}
 <section id="deadlines" class="section section-band" aria-labelledby="deadlines-title">
-  <div class="container-page">
+  <div class="container-page cm-pairs">
     {% call ui.sectionHead("read.contrib.deadlines_title" | t(lang), "read.contrib.deadlines_sub" | t(lang), "", "", "calendar-clock", { eyebrow: "read.contrib.deadlines_eyebrow" | t(lang), id: "deadlines-title", lang: lang }) %}{% if gvEd.total or lvEd.total %}{{ ui.freshness(db.editorial.updated, lang) }}{% endif %}{% endcall %}
     {% if gvEd.total or lvEd.total %}
-    <div class="grid grid-cols-1 items-start gap-5 lg:grid-cols-2 lg:gap-6">
+    {#- side by side the two cards are the same height (stretched; one column where they would be
+        narrow — below 1024px, and on larger screens at large text: community.css .cm-dl-pair): the
+        notes at their feet line up, Grapevine's "Recently closed" sits at its bottom (mt-auto) and
+        La Viña's topic tiles grow to fill its card (their words stay centred in them: topicChip) -#}
+    <div class="cm-dl-pair">
       {% for p in pubOrder %}
         {% if p == "lv" %}{{ themeList(lvEd, "lv", lang, lvCalendar, lvEd.calendarPdf or (lvTopicsPdf.url if lvTopicsPdf else "")) }}{% else %}{{ themeList(gvEd, "gv", lang, gvCalendar, gvEd.calendarPdf) }}{% endif %}
       {% endfor %}
@@ -479,6 +508,16 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
     {% else %}
       {{ ui.emptyState("calendar-clock", "read.contrib.no_themes" | t(lang), "read.contrib.no_themes_text" | t(lang), gvCalendar, "read.contrib.gv_calendar" | t(lang)) }}
       <p class="mt-3 text-center text-sm"><a class="link tap-link" href="{{ lvCalendar }}" target="_blank" rel="noopener">{{ "read.contrib.lv_calendar" | t(lang) }}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a></p>
+    {% endif %}
+    {#- Under both cards (not inside them, so the pair stays equal): the committee's printable flyers -#}
+    {% if storyFlyers | length %}
+    <p class="mt-5 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted">
+      <span class="inline-flex items-center gap-1.5 font-semibold text-ink"><span class="text-vine">{% icon "printer", "size-4" %}</span>{{ ("read.contrib.print_flyer" if storyFlyers | length == 1 else "read.contrib.print_flyers") | t(lang) }}</span>
+      {%- for f in storyFlyers %}
+      {%- set ft = f | tx("title", lang) %}
+      <a class="link tap-link" href="{{ f.extra.view_url or f.url }}" target="_blank" rel="noopener"{% if f.lang and f.lang != lang and ft == f.title %} lang="{{ f.lang }}"{% endif %}>{{ ft }}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a>{% if not loop.last %}<span aria-hidden="true">·</span>{% endif %}
+      {%- endfor %}
+    </p>
     {% endif %}
   </div>
 </section>
@@ -556,6 +595,30 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
         {% endif %}
       </div>
     </div>
+    {#- The next writing / recording workshops (cmWorkshops): a date tile in the event's colour
+        (eventTone), the title and the place; each opens its card on /events/. A workshop that has
+        ended hides itself (data-cm-expire, read.js), and the list with it when none is left. -#}
+    {% if workshops | length %}
+    <div class="relative z-10 mt-8 border-t border-white/15 pt-6" data-ws-list>
+      <h3 class="eyebrow flex items-center gap-2 font-sans text-white/75">{% icon "calendar-days", "size-4 shrink-0" %}<span>{{ "read.contrib.ws_next" | t(lang) }}</span></h3>
+      <ul class="read-ws-list mt-3 grid gap-3{{ ' max-w-xl' if workshops | length == 1 }}" style="--n: {{ workshops | length }}" role="list">
+        {% for ev in workshops %}
+        <li data-cm-expire="{{ ev.expireIso }}">
+          <a href="{{ '/events/' | lurl(lang) }}#{{ ev.anchor }}" class="card card-link cm-mini-card ev-accent ev-tone-{{ ev | eventTone }} group h-full">
+            <span class="cm-date-tile{{ ' cm-tile-range' if ev.tile.range }}" aria-hidden="true"><span class="cm-tile-mon">{{ ev.tile.mon }}</span><span class="cm-tile-day">{{ ev.tile.day }}</span><span class="cm-tile-wd">{{ ev.tile.wd }}</span></span>
+            <span class="min-w-0">
+              <span class="block font-display text-lg font-semibold leading-snug text-ink group-hover:text-gv">{{ ev.title }}</span>
+              <span class="sr-only">{{ ev.dateLabel }}</span>
+              {% if ev.location %}<span class="mt-1 flex items-start gap-1.5 text-sm text-muted{{ ' italic' if ev.locationTba }}">{% set wsIcon = "hourglass" if ev.locationTba else "map-pin" %}{% icon wsIcon, "mt-0.5 size-4 shrink-0 text-faint" %}<span class="min-w-0">{{ ev.location }}</span></span>
+              {% elif ev.isOnline %}<span class="mt-1 flex items-start gap-1.5 text-sm text-muted">{% icon "video", "mt-0.5 size-4 shrink-0 text-faint" %}<span class="min-w-0">{{ ("committee.events.online_on" | t(lang, { platform: ev.platform })) if ev.platform else ("committee.events.online" | t(lang)) }}</span></span>{% endif %}
+              {% if ev.tentative %}<span class="mt-1.5 block">{{ ui.tentativeBadge(lang) }}</span>{% endif %}
+            </span>
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
   </div>
 </section>
 

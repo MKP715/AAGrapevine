@@ -19,6 +19,9 @@ export default function () {
     // Zoom dial-in numbers + callers' passcodes for /accessibility/#phone (eleventy/filters/access.js)
     phone_access: cfg.phone_access || {},
     digest: cfg.digest || {},
+    // La Viña's weekly open meeting (the data itself comes from data/site/weekly_open.json); the page
+    // reads `flyer_match` here — the "View flyer" link on /meetings/#weekly-open
+    lavina_weekly_open: cfg.lavina_weekly_open || {},
     // Build timestamp (UTC ISO) — shown as "Last updated" in the footer.
     built: new Date().toISOString(),
     // No link to the Drive ROOT on purpose: it can hold private files (e.g. sign-up response sheets).

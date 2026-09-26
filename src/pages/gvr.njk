@@ -7,139 +7,21 @@ titleKey: nav.gvr
 descKey: read.gvr.meta_desc
 pageScripts: ["/assets/js/read.js"]
 ---
-{#- GVR / RLV CORNER — the group representative's home: what the job is, a first-steps
-    checklist (saved in the browser), the official GVR and RLV resource kits (db.pdfs,
-    category gvr/rlv or found on /gvr-resources and /recursos), ideas for the home group
-    and next steps. Flow (docs: ui.njk): hero → page nav → the job → first steps (band) →
-    resource kits → ideas → next steps. -#}
+{#- GVR / RLV CORNER — the group representative's home: what the service position is (never "job"), a first-steps
+    checklist (saved in the browser), the official GVR and RLV resource kits (#kits: the handbooks and
+    one button per kit to its collection in the Library — the kits' one home — with the Library's own
+    counts), ideas for the home group and next steps. Flow (docs: ui.njk): hero → page nav → the
+    position → first steps (band) → resource kits → ideas → next steps. -#}
 {% import "macros/ui.njk" as ui with context %}
 {%- set L = site.links -%}
-{%- set gvrKit = db.pdfs | readKit("gvr") -%}
-{%- set rlvKit = db.pdfs | readKit("rlv") -%}
 {%- set gvHandbook = (db.pdfs | readPdfsMatching("\\bhandbook\\b|gvr handbook", 1))[0] -%}
 {%- set lvHandbook = (db.pdfs | readPdfsMatching("manual del representante|manual del rlv|\\bmanual\\b", 1))[0] -%}
 {%- set handbooks = ([lvHandbook, gvHandbook] if lang == "es" else [gvHandbook, lvHandbook]) | select -%}
 {%- set kitOrder = ["rlv", "gvr"] if lang == "es" else ["gvr", "rlv"] -%}
-{#- Kit grids (.read-kit-grid in read.css): 1 → 2 (640px) → 3 (1024px) → 4 (1536px) → 5 (1800px)
-    columns. Each group shows two full rows (3 files on phones) until "Show all" or a search. -#}
-{%- set groupIcons = { news: "newspaper", guides: "book-marked", flyers: "image", forms: "clipboard-list", other: "sparkles" } -%}
-
-{#- One PDF in a kit -#}
-{% macro kitCard(p, kit, lang, group="") %}
-{%- set info = p | readPdfTitleInfo(lang) -%}
-{%- set ex = p.extra or {} -%}
-{%- set dl = p | readDocLang -%}
-<li data-kit-item data-kit="{{ kit }}" data-text="{{ (info.title + ' ' + (info.gloss or '') + ' ' + (p.title or '') + ' ' + group + ' ' + ((p.tags or []) | join(' '))) | lower }}"
-    x-show="match($el)">
-  <a href="{{ p.url }}" target="_blank" rel="noopener" class="card card-link group flex h-full items-start gap-3 p-2.5 no-underline sm:p-3">
-    <span class="relative aspect-[3/4] w-11 shrink-0 overflow-hidden rounded-lg border border-line bg-surface-2 sm:w-14">
-      {% if ex.thumb %}<img src="{{ ex.thumb }}" alt="" loading="lazy" decoding="async" class="absolute inset-0 size-full object-cover object-top">
-      {% else %}<span class="read-pdf-ph {{ 'read-accent-lv' if kit == 'rlv' else 'read-accent-gv' }} absolute inset-0">{% icon "file-text", "relative size-5" %}</span>{% endif %}
-    </span>
-    <span class="flex min-w-0 flex-1 flex-col gap-1">
-      <span class="line-clamp-2 text-sm font-semibold leading-snug text-ink transition {{ 'group-hover:text-lv' if kit == 'rlv' else 'group-hover:text-gv' }}" lang="{{ info.lang or p.lang }}">{{ info.title }}</span>
-      {% if info.gloss and info.machine %}<span class="flex items-center gap-1 text-xs leading-snug text-muted" title="{{ 'common.auto_translated' | t(lang) }} — {{ 'common.auto_translated_help' | t(lang) }}">{% icon "languages", "size-3 shrink-0" %}<span class="sr-only">{{ "common.auto_translated" | t(lang) }}:</span><span class="line-clamp-1" lang="{{ info.glossLang }}">{{ info.gloss }}</span></span>
-      {% elif info.gloss %}<span class="flex items-center gap-1 text-xs leading-snug text-muted" title="{{ 'read.title_translation' | t(lang) }}"><span class="sr-only">{{ "read.title_translation" | t(lang) }}:</span><span class="line-clamp-1" lang="{{ info.glossLang }}">{{ info.gloss }}</span></span>{% endif %}
-      <span class="flex flex-wrap items-center gap-1.5 text-xs text-muted">
-        {% if p.is_new %}<span class="badge-new">{{ "common.new" | t(lang) }}</span>{% endif %}
-        {% if dl and dl != lang %}<span class="badge-muted uppercase" title="{{ ('lang.' + dl) | t(lang) }}">{{ dl }}</span>{% endif %}
-        {% if ex.upload_month %}<span>{{ ex.upload_month | readMonth(lang) }}</span>{% elif p.date %}<span>{{ p.date | readMonth(lang) }}</span>{% endif %}
-        {% if ex.pages %}<span>· {{ ("read.one_page" if ex.pages == 1 else "common.pages") | t(lang, {n: ex.pages}) }}</span>{% endif %}
-      </span>
-    </span>
-    <span class="sr-only">({{ "kind.pdf" | t(lang) | lower }}, {{ "common.external" | t(lang) }})</span>
-  </a>
-</li>
-{% endmacro %}
-
-{#- One official kit (GVR or RLV), grouped by type. Every group is ONE .read-kit-group element
-    (the forms pointer included): the kit filter and "Show all" work group by group. -#}
-{% macro kitBlock(kit, items, lang) %}
-{%- set isLv = kit == "rlv" -%}
-<div id="kit-{{ kit }}" x-show="kitVisible('{{ kit }}')">
-  <div class="read-cover {{ 'read-cover--lv' if isLv else 'read-cover--gv' }} relative isolate flex flex-wrap items-center justify-between gap-4 overflow-hidden rounded-[var(--radius-card)] px-5 py-5 text-white sm:px-7">
-    <svg class="read-cover-art w-32! -bottom-10!" viewBox="0 0 200 240" fill="none" aria-hidden="true"><g fill="currentColor"><circle cx="82" cy="96" r="17"/><circle cx="116" cy="96" r="17"/><circle cx="66" cy="126" r="17"/><circle cx="100" cy="126" r="17"/><circle cx="134" cy="128" r="17"/><circle cx="82" cy="156" r="17"/><circle cx="116" cy="156" r="17"/><circle cx="100" cy="186" r="17"/></g></svg>
-    <div>
-      <h3 class="flex items-center gap-2 font-display text-2xl font-semibold">{% icon "badge-check", "size-6" %} {{ ("read.gvr.kit_rlv" if isLv else "read.gvr.kit_gvr") | t(lang) }}</h3>
-      <p class="mt-1 text-sm text-white/80">{{ ("read.gvr.kit_rlv_sub" if isLv else "read.gvr.kit_gvr_sub") | t(lang, {n: items.length}) }}</p>
-    </div>
-    <a class="btn-on-dark btn-sm" href="{{ L.rlv_resources if isLv else L.gvr_resources }}" target="_blank" rel="noopener">{{ "read.gvr.official_page" | t(lang) }} {% icon "arrow-up-right", "size-4" %}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a>
-  </div>
-  {% if items.length %}
-  {#- The groups share one grid with the files' columns (read.css .read-kit-groups): a group of one
-      or two cards (the Shop pointers: news & catalogs, order forms) takes just that many columns,
-      and those two come first, so they sit side by side instead of each leaving empty columns. -#}
-  {%- set gs = items | readKitGroups -%}
-  {%- set ordered = [] -%}
-  {%- for key in ["news", "forms", "guides", "flyers", "other"] %}{% for g in gs %}{% if g.key == key and ordered.push(g) %}{% endif %}{% endfor %}{% endfor -%}
-  {%- for g in gs %}{% if g.key not in ["news", "forms", "guides", "flyers", "other"] and ordered.push(g) %}{% endif %}{% endfor -%}
-  <div class="read-kit-groups mt-5">
-    {% for g in ordered %}
-    {#- cards shown: the forms pointer = 1; news = its files + one "Catalogs: in the Shop" card -#}
-    {%- set cats = [] -%}
-    {%- if g.key == "news" %}{% for p in g.items %}{% if ("catalog" in (p.tags or []) or r/cat[aá]logo/i.test(p.title or "")) and cats.push(1) %}{% endif %}{% endfor %}{% endif -%}
-    {%- set nt = 1 if g.key == "forms" else (g.items.length - (cats | length) + (1 if cats | length else 0)) -%}
-    <div role="group" class="read-kit-group{{ (' is-small is-n' ~ nt) if nt <= 2 }}" x-data="{ more: false }" :class="{ 'is-js': true, 'is-more': more || q }" x-show="groupHas($el)" aria-labelledby="kit-{{ kit }}-{{ g.key }}">
-      <h4 id="kit-{{ kit }}-{{ g.key }}" class="mb-3 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.12em] text-muted">
-        <span class="{{ 'text-lv' if isLv else 'text-gv' }}">{% icon groupIcons[g.key], "size-4" %}</span>{{ ("read.gvr.g_" + g.key) | t(lang) }}
-        <span class="badge-muted normal-case tracking-normal">{{ g.items.length }}</span>
-      </h4>
-      {% if g.key == "forms" %}
-      {#- Order & subscription forms have ONE home: the Shop (/shop/#forms-title) — one pointer here -#}
-      <ul class="read-kit-grid">
-        <li data-kit-item data-kit="{{ kit }}" data-text="{{ (('read.gvr.g_forms' | t(lang)) + ' ' + ('read.gvr.forms_in_shop' | t(lang)) + ' ' + (g.items | join(' ', 'title'))) | lower }}" x-show="match($el)">
-          <a href="{{ '/shop/' | lurl(lang) }}#forms-title" class="card card-link group flex h-full items-center gap-3 p-2.5 no-underline sm:p-3">
-            <span class="grid size-11 shrink-0 place-items-center rounded-lg {{ 'bg-lv-soft text-lv' if isLv else 'bg-gv-soft text-gv' }}">{% icon "shopping-bag", "size-5" %}</span>
-            <span class="flex min-w-0 flex-1 flex-col gap-0.5">
-              <span class="text-sm font-semibold leading-snug text-ink {{ 'group-hover:text-lv' if isLv else 'group-hover:text-gv' }}">{{ "read.gvr.forms_in_shop" | t(lang) }}</span>
-              <span class="text-xs text-muted">{{ "read.gvr.forms_in_shop_sub" | t(lang, { n: g.items.length }) }}</span>
-            </span>
-            {% icon "arrow-right", "size-4 shrink-0 text-faint" %}
-          </a>
-        </li>
-      </ul>
-      {% else %}
-      {#- Catalogs have ONE home too (/shop/#catalogs): in "News & catalogs" they are one pointer card -#}
-      {%- set hasCat = false -%}
-      <ul class="read-kit-grid">
-        {% for p in g.items %}
-        {%- set isCat = g.key == "news" and ("catalog" in (p.tags or []) or r/cat[aá]logo/i.test(p.title or "")) -%}
-        {% if isCat %}{% set hasCat = true %}{% else %}{{ kitCard(p, kit, lang, ("read.gvr.g_" + g.key) | t(lang)) }}{% endif %}
-        {% endfor %}
-        {% if hasCat %}
-        <li data-kit-item data-kit="{{ kit }}" data-text="{{ (('read.subs.cat_title' | t(lang)) + ' catalog catálogo') | lower }}" x-show="match($el)">
-          <a href="{{ '/shop/' | lurl(lang) }}#catalogs" class="card card-link group flex h-full items-center gap-3 p-2.5 no-underline sm:p-3">
-            <span class="grid size-11 shrink-0 place-items-center rounded-lg {{ 'bg-lv-soft text-lv' if isLv else 'bg-gv-soft text-gv' }}">{% icon "book-open", "size-5" %}</span>
-            <span class="flex min-w-0 flex-1 flex-col gap-0.5">
-              <span class="text-sm font-semibold leading-snug text-ink {{ 'group-hover:text-lv' if isLv else 'group-hover:text-gv' }}">{{ "read.gvr.catalogs_in_shop" | t(lang) }}</span>
-            </span>
-            {% icon "arrow-right", "size-4 shrink-0 text-faint" %}
-          </a>
-        </li>
-        {% endif %}
-      </ul>
-      {#- The button only shows at widths where some files are folded away: 3 on phones, then
-          two rows of 2 / 3 / 4 / 5 columns (4 · 6 · 8 · 10 files) — same steps as read.css. -#}
-      {%- set nk = g.items.length -%}
-      {% if nk > 3 %}
-      {%- set btnHide = "sm:hidden" if nk <= 4 else ("lg:hidden" if nk <= 6 else ("2xl:hidden" if nk <= 8 else ("min-[1800px]:hidden" if nk <= 10 else ""))) -%}
-      <button type="button" class="btn-ghost btn-sm mt-2 {{ 'text-lv' if isLv else 'text-gv' }} {{ btnHide }}" x-show="!q" x-cloak @click="more = !more" :aria-expanded="more.toString()">
-        <span x-show="!more">{{ "read.gvr.show_all" | t(lang, {n: nk}) }}</span>
-        <span x-show="more">{{ "common.show_less" | t(lang) }}</span>
-        {% icon "chevron-down", "size-4 transition" %}
-      </button>
-      {% endif %}
-      {% endif %}
-    </div>
-    {% endfor %}
-  </div>
-  {% else %}
-  <div class="mt-5">
-    {{ ui.emptyState("folder-open", "read.gvr.kit_empty" | t(lang), "read.gvr.kit_empty_text" | t(lang), (L.rlv_resources if isLv else L.gvr_resources), "read.gvr.official_page" | t(lang)) }}
-  </div>
-  {% endif %}
-</div>
-{% endmacro %}
+{#- The two kits live in the Library (their one home: search, filters, previews); the counts come from
+    the same collections the Library and Home show (libCollections), so the numbers match -#}
+{%- set libCols = (db | libDocs(lang)) | libCollections(lang) -%}
+{%- set kitN = { gvr: ((libCols | where("key", "gvr-kit") | first) or {}).count or 0, rlv: ((libCols | where("key", "rlv-kit") | first) or {}).count or 0 } -%}
 
 {#- Hero: the two registrations (the page-language magazine first). The in-page jumps live in the
     page nav below, so the hero has no jump buttons. The kit counts are shown once, in each kit's
@@ -152,18 +34,19 @@ pageScripts: ["/assets/js/read.js"]
 {% endcall %}
 
 <div class="container-page page-overlap">{{ ui.pageNav([
-  { href: "#job", label: "read.gvr.nav_job" | t(lang), icon: "hand-heart" },
+  { href: "#position", label: "read.gvr.nav_job" | t(lang), icon: "hand-heart" },
   { href: "#steps", label: "read.gvr.nav_steps" | t(lang), icon: "list-checks" },
   { href: "#kits", label: "read.gvr.see_kits" | t(lang), icon: "folder-open" },
   { href: "#ideas", label: "read.gvr.nav_ideas" | t(lang), icon: "lightbulb" },
   { href: "#next", label: "common.next_steps" | t(lang), icon: "compass" }
 ], lang) }}</div>
 
-{#- ---------- The job ---------- -#}
-<section id="job" class="section container-page pt-10 sm:pt-12" aria-labelledby="job-title">
+{#- ---------- The service position (#job: this section's older address, kept working) ---------- -#}
+<section id="position" class="section container-page pt-10 sm:pt-12" aria-labelledby="position-title">
+  <span id="job" aria-hidden="true"></span>
   <div class="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.35fr)] lg:gap-10 2xl:gap-14">
     <div>
-      {{ ui.sectionHead("read.gvr.job_title" | t(lang), "read.gvr.job_text" | t(lang), "", "", "hand-heart", { eyebrow: "read.gvr.job_eyebrow" | t(lang), tone: "text-vine", id: "job-title", lang: lang }) }}
+      {{ ui.sectionHead("read.gvr.job_title" | t(lang), "read.gvr.job_text" | t(lang), "", "", "hand-heart", { eyebrow: "read.gvr.job_eyebrow" | t(lang), tone: "text-vine", id: "position-title", lang: lang }) }}
       <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div class="panel-muted p-4! sm:p-4!">
           <p class="font-display text-lg font-semibold text-gv">GVR</p>
@@ -175,9 +58,9 @@ pageScripts: ["/assets/js/read.js"]
         </div>
       </div>
       <p class="mt-5 flex items-start gap-2 text-sm leading-relaxed text-muted">{% icon "users-round", "mt-0.5 size-4 shrink-0 text-vine" %}<span><strong class="text-ink">{{ "read.gvr.who_t" | t(lang) }}</strong> {{ "read.gvr.who" | t(lang) }}</span></p>
-      {#- GVR / RLV 101 (/orientation/): the lessons for new representatives — the first stop for someone new -#}
+      {#- GVR / RLV 101 (/orientation/): the sessions for new representatives — the first stop for someone new -#}
       <div class="card card-link group relative mt-6 flex items-start gap-4 p-5">
-        <span class="grid size-12 shrink-0 place-items-center rounded-xl bg-grape-soft text-grape">{% icon "graduation-cap", "size-6" %}</span>
+        <span class="grid size-12 shrink-0 place-items-center rounded-xl bg-grape-soft text-grape">{% icon "sprout", "size-6" %}</span>
         <div class="min-w-0 flex-1">
           <p class="eyebrow text-grape">{{ "orientation.gvr_eyebrow" | t(lang) }}</p>
           <h3 class="h-card mt-1"><a class="no-underline after:absolute after:inset-0 after:rounded-[var(--radius-card)] group-hover:text-gv" href="{{ '/orientation/' | lurl(lang) }}">{{ "orientation.gvr_title" | t(lang) }}</a></h3>
@@ -247,7 +130,7 @@ pageScripts: ["/assets/js/read.js"]
                     <a class="link tap-link" href="{{ '/meetings/' | lurl(lang) }}#committee-meeting">{% if meeting.next %}{{ "read.gvr.next_meeting" | t(lang, {date: meeting.next.start | fmtDate(lang, "medium")}) }}{% else %}{{ "nav.meeting" | t(lang) }}{% endif %}</a>
                   {% elif s.id == "table" %}
                     <a class="link tap-link" href="{{ '/shop/' | lurl(lang) }}#cat-title">{{ "read.subs.cat_title" | t(lang) }}</a>
-                    <a class="link tap-link" href="#kit-{{ 'rlv' if lang == 'es' else 'gvr' }}">{{ "read.gvr.g_flyers" | t(lang) }}</a>
+                    <a class="link tap-link" href="{{ '/library/' | lurl(lang) }}?col={{ 'rlv' if lang == 'es' else 'gvr' }}-kit">{{ "read.gvr.g_flyers" | t(lang) }}</a>
                   {% elif s.id == "announce" %}
                     <a class="link tap-link" href="{{ '/read/' | lurl(lang) }}">{{ "read.gvr.current_issues" | t(lang) }}</a>
                     <a class="link tap-link" href="{{ '/contribute/' | lurl(lang) }}#deadlines">{{ "read.contrib.deadlines_title" | t(lang) }}</a>
@@ -295,31 +178,42 @@ pageScripts: ["/assets/js/read.js"]
   </div>
 </section>
 
-{#- ---------- Official kits ---------- -#}
-<section class="section container-page" id="kits" aria-labelledby="kits-title" x-data="kitFilter('all')">
-  {% call ui.sectionHead("read.gvr.kits_title" | t(lang), "read.gvr.kits_sub" | t(lang), "", "", "folder-open", { eyebrow: "read.gvr.kits_eyebrow" | t(lang), id: "kits-title", lang: lang }) %}{{ ui.freshness(db.pdfs.updated, lang) }}{% endcall %}
-
-  {% if gvrKit.length or rlvKit.length %}
-  <div class="mb-8 flex flex-col gap-3 rounded-[var(--radius-card)] border border-line bg-surface p-3 sm:flex-row sm:items-center" data-js-only>
-    <div class="chip-row" role="group" aria-label="{{ 'read.gvr.kit_filter' | t(lang) }}">
-      <button type="button" class="chip" aria-pressed="true" :aria-pressed="(kit === 'all').toString()" @click="kit = 'all'">{{ "common.all" | t(lang) }}</button>
-      {% for k in kitOrder %}
-      <button type="button" class="chip {{ 'read-chip-rlv' if k == 'rlv' else '' }}" aria-pressed="false" :aria-pressed="(kit === '{{ k }}').toString()" @click="kit = '{{ k }}'">{{ ("read.gvr.kit_rlv" if k == "rlv" else "read.gvr.kit_gvr") | t(lang) }}</button>
-      {% endfor %}
+{#- ---------- Official resource kits: a pointer to the Library ----------
+    The handbook(s) first, then one button per kit (the page-language magazine's first) to its
+    collection in the Library (/library/?col=gvr-kit · rlv-kit), with the same count the Library
+    shows; a kit with no files has no button. The official resource pages close the card. -#}
+<section class="section container-page" id="kits" aria-labelledby="kits-title">
+  {{ ui.sectionHead("read.gvr.kits_title" | t(lang), "read.gvr.kits_sub" | t(lang), "", "", "folder-open", { eyebrow: "read.gvr.kits_eyebrow" | t(lang), id: "kits-title", lang: lang }) }}
+  {% if kitN.gvr or kitN.rlv or handbooks | length %}
+  <div class="card card-pad @container">
+    {#- wide card: the handbook(s) | the Library pointer + the kit buttons; narrow: one column -#}
+    <div class="grid gap-6{{ ' @3xl:grid-cols-2 @3xl:gap-10' if handbooks | length }}">
+      {% if handbooks | length %}
+      <div class="min-w-0">
+        <p class="eyebrow">{{ "read.gvr.kits_handbook" | t(lang) }}</p>
+        <ul class="mt-1.5 space-y-0.5" role="list">
+          {% for h in handbooks %}
+          <li><a class="link tap-link inline-flex items-start gap-2 font-semibold" href="{{ h.url }}" target="_blank" rel="noopener"><span class="mt-0.5 shrink-0 {{ 'text-lv' if h.lang == 'es' else 'text-gv' }}">{% icon "book-marked", "size-4" %}</span><span class="min-w-0 hyphens-auto [overflow-wrap:anywhere]"><span lang="{{ h.lang }}">{{ h | readPdfTitle(lang) }}</span> <span class="font-normal text-muted">({{ "kind.pdf" | t(lang) | lower }})</span><span class="sr-only"> ({{ "common.external" | t(lang) }})</span></span></a></li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+      <div class="min-w-0">
+        <p class="max-w-2xl text-sm leading-relaxed text-muted">{{ "read.gvr.kits_library" | t(lang) }}</p>
+        {% if kitN.gvr or kitN.rlv %}
+        <div class="mt-4 grid grid-cols-1 gap-2.5 min-[26rem]:flex min-[26rem]:flex-wrap">
+          {% for k in kitOrder %}{% if kitN[k] %}
+          <a class="{{ 'btn-lv' if k == 'rlv' else 'btn-primary' }}" href="{{ '/library/' | lurl(lang) }}?col={{ k }}-kit">{% icon "badge-check", "size-4" %} {{ ("read.gvr.browse_" + k) | t(lang, { n: kitN[k] }) }}</a>
+          {% endif %}{% endfor %}
+        </div>
+        {% endif %}
+      </div>
     </div>
-    <label class="relative flex-1 sm:ml-auto sm:max-w-sm">
-      <span class="sr-only">{{ "read.gvr.search_label" | t(lang) }}</span>
-      <span class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted">{% icon "search", "size-4" %}</span>
-      <input type="search" class="input pl-10" x-model.debounce.150ms="q" placeholder="{{ 'read.gvr.search_ph' | t(lang) }}" autocomplete="off">
-    </label>
-    <p class="read-num shrink-0 px-2 text-sm text-muted" aria-live="polite" x-show="q || kit !== 'all'" x-cloak data-t1="{{ 'read.gvr.shown_one' | t(lang) }}" data-t="{{ 'read.gvr.shown' | t(lang) }}" x-text="shown === 1 ? $el.dataset.t1 : $el.dataset.t.replace('{n}', shown)"></p>
-  </div>
-
-  <div class="space-y-12">
-    {% for k in kitOrder %}{{ kitBlock(k, (rlvKit if k == "rlv" else gvrKit), lang) }}{% endfor %}
-  </div>
-  <div class="mt-6" x-show="shown === 0" x-cloak>
-    {{ ui.emptyState("search-x", "read.gvr.no_match" | t(lang), "read.gvr.no_match_text" | t(lang)) }}
+    <p class="mt-5 flex flex-wrap gap-x-5 gap-y-1 border-t border-line pt-4 text-sm">
+      {% for k in kitOrder %}
+      <a class="link tap-link inline-flex items-center gap-1.5" href="{{ L.rlv_resources if k == 'rlv' else L.gvr_resources }}" target="_blank" rel="noopener">{{ ("read.subs.all_rlv" if k == "rlv" else "read.subs.all_gvr") | t(lang) }}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span>{% icon "arrow-up-right", "size-4 shrink-0" %}</a>
+      {% endfor %}
+    </p>
   </div>
   {% else %}
     {{ ui.emptyState("folder-open", "read.gvr.kits_empty" | t(lang), "read.gvr.kits_empty_text" | t(lang), L.gvr_resources, "read.gvr.kit_gvr" | t(lang)) }}

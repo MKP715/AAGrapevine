@@ -755,7 +755,7 @@
     window.addEventListener("resize", mark);
   }
 
-  /* ---------------- a link to a collapsed disclosure (#how-docs, #share-photos, #how-to-post …) ----------------
+  /* ---------------- a link to a collapsed disclosure (#how-docs, #share-photos, #how-to-post, #how-events …) ----------------
      opens it (and the <details> it is in), then brings it into view */
   function openTarget() {
     var id = "";

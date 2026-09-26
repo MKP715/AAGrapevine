@@ -1,17 +1,19 @@
-/* "GVR / RLV 101" — /orientation/ (hub) and /orientation/<id>/ (a lesson). Plain JavaScript, no
-   dependencies (loaded with `defer` after app.js). Everything here is an extra: without it the lessons,
-   the self-check answers (a "See the answer" disclosure) and the printed handout all still work.
+/* "GVR / RLV 101" — /orientation/ (hub) and /orientation/<id>/ (a session; the data and the code call
+   them lessons, the pages never do). Plain JavaScript, no dependencies (loaded with `defer` after
+   app.js). Everything here is an extra: without it the sessions, the review answers (a "See the answer"
+   disclosure) and the printed handout all still work.
 
-   1. Progress — "lessons done on this device": a list of lesson ids in localStorage (key below), and
+   1. Progress — "sessions done on this device": a list of session ids in localStorage (key below), and
       nothing else. Every read and write is wrapped in try/catch (private windows, blocked storage):
       the pages then simply show no progress. Drawn into [data-o101-card=<id>] (the Done badge, the
-      card's call to action, the lesson list's check mark), [data-o101-progress] (count + bar + "Start
-      over") and the hub's resume button [data-o101-resume] ("Continue: lesson 3").
-   2. Self-check (lesson pages) — [data-o101-quiz]: feedback on the answer chosen (a click or tap, Space
-      or Enter, or leaving the question — not each arrow-key move); when all three are right the lesson
-      is saved as done. Nothing is sent anywhere.
+      card's call to action, the session list's check mark), [data-o101-progress] (count + bar + "Start
+      over") and the hub's resume button [data-o101-resume] ("Continue: session 3").
+   2. Quick review (session pages) — [data-o101-quiz]: feedback on the answer chosen (a click or tap,
+      Space or Enter, or leaving the question — not each arrow-key move); when all three are right the
+      session is saved as done. Nothing is sent anywhere.
    3. Slide show (hub) — #o101-deck-tpl is cloned into a full-screen dialog by "Present as slides"
-      [data-o101-present] or on load at ?slides. #slide-N (resume) or #lesson-<id> picks the first slide.
+      [data-o101-present] or on load at ?slides. #slide-N (resume) or #session-<id> (also the older
+      #lesson-<id>) picks the first slide.
       Keys: → ↓ Space PageDown next · ← ↑ Shift+Space PageUp back · Home / End · F full screen ·
       Esc exits. A slide taller than the screen (larger text, a phone, a zoomed browser) scrolls on
       its own: ↓ Space PageDown (↑ Shift+Space PageUp) scroll it first and turn the page at its end. Click or tap the right two thirds (next) or the left third (back); swipe on touch.
@@ -73,7 +75,7 @@
       if (reset) reset.hidden = n === 0;
     });
 
-    // Hub: "Start lesson 1" → "Continue: lesson 3" (the first lesson not done) → "Review lesson 1"
+    // Hub: "Start session 1" → "Continue: session 3" (the first one not done) → "Review session 1"
     var resume = document.querySelector("[data-o101-resume]");
     if (resume && cards.length) {
       var label = resume.querySelector("[data-o101-resume-label]");
@@ -108,7 +110,7 @@
     }
     var pr = e.target.closest && e.target.closest("[data-o101-print]");
     if (pr) { window.print(); }
-    // A lesson page on a phone: "All 6 lessons" unfolds the lesson list (orientation.css)
+    // A session page on a phone: "All 6 sessions" unfolds the session list (orientation.css)
     var tb = e.target.closest && e.target.closest("[data-o101-toc-btn]");
     if (tb) {
       var box = tb.closest("[data-o101-toc]");
@@ -117,10 +119,10 @@
       tb.setAttribute("aria-expanded", String(open));
     }
   });
-  // Another tab finished a lesson: redraw.
+  // Another tab finished a session: redraw.
   window.addEventListener("storage", function (e) { if (e.key === KEY || e.key === null) render(); });
 
-  /* ---------------- 2. Self-check ---------------- */
+  /* ---------------- 2. Quick review ---------------- */
   function icon(ok) {
     return ok
       ? '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>'
@@ -212,7 +214,7 @@
   function indexFromHash(hash) {
     var m = /^#slide-(\d+)$/.exec(hash || "");
     if (m) return Math.max(0, Number(m[1]) - 1);
-    m = /^#lesson-([a-z0-9-]+)$/.exec(hash || "");
+    m = /^#(?:session|lesson)-([a-z0-9-]+)$/.exec(hash || "");
     if (m) {
       for (var i = 0; i < slides.length; i++) if (slides[i].getAttribute("data-lesson") === m[1]) return i;
     }
@@ -357,7 +359,7 @@
     var tpl = tplEl();
     if (deck || !tpl) return;
     lastFocus = document.activeElement;
-    if (!startUrl) startUrl = location.pathname + location.search.replace(/[?&]slides(=[^&]*)?/, "").replace(/^&/, "?") + (/^#(slide-|lesson-)/.test(location.hash) ? "" : location.hash);
+    if (!startUrl) startUrl = location.pathname + location.search.replace(/[?&]slides(=[^&]*)?/, "").replace(/^&/, "?") + (/^#(slide-|session-|lesson-)/.test(location.hash) ? "" : location.hash);
     deck = tpl.content.firstElementChild.cloneNode(true);
     document.body.appendChild(deck);
     inerted = Array.prototype.filter.call(document.body.children, function (el) {
@@ -415,7 +417,7 @@
   /* ---------------- start ---------------- */
   function start() {
     render();
-    // From now on a change of the count ("2 of 6 lessons done") is read out; the first draw is not.
+    // From now on a change of the count ("2 of 6 sessions done") is read out; the first draw is not.
     document.querySelectorAll("[data-o101-count]").forEach(function (el) { el.setAttribute("aria-live", "polite"); });
     document.querySelectorAll("[data-o101-quiz]").forEach(initQuiz);
     var hasSlides = false;

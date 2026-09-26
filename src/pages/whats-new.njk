@@ -69,14 +69,15 @@ pageScripts: ["/assets/js/community.js"]
 ]) }}
 {% endcall %}
 
-<div class="container-page page-start">
+{#- cm-wn-page: the container the three-column layout measures itself against (community.css) -#}
+<div class="container-page page-start cm-wn-page">
   <div class="cm-wn-layout">
 
     {#- ============ Timeline ============
-        < 1536px: the filter chips are ONE line (chip-row-nowrap: it scrolls sideways) that sticks
-        under the header in windows at least 40rem tall (community.css .cm-chipbar);
-        ≥ 1536px: they become a sticky column on the left of the timeline.
-        Each entry: icon · text (a readable 72ch column) · a fixed thumbnail slot. -#}
+        Up to 1536px (and at 130–150% text): the filter chips are ONE line (chip-row-nowrap: it
+        scrolls sideways) that sticks under the header in windows at least 40rem tall
+        (community.css .cm-chipbar); from 1536px they become a sticky column on the left of the
+        timeline. Each entry: icon · text (a readable 72ch column) · a thumbnail slot. -#}
     <div class="cm-wn-main min-w-0"
          x-data="whatsNew({ cap: {{ CAP }}, days: {{ DAYS_INITIAL }} })"
          data-today="{{ 'common.today' | t(lang) }}" data-yesterday="{{ 'community.yesterday' | t(lang) }}"
@@ -86,8 +87,8 @@ pageScripts: ["/assets/js/community.js"]
       {% if days | length %}
       {#- Filter chips (JS only — hidden without JS since they would do nothing; community.css keys
           that on html.js, so the bar is there from the first paint and the feed never jumps) -#}
-      <div class="cm-chipbar -mx-4 mb-4 bg-paper/90 px-4 py-2.5 backdrop-blur sm:mx-0 sm:px-0 2xl:mb-0 2xl:bg-transparent 2xl:py-0 2xl:backdrop-blur-none">
-        <p id="wn-filter-title" class="eyebrow mb-3 hidden 2xl:block">{{ "community.wn.filter_aria" | t(lang) }}</p>
+      <div class="cm-chipbar -mx-4 mb-4 bg-paper/90 px-4 py-2.5 backdrop-blur sm:mx-0 sm:px-0">
+        <p id="wn-filter-title" class="cm-wn-filter-title eyebrow mb-3">{{ "community.wn.filter_aria" | t(lang) }}</p>
         <div class="cm-chips chip-row-nowrap" role="group" aria-labelledby="wn-filter-title">
           <button type="button" class="chip" :aria-pressed="(filter === '').toString()" aria-pressed="true" @click="setFilter('')">
             {{ "common.all" | t(lang) }} <span class="cm-wn-count">{{ items | length }}</span>
@@ -164,6 +165,8 @@ pageScripts: ["/assets/js/community.js"]
             {%- set href = it | cmHref(lang) -%}
             {%- set ex = it.extra or {} -%}
             {%- if it._isGroup -%}{%- set kindLabel = "community.wn.photo_group" | t(lang) -%}
+            {#- a flyer from the committee's Drive "flyers" folder is a flyer, not a photo (Portfolio keeps "Image": its file type) -#}
+            {%- elif it.source == "drive" and it.category == "flyers" -%}{%- set kindLabel = "kind.flyer" | t(lang) -%}
             {%- elif it.kind == "episode" and ex.show_name -%}{%- set kindLabel = ex.show_name -%}
             {%- elif it.kind == "video" and (it | mediaVideoKind) == "weekly" -%}{%- set kindLabel = "media.show_short_weekly" | t(lang) -%}
             {%- elif it.kind == "post" and igProfiles[ex.account] -%}{%- set kindLabel = igProfiles[ex.account].name -%}

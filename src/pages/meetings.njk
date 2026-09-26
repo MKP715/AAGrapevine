@@ -8,17 +8,20 @@ descKey: committee.meetings.meta_desc
 pageScripts: ["/assets/js/committee.js"]
 ---
 {#- Meetings (/meetings/ — the old /meeting/ address redirects here, #anchors kept: meeting.njk).
-    The shared page hero (two jump links: the Grapevine meetings and the weekly open meetings), the
-    committee sub-nav, then:
+    The shared page hero (two jump links: the Grapevine meetings and the weekly open meetings — on /es/
+    the weekly open meetings first, La Viña's being there), the committee sub-nav, then:
     (a) #committee-meeting — the committee's monthly Zoom meeting: live countdown, how to join, the
-        next dates (+ the calendar feed), who can attend, the chair and what happens at the meeting,
-        on one board that ends level on wide screens;
+        next dates (+ the calendar feed), who can attend, the chair (+ a link to the agendas and past
+        reports in the Portfolio) and what happens at the meeting, on one board that ends level on wide
+        screens;
     (b) #grapevine-meetings — the Grapevine ("GR") meetings of the meeting lists in and next to our
         Area (db.meetings, its ONE home on the site): one card per group with its whole week, our
         Area first, by office region (Dallas area, Fort Worth area …), then each nearby region —
         both halves with the same region heads; filters (day, city/county/group, in person/online,
-        nearby on/off) in committee.js (cmGvMeetings) — without JavaScript every group shows;
-    (c) #weekly-open — the weekly open meetings of AA Grapevine and La Viña.
+        nearby on/off) in committee.js (cmGvMeetings) — without JavaScript every group shows. On /es/,
+        when no group on the lists meets in Spanish, the intro points to #weekly-open;
+    (c) #weekly-open — the weekly open meetings of AA Grapevine and La Viña (La Viña's card links to its
+        official flyer on the committee's Drive when one matches lavina_weekly_open.flyer_match).
     Each section opens with ui.sectionHead (eyebrow, title, one line of text). -#}
 {% import "macros/ui.njk" as ui with context %}
 {%- set m = site.meeting -%}
@@ -28,9 +31,10 @@ pageScripts: ["/assets/js/committee.js"]
 {%- set timeRange = m | cmTimeRange(lang) -%}
 {#- The weekly open meetings (Grapevine Weekly Open + La Viña), the page language's first -#}
 {%- set wos = db.weekly_open.items | cmWeeklyAll(lang) -%}
-{#- Monthly recurring events (config/site.yml `recurring_events:`, e.g. the CityWide Dallas booth):
-    their next date, as a small "Also every month" box under the meeting dates -#}
-{%- set monthly = db.events.items | cmRecurringNext(site, lang) -%}
+{#- The chair card's "Agendas and past reports" link: the Portfolio's meeting-notes section when it
+    has files (the same cmDocTabs list the Portfolio shows), else the Portfolio itself -#}
+{%- set notesTab = (db.drive.items | cmDocTabs(lang)).tabs | where("key", "notes") | first -%}
+{%- set agendaHref = ("/portfolio/" | lurl(lang)) + ("#docs-notes" if (notesTab and notesTab.count) else "") -%}
 {%- set pageAbs = page.url | siteUrl(site) -%}
 {%- set cfg = {
   rule: m | cmRuleObj,
@@ -52,9 +56,15 @@ pageScripts: ["/assets/js/committee.js"]
     The committee meeting is the first block right under the hero (its Join button and live
     countdown are there), so it needs no jump link. -#}
 {% call ui.pageHero(lang, "nav.meetings" | t(lang), "committee.meetings.hero_sub" | t(lang), "calendar-clock", "committee.meetings.eyebrow" | t(lang)) %}
+  {#- /es/: La Viña first (SPEC 1.18) — the weekly open meetings (La Viña's Reunión Abierta) lead -#}
   <nav class="hero-actions" aria-label="{{ 'committee.meetings.jump_aria' | t(lang) }}">
+    {% if lang == "es" %}
+    <a href="#weekly-open" class="btn-light">{% icon "video", "size-4" %} {{ "committee.meetings.jump_weekly" | t(lang) }}</a>
+    <a href="#grapevine-meetings" class="btn-on-dark">{% icon "grapes", "size-4" %} {{ "committee.meetings.find_gv" | t(lang) }}</a>
+    {% else %}
     <a href="#grapevine-meetings" class="btn-light">{% icon "grapes", "size-4" %} {{ "committee.meetings.find_gv" | t(lang) }}</a>
     <a href="#weekly-open" class="btn-on-dark">{% icon "video", "size-4" %} {{ "committee.meetings.jump_weekly" | t(lang) }}</a>
+    {% endif %}
   </nav>
 {% endcall %}
 
@@ -171,8 +181,9 @@ pageScripts: ["/assets/js/committee.js"]
       </ul>
     </div>
 
-    {#- ---------- The next dates · also every month · the calendar feed (from 1024 to 1279px the card
-        spans the board, and its dates sit in rows of three: committee.css .cm-dates) ---------- -#}
+    {#- ---------- The next dates · the calendar feed (from 1024 to 1279px the card spans the board,
+        and its dates sit in rows of three: committee.css .cm-dates). The monthly booth is not
+        repeated here: it has its home on /events/ and in Home's upcoming events. ---------- -#}
     <div class="cm-dates-card card card-pad flex flex-col">
       <h3 class="card-h"><span>{% icon "calendar-days", "size-5" %}</span>{{ "committee.meeting.next_dates" | t(lang) }}</h3>
       {% set dates = meeting.upcoming | limit(7) %}
@@ -195,25 +206,6 @@ pageScripts: ["/assets/js/committee.js"]
       {% else %}
       <p class="mt-5 text-sm text-muted">{{ "committee.meeting.no_next" | t(lang) }}</p>
       {% endif %}
-      {% if monthly | length %}
-      <div class="mt-6 border-t border-line pt-4">
-        <h4 class="eyebrow font-sans">{{ "committee.meeting.also_monthly" | t(lang) }}</h4>
-        <ul class="mt-2.5 space-y-3">
-          {% for ev in monthly %}
-          {#- the whole line is the link's target (after:inset-0), not just its title -#}
-          <li class="relative flex gap-2.5 rounded-lg">
-            <span class="mt-0.5 text-vine">{% icon "repeat", "size-4" %}</span>
-            <span class="min-w-0">
-              <a class="font-semibold text-ink underline-offset-2 after:absolute after:inset-0 after:content-[''] hover:text-gv hover:underline" href="{{ '/events/' | lurl(lang) }}#{{ ev.anchor }}">{{ ev.title }}</a>
-              <span class="block text-sm text-muted">{{ ev.recurrence }}</span>
-              {#- Spanish weekday and month names are lower-case inside a sentence -#}
-              <span class="block text-sm text-muted">{{ "committee.meeting.also_next" | t(lang, { date: (ev.dateLabel | lower) if lang == "es" else ev.dateLabel }) }}</span>
-            </span>
-          </li>
-          {% endfor %}
-        </ul>
-      </div>
-      {% endif %}
       {#- The calendar feed (every meeting and event) is set up in ONE place: /events/#subscribe -#}
       <p class="mt-auto pt-3"><a href="{{ '/events/' | lurl(lang) }}#subscribe" class="inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-gv hover:underline">{% icon "calendar-sync", "size-4" %} {{ "committee.meeting.subscribe_all" | t(lang) }}</a></p>
     </div>
@@ -231,6 +223,8 @@ pageScripts: ["/assets/js/committee.js"]
     <div class="cm-chair card card-pad flex flex-col">
       <h3 class="card-h"><span>{% icon "mail", "size-5" %}</span>{{ m | pick(lang, "chair_title") }}</h3>
       <p class="mt-2 max-w-[65ch] leading-relaxed text-muted">{{ "committee.meeting.contact_text" | t(lang) }}</p>
+      {#- the agendas and past reports have one home: the Portfolio -#}
+      <p class="mt-2"><a class="link tap-link inline-flex items-center gap-1.5 text-sm" href="{{ agendaHref }}">{% icon "folder-open", "size-4 shrink-0" %}{{ "committee.meeting.agenda_link" | t(lang) }} <span aria-hidden="true">→</span></a></p>
       <div class="mt-auto flex flex-wrap gap-2.5 pt-5">
         <a class="btn-primary" href="{{ (m.chair_email or site.contact_email) | mailto('committee.meeting.mail_subject' | t(lang)) }}">{% icon "mail", "size-4" %} {{ "committee.meeting.write_chair" | t(lang) }}</a>
         <button type="button" class="btn-secondary max-w-full" data-js-only data-copy="{{ m.chair_email or site.contact_email }}">{% icon "copy", "size-4 shrink-0" %} <span class="min-w-0 truncate">{{ (m.chair_email or site.contact_email) | replace("@", "@<wbr>") | safe }}</span></button>
@@ -380,8 +374,14 @@ pageScripts: ["/assets/js/committee.js"]
   data-count-label="{{ 'committee.gvm.showing' | t(lang, { total: gvm.total }) }}" data-count-label-one="{{ 'committee.gvm.showing_one' | t(lang, { total: gvm.total }) }}"
   data-groups-one="{{ groupTpl.one }}" data-groups-many="{{ groupTpl.many }}" data-meetings-one="{{ countTpl.one }}" data-meetings-many="{{ countTpl.many }}" data-today-label="{{ 'committee.gvm.day_today' | t(lang) }}">
   <div class="container-page">
+    {#- /es/ with no Spanish-speaking group on these lists (computed: gvm.spanish): one line pointing to
+        La Viña's weekly open meeting, further down this page -#}
+    {%- set gvmIntro -%}
+    {{ "committee.gvm.what" | t(lang) }}
+    {%- if lang == "es" and gvm.total and not gvm.spanish %}<span class="mt-2 flex gap-2 text-sm"><span class="mt-0.5 shrink-0 text-lv">{% icon "languages", "size-4" %}</span><span>{{ "committee.gvm.no_spanish" | t(lang) }} <a class="link" href="#weekly-open">{{ "committee.gvm.no_spanish_link" | t(lang) }}<span aria-hidden="true"> →</span></a></span></span>{% endif %}
+    {%- endset %}
     <div id="grapevine-meetings">
-    {{ ui.sectionHead("committee.gvm.title" | t(lang), "committee.gvm.what" | t(lang), "", "", "grapes",
+    {{ ui.sectionHead("committee.gvm.title" | t(lang), gvmIntro, "", "", "grapes",
       { eyebrow: "committee.gvm.eyebrow" | t(lang), id: "gvm-title", lang: lang }) }}
     </div>
 
@@ -620,7 +620,17 @@ pageScripts: ["/assets/js/committee.js"]
           {% if not w.isLv %}<a class="btn-secondary" href="{{ '/listen/?show=wo#episodes' | lurl(lang) }}">{% icon "headphones", "size-4" %} {{ "committee.weekly.listen" | t(lang) }}</a>{% endif %}
           {% if w.detailsUrl %}<a class="btn-ghost" href="{{ w.detailsUrl }}" target="_blank" rel="noopener">{% icon "external-link", "size-4" %} {{ ("committee.weekly.details_" + key) | t(lang) }}</a>{% endif %}
         </div>
+        {#- La Viña's details come from its official flyer: the flyer itself, when it is on the committee's
+            Drive (config/site.yml lavina_weekly_open.flyer_match → driveMatch; the Portfolio stays its home) -#}
+        {%- set woFlyer = (db.drive.items | driveMatch(site.lavina_weekly_open.flyer_match)) if (w.isLv and site.lavina_weekly_open and site.lavina_weekly_open.flyer_match) else null -%}
+        {% if woFlyer %}
+        <div class="mt-auto flex flex-wrap items-center gap-x-3 gap-y-1 pt-4">
+          <p class="text-xs text-faint">{{ ("committee.weekly.source_" + key) | t(lang) }}</p>
+          <a class="btn-ghost btn-sm" href="{{ woFlyer.extra.view_url or woFlyer.url }}" target="_blank" rel="noopener">{% icon "file-image", "size-4" %} {{ "committee.events.view_flyer" | t(lang) }}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a>
+        </div>
+        {% else %}
         <p class="mt-auto pt-4 text-xs text-faint">{{ ("committee.weekly.source_" + key) | t(lang) }}</p>
+        {% endif %}
       </div>
     </article>
     {% endfor %}

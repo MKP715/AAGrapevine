@@ -6,62 +6,43 @@ pageKey: about
 titleKey: nav.about
 descKey: read.about.meta_desc
 ---
-{#- ABOUT — what and who first: the two magazines, our NETA 65 committee; then privacy & anonymity |
-    contact; how the site stays up to date (two lines, the live numbers, a link to /status/ — the
-    step-by-step lives only on /status/); open-source credits. Every section opens with
-    ui.sectionHead. (The "not an official site" note is the footer's disclaimer.) -#}
+{#- ABOUT — what and who first: the two magazines and their history (config/history.yml, a timeline by
+    decade), our NETA 65 committee; then privacy & anonymity | contact; how the site stays up to date
+    (#how: two lines and a link to /status/ — no numbers here: the totals are on Home and /status/, the
+    footer says "Last updated", and the step-by-step and the open-source credits live only on /status/).
+    An "On this page" nav after the hero; every section opens with ui.sectionHead.
+    (The "not an official site" note is the footer's disclaimer.) -#}
 {% import "macros/ui.njk" as ui with context %}
-{%- set st = db.status -%}
-{%- set counts = [
-  { k: "articles", icon: "book-open", n: st | readSourceCount("articles") },
-  { k: "pdfs", icon: "file-text", n: st | readSourceCount("pdfs") },
-  { k: "podcasts", icon: "headphones", n: st | readSourceCount("podcasts") },
-  { k: "youtube", icon: "circle-play", n: st | readSourceCount("youtube") },
-  { k: "instagram", icon: "instagram", n: st | readSourceCount("instagram") },
-  { k: "drive", icon: "folder-open", n: st | readSourceCount("drive") }
-] -%}
-{#- Credits: the website stack + the translation models -#}
-{%- set credits = [
-  ["Eleventy", "https://www.11ty.dev", "MIT", "eleventy"],
-  ["Tailwind CSS", "https://tailwindcss.com", "MIT", "tailwind"],
-  ["Alpine.js", "https://alpinejs.dev", "MIT", "alpine"],
-  ["MiniSearch", "https://github.com/lucaong/minisearch", "MIT", "minisearch"],
-  ["GLightbox", "https://github.com/biati-digital/glightbox", "MIT", "glightbox"],
-  ["lite-youtube-embed", "https://github.com/paulirish/lite-youtube-embed", "Apache-2.0", "liteyt"],
-  ["Lucide", "https://lucide.dev", "ISC", "lucide"],
-  ["markdown-it", "https://github.com/markdown-it/markdown-it", "MIT", "markdownit"],
-  ["Fraunces", "https://github.com/undercasetype/Fraunces", "OFL-1.1", "fraunces"],
-  ["Inter", "https://rsms.me/inter/", "OFL-1.1", "inter"],
-  ["CTranslate2", "https://github.com/OpenNMT/CTranslate2", "MIT", "ct2"],
-  ["Argos Translate", "https://github.com/argosopentech/argos-translate", "MIT", "argos"],
-  ["OPUS-MT", "https://github.com/Helsinki-NLP/Opus-MT", "CC-BY-4.0", "opusmt"]
-] -%}
+{%- set H = history -%}
+{#- On /es/ La Viña comes first wherever both magazines appear -#}
+{%- set pubs = ["lv", "gv"] if lang == "es" else ["gv", "lv"] -%}
 
 {#- The shared hero (same height on every page); "read-hero" (read.css) keeps phone heroes within
-    24–28rem. -#}
+    24–28rem. No jump buttons (the page has an "On this page" nav): "Contact us" writes to the committee. -#}
 {% call ui.pageHero(lang, "read.about.title" | t(lang), "read.about.subtitle" | t(lang), "info", "read.about.eyebrow" | t(lang), { class: "read-hero" }) %}
   <div class="hero-actions">
-    <a class="btn-light" href="#contact">{% icon "mail", "size-4" %} {{ "read.about.contact_btn" | t(lang) }}</a>
+    <a class="btn-light" href="mailto:{{ site.contact_email }}">{% icon "mail", "size-4" %} {{ "read.about.contact_btn" | t(lang) }}</a>
     <a class="btn-on-dark" href="{{ '/meetings/' | lurl(lang) }}#committee-meeting">{% icon "video", "size-4" %} {{ "read.about.com_meeting" | t(lang) }}</a>
   </div>
 {% endcall %}
 
+<div class="container-page page-overlap">
+  {{ ui.pageNav([
+    { href: "#magazines", label: "read.about.mags_title" | t(lang), icon: "grapes" },
+    { href: ("#history" if H.items.length else ""), label: "read.about.hist_title" | t(lang), icon: "history" },
+    { href: "#committee", label: "read.about.com_title" | t(lang), icon: "users" },
+    { href: "#privacy", label: "read.about.nav_privacy" | t(lang), icon: "eye-off" },
+    { href: "#contact", label: "read.about.contact_title" | t(lang), icon: "mail" },
+    { href: "#how", label: "read.about.nav_how" | t(lang), icon: "refresh-cw" }
+  ], lang) }}
+</div>
+
 {#- ---------- The two magazines ---------- -#}
-<section class="container-page page-start" aria-labelledby="mags-title">
+<section id="magazines" class="container-page section pt-10 sm:pt-12" aria-labelledby="mags-title">
   {{ ui.sectionHead("read.about.mags_title" | t(lang), "read.about.mags_sub" | t(lang), "", "", "grapes", { eyebrow: "Grapevine · La Viña", id: "mags-title", lang: lang }) }}
 
-  <ol class="read-timeline mb-10 grid grid-cols-1 gap-6 pl-8 md:grid-cols-3 md:pl-0 md:pt-8">
-    {% for m in [["1944", "bg-gv", "tl1"], ["1996", "bg-lv", "tl2"], ["read.about.today", "bg-vine", "tl3"]] %}
-    <li class="relative">
-      <span class="absolute -left-[1.85rem] top-1 size-4 rounded-full border-4 border-paper {{ m[1] }} md:-top-[2.3rem] md:left-0" aria-hidden="true"></span>
-      <p class="font-display text-3xl font-semibold text-ink">{{ (m[0] | t(lang)) if m[0].startsWith("read.") else m[0] }}</p>
-      <p class="mt-1 text-sm leading-relaxed text-muted">{{ ("read.about." + m[2]) | t(lang) }}</p>
-    </li>
-    {% endfor %}
-  </ol>
-
   <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
-    {% for p in (["lv", "gv"] if lang == "es" else ["gv", "lv"]) %}
+    {% for p in pubs %}
     {%- set isLv = p == "lv" -%}
     {#- @container: when the card is wide (two cards side by side on a big screen) the story
         keeps a readable line length and the facts move into a column beside it -#}
@@ -88,8 +69,62 @@ descKey: read.about.meta_desc
   </div>
 </section>
 
+{#- ---------- Our history: the milestones of both magazines, by decade (config/history.yml) ----------
+    One rail (phones) or a rail in the middle with the milestones taking turns left and right (wide).
+    Filter chips (All · Grapevine · La Viña, with counts) and "Show all" are CSS states that Alpine
+    switches (data-f / data-open on .read-hist — read.css "History"): every milestone is in the HTML,
+    and without JavaScript (or on paper) every one shows. -#}
+{% if H.items.length %}
+{%- set fLabel = { all: "common.all" | t(lang), gv: "Grapevine", lv: "La Viña" } -%}
+{%- set tBadge = { grapevine: ["badge-gv", "Grapevine"], lavina: ["badge-lv", "La Viña"], both: ["badge-vine", "read.about.hist_both" | t(lang)] } -%}
+<section id="history" class="container-page section pt-0" aria-labelledby="history-title">
+  {{ ui.sectionHead("read.about.hist_title" | t(lang), "read.about.hist_sub" | t(lang, { years: H.years, n: H.count.all, first: H.first }), "", "", "history", { eyebrow: "read.about.hist_eyebrow" | t(lang, { year: H.first }), id: "history-title", lang: lang }) }}
+  <div class="read-hist" x-data="{ f: 'all', open: false, said: '' }" data-f="all" data-open="0" :data-f="f" :data-open="open ? '1' : '0'">
+    <div class="read-hist-bar" role="group" aria-label="{{ 'read.about.hist_filter' | t(lang) }}" data-js-only>
+      {%- for k in ["all", pubs[0], pubs[1]] %}
+      <button type="button" class="chip" aria-pressed="{{ 'true' if k == 'all' else 'false' }}" :aria-pressed="String(f === '{{ k }}')" data-said="{{ 'read.about.hist_shown' | t(lang, { what: fLabel[k], n: H.count[k] }) }}" @click="f = '{{ k }}'; said = $el.dataset.said">
+        {%- if k != "all" %}<span class="read-hist-dot {{ 'bg-gv' if k == 'gv' else 'bg-lv' }}" aria-hidden="true"></span>{% endif %}
+        <span>{{ fLabel[k] }}</span> <span class="cm-chip-count">{{ H.count[k] }}</span>
+      </button>
+      {%- endfor %}
+    </div>
+    <p class="sr-only" aria-live="polite" x-text="said"></p>
+    <ol id="history-list" class="read-hist-decades" role="list">
+      {% for d in H.decades %}
+      <li class="read-hist-decade {{ d.cls }}">
+        <h3 class="read-hist-dec"><span>{{ "read.about.hist_decade" | t(lang, { d: d.decade }) }}</span></h3>
+        <ol class="read-hist-list" role="list">
+          {% for it in d.items %}
+          <li class="read-hist-item {{ it.cls }}" data-t="{{ it.type }}">
+            <div class="read-hist-card card">
+              <p class="read-hist-meta"><time class="read-hist-when" datetime="{{ it.iso }}">{{ it.label[lang] }}</time><span class="{{ tBadge[it.type][0] }}">{{ tBadge[it.type][1] }}</span></p>
+              <h4 class="h-card mt-1.5 text-balance">{{ it.title[lang] }}</h4>
+              <p class="mt-1.5 text-sm leading-relaxed text-muted">{{ it.desc[lang] }}</p>
+            </div>
+          </li>
+          {% endfor %}
+        </ol>
+      </li>
+      {% endfor %}
+    </ol>
+    <div class="read-hist-foot">
+      <button type="button" class="btn-secondary read-hist-more {{ H.moreCls }}" aria-controls="history-list" aria-expanded="false" :aria-expanded="String(open)" @click="open = !open; if (!open) $nextTick(() => $el.scrollIntoView({ block: 'nearest' }))" data-js-only>
+        {%- for k in ["all", "gv", "lv"] %}<span data-l="{{ k }}">{{ "read.about.hist_more" | t(lang, { n: H.count[k] }) }}</span>{% endfor -%}
+        <span data-l="less">{{ "read.about.hist_less" | t(lang) }}</span> {% icon "chevron-down", "size-4" %}
+      </button>
+      {%- if H.official.grapevine and H.official.lavina %}
+      {%- set offLinks = { gv: [H.official.grapevine, "read.about.hist_official_gv" | t(lang)], lv: [H.official.lavina, "read.about.hist_official_lv" | t(lang)] } %}
+      <p class="max-w-2xl text-sm leading-relaxed text-muted">{{ "read.about.hist_official" | t(lang) }}
+        {% for p in pubs %}<a class="link" href="{{ offLinks[p][0] }}" target="_blank" rel="noopener">{{ offLinks[p][1] }}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a>{{ " · " if loop.first }}{% endfor %}
+      </p>
+      {%- endif %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
 {#- ---------- Our committee (who we are, who we serve) ---------- -#}
-<section class="section section-band" aria-labelledby="committee-title">
+<section id="committee" class="section section-band" aria-labelledby="committee-title">
   <div class="container-page">
     {{ ui.sectionHead("read.about.com_title" | t(lang), "read.about.com_p1" | t(lang), site.committee_page or "", "read.about.com_area_page" | t(lang), "users", { eyebrow: site | pick(lang, "area"), tone: "text-vine", id: "committee-title", lang: lang }) }}
     <div class="max-w-3xl">
@@ -116,7 +151,7 @@ descKey: read.about.meta_desc
 
 {#- ---------- Privacy & anonymity | contact ---------- -#}
 <div class="container-page section grid grid-cols-1 gap-x-10 gap-y-12 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
-  <section aria-labelledby="privacy-title">
+  <section id="privacy" aria-labelledby="privacy-title">
     {{ ui.sectionHead("read.about.privacy_title" | t(lang), "", "", "", "eye-off", { eyebrow: "read.about.privacy_eyebrow" | t(lang), tone: "text-vine", id: "privacy-title", lang: lang }) }}
     <ul class="card card-pad space-y-3">
       {% for n in range(1, 6) %}
@@ -140,52 +175,8 @@ descKey: read.about.meta_desc
   </section>
 </div>
 
-{#- ---------- How this site stays up to date: two lines, the live numbers, the full status ---------- -#}
+{#- ---------- How this site stays up to date: two lines and the link to the full status ---------- -#}
 <section id="how" class="container-page section pt-0" aria-labelledby="how-title">
   {{ ui.sectionHead("read.about.how_title" | t(lang), "read.about.how_sub" | t(lang), '/status/' | lurl(lang), "read.about.status_link" | t(lang), "refresh-cw", { eyebrow: "read.about.how_eyebrow" | t(lang), id: "how-title", lang: lang }) }}
-  <div class="card overflow-hidden">
-    <p class="flex flex-wrap items-center gap-x-2 gap-y-1 border-b border-line px-5 py-3.5 text-sm font-semibold text-ink sm:px-6">
-      <span class="relative flex size-2.5" aria-hidden="true"><span class="absolute inline-flex size-full animate-ping rounded-full bg-vine opacity-60"></span><span class="relative inline-flex size-2.5 rounded-full bg-vine"></span></span>
-      {% if st.generated and (st | readSourceCount("articles") or st | readSourceCount("pdfs") or st | readSourceCount("youtube")) %}
-        <span>{{ "read.about.last_sync" | t(lang) }} <time datetime="{{ st.generated }}" data-local-time>{{ st.generated | fmtDate(lang, "datetime") }}</time></span>
-      {% else %}
-        <span>{{ "read.about.first_sync" | t(lang) }}</span>
-      {% endif %}
-    </p>
-    <dl class="about-stats grid grid-cols-2 gap-px bg-line sm:grid-cols-3 lg:grid-cols-6">
-      {% for c in counts %}
-      <div class="bg-surface p-5">
-        <dt class="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-muted">{% icon c.icon, "size-3.5" %} {{ ("read.about.n_" + c.k) | t(lang) }}</dt>
-        {% if c.n %}<dd class="read-num mt-1 font-display text-3xl font-semibold text-ink">{{ c.n }}</dd>
-        {% elif c.k == "drive" and st.generated %}<dd class="mt-2 flex items-center gap-1.5 text-sm font-medium leading-snug text-vine">{% icon "folder-up", "size-4 shrink-0" %} {{ "read.about.n_drive_zero" | t(lang) }}</dd>
-        {% else %}<dd class="read-num mt-1 font-display text-3xl font-semibold text-ink">—</dd>{% endif %}
-      </div>
-      {% endfor %}
-    </dl>
-  </div>
-  <p class="mt-4 flex max-w-3xl gap-2.5 text-sm leading-relaxed text-muted"><span class="mt-0.5 text-gv">{% icon "shield-check", "size-4" %}</span><span><strong class="font-semibold text-ink">{{ "read.about.polite_title" | t(lang) }}.</strong> {{ "read.about.polite_text" | t(lang) }}</span></p>
-</section>
-
-{#- ---------- Open-source credits ---------- -#}
-<section class="section section-band" aria-labelledby="credits-title">
-  <div class="container-page">
-    {{ ui.sectionHead("read.about.credits_title" | t(lang), "read.about.credits_sub" | t(lang), "", "", "heart", { eyebrow: "read.about.credits_eyebrow" | t(lang), tone: "text-grape", id: "credits-title", lang: lang }) }}
-    {#- one list, split into columns when it is wide (read.css .read-credit-list) -#}
-    {%- set half = ((credits.length + 1) / 2) | round(0, "floor") %}
-    <div class="@container">
-      <ul class="read-credit-list card overflow-hidden" style="--rows: {{ half }}">
-        {% for c in credits %}
-        <li class="{{ 'read-credit-c1' if loop.index <= half }}{{ ' read-credit-c2top' if loop.index == half + 1 }}">
-          <a class="group flex min-h-14 items-center gap-3 px-4 py-2.5 no-underline transition hover:bg-surface-2" href="{{ c[1] }}" target="_blank" rel="noopener">
-            <span class="min-w-0 flex-1">
-              <span class="block font-semibold text-ink group-hover:text-gv">{{ c[0] }}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></span>
-              <span class="block text-xs text-muted">{{ ("read.about.cr_" + c[3]) | t(lang) }}</span>
-            </span>
-            <span class="badge-muted shrink-0 font-mono">{{ c[2] }}</span>
-          </a>
-        </li>
-        {% endfor %}
-      </ul>
-    </div>
-  </div>
+  <p class="flex max-w-3xl gap-2.5 text-sm leading-relaxed text-muted"><span class="mt-0.5 text-gv">{% icon "shield-check", "size-4" %}</span><span><strong class="font-semibold text-ink">{{ "read.about.polite_title" | t(lang) }}.</strong> {{ "read.about.polite_text" | t(lang) }}</span></p>
 </section>

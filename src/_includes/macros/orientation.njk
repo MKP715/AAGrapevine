@@ -40,7 +40,9 @@
   <p class="o101-live-main">{{ site.meeting | cmRule(lang) }}</p>
   <p class="o101-live-sub">{{ "orientation.live_meeting_sub" | t(lang, { time: site.meeting | cmTimeRange(lang) }) }}</p>
   {%- endif %}
-  {%- if gvm %}<p class="o101-live-extra">{{ ("orientation.live_gvm_one" if gvm == 1 else "orientation.live_gvm") | t(lang, { n: gvm }) }}</p>{% endif %}
+  {#- the Grapevine meetings sentence links to their list (/meetings/#grapevine-meetings); "Meeting
+      details" below stays with the committee meeting -#}
+  {%- if gvm %}<p class="o101-live-extra">{{ ("orientation.live_gvm_one" if gvm == 1 else "orientation.live_gvm") | t(lang, { n: gvm }) }}{% if withLink %} <a class="link" href="{{ '/meetings/' | lurl(lang) }}#grapevine-meetings">{{ "committee.meetings.find_gv" | t(lang) }}<span aria-hidden="true"> →</span></a>{% endif %}</p>{% endif %}
   {%- if withLink %}<a class="o101-live-link" href="{{ '/meetings/' | lurl(lang) }}#committee-meeting">{{ "orientation.live_meeting_link" | t(lang) }} {% icon "arrow-right", "size-4" %}</a>{% endif %}
 {%- elif kind == "tip" %}
   {%- set tip = m.tips[0] if (m and m.tips and m.tips.length) else null -%}

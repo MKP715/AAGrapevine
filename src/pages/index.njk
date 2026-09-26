@@ -15,10 +15,11 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
     the right) and is left out when it has no data — Home never shows an empty section.
     Section order: hero (the shared ui.pageHero, with the next-meeting card on the
     right from 1024px) · meeting card (below 1024px) + site counters · the Grapevine / La Viña
-    daily quote (a second card in the same page-overlap block) · FRESH (what no other
-    section shows) · announcements · magazines (+ write for the magazines, + this month in the
-    Shop: Book of the Month · subscriptions · monthly toolkit) · listen & watch · PUBLISHED
-    WRITERS · events · library · instagram · committee uploads · the service band.
+    daily quote (a second card in the same page-overlap block) · announcements · magazines (+ write
+    for the magazines, + this month in the Shop: Book of the Month · subscriptions · monthly
+    toolkit) · listen & watch · PUBLISHED WRITERS · events · library · instagram · committee uploads
+    · the service band. (No mixed "newest" strip: every kind has its own section, and the hero's
+    "See what's new" opens the full feed.)
     The hero art (hero-canvas.js) is loaded by layouts/base.njk on every page.
     ====================================================================== -#}
 {% import "macros/ui.njk" as ui with context %}
@@ -251,6 +252,9 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
     magazine named for screen readers). No other page repeats it; left out when there is no quote from
     the last 2 days (two runs a day keep it current). -#}
 {%- set quotes = D.quote | homeDailyQuotes(L, 2) -%}
+{#- the announcements (section 4) are the first section after this block; without them the magazines
+    band follows it, so the block keeps the band's outside gap itself (mb-10 / sm:mb-12) -#}
+{%- set anns = (D.announcements.items | homeAnnouncements) | limit(2) -%}
 {%- set stats = [
   { n: D.pdfs.items.length, key: "home.stat_pdfs", url: "/library/", icon: "file-text", tone: "gv" },
   { n: D.episodes.items.length, key: "home.stat_episodes", url: "/listen/", icon: "headphones", tone: "grape" },
@@ -259,7 +263,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
 ] %}
 {%- set statCount = 0 %}{% for s in stats %}{% if s.n %}{% set statCount = statCount + 1 %}{% endif %}{% endfor %}
 {% if meeting.next or statCount or quotes.length %}
-<div class="container-page page-overlap home-under">
+<div class="container-page page-overlap home-under{{ ' mb-10 sm:mb-12' if not anns.length }}">
   {% if meeting.next or statCount %}
   <div class="card home-under-card{{ ' max-sm:hidden' if not meeting.next }}{{ ' lg:hidden' if not statCount }}">
     {% if meeting.next %}<div class="home-under-meet lg:hidden">{{ meetingCard("page", L, meeting, mt) }}</div>{% endif %}
@@ -316,8 +320,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
 {% endif %}
 
 {#- =====================================================================
-    Data for every section first: "Fresh" (the first section) leaves out what the sections
-    further down already show, so no item appears twice on the page (homeFresh `shown`).
+    Data for every section first.
     ===================================================================== -#}
 {% set spot = D | homeSpotlight(site.spotlight.home_days if site.spotlight else 60, site.spotlight.list_days if site.spotlight else null) %}
 {% set gvIssue = D.articles.items | homeLatestIssue("gv", 5, D.articles.issues, L) %}
@@ -333,70 +336,13 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
 {% set newestPdfs = D.pdfs.items | homeNewestPdfs(6) %}
 {% set posts = D.instagram.items | homeInstagram(6) %}
 {% set driveItems = D.drive.items | homeDrive(6) %}
-{% set fresh = D.whatsnew.items | homeFresh(10, [ep], moreEps, vids, gvIssue.items, lvIssue.items, spot.a65, spot.tx, newestPdfs, posts, driveItems) %}
 
 {#- =====================================================================
-    3. FRESH OFF THE VINE — the newest items across every source that no other section of
-       this page shows. Always full rows: phones swipe through all 10 · 2 columns × 3 rows ·
-       3 × 2 (1024px) · 4 × 2 (1280px) · 5 × 2 (1800px) — home.css hides the cards that would
-       start an incomplete row. The first real section after the page-overlap block.
+    4. ANNOUNCEMENTS — pinned first; left out when there are none. The first section after the
+       page-overlap block (pt-10 / sm:pt-12); without it the magazines band follows that block.
     ===================================================================== -#}
-{% if fresh.length %}
-<section class="pt-10 pb-12 sm:pt-12 sm:pb-16" aria-labelledby="fresh-title">
-  <div class="container-page">
-    {{ ui.sectionHead("home.fresh_title" | t(L), "home.fresh_sub" | t(L), "/whats-new/" | lurl(L), "home.fresh_all" | t(L), "sparkles", { eyebrow: "home.fresh_eyebrow" | t(L), tone: "text-gv", id: "fresh-title", lang: L }) }}
-    <ul class="home-rail no-scrollbar" role="list">
-      {% for it in fresh %}
-      {%- set pic = it | homeImage -%}
-      {%- set href = (it.url or '/whats-new/') | lurl(L) -%}
-      {%- set isExt = href.startsWith("http") -%}
-      {%- set docLang = it | homeDocLang -%}
-      {%- set isMedia = it.kind == "episode" or it.kind == "video" -%}
-      {%- set ttl = (it | mediaTitle(L)) if isMedia else (it | homeTitle(L)) -%}
-      {%- set ttlOrig = (it | mediaTitle(it.lang)) if isMedia else it.title -%}
-      {%- set itShow = (it | mediaShowOf(epShows)) if it.kind == "episode" else null -%}
-      {%- set isWeekly = (itShow and itShow.weekly) or (it.kind == "video" and (it | mediaVideoKind) == "weekly") -%}
-      <li class="home-rail-item">
-        <article class="card card-link group relative flex h-full flex-col overflow-hidden">
-          <div class="relative aspect-[16/10] overflow-hidden rounded-t-[var(--radius-card)] bg-surface-2">
-            {{ tile(it, L) }}
-            {% if pic %}{{ img(pic, ("absolute inset-0 size-full object-contain p-3" if it.kind == "episode" else ("absolute inset-0 size-full object-cover object-top" if it.kind == "pdf" else "absolute inset-0 size-full object-cover")) ~ " transition duration-500 group-hover:scale-[1.04]") }}{% endif %}
-            {% if pic and (it.kind == "video" or it.kind == "episode") %}
-            <span class="absolute inset-0 grid place-items-center" aria-hidden="true"><span class="grid size-11 place-items-center rounded-full bg-black/55 text-white backdrop-blur transition group-hover:scale-110">{% icon "play", "size-5 translate-x-px" %}</span></span>
-            {% endif %}
-            {% if it.extra and it.extra.is_group and it.extra.count > 1 %}<span class="absolute right-2.5 bottom-2.5 inline-flex items-center gap-1 rounded-full bg-black/60 px-2 py-0.5 text-xs font-semibold text-white">{% icon "images", "size-3.5" %} {{ it.extra.count }}</span>{% endif %}
-          </div>
-          <div class="flex flex-1 flex-col gap-2 p-4">
-            <div class="flex flex-wrap items-center gap-1.5">
-              {{ ui.sourceBadge(it, L) }}
-              {% if isWeekly %}<span class="badge-grape">{% icon "users", "size-3" %} {{ "media.show_short_weekly" | t(L) }}</span>{% endif %}
-              {% if it.is_new %}<span class="badge-new">{{ "common.new" | t(L) }}</span>{% endif %}
-              {% if docLang and docLang != L %}<span class="badge-muted uppercase" title="{{ ('lang.' ~ docLang) | t(L) }}">{{ docLang }}</span>{% endif %}
-            </div>
-            <h3 class="font-display text-[1.05rem] font-semibold leading-snug text-ink"{% if it.lang and it.lang != L and it.lang != "und" and ttl == ttlOrig %} lang="{{ it.lang }}"{% endif %}>
-              <a href="{{ href }}" class="line-clamp-3 no-underline after:absolute after:inset-0 group-hover:text-gv"{% if isExt %} target="_blank" rel="noopener"{% endif %}>{{ ttl }}</a>
-            </h3>
-            <p class="meta-row mt-auto pt-1 text-xs text-faint">
-              <span>{% icon it.kind | homeKindIcon, "size-3.5 inline-block align-[-0.2em] mr-1" %}{{ ("kind." ~ it.kind) | t(L) }}</span>
-              {% if it.kind == "article" and it.extra and it.extra.issue_label %}<span>{{ it.extra.issue_label | homeIssueLabel(L) }}</span>
-              {% elif it.date %}<time datetime="{{ it.date | isoDate }}">{{ it.date | fmtDate(L, ("month" if (it.extra and it.extra.date_approx) else "short")) }}</time>{% endif %}
-            </p>
-            {% if it | machineFor(L) %}<p class="-mt-1">{{ ui.autoNote(it, L) }}</p>{% endif %}
-          </div>
-        </article>
-      </li>
-      {% endfor %}
-    </ul>
-  </div>
-</section>
-{% endif %}
-
-{#- =====================================================================
-    4. ANNOUNCEMENTS — pinned first; left out when there are none
-    ===================================================================== -#}
-{% set anns = (D.announcements.items | homeAnnouncements) | limit(2) %}
 {% if anns.length %}
-<section class="container-page pb-12 sm:pb-16" aria-labelledby="ann-title">
+<section class="container-page pt-10 pb-12 sm:pt-12 sm:pb-16" aria-labelledby="ann-title">
   {{ ui.sectionHead("home.ann_title" | t(L), "home.ann_sub" | t(L), "/announcements/" | lurl(L), "home.ann_all" | t(L), "megaphone", { eyebrow: "nav.announcements" | t(L), tone: "text-vine", id: "ann-title", lang: L }) }}
   <div class="grid items-start gap-5 {{ 'lg:grid-cols-2' if anns.length > 1 }}">
     {% for a in anns %}
@@ -544,9 +490,14 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
     {%- set epSE = ep | mediaSE(L) -%}
     {#- A Weekly Open title already names the meeting's date ("Meeting of September 16, 2026"). -#}
     {%- set epMeta = ([ep.extra.duration_sec | duration] if (epShow and epShow.weekly) else [ep.date | fmtDate(L, "medium"), ep.extra.duration_sec | duration]) | join(" · ") -%}
-    <div class="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1.45fr)_minmax(0,1fr)] lg:items-start" x-data="homePlayer">
+    {#- Side by side (from 1024px) the two cards are the same height (the grid stretches them; they
+        stack at 150% text below 1280px, home.css .home-lw). Each one's footer is anchored to its
+        bottom (mt-auto): the player in the episode card (the extra height of a shorter episode card
+        sits between its text and the player), the weekly open meetings link in "More episodes"
+        (there the episode rows share the extra height: the list grows and so does each row). -#}
+    <div class="home-lw grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1.45fr)_minmax(0,1fr)]" x-data="homePlayer">
       <article class="home-episode card relative flex flex-col overflow-hidden p-5 sm:p-7" aria-labelledby="ep-title">
-        <div class="relative flex items-start gap-4 sm:gap-5">
+        <div class="relative mb-5 flex items-start gap-4 sm:gap-5">
           <div class="relative size-20 shrink-0 overflow-hidden rounded-2xl bg-grape-soft shadow-[var(--shadow-card)] sm:size-40">
             <span class="absolute inset-0 grid place-items-center text-grape" aria-hidden="true">{% icon "headphones", "size-10" %}</span>
             {% if ep.extra.thumb or ep.image %}<img x-ref="art" src="{{ ep.extra.thumb or ep.image }}" alt="" width="160" height="160" loading="lazy" decoding="async" referrerpolicy="no-referrer" class="absolute inset-0 size-full object-cover" onerror="this.style.visibility='hidden'">{% endif %}
@@ -568,7 +519,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
           </div>
         </div>
         {#- The player sits in the same frame as the Listen page's player (media-player) -#}
-        <div class="media-player relative mt-5">
+        <div class="media-player relative mt-auto">
           {% if ep.extra.audio_url %}
           <audio x-ref="audio" class="home-audio w-full" controls preload="none" src="{{ ep.extra.audio_url }}">
             {{ "home.audio_fallback" | t(L) }} <a href="{{ ep.extra.audio_url }}">{{ "home.download_episode" | t(L) }}</a>.
@@ -590,7 +541,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
 
       <div class="card card-pad flex flex-col">
         <h3 class="card-h"><span class="text-grape!">{% icon "list-music", "size-5" %}</span>{{ "home.more_episodes" | t(L) }}</h3>
-        <ul class="mt-2 divide-y divide-line" role="list">
+        <ul class="mt-2 flex grow flex-col divide-y divide-line{{ ' mb-3' if (wo and wo.extra) }}" role="list">
           {% for e in moreEps %}
           {%- set et = e | mediaTitle(L) -%}
           {%- set eShow = e | mediaShowOf(epShows) -%}
@@ -600,7 +551,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
           {#- Rows of the other show say which show (like the badge on /listen/), and so does the player title. -#}
           {%- set otherShow = eShow and epShow and eShow.key != epShow.key -%}
           {%- set eFull = (eShow.short ~ " · " ~ et) if otherShow else et -%}
-          <li class="flex items-center gap-3 py-3{{ ' max-sm:hidden' if loop.index > 2 }}">
+          <li class="flex grow items-center gap-3 py-3{{ ' max-sm:hidden' if loop.index > 2 }}">
             <span class="relative size-14 shrink-0 overflow-hidden rounded-xl bg-grape-soft text-grape">
               <span class="absolute inset-0 grid place-items-center" aria-hidden="true">{% icon "headphones", "size-5" %}</span>
               {#- the ≤480px copy the sync makes (extra.thumb) for a 56px tile, not the 1500–3000px cover art -#}
@@ -627,7 +578,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
         {% if wo and wo.extra %}
         {#- both weekly open meetings in one line (as on /listen/ and /watch/); details on /meetings/ -#}
         {%- set woWhen = D.weekly_open.items | mediaWeeklyDays(L) -%}
-        <a href="{{ '/meetings/#weekly-open' | lurl(L) }}" class="group mt-3 flex items-start gap-3 rounded-xl bg-gv-soft/60 p-3.5 no-underline transition hover:bg-gv-soft">
+        <a href="{{ '/meetings/#weekly-open' | lurl(L) }}" class="group mt-auto flex items-start gap-3 rounded-xl bg-gv-soft/60 p-3.5 no-underline transition hover:bg-gv-soft">
           <span class="grid size-10 shrink-0 place-items-center rounded-lg bg-surface text-gv">{% icon "video", "size-5" %}</span>
           <span class="min-w-0">
             <span class="block text-sm font-semibold text-ink group-hover:text-gv">{{ ("home.weekly_opens" if D.weekly_open.items.length > 1 else "home.weekly_open") | t(L) }}</span>
@@ -783,20 +734,27 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
       {#- date tile, "when" line and place — the same rules as /events/ (a date RANGE for an event over
           several days, the place in the page language, "Venue to be announced" without a map pin) -#}
       {%- set info = e | homeEventInfo(L) -%}
-      {%- if e.category == "committee" or e.category == "gv-calendar" %}{% set tone = "gv" %}{% elif e.category == "lv-calendar" %}{% set tone = "lv" %}{% elif e.category == "flyer" or e.category == "recurring" or e.category == "neta65" %}{% set tone = "vine" %}{% else %}{% set tone = "grape" %}{% endif -%}
+      {#- the kind's colour, the same as on /events/ (eventTone: committee · gv · lv · booth · assembly · other) -#}
+      {%- set tone = e | eventTone -%}
       {#- A monthly recurring event (e.g. the CityWide Dallas booth) opens its card on /events/ -#}
       {%- set href = (("/events/#" ~ (e | homeEventAnchor)) if e.category == "recurring" else (e.url or x.flyer_url or x.online_url or "/events/")) | lurl(L) -%}
       {%- set et = e | tx("title", L) -%}
       <li{% if loop.index > 3 %} class="max-sm:hidden"{% endif %}>
-        <article class="card card-link group relative flex h-full gap-4 p-4 sm:flex-col sm:p-5">
-          <div class="home-datetile home-tone-{{ tone }}{{ ' is-range' if info.tile.range }}" aria-hidden="true">
+        <article class="card card-link ev-accent ev-tone-{{ tone }} group relative flex h-full gap-4 p-4 sm:flex-col sm:p-5">
+          <div class="home-datetile{{ ' is-range' if info.tile.range }}" aria-hidden="true">
             <span class="home-datetile-month">{{ info.tile.mon }}</span>
             <span class="home-datetile-day">{{ info.tile.day }}</span>
             <span class="home-datetile-wd">{{ info.tile.wd }}</span>
           </div>
           <div class="min-w-0 flex-1">
             <p class="flex flex-wrap items-center gap-1.5">
-              <span class="{{ 'badge-' ~ tone }}">{{ ("home.evcat." ~ (e.category or "manual")) | t(L) }}</span>
+              {#- names the kind in words — the same labels and icons as the /events/ badges, so colour is never the only signal -#}
+              {%- set kindIcon = { committee: "users", gv: "grapes", lv: "grapes", booth: "store", assembly: "landmark", other: "map-pin" } -%}
+              {%- if tone == "gv" and e.category == "gv-calendar" %}{% set kindLabel = "committee.events.badge_gv" | t(L) %}
+              {%- elif tone == "lv" and e.category == "lv-calendar" %}{% set kindLabel = "committee.events.badge_lv" | t(L) %}
+              {%- elif tone == "other" %}{% set kindLabel = ("committee.events.kind.neta" if e.category == "neta65" else "committee.events.kind.event") | t(L) %}
+              {%- else %}{% set kindLabel = ("committee.events.kind." ~ tone) | t(L) %}{% endif %}
+              <span class="badge ev-badge">{% icon kindIcon[tone], "size-3" %} {{ kindLabel }}</span>
               {% if info.tentative %}{{ ui.tentativeBadge(L) }}{% endif %}
               {% if e.lang and e.lang != L and e.lang != "und" and ((e | machineFor(L)) or et == e.title) %}<span class="badge-muted uppercase" title="{{ ('lang.' ~ e.lang) | t(L) }}">{{ e.lang }}</span>{% endif %}
             </p>
@@ -930,13 +888,17 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
 {% endif %}
 
 {#- =====================================================================
-    11. COMMITTEE UPLOADS — the newest Drive documents / photos; left out while there are none
+    11. COMMITTEE UPLOADS — the newest Drive documents / photos; left out while there are none.
+        A file from the Drive "flyers" folder is labelled "Flyer" (kind.flyer), not "Photo". The
+        Photos button shows only when /photos/ has an album (the same cmAlbums list), so Home never
+        links to an empty page.
     ===================================================================== -#}
 {% if driveItems.length %}
+{%- set hasAlbums = (db.drive.items | cmAlbums(L)) | length -%}
 <section class="section{{ ' pt-0' if posts.length }}" aria-labelledby="drive-title">
   <div class="container-page">
     {% call ui.sectionHead("home.drive_title" | t(L), "home.drive_sub" | t(L), "/portfolio/" | lurl(L), "home.drive_all" | t(L), "folder-open", { eyebrow: "home.drive_eyebrow" | t(L), tone: "text-vine", id: "drive-title", lang: L }) %}
-    <a href="{{ '/photos/' | lurl(L) }}" class="btn-ghost btn-sm">{% icon "images", "size-4" %} {{ "nav.photos" | t(L) }}</a>
+    {% if hasAlbums %}<a href="{{ '/photos/' | lurl(L) }}" class="btn-ghost btn-sm">{% icon "images", "size-4" %} {{ "nav.photos" | t(L) }}</a>{% endif %}
     {% endcall %}
     <ul class="home-drive-grid grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6" role="list">
       {% for f in driveItems %}
@@ -950,7 +912,8 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
             {% if pic %}{{ img(pic, "absolute inset-0 size-full object-cover " ~ ("" if isPhoto else "object-top") ~ " transition duration-500 group-hover:scale-[1.04]") }}{% endif %}
           </div>
           <div class="flex flex-1 flex-col gap-1 p-3.5">
-            <p class="inline-flex items-center gap-1 text-[0.7rem] font-semibold uppercase tracking-wider text-vine">{% icon f.kind | homeKindIcon, "size-3.5" %} {{ ("kind." ~ f.kind) | t(L) }}</p>
+            {%- set isFlyer = f.category == "flyers" -%}
+            <p class="inline-flex items-center gap-1 text-[0.7rem] font-semibold uppercase tracking-wider text-vine">{% set fIcon = "megaphone" if isFlyer else (f.kind | homeKindIcon) %}{% icon fIcon, "size-3.5" %} {{ ("kind.flyer" if isFlyer else ("kind." ~ f.kind)) | t(L) }}</p>
             <h3 class="text-sm font-semibold leading-snug text-ink">
               <a href="{{ fHref }}"{% if fHref.startsWith('http') %} target="_blank" rel="noopener"{% endif %} class="line-clamp-2 no-underline after:absolute after:inset-0 group-hover:text-gv">{{ f | homeTitle(L) }}</a>
             </h3>
@@ -967,15 +930,16 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
 
 {#- =====================================================================
     12. FOR GVRs, RLVs & DISTRICTS — the closing feature band (the monthly GV/LV report lives on
-        /monthly/#report). Phones: the first 3 links + "More" (the other 3 open in place).
+        /monthly/#report): the two registration buttons and four link tiles (2 × 2 from 640px).
     ===================================================================== -#}
-{#- Four service tools for a group's GVR / RLV. The feeds (RSS, calendar) are not repeated here:
-    they live in the footer's "Stay updated" column, right below; the digest is the one "get
-    updates" tile. -#}
+{#- Four service tools for a group's GVR / RLV, the course for new representatives first. The feeds
+    (RSS, calendar) are not repeated here: they live in the footer's "Stay updated" column, right
+    below; the digest is the one "get updates" tile. The QR codes & posters page (/share/) is in the
+    footer and in the GVR corner's checklist. -#}
 {%- set svcLinks = [
+  { url: "/orientation/", icon: "sprout", key: "nav.orientation", desc: "nav.orientation_desc" },
   { url: "/gvr/", icon: "badge-check", key: "nav.gvr", desc: "home.svc_corner_desc" },
   { url: "/monthly/#report", icon: "clipboard-list", key: "home.svc_report", desc: "home.svc_report_desc" },
-  { url: "/share/", icon: "qr-code", key: "nav.share", desc: "home.svc_share_desc" },
   { url: "/digest/", icon: "mail-open", key: "nav.digest", desc: "home.svc_digest_desc" }
 ] %}
 <section class="home-band relative isolate overflow-hidden text-white" aria-labelledby="svc-title">

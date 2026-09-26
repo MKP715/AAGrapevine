@@ -80,6 +80,10 @@
       grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: auto auto 1fr;
       grid-template-areas: "count join join" "dates who chair" "dates agenda agenda";
     }
+    /* the dates card is two rows tall here: when it is taller than its dates, the list grows and
+       the extra height goes between the date rows (each row keeps its size, so the "Next" row's
+       highlight stays compact) instead of a blank band above the calendar link at its foot */
+    .cm-board > .cm-dates-card .cm-dates { flex-grow: 1; align-content: space-between; }
   }
   /* What happens: six numbered steps (step-num) — one column (joined by a thin line), two from 36rem
      of card width, three from 48rem (the card spans two columns from 1024px) */
@@ -217,9 +221,10 @@
   .cm-feed-other { overflow-wrap: anywhere; }
 
   /* ---------- events ---------- */
+  /* the next committee meeting, pinned: in the committee's colour (grape — the /events/ colour key) */
   .cm-pinned {
     position: relative; border-radius: 1.25rem; padding: 1.25rem; color: #fff;
-    background: radial-gradient(120% 140% at 100% 0%, rgb(108 176 239 / 0.35), transparent 55%), linear-gradient(135deg, #0f1730 0%, #0b3f73 55%, #0a5fa8 100%);
+    background: radial-gradient(120% 140% at 100% 0%, rgb(194 154 232 / 0.3), transparent 55%), linear-gradient(135deg, #1a1030 0%, #3b1c5c 55%, #5b2a86 100%);
     box-shadow: var(--shadow-lift);
   }
   @media (width >= 40rem) { .cm-pinned { padding: 1.5rem 1.75rem; } }
@@ -317,19 +322,6 @@
   .cm-switch:checked { background: var(--c-gv); }
   .cm-switch:checked::after { transform: translateX(1.2rem); }
 
-  .cm-empty-flyer {
-    padding: 1.5rem; border-radius: 1.25rem; border: 1px dashed color-mix(in srgb, var(--c-vine) 45%, var(--c-line));
-    background: linear-gradient(135deg, var(--c-vine-soft), transparent 65%), var(--c-surface);
-  }
-  @media (width >= 40rem) { .cm-empty-flyer { padding: 2rem; } }
-  .cm-flyer-illo { position: relative; width: 7rem; height: 8.5rem; margin: 0.5rem auto; }
-  .cm-illo-sheet {
-    position: absolute; inset: 0; z-index: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem;
-    border-radius: 0.8rem; background: var(--c-surface); border: 1px solid var(--c-line); box-shadow: var(--shadow-lift); color: var(--c-vine); transform: rotate(-4deg);
-  }
-  .cm-illo-sheet > span { padding: 0.15rem 0.4rem; border-radius: 0.35rem; font-family: ui-monospace, monospace; font-size: 0.66rem; font-weight: 700; color: var(--c-lv-strong); background: var(--c-lv-soft); }
-  .cm-illo-back { z-index: 0; background: var(--c-vine-soft); transform: rotate(7deg) translate(12px, 4px); box-shadow: none; }
-
   /* ---------- "where it goes on Drive" breadcrumb + last-checked line ---------- */
   .cm-path {
     display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem 0.2rem; width: fit-content; max-width: 100%;
@@ -339,6 +331,7 @@
   }
   .cm-path-seg, .cm-path-file { display: inline-flex; align-items: center; gap: 0.3rem; min-width: 0; padding: 0.15rem 0.35rem; border-radius: 0.45rem; overflow-wrap: anywhere; }
   .cm-path-seg > svg { flex-shrink: 0; color: var(--c-faint); }
+  .cm-path-seg > span, .cm-path-file > span { min-width: 0; overflow-wrap: anywhere; }
   .cm-path-seg.is-target { font-weight: 700; color: var(--c-gv); background: var(--c-gv-soft); }
   .cm-path-seg.is-target > svg { color: var(--c-gv); }
   .cm-path-file { font-weight: 600; color: var(--c-ink); background: var(--c-surface-2); }
@@ -351,7 +344,7 @@
   .cm-checked > svg { flex-shrink: 0; margin-top: 0.1rem; color: var(--c-vine); }
   .cm-checked.is-warn > svg { color: var(--c-lv); }
 
-  /* ---------- flyer naming guide (events empty state) ---------- */
+  /* ---------- flyer naming guide (events: "For committee members · Add an event") ---------- */
   .cm-naming { display: grid; overflow: hidden; border-radius: 0.9rem; border: 1px solid var(--c-line); background: var(--c-surface); }
   .cm-naming-head, .cm-naming-row { display: grid; gap: 0.35rem 1rem; padding: 0.65rem 0.9rem; }
   .cm-naming-head { font-size: 0.66rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--c-muted); background: var(--c-surface-2); }
@@ -657,6 +650,49 @@ html:not(.cm-js) [data-cm-js] { display: none !important; }
 [data-theme="dark"] .is-next .cm-mini-tile span,
 [data-theme="dark"] .is-next .cm-mini-tile strong { color: var(--c-paper); }
 [data-theme="dark"] .cm-join-live { color: var(--c-paper) !important; }
+
+/* ---------- Event colours by kind — shared by every event list (/events/, the home page's "Upcoming
+   events", the monthly toolkit's dates …). The kind comes from the eventTone filter
+   (eleventy/filters/event-tone.js): committee meeting · Grapevine · La Viña · booth · assembly · other.
+   Put .ev-tone-<kind> on the card (or on the tile / badge / dot); it sets
+     --ev       the accent (the card's left edge, the key's dot)
+     --ev-soft  the soft fill (date tile, badge)
+     --ev-ink   small text on --ev-soft (≥ 4.5:1 in light, dark and both high-contrast themes)
+   and the --tone / --tone-soft / --tone-ink the date tiles already read (.cm-date-tile, .cm-date-strip,
+   .home-datetile). Tokens only: committee = grape, Grapevine = gv, La Viña = lv, assembly = vine,
+   booth = raspberry (lv and grape mixed in oklch, which keeps their strength: #972963 light, #f28dac
+   dark, text on its soft fill ≥ 7.7:1 in every theme), other = the neutral greys.
+   An accent, never a flood: the left edge, the date tile and one badge. The badge (or the title)
+   always says the kind in words — colour is never the only signal. (unlayered: beats .card's shadow) */
+.ev-tone-committee { --ev: var(--c-grape); --ev-soft: var(--c-grape-soft); --ev-ink: var(--c-grape); }
+.ev-tone-gv { --ev: var(--c-gv); --ev-soft: var(--c-gv-soft); --ev-ink: var(--c-gv-strong); }
+.ev-tone-lv { --ev: var(--c-lv); --ev-soft: var(--c-lv-soft); --ev-ink: var(--c-lv-strong); }
+.ev-tone-assembly { --ev: var(--c-vine); --ev-soft: var(--c-vine-soft); --ev-ink: var(--c-vine); }
+.ev-tone-booth {
+  --ev: color-mix(in oklch, var(--c-lv) 50%, var(--c-grape));
+  --ev-soft: color-mix(in oklch, var(--c-lv-soft) 50%, var(--c-grape-soft));
+  --ev-ink: color-mix(in oklch, var(--c-lv-strong) 50%, var(--c-grape));
+}
+.ev-tone-other { --ev: var(--c-faint); --ev-soft: var(--c-surface-2); --ev-ink: var(--c-muted); }
+:is(.ev-tone-committee, .ev-tone-gv, .ev-tone-lv, .ev-tone-assembly, .ev-tone-booth, .ev-tone-other) {
+  --tone: var(--ev); --tone-soft: var(--ev-soft); --tone-ink: var(--ev-ink);
+}
+/* the neutral tile: muted figures (the faint grey is for the edge only) */
+.ev-tone-other { --tone: var(--c-muted); }
+/* the card's left edge (an inset shadow follows the rounded corners; a link card still lifts) */
+.ev-accent { box-shadow: inset 4px 0 0 var(--ev, var(--c-line)), var(--shadow-card); }
+.ev-accent.card-link:is(:hover, :focus-within) { box-shadow: inset 4px 0 0 var(--ev, var(--c-line)), var(--shadow-lift); }
+/* the kind badge (pair it with the shared .badge for the shape) */
+.ev-badge { background: var(--ev-soft); color: var(--ev-ink); }
+/* a date chip that takes the kind's colours (.ev-tile[class] outranks an area's own one-class tile) */
+.ev-tile[class] { background: var(--ev-soft); color: var(--ev-ink); }
+/* a small round swatch (the colour key, the past-events list) */
+.ev-dot { display: inline-block; flex-shrink: 0; width: 0.7rem; height: 0.7rem; border-radius: 9999px; background: var(--ev, var(--c-faint)); box-shadow: 0 0 0 2px var(--ev-soft, transparent); }
+/* the colour key under the /events/ filters: one wrapping line of small swatches + labels */
+.ev-legend { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.25rem 0.9rem; font-size: 0.8rem; line-height: 1.4; color: var(--c-muted); }
+.ev-legend-label { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; }
+.ev-legend-list { display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem 1rem; min-width: 0; }
+.ev-legend-list > li { display: inline-flex; align-items: center; gap: 0.45rem; white-space: nowrap; }
 
 /* GLightbox: match the site's type and colors (beats glightbox.min.css). */
 .glightbox-container.cm-lightbox .gslide-description { background: var(--c-surface); }

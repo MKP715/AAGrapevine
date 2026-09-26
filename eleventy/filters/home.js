@@ -33,8 +33,8 @@ const JUNK_PREFIX = /^(read more|learn more|click here|lee m[aá]s|leer m[aá]s|
 // The pattern stays broad on purpose (any trailing bracket mentioning a season/episode).
 const SEASON_TAIL = /\s*[[(][^\])]*(season|temporada|episod)[^\])]*[\])]\s*$/i;
 
-// Kinds that never belong in the "fresh" strip (they have their own sections / no page).
-// Announcements are skipped too: they have their own section right below the strip.
+// Kinds that are not counted as "new" news items (homeRecentCount): they have their own sections
+// or no page of their own.
 const FRESH_SKIP = new Set(["event", "topic", "meeting", "announcement"]);
 
 // Magazine sections that carry the issue's theme ("Featured Section", "Sección Especial" …).
@@ -161,14 +161,6 @@ export default function (eleventyConfig, helpers) {
     return x.thumb || i.image || x.thumb_url || x.flyer_thumb || (Array.isArray(x.thumbs) && x.thumbs.find(Boolean)) || "";
   }
 
-  // How good a card an item makes (ties inside one day / one issue).
-  function richness(i) {
-    const x = i.extra || {};
-    let s = (imageOf(i) ? 1 : 0) + (String(i.summary || "").length > 60 ? 1 : 0);
-    if (i.kind === "article") s += (x.department ? 0 : 3) + (FEATURED_SECTION.test(String(x.section || "")) && !x.department ? 2 : 0);
-    return s;
-  }
-
   // Monday-based week number — used to rotate evergreen lists once a week
   // (stable within a week, so daily builds don't reshuffle the page).
   const weekSeed = () => Math.floor((Date.now() + 3 * DAY) / (7 * DAY));
@@ -261,62 +253,6 @@ export default function (eleventyConfig, helpers) {
     let s = new Intl.DateTimeFormat(LOCALES[lang] || "en-US", { weekday: "long", month: "long", day: "numeric", timeZone: TZ }).format(d);
     if (lang === "es") s = s.charAt(0).toUpperCase() + s.slice(1);
     return s;
-  });
-
-  /* "Fresh" strip: the newest items across all sources, mixed round-robin by source
-     (GV stories, LV stories, posts, videos, episodes, PDFs, committee files) so one busy
-     source — a new magazine issue with 30 stories — can't take over the row.
-     `shown` (extra arguments: single items or arrays) = everything the home page already shows in
-     its own sections (Listen & watch, New on YouTube, the magazines, published writers, newest
-     documents, Instagram, committee uploads): those are left out, and so is a podcast episode's
-     YouTube copy (same title), so no item appears twice on the page. */
-  eleventyConfig.addFilter("homeFresh", (items, n = 8, ...shown) => {
-    const now = Date.now();
-    const shownItems = shown.flat(2).filter(Boolean);
-    const shownIds = new Set(shownItems.map((i) => i.id).filter(Boolean));
-    const shownUrls = new Set(shownItems.map((i) => i.url).filter(Boolean));
-    const shownMedia = new Set(shownItems.filter((i) => i.kind === "episode" || i.kind === "video").map(titleKey).filter(Boolean));
-    const isShown = (i) => shownIds.has(i.id) || (i.url && shownUrls.has(i.url))
-      || ((i.kind === "episode" || i.kind === "video") && shownMedia.has(titleKey(i)));
-    const list = [...arr(items)].filter((i) => alive(i) && !isShown(i)).sort((a, b) => newsTime(b) - newsTime(a));
-    // A podcast episode and its YouTube upload share a title: keep the episode
-    // (the podcast player page), so the video slot goes to a different video.
-    const epKeys = new Set(list.filter((i) => i.kind === "episode").map(titleKey).filter(Boolean));
-    const seen = new Set();
-    const pool = list.filter((i) => {
-      if (FRESH_SKIP.has(i.kind) || !goodTitle(i)) return false;
-      const t = newsTime(i);
-      // Magazine issues are dated ahead (the October issue is out in September);
-      // anything further out than ~6 weeks is a bad date, not "fresh".
-      if (!t || t > now + 45 * DAY) return false;
-      // Instagram posts without a picture make a poor preview (they have their own strip).
-      if (i.kind === "post" && !imageOf(i)) return false;
-      if (i.kind === "video" && epKeys.has(titleKey(i))) return false;
-      const key = i.id || i.url;
-      if (seen.has(key)) return false;
-      seen.add(key);
-      return true;
-    });
-    // Prefer the last two months; older items only when there is too little.
-    const recent = pool.filter((i) => now - newsTime(i) <= 60 * DAY);
-    const src = recent.length >= Math.min(n, 4) ? recent : pool;
-    const groupOf = (i) => (i.kind === "article" ? "article:" + pubOf(i) : ["photo", "document", "slides", "form", "video_file"].includes(i.kind) ? "drive" : i.kind);
-    const groups = new Map();
-    for (const it of src) {
-      const g = groupOf(it);
-      if (!groups.has(g)) groups.set(g, []);
-      groups.get(g).push(it);
-    }
-    const dayOf = (i) => Math.floor(newsTime(i) / DAY);
-    for (const g of groups.values()) g.sort((a, b) => dayOf(b) - dayOf(a) || richness(b) - richness(a) || newsTime(b) - newsTime(a));
-    const out = [];
-    for (let round = 0; out.length < n; round++) {
-      const heads = [...groups.values()].filter((a) => a.length > round).map((a) => a[round]);
-      if (!heads.length) break;
-      heads.sort((a, b) => newsTime(b) - newsTime(a));
-      for (const h of heads) { if (out.length >= n) break; out.push(h); }
-    }
-    return out.sort((a, b) => newsTime(b) - newsTime(a) || richness(b) - richness(a));
   });
 
   /* Items whose news date is within the last `days` days (not in the future beyond a day). */

@@ -9,17 +9,19 @@ bodyClass: o101-hub
 pageScripts: ["/assets/js/orientation.js"]
 ---
 {#- /orientation/ — "GVR / RLV 101", the orientation for new GVRs and RLVs (Panel 77 starts in January
-    2027). The lessons live in config/orientation.yml (src/_data/orientation.js → `orientation`); each one
-    has its own page (orientation-lesson.njk). This hub holds:
-      hero → welcome + progress (page-overlap) → the 6 lesson cards → present or print (band) →
-      for trainers (a 45-minute district plan) → next steps
+    2027). Wording: "sessions" led by a "facilitator", never lessons, trainers or a course (AA shares
+    experience; see config/orientation.yml). The sessions live in config/orientation.yml
+    (src/_data/orientation.js → `orientation.lessons`); each one has its own page (orientation-lesson.njk).
+    This hub holds:
+      hero → welcome + progress (page-overlap) → the 6 session cards → present or print (band) →
+      for facilitators (a 45-minute district plan) → next steps
     plus two things that are not on screen:
       #o101-deck-tpl  the slide show (a <template>): orientation.js clones it into a full-screen dialog on
-                      "Present as slides" or at /orientation/?slides (#slide-N resumes, #lesson-<id> starts a
-                      lesson). Fixed high-contrast palette, type sized to the 16:9 stage (areas/orientation.css).
+                      "Present as slides" or at /orientation/?slides (#slide-N resumes, #session-<id> — or the
+                      older #lesson-<id> — starts a session). Fixed high-contrast palette, type sized to the 16:9 stage (areas/orientation.css).
       .o101-handout   the printable handout (display: none on screen; printing this page prints it):
-                      one Letter sheet per lesson.
-    Progress ("lessons done on this device") is kept by orientation.js in localStorage only. -#}
+                      one Letter sheet per session.
+    Progress ("sessions done on this device") is kept by orientation.js in localStorage only. -#}
 {% import "macros/ui.njk" as ui with context %}
 {% import "macros/orientation.njk" as o with context %}
 {%- set O = orientation -%}
@@ -32,7 +34,7 @@ pageScripts: ["/assets/js/orientation.js"]
 {%- set secondHalf = O.lessons | offset(half) -%}
 {%- set welcomeMin = 3 -%}{%- set closeMin = 3 -%}
 
-{% call ui.pageHero(lang, "nav.orientation" | t(lang), "orientation.hero_sub" | t(lang), "graduation-cap", "orientation.eyebrow" | t(lang)) %}
+{% call ui.pageHero(lang, "nav.orientation" | t(lang), "orientation.hero_sub" | t(lang), "sprout", "orientation.eyebrow" | t(lang)) %}
 <div class="hero-actions">
   {%- if total %}
   <a class="btn-light" href="{{ ('/orientation/' + O.lessons[0].id + '/') | lurl(lang) }}" data-o101-resume data-t-continue="{{ 'orientation.continue' | t(lang) }}" data-t-review="{{ 'orientation.review' | t(lang) }}">{% icon "play", "size-4" %} <span data-o101-resume-label>{{ "orientation.start" | t(lang) }}</span></a>
@@ -65,9 +67,10 @@ pageScripts: ["/assets/js/orientation.js"]
   </div>
 </section>
 
-{#- ---------- The lessons ---------- -#}
-<section id="lessons" class="section container-page pt-10 sm:pt-12" aria-labelledby="lessons-title">
-  {{ ui.sectionHead("orientation.lessons_title" | t(lang), "orientation.lessons_sub" | t(lang), "", "", "list-checks", { eyebrow: "orientation.lessons_eyebrow" | t(lang), id: "lessons-title", lang: lang }) }}
+{#- ---------- The sessions (#lessons: the older address of this section, kept working) ---------- -#}
+<section id="sessions" class="section container-page pt-10 sm:pt-12" aria-labelledby="sessions-title">
+  <span id="lessons" aria-hidden="true"></span>
+  {{ ui.sectionHead("orientation.lessons_title" | t(lang), "orientation.lessons_sub" | t(lang), "", "", "list-checks", { eyebrow: "orientation.lessons_eyebrow" | t(lang), id: "sessions-title", lang: lang }) }}
   <ol class="grid-cards-fit [--cards-min:15rem] [--cards-max:3] min-[1800px]:[--cards-max:6]" role="list">
     {% for l in O.lessons %}
     {%- set url = ('/orientation/' + l.id + '/') | lurl(lang) -%}
@@ -132,11 +135,12 @@ pageScripts: ["/assets/js/orientation.js"]
   </div>
 </section>
 
-{#- ---------- For trainers: a 45-minute district orientation ---------- -#}
+{#- ---------- For facilitators: a 45-minute district orientation (#trainers: its older address) ---------- -#}
 {%- set sumA = firstHalf | sum("minutes") -%}
 {%- set sumB = secondHalf | sum("minutes") -%}
-<section id="trainers" class="section container-page" aria-labelledby="trainers-title">
-  {{ ui.sectionHead("orientation.trainers_title" | t(lang, { n: welcomeMin + O.totalMinutes + closeMin }), "orientation.trainers_sub" | t(lang), "", "", "users", { eyebrow: "orientation.trainers_eyebrow" | t(lang), tone: "text-vine", id: "trainers-title", lang: lang }) }}
+<section id="facilitators" class="section container-page" aria-labelledby="facilitators-title">
+  <span id="trainers" aria-hidden="true"></span>
+  {{ ui.sectionHead("orientation.trainers_title" | t(lang, { n: welcomeMin + O.totalMinutes + closeMin }), "orientation.trainers_sub" | t(lang), "", "", "users", { eyebrow: "orientation.trainers_eyebrow" | t(lang), tone: "text-vine", id: "facilitators-title", lang: lang }) }}
   {#- The plan: four steps in a row from 1280px (2 × 2 from 640px); then what to bring, full width -#}
   <div class="space-y-5">
     <div class="card card-pad">
@@ -292,7 +296,7 @@ pageScripts: ["/assets/js/orientation.js"]
   </div>
 </template>
 
-{#- ================= The printable handout (print only: one sheet per lesson) ================= -#}
+{#- ================= The printable handout (print only: one sheet per session) ================= -#}
 <div class="o101-handout">
   {% for l in O.lessons %}
   {%- set lessonAbs = (('/orientation/' + l.id + '/') | lurl(lang)) | siteUrl(site) -%}

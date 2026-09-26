@@ -19,6 +19,10 @@ PLACEHOLDERS = {"rule_lc", "time", "panel", "panel_start"}
 EXAMPLES = {"issue", "meeting", "tip", "botm", "deadline", "poster"}
 # The site's wording rules for visitors (docs: "document(s)", never "PDF"; no talk of how data is gathered).
 BANNED = re.compile(r"\b(pdf|crawl\w*|scrap\w*|robot|bot|automatically|autom[aá]ticamente)\b", re.I)
+# AA shares experience rather than teaching: the orientation is "sessions" led by a "facilitator", with
+# "review questions" — never classroom words; and GVR / RLV service is a "position", never a job.
+CLASSROOM = re.compile(r"\b(lessons?|lecci[oó]n(es)?|trainers?|training|quiz\w*|course|curso|curriculum|class(es)?|"
+                       r"clases?|self-check|teach\w*|enseñ\w*|capacitaci[oó]n|jobs?)\b", re.I)
 
 
 def pairs(node, where=""):
@@ -178,6 +182,23 @@ class OrientationStringsTest(unittest.TestCase):
                 self.assertEqual(set(re.findall(r"\{(\w+)\}", v["en"])), set(re.findall(r"\{(\w+)\}", v["es"])),
                                  "both languages use the same {placeholders}")
                 self.assertIsNone(BANNED.search(v["en"]) or BANNED.search(v["es"]))
+
+    def test_aa_wording(self):
+        """Every visitor-facing text of GVR / RLV 101 (its strings and its session data), the other strings
+        that name it, and the GVR / RLV corner's own strings."""
+        texts = [(f"orientation.json {k}", v[lang]) for k, v in json.loads(I18N.read_text(encoding="utf-8")).items()
+                 for lang in ("en", "es")]
+        texts += [(f"orientation.yml {w}", p[lang]) for w, p in pairs(yaml.safe_load(FILE.read_text(encoding="utf-8")))
+                  for lang in ("en", "es")]
+        others = {}
+        for name in ("common", "access", "pwa", "read"):
+            others.update(json.loads((ROOT / "src" / "_i18n" / f"{name}.json").read_text(encoding="utf-8")))
+        texts += [(k, v[lang]) for k, v in others.items() for lang in ("en", "es")
+                  if k.startswith(("read.gvr.", "nav.orientation")) or "101" in v["en"]]
+        self.assertGreater(len(texts), 400)
+        for where, s in texts:
+            with self.subTest(where=where):
+                self.assertIsNone(CLASSROOM.search(s), s)
 
 
 if __name__ == "__main__":

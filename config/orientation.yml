@@ -1,14 +1,21 @@
 # =====================================================================
 #  "GVR / RLV 101" — the orientation for new Grapevine and La Viña
-#  representatives: /orientation/ (lessons, slides, printable handout)
-#  and one page per lesson, /orientation/<id>/. Read by
+#  representatives: /orientation/ (sessions, slides, printable handout)
+#  and one page per session, /orientation/<id>/. Read by
 #  src/_data/orientation.js (templates see it as orientation.*).
+#
+#  Wording: AA shares experience, it doesn't teach. On the site these are
+#  "sessions" ("sesiones"), led by a "facilitator" ("quien facilita"),
+#  with "review questions" ("preguntas de repaso"); GVR / RLV service is a
+#  "position" ("puesto de servicio"), never a job. Never "lesson", "course",
+#  "class", "training", "trainer" or "quiz". (The YAML key below stays
+#  `lessons:` — it is only the data's name.)
 #
 #  Format
 #  - Every text is a pair:  { en: "English", es: "Español" }  — both are
 #    required (the site build stops if one is missing). Spanish is written
 #    by hand (Latin-American, "tú"); on the Spanish pages La Viña comes first.
-#  - Keep it short: each lesson is read in 5–8 minutes and shown on slides
+#  - Keep it short: each session is read in 5–8 minutes and shown on slides
 #    (a key point is at most about 220 characters).
 #  - Facts only from the official pages (aagrapevine.org / aalavina.org)
 #    or from this site's own data. Never copy the GVR Workbook, the RLV
@@ -132,11 +139,11 @@ lessons:
     minutes: 7
     example: meeting
     title:
-      en: "The GVR / RLV role"
-      es: "El servicio de RLV / GVR"
+      en: "The GVR / RLV service position"
+      es: "Puesto de servicio: RLV / GVR"
     summary:
-      en: "What the service is, how to register, and how you connect with your district and our Area."
-      es: "En qué consiste el servicio, cómo registrarte y cómo te conectas con tu distrito y con nuestra Área."
+      en: "What the service position involves, how to register, and how you connect with your district and our Area."
+      es: "En qué consiste el puesto de servicio, cómo registrarte y cómo te conectas con tu distrito y con nuestra Área."
     goal:
       en: "Know what your group expects of you, and where to go for help."
       es: "Saber qué espera tu grupo de ti y a dónde acudir cuando necesites ayuda."
@@ -151,8 +158,8 @@ lessons:
           en: "Your group chooses you"
           es: "Tu grupo te elige"
         text:
-          en: "The group conscience elects its GVR or RLV and decides how long the term lasts. When yours ends, help train the next one — rotation keeps the service fresh."
-          es: "La conciencia de grupo elige a su RLV o GVR y decide cuánto dura el servicio. Cuando termine el tuyo, ayuda a preparar a quien sigue: la rotación mantiene vivo el servicio."
+          en: "The group conscience elects its GVR or RLV and decides how long the term lasts. When yours ends, share your experience with the next one — rotation keeps the service fresh."
+          es: "La conciencia de grupo elige a su RLV o GVR y decide cuánto dura el servicio. Cuando termine el tuyo, comparte tu experiencia con quien sigue: la rotación mantiene vivo el servicio."
       - title:
           en: "Register online"
           es: "Regístrate en línea"

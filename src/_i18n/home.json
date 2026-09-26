@@ -227,22 +227,6 @@
     "en": "Every member's experience, strength and hope has a place in Grapevine and La Viña. Here's how to send yours.",
     "es": "La experiencia, fortaleza y esperanza de cada miembro tiene un lugar en La Viña y Grapevine. Así puedes enviar la tuya."
   },
-  "home.fresh_eyebrow": {
-    "en": "What's new",
-    "es": "Novedades"
-  },
-  "home.fresh_title": {
-    "en": "Fresh off the vine",
-    "es": "Lo más reciente"
-  },
-  "home.fresh_sub": {
-    "en": "The newest stories, episodes, videos, posts and documents from the official Grapevine and La Viña sources.",
-    "es": "Las historias, episodios, videos, publicaciones y documentos más nuevos de las fuentes oficiales de La Viña y Grapevine."
-  },
-  "home.fresh_all": {
-    "en": "Everything new",
-    "es": "Todas las novedades"
-  },
   "home.ann_title": {
     "en": "From the committee",
     "es": "Noticias del comité"
@@ -431,38 +415,6 @@
     "en": "All day",
     "es": "Todo el día"
   },
-  "home.evcat.committee": {
-    "en": "Committee",
-    "es": "Comité"
-  },
-  "home.evcat.flyer": {
-    "en": "Area event",
-    "es": "Evento del área"
-  },
-  "home.evcat.gv-calendar": {
-    "en": "Grapevine",
-    "es": "Grapevine"
-  },
-  "home.evcat.lv-calendar": {
-    "en": "La Viña",
-    "es": "La Viña"
-  },
-  "home.evcat.manual": {
-    "en": "Event",
-    "es": "Evento"
-  },
-  "home.evcat.ics": {
-    "en": "Event",
-    "es": "Evento"
-  },
-  "home.evcat.recurring": {
-    "en": "Every month",
-    "es": "Cada mes"
-  },
-  "home.evcat.neta65": {
-    "en": "NETA 65",
-    "es": "NETA 65"
-  },
   "home.lib_eyebrow": {
     "en": "The library",
     "es": "La biblioteca"
@@ -582,10 +534,6 @@
   "home.svc_corner_desc": {
     "en": "Guides, handbooks and ideas for your group",
     "es": "Guías, manuales e ideas para tu grupo"
-  },
-  "home.svc_share_desc": {
-    "en": "QR codes, flyers and ready-to-send messages",
-    "es": "Códigos QR, volantes y mensajes listos para enviar"
   },
   "home.svc_digest_desc": {
     "en": "Last month's news and this month's dates, ready to paste into WhatsApp or e-mail",

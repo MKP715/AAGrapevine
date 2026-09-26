@@ -65,7 +65,7 @@ function loadOrientation(text) {
       return { href: k.href || "", link: k.link || "", link_es: k.link_es || "", url: k.url || "", url_es: k.url_es || "", pub: k.pub || "", label: pair(k.label, `${w} label`) };
     });
     return {
-      id, n: i + 1, icon: String(l.icon || "graduation-cap"), minutes, example: l.example,
+      id, n: i + 1, icon: String(l.icon || "sprout"), minutes, example: l.example,
       title: pair(l.title, `${where} title`),
       summary: pair(l.summary, `${where} summary`),
       goal: pair(l.goal, `${where} goal`),

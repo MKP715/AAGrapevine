@@ -4,7 +4,7 @@
     "es": "Historias, podcasts, reuniones y recursos de servicio del Comité de Grapevine y La Viña del Área 65 del Noreste de Texas, en español e inglés, aun con poca señal."
   },
   "pwa.manifest.shot_narrow": { "en": "The home page on a phone: the next committee meeting and what's new", "es": "La página de inicio en un celular: la próxima reunión del comité y las novedades" },
-  "pwa.manifest.shot_wide": { "en": "GVR / RLV 101 on a computer: six short lessons for new representatives", "es": "RLV / GVR 101 en una computadora: seis lecciones breves para nuevos representantes" },
+  "pwa.manifest.shot_wide": { "en": "GVR / RLV 101 on a computer: six short sessions for new representatives", "es": "RLV / GVR 101 en una computadora: seis sesiones breves para nuevos representantes" },
   "pwa.audio_size": { "en": "Download size:", "es": "Tamaño de descarga:" },
   "pwa.offline.page_title": { "en": "Saved pages", "es": "Páginas guardadas" },
   "pwa.offline.meta_desc": {
@@ -58,8 +58,8 @@
   },
   "pwa.offline.how2_h": { "en": "Save key pages before you go", "es": "Guarda las páginas clave antes de salir" },
   "pwa.offline.how2_t": {
-    "en": "One tap in the Aa menu saves Meetings, this month's toolkit and district report, the GVR / RLV 101 lessons, Share your story and the Shop, in your language.",
-    "es": "Un toque en el menú Aa guarda Reuniones, el kit y el informe del mes, las lecciones de RLV / GVR 101, Comparte tu historia y la Tienda, en tu idioma."
+    "en": "One tap in the Aa menu saves Meetings, this month's toolkit and district report, the GVR / RLV 101 sessions, Share your story and the Shop, in your language.",
+    "es": "Un toque en el menú Aa guarda Reuniones, el kit y el informe del mes, las sesiones de RLV / GVR 101, Comparte tu historia y la Tienda, en tu idioma."
   },
   "pwa.offline.how3_h": { "en": "Install it like an app", "es": "Instálalo como una app" },
   "pwa.offline.how3_t": {

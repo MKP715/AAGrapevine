@@ -20,7 +20,9 @@ pageScripts: ["/assets/js/community.js"]
     Plain-text versions (WhatsApp / e-mail, one language or both) come from cmDigestText.
     MONTHLY_NOW=2026-10-01 (the /monthly/ test clock) builds the October edition.
     Layout: the newsletter card + share panel (≥1024px); from 1280px the card itself has two
-    newspaper columns — last month's news on the left, this month on the right. -#}
+    newspaper columns — last month's news on the left, this month on the right. Its job: a group chat
+    or e-mail. For the district meeting there is the district report (/monthly/#report): the card
+    under the previews points there, and the report points back here. -#}
 {%- set md = db | cmMonthlyDigest(meeting, carry, site) -%}
 {%- set ed = md.edition -%}
 {%- set other = lang | otherLang -%}
@@ -534,6 +536,12 @@ pageScripts: ["/assets/js/community.js"]
         <h2 class="text-sm font-semibold text-ink">{{ "community.sub.email_title" | t(lang) }}</h2>
         <p class="mt-0.5 text-xs leading-relaxed text-muted">{{ "community.sub.email_text" | t(lang) }}</p>
         <a class="link tap-link mt-1 inline-flex items-center gap-1.5 text-sm font-semibold" href="{{ (site.meeting.chair_email or site.contact_email) | cmMailto('community.sub.email_subject' | t(lang)) }}">{% icon "mail", "size-4 shrink-0" %} {{ "community.sub.email_btn" | t(lang) }}</a>
+      </div>
+      {#- One job each: this digest is for a group chat or e-mail; the district meeting has its own
+          report (/monthly/#report, which points back here) -#}
+      <div class="px-4 py-3.5">
+        <p class="text-xs leading-relaxed text-muted">{{ "community.digest.report_hint" | t(lang) }}</p>
+        <a class="link tap-link mt-1 inline-flex items-center gap-1.5 text-sm font-semibold" href="{{ '/monthly/' | lurl(lang) }}#report">{% icon "clipboard-list", "size-4 shrink-0" %} {{ "community.digest.report_link" | t(lang) }}<span aria-hidden="true"> →</span></a>
       </div>
     </div>
   </div>

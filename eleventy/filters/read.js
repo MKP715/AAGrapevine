@@ -428,28 +428,8 @@ export function pdfTitleInfo(item, lang, helpers) {
 }
 export function pdfTitle(item, lang, helpers) { return pdfTitleInfo(item, lang, helpers).title; }
 
-function refMatches(item, re) {
-  const refs = (item.extra && item.extra.referrers) || [];
-  return refs.some((r) => r && re.test(String(r.url || "")));
-}
 const byDateDesc = (a, b) => String(b.date || b.extra?.upload_month || "").localeCompare(String(a.date || a.extra?.upload_month || ""));
 
-/** PDFs of the official GVR (Grapevine) or RLV (La Viña) resource kit, newest first. */
-export function kitItems(pdfs, which) {
-  const re = which === "rlv" ? /\/recursos(\/|$|[?#])/i : /\/gvr-resources(\/|$|[?#])/i;
-  const seen = new Set();
-  const out = [];
-  for (const p of pdfEditions(pdfs)) {
-    if (!(p.category === which || refMatches(p, re))) continue;
-    const key = p.url || p.id;
-    if (seen.has(key)) continue;
-    seen.add(key);
-    out.push(p);
-  }
-  return out.sort(byDateDesc);
-}
-
-const KIT_GROUPS = ["news", "guides", "flyers", "forms", "other"];
 /* Crawler sub-types (tags / category) → kit group. */
 const TAG_GROUP = {
   news: "news", catalog: "news",
@@ -469,12 +449,6 @@ export function kitGroup(item) {
   if (/\b(handbook|manual|workbook|libro de trabajo|guides?|gu[ií]as?|guidelines|pautas|checklist|chequeo|today|hoy|self support|automantenimiento|autonom[ií]a|workshop|taller(es)?|pol[ií]tica|history|historia|editorial|calendar|temas|traditions?|tradiciones|12 ways|12 maneras)\b/i.test(t)) return "guides";
   if (/\b(new|nuevos?|book|libros?|audio|audiobook|audiolibro|descarga|download|app|apps|aplicaciones|ctm|carry the message|lleva el mensaje|instagram|youtube|podcast)\b/i.test(t)) return "flyers";
   return "other";
-}
-
-export function kitGroups(items) {
-  const m = new Map(KIT_GROUPS.map((k) => [k, []]));
-  for (const i of items || []) m.get(kitGroup(i)).push(i);
-  return KIT_GROUPS.map((key) => ({ key, items: m.get(key) })).filter((g) => g.items.length);
 }
 
 /** Magazine catalogs (tag/category "catalog"; or "catalog" in the name — but never postcards or forms).
@@ -759,8 +733,6 @@ export default function (eleventyConfig, helpers) {
   eleventyConfig.addFilter("readArticle", (item, lang) => articleView(item, lang, h));
   eleventyConfig.addFilter("readPdfTitle", (item, lang) => pdfTitle(item, lang, h));
   eleventyConfig.addFilter("readPdfTitleInfo", (item, lang) => pdfTitleInfo(item, lang, h));
-  eleventyConfig.addFilter("readKit", (pdfs, which) => kitItems(pdfs, which));
-  eleventyConfig.addFilter("readKitGroups", (items) => kitGroups(items));
   eleventyConfig.addFilter("readCatalogs", (pdfs, lang) => catalogItems(pdfs, lang));
   eleventyConfig.addFilter("readInSentence", (label, lang, pub) => labelInSentence(label, lang, pub));
   eleventyConfig.addFilter("readForms", (pdfs) => formItems(pdfs));
@@ -782,9 +754,5 @@ export default function (eleventyConfig, helpers) {
     const m = String(ym || "").match(/^(\d{4})-(\d{2})/);
     if (!m) return "";
     return new Intl.DateTimeFormat(LOCALES[lang] || "en-US", { month: style === "long" ? "long" : "short", year: "numeric", timeZone: "UTC" }).format(new Date(Date.UTC(+m[1], +m[2] - 1, 15)));
-  });
-  eleventyConfig.addFilter("readSourceCount", (status, name) => {
-    const s = ((status && status.sources) || []).find((x) => x.source === name);
-    return s && !EMPTY ? Number(s.count) || 0 : 0;
   });
 }

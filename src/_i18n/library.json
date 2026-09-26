@@ -668,12 +668,12 @@
     "es": "Todos los documentos oficiales de La Viña, Grapevine y AA, más el portafolio del comité."
   },
   "search.page_desc.about": {
-    "en": "Who we are and how this self-updating site works.",
-    "es": "Quiénes somos y cómo funciona este sitio que se actualiza solo."
+    "en": "Who we are, the magazines' history and how this site stays up to date.",
+    "es": "Quiénes somos, la historia de las revistas y cómo se mantiene al día este sitio."
   },
   "search.page_desc.digest": {
-    "en": "A monthly summary: last month's news and this month's dates, ready to forward to your district.",
-    "es": "Un resumen mensual: las novedades del mes pasado y las fechas de este mes, listo para reenviar a tu distrito."
+    "en": "A monthly summary: last month's news and this month's dates, ready for WhatsApp or e-mail.",
+    "es": "Un resumen mensual: las novedades del mes pasado y las fechas de este mes, listo para WhatsApp o correo."
   },
   "search.page_desc.share": {
     "en": "QR codes, links and ready-to-print material to share this site.",
@@ -733,8 +733,8 @@
     "es": "rlv gvr representante de la viña representante de grupo kit manual cuaderno registrarse"
   },
   "search.kw.contribute": {
-    "en": "share your story write submit contribute editorial themes deadlines guidelines record",
-    "es": "comparte tu historia escribir enviar contribuir temas editoriales fechas límite pautas grabar"
+    "en": "share your story write submit contribute editorial themes deadlines guidelines record phone audio writing workshop recording workshop",
+    "es": "comparte tu historia escribir enviar contribuir temas editoriales fechas límite pautas grabar teléfono audio taller de escritura taller de grabación"
   },
   "search.kw.shop": {
     "en": "shop store buy order subscribe subscription price prices book of the month books catalog order form magazine app gift carry the message",
@@ -753,8 +753,8 @@
     "es": "resumen mensual correo boletín edición del mes whatsapp"
   },
   "search.kw.share": {
-    "en": "share kit qr code print poster link",
-    "es": "compartir kit código qr imprimir cartel enlace"
+    "en": "share kit qr code codes print poster posters link table tent",
+    "es": "compartir kit código códigos qr imprimir cartel carteles enlace tarjeta de mesa"
   },
   "search.kw.search": {
     "en": "search find",
