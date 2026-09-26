@@ -160,6 +160,10 @@
     "en": "Monthly digest",
     "es": "Resumen mensual"
   },
+  "nav.digest_desc": {
+    "en": "What's new each month — by e-mail or WhatsApp",
+    "es": "Las novedades de cada mes, por correo o WhatsApp"
+  },
   "nav.share": {
     "en": "QR codes & posters",
     "es": "Códigos QR y carteles"
