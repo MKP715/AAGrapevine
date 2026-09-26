@@ -377,7 +377,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
               <a href="{{ href }}" class="line-clamp-3 no-underline after:absolute after:inset-0 group-hover:text-gv"{% if isExt %} target="_blank" rel="noopener"{% endif %}>{{ ttl }}</a>
             </h3>
             <p class="meta-row mt-auto pt-1 text-xs text-faint">
-              <span class="inline-flex items-center gap-1">{% icon it.kind | homeKindIcon, "size-3.5" %}{{ ("kind." ~ it.kind) | t(L) }}</span>
+              <span>{% icon it.kind | homeKindIcon, "size-3.5 inline-block align-[-0.2em] mr-1" %}{{ ("kind." ~ it.kind) | t(L) }}</span>
               {% if it.kind == "article" and it.extra and it.extra.issue_label %}<span>{{ it.extra.issue_label | homeIssueLabel(L) }}</span>
               {% elif it.date %}<time datetime="{{ it.date | isoDate }}">{{ it.date | fmtDate(L, ("month" if (it.extra and it.extra.date_approx) else "short")) }}</time>{% endif %}
             </p>
@@ -807,8 +807,8 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
             <ul class="mt-2 space-y-1 text-sm text-muted">
               {#- An outside calendar that only gives a date: the time isn't listed (same wording as /events/), not "all day". -#}
               <li class="flex items-start gap-1.5">{% set whenIcon = "calendar-range" if info.multiDay else "clock" %}{% icon whenIcon, "mt-0.5 size-4 shrink-0 text-faint" %}{{ info.when }}</li>
-              {% if info.location and info.tba %}<li class="flex items-center gap-1.5 italic">{% icon "hourglass", "size-4 shrink-0 text-faint" %}<span class="truncate">{{ info.location }}</span></li>
-              {% elif info.location %}{% set locIcon = "video" if (x.online_url and not x.city) else "map-pin" %}<li class="flex items-center gap-1.5">{% icon locIcon, "size-4 shrink-0 text-faint" %}<span class="truncate">{{ info.location }}</span></li>{% endif %}
+              {% if info.location and info.tba %}<li class="flex items-start gap-1.5 italic">{% icon "hourglass", "mt-0.5 size-4 shrink-0 text-faint" %}<span class="min-w-0 line-clamp-2">{{ info.location }}</span></li>
+              {% elif info.location %}{% set locIcon = "video" if (x.online_url and not x.city) else "map-pin" %}<li class="flex items-start gap-1.5">{% icon locIcon, "mt-0.5 size-4 shrink-0 text-faint" %}<span class="min-w-0 line-clamp-2">{{ info.location }}</span></li>{% endif %}
             </ul>
           </div>
         </article>

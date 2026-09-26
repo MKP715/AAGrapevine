@@ -413,3 +413,8 @@
   body.mp-page .mp-stage { width: 7.5in !important; margin: 0 auto !important; }
   body.mp-page .mp-fit { box-shadow: none !important; border-radius: 0 !important; break-inside: avoid; }
 }
+
+/* The hidden copy fit() measures (monthly.js): never animate it. The reduced-motion rules set a tiny
+   transition-duration on everything, which made each font-size change a transition, so the fit read
+   stale sizes and posters overflowed with "Reduce motion" on. */
+.mp-measure .mp-poster, .mp-measure .mp-poster * { transition-property: none !important; }

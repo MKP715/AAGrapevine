@@ -276,10 +276,17 @@
 .lib-icon { padding: 0; width: 2.75rem; }
 /* Mouse users get slightly smaller icon buttons from 640px (phones and touch screens keep 44px targets). */
 @media (pointer: fine) and (width >= 40rem) { .lib-btn { min-height: 2.5rem; min-width: 2.5rem; } .lib-icon { width: 2.5rem; } }
-/* Very narrow cards: the main button shows its icon only (label stays in aria-label). */
+/* Narrow cards: the main button shows its icon only (label stays in aria-label).
+   Grid view (picture above the text): only very narrow cards. List view (picture BESIDE the text, the
+   phone layout): measured — below a ~21.5rem card (about 375px phones and narrower) "Preview" /
+   "Vista previa" no longer fits next to the icon buttons. rem follows the reading settings. */
 @container (width < 15rem) {
   .lib-btn-main { flex: none; width: 2.75rem; padding: 0; }
   .lib-btn-main > span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+}
+@container (width < 21.5rem) {
+  .lib-results[data-view="list"] .lib-btn-main { flex: none; width: 2.75rem; padding: 0; }
+  .lib-results[data-view="list"] .lib-btn-main > span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 }
 .lib-empty-icon[data-tone] { background: var(--tone-soft); color: var(--tone); }
 .lib-btn.is-done { color: var(--c-vine); background: var(--c-vine-soft); }
@@ -403,6 +410,8 @@
   transition: transform 0.2s, box-shadow 0.2s;
 }
 .ss-browse a:hover { transform: translateY(-2px); box-shadow: var(--shadow-lift); }
+/* Very narrow phones: icon above the title so long words (e.g. "Novedades") fit the tile. */
+@media (width < 22.5rem) { .ss-browse a { flex-direction: column; align-items: flex-start; } }
 .ss-browse .ss-b-icon { display: grid; place-items: center; flex-shrink: 0; width: 2.4rem; height: 2.4rem; border-radius: 0.8rem; background: var(--tone-soft); color: var(--tone); }
 .ss-browse .ss-b-t { display: block; font-weight: 700; color: var(--c-ink); }
 .ss-browse .ss-b-n { display: block; font-size: 0.78rem; color: var(--c-muted); }

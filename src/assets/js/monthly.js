@@ -51,6 +51,7 @@
   function fit(p) {
     // the copy: same classes and content, unscaled, positioned (so offsetParent stops at it), out of sight
     var holder = document.createElement("div");
+    holder.className = "mp-measure";
     holder.setAttribute("aria-hidden", "true");
     holder.style.cssText = "position:absolute;left:-12000px;top:0;width:1080px;visibility:hidden;pointer-events:none;";
     var c = p.cloneNode(true);
