@@ -193,7 +193,7 @@ pageScripts: ["/assets/js/read.js"]
         <p class="eyebrow">{{ "read.gvr.kits_handbook" | t(lang) }}</p>
         <ul class="mt-1.5 space-y-0.5" role="list">
           {% for h in handbooks %}
-          <li><a class="link tap-link inline-flex items-start gap-2 font-semibold" href="{{ h.url }}" target="_blank" rel="noopener"><span class="mt-0.5 shrink-0 {{ 'text-lv' if h.lang == 'es' else 'text-gv' }}">{% icon "book-marked", "size-4" %}</span><span><span lang="{{ h.lang }}">{{ h | readPdfTitle(lang) }}</span> <span class="font-normal text-muted">({{ "kind.pdf" | t(lang) | lower }})</span><span class="sr-only"> ({{ "common.external" | t(lang) }})</span></span></a></li>
+          <li><a class="link tap-link inline-flex items-start gap-2 font-semibold" href="{{ h.url }}" target="_blank" rel="noopener"><span class="mt-0.5 shrink-0 {{ 'text-lv' if h.lang == 'es' else 'text-gv' }}">{% icon "book-marked", "size-4" %}</span><span class="min-w-0 hyphens-auto [overflow-wrap:anywhere]"><span lang="{{ h.lang }}">{{ h | readPdfTitle(lang) }}</span> <span class="font-normal text-muted">({{ "kind.pdf" | t(lang) | lower }})</span><span class="sr-only"> ({{ "common.external" | t(lang) }})</span></span></a></li>
           {% endfor %}
         </ul>
       </div>

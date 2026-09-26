@@ -415,38 +415,6 @@
     "en": "All day",
     "es": "Todo el día"
   },
-  "home.evcat.committee": {
-    "en": "Committee",
-    "es": "Comité"
-  },
-  "home.evcat.flyer": {
-    "en": "Area event",
-    "es": "Evento del área"
-  },
-  "home.evcat.gv-calendar": {
-    "en": "Grapevine",
-    "es": "Grapevine"
-  },
-  "home.evcat.lv-calendar": {
-    "en": "La Viña",
-    "es": "La Viña"
-  },
-  "home.evcat.manual": {
-    "en": "Event",
-    "es": "Evento"
-  },
-  "home.evcat.ics": {
-    "en": "Event",
-    "es": "Evento"
-  },
-  "home.evcat.recurring": {
-    "en": "Every month",
-    "es": "Cada mes"
-  },
-  "home.evcat.neta65": {
-    "en": "NETA 65",
-    "es": "NETA 65"
-  },
   "home.lib_eyebrow": {
     "en": "The library",
     "es": "La biblioteca"

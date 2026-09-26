@@ -331,6 +331,7 @@
   }
   .cm-path-seg, .cm-path-file { display: inline-flex; align-items: center; gap: 0.3rem; min-width: 0; padding: 0.15rem 0.35rem; border-radius: 0.45rem; overflow-wrap: anywhere; }
   .cm-path-seg > svg { flex-shrink: 0; color: var(--c-faint); }
+  .cm-path-seg > span, .cm-path-file > span { min-width: 0; overflow-wrap: anywhere; }
   .cm-path-seg.is-target { font-weight: 700; color: var(--c-gv); background: var(--c-gv-soft); }
   .cm-path-seg.is-target > svg { color: var(--c-gv); }
   .cm-path-file { font-weight: 600; color: var(--c-ink); background: var(--c-surface-2); }

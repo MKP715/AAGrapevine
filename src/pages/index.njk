@@ -748,7 +748,13 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
           </div>
           <div class="min-w-0 flex-1">
             <p class="flex flex-wrap items-center gap-1.5">
-              <span class="badge ev-badge">{{ ("home.evcat." ~ (e.category or "manual")) | t(L) }}</span>
+              {#- names the kind in words — the same labels and icons as the /events/ badges, so colour is never the only signal -#}
+              {%- set kindIcon = { committee: "users", gv: "grapes", lv: "grapes", booth: "store", assembly: "landmark", other: "map-pin" } -%}
+              {%- if tone == "gv" and e.category == "gv-calendar" %}{% set kindLabel = "committee.events.badge_gv" | t(L) %}
+              {%- elif tone == "lv" and e.category == "lv-calendar" %}{% set kindLabel = "committee.events.badge_lv" | t(L) %}
+              {%- elif tone == "other" %}{% set kindLabel = ("committee.events.kind.neta" if e.category == "neta65" else "committee.events.kind.event") | t(L) %}
+              {%- else %}{% set kindLabel = ("committee.events.kind." ~ tone) | t(L) %}{% endif %}
+              <span class="badge ev-badge">{% icon kindIcon[tone], "size-3" %} {{ kindLabel }}</span>
               {% if info.tentative %}{{ ui.tentativeBadge(L) }}{% endif %}
               {% if e.lang and e.lang != L and e.lang != "und" and ((e | machineFor(L)) or et == e.title) %}<span class="badge-muted uppercase" title="{{ ('lang.' ~ e.lang) | t(L) }}">{{ e.lang }}</span>{% endif %}
             </p>
