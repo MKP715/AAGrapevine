@@ -296,6 +296,8 @@ def parse_event(path: Path, tz: ZoneInfo) -> dict:
              "slug": slug, "file": f"content/events/{path.name}"}
     if as_bool(meta.get("tentative")):
         extra["tentative"] = True        # details not final yet: "Details to be confirmed", STATUS:TENTATIVE
+    if as_bool(meta.get("confirmed")):
+        extra["confirmed"] = True        # the committee checked date, time and place: no calendar feed changes them
     own = own_translations(meta)
     for lang in ("en", "es"):            # the place in the other language (never machine-translated)
         loc = clean_text(meta.get(f"location_{lang}"))

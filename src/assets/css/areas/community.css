@@ -1,4 +1,4 @@
-/* Area styles: community — What's New, Digest, GV/LV report (/monthly/), Share Kit, Status, 404,
+/* Area styles: community — What's New, Digest, Share Kit, Status, 404,
    language banner. Owned by the community page agent. Prefer Tailwind utilities
    in templates; this file holds what utilities cannot express (timeline rail,
    print layouts, poster scaling, responsive table). All classes are prefixed
@@ -54,6 +54,33 @@
 @media (width < 40rem) {
   .cm-entry { column-gap: 0.75rem; }
 }
+/* A phone at 150% text or with relaxed spacing (and a narrow one, below 384px, at 115–130%): the
+   entry's icon and picture go ABOVE the words (icon at the left, picture at the right), which get the
+   entry's whole width — beside them the text column was two or three words wide and broke inside
+   words. The rail through the icons goes (it would run through the text), and "Show N more" lines up
+   with the text again. The "source · time" meta row gets a line of its own under the badge (beside it,
+   main.css's rule for text columns in a row left it 7em wide: "6:30 a. m. CDT" broke and was clipped;
+   that one is in @layer base with !important, after main.css's own rule there, to take its place). */
+@media (width < 40rem) {
+  :root:is([data-text="150"], [data-spacing="relaxed"]) .cm-timeline::before { display: none; }
+  :root:is([data-text="150"], [data-spacing="relaxed"]) .cm-entry { grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "icon thumb" "text text"; row-gap: 0.625rem; }
+  :root:is([data-text="150"], [data-spacing="relaxed"]) .cm-entry > .cm-entry-icon { grid-area: icon; }
+  :root:is([data-text="150"], [data-spacing="relaxed"]) .cm-entry > :not(.cm-entry-icon, .cm-thumb) { grid-area: text; }
+  :root:is([data-text="150"], [data-spacing="relaxed"]) .cm-entry > .cm-thumb { grid-area: thumb; justify-self: end; align-self: start; }
+  :root:is([data-text="150"], [data-spacing="relaxed"]) .cm-day > .ml-12 { margin-left: 0; }
+}
+@media (width < 24rem) {
+  :root:is([data-text="115"], [data-text="130"]) .cm-timeline::before { display: none; }
+  :root:is([data-text="115"], [data-text="130"]) .cm-entry { grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "icon thumb" "text text"; row-gap: 0.625rem; }
+  :root:is([data-text="115"], [data-text="130"]) .cm-entry > .cm-entry-icon { grid-area: icon; }
+  :root:is([data-text="115"], [data-text="130"]) .cm-entry > :not(.cm-entry-icon, .cm-thumb) { grid-area: text; }
+  :root:is([data-text="115"], [data-text="130"]) .cm-entry > .cm-thumb { grid-area: thumb; justify-self: end; align-self: start; }
+  :root:is([data-text="115"], [data-text="130"]) .cm-day > .ml-12 { margin-left: 0; }
+}
+@layer base {
+  @media (width < 40rem) { :root:is([data-text="150"], [data-spacing="relaxed"]) main .cm-entry .flex > .meta-row.min-w-0 { flex-basis: 100% !important; } }
+  @media (width < 24rem) { :root:is([data-text="115"], [data-text="130"]) main .cm-entry .flex > .meta-row.min-w-0 { flex-basis: 100% !important; } }
+}
 /* The filter bar (< 1536px): ONE line of chips (chip-row-nowrap) under the header, sticky only in
    windows at least 40rem tall (a shorter window keeps all of its height for the feed). Entries and
    day headings that get focus or a jump land below it (scroll-padding-top covers the header only). */
@@ -105,6 +132,22 @@
   bottom: calc(var(--player-h, 0px) + env(safe-area-inset-bottom, 0px) + 0.75rem);
   transition: bottom 0.25s ease;
 }
+/* The card: the question, then Switch + Close. When the question can't have ~7em beside the buttons
+   (a narrow phone), and always on a phone at 130%+ or with relaxed spacing, the buttons go to a second
+   row, at the right — the question is never squeezed into a column of single letters. Below 640px the text is
+   115% at most (--bar-zoom, areas/access.css): the banner never covers much of a phone screen. */
+.cm-lang-banner-card {
+  flex-wrap: wrap; max-height: 40vh; overflow-y: auto;
+  gap: calc(0.5rem * var(--bar-zoom, 1)) calc(0.75rem * var(--bar-zoom, 1));
+  padding: calc(0.5rem * var(--bar-zoom, 1)) calc(0.5rem * var(--bar-zoom, 1)) calc(0.5rem * var(--bar-zoom, 1)) calc(1rem * var(--bar-zoom, 1));
+}
+.cm-lang-banner-card > * { zoom: var(--bar-zoom, 1); }
+.cm-lang-banner-card > p { flex: 1 1 7em; }
+.cm-lang-banner-actions { display: flex; flex-shrink: 0; align-items: center; gap: 0.5rem; margin-left: auto; }
+@media (width < 40rem) {
+  :root:is([data-text="115"], [data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .cm-lang-banner-icon { display: none; }
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .cm-lang-banner-card > p { flex-basis: 100%; }
+}
 
 /* ------------------------------------------------------------------ */
 /*  Shared bits (segmented control, text previews)                     */
@@ -116,8 +159,12 @@
   color: var(--c-muted); cursor: pointer; transition: background-color 0.15s, color 0.15s;
 }
 .cm-seg > span:hover { color: var(--c-ink); }
-.cm-seg > input:checked + span { background: var(--c-surface); color: var(--c-ink); box-shadow: var(--shadow-card); }
+/* The chosen option: a surface pill with a 2px blue ring and blue text (like the Aa panel's options),
+   so it stands out from the track in both themes (≥ 3:1, WCAG 1.4.11) — not only by a fill. */
+.cm-seg > input:checked + span { background: var(--c-surface); color: var(--c-gv); box-shadow: var(--shadow-card), inset 0 0 0 2px var(--c-gv); }
 .cm-seg > input:focus-visible + span { outline: 3px solid var(--c-gv); outline-offset: 2px; }
+/* Windows High Contrast (forced colours drop fills and shadows): the chosen option gets a system outline */
+@media (forced-colors: active) { .cm-seg > input:checked + span { outline: 3px solid Highlight; outline-offset: -3px; } }
 .cm-pre {
   margin: 0; padding: 0.25rem 1rem 1rem; max-height: 24rem; overflow: auto;
   white-space: pre-wrap; overflow-wrap: anywhere; font-family: ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;
@@ -128,11 +175,6 @@
 .cm-preview > summary::after { content: "+"; margin-left: auto; font-weight: 700; color: var(--c-faint); }
 .cm-preview[open] > summary::after { content: "–"; }
 .cm-pre:focus-visible { outline-offset: -3px; }
-.cm-report {
-  white-space: pre-wrap; overflow-wrap: anywhere; font-size: 0.92rem; line-height: 1.7; color: var(--c-ink);
-  background-image: repeating-linear-gradient(to bottom, transparent 0 calc(1.7em - 1px), color-mix(in srgb, var(--c-gv) 10%, transparent) calc(1.7em - 1px) 1.7em);
-  background-position: 0 0.35em;
-}
 
 /* ------------------------------------------------------------------ */
 /*  Print: shared (digest + share kit)                                 */
@@ -142,7 +184,7 @@
   html:root:has(body.cm-print-light) {
     --c-paper: #ffffff; --c-surface: #ffffff; --c-surface-2: #f3f3f3; --c-ink: #000000; --c-muted: #333333;
     --c-faint: #555555; --c-line: #cccccc; --c-gv: #0a4f8f; --c-gv-strong: #07457c; --c-gv-soft: #eef4fa;
-    --c-lv: #9a3a0a; --c-lv-soft: #fbefe6; --c-grape: #4a2270; --c-grape-soft: #f3edf8; --c-vine: #245a22; --c-vine-soft: #eef6eb;
+    --c-lv: #9a3a0a; --c-lv-strong: #8f3207; --c-lv-soft: #fbefe6; --c-grape: #4a2270; --c-grape-soft: #f3edf8; --c-vine: #245a22; --c-vine-soft: #eef6eb;
     color-scheme: light;
   }
   body.cm-print-light { background: #fff !important; color: #000; }
@@ -167,6 +209,8 @@
 .cm-dg-previews { grid-area: previews; align-self: end; }
 .cm-digest { grid-area: digest; }
 @media (width < 64rem) {
+  /* without JavaScript the tool card is hidden (data-js-only): no empty row for it */
+  :root:not(.js) .cm-dg-layout { grid-template-areas: "digest" "previews"; }
   :root.js .cm-dg-layout:not(.is-more) .cm-dg-more { display: none; }
   .cm-dg-layout.is-more [aria-controls="dg-more"] .icon { transform: rotate(180deg); }
 }
@@ -177,17 +221,25 @@
 @media (width >= 80rem) { .cm-dg-layout { column-gap: 3rem; } }
 @media (width >= 96rem) { .cm-dg-layout { grid-template-columns: minmax(0, 1fr) 22rem; } }
 
-/* Digest newsletter body: one column below 1280px (next meeting first — it is first in the DOM);
-   from 1280px two newspaper columns that balance themselves (CSS columns): each block stays whole
-   and the reading order is the DOM order (next meeting, the week's news, what's coming up).
-   .cm-dg-2col lists (article titles, deadlines) go back to one column while the columns are narrow. */
+/* Monthly edition body: one column below 1280px (the headline, then the next meeting — DOM order);
+   from 1280px the headline spans the card and the rest flows into two newspaper columns that
+   balance themselves (CSS columns): each block stays whole and the reading order is the DOM order
+   (next meeting, last month's news and this month's issues, then what's coming up this month).
+   .cm-dg-line = a one-line pointer row (Instagram, subscriptions, the daily quote). */
 .cm-dg-body { display: flex; flex-direction: column; gap: 2.25rem; }
+/* The newsletter's standalone links ("117 more updates since …", "See all …") are at least 24px tall
+   with a mouse too (WCAG 2.5.8; tap-link makes them 44px on phones and touch screens). Padding on an
+   inline link grows its target without moving the text. */
+.cm-dg-layout a.tap-link { padding-block: 0.25rem; }
 .cm-dg-news, .cm-dg-side { display: contents; }
+.cm-dg-body .cm-dg-line + .cm-dg-line { margin-top: -1.5rem; }
 @media screen and (width >= 80rem) {
   .cm-dg-body { display: block; columns: 2; column-gap: 2.5rem; }
-  .cm-dg-body :is(.cm-dg-next, .cm-digest-group, .cm-dg-month, .empty-state) { break-inside: avoid; margin-bottom: 2.25rem; }
+  .cm-dg-intro { column-span: all; max-width: 72ch; }
+  .cm-dg-body :is(.cm-dg-intro, .cm-dg-next, .cm-digest-group, .cm-dg-line, .empty-state) { break-inside: avoid; margin-bottom: 2.25rem; }
+  .cm-dg-body .cm-dg-line + .cm-dg-line { margin-top: 0; }
+  .cm-dg-body .cm-dg-line:has(+ .cm-dg-line) { margin-bottom: 0.75rem; }
 }
-@media screen and (80rem <= width < 112.5rem) { .cm-dg-2col { grid-template-columns: minmax(0, 1fr); } }
 @media screen and (width >= 96rem) { .cm-dg-body { column-gap: 3rem; } }
 
 /* Digest print: the newsletter card becomes the page. */
@@ -200,40 +252,6 @@
   .cm-page-digest .cm-digest h3 { break-after: avoid; }
   .cm-page-digest .cm-digest-group ul { break-before: avoid; }
 }
-
-/* ------------------------------------------------------------------ */
-/*  GV/LV report on the Monthly toolkit (/monthly/#report)             */
-/* ------------------------------------------------------------------ */
-/* Report, tips and the published-writers strip (monthly.njk). Phones / tablets: one column in DOM
-   order (report, tips, writers). From 1024px: the report with the writers strip under it, and the
-   tips beside both (20rem; 22rem from 1536px) — the two columns end close together. From 1800px:
-   three columns — the report keeps ~1000px, tips and writers 21rem each.
-   (Plain CSS on purpose: Tailwind emits min-[1800px]: rules BEFORE 2xl: rules.) */
-.cm-rp-layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.25rem; }
-.cm-rp-report { grid-area: report; } .cm-rp-tips { grid-area: tips; } .cm-rp-writers { grid-area: writers; }
-.cm-rp-layout { grid-template-areas: "report" "tips" "writers"; }
-@media (width >= 64rem) {
-  .cm-rp-layout { grid-template-columns: minmax(0, 1fr) 20rem; grid-template-rows: auto 1fr;
-    grid-template-areas: "report tips" "writers tips"; column-gap: 2rem; }
-  .cm-rp-tips, .cm-rp-writers { align-self: start; }
-}
-@media (width >= 80rem) { .cm-rp-layout { column-gap: 3rem; } }
-@media (width >= 96rem) { .cm-rp-layout { grid-template-columns: minmax(0, 1fr) 22rem; } }
-@media (width >= 112.5rem) {
-  .cm-rp-layout { grid-template-columns: minmax(0, 1fr) 21rem 21rem; grid-template-rows: auto;
-    grid-template-areas: "report tips writers"; column-gap: 2rem; }
-}
-/* Narrow screens: let long URLs wrap without leaving orphaned indentation. */
-@media (width < 40rem) { .cm-report { white-space: pre-line; } }
-/* The report box is folded to a readable height (26rem; 20rem on phones) with a fade at the
-   bottom until "Show the full report" (.is-open). Needs JS (html.js, set in <head> so the box is
-   folded from the first paint — no jump when Alpine starts), so without it the whole
-   report shows. "Copy report" copies the full text either way. */
-:root.js .cm-report-box:not(.is-open) { max-height: 26rem; overflow: hidden;
-  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 4rem), transparent);
-          mask-image: linear-gradient(to bottom, #000 calc(100% - 4rem), transparent); }
-@media (width < 40rem) { :root.js .cm-report-box:not(.is-open) { max-height: 20rem; } }
-.cm-report-box + div [aria-expanded="true"] .icon { transform: rotate(180deg); }
 
 /* ------------------------------------------------------------------ */
 /*  Share kit: poster + table tent                                     */
@@ -249,6 +267,10 @@
   box-shadow: 0 1px 2px rgb(0 0 0 / 0.08), 0 28px 50px -26px rgb(0 0 0 / 0.45);
   container-type: inline-size; font-family: var(--font-sans);
   -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  /* the artwork's own text spacing, whatever the page around it has: relaxed spacing (main.css) leaves
+     the frame out, but letter-, word-spacing and line-height are inherited from the card around it and
+     made the URL, "Scan to visit" and the footer lines run into each other (on paper too) */
+  letter-spacing: 0; word-spacing: 0; line-height: 1.5;
 }
 @media screen and (width >= 96rem) { .cm-frame { max-width: 38rem; } } /* bigger previews on wide screens */
 .cm-sheet { position: absolute; inset: 0; display: flex; flex-direction: column; }
@@ -352,6 +374,7 @@
   display: block; font-family: var(--font-display); font-size: clamp(1.5rem, 1.25rem + 1vw, 1.875rem);
   font-weight: 600; line-height: 1.15; font-variant-numeric: tabular-nums; white-space: nowrap;
 }
+.cm-rec-num > span { white-space: nowrap; } /* the parts of the number (contribute.njk) never break inside */
 /* A key to press on the keypad (1, #, 2 …): a small key cap inside the sentence. */
 .cm-rec-key {
   display: inline-grid; place-items: center; min-width: 1.6em; height: 1.6em; padding: 0 0.3em; margin-inline: 0.1em;

@@ -83,8 +83,9 @@ pageScripts: ["/assets/js/community.js"]
   <div class="cm-st-layout">
   <div class="min-w-0">
   {% if total %}
-  {#- From 768px: a table -#}
-  <div class="card overflow-hidden max-md:hidden">
+  {#- From 768px: a table. When it is wider than its card (Spanish at 768px, larger text) the card
+      scrolls sideways — a named region that keyboard users can focus and scroll. -#}
+  <div class="card overflow-hidden max-md:hidden" role="region" aria-label="{{ 'community.status.table_aria' | t(lang) }}" tabindex="0">
     <table class="w-full text-left text-sm">
       <thead class="bg-surface-2/70 text-xs uppercase tracking-wider text-muted">
         <tr>

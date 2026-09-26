@@ -8,7 +8,7 @@
       Phones: the groups sit two per row and every link is a 44px touch target; sm: four across;
       lg+: the about blurb joins the row (the wrapper becomes display:contents so the groups are
       items of the outer grid). -#}
-  <div class="container-page grid gap-8 py-10 md:py-12 lg:grid-cols-[minmax(0,1.4fr)_repeat(4,minmax(0,1fr))] lg:gap-8 xl:gap-12">
+  <div class="site-footer-main container-page grid gap-8 py-10 md:py-12 lg:grid-cols-[minmax(0,1.4fr)_repeat(4,minmax(0,1fr))] lg:gap-8 xl:gap-12">
     <div>
       <a href="{{ '/' | lurl(L) }}" class="inline-flex items-center gap-3 no-underline">
         <span class="grid h-11 place-items-center rounded-lg bg-white px-1.5 ring-1 ring-black/5"><img src="/assets/img/logo-wide.png" alt="NETA 65" width="128" height="63" class="h-9 w-auto" loading="lazy"></span>
@@ -16,11 +16,11 @@
       </a>
       <p class="mt-4 max-w-sm leading-relaxed">{{ "footer.about" | t(L) }}</p>
       <p class="mt-4 flex flex-wrap gap-2">
-        <a class="btn-secondary btn-sm" href="mailto:{{ site.contact_email }}">{% icon "mail", "size-4" %} {{ site.contact_email }}</a>
-        <a class="btn-secondary btn-sm" href="{{ site.area_website }}" rel="noopener" target="_blank">{% icon "globe", "size-4" %} neta65.org<span class="sr-only"> ({{ 'common.external' | t(L) }})</span></a>
+        <a class="btn-secondary btn-sm" href="mailto:{{ site.contact_email }}">{% icon "mail", "size-4 shrink-0" %} <span class="min-w-0">{{ site.contact_email | replace("@", "@<wbr>") | safe }}</span></a>
+        <a class="btn-secondary btn-sm" href="{{ site.area_website }}" rel="noopener" target="_blank">{% icon "globe", "size-4 shrink-0" %} neta65.org<span class="sr-only"> ({{ 'common.external' | t(L) }})</span></a>
       </p>
     </div>
-    <div class="grid grid-cols-2 gap-x-6 gap-y-7 sm:grid-cols-4 lg:contents">
+    <div class="site-footer-groups grid grid-cols-2 gap-x-6 gap-y-7 sm:grid-cols-4 lg:contents">
       <div>
         <h2 class="eyebrow mb-2 font-sans sm:mb-3">{{ "footer.explore" | t(L) }}</h2>
         <ul class="grid gap-y-0 sm:gap-y-2">

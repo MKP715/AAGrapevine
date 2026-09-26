@@ -369,7 +369,7 @@ class Crawler:
                 self.c["sitemap_requests"] += 1
                 if r is None or r.status_code != 200:
                     complete = False
-                    log.warning("sitemap %s → %s", sm, getattr(r, "status_code", "no response"))
+                    log.warning("sitemap %s -> %s", sm, getattr(r, "status_code", "no response"))
                     continue
                 content, status = r.content, r.status_code
             try:
@@ -969,7 +969,7 @@ class Crawler:
             for k in ("error", "attempts", "next_try", "final"):
                 d.pop(k, None)
         rec["details"] = {k: v for k, v in d.items() if v not in (None, "")}
-        log.info("PDF %s → %s%s", url, f"{d.get('pages')} p." if d.get("pages") else "no details",
+        log.info("PDF %s -> %s%s", url, f"{d.get('pages')} p." if d.get("pages") else "no details",
                  f" ({err})" if err else "")
 
     # ------------------------------------------------------------------ run log

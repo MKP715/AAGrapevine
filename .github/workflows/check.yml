@@ -113,6 +113,18 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
 
+      # A few tests run the site's own JavaScript (the district report, the offline worker, the
+      # website's copy of the monthly-digest rules — tests/nodejs.py); without Node.js and the
+      # site's packages they would be skipped.
+      - name: Set up Node.js (for the tests that run the site's JavaScript)
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install site tools
+        run: npm ci --no-audit --no-fund
+
       - name: Run the tests
         # The translation models are not downloaded here, so the tests that need them
         # are skipped; everything else (text handling, content parsing, build rules) runs.

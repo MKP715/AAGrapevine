@@ -547,7 +547,8 @@ function shapeEvent(it, site, lang, now, descOverride) {
   let link = it.url ? localPath(it.url, lang) : "";
   const flyerView = x.flyer_url || (it.source === "drive" && /drive\.google\.com/.test(it.url || "") ? it.url : null);
   const flyerId = driveFileId(flyerView);
-  const flyerThumb = x.flyer_thumb || (flyerId ? `https://lh3.googleusercontent.com/d/${flyerId}=w600` : null);
+  // the flyer tile on /events/ is 7.5rem (120px) wide: a 320px copy is sharp on 2× screens
+  const flyerThumb = x.flyer_thumb || (flyerId ? `https://lh3.googleusercontent.com/d/${flyerId}=w320` : null);
   // The place in this language: content/events `location_es` / `location_en` → i18n.location (build_data
   // also writes "Lugar por anunciarse" for an English "Venue to be announced"); else as written.
   const locText = String(H.pickLang(it, "location", lang) || x.location || "").trim();
@@ -1022,10 +1023,11 @@ export function weeklyOpenAll(items, lang = "en", now = new Date()) {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Weekly digest: Book of the Month teaser + this month's toolkit     */
+/*  Monthly digest: Book of the Month teaser + this month's toolkit    */
 /* ------------------------------------------------------------------ */
 // The one canonical home for prices and dates is /shop/ (data/site/shop.json → db.shop): the digest
 // only shows a compact teaser — title, sale price, end date — linking there and to the official store.
+// digestShop is used by community.js (the monthly digest: page + texts) and report.js (the district report).
 const moneyFmt = (v, lang) => {
   const n = Number(v);
   if (!Number.isFinite(n)) return "";
@@ -1068,43 +1070,6 @@ export function digestShop(shop, lang = "en", now = new Date()) {
   const ym = today.slice(0, 7);
   const monthLabel = fmt(parseInstant(`${ym}-15`), lang, { month: "long", year: "numeric" }); // "September 2026" / "septiembre de 2026"
   return { offers, pct: pcts.length === 1 ? pcts[0] : null, month: { key: ym, path: `/monthly/${ym}/`, label: monthLabel } };
-}
-
-/**
- * The digest's plain text (community.js digestText) + the Book of the Month teaser and the
- * toolkit line, inserted before the closing "everything new" footer (the last paragraph).
- */
-export function digestShopText(text, shop, langs, style, site, now = new Date()) {
-  const L = Array.isArray(langs) ? langs : [langs];
-  const main = L[0] || "en";
-  const wa = style === "whatsapp";
-  const base = String(site?.url || "").replace(/\/+$/, "");
-  const abs = (p, l) => `${base}${l === "es" ? "/es" : ""}${p}`;
-  // vars: an object, or a function of the language (a month name differs by language)
-  const both = (key, vars) => L.map((l) => t(key, l, typeof vars === "function" ? vars(l) : vars)).filter((v, i, a) => a.indexOf(v) === i).join(" / ");
-  const head = (s) => (wa ? `*${s}*` : `${s.toUpperCase()}\n${"-".repeat(Math.min(s.length, 60))}`);
-  const dg = digestShop(shop, main, now);
-  const out = [];
-  if (dg.offers.length) {
-    const label = dg.pct ? both("community.digest.botm_title", { pct: dg.pct }) : both("community.digest.botm_title_plain");
-    out.push(wa ? `📚 ${head(label)}` : head(label));
-    for (const o of dg.offers) {
-      // the title it is sold under first, then the translations as a second line
-      const titles = [o.raw.title, ...L.map((l) => o.raw.i18n?.title?.[l])].filter((v, i, a) => v && a.indexOf(v) === i);
-      const price = o.price ? t("community.digest.botm_price", main, { sale: o.sale, price: o.price }) : o.sale;
-      const ends = o.endsLabel ? ` · ${t("community.digest.botm_ends", main, { date: o.endsLabel })}` : "";
-      out.push(`${wa ? "•" : "-"} "${titles[0] || o.title}" (${o.pubName}) — ${price}${ends}`);
-      for (const r of titles.slice(1)) out.push(`  "${r}"`);
-      out.push(`  ${o.url}`);
-    }
-    out.push(`${both("community.digest.botm_more")}: ${abs("/shop/", main)}#botm`);
-    out.push("");
-  }
-  out.push(`${wa ? "🖼️ " : ""}${both("community.digest.monthly", (l) => ({ month: digestShop(null, l, now).month.label }))}: ${abs(dg.month.path, main)}`);
-  const block = out.join("\n");
-  const s = String(text || "").replace(/\s+$/, "");
-  const cut = s.lastIndexOf("\n\n");
-  return (cut > 0 ? `${s.slice(0, cut)}\n\n${block}\n\n${s.slice(cut + 2)}` : `${s}\n\n${block}`) + "\n";
 }
 
 /**
@@ -1480,9 +1445,6 @@ export default function (eleventyConfig, helpers) {
   eleventyConfig.addFilter("cmWeeklyAll", (items, lang) => weeklyOpenAll(EMPTY ? [] : items, lang));
   // Grapevine meetings in our Area and nearby (db.meetings) — /meetings/#grapevine-meetings
   eleventyConfig.addFilter("cmGvMeetings", (data, lang, site) => gvMeetings(data, lang, site));
-  // Weekly digest (/digest/): Book of the Month teaser + this month's toolkit link, and the same in the copy text
-  eleventyConfig.addFilter("cmDigestShop", (shop, lang) => digestShop(shop, lang));
-  eleventyConfig.addFilter("cmDigestShopText", (text, shop, langs, style, site) => digestShopText(text, shop, langs, style, site));
   // Text for GLightbox's data-title / data-description. GLightbox puts those values into the
   // page with innerHTML, so plain autoescaping is not enough (the browser decodes the
   // attribute first). This returns HTML-escaped text as a normal string; autoescape then
@@ -1612,7 +1574,7 @@ export default function (eleventyConfig, helpers) {
   <div class="mt-5 grid gap-2">
     ${rows.map((r) => `
     <details class="cm-howto">
-      <summary>${icon(r.ic, "size-4 text-gv")} <span>${esc(t(`committee.sub.howto_${r.k}`, L))}</span>${icon("chevron-down", "size-4 ml-auto opacity-60 cm-chev")}</summary>
+      <summary>${icon(r.ic, "size-4 text-gv")} <span class="min-w-0 hyphens-auto [overflow-wrap:anywhere]">${esc(t(`committee.sub.howto_${r.k}`, L))}</span>${icon("chevron-down", "size-4 ml-auto opacity-60 cm-chev")}</summary>
       <div class="cm-howto-body">
         <a class="${r.cls} btn-sm w-full" href="${esc(r.href)}"${r.href.startsWith("http") ? ' target="_blank" rel="noopener"' : ""}>${icon(r.ic, "size-4")} ${esc(r.label)}${r.href.startsWith("http") ? ext : ""}</a>
         <p>${esc(t(`committee.sub.howto_${r.k}_text`, L))}</p>
@@ -1622,7 +1584,7 @@ export default function (eleventyConfig, helpers) {
   <div class="mt-5 border-t border-line pt-5">
     <p class="eyebrow">${esc(t("committee.sub.url_label", L))}</p>
     <p class="cm-feed-url mt-2" translate="no">${esc(feed)}</p>
-    <button type="button" class="btn-secondary btn-sm mt-3 w-full" data-copy="${esc(feed)}">${icon("copy", "size-4")} ${esc(t("committee.sub.copy_aria", L))}</button>
+    <button type="button" class="btn-secondary btn-sm mt-3 w-full" data-js-only data-copy="${esc(feed)}">${icon("copy", "size-4")} ${esc(t("committee.sub.copy_aria", L))}</button>
     <p class="mt-3 text-xs leading-relaxed text-muted">${esc(t("committee.sub.url_help", L))}</p>
     <p class="mt-2 text-xs leading-relaxed text-muted">${esc(t("committee.sub.other_lang", L))} <a class="link cm-feed-other" href="${esc(otherFeed)}" hreflang="${other}" translate="no">${esc(otherFeed.replace(/^https?:\/\//, ""))}</a></p>
   </div>

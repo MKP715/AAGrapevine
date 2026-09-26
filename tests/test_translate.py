@@ -627,7 +627,7 @@ class BuildRules(unittest.TestCase):
                                            "zoom_id": "871 2036 8287", "passcode": "238047"}}
         lab = self.B.weekly_open_labels(it)
         self.assertEqual(lab["when"], {"en": "Wednesdays at 11:00 AM Central",
-                                       "es": "Miércoles a las 11:00 a. m. (hora del Centro)"})
+                                       "es": "Los miércoles a las 11:00 a. m. (hora del Centro)"})
         self.assertEqual(lab["time"]["en"], "Noon Eastern")
         self.assertIn("871 2036 8287", lab["sentence"]["es"])
         self.assertEqual(self.B.weekly_open_labels({"kind": "meeting", "extra": {}}), {})

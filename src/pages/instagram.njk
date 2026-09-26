@@ -148,12 +148,12 @@ pageScripts: ["/assets/js/media.js"]
         </div>
         <div class="px-5 pb-5 sm:px-6">
           <div class="flex items-end justify-between gap-3">
-            <span class="ig-avatar is-{{ acc.key }} relative z-10"><span>{% icon "grapes", "size-8" %}</span>{% if prof.avatar %}<img src="{{ prof.avatar }}" alt="" width="72" height="72" decoding="async" onerror="this.remove()">{% endif %}</span>
+            <span class="ig-avatar is-{{ acc.key }} relative z-10"><span>{% icon "grapes", "size-8" %}</span>{% if prof.avatar %}<img src="{{ prof.avatar }}" alt="" width="72" height="72" loading="lazy" decoding="async" onerror="this.remove()">{% endif %}</span>
             <a class="{{ 'btn-lv' if isLv else 'btn-primary' }} btn-sm" href="{{ profile }}" target="_blank" rel="noopener">{% icon "instagram", "size-4" %} {{ "common.follow" | t(lang) }}</a>
           </div>
           <h3 id="ig-{{ acc.key }}-title" class="mt-3 font-display text-2xl font-semibold">{{ acc.name }}</h3>
           <p class="mt-0.5 flex flex-wrap items-center gap-2 text-sm text-muted">
-            <a class="tap-link font-medium hover:text-gv" href="{{ profile }}" target="_blank" rel="noopener">@{{ prof.username }}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a>
+            <a class="tap-link font-medium [overflow-wrap:anywhere] hover:text-gv" href="{{ profile }}" target="_blank" rel="noopener">@{{ prof.username }}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a>
             <span class="{{ 'badge-lv' if isLv else 'badge-gv' }}">{{ ("media.ig_in_spanish" if isLv else "media.ig_in_english") | t(lang) }}</span>
           </p>
           {% if prof.posts or prof.followers %}

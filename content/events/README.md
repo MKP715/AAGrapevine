@@ -66,7 +66,7 @@ tentative: true            # also works: yes, sí
 ```
 
 The event then shows a **"Details to be confirmed" / "Detalles por confirmar"**
-badge on the Events page, the home page, the weekly digest and the search, and
+badge on the Events page, the home page, the monthly digest and the search, and
 people's calendar apps mark it as *tentative*.
 
 **When the details are final**, edit the file: put the real place in `location`
@@ -90,6 +90,24 @@ When the calendar says something this file does not — its event page on anothe
 date, another start time, or a real venue while the file says "Venue to be
 announced" — the run summary (GitHub → **Actions** → the latest run) shows a
 **Check:** line with the file's name. Update the file; nothing else is needed.
+
+## Our dates win for good: `confirmed: true`
+
+When the committee has checked an event's date, time and place itself (and the
+NETA 65 calendar still shows something else), add:
+
+```markdown
+confirmed: true            # also works: yes, sí
+```
+
+From then on the file always wins: its date, time and place are never changed by
+the calendar, the calendar's copy of the same event page (`url:`) is never shown as
+a second event or on another date, and there is no **Check:** line for it any more
+(only a quiet note in the run's log). Keep `url:` pointing to the event's page. If
+neta65.org later uses that same page for a *new* workshop, add a file for the new
+date (or delete the `confirmed: true` line once the event is over).
+`confirmed` is only about the calendar: an event whose details are still open keeps
+`tentative: true` as well.
 
 While neta65.org blocks our robot (the **Status** page says so), the calendar is
 not read at all: a workshop or assembly shows on the Events page only when it has a

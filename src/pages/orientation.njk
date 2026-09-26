@@ -1,0 +1,346 @@
+---
+pagination: { data: languages, size: 1, alias: lang }
+permalink: "{{ '/' if lang == 'en' else '/es/' }}orientation/index.html"
+layout: layouts/base.njk
+pageKey: orientation
+titleKey: nav.orientation
+descKey: orientation.meta_desc
+bodyClass: o101-hub
+pageScripts: ["/assets/js/orientation.js"]
+---
+{#- /orientation/ — "GVR / RLV 101", the orientation for new GVRs and RLVs (Panel 77 starts in January
+    2027). The lessons live in config/orientation.yml (src/_data/orientation.js → `orientation`); each one
+    has its own page (orientation-lesson.njk). This hub holds:
+      hero → welcome + progress (page-overlap) → the 6 lesson cards → present or print (band) →
+      for trainers (a 45-minute district plan) → next steps
+    plus two things that are not on screen:
+      #o101-deck-tpl  the slide show (a <template>): orientation.js clones it into a full-screen dialog on
+                      "Present as slides" or at /orientation/?slides (#slide-N resumes, #lesson-<id> starts a
+                      lesson). Fixed high-contrast palette, type sized to the 16:9 stage (areas/orientation.css).
+      .o101-handout   the printable handout (display: none on screen; printing this page prints it):
+                      one Letter sheet per lesson.
+    Progress ("lessons done on this device") is kept by orientation.js in localStorage only. -#}
+{% import "macros/ui.njk" as ui with context %}
+{% import "macros/orientation.njk" as o with context %}
+{%- set O = orientation -%}
+{%- set V = O | o101Vars(lang, site.meeting | cmRule(lang), site.meeting | cmTimeRange(lang)) -%}
+{%- set total = O.lessons | length -%}
+{%- set hubAbs = ('/orientation/' | lurl(lang)) | siteUrl(site) -%}
+{%- set tones = ["bg-gv-soft text-gv", "bg-vine-soft text-vine", "bg-lv-soft text-lv", "bg-grape-soft text-grape", "bg-gv-soft text-gv", "bg-vine-soft text-vine"] -%}
+{%- set half = ((total + 1) / 2) | round(0, "floor") -%}
+{%- set firstHalf = O.lessons | limit(half) -%}
+{%- set secondHalf = O.lessons | offset(half) -%}
+{%- set welcomeMin = 3 -%}{%- set closeMin = 3 -%}
+
+{% call ui.pageHero(lang, "nav.orientation" | t(lang), "orientation.hero_sub" | t(lang), "graduation-cap", "orientation.eyebrow" | t(lang)) %}
+<div class="hero-actions">
+  {%- if total %}
+  <a class="btn-light" href="{{ ('/orientation/' + O.lessons[0].id + '/') | lurl(lang) }}" data-o101-resume data-t-continue="{{ 'orientation.continue' | t(lang) }}" data-t-review="{{ 'orientation.review' | t(lang) }}">{% icon "play", "size-4" %} <span data-o101-resume-label>{{ "orientation.start" | t(lang) }}</span></a>
+  <a class="btn-on-dark" href="?slides" data-o101-present data-js-only>{% icon "presentation", "size-4" %} {{ "orientation.present" | t(lang) }}</a>
+  <button type="button" class="btn-on-dark max-md:hidden" data-o101-print data-js-only>{% icon "printer", "size-4" %} {{ "orientation.handout_btn" | t(lang) }}</button>
+  {%- endif %}
+</div>
+{{ ui.heroStats([
+  { value: total, label: "orientation.stat_lessons" | t(lang) },
+  { value: O.totalMinutes, label: "orientation.stat_minutes" | t(lang) },
+  { value: O.totalChecks, label: "orientation.stat_checks" | t(lang) }
+]) }}
+{% endcall %}
+
+{#- ---------- Welcome (page-overlap) + progress on this device ---------- -#}
+<section class="container-page page-overlap" aria-labelledby="o101-welcome-title">
+  <div class="card card-pad o101-welcome">
+    <div class="min-w-0">
+      <p class="eyebrow flex items-center gap-2 text-vine">{% icon "calendar-days", "size-4 shrink-0" %}<span>{{ "orientation.welcome_eyebrow" | t(lang, { panel: V.panel, start: V.panel_start }) }}</span></p>
+      <h2 id="o101-welcome-title" class="h-section mt-2 text-balance">{{ "orientation.welcome_title" | t(lang) }}</h2>
+      <p class="mt-2 max-w-2xl leading-relaxed text-muted">{{ "orientation.welcome_text" | t(lang, { min: O.totalMinutes }) }}</p>
+    </div>
+    <div class="o101-progress" data-js-only data-o101-progress data-total="{{ total }}" data-t="{{ 'orientation.progress' | t(lang) }}" data-t-all="{{ 'orientation.progress_all' | t(lang) }}">
+      <p class="eyebrow">{{ "orientation.progress_label" | t(lang) }}</p>
+      <div class="o101-bar mt-2" role="progressbar" aria-label="{{ 'orientation.progress_label' | t(lang) }}" aria-valuemin="0" aria-valuemax="{{ total }}" aria-valuenow="0"><span data-o101-bar style="width:0%"></span></div>
+      <p class="mt-2 text-sm font-semibold text-ink" data-o101-count>{{ "orientation.progress" | t(lang, { n: 0, total: total }) }}</p>
+      <p class="mt-1 flex items-start gap-1.5 text-xs leading-relaxed text-muted">{% icon "lock", "mt-0.5 size-3 shrink-0" %}<span>{{ "orientation.saved_note" | t(lang) }}</span></p>
+      <button type="button" class="btn-ghost btn-sm -mx-2 mt-1 text-muted" data-o101-reset hidden>{% icon "rotate-ccw", "size-4" %} {{ "orientation.progress_reset" | t(lang) }}</button>
+    </div>
+  </div>
+</section>
+
+{#- ---------- The lessons ---------- -#}
+<section id="lessons" class="section container-page pt-10 sm:pt-12" aria-labelledby="lessons-title">
+  {{ ui.sectionHead("orientation.lessons_title" | t(lang), "orientation.lessons_sub" | t(lang), "", "", "list-checks", { eyebrow: "orientation.lessons_eyebrow" | t(lang), id: "lessons-title", lang: lang }) }}
+  <ol class="grid-cards-fit [--cards-min:15rem] [--cards-max:3] min-[1800px]:[--cards-max:6]" role="list">
+    {% for l in O.lessons %}
+    {%- set url = ('/orientation/' + l.id + '/') | lurl(lang) -%}
+    <li class="card card-link group relative flex flex-col p-5 sm:p-6" data-o101-card="{{ l.id }}" data-n="{{ l.n }}">
+      <div class="flex flex-wrap items-center gap-x-3 gap-y-2">
+        <span class="grid size-11 shrink-0 place-items-center rounded-xl {{ tones[loop.index0 % 6] }}">{% icon l.icon, "size-5" %}</span>
+        <span class="eyebrow">{{ "orientation.lesson_n" | t(lang, { n: l.n }) }}</span>
+        <span class="badge-muted ml-auto">{% icon "clock", "size-3" %} {{ "orientation.minutes" | t(lang, { n: l.minutes }) }}</span>
+      </div>
+      <h3 class="h-card mt-4 text-balance"><a class="no-underline after:absolute after:inset-0 after:rounded-[var(--radius-card)] hover:text-gv" href="{{ url }}">{{ l.title | o101Text(lang) }}<span class="sr-only" data-o101-done-sr hidden> ({{ "orientation.done" | t(lang) }})</span></a></h3>
+      <p class="mt-2 text-sm leading-relaxed text-muted">{{ l.summary | o101Text(lang) }}</p>
+      <div class="mt-auto flex flex-wrap items-center gap-2 pt-4">
+        <span class="badge-vine" data-o101-done hidden>{% icon "circle-check", "size-3" %} {{ "orientation.done" | t(lang) }}</span>
+        <span class="inline-flex items-center gap-1.5 text-sm font-semibold text-gv" aria-hidden="true"><span data-o101-cta data-t-review="{{ 'orientation.review_lesson' | t(lang) }}">{{ "orientation.start_lesson" | t(lang) }}</span> {% icon "arrow-right", "size-4 transition group-hover:translate-x-0.5" %}</span>
+      </div>
+    </li>
+    {% endfor %}
+  </ol>
+</section>
+
+{#- ---------- Present or print (a band) ---------- -#}
+<section id="present" class="section section-band" aria-labelledby="present-title">
+  <div class="container-page">
+    {{ ui.sectionHead("orientation.use_title" | t(lang), "orientation.use_sub" | t(lang), "", "", "presentation", { eyebrow: "orientation.use_eyebrow" | t(lang), tone: "text-grape", id: "present-title", lang: lang }) }}
+    <div class="grid grid-cols-1 gap-5 lg:grid-cols-2">
+      <div class="card card-pad flex flex-col">
+        <h3 class="card-h"><span class="text-grape">{% icon "presentation", "size-5" %}</span>{{ "orientation.present" | t(lang) }}</h3>
+        <p class="mt-2 text-sm leading-relaxed text-muted">{{ "orientation.slides_text" | t(lang) }}</p>
+        <div class="mt-4 rounded-xl bg-surface-2 p-4">
+          <p class="eyebrow flex items-center gap-2">{% icon "keyboard", "size-4 shrink-0" %}<span>{{ "orientation.keys_title" | t(lang) }}</span></p>
+          <dl class="o101-keys mt-3">
+            <div><dt><kbd>→</kbd> <kbd>{{ "orientation.kbd_space" | t(lang) }}</kbd></dt><dd>{{ "orientation.key_next" | t(lang) }}</dd></div>
+            <div><dt><kbd>←</kbd></dt><dd>{{ "orientation.key_prev" | t(lang) }}</dd></div>
+            <div><dt><kbd>{{ "orientation.kbd_home" | t(lang) }}</kbd> <kbd>{{ "orientation.kbd_end" | t(lang) }}</kbd></dt><dd>{{ "orientation.key_ends" | t(lang) }}</dd></div>
+            <div><dt><kbd>F</kbd></dt><dd>{{ "orientation.key_full" | t(lang) }}</dd></div>
+            <div><dt><kbd>Esc</kbd></dt><dd>{{ "orientation.key_exit" | t(lang) }}</dd></div>
+          </dl>
+          <p class="mt-3 text-xs text-muted">{{ "orientation.slides_touch" | t(lang) }}</p>
+        </div>
+        <div class="mt-auto pt-5">
+          <a class="btn-primary" href="?slides" data-o101-present data-js-only>{% icon "presentation", "size-4" %} {{ "orientation.present" | t(lang) }}</a>
+          <p class="o101-nojs-only text-sm text-muted">{% icon "info", "size-4 inline -mt-0.5" %} {{ "orientation.slides_nojs" | t(lang) }}</p>
+        </div>
+      </div>
+      <div class="card card-pad flex flex-col">
+        <h3 class="card-h"><span class="text-grape">{% icon "printer", "size-5" %}</span>{{ "orientation.handout" | t(lang) }}</h3>
+        <p class="mt-2 text-sm leading-relaxed text-muted">{{ "orientation.handout_text" | t(lang) }}</p>
+        {#- A miniature of one sheet: what each page holds -#}
+        <div class="o101-sheet-mini mt-4" aria-hidden="true">
+          <span class="o101-sheet-mini-head"></span>
+          <span class="o101-sheet-mini-title"></span>
+          <span></span><span></span><span class="w-4/5"></span>
+          <span class="o101-sheet-mini-cols"><span></span><span></span></span>
+          <span class="o101-sheet-mini-qr"></span>
+        </div>
+        <div class="mt-auto pt-5">
+          <button type="button" class="btn-secondary" data-o101-print data-js-only>{% icon "printer", "size-4" %} {{ "orientation.handout_btn" | t(lang) }}</button>
+          <p class="mt-2 text-xs text-muted">{{ "orientation.handout_note" | t(lang) }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{#- ---------- For trainers: a 45-minute district orientation ---------- -#}
+{%- set sumA = firstHalf | sum("minutes") -%}
+{%- set sumB = secondHalf | sum("minutes") -%}
+<section id="trainers" class="section container-page" aria-labelledby="trainers-title">
+  {{ ui.sectionHead("orientation.trainers_title" | t(lang, { n: welcomeMin + O.totalMinutes + closeMin }), "orientation.trainers_sub" | t(lang), "", "", "users", { eyebrow: "orientation.trainers_eyebrow" | t(lang), tone: "text-vine", id: "trainers-title", lang: lang }) }}
+  {#- The plan: four steps in a row from 1280px (2 × 2 from 640px); then what to bring, full width -#}
+  <div class="space-y-5">
+    <div class="card card-pad">
+      <h3 class="card-h"><span class="text-vine">{% icon "timer", "size-5" %}</span>{{ "orientation.plan_title" | t(lang) }}</h3>
+      <ol class="o101-plan mt-5" role="list">
+        {%- set plan = [
+          { t: "orientation.plan1_t" | t(lang), min: welcomeMin, text: "orientation.plan1" | t(lang) },
+          { t: "orientation.plan_lessons" | t(lang, { a: 1, b: half }), min: sumA, text: "orientation.plan2" | t(lang) },
+          { t: "orientation.plan_lessons" | t(lang, { a: half + 1, b: total }), min: sumB, text: "orientation.plan3" | t(lang) },
+          { t: "orientation.plan4_t" | t(lang), min: closeMin, text: "orientation.plan4" | t(lang) }
+        ] %}
+        {% for p in plan %}
+        <li>
+          <span class="step-num" aria-hidden="true">{{ loop.index }}</span>
+          <div class="min-w-0">
+            <p class="flex flex-wrap items-center gap-x-2 gap-y-1 font-semibold text-ink">{{ p.t }} <span class="badge-muted">{{ "orientation.minutes" | t(lang, { n: p.min }) }}</span></p>
+            <p class="mt-1 text-sm leading-relaxed text-muted">{{ p.text }}</p>
+          </div>
+        </li>
+        {% endfor %}
+      </ol>
+    </div>
+    <div class="card card-pad">
+      <h3 class="card-h"><span class="text-vine">{% icon "list-checks", "size-5" %}</span>{{ "orientation.before_title" | t(lang) }}</h3>
+      <div class="o101-before mt-4 grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,24rem)] lg:items-center 2xl:grid-cols-[minmax(0,1fr)_minmax(0,28rem)]">
+        <ul class="o101-before-list grid grid-cols-1 gap-3 text-sm leading-relaxed text-ink" role="list">
+          {% for k in ["before1", "before2", "before3", "before4"] %}
+          <li class="flex gap-2.5">{% icon "check", "mt-0.5 size-4 shrink-0 text-vine" %}<span class="min-w-0">{{ ("orientation." + k) | t(lang) }}</span></li>
+          {% endfor %}
+        </ul>
+        <p class="flex gap-2.5 rounded-xl bg-surface-2 p-4 text-sm leading-relaxed text-muted">{% icon "shield-check", "mt-0.5 size-4 shrink-0 text-vine" %}<span>{{ "orientation.anon_note" | t(lang) }}</span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{#- ---------- Next steps (closing block) ---------- -#}
+<section id="next" class="section container-page pt-0" aria-labelledby="next-title">
+  {{ ui.sectionHead("orientation.next_title" | t(lang), "orientation.next_sub" | t(lang), "", "", "compass", { eyebrow: "common.next_steps" | t(lang), id: "next-title", lang: lang }) }}
+  {{ ui.nextSteps([
+    { href: ("/gvr/" | lurl(lang)) + "#steps", title: "nav.gvr" | t(lang), text: "orientation.ns_gvr" | t(lang), cta: "orientation.ns_gvr_cta" | t(lang), icon: "badge-check", tone: "vine" },
+    { href: "/monthly/" | lurl(lang), title: "nav.monthly" | t(lang), text: "orientation.ns_monthly" | t(lang), cta: "orientation.ns_monthly_cta" | t(lang), icon: "calendar-heart", tone: "gv" },
+    { href: ("/meetings/" | lurl(lang)) + "#committee-meeting", title: "orientation.ns_meeting_t" | t(lang), text: (site.meeting | cmRule(lang)) + " · " + (site.meeting | cmTimeRange(lang)) + " · " + (site.meeting.platform or "Zoom"), cta: "orientation.ns_meeting_cta" | t(lang), icon: "video", tone: "grape" },
+    { href: ("/contribute/" | lurl(lang)) + "#deadlines", title: "nav.contribute" | t(lang), text: "orientation.ns_contribute" | t(lang), cta: "orientation.ns_contribute_cta" | t(lang), icon: "pen-line", tone: "lv" }
+  ], lang) }}
+</section>
+
+{#- ================= The slide show (cloned by orientation.js) ================= -#}
+{%- set deck = O.lessons | o101Deck -%}
+{%- set N = deck | length -%}
+{%- set grapes %}<svg class="o101-s-art" viewBox="0 0 200 240" fill="none" aria-hidden="true"><path d="M100 18c4 18 2 34-6 48" stroke="currentColor" stroke-width="6" stroke-linecap="round"/><path d="M104 40c18-16 42-18 60-8-14 16-38 20-60 8Z" fill="currentColor" opacity=".55"/><g fill="currentColor"><circle cx="82" cy="96" r="17"/><circle cx="116" cy="96" r="17"/><circle cx="66" cy="126" r="17"/><circle cx="100" cy="126" r="17"/><circle cx="134" cy="128" r="17"/><circle cx="82" cy="156" r="17"/><circle cx="116" cy="156" r="17"/><circle cx="100" cy="186" r="17"/></g></svg>{% endset -%}
+<template id="o101-deck-tpl">
+  <div class="o101-deck" role="dialog" aria-modal="true" aria-label="{{ 'orientation.deck_label' | t(lang) }}" tabindex="-1" data-o101-deck
+       data-t-live="{{ 'orientation.deck_live' | t(lang) }}" data-t-full="{{ 'orientation.deck_full' | t(lang) }}" data-t-full-exit="{{ 'orientation.deck_full_exit' | t(lang) }}"
+       data-t-show="{{ 'orientation.deck_show' | t(lang) }}" data-t-hide="{{ 'orientation.deck_hide' | t(lang) }}">
+    <div class="o101-deck-progress" aria-hidden="true"><span data-o101-deck-bar></span></div>
+    <div class="o101-deck-main" data-o101-stage-wrap>
+      <div class="o101-stage" data-o101-stage>
+        {% for s in deck %}
+        {%- set i = loop.index -%}
+        {%- set hid = "slide-" ~ i ~ "-h" -%}
+        {%- set l = s.lesson -%}
+        {%- set lessonOf = ("orientation.lesson_n_of" | t(lang, { n: l.n, total: total })) if l else "" -%}
+        <section class="o101-slide o101-slide--{{ s.kind }}" id="slide-{{ i }}" data-o101-slide{% if s.kind == 'lesson' %} data-lesson="{{ l.id }}"{% endif %} aria-roledescription="{{ 'orientation.deck_slide' | t(lang) }}" aria-labelledby="{{ hid }}" hidden>
+          {%- if s.kind == "title" %}
+          <div class="o101-s-body o101-s-center">
+            {{ grapes | safe }}
+            <p class="o101-s-eyebrow">{{ site | pick(lang, "committee") }}</p>
+            <h2 id="{{ hid }}" class="o101-s-display">{{ "nav.orientation" | t(lang) }}</h2>
+            <p class="o101-s-lead">{{ "orientation.hero_sub" | t(lang) }}</p>
+            <p class="o101-s-meta">{{ "orientation.welcome_eyebrow" | t(lang, { panel: V.panel, start: V.panel_start }) }}</p>
+          </div>
+          {%- elif s.kind == "agenda" %}
+          <div class="o101-s-body">
+            <p class="o101-s-eyebrow">{{ "orientation.deck_agenda_eyebrow" | t(lang) }}</p>
+            <h2 id="{{ hid }}" class="o101-s-h">{{ "orientation.deck_agenda_title" | t(lang, { n: O.totalMinutes }) }}</h2>
+            <ol class="o101-s-agenda" role="list">
+              {% for a in O.lessons %}<li><span class="o101-s-n" aria-hidden="true">{{ a.n }}</span><span class="o101-s-agenda-t">{{ a.title | o101Text(lang) }}</span><span class="o101-s-min">{{ "orientation.minutes" | t(lang, { n: a.minutes }) }}</span></li>{% endfor %}
+            </ol>
+          </div>
+          {%- elif s.kind == "lesson" %}
+          <div class="o101-s-body o101-s-lesson">
+            <span class="o101-s-icon" aria-hidden="true">{% icon l.icon, "size-full" %}</span>
+            <p class="o101-s-eyebrow">{{ lessonOf }} · {{ "orientation.minutes" | t(lang, { n: l.minutes }) }}</p>
+            <h2 id="{{ hid }}" class="o101-s-display">{{ l.title | o101Text(lang) }}</h2>
+            <p class="o101-s-goal"><span class="o101-s-goal-k">{{ "orientation.goal" | t(lang) }}</span> {{ l.goal | o101Text(lang, V) }}</p>
+          </div>
+          {%- elif s.kind == "points" %}
+          <div class="o101-s-body">
+            <p class="o101-s-eyebrow">{{ lessonOf }} · {{ "orientation.points_eyebrow" | t(lang) }}{% if s.parts > 1 %} ({{ "orientation.deck_part" | t(lang, { a: s.part, b: s.parts }) }}){% endif %}</p>
+            <h2 id="{{ hid }}" class="o101-s-h">{{ l.title | o101Text(lang) }}</h2>
+            <ol class="o101-s-points" role="list">
+              {% for p in s.points %}<li><span class="o101-s-n" aria-hidden="true">{{ s.start + loop.index }}</span><div><h3>{{ p.title | o101Text(lang, V) }}</h3><p>{{ p.text | o101Text(lang, V) }}</p></div></li>{% endfor %}
+            </ol>
+          </div>
+          {%- elif s.kind == "try" %}
+          <div class="o101-s-body o101-s-split">
+            <div class="min-w-0">
+              <p class="o101-s-eyebrow">{{ lessonOf }}</p>
+              <h2 id="{{ hid }}" class="o101-s-h">{{ "orientation.try_title" | t(lang) }}</h2>
+              <p class="o101-s-text">{{ l.try | o101Text(lang, V) }}</p>
+              <h3 class="o101-s-sub">{{ "orientation.discuss_title" | t(lang) }}</h3>
+              <p class="o101-s-text o101-s-quote">{{ l.discuss | o101Text(lang, V) }}</p>
+            </div>
+            <div class="o101-s-panel min-w-0">
+              <h3 class="o101-s-sub">{{ "orientation.live_title" | t(lang) }}</h3>
+              {{ o.live(l.example, lang, "slide") }}
+            </div>
+          </div>
+          {%- elif s.kind == "check" %}
+          <div class="o101-s-body" data-o101-check>
+            <p class="o101-s-eyebrow">{{ lessonOf }} · {{ "orientation.deck_check" | t(lang, { n: s.qi + 1, total: l.check | length }) }}</p>
+            <h2 id="{{ hid }}" class="o101-s-h">{{ s.q.q | o101Text(lang, V) }}</h2>
+            <ol class="o101-s-opts" role="list">
+              {% for op in s.q.options %}<li{% if loop.index == s.q.answer %} data-correct{% endif %}><span class="o101-s-letter" aria-hidden="true">{{ loop.index0 | o101Letter }}</span><span class="min-w-0">{{ op | o101Text(lang, V) }}</span>{% if loop.index == s.q.answer %}<span class="o101-s-ok" data-o101-ok hidden>{% icon "circle-check", "size-full" %}<span class="sr-only"> ({{ "orientation.deck_correct" | t(lang) }})</span></span>{% endif %}</li>{% endfor %}
+            </ol>
+            <div class="o101-s-reveal">
+              <button type="button" class="o101-s-btn" data-o101-reveal aria-expanded="false" aria-controls="slide-{{ i }}-why">{% icon "eye", "size-[1.1em]" %}<span data-o101-reveal-label>{{ "orientation.deck_show" | t(lang) }}</span></button>
+              <p id="slide-{{ i }}-why" class="o101-s-why" data-o101-why hidden>{{ s.q.why | o101Text(lang, V) }}</p>
+            </div>
+          </div>
+          {%- elif s.kind == "close" %}
+          <div class="o101-s-body o101-s-split o101-s-split--close">
+            <div class="min-w-0">
+              <p class="o101-s-eyebrow">{{ "common.next_steps" | t(lang) }}</p>
+              <h2 id="{{ hid }}" class="o101-s-display o101-s-display--sm">{{ "orientation.deck_close_title" | t(lang) }}</h2>
+              <ul class="o101-s-close" role="list">
+                <li><strong>{{ "orientation.deck_close_register" | t(lang) }}</strong><span>{% if lang == "es" %}aalavina.org · aagrapevine.org{% else %}aagrapevine.org · aalavina.org{% endif %}</span></li>
+                <li><strong>{{ "orientation.deck_close_steps" | t(lang) }}</strong><span>{{ (('/gvr/' | lurl(lang)) | siteUrl(site)) | replace("https://", "") }}</span></li>
+                <li><strong>{{ "orientation.deck_close_meeting" | t(lang) }}</strong><span>{% if meeting.next %}{{ meeting.next.start | fmtDate(lang, "long") }} · {% endif %}{{ site.meeting | cmTimeRange(lang) }} · Zoom</span></li>
+                <li><strong>{{ "orientation.deck_close_monthly" | t(lang) }}</strong><span>{{ (('/monthly/' | lurl(lang)) | siteUrl(site)) | replace("https://", "") }}</span></li>
+              </ul>
+            </div>
+            <figure class="o101-s-qr">
+              {{ hubAbs | qrSvg("orientation.qr_alt" | t(lang, { url: hubAbs }), "o101-s-qr-svg") | safe }}
+              <figcaption><strong>{{ "orientation.deck_qr" | t(lang) }}</strong><span>{{ (hubAbs | replace("https://", "") | escape | replace("/", "/<wbr>")) | safe }}</span></figcaption>
+            </figure>
+          </div>
+          {%- endif %}
+        </section>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="o101-deck-bar">
+      <button type="button" class="o101-deck-btn" data-o101-prev aria-label="{{ 'orientation.deck_prev' | t(lang) }}">{% icon "chevron-left", "size-5" %}</button>
+      <p class="o101-deck-count" aria-hidden="true"><span data-o101-n>1</span> / {{ N }}</p>
+      <button type="button" class="o101-deck-btn" data-o101-next aria-label="{{ 'orientation.deck_next' | t(lang) }}">{% icon "chevron-right", "size-5" %}</button>
+      <span class="flex-1"></span>
+      <button type="button" class="o101-deck-btn o101-deck-btn--text" data-o101-full>{% icon "maximize", "size-5" %}<span data-o101-full-label>{{ "orientation.deck_full" | t(lang) }}</span></button>
+      <button type="button" class="o101-deck-btn o101-deck-btn--text" data-o101-exit aria-label="{{ 'orientation.deck_exit_label' | t(lang) }}">{% icon "x", "size-5" %}<span>{{ "orientation.deck_exit" | t(lang) }}</span></button>
+    </div>
+    <p class="sr-only" aria-live="polite" data-o101-live></p>
+  </div>
+</template>
+
+{#- ================= The printable handout (print only: one sheet per lesson) ================= -#}
+<div class="o101-handout">
+  {% for l in O.lessons %}
+  {%- set lessonAbs = (('/orientation/' + l.id + '/') | lurl(lang)) | siteUrl(site) -%}
+  <article class="o101-sheet" aria-labelledby="sheet-{{ l.id }}">
+    <header class="o101-sheet-head">
+      <span>{{ "orientation.lesson_eyebrow" | t(lang, { n: l.n, total: total }) }} · {{ "orientation.minutes" | t(lang, { n: l.minutes }) }}</span>
+      <span>{{ site | pick(lang, "committee") }}</span>
+    </header>
+    <h2 id="sheet-{{ l.id }}">{{ l.title | o101Text(lang) }}</h2>
+    <p class="o101-sheet-goal"><strong>{{ "orientation.goal" | t(lang) }}:</strong> {{ l.goal | o101Text(lang, V) }}</p>
+    <h3>{{ "orientation.points_eyebrow" | t(lang) }}</h3>
+    <ol class="o101-sheet-points">
+      {% for p in l.points %}<li><strong>{{ p.title | o101Text(lang, V) }}.</strong> {{ p.text | o101Text(lang, V) }}</li>{% endfor %}
+    </ol>
+    <div class="o101-sheet-cols">
+      <div>
+        <h3>{{ "orientation.try_title" | t(lang) }}</h3>
+        <p>{{ l.try | o101Text(lang, V) }}</p>
+        <h3>{{ "orientation.discuss_title" | t(lang) }}</h3>
+        <p><em>{{ l.discuss | o101Text(lang, V) }}</em></p>
+        <h3>{{ "orientation.live_title" | t(lang) }}</h3>
+        {{ o.live(l.example, lang, "print") }}
+      </div>
+      <div>
+        <h3>{{ "orientation.check_eyebrow" | t(lang) }}</h3>
+        <ol class="o101-sheet-qs">
+          {% for q in l.check %}
+          <li><p>{{ q.q | o101Text(lang, V) }}</p>
+            <ul>{% for op in q.options %}<li><span class="o101-sheet-box" aria-hidden="true"></span>{{ loop.index0 | o101Letter }}. {{ op | o101Text(lang, V) }}</li>{% endfor %}</ul>
+          </li>
+          {% endfor %}
+        </ol>
+        {%- set ans = [] -%}{%- for q in l.check %}{% set _x = ans.push(loop.index ~ " " ~ ((q.answer - 1) | o101Letter)) %}{% endfor %}
+        <p class="o101-sheet-answers">{{ "orientation.handout_answers" | t(lang, { list: ans | join(" · ") }) }}</p>
+      </div>
+    </div>
+    <footer class="o101-sheet-foot">
+      <div>
+        <h3>{{ "orientation.links_title" | t(lang) }}</h3>
+        <ul>
+          {% for k in l.links | o101Links(lang, site) %}<li>{{ k.label }} — {{ (k.href if k.ext else (k.href | siteUrl(site))) | replace("https://", "") | replace("www.", "") }}</li>{% endfor %}
+        </ul>
+      </div>
+      <figure>
+        {{ lessonAbs | qrSvg("", "o101-sheet-qr") | safe }}
+        <figcaption>{{ "orientation.handout_qr" | t(lang) }}<br>{{ lessonAbs | replace("https://", "") }}</figcaption>
+      </figure>
+    </footer>
+  </article>
+  {% endfor %}
+</div>

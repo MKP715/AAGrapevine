@@ -55,7 +55,7 @@ meeting:
 # ---------------------------------------------------------------------
 #  Recurring events — things the committee does EVERY MONTH (a booth,
 #  a workshop …). Each one shows on the Events page, the home page, the
-#  calendar feed, the weekly digest and the search, with the next dates
+#  calendar feed, the monthly digest and the search, with the next dates
 #  worked out automatically (Central time, daylight saving included).
 #
 #  To add one: copy the block that starts with "- key:" (keep the
@@ -282,6 +282,46 @@ lavina_weekly_open:
   summary_en: "A weekly virtual open AA meeting in Spanish where two members share their experience, strength and hope. It is recorded to be published as a podcast. Let's keep extending this powerful lifeline together!"
   url: ""                       # La Viña's page for the meeting, once there is one
   source: "Official La Viña flyer (November 2026), shared with the committee"
+
+# ---------------------------------------------------------------------
+#  Joining our Zoom meetings BY PHONE — the "Join by phone" part of the
+#  Accessibility page (/accessibility/#phone). No internet or app needed.
+#  numbers: Zoom's U.S. dial-in numbers, as printed in every Zoom
+#    invitation under "Dial by your location" (Zoom's help page says the
+#    numbers are in the invitation; zoom.us/zoomconference lists the
+#    countries). Any number reaches any meeting — the meeting ID picks it.
+#    They are regular long-distance numbers, not toll-free: the caller's
+#    phone plan rates apply. The first one is used for the tap-to-call
+#    buttons. city_es: the city name on the Spanish page (optional).
+#  The meeting IDs and passcodes are NOT repeated here: they come from
+#  `meeting:` above (the committee meeting) and from the weekly open
+#  meetings (data/site/weekly_open.json, `lavina_weekly_open:`).
+#  phone_passcode: what a CALLER types. When a meeting's passcode has
+#    letters (the committee's "neta65"), Zoom gives callers a different
+#    passcode made of numbers only: it is in the host's Zoom invitation
+#    (the digits after "*" in the "One tap mobile" line, or "Passcode:"
+#    under "Dial by your location"). Paste it here; until then the page
+#    says "Ask the chair for the phone passcode". Leave it "" for a
+#    numbers-only passcode (the weekly open meetings' 238047): callers
+#    type that same passcode.
+#  Joining by phone only works while the host's Zoom settings allow it.
+# ---------------------------------------------------------------------
+phone_access:
+  numbers:
+    - number: "+1 346 248 7799"
+      city: "Houston"
+    - number: "+1 312 626 6799"
+      city: "Chicago"
+    - number: "+1 646 558 8656"
+      city: "New York"
+      city_es: "Nueva York"
+    - number: "+1 301 715 8592"
+      city: "Washington DC"
+      city_es: "Washington D. C."
+  committee:
+    phone_passcode: ""
+  weekly_open:
+    phone_passcode: ""
 
 # ---------------------------------------------------------------------
 #  Grapevine meetings (Meetings page) — AA meetings whose meeting type
@@ -514,6 +554,8 @@ links:
   gv_store: "https://www.aagrapevine.org/store"
   lv_store: "https://www.aalavina.org/tienda"
   carry_the_message: "https://www.aagrapevine.org/carry-the-message"
+  # La Viña's own Carry the Message page (in Spanish): the Spanish pages and the Spanish report use it.
+  lleva_el_mensaje: "https://www.aalavina.org/lleva-el-mensaje"
   gv_share_story: "https://www.aagrapevine.org/share"
   gv_audio_project: "https://www.aagrapevine.org/audio-portal"
   gv_photo_contest: "https://www.aagrapevine.org/photocontest"
@@ -535,6 +577,15 @@ links:
   instagram_lv: "https://www.instagram.com/alcoholicosanonimos_lv/"
   aa_org: "https://www.aa.org"
   aa_org_es: "https://www.aa.org/es"
+  # Accessibility page (/accessibility/): the official ASL, audio and large-print resources,
+  # as listed in AA's "Accessibility Resources" service piece (GSO, October 2025).
+  asl_playlist: "https://www.youtube.com/playlist?list=PL32cyZpp2liBOcLY6M6rEh1qFL7MKSFI7"
+  aa_big_book: "https://www.aa.org/the-big-book"
+  aa_twelve_and_twelve: "https://www.aa.org/twelve-steps-twelve-traditions"
+  # the same page in Spanish, with each Step and Tradition read aloud in Spanish (the Spanish page's audio)
+  aa_twelve_and_twelve_es: "https://www.aa.org/es/twelve-steps-twelve-traditions"
+  aa_accessibility_resources: "https://www.aa.org/sites/default/files/literature/eng-accessibility-resources-1025.pdf"
+  aa_access_email: "access@aa.org"
   # Story submissions, as given on the official guideline pages (gv_guidelines / lv_guidelines).
   gv_email_editorial: "gveditorial@aagrapevine.org"
   lv_email_editorial: "manuscritoslv@aagrapevine.org"
@@ -563,10 +614,15 @@ library:
     - aaws.widen.net
 
 # ---------------------------------------------------------------------
-#  Optional weekly e-mail digest (off unless these GitHub secrets exist):
+#  Monthly digest — the /digest/ page and the optional monthly e-mail.
+#  One edition per month: what was new LAST month + this month's issues,
+#  dates and story deadlines. The e-mail goes out on the 1st of each
+#  month around 9–10 AM Central (.github/workflows/monthly-digest.yml),
+#  and only if these GitHub secrets exist:
 #  SMTP_SERVER, SMTP_PORT, SMTP_USERNAME, SMTP_PASSWORD, DIGEST_TO
-#  (DIGEST_TO can be a Google Group address that reaches all districts)
+#  (DIGEST_TO can be a Google Group address that reaches all districts).
+#  A month with nothing new is not sent.
 # ---------------------------------------------------------------------
 digest:
-  weekday: "monday"
-  days: 7
+  highlights: 3        # stories shown for each magazine issue (the rest are one link away)
+  per_section: 5       # episodes, videos, documents … listed per section before "and N more"

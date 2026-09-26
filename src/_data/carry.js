@@ -1,20 +1,20 @@
 // Loads config/carry.yml — "Put this issue to work": Grapevine & La Viña as a Twelfth Step tool —
 // and exposes it as `carry` in every template:
 //   carry.intro / carry.source / carry.story_note   {en, es}
-//   carry.quote                                     {en, es, cite: {en, es}}
+//   carry.guides                                    {en, es}  (a pointer to the GVR / RLV guides)
 //   carry.ways        [{id, icon, title: {en, es}, text: {en, es}}]   (display order)
 //   carry.wayById     {<id>: way}                                     (lookup for tips)
 //   carry.tips        {"YYYY-MM": [{way, text: {en, es}}]}            (Grapevine issue month)
 //   carry.issueKeys   ["YYYY-MM", …] sorted ascending
-// Theme names are not stored here: pages join carry.tips[key] with the editorial calendar
-// (db.editorial items, extra.issue_key / extra.theme).
+// Theme names are not stored here: pages join carry.tips[key] with the issue's own theme once it is
+// out (db.articles issues[]), else the editorial calendar (db.editorial items, extra.issue_key).
 // Checks: a tip whose `way` is not a known id is dropped; a missing en/es text is filled from the
 // other language. Both are logged, and with I18N_STRICT=1 (CI) they fail the build instead.
 import fs from "node:fs";
 import * as yaml from "js-yaml";
 
 const FILE = "config/carry.yml";
-const EMPTY = { intro: null, source: null, story_note: null, quote: null, ways: [], wayById: {}, tips: {}, issueKeys: [] };
+const EMPTY = { intro: null, source: null, story_note: null, guides: null, ways: [], wayById: {}, tips: {}, issueKeys: [] };
 
 export default function () {
   if (!fs.existsSync(FILE)) return EMPTY;
@@ -53,8 +53,7 @@ export default function () {
   const intro = pair(cfg.intro, "intro");
   const source = pair(cfg.source, "source");
   const story_note = pair(cfg.story_note, "story_note");
-  const quote = pair(cfg.quote, "quote");
-  if (quote && quote.cite) quote.cite = pair(quote.cite, "quote cite");
+  const guides = cfg.guides ? pair(cfg.guides, "guides") : null;
 
   if (problems.length) {
     const msg = `[carry] ${FILE}: ${problems.join("; ")}`;
@@ -66,7 +65,7 @@ export default function () {
     intro,
     source,
     story_note,
-    quote,
+    guides,
     ways,
     wayById,
     tips,

@@ -3,6 +3,10 @@
     "en": "NETA 65 Grapevine & La Viña Committee",
     "es": "Comité de Grapevine y La Viña de NETA 65"
   },
+  "site.home_title_tail": {
+    "en": "NETA 65 Committee",
+    "es": "Comité de NETA 65"
+  },
   "site.description": {
     "en": "Northeast Texas Area 65 Grapevine and La Viña Committee — new stories, podcasts, videos and service resources for GVRs, RLVs, districts and groups.",
     "es": "Comité de Grapevine y La Viña del Área 65 del Noreste de Texas: historias, podcasts, videos y recursos de servicio para RLV, GVR, distritos y grupos."
@@ -132,6 +136,14 @@
     "en": "This month's issue, your GV/LV report, printable posters",
     "es": "La revista del mes, tu informe de GV/LV y carteles para imprimir"
   },
+  "nav.orientation": {
+    "en": "GVR / RLV 101",
+    "es": "RLV / GVR 101"
+  },
+  "nav.orientation_desc": {
+    "en": "Six short lessons for new representatives, with slides",
+    "es": "Seis lecciones breves para nuevos representantes, con diapositivas"
+  },
   "nav.instagram": {
     "en": "Instagram",
     "es": "Instagram"
@@ -145,8 +157,8 @@
     "es": "Acerca de"
   },
   "nav.digest": {
-    "en": "Weekly digest",
-    "es": "Resumen semanal"
+    "en": "Monthly digest",
+    "es": "Resumen mensual"
   },
   "nav.share": {
     "en": "Share kit & QR",
@@ -503,5 +515,169 @@
   "nav.published_desc": {
     "en": "Stories by writers from our Area & Texas",
     "es": "Historias de escritores de nuestra Área y de Texas"
+  },
+  "nav.accessibility": {
+    "en": "Accessibility",
+    "es": "Accesibilidad"
+  },
+  "nav.offline": {
+    "en": "Saved pages & app",
+    "es": "Páginas guardadas y app"
+  },
+  "comfort.button": {
+    "en": "Reading & display settings",
+    "es": "Ajustes de lectura y pantalla"
+  },
+  "comfort.custom_on": {
+    "en": "(your settings are on)",
+    "es": "(tus ajustes están activos)"
+  },
+  "comfort.reading_on": {
+    "en": "(reading aloud)",
+    "es": "(leyendo en voz alta)"
+  },
+  "comfort.title": {
+    "en": "Reading & display",
+    "es": "Lectura y pantalla"
+  },
+  "comfort.saved_note": {
+    "en": "Changes apply right away and are saved on this device only.",
+    "es": "Los cambios se aplican al instante y se guardan solo en este dispositivo."
+  },
+  "comfort.text": {
+    "en": "Text size",
+    "es": "Tamaño del texto"
+  },
+  "comfort.text_preview": {
+    "en": "Our meeting in print — Grapevine and La Viña.",
+    "es": "Nuestra reunión impresa: La Viña y Grapevine."
+  },
+  "comfort.normal": {
+    "en": "Normal",
+    "es": "Normal"
+  },
+  "comfort.spacing": {
+    "en": "Spacing",
+    "es": "Espaciado"
+  },
+  "comfort.spacing_relaxed": {
+    "en": "Relaxed",
+    "es": "Amplio"
+  },
+  "comfort.spacing_hint": {
+    "en": "More room between lines, paragraphs, words and letters.",
+    "es": "Más espacio entre líneas, párrafos, palabras y letras."
+  },
+  "comfort.contrast": {
+    "en": "Contrast",
+    "es": "Contraste"
+  },
+  "comfort.contrast_high": {
+    "en": "High",
+    "es": "Alto"
+  },
+  "comfort.contrast_hint": {
+    "en": "Darker text, stronger borders, solid backgrounds and underlined links.",
+    "es": "Texto más oscuro, bordes más marcados, fondos sólidos y enlaces subrayados."
+  },
+  "comfort.motion": {
+    "en": "Motion",
+    "es": "Movimiento"
+  },
+  "comfort.motion_auto": {
+    "en": "Follow my device",
+    "es": "Según mi dispositivo"
+  },
+  "comfort.motion_reduce": {
+    "en": "Reduce",
+    "es": "Reducir"
+  },
+  "comfort.motion_hint": {
+    "en": "“Reduce” stops the moving vineyard art and the page animations.",
+    "es": "«Reducir» detiene el viñedo animado y las animaciones de la página."
+  },
+  "comfort.read": {
+    "en": "Read aloud",
+    "es": "Leer en voz alta"
+  },
+  "comfort.read_play": {
+    "en": "Read this page",
+    "es": "Leer esta página"
+  },
+  "comfort.read_pause": {
+    "en": "Pause",
+    "es": "Pausa"
+  },
+  "comfort.read_resume": {
+    "en": "Resume",
+    "es": "Continuar"
+  },
+  "comfort.read_stop": {
+    "en": "Stop",
+    "es": "Detener"
+  },
+  "comfort.read_hint": {
+    "en": "Uses your device's own voice, paragraph by paragraph. It stops when you leave the page.",
+    "es": "Usa la voz de tu dispositivo, párrafo por párrafo. Se detiene al salir de la página."
+  },
+  "comfort.read_now": {
+    "en": "Reading: {section}",
+    "es": "Leyendo: {section}"
+  },
+  "comfort.read_paused": {
+    "en": "Paused: {section}",
+    "es": "En pausa: {section}"
+  },
+  "comfort.read_done": {
+    "en": "Finished reading this page.",
+    "es": "Terminó la lectura de esta página."
+  },
+  "comfort.read_top": {
+    "en": "Top of the page",
+    "es": "Inicio de la página"
+  },
+  "comfort.read_empty": {
+    "en": "There's no text to read on this page.",
+    "es": "No hay texto para leer en esta página."
+  },
+  "comfort.read_none": {
+    "en": "Read aloud doesn't work in this browser. Your phone or computer's own screen reader or “Speak” option can read pages to you.",
+    "es": "La lectura en voz alta no funciona en este navegador. El lector de pantalla de tu celular o computadora, o su opción «Leer en voz alta», puede leerte las páginas."
+  },
+  "comfort.saver": {
+    "en": "Data saver",
+    "es": "Ahorro de datos"
+  },
+  "comfort.off": {
+    "en": "Off",
+    "es": "Apagado"
+  },
+  "comfort.on": {
+    "en": "On",
+    "es": "Encendido"
+  },
+  "comfort.auto": {
+    "en": "Automatic",
+    "es": "Automático"
+  },
+  "comfort.saver_hint": {
+    "en": "Automatic turns it on when your browser asks to save data, the connection is very slow or you're offline.",
+    "es": "En automático se activa cuando tu navegador pide ahorrar datos, la conexión es muy lenta o no tienes conexión."
+  },
+  "comfort.saver_active": {
+    "en": "Data saver is on right now.",
+    "es": "El ahorro de datos está activo ahora."
+  },
+  "comfort.more": {
+    "en": "Captions, ASL and joining by phone",
+    "es": "Subtítulos, lengua de señas y unirse por teléfono"
+  },
+  "comfort.reset": {
+    "en": "Reset to defaults",
+    "es": "Restablecer"
+  },
+  "comfort.reset_done": {
+    "en": "Reading and display settings are back to the defaults.",
+    "es": "Los ajustes de lectura y pantalla volvieron a los valores predeterminados."
   }
 }

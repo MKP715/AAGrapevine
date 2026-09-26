@@ -99,7 +99,7 @@ calendar feeds write `STATUS:TENTATIVE` (every other event `STATUS:CONFIRMED`). 
    `sentence`) plus `starts` (first meeting, "2026-11-05") and `source_note`; `next_start` is never before
    `starts`. Title and summary are the config's own words in both languages (`extra.own_i18n` → `i18n.title`,
    `i18n.summary`, never machine-translated); `i18n.day/time/time_central/when/sentence` are written by rules as
-   for the Grapevine item ("Thursdays at 11:00 AM Central" / "Jueves a las 11:00 a. m. (hora del Centro)").
+   for the Grapevine item ("Thursdays at 11:00 AM Central" / "Los jueves a las 11:00 a. m. (hora del Centro)").
    Delete the config block or set `enabled: false` to take it off the site. A `starts` date that is not on
    the configured weekday is replaced by the first real meeting (with a warning in the log). The title has no
    "New": the /monthly/ poster adds a "New" badge in the first month only.
@@ -525,6 +525,35 @@ share, print on one Letter page). The 3 months before this one keep small redire
 (`monthlyPastPages`, `src/pages/monthly-past.njk`), so a printed poster's QR code never lands on a 404.
 `MONTHLY_NOW=2026-12-15` fixes "today" for testing.
 
+### The district report (`/monthly/#report`) — no data file of its own
+`eleventy/filters/report.js` (`rpModel`) writes the current month's report in English AND Spanish as 12 sections
+`{id, title, text}` (plain text; a line starting with "•" is a list item): `header` (blanks `[##]`, name, role,
+home group), `committee` (`meeting.next`, `site.meeting`), `issues` (the month model: GV theme, LV issue, the
+`config/carry.yml` tips, a newer issue already out), `deadlines` (next 3 Grapevine deadlines in `db.editorial`, La
+Viña's rotating topics, `db.audio_project` phone lines), `shop` (`db.shop` Book of the Month and the lowest U.S.
+subscription prices, Carry the Message), `events` (`upcomingEvents`: the next 45 days, a monthly series once),
+`writers` (`db.spotlight`, Area 65, 60 days), `meetings` (`gvMeetings`; plus `meetings.options`: one option per
+county of our Area and per nearby region, with its lines, for the county picker), `weekly` (`db.weekly_open`),
+`resources` (`db.pdfs` of the last 45 days, `site.links` GVR/RLV sign-up, contact), `asks`, `notes` (empty). The page
+embeds it as JSON (`rpJson`); `src/assets/js/report.js` is the editor; without JavaScript `rpText` shows it as text.
+Kept per visitor only (optional): `localStorage["gv-report:YYYY-MM:en|es"]` = the changes to that month's report
+`{ order, off, text, titles, custom, meet }` (only what differs from the data; drafts older than 3 months are
+removed), `["gv-report:profile"]` = `{ district, name, role, group }`, `["gv-report:lang"]` = the report language.
+
+### GVR / RLV 101 (`/orientation/`) — `config/orientation.yml`
+Hand-written lessons for new GVRs / RLVs, loaded by `src/_data/orientation.js` as `orientation`
+(`panel`, `lessons[]`, `pages` → `/orientation/<id>/` × en/es, `totalMinutes`, `totalChecks`). Each lesson:
+`id` (the page address — keep it), `icon`, `minutes`, `example` (`issue` · `meeting` · `tip` · `botm` ·
+`deadline` · `poster`: which live example `src/_includes/macros/orientation.njk` builds from `db.*`, `carry` and
+`meeting` — nothing in the file itself goes stale), `title` / `summary` / `goal` / `try` / `discuss` `{en, es}`,
+`points[]` `{title, text}`, `links[]` (`href` a page of this site · `link` a `site.links` key · `url`, with
+`pub: gv|lv` for the La Viña-first order on `/es/`) and `check[]` (3 questions × 3 options, `answer` 1–3, `why`).
+Placeholders `{rule_lc}` `{time}` `{panel}` `{panel_start}` are filled from `site.meeting` and `panel`. The build
+fails on a missing language or a malformed question (`I18N_STRICT=1`); `tests/test_orientation.py` checks the
+same plus lengths and wording. Filters: `eleventy/filters/orientation.js` (`o101Text`, `o101Vars`, `o101Links`,
+`o101Deck` — the slide plan). The search index lists each lesson (`eleventy/filters/library.js`). The only thing
+kept per visitor is `localStorage["gv-orientation-v1"]` = `{ v: 1, done: [lesson ids] }` (optional).
+
 ## 4. Template helpers (Eleventy filters)
 
 * `{{ "nav.home" | t(lang) }}` — UI string from `src/_i18n/*.json`
@@ -544,7 +573,7 @@ field also gets `i18n.<name> = {en, es}` in the site file.
 
 | raw file | extra top-level keys |
 |---|---|
-| `articles.json` | `issues` {"gv:2026-10": {`publication`, `key`, `label`, `theme`, `description`, `url`, `image`, `cover` (local WebP), `hub`, `seen`}} — only issues seen as the CURRENT issue on a magazine hub; `detail_state` (module bookkeeping: retry state; `byline_at` = the article page was read and has no author/place, do not ask again); `archive_state` (below) |
+| `articles.json` | `issues` {"gv:2026-10": {`publication`, `key`, `label`, `theme`, `description`, `url`, `image`, `cover` (local WebP; `articles.py` also writes a 128 px JPEG copy next to it for the monthly e-mail), `hub`, `seen`}} — only issues seen as the CURRENT issue on a magazine hub; `detail_state` (module bookkeeping: retry state; `byline_at` = the article page was read and has no author/place, do not ask again); `archive_state` (below) |
 | `podcasts.json` | `shows` [{`key`, `name`, `title`, `feed`, `description`, `image`, `language`, `web`, `apple`, `spotify`, `amazon`, `episodes`}], `discovery` (weekly feed discovery) |
 | `youtube.json` | `playlists` [{`id`, `title`, `lang` (en/es/und), `count`, `channel_id`, `url`}], `backfilled_at`, `detail_fails`, `channel_ids` |
 | `instagram.json` | `profiles` {gv/lv: {`username`, `name`, `full_name`, `url`, `followers`, `posts`, `owner_id`, `checked`, `avatar`}} |
@@ -598,7 +627,7 @@ it is read once.
 | article (`articles`, `spotlight`) | `publication`, `issue_key`, `issue_label`, `issue_date` (cover date), `issue_theme`, `issue_url`, `topic`, `section`, `author`, `author_location`, `subtitle`, `teaser`, `free`, `online_exclusive`, `department` (bool); written by build_data: `geo`, `pub_date` (below) | `section`, `topic`, `issue_theme` (machine); `issue_label`, `author_location` (rules — from `geo.label_en/label_es`, only when a place is known) |
 | pdf (`pdfs`) | `host`, `file_url`, `filename`, `size_bytes`, `pages`, `thumb`, `referrers` [{url, title}], `upload_month`, `link_texts`, `event_date`, `doc_lang`, `multilingual` (`true` when one file holds several languages — two or more page languages, language-only links for 2+ languages, or a heading such as "Catalog • Catálogo • Catalogue"; otherwise `null`: such a file takes the host site's language and gets no "(Spanish)" title suffix), `section` (heading on the referring page), `external`, `orphan`; after the Library rules (§3 *pdfs.json*): `duplicates` (other addresses of the same file), `kits` (every rep kit it is in), `versions` (language editions), `same_file` | `versions[].i18n_title` |
 | topic (`editorial`) | `publication`, `theme`, `evergreen`, and for dated GV themes `issue_key`, `issue_label`, `deadline`, `due_text`, `pdf_url`, `submit_url`, `guidelines_url` | `issue_label` (rules); `theme` when it differs from the title |
-| meeting (`weekly_open`) | `zoom_id`, `zoom_url`, `passcode`, `day`, `time`, `time_central`, `sentence`, `weekday`, `start_local`, `timezone`, `next_start`, `url`, `player_url`; La Viña item (`weekly_open_lv`, §2): no `sentence`/`player_url`, plus `starts`, `source_note`, `own_i18n` | written by rules from weekday/start_local/timezone: `day` ("Wednesdays"/"Miércoles"), `time` ("Noon Eastern"/"mediodía (hora del Este)"), `time_central` ("11:00 AM Central"/"11:00 a. m. (hora del Centro)"), `when` ("Wednesdays at 11:00 AM Central"/"Miércoles a las 11:00 a. m. (hora del Centro)"), `sentence` (join line with Zoom ID + passcode). Machine-translated only if those fields are missing |
+| meeting (`weekly_open`) | `zoom_id`, `zoom_url`, `passcode`, `day`, `time`, `time_central`, `sentence`, `weekday`, `start_local`, `timezone`, `next_start`, `url`, `player_url`; La Viña item (`weekly_open_lv`, §2): no `sentence`/`player_url`, plus `starts`, `source_note`, `own_i18n` | written by rules from weekday/start_local/timezone: `day` ("Wednesdays"/"Miércoles"), `time` ("Noon Eastern"/"mediodía (hora del Este)"), `time_central` ("11:00 AM Central"/"11:00 a. m. (hora del Centro)"), `when` ("Wednesdays at 11:00 AM Central"/"Los miércoles a las 11:00 a. m. (hora del Centro)" — capitalized for a line of its own; a sentence lower-cases the first letter), `sentence` (join line with Zoom ID + passcode). Machine-translated only if those fields are missing |
 | event (`events`) | common: `start`, `end`, `all_day`, `location`, `online_url`, `flyer_url`, `flyer_thumb`, `city`, `state`, `past`; `tentative` (`true` only: details to be confirmed), `location_tba` (`true` only: the place is not known yet — "Venue to be announced"; decided by the item's own `location`, by `location_es` / `location_en` only when there is no `location`). Committee: `meeting_id`, `passcode`, `recurring`. Recurring (category `recurring`, below): `recurring` (`true`), `series`, `rule`, `recurrence_label`. External calendar: `platform`, `online`, `scope`, `site`, `country`, `website`, `organizer`, `date_text`. Drive flyer: `drive_id`, `is_pdf`, `is_image`. Manual: `body_md`, `slug`, `file`, `own_i18n`; `also_in_feed` (the key of an .ics feed that lists the same event — also on a flyer, committee or recurring event) + `feed_match` (`url` / `title`). .ics feed (category `neta65` / `ics` / `gv-calendar` / `lv-calendar`, source `calendar`): `feed` (the feed's key), `uid` | committee meetings and recurring events: fixed human `title`/`summary` in both languages; recurring: `recurrence_label` (rules); manual: `body_md` (+ the file's own `title_es` / `summary_es`, never machine-translated); `location` (the file's `location_es` / `location_en`, or the site's own words for a place not known yet — never machine-translated) |
 | document / slides / photo / video_file / form (`drive`) | `file_id`, `mime`, `name`, `panel`, `panel_label`, `path`, `album`, `view_url`, `preview_url`, `download_url`, `thumb_url`, `image_url`, `is_image`, `is_video`, `is_pdf`, `file_type`, `folder_id`, `folder_url`, `folder_chain`, `modified_text`, `size_bytes`, `duration_sec`, `shortcut_id`, `generic_name`, flyers: `event_date`, `event_title`, `event_time`, `event_end_time`, `event_location` / `event_month`, forms: `form_closed`, `form_signin_required` | `album` (photos in a sub-folder) |
 | announcement (`announcements`) | `body_md`, `expires`, `pinned`, `slug`, `file`, `link`, `own_i18n` | `body_md` (+ the file's own `title_es` / `summary_es`) |
@@ -711,7 +740,7 @@ calendar feed keeps them for subscribers):
   both labels keep the writer's spelling of the city.
 
 `extra.pub_date` (`YYYY-MM-DD`) = the day the story counts as published for the 60/90-day windows and the
-weekly digest: the EARLIER of the first day of its issue (La Viña's bimonthly issues: the first month) and
+monthly digest (last month's writers): the EARLIER of the first day of its issue (La Viña's bimonthly issues: the first month) and
 the day the story was first seen online (`first_seen`, in America/Chicago) — never later than today. It
 does not move: an October issue seen online on September 16 counts from September 16, also after
 October 1 (so the digest lists it once); a back-catalog story found by the archive backfill counts

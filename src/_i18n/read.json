@@ -1,8 +1,8 @@
 {
   "read.title": { "en": "Read Grapevine & La Viña", "es": "Lee La Viña y Grapevine" },
   "read.meta_desc": {
-    "en": "The current issues of AA Grapevine and La Viña — tables of contents, themes and teasers, with links to each story on the official sites. We keep it updated regularly.",
-    "es": "Las ediciones actuales de La Viña y AA Grapevine: índices, temas y adelantos, con enlaces a cada historia en los sitios oficiales. Lo mantenemos al día con regularidad."
+    "en": "The current issues of AA Grapevine and La Viña — tables of contents, themes and teasers, with links to each story on the official sites.",
+    "es": "Las ediciones actuales de La Viña y AA Grapevine: índices, temas y adelantos, con enlaces a cada historia en los sitios oficiales."
   },
   "read.eyebrow": { "en": "Read · Magazines", "es": "Leer · Revistas" },
   "read.subtitle": {
@@ -250,7 +250,7 @@
   "read.contrib.faq6_q": { "en": "Can I send a recording instead?", "es": "¿Puedo enviar una grabación?" },
   "read.contrib.faq6_a": { "en": "Yes. Both magazines take recorded stories: call Grapevine's or La Viña's story line, or record on your phone and email the file.", "es": "Sí. Ambas revistas reciben historias grabadas: llama a la línea de historias de Grapevine o de La Viña, o grábala en tu teléfono y envía el archivo por correo." },
   "read.subs.title": { "en": "Shop & subscribe", "es": "Tienda y suscripciones" },
-  "read.subs.meta_desc": { "en": "Grapevine and La Viña's Book of the Month, subscriptions and prices, catalogs and order forms — in print, online, in the apps or as audio, plus gift and group subscriptions. Everything is bought from the official stores.", "es": "El libro del mes, las suscripciones y los precios de La Viña y Grapevine, catálogos y formularios de pedido: impresas, en línea, en las apps o en audio, además de suscripciones de regalo y para grupos. Todo se compra en las tiendas oficiales." },
+  "read.subs.meta_desc": { "en": "Book of the Month, subscriptions, prices, catalogs and order forms for Grapevine and La Viña — print, online, app or audio, all from the official stores.", "es": "Libro del mes, suscripciones, precios, catálogos y formularios de La Viña y Grapevine: impresas, en línea, en la app o en audio, en las tiendas oficiales." },
   "read.subs.moved_title": { "en": "This page has moved", "es": "Esta página se mudó" },
   "read.subs.moved_text": { "en": "Subscriptions, catalogs and order forms are now on our Shop page:", "es": "Las suscripciones, los catálogos y los formularios de pedido ahora están en nuestra página Tienda:" },
   "read.subs.eyebrow": { "en": "Shop · Magazines & books", "es": "Tienda · Revistas y libros" },
@@ -392,8 +392,8 @@
   "read.gvr.current_issues": { "en": "Current issues", "es": "Ediciones actuales" },
   "read.gvr.s_subscribe_t": { "en": "Help your group subscribe", "es": "Ayuda a tu grupo a suscribirse" },
   "read.gvr.s_subscribe": { "en": "Propose a group subscription and a Carry the Message gift at the business meeting.", "es": "Propón una suscripción del grupo y un regalo de Lleva el Mensaje en la reunión de trabajo." },
-  "read.gvr.s_updates_t": { "en": "Get the weekly updates", "es": "Recibe las novedades cada semana" },
-  "read.gvr.s_updates": { "en": "Follow the weekly digest or the RSS feed so you never miss a new resource.", "es": "Sigue el resumen semanal o el canal RSS para no perderte ningún recurso nuevo." },
+  "read.gvr.s_updates_t": { "en": "Stay up to date", "es": "Mantente al día" },
+  "read.gvr.s_updates": { "en": "Follow the monthly digest or the RSS feed so you never miss a new resource.", "es": "Sigue el resumen mensual o el canal RSS para no perderte ningún recurso nuevo." },
   "read.gvr.s_district_t": { "en": "Say hello to your district", "es": "Preséntate en tu distrito" },
   "read.gvr.s_district": { "en": "Let your DCM and district know you're the group's GVR or RLV, and share this site.", "es": "Dile a tu MCD y a tu distrito que eres el RLV o GVR del grupo, y comparte este sitio." },
   "read.gvr.help_title": { "en": "You're not alone", "es": "No estás solo" },
@@ -473,11 +473,11 @@
   "read.about.lv_kicker": { "en": "AA's magazine in Spanish", "es": "La revista de AA en español" },
   "read.about.gv_p1": { "en": "AA Grapevine began in June 1944, when a handful of AA members in New York started a small newsletter to share their experience. It grew into the international journal of Alcoholics Anonymous — often called “our meeting in print.”", "es": "AA Grapevine comenzó en junio de 1944, cuando un puñado de miembros de AA en Nueva York empezó un pequeño boletín para compartir su experiencia. Con el tiempo se convirtió en la revista internacional de Alcohólicos Anónimos, a la que muchos llaman «nuestra reunión impresa»." },
   "read.about.gv_p2": { "en": "Each monthly issue is written almost entirely by members: personal stories, experience with the Steps and Traditions, letters, humor and cartoons.", "es": "Cada edición mensual la escriben casi por completo los miembros: historias personales, experiencia con los Pasos y las Tradiciones, cartas, humor y caricaturas." },
-  "read.about.lv_p1": { "en": "La Viña published its first issue in July 1996 — a Spanish-language magazine approved by the General Service Conference to carry the message to Spanish-speaking alcoholics.", "es": "La Viña publicó su primera edición en julio de 1996: una revista en español aprobada por la Conferencia de Servicios Generales para llevar el mensaje a los alcohólicos de habla hispana." },
+  "read.about.lv_p1": { "en": "La Viña published its first issue in June 1996 — a Spanish-language magazine approved by the General Service Conference to carry the message to Spanish-speaking alcoholics.", "es": "La Viña publicó su primera edición en junio de 1996: una revista en español aprobada por la Conferencia de Servicios Generales para llevar el mensaje a los alcohólicos de habla hispana." },
   "read.about.lv_p2": { "en": "Every two months it brings stories, reflections and service experience from members in the United States, Latin America, Spain and around the world.", "es": "Cada dos meses trae historias, reflexiones y experiencias de servicio de miembros de Estados Unidos, América Latina, España y todo el mundo." },
   "read.about.f_first": { "en": "First issue", "es": "Primera edición" },
   "read.about.gv_first": { "en": "June 1944", "es": "Junio de 1944" },
-  "read.about.lv_first": { "en": "July 1996", "es": "Julio de 1996" },
+  "read.about.lv_first": { "en": "June 1996", "es": "Junio de 1996" },
   "read.about.f_freq": { "en": "Frequency", "es": "Frecuencia" },
   "read.about.f_lang": { "en": "Language", "es": "Idioma" },
   "read.about.com_title": { "en": "Our committee", "es": "Nuestro comité" },
@@ -492,7 +492,7 @@
   "read.about.w2_t": { "en": "GVRs & RLVs", "es": "RLV y GVR" },
   "read.about.w2": { "en": "Group representatives get orientation, resource kits and a friendly monthly meeting.", "es": "Los representantes de grupo reciben orientación, kits de recursos y una reunión mensual amigable." },
   "read.about.w3_t": { "en": "Districts", "es": "Distritos" },
-  "read.about.w3": { "en": "District committees and DCMs get news and resources to pass along, with a weekly digest.", "es": "Los comités de distrito y los MCD reciben noticias y recursos para compartir, con un resumen semanal." },
+  "read.about.w3": { "en": "District committees and DCMs get news and resources to pass along, with a monthly digest.", "es": "Los comités de distrito y los MCD reciben noticias y recursos para compartir, con un resumen mensual." },
   "read.about.w4_t": { "en": "Spanish-speaking districts", "es": "Distritos de habla hispana" },
   "read.about.w4": { "en": "Everything here is available in Spanish, and La Viña always gets equal billing.", "es": "Todo aquí está disponible en español, y La Viña siempre ocupa el mismo lugar que Grapevine." },
   "read.about.how_eyebrow": { "en": "Behind the scenes", "es": "Detrás de escena" },

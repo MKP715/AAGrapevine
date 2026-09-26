@@ -75,7 +75,7 @@ pageScripts: ["/assets/js/committee.js"]
   {%- set dfltMonths = [] -%}
   {%- for grp in months %}{% if (grp.items | whereNot("committee", true) | whereNot("later", true) | length) and dfltMonths.push(grp.key) %}{% endif %}{% endfor -%}
   <div class="mb-8 grid grid-cols-1 gap-3">
-    <div class="chip-row" role="group" aria-label="{{ 'committee.events.filter_aria' | t(lang) }}">
+    <div class="chip-row" role="group" aria-label="{{ 'committee.events.filter_aria' | t(lang) }}" data-js-only>
       {%- for f in [["all", "common.all", "", "layout-grid"], ["committee", "committee.events.f_committee", meetings.length, "users"], ["neta", "committee.events.f_neta", nNeta, "map-pin"], ["calendar", "committee.events.f_calendar", nCal, "grapes"]] %}
       {%- if f[0] == "all" or f[2] %}
       <button type="button" class="chip" data-cm-filter="{{ f[0] }}" @click="set('{{ f[0] }}')" :aria-pressed="(filter === '{{ f[0] }}').toString()" aria-pressed="{{ 'true' if f[0] == 'all' else 'false' }}">
@@ -161,7 +161,7 @@ pageScripts: ["/assets/js/committee.js"]
           <div class="min-w-0 flex-1">
             <div class="mb-2.5 flex items-center justify-between gap-3 sm:hidden">
               <p class="cm-date-strip cm-tone-{{ tone }}" aria-hidden="true">{% icon "calendar", "size-3.5" %}<span>{{ ev.tile.wd }} · {{ ev.tile.mon }} {{ ev.tile.day }}</span></p>
-              <button type="button" class="btn-ghost -my-1 -mr-2 size-11 shrink-0 p-0" data-share="{{ pageAbs }}#{{ ev.anchor }}" data-share-title="{{ ev.title }}" data-share-text="{{ ev.shareWhen }}" aria-label="{{ 'common.share' | t(lang) }}: {{ ev.title }}">{% icon "share-2", "size-4" %}</button>
+              <button type="button" class="btn-ghost -my-1 -mr-2 size-11 shrink-0 p-0" data-js-only data-share="{{ pageAbs }}#{{ ev.anchor }}" data-share-title="{{ ev.title }}" data-share-text="{{ ev.shareWhen }}" aria-label="{{ 'common.share' | t(lang) }}: {{ ev.title }}">{% icon "share-2", "size-4" %}</button>
             </div>
             <div class="flex flex-wrap items-center gap-1.5">
               {{ groupBadge(ev) }}
@@ -216,7 +216,7 @@ pageScripts: ["/assets/js/committee.js"]
               <a class="btn-secondary btn-sm" href="{{ ev.link }}" target="_blank" rel="noopener">{% icon "external-link", "size-4" %} <span class="sm:hidden" aria-hidden="true">{{ "committee.events.details_short" | t(lang) }}</span><span class="max-sm:sr-only">{{ "committee.events.details" | t(lang) }}</span><span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a>
               {% endif %}
               </div>
-              <button type="button" class="btn-ghost btn-sm max-xl:px-2.5 max-sm:hidden" data-share="{{ pageAbs }}#{{ ev.anchor }}" data-share-title="{{ ev.title }}" data-share-text="{{ ev.shareWhen }}">{% icon "share-2", "size-4" %}<span class="max-xl:sr-only">{{ "common.share" | t(lang) }}</span></button>
+              <button type="button" class="btn-ghost btn-sm max-xl:px-2.5 max-sm:hidden" data-js-only data-share="{{ pageAbs }}#{{ ev.anchor }}" data-share-title="{{ ev.title }}" data-share-text="{{ ev.shareWhen }}">{% icon "share-2", "size-4" %}<span class="max-xl:sr-only">{{ "common.share" | t(lang) }}</span></button>
             </div>
           </div>
           {% if ev.flyer and ev.flyer.thumb %}
@@ -326,3 +326,20 @@ pageScripts: ["/assets/js/committee.js"]
 </div>
 
 {% cmPreviewDialog lang %}
+
+{#- Structured data (schema.org): the upcoming events, for search engines' event listings. Online
+    ones (the committee meeting, Zoom workshops) point to this page; a place that isn't known yet is
+    left out (an event needs one). No personal names; the organizer is the committee. -#}
+{%- set ldEvents = [] -%}
+{%- for ev in upcoming %}{% if loop.index <= 30 and not ev.later %}
+{%- set onlineEv = ev.committee or ev.isOnline -%}
+{%- if onlineEv or (ev.location and not ev.locationTba) -%}
+{%- set _ld = ldEvents.push({ "@type": "Event", "name": ev.title, "startDate": ev.startIso, "endDate": ev.endIso,
+  "eventStatus": "https://schema.org/EventScheduled",
+  "eventAttendanceMode": "https://schema.org/OnlineEventAttendanceMode" if onlineEv else "https://schema.org/OfflineEventAttendanceMode",
+  "location": { "@type": "VirtualLocation", "url": pageAbs + "#" + ev.anchor } if onlineEv else { "@type": "Place", "name": ev.location, "address": ev.location },
+  "organizer": { "@type": "Organization", "name": site | pick(lang, "committee"), "url": ('/' | lurl(lang)) | siteUrl(site) },
+  "isAccessibleForFree": true, "inLanguage": "es-US" if lang == "es" else "en-US", "url": pageAbs + "#" + ev.anchor }) -%}
+{%- endif -%}
+{% endif %}{% endfor -%}
+{% if ldEvents | length %}<script type="application/ld+json">{{ { "@context": "https://schema.org", "@graph": ldEvents } | rpJson | safe }}</script>{% endif %}

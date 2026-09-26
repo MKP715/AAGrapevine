@@ -9,8 +9,9 @@
 #    is a Lucide icon name (https://lucide.dev/icons).
 #  - tips:  keyed by the Grapevine ISSUE month "YYYY-MM" (quote the key).
 #    Each tip is { way: <a ways id>, text: {en, es} }. Theme names are NOT
-#    stored here: the pages take them from the synced editorial calendar
-#    (the "# Theme" comment after each key is only a reminder for editors).
+#    stored here: the pages show the issue's own theme once it is out, else
+#    the synced editorial calendar's (the "# Theme" comment after each key
+#    is only a reminder for editors).
 #  - New editorial year? Just append the new "YYYY-MM" blocks at the end of
 #    `tips` (past months can stay or be removed — pages only show the
 #    current/upcoming issues).
@@ -141,15 +142,15 @@ story_note:
     inicia una conversación — o un miembro dice “yo viví eso” — anímalo a escribir su
     historia y enviarla. Así se completa el círculo del Paso Doce en letra impresa.
 
-# The quotation itself (en/es) plus its attribution (cite).
-quote:
-  en: "Grapevine is a wonderful service tool for groups to use in Twelfth Step work."
-  es: "Grapevine es una maravillosa herramienta de servicio que los grupos pueden usar en el trabajo del Paso Doce."
-  cite:
-    en: "GVR Workbook"
-    es: "Manual de trabajo del GVR"
+# A pointer to the representatives' own guides (Grapevine's GVR Workbook, La Viña's RLV manual), in
+# our own words — never their text. The Monthly toolkit links to the documents themselves (their
+# copies in the Library, data/site/pdfs.json: eleventy/filters/monthly.js repGuides) and to the official
+# GVR / RLV resource pages (config/site.yml links.gvr_resources / links.rlv_resources).
+guides:
+  en: "Serving as your group's GVR or RLV? The official guides for representatives explain the job in detail."
+  es: "¿Te toca servir como RLV o GVR de tu grupo? Las guías oficiales para representantes explican el servicio con detalle."
 
-# Tips per Grapevine issue ("YYYY-MM"). Themes come from the editorial calendar.
+# Tips per Grapevine issue ("YYYY-MM"). Theme names come from the synced data (see the header).
 tips:
   "2026-09":   # Sponsorship
     - way: lending-library

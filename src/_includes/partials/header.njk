@@ -9,7 +9,7 @@
         class="site-header fixed inset-x-0 top-0 z-50 border-b bg-transparent text-white transition-colors duration-300"
         style="padding-top: env(safe-area-inset-top)">
   <div class="container-page flex h-16 items-center gap-2 min-[360px]:gap-3">
-    <a href="{{ '/' | lurl(L) }}" class="group flex min-h-11 min-w-0 items-center gap-2 no-underline min-[390px]:gap-2.5" aria-label="{{ 'nav.home_aria' | t(L) }}">
+    <a href="{{ '/' | lurl(L) }}" class="site-logo group flex min-h-11 min-w-0 items-center gap-2 no-underline min-[390px]:gap-2.5" aria-label="{{ 'nav.home_aria' | t(L) }}">
       {#- Phones (with search, language and menu on the right): the name sits on two lines,
           "Grapevine /" over "La Viña" — never truncated; the logo is a little smaller below 360px.
           From 640px: one line + the committee line under it. -#}
@@ -22,7 +22,7 @@
       </span>
     </a>
 
-    <nav class="ml-auto hidden items-center gap-0.5 xl:flex" aria-label="{{ 'nav.primary_aria' | t(L) }}">
+    <nav class="site-nav ml-auto hidden items-center gap-0.5 xl:flex" aria-label="{{ 'nav.primary_aria' | t(L) }}">
       {%- for item in nav.primary %}
         {%- if item.children %}
         {#- navMenu (app.js): Escape puts focus back on the button, tabbing out closes it.
@@ -52,22 +52,35 @@
       {%- endfor %}
     </nav>
 
-    {#- Phones: search, language and menu are 44px touch targets (40px from 640px, with a mouse
-        in mind); the language pill drops its icon below 390px so everything fits at 320px. The
-        theme toggle lives in the drawer below 640px. Search opens /search/ (no overlay). -#}
+    {#- Phones: "Aa" (reading & display settings), language and menu are 44px touch targets (40px
+        from 640px, with a mouse in mind); the language pill drops its icon below 390px so
+        everything fits at 320px. Below 640px search is the full-width button at the bottom of the
+        drawer (the icon here comes back without JavaScript, when the drawer can't open: areas/
+        access.css .site-search-btn), and the theme toggle lives in the drawer. Search opens
+        /search/ (no overlay). -#}
     <div class="ml-auto flex shrink-0 items-center gap-0.5 min-[390px]:gap-1 xl:ml-2">
-      <a href="{{ '/search/' | lurl(L) }}" class="grid size-11 place-items-center rounded-full transition hover:bg-white/10 sm:size-10" :class="solid && 'hover:bg-surface-2'" aria-label="{{ 'nav.search' | t(L) }}"{% if pageKey == 'search' %} aria-current="page"{% endif %}>{% icon "search", "size-5" %}</a>
+      <a href="{{ '/search/' | lurl(L) }}" class="site-search-btn grid size-11 place-items-center rounded-full transition hover:bg-white/10 sm:size-10" :class="solid && 'hover:bg-surface-2'" aria-label="{{ 'nav.search' | t(L) }}"{% if pageKey == 'search' %} aria-current="page"{% endif %}>{% icon "search", "size-5" %}</a>
       <a href="{{ alt }}" hreflang="{{ L | otherLang }}" lang="{{ L | otherLang }}"
          class="inline-flex min-h-11 min-w-11 items-center justify-center gap-1.5 rounded-full border px-2.5 text-xs font-bold tracking-wide no-underline transition min-[390px]:px-3 sm:min-h-10"
          :class="solid ? 'border-line hover:border-gv hover:text-gv' : 'border-white/30 hover:bg-white/10'"
          aria-label="{{ 'nav.switch_lang_aria' | t(L) }}" data-lang-switch>
         {% icon "languages", "size-4 max-[389px]:hidden" %}<span>{{ "ES" if L == "en" else "EN" }}</span>
       </a>
+      {#- Reading & display settings ("Aa"): opens the panel below (#gvlv-panel). It sits here at
+          every width — on phones in the place of the search icon, one tap away for low-vision
+          visitors (the drawer's top bar has it too). The dot says that the visitor changed a
+          setting (or that the page is being read aloud). -#}
+      <button type="button" data-js-only class="gvlv-trigger relative grid size-11 place-items-center rounded-full transition hover:bg-white/10 sm:size-10" :class="solid && 'hover:bg-surface-2'"
+              @click="$store.gvlv.toggle($el)" :aria-expanded="$store.gvlv.open.toString()" aria-expanded="false" aria-controls="gvlv-panel" aria-haspopup="dialog">
+        {% icon "a-large-small", "size-5" %}<span class="sr-only">{{ "comfort.button" | t(L) }}</span>
+        <span class="gvlv-dot" x-show="$store.gvlv.custom || $store.gvlv.speaking" x-cloak aria-hidden="true"></span>
+        <span class="sr-only" x-show="$store.gvlv.speaking" x-cloak> {{ "comfort.reading_on" | t(L) }}</span><span class="sr-only" x-show="$store.gvlv.custom && !$store.gvlv.speaking" x-cloak> {{ "comfort.custom_on" | t(L) }}</span>
+      </button>
       <button type="button" @click="toggleTheme()" class="hidden size-10 place-items-center sm:grid rounded-full transition hover:bg-white/10" :class="solid && 'hover:bg-surface-2'" aria-label="{{ 'nav.theme_aria' | t(L) }}">
         <span x-show="theme === 'dark'" x-cloak>{% icon "sun", "size-5" %}</span>
         <span x-show="theme !== 'dark'">{% icon "moon", "size-5" %}</span>
       </button>
-      <button type="button" x-ref="menuBtn" @click="drawer = true" class="grid size-11 place-items-center rounded-full transition hover:bg-white/10 sm:size-10 xl:hidden" :class="solid && 'hover:bg-surface-2'" aria-label="{{ 'nav.menu' | t(L) }}" :aria-expanded="drawer" aria-controls="mobile-drawer">
+      <button type="button" x-ref="menuBtn" @click="drawer = true" class="site-menu-btn grid size-11 place-items-center rounded-full transition hover:bg-white/10 sm:size-10 xl:hidden" :class="solid && 'hover:bg-surface-2'" aria-label="{{ 'nav.menu' | t(L) }}" :aria-expanded="drawer" aria-controls="mobile-drawer">
         {% icon "menu", "size-6" %}
       </button>
     </div>
@@ -79,13 +92,19 @@
       It is a modal dialog: app.js siteHeader moves focus into it, makes the page behind it
       inert while it is open, and puts focus back on the Menu button when it closes. -#}
   <template x-teleport="body">
-  <div x-show="drawer" x-cloak class="fixed inset-0 z-[60] xl:hidden" role="dialog" aria-modal="true" aria-label="{{ 'nav.menu' | t(L) }}" id="mobile-drawer" @keydown.escape.window="drawer = false">
+  <div x-show="drawer" x-cloak class="site-drawer fixed inset-0 z-[60] xl:hidden" role="dialog" aria-modal="true" aria-label="{{ 'nav.menu' | t(L) }}" id="mobile-drawer" @keydown.escape.window="drawer = false">
     <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" @click="drawer = false" x-show="drawer" x-transition.opacity></div>
     <div class="absolute inset-y-0 right-0 flex w-[min(24rem,88vw)] flex-col overflow-y-auto bg-surface text-ink shadow-2xl"
          x-show="drawer" x-transition:enter="transition duration-200" x-transition:enter-start="translate-x-full" x-transition:leave="transition duration-150" x-transition:leave-end="translate-x-full"
          style="padding-bottom: env(safe-area-inset-bottom)">
       <div class="flex items-center gap-1 border-b border-line py-2.5 pl-5 pr-3">
         <span class="mr-auto font-display text-lg font-semibold">{{ "nav.menu" | t(L) }}</span>
+        <button type="button" data-js-only class="relative grid size-11 place-items-center rounded-full text-muted hover:bg-surface-2 hover:text-ink"
+                @click="openComfort()" :aria-expanded="$store.gvlv.open.toString()" aria-expanded="false" aria-controls="gvlv-panel" aria-haspopup="dialog">
+          {% icon "a-large-small", "size-5" %}<span class="sr-only">{{ "comfort.button" | t(L) }}</span>
+          <span class="gvlv-dot" x-show="$store.gvlv.custom || $store.gvlv.speaking" x-cloak aria-hidden="true"></span>
+          <span class="sr-only" x-show="$store.gvlv.speaking" x-cloak> {{ "comfort.reading_on" | t(L) }}</span><span class="sr-only" x-show="$store.gvlv.custom && !$store.gvlv.speaking" x-cloak> {{ "comfort.custom_on" | t(L) }}</span>
+        </button>
         <button type="button" @click="toggleTheme()" class="grid size-11 place-items-center rounded-full text-muted hover:bg-surface-2 hover:text-ink" aria-label="{{ 'nav.theme_aria' | t(L) }}">
           <span x-show="theme === 'dark'" x-cloak>{% icon "sun", "size-5" %}</span>
           <span x-show="theme !== 'dark'">{% icon "moon", "size-5" %}</span>
@@ -111,6 +130,8 @@
         {%- endif %}{% endfor %}
       </nav>
       <div class="grid gap-2 border-t border-line p-4">
+        {#- the same panel as the "Aa" icon above, with its name spelled out -#}
+        <button type="button" data-js-only class="btn-secondary w-full" @click="openComfort()" :aria-expanded="$store.gvlv.open.toString()" aria-expanded="false" aria-controls="gvlv-panel" aria-haspopup="dialog">{% icon "a-large-small", "size-4" %} {{ "comfort.title" | t(L) }}</button>
         <a href="{{ '/search/' | lurl(L) }}" class="btn-secondary w-full"{% if pageKey == 'search' %} aria-current="page"{% endif %}>{% icon "search", "size-4" %} {{ "nav.search" | t(L) }}</a>
         <a href="{{ alt }}" hreflang="{{ L | otherLang }}" lang="{{ L | otherLang }}" class="btn-primary w-full" data-lang-switch>{% icon "languages", "size-4" %} {{ "nav.switch_lang" | t(L) }}</a>
       </div>
@@ -118,3 +139,4 @@
   </div>
   </template>
 </header>
+{% include "partials/comfort-panel.njk" %}

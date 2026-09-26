@@ -107,7 +107,7 @@ def run_source(name: str, argv: list[str]) -> dict:
             if e.code not in (0, None):
                 raise RuntimeError(f"exited with code {e.code}") from None
 
-    log.info("──── %s %s", name, " ".join(args))
+    log.info("---- %s %s", name, " ".join(args))
     before = _raw_summary(name)
     run_module(RAW_NAME.get(name, name), call)     # never raises; marks the raw file ok=false on crash
     after = _raw_summary(name)

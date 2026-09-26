@@ -20,6 +20,7 @@ import path from "node:path";
 import { createRequire } from "node:module";
 import * as yaml from "js-yaml";
 import { safeUrl } from "../../eleventy.config.js";
+import { scriptJson } from "../script-json.js";
 
 const require = createRequire(import.meta.url);
 
@@ -312,10 +313,8 @@ function pwIcon(name, cls = "size-4") {
   return `<svg class="icon ${cls}" aria-hidden="true" focusable="false"><use href="#pw-i-${n}"/></svg>`;
 }
 
-/** JSON for an inline <script type="application/json">: "<" escaped so no text can close the tag. */
-function pwJson(v) {
-  return JSON.stringify(v).replace(/</g, "\\u003c");
-}
+/** JSON for an inline <script type="application/json"> (the shared serializer, eleventy/script-json.js). */
+const pwJson = scriptJson;
 
 export default function (eleventyConfig, helpers) {
   const h = helpers || {};

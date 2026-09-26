@@ -91,6 +91,8 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
       <span class="badge-new" x-show="ep.n">{{ "common.new" | t(lang) }}</span>
       <span class="badge-muted uppercase" x-show="foreign(ep)" x-text="ep.l" :title="langTitle(ep.l)"></span>
       {%- endif %}
+      {#- the audio file's size — only while Data saver is on (areas/pwa.css .pwa-saver-only; pwa.js GV.fileSize) -#}
+      <span class="pwa-saver-only" x-show="ep.b" x-cloak><span class="sr-only">{{ "pwa.audio_size" | t(lang) }} </span><span x-text="ep.b ? GV.fileSize(ep.b) : ''"></span></span>
       <span class="inline-flex items-center gap-1 font-semibold text-vine" x-show="isDone(ep)" x-cloak>{% micon "check", "size-3.5" %}{{ "media.played" | t(lang) }}</span>
     </p>
     <h3 class="mt-1 font-display text-[1.05rem] font-semibold leading-snug text-ink sm:text-lg"{% if not srv %} x-text="ep.t"{% endif %}>{% if srv %}{{ title }}{% endif %}</h3>
@@ -165,7 +167,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
     <div class="card media-feature overflow-hidden" x-data="{ latest: epAt(0), get alt() { var a = this.$store.audio; return a.wide && a.curEp && a.curEp.id && a.curEp.id !== this.latest.id ? a.curEp : null; }, get ep() { return this.alt || this.latest; } }">
       <div class="grid grid-cols-1 md:grid-cols-[minmax(0,15rem)_minmax(0,1fr)] lg:grid-cols-[minmax(0,19rem)_minmax(0,1fr)] min-[90rem]:grid-cols-1">
         <div class="media-feature-art hidden md:flex min-[90rem]:hidden">
-          {% if fArt %}<img src="{{ fArt }}" alt="" width="304" height="304" decoding="async" referrerpolicy="no-referrer">{% else %}<span class="ep-art-ph size-full">{% icon "headphones", "size-16" %}</span>{% endif %}
+          {% if fArt %}<img src="{{ fArt }}" alt="" width="304" height="304" loading="lazy" decoding="async" referrerpolicy="no-referrer">{% else %}<span class="ep-art-ph size-full">{% icon "headphones", "size-16" %}</span>{% endif %}
         </div>
         {#- From 1440px (the right-hand column, above the Short) the card is compact and of bounded
             height (~400–480px), so the two fit the window together: the small artwork beside a title
@@ -173,7 +175,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
             in the first row of the episode list), a slimmer player and the keyboard hint alone. -#}
         <div class="flex min-w-0 flex-col gap-3 p-4 min-[400px]:p-5 sm:p-7 min-[90rem]:p-5">
           <div class="flex items-start gap-4">
-            {% if fArt %}<img src="{{ fArt }}" alt="" width="88" height="88" class="size-[5.5rem] shrink-0 rounded-xl object-cover shadow-md ring-1 ring-black/5 md:hidden min-[90rem]:block" x-show="!alt" decoding="async" referrerpolicy="no-referrer">{% endif %}
+            {% if fArt %}<img src="{{ fArt }}" alt="" width="88" height="88" loading="lazy" class="size-[5.5rem] shrink-0 rounded-xl object-cover shadow-md ring-1 ring-black/5 md:hidden min-[90rem]:block" x-show="!alt" decoding="async" referrerpolicy="no-referrer">{% endif %}
             <img :src="alt ? art(alt) : ''" alt="" width="88" height="88" class="size-[5.5rem] shrink-0 rounded-xl object-cover shadow-md ring-1 ring-black/5" x-show="alt && art(alt)" x-cloak referrerpolicy="no-referrer">
             <div class="min-w-0">
               <p class="flex flex-wrap items-center gap-2" x-show="!alt">
@@ -193,11 +195,13 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
             <span class="font-medium text-ink">{{ fShow.name if fShow else f.extra.show_name }}</span>
             {% if f.date %}<time datetime="{{ f.date | isoDate }}"><span class="min-[90rem]:hidden">{{ f.date | fmtDate(lang, "medium") }}</span><span class="hidden min-[90rem]:inline">{{ f.date | fmtDate(lang, "short") }}</span></time>{% endif %}
             {% if f.extra.duration_sec %}<span class="inline-flex items-center gap-1">{% icon "clock-3", "size-3.5" %}{{ f.extra.duration_sec | mediaMinutes(lang) }}</span>{% endif %}
+            {% if f.extra.audio_bytes %}<span class="pwa-saver-only"><span class="sr-only">{{ "pwa.audio_size" | t(lang) }} </span>{{ f.extra.audio_bytes | fileSize }}</span>{% endif %}
           </p>
           <p class="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted" x-show="alt" x-cloak>
             <span class="font-medium text-ink" x-show="alt && showName(alt)" x-text="alt ? showName(alt) : ''"></span>
             <time x-show="alt && alt.d" :datetime="alt && alt.d" x-text="alt && alt.d ? date(alt.d) : ''"></time>
             <span class="inline-flex items-center gap-1" x-show="alt && alt.du">{% icon "clock-3", "size-3.5" %}<span x-text="alt && alt.du ? mins(alt.du) : ''"></span></span>
+            <span class="pwa-saver-only" x-show="alt && alt.b"><span class="sr-only">{{ "pwa.audio_size" | t(lang) }} </span><span x-text="alt && alt.b ? GV.fileSize(alt.b) : ''"></span></span>
           </p>
           <p class="line-clamp-2 leading-relaxed text-muted" x-show="alt && alt.s" x-cloak x-text="alt ? alt.s : ''"></p>
           {%- set fSum = f | tx("summary", lang) -%}
@@ -264,7 +268,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
   <aside class="card listen-short" aria-labelledby="listen-short-title">
     <div class="listen-short-video">
       <lite-youtube videoid="{{ shortId }}" class="media-lyt listen-lyt" params="rel=0&amp;playsinline=1&amp;hl={{ lang }}"
-                    style="background-image: url('{{ shortId | ytThumb('oar2') }}');" playlabel="{{ 'media.play' | t(lang) }}: {{ shortTitle }}">
+                    style="background-image: url('{{ shortId | ytThumb }}');" playlabel="{{ 'media.play' | t(lang) }}: {{ shortTitle }}">
         <a href="{{ shortUrl }}" class="lyt-playbtn" title="{{ 'media.play' | t(lang) }}: {{ shortTitle }}" target="_blank" rel="noopener">
           <span class="lyt-visually-hidden">{{ "media.play" | t(lang) }}: {{ shortTitle }}</span>
         </a>
@@ -336,7 +340,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
               {% if s.spotify %}<li><a class="media-plat" href="{{ s.spotify }}" target="_blank" rel="noopener"><span class="media-plat-icon text-vine">{% icon "spotify", "size-4" %}</span>{{ "media.spotify" | t(lang) }}</a></li>{% endif %}
               {% if s.amazon %}<li><a class="media-plat" href="{{ s.amazon }}" target="_blank" rel="noopener"><span class="media-plat-icon text-gv">{% icon "music", "size-4" %}</span>{{ "media.amazon" | t(lang) }}</a></li>{% endif %}
               {% if s.web %}<li><a class="media-plat" href="{{ s.web }}" target="_blank" rel="noopener"><span class="media-plat-icon text-lv">{% icon "grapes", "size-4" %}</span>{{ "media.web_short" | t(lang) }}</a></li>{% endif %}
-              {% if s.feed %}<li><button type="button" class="media-plat" data-copy="{{ s.feed }}" title="{{ 'media.rss_help' | t(lang) }}" aria-label="{{ 'media.copy_rss' | t(lang) }}: {{ s.name }}"><span class="media-plat-icon text-lv">{% icon "rss", "size-4" %}</span>{{ "media.copy_rss" | t(lang) }}</button></li>{% endif %}
+              {% if s.feed %}<li data-js-only><button type="button" class="media-plat" data-copy="{{ s.feed }}" title="{{ 'media.rss_help' | t(lang) }}" aria-label="{{ 'media.copy_rss' | t(lang) }}: {{ s.name }}"><span class="media-plat-icon text-lv">{% icon "rss", "size-4" %}</span>{{ "media.copy_rss" | t(lang) }}</button></li>{% endif %}
             </ul>
           </div>
         </div>
@@ -469,7 +473,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
       <div class="flex items-center gap-2 px-2.5 pt-1 pb-2.5 sm:gap-3 sm:px-3.5">
         <img :src="art(ep)" alt="" width="48" height="48" class="size-11 shrink-0 rounded-lg object-cover sm:size-12" x-show="art(ep)" referrerpolicy="no-referrer" @load="$el.style.visibility = ''" @error="$el.style.visibility = 'hidden'">
         <div class="min-w-0 flex-1">
-          <p class="truncate text-sm font-semibold text-ink" x-text="ep.t"></p>
+          <p class="media-mini-title truncate text-sm font-semibold text-ink" x-text="ep.t" :title="ep.t"></p>
           <p class="truncate text-xs tabular-nums text-muted">
             <span x-show="$store.audio.error" class="text-danger">{{ "media.retry" | t(lang) }}?</span>
             <span x-show="!$store.audio.error"><span x-text="clock($store.audio.time)"></span> / <span x-text="clock($store.audio.durFor(ep))"></span><span class="hidden sm:inline" x-text="showName(ep) ? ' · ' + showName(ep) : ''"></span></span>

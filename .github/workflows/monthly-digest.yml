@@ -1,35 +1,38 @@
 # =====================================================================
-#  Weekly e-mail digest (OPTIONAL — off until you add the secrets).
+#  Monthly e-mail digest (OPTIONAL — off until you add the secrets).
 #
-#  Sends one bilingual (English + Spanish) e-mail with everything new
-#  on the site in the last week, the next committee meeting and upcoming
-#  events — e.g. to a Google Group that reaches every district.
+#  On the 1st of every month it sends one bilingual (English + Spanish)
+#  e-mail — the same edition as the website's /digest/ page: what was
+#  new last month, this month's magazine issues and "put it to work"
+#  tips, the committee meeting, events, story deadlines and more —
+#  e.g. to a Google Group that reaches every district.
 #
 #  Turn it on: Settings → Secrets and variables → Actions → add
 #    SMTP_SERVER, SMTP_USERNAME, SMTP_PASSWORD, DIGEST_TO
 #    (optional: SMTP_PORT, DIGEST_FROM, DIGEST_REPLY_TO)
-#  Step-by-step instructions: README.md → "Weekly e-mail digest".
+#  Step-by-step instructions: README.md → "Monthly e-mail digest".
 #
-#  The day it goes out is set in config/site.yml → digest.weekday
-#  (this workflow checks every morning and only sends on that day).
-#  Preview without sending: Actions → "Weekly e-mail digest" →
-#  Run workflow → tick "Preview only" → download the preview artifact.
+#  Preview without sending: Actions → "Monthly e-mail digest" →
+#  Run workflow → leave "Preview only" ticked → download the preview
+#  artifact. The "month" box previews another edition (e.g. 2026-11).
 # =====================================================================
-name: Weekly e-mail digest
+name: Monthly e-mail digest
 
 on:
   schedule:
-    # 14:05 UTC = 9:05 AM Central (CDT) / 8:05 AM (CST) — after the daily
-    # 5:17 AM update has finished, so the digest includes today's content.
-    - cron: "5 14 * * *"
+    # GitHub cron is always UTC: 15:05 UTC on the 1st = 10:05 AM Central in summer (CDT) and
+    # 9:05 AM in winter (CST) — always after 6 AM Texas time, and after the morning updates
+    # (update.yml: 10:17 and 12:07 UTC), so the edition includes the 1st's content.
+    # Minute 5 avoids the top-of-the-hour rush, when GitHub delays scheduled jobs the most.
+    - cron: "5 15 1 * *"
   workflow_dispatch:
     inputs:
       preview_only:
         description: "Preview only — build the e-mail but don't send it (download it from the run's Artifacts)"
         type: boolean
         default: true
-      days:
-        description: "Look back this many days (empty = config/site.yml digest.days)"
+      month:
+        description: "Edition to build, as YYYY-MM (empty = this month)"
         type: string
         default: ""
 
@@ -38,7 +41,7 @@ permissions:
   pages: read        # to look up the site's public address
 
 concurrency:
-  group: weekly-digest
+  group: monthly-digest
   cancel-in-progress: false
 
 jobs:
@@ -63,7 +66,7 @@ jobs:
             echo "mode=send" >> "$GITHUB_OUTPUT"
           else
             echo "mode=off" >> "$GITHUB_OUTPUT"
-            echo "::notice title=E-mail digest is off::Add the SMTP_SERVER, SMTP_USERNAME, SMTP_PASSWORD and DIGEST_TO secrets to turn it on (README → Weekly e-mail digest)."
+            echo "::notice title=E-mail digest is off::Add the SMTP_SERVER, SMTP_USERNAME, SMTP_PASSWORD and DIGEST_TO secrets to turn it on (README → Monthly e-mail digest)."
             echo "E-mail digest is not set up — nothing to do. (This is normal.)" >> "$GITHUB_STEP_SUMMARY"
           fi
 
@@ -79,7 +82,7 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install PyYAML (reads config/site.yml)
+      - name: Install PyYAML (reads config/site.yml and config/carry.yml)
         if: steps.check.outputs.mode != 'off'
         run: python -m pip install --quiet PyYAML
 
@@ -109,17 +112,17 @@ jobs:
           DIGEST_REPLY_TO: ${{ secrets.DIGEST_REPLY_TO }}
           SITE_URL: ${{ steps.site.outputs.url }}
           MODE: ${{ steps.check.outputs.mode }}
-          EVENT: ${{ github.event_name }}
-          DAYS: ${{ inputs.days }}
+          MONTH: ${{ inputs.month }}
         run: |
           set -euo pipefail
           args=()
           # (the preview goes to the runner's temp folder: upload-artifact skips hidden folders like .tmp/)
           if [ "$MODE" = "preview" ]; then args+=(--dry-run --out-dir "$RUNNER_TEMP/digest-preview"); fi
-          # The daily schedule only sends on config/site.yml digest.weekday;
-          # a manual "Run workflow" sends right away.
-          if [ "$EVENT" = "schedule" ]; then args+=(--only-on-weekday); fi
-          if [[ "${DAYS:-}" =~ ^[0-9]+$ ]]; then args+=(--days "$DAYS"); fi
+          # Any "month" typed in is passed on (spaces removed), so a mistyped one ("2026-9", "Oct")
+          # stops the run (send_digest exits 2) instead of sending this month's edition to everyone.
+          month="${MONTH:-}"
+          month="${month//[[:space:]]/}"
+          if [ -n "$month" ]; then args+=(--month "$month"); fi
           python -m scripts.notify.send_digest "${args[@]}"
 
       - name: Keep the preview

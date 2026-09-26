@@ -120,7 +120,7 @@ pageScripts: ["/assets/js/committee.js"]
               <button type="button" @click="downloadIcs()" data-cm-js>{% icon "download", "size-4" %} {{ "committee.cal.ics_file" | t(lang) }}</button>
             </div>
           </details>
-          <button type="button" class="btn-on-dark cm-count-share" data-share="{{ pageAbs }}" data-share-title="{{ 'nav.meeting' | t(lang) }} — NETA 65" data-share-text="{{ rule }} · {{ timeRange }}">{% icon "share-2", "size-4" %} <span class="cm-count-share-label">{{ "common.share" | t(lang) }}</span></button>
+          <button type="button" class="btn-on-dark cm-count-share" data-js-only data-share="{{ pageAbs }}" data-share-title="{{ 'nav.meeting' | t(lang) }} — NETA 65" data-share-text="{{ rule }} · {{ timeRange }}">{% icon "share-2", "size-4" %} <span class="cm-count-share-label">{{ "common.share" | t(lang) }}</span></button>
         </div>
         <p class="mt-3 text-sm leading-relaxed text-white/75" x-show="phase === 'upcoming'">{{ "committee.meeting.join_hint" | t(lang) }}</p>
       </div>
@@ -143,7 +143,7 @@ pageScripts: ["/assets/js/committee.js"]
           <dt class="eyebrow">{{ "committee.meeting.id" | t(lang) }}</dt>
           <dd class="mt-1.5 flex items-center justify-between gap-3">
             <span class="font-mono text-xl font-semibold tracking-wide text-ink @sm:text-2xl">{{ m.meeting_id }}</span>
-            <button type="button" class="btn-secondary btn-sm" data-copy="{{ m.meeting_id | cmDigits }}" aria-label="{{ 'committee.meeting.copy_id' | t(lang) }}">{% icon "copy", "size-4" %} {{ "common.copy" | t(lang) }}</button>
+            <button type="button" class="btn-secondary btn-sm" data-js-only data-copy="{{ m.meeting_id | cmDigits }}" aria-label="{{ 'committee.meeting.copy_id' | t(lang) }}">{% icon "copy", "size-4" %} {{ "common.copy" | t(lang) }}</button>
           </dd>
         </div>
         {% endif %}
@@ -152,14 +152,16 @@ pageScripts: ["/assets/js/committee.js"]
           <dt class="eyebrow">{{ "committee.meeting.passcode" | t(lang) }}</dt>
           <dd class="mt-1.5 flex items-center justify-between gap-3">
             <span class="font-mono text-xl font-semibold tracking-wide text-ink @sm:text-2xl">{{ m.passcode }}</span>
-            <button type="button" class="btn-secondary btn-sm" data-copy="{{ m.passcode }}" aria-label="{{ 'committee.meeting.copy_passcode' | t(lang) }}">{% icon "copy", "size-4" %} {{ "common.copy" | t(lang) }}</button>
+            <button type="button" class="btn-secondary btn-sm" data-js-only data-copy="{{ m.passcode }}" aria-label="{{ 'committee.meeting.copy_passcode' | t(lang) }}">{% icon "copy", "size-4" %} {{ "common.copy" | t(lang) }}</button>
           </dd>
         </div>
         {% endif %}
       </dl>
 
-      <div class="mt-4">
-        <button type="button" class="btn-secondary" data-copy="{{ m.zoom_url }}">{% icon "link", "size-4" %} {{ "committee.meeting.copy_link" | t(lang) }}</button>
+      <div class="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2">
+        <button type="button" class="btn-secondary" data-js-only data-copy="{{ m.zoom_url }}">{% icon "link", "size-4" %} {{ "committee.meeting.copy_link" | t(lang) }}</button>
+        {#- no internet or app: the dial-in numbers and steps live on /accessibility/#phone -#}
+        <a class="link tap-link inline-flex items-center gap-1.5 text-sm" href="{{ '/accessibility/' | lurl(lang) }}#phone">{% icon "phone", "size-4 shrink-0" %}{{ "access.join_by_phone" | t(lang) }} <span aria-hidden="true">→</span></a>
       </div>
 
       <ul class="mt-6 grid gap-3 border-t border-line pt-5 text-sm text-muted @3xl:grid-cols-3">
@@ -231,7 +233,9 @@ pageScripts: ["/assets/js/committee.js"]
       <p class="mt-2 max-w-[65ch] leading-relaxed text-muted">{{ "committee.meeting.contact_text" | t(lang) }}</p>
       <div class="mt-auto flex flex-wrap gap-2.5 pt-5">
         <a class="btn-primary" href="{{ (m.chair_email or site.contact_email) | mailto('committee.meeting.mail_subject' | t(lang)) }}">{% icon "mail", "size-4" %} {{ "committee.meeting.write_chair" | t(lang) }}</a>
-        <button type="button" class="btn-secondary max-w-full" data-copy="{{ m.chair_email or site.contact_email }}">{% icon "copy", "size-4" %} <span class="truncate">{{ m.chair_email or site.contact_email }}</span></button>
+        <button type="button" class="btn-secondary max-w-full" data-js-only data-copy="{{ m.chair_email or site.contact_email }}">{% icon "copy", "size-4 shrink-0" %} <span class="min-w-0 truncate">{{ (m.chair_email or site.contact_email) | replace("@", "@<wbr>") | safe }}</span></button>
+        {#- without JavaScript: the address as text, to select and copy -#}
+        <span class="self-center font-mono text-sm text-ink select-all break-all" data-nojs-only>{{ m.chair_email or site.contact_email }}</span>
       </div>
     </div>
 
@@ -545,7 +549,7 @@ pageScripts: ["/assets/js/committee.js"]
     <dt class="eyebrow">{{ "committee.meeting.id" | t(lang) }}</dt>
     <dd class="mt-1.5 flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
       <span class="font-mono text-lg font-semibold tracking-wide whitespace-nowrap text-ink">{{ zoomId }}</span>
-      <button type="button" class="btn-secondary btn-sm" data-copy="{{ zoomDigits }}" aria-label="{{ idAria }}">{% icon "copy", "size-4" %} {{ "common.copy" | t(lang) }}</button>
+      <button type="button" class="btn-secondary btn-sm" data-js-only data-copy="{{ zoomDigits }}" aria-label="{{ idAria }}">{% icon "copy", "size-4" %} {{ "common.copy" | t(lang) }}</button>
     </dd>
   </div>
   {% endif %}
@@ -554,7 +558,7 @@ pageScripts: ["/assets/js/committee.js"]
     <dt class="eyebrow">{{ "committee.meeting.passcode" | t(lang) }}</dt>
     <dd class="mt-1.5 flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
       <span class="font-mono text-lg font-semibold tracking-wide text-ink">{{ passcode }}</span>
-      <button type="button" class="btn-secondary btn-sm" data-copy="{{ passcode }}" aria-label="{{ passAria }}">{% icon "copy", "size-4" %} {{ "common.copy" | t(lang) }}</button>
+      <button type="button" class="btn-secondary btn-sm" data-js-only data-copy="{{ passcode }}" aria-label="{{ passAria }}">{% icon "copy", "size-4" %} {{ "common.copy" | t(lang) }}</button>
     </dd>
   </div>
   {% endif %}
@@ -610,7 +614,7 @@ pageScripts: ["/assets/js/committee.js"]
       </div>
 
       <div class="@container flex flex-1 flex-col p-6 sm:p-7">
-        {% if not sharedZoom %}<div class="mb-5">{{ zoomFields(w.zoomId, w.zoomDigits, w.passcode, ("committee.weekly.copy_id_" + key) | t(lang), ("committee.weekly.copy_passcode_" + key) | t(lang)) }}</div>{% endif %}
+        {% if not sharedZoom %}<div class="mb-5">{{ zoomFields(w.zoomId, w.zoomDigits, w.passcode, ("committee.weekly.copy_id_" + key) | t(lang), ("committee.weekly.copy_passcode_" + key) | t(lang)) }}<p class="mt-2"><a class="link tap-link inline-flex items-center gap-1.5 text-sm" href="{{ '/accessibility/' | lurl(lang) }}#phone">{% icon "phone", "size-4 shrink-0" %}{{ "access.join_by_phone" | t(lang) }} <span aria-hidden="true">→</span></a></p></div>{% endif %}
         <div class="flex flex-wrap gap-2.5">
           {% if w.zoomUrl %}<a class="btn-primary" href="{{ w.zoomUrl }}" target="_blank" rel="noopener" aria-label="{{ ('committee.weekly.join_' + key) | t(lang) }}">{% icon "video", "size-4" %} {{ "committee.meeting.join" | t(lang) }}</a>{% endif %}
           {% if not w.isLv %}<a class="btn-secondary" href="{{ '/listen/?show=wo#episodes' | lurl(lang) }}">{% icon "headphones", "size-4" %} {{ "committee.weekly.listen" | t(lang) }}</a>{% endif %}
@@ -630,6 +634,7 @@ pageScripts: ["/assets/js/committee.js"]
         <span class="min-w-0">
           <span class="block font-semibold text-ink">{{ "committee.weekly.same_zoom" | t(lang) }}</span>
           <span class="mt-0.5 block text-sm text-muted">{{ "committee.weekly.same_zoom_sub" | t(lang) }}</span>
+          <a class="link tap-link mt-1 inline-flex items-center gap-1.5 text-sm" href="{{ '/accessibility/' | lurl(lang) }}#phone">{% icon "phone", "size-4 shrink-0" %}{{ "access.join_by_phone" | t(lang) }} <span aria-hidden="true">→</span></a>
         </span>
       </p>
       {{ zoomFields(wos[0].zoomId, wos[0].zoomDigits, wos[0].passcode, "committee.meeting.copy_id" | t(lang), "committee.meeting.copy_passcode" | t(lang)) }}

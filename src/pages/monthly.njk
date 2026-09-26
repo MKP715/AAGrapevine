@@ -6,24 +6,20 @@ pageKey: monthly
 titleKey: monthly.title
 descKey: monthly.meta_desc
 bodyClass: mp-hub
-pageScripts: ["/assets/js/monthly.js", "/assets/js/community.js"]
+pageScripts: ["/assets/js/monthly.js", "/assets/js/report.js"]
 ---
 {#- /monthly/ — the "Monthly toolkit" (posters included). Flow (docs: ui.njk): hero → page nav → this month
     (a teaser with a one-line link to next month; the full toolkit lives on the month's own page,
     monthly-month.njk) → the GV/LV report → all posters (band) → the 10 ways. Prices stay in the shop.
-    #report is the one home of the self-filling GV/LV report a GVR / RLV reads at the district
-    meeting (eleventy/filters/community.js reportData / reportText; the old /districts/ page
-    redirects here), with the tips and the count of our Area's published writers beside it (the
-    report text itself lists their names). This page is the canonical home of the district guide
+    #report is the one home of the GV/LV report a GVR / RLV tailors for the district meeting
+    (eleventy/filters/report.js + src/assets/js/report.js; the old /districts/ page redirects here).
+    This page is the canonical home of the district guide
     "how each month's magazine can be useful in carrying the message" (config/carry.yml). -#}
 {% import "macros/ui.njk" as ui with context %}
 {% import "macros/monthly.njk" as mp with context %}
 {%- set months = db | mpMonths(carry, site, lang) -%}
 {%- set m = months[0] -%}
 {%- set nx = months[1] -%}
-{%- set other = lang | otherLang -%}
-{%- set rd = db | cmReport(meeting) -%}
-{%- set W = rd.writers -%}
 {%- set monthUrl = ('/monthly/' + m.key + '/') | lurl(lang) -%}
 
 {% call ui.pageHero(lang, "monthly.title" | t(lang), "monthly.hero_sub" | t(lang), "calendar-heart", "monthly.eyebrow" | t(lang)) %}
@@ -96,74 +92,218 @@ pageScripts: ["/assets/js/monthly.js", "/assets/js/community.js"]
   </div>
 </section>
 
-{#- ============ Your GV/LV report (the one home of the district report) ============ -#}
-{#- The report, the tips beside it (20rem from 1024px, 22rem from 1536px) and the published-writers
-    strip under the report; from 1800px three columns (areas/community.css .cm-rp-layout). The report
-    box is folded to a readable height (26rem, 20rem on phones) with "Show the full report";
-    "Copy report" always copies the whole text. -#}
-<section id="report" class="section container-page pt-0" aria-labelledby="report-title" x-data="reportBox('{{ lang }}')">
+{#- ============ Your district report (the one home of the GV/LV report) ============ -#}
+{#- An editor each GVR / RLV tailors for the district meeting (src/assets/js/report.js). Its 12
+    sections are written at build time from the site's data, in English AND Spanish
+    (eleventy/filters/report.js → #rp-data); the editor's own words come from #rp-ui (page language).
+    Layout (areas/report.css .rp-grid): "Your details" across the top, then the section list (left)
+    and the live preview with the copy / share / save buttons (right; pinned while the list scrolls
+    when the window is tall enough). From 1800px three columns: details · sections · preview.
+    Phones: one column in that order, the preview folded to a readable height. Without JavaScript:
+    the whole report as text in the page language (.rp-nojs). Printing prints only the report. -#}
+{%- set rp = db | rpModel(meeting, carry, site) -%}
+<section id="report" class="section container-page pt-0" aria-labelledby="report-title">
   {{ ui.sectionHead("community.report.title" | t(lang), "community.report.sub" | t(lang), "", "", "clipboard-list", { eyebrow: "community.report.eyebrow" | t(lang), id: "report-title", lang: lang }) }}
-  <div class="cm-rp-layout">
-    <div class="cm-rp-report min-w-0">
-      <div class="card overflow-hidden">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-line bg-surface-2/60 px-4 py-3 sm:px-5">
-          <fieldset class="min-w-0" x-cloak>
-            <legend class="sr-only">{{ "community.report.lang" | t(lang) }}</legend>
-            <div class="grid grid-cols-2 gap-1 rounded-full border border-line bg-surface p-1">
-              <label class="cm-seg"><input type="radio" name="report-lang" class="sr-only" :checked="rl === 'en'" @change="rl = 'en'" {% if lang == 'en' %}checked{% endif %}><span lang="en">{{ "community.lang_name_en" | t(lang) }}</span></label>
-              <label class="cm-seg"><input type="radio" name="report-lang" class="sr-only" :checked="rl === 'es'" @change="rl = 'es'" {% if lang == 'es' %}checked{% endif %}><span lang="es">{{ "community.lang_name_es" | t(lang) }}</span></label>
+
+  <div class="rp-nojs card overflow-hidden">
+    <p class="flex items-center gap-2 border-b border-line bg-surface-2/60 px-4 py-3 text-sm text-muted sm:px-6">{% icon "info", "size-4 shrink-0" %} {{ "report.nojs_note" | t(lang) }}</p>
+    <pre class="rp-nojs-text" lang="{{ lang }}">{{ rp | rpText(lang) }}</pre>
+  </div>
+
+  <div class="rp-app" data-js-only x-data="rpEditor('{{ lang }}')">
+    <script type="application/json" id="rp-data">{{ rp | rpJson | safe }}</script>
+    <script type="application/json" id="rp-ui">{{ lang | rpUi | rpJson | safe }}</script>
+    <template x-if="d">
+    <div class="rp-grid">
+
+      {#- ---- Your details: they fill the [blanks]; the report language ---- -#}
+      <div class="rp-settings card card-pad">
+        <div class="rp-settings-head">
+          <h3 class="card-h"><span>{% icon "user-round", "size-5" %}</span>{{ "report.settings_title" | t(lang) }}</h3>
+          <p class="rp-saved" :class="{ 'is-failed': saveState === 'failed' }">
+            <span class="rp-saved-icon" x-show="saveState !== 'failed'">{% icon "circle-check", "size-4" %}</span><span class="rp-saved-icon" x-show="saveState === 'failed'">{% icon "triangle-alert", "size-4" %}</span>
+            <span role="status" x-text="savedText()"></span><span aria-hidden="true" x-show="savedAt && saveState === 'saved'" x-text="'· ' + savedAt"></span>
+          </p>
+        </div>
+        <div class="rp-fields">
+          <div class="rp-f rp-f-district">
+            <label class="rp-label" for="rp-district">{{ "report.f_district" | t(lang) }}</label>
+            <input id="rp-district" class="input" type="text" autocomplete="off" maxlength="12" :value="prof.district" @input="setProf('district', $event.target.value)">
+          </div>
+          <div class="rp-f rp-f-role">
+            <label class="rp-label" for="rp-role">{{ "report.f_role" | t(lang) }}</label>
+            <select id="rp-role" class="input rp-select" x-effect="$el.value = prof.role" @change="setProf('role', $event.target.value)">
+              <option value="">{{ "report.f_role_none" | t(lang) }}</option>
+              {#- La Viña first on Spanish pages -#}
+              {%- if lang == "es" %}
+              <option value="rlv">{{ "report.role_rlv" | t(lang) }}</option>
+              <option value="gvr">{{ "report.role_gvr" | t(lang) }}</option>
+              {%- else %}
+              <option value="gvr">{{ "report.role_gvr" | t(lang) }}</option>
+              <option value="rlv">{{ "report.role_rlv" | t(lang) }}</option>
+              {%- endif %}
+              <option value="both">{{ "report.role_both" | t(lang) }}</option>
+              <option value="chair">{{ "report.role_chair_label" | t(lang) }}</option>
+              <option value="dcm">{{ "report.role_dcm" | t(lang) }}</option>
+            </select>
+          </div>
+          <div class="rp-f rp-f-name">
+            <label class="rp-label" for="rp-name">{{ "report.f_name" | t(lang) }}</label>
+            <input id="rp-name" class="input" type="text" autocomplete="off" maxlength="40" aria-describedby="rp-name-hint" :value="prof.name" @input="setProf('name', $event.target.value)">
+            <p id="rp-name-hint" class="rp-hint">{{ "report.f_name_hint" | t(lang) }}</p>
+          </div>
+          <div class="rp-f rp-f-group">
+            <label class="rp-label" for="rp-group">{{ "report.f_group" | t(lang) }}</label>
+            <input id="rp-group" class="input" type="text" autocomplete="off" maxlength="60" :value="prof.group" @input="setProf('group', $event.target.value)">
+          </div>
+          <fieldset class="rp-f rp-f-lang">
+            <legend class="rp-label">{{ "report.f_lang" | t(lang) }}</legend>
+            <div class="grid grid-cols-2 gap-1 rounded-full border border-line bg-surface-2 p-1">
+              {%- for l in (["es", "en"] if lang == "es" else ["en", "es"]) %}
+              <label class="cm-seg"><input type="radio" name="rp-lang" value="{{ l }}" class="sr-only" :checked="rl === '{{ l }}'" @change="setLang('{{ l }}')"><span lang="{{ l }}">{{ ("community.lang_name_" + l) | t(lang) }}</span></label>
+              {%- endfor %}
             </div>
           </fieldset>
-          <button type="button" class="btn-primary btn-sm" data-copy-from="#report-{{ lang }}" :data-copy-from="'#report-' + rl">{% icon "copy", "size-4" %} {{ "community.report.copy" | t(lang) }}</button>
         </div>
-        <div id="report-box" class="cm-report-box" :class="{ 'is-js': true, 'is-open': full }">
-          {% for l in [lang, other] %}
-          <pre id="report-{{ l }}" class="cm-report m-0 px-4 py-4 font-sans sm:px-6 sm:py-5" x-show="rl === '{{ l }}'"{% if l != lang %} x-cloak{% endif %} role="region" aria-label="{{ 'community.report.label' | t(lang) }} ({{ ('community.lang_name_' + l) | t(lang) }})"><span lang="{{ l }}">{{ rd | cmReportText(l, site) }}</span></pre>
-          {% endfor %}
-        </div>
-        <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-t border-line px-4 py-2 sm:px-6">
-          <p class="flex items-center gap-2 py-2 text-xs text-muted">{% icon "info", "size-4 shrink-0" %} {{ "community.report.note" | t(lang) }}</p>
-          <button type="button" class="btn-ghost btn-sm -mx-2 text-gv" x-cloak @click="full = !full" :aria-expanded="full.toString()" aria-controls="report-box">
-            <span x-show="!full">{{ "community.report.show_full" | t(lang) }}</span><span x-show="full" x-cloak>{{ "common.show_less" | t(lang) }}</span>
-            {% icon "chevron-down", "size-4 transition" %}
-          </button>
-        </div>
+        <p class="rp-note">{{ "report.settings_note" | t(lang, { month: rp.langs[lang].month }) }}</p>
       </div>
-    </div>
 
-    <aside class="cm-rp-tips card card-pad" aria-labelledby="tips-title">
-      <h3 id="tips-title" class="card-h"><span class="text-lv">{% icon "lightbulb", "size-5" %}</span>{{ "community.report.tips_title" | t(lang) }}</h3>
-      <ul class="mt-3 space-y-3 text-sm leading-relaxed text-muted" role="list">
-        {% for k in ["tip1", "tip2", "tip3", "tip4", "tip5"] %}
-        <li class="flex gap-2.5">{% icon "check", "size-4 mt-0.5 shrink-0 text-vine" %}<span>{{ ("community.report." + k) | t(lang) }}</span></li>
-        {% endfor %}
-      </ul>
-      <div class="mt-5 flex flex-wrap gap-2 border-t border-line pt-4">
-        <a class="btn-secondary btn-sm" href="{{ site.links.carry_the_message }}" target="_blank" rel="noopener">{% icon "gift", "size-4" %} {{ "community.report.ctm" | t(lang) }}<span class="sr-only"> {{ "community.new_tab" | t(lang) }}</span></a>
-        <a class="btn-secondary btn-sm" href="{{ '/gvr/' | lurl(lang) }}">{% icon "badge-check", "size-4" %} {{ "nav.gvr" | t(lang) }}</a>
-      </div>
-    </aside>
-
-    {#- Published writers from our Area: the counts + one link (the report text already lists their
-        names and stories). A strip under the report; a column of its own from 1800px. -#}
-    {% if W %}
-    <div class="cm-rp-writers card card-pad @container">
-      <div class="grid gap-4 @xl:grid-cols-[minmax(0,1fr)_18rem] @xl:gap-x-6">
-        <div class="min-w-0">
-          <h3 id="writers-title" class="card-h"><span class="text-lv">{% icon "award", "size-5" %}</span>{{ "community.writers.card_title" | t(lang) }}</h3>
-          <p class="mt-1 text-sm leading-relaxed text-muted">{{ "community.writers.card_sub" | t(lang, { n: W.days }) }}</p>
-          {% if not (W.neta65 | length) %}<p class="mt-2 text-sm leading-relaxed text-muted">{{ ("community.writers.card_none" if W.texas | length else "community.writers.card_empty") | t(lang) }}</p>{% endif %}
+      {#- ---- The sections: include, reorder, edit, add your own ---- -#}
+      <div class="rp-side">
+        <div class="rp-list card">
+          <div class="rp-list-head">
+            <h3 id="rp-secs-title" class="card-h"><span>{% icon "list-ordered", "size-5" %}</span>{{ "report.sections_title" | t(lang) }}</h3>
+            <p class="mt-1 text-sm leading-relaxed text-muted">{{ "report.sections_hint" | t(lang) }}</p>
+          </div>
+          <ol class="rp-secs" role="list" aria-labelledby="rp-secs-title">
+            <template x-for="s in list()" :key="s.id">
+              <li class="rp-sec" :class="{ 'is-off': !s.on, 'is-empty': s.empty, 'is-open': open[s.id], 'is-active': active === s.id }">
+                <div class="rp-sec-row">
+                  <label class="rp-check"><input type="checkbox" :checked="s.on" @change="toggle(s.id)" :aria-label="say('include', s.title)"></label>
+                  <button type="button" class="rp-sec-btn" :data-rp-edit="s.id" :aria-expanded="open[s.id] ? 'true' : 'false'" :aria-controls="'rp-ed-' + s.id" @click="toggleOpen(s.id)">
+                    <span class="rp-num" aria-hidden="true"><span x-show="s.header">{% icon "heading", "size-3.5" %}</span><span x-show="!s.header" x-text="s.num || '–'"></span></span>
+                    <span class="rp-sec-name">
+                      <span class="sr-only">{{ "report.edit" | t(lang) }}: </span><span :id="'rp-t-' + s.id" :lang="rl" x-text="s.title"></span>
+                      <span class="rp-badges"><span class="badge-lv" x-show="s.edited">{{ "report.edited" | t(lang) }}</span><span class="badge-muted" x-show="s.empty">{{ "report.empty" | t(lang) }}</span></span>
+                    </span>
+                    <span class="rp-sec-edit" aria-hidden="true">{% icon "pencil", "size-4" %}<span class="rp-sec-edit-label">{{ "report.edit" | t(lang) }}</span></span>
+                  </button>
+                  <div class="rp-move">
+                    <template x-if="!s.header">
+                      <div class="flex">
+                        <button type="button" class="rp-icon-btn" data-rp-move="up" :data-rp-id="s.id" :aria-disabled="s.first ? 'true' : 'false'" :aria-label="say('move_up', s.title)" @click="move(s.id, -1)">{% icon "arrow-up", "size-4" %}</button>
+                        <button type="button" class="rp-icon-btn" data-rp-move="down" :data-rp-id="s.id" :aria-disabled="s.last ? 'true' : 'false'" :aria-label="say('move_down', s.title)" @click="move(s.id, 1)">{% icon "arrow-down", "size-4" %}</button>
+                      </div>
+                    </template>
+                  </div>
+                </div>
+                <div class="rp-sec-ed" :id="'rp-ed-' + s.id" x-show="open[s.id]" role="group" :aria-labelledby="'rp-t-' + s.id">
+                  <template x-if="!s.header">
+                    <div class="rp-field">
+                      <label class="rp-label" :for="'rp-title-' + s.id">{{ "report.f_title" | t(lang) }}</label>
+                      <input class="input" type="text" maxlength="120" :id="'rp-title-' + s.id" :lang="rl" :placeholder="s.custom ? lm().custom : ''" x-effect="if ($el.value !== titleValue(s.id)) $el.value = titleValue(s.id)" @input="setTitle(s.id, $event.target.value)" @focus="focusSec(s.id)">
+                    </div>
+                  </template>
+                  <template x-if="s.id === 'meetings'">
+                    <fieldset class="rp-pick">
+                      <legend class="rp-label">{{ "report.meet_pick" | t(lang) }}</legend>
+                      <p class="rp-hint -mt-1 mb-2">{{ "report.meet_pick_hint" | t(lang) }}</p>
+                      {%- for g in [["area", "report.meet_area"], ["near", "report.meet_near"]] %}
+                      <template x-if="meetOpts('{{ g[0] }}').length">
+                        <div class="rp-pick-group">
+                          <p class="rp-pick-head">{{ g[1] | t(lang) }}</p>
+                          <div class="rp-pick-list">
+                            <template x-for="o in meetOpts('{{ g[0] }}')" :key="o.id">
+                              <label class="rp-pick-item"><input type="checkbox" :checked="picked(o.id)" @change="togglePick(o.id)"><span x-text="o.label[L]"></span><span class="rp-pick-n" x-text="o.count"></span></label>
+                            </template>
+                          </div>
+                        </div>
+                      </template>
+                      {%- endfor %}
+                      <button type="button" class="btn-ghost btn-sm mt-1" x-show="d.meet.length" @click="clearPicks()">{% icon "x", "size-4" %} {{ "report.meet_clear" | t(lang) }}</button>
+                    </fieldset>
+                  </template>
+                  <div class="rp-field">
+                    <label class="rp-label" :for="'rp-text-' + s.id">{{ "report.f_text" | t(lang) }}</label>
+                    <textarea class="input rp-text" rows="6" spellcheck="true" :id="'rp-text-' + s.id" :lang="rl" :aria-describedby="'rp-hint-' + s.id" :placeholder="s.id === 'notes' ? ui.n_placeholder : ''" x-effect="if ($el.value !== textOf(s.id)) { $el.value = textOf(s.id); grow($el) }" @input="setText(s.id, $event.target.value); grow($event.target)" @focus="focusSec(s.id)"></textarea>
+                    <p class="rp-hint" :id="'rp-hint-' + s.id" x-text="s.header ? ui.header_hint : ui.text_hint"></p>
+                  </div>
+                  <div class="rp-ed-actions">
+                    <button type="button" class="btn-ghost btn-sm" x-show="s.edited" @click="resetSection(s.id)">{% icon "rotate-ccw", "size-4" %} {{ "report.reset_section" | t(lang) }}</button>
+                    <button type="button" class="btn-ghost btn-sm text-danger" x-show="s.custom" @click="removeCustom(s.id)">{% icon "trash-2", "size-4" %} {{ "report.remove_section" | t(lang) }}</button>
+                    <button type="button" class="btn-secondary btn-sm ml-auto" @click="closeEditor(s.id)">{% icon "check", "size-4" %} {{ "report.done" | t(lang) }}</button>
+                  </div>
+                </div>
+              </li>
+            </template>
+          </ol>
+          <div class="rp-list-foot">
+            <button type="button" class="btn-secondary btn-sm" x-ref="add" @click="addCustom()">{% icon "plus", "size-4" %} {{ "report.add_section" | t(lang) }}</button>
+            <button type="button" class="btn-ghost btn-sm" @click="resetAll()">{% icon "rotate-ccw", "size-4" %} {{ "report.reset_all" | t(lang) }}</button>
+          </div>
         </div>
-        {% if (W.neta65 | length) or (W.texas | length) %}
-        <dl class="grid grid-cols-2 gap-3 @xl:col-start-2 @xl:row-span-2 @xl:row-start-1 @xl:self-center">
-          <div class="flex flex-col-reverse justify-end gap-1 rounded-xl bg-surface-2 p-3"><dt class="text-xs leading-snug text-muted">{{ "community.writers.group_neta65" | t(lang) }}</dt><dd class="font-display text-3xl font-semibold leading-none text-vine tabular-nums">{{ W.neta65 | length }}</dd></div>
-          <div class="flex flex-col-reverse justify-end gap-1 rounded-xl bg-surface-2 p-3"><dt class="text-xs leading-snug text-muted">{{ "community.writers.group_texas" | t(lang) }}</dt><dd class="font-display text-3xl font-semibold leading-none text-ink tabular-nums">{{ W.texas | length }}</dd></div>
-        </dl>
-        {% endif %}
-        <a class="btn-secondary btn-sm justify-self-start @xl:col-start-1 @xl:row-start-2" href="{{ '/published/' | lurl(lang) }}">{{ "community.writers.see_all" | t(lang, { n: W.allDays }) }} {% icon "arrow-right", "size-4 shrink-0" %}</a>
+
+        <details class="rp-tips card group">
+          <summary class="rp-tips-sum">
+            <span class="grid size-9 shrink-0 place-items-center rounded-lg bg-lv-soft text-lv">{% icon "lightbulb", "size-5" %}</span>
+            <span class="min-w-0 flex-1 font-semibold text-ink">{{ "report.tips_more" | t(lang) }}</span>
+            {% icon "chevron-down", "size-5 shrink-0 text-muted transition group-open:rotate-180" %}
+          </summary>
+          <ul class="space-y-3 border-t border-line px-5 py-4 text-sm leading-relaxed text-muted" role="list">
+            {% for k in ["tip1", "tip2", "tip3", "tip4", "tip5"] %}
+            <li class="flex gap-2.5">{% icon "check", "size-4 mt-0.5 shrink-0 text-vine" %}<span>{{ ("community.report." + k) | t(lang) }}</span></li>
+            {% endfor %}
+          </ul>
+        </details>
       </div>
+
+      {#- ---- The live preview + copy / share / save ---- -#}
+      <div class="rp-main">
+        <div class="rp-out card">
+          <div class="rp-out-head">
+            <div class="rp-out-top">
+              <h3 id="rp-out-title" class="card-h"><span>{% icon "file-text", "size-5" %}</span>{{ "report.preview_title" | t(lang) }}</h3>
+              <p class="rp-stats"><span :class="{ 'is-blanks': blanks() }" x-text="blanksText()"></span><span x-text="readText()"></span></p>
+            </div>
+            <div class="rp-actions" role="group" aria-label="{{ 'report.actions_label' | t(lang) }}">
+              <div class="rp-act-row">
+                <button type="button" class="btn-primary btn-sm rp-a-main" @click="copyText($el)">{% icon "copy", "size-4" %} {{ "report.copy_text" | t(lang) }}</button>
+                <button type="button" class="btn-secondary btn-sm" data-rp-wa @click="whatsapp()">{% icon "message-circle", "size-4" %}<span><span class="sr-only">{{ "report.send_sr" | t(lang) }} </span>{{ "report.whatsapp" | t(lang) }}</span></button>
+                <button type="button" class="btn-secondary btn-sm" @click="email()">{% icon "mail", "size-4" %}<span><span class="sr-only">{{ "report.send_sr" | t(lang) }} </span>{{ "report.email" | t(lang) }}</span></button>
+                <button type="button" class="btn-secondary btn-sm rp-a-wide" @click="copyHtml($el)">{% icon "clipboard-copy", "size-4" %} {{ "report.copy_html" | t(lang) }}</button>
+              </div>
+              <div class="rp-act-row">
+                <button type="button" class="btn-secondary btn-sm" @click="download('docx')">{% icon "file-text", "size-4" %}<span><span class="sr-only">{{ "report.download_sr" | t(lang) }} </span>{{ "report.download_doc" | t(lang) }}</span></button>
+                <button type="button" class="btn-secondary btn-sm" @click="download('txt')">{% icon "download", "size-4" %}<span><span class="sr-only">{{ "report.download_sr" | t(lang) }} </span>{{ "report.download_txt" | t(lang) }}</span></button>
+                <button type="button" class="btn-secondary btn-sm" @click="print()">{% icon "printer", "size-4" %} {{ "report.print" | t(lang) }}</button>
+              </div>
+            </div>
+            <p class="rp-msg" x-show="msg" x-cloak>{% icon "circle-check", "size-4 shrink-0" %}<span x-text="msg"></span></p>
+            <div class="rp-wa" x-show="waLong" x-cloak>
+              <h4 id="rp-wa-title" class="flex items-center gap-2 font-semibold text-ink" tabindex="-1">{% icon "triangle-alert", "size-4 shrink-0 text-lv" %} {{ "report.wa_long_title" | t(lang) }}</h4>
+              <p class="mt-1 text-sm leading-relaxed text-muted">{{ "report.wa_long_text" | t(lang) }}</p>
+              <div class="mt-3 flex flex-wrap gap-2">
+                <button type="button" class="btn-secondary btn-sm" @click="copyText($el)">{% icon "copy", "size-4" %} {{ "report.copy_text" | t(lang) }}</button>
+                <button type="button" class="btn-secondary btn-sm" @click="waOpen()">{% icon "message-circle", "size-4" %} {{ "report.wa_open" | t(lang) }}<span class="sr-only"> ({{ 'common.external' | t(lang) }})</span></button>
+                <button type="button" class="btn-secondary btn-sm" x-show="canShare" @click="shareNative()">{% icon "share-2", "size-4" %} {{ "report.share_other" | t(lang) }}</button>
+                <button type="button" class="btn-ghost btn-sm" @click="closeWa()">{% icon "x", "size-4" %} {{ "common.close" | t(lang) }}</button>
+              </div>
+            </div>
+          </div>
+          <div id="rp-doc-wrap" class="rp-doc-wrap" data-tts-skip x-ref="doc" :class="{ 'is-open': full }" tabindex="0" role="region" aria-label="{{ 'report.preview_label' | t(lang) }}">
+            <div class="rp-doc" :lang="rl" x-html="preview()"></div>
+          </div>
+          <div class="rp-fold">
+            <button type="button" class="btn-ghost btn-sm text-gv" @click="full = !full" :aria-expanded="full ? 'true' : 'false'" aria-controls="rp-doc-wrap">
+              <span x-show="!full">{{ "community.report.show_full" | t(lang) }}</span><span x-show="full">{{ "common.show_less" | t(lang) }}</span>
+              {% icon "chevron-down", "size-4 transition" %}
+            </button>
+          </div>
+        </div>
+      </div>
+
     </div>
-    {% endif %}
+    </template>
   </div>
 </section>
 
@@ -209,14 +349,30 @@ pageScripts: ["/assets/js/monthly.js", "/assets/js/community.js"]
       <p class="text-ink">{{ carry.story_note[lang] }} <a class="link font-semibold" href="{{ '/contribute/' | lurl(lang) }}">{{ "nav.contribute" | t(lang) }}</a></p>
     </div>
     {% endif %}
-    {% if carry.quote %}
-    <figure class="card card-pad mp-quote">
-      {% icon "quote", "size-6 text-grape" %}
-      <blockquote class="mt-2 font-display text-xl text-ink">{{ carry.quote[lang] }}</blockquote>
-      {% if carry.quote.cite %}<figcaption class="mt-2 text-sm text-muted">— {{ carry.quote.cite[lang] }}</figcaption>{% endif %}
-    </figure>
+    {#- The representatives' official guides: a pointer in our own words + the documents (never quoted)
+        + the official GVR / RLV resource pages (config/site.yml links.gvr_resources / rlv_resources) -#}
+    {%- set guides = db.pdfs | mpGuides(lang) if carry.guides else [] -%}
+    {%- set repLinks = [[site.links.gvr_resources, "read.subs.all_gvr", "en"], [site.links.rlv_resources, "read.subs.all_rlv", "es"]] if carry.guides else [] -%}
+    {% if guides.length or (repLinks | length and site.links.gvr_resources) %}
+    <div class="card card-pad flex gap-4">
+      <span class="mp-tipicon">{% icon "notebook-pen", "size-5" %}</span>
+      <div class="min-w-0">
+        <p class="text-ink">{{ carry.guides[lang] }}</p>
+        <ul class="mt-1 space-y-0.5" role="list">
+          {% for g in guides %}
+          <li><a class="link tap-link inline-flex flex-wrap items-baseline gap-x-1.5 font-semibold" href="{{ g.url }}" target="_blank" rel="noopener" hreflang="{{ g.lang }}"><span{% if g.lang != lang %} lang="{{ g.lang }}"{% endif %}>{{ g.title }}</span><span class="text-sm font-normal text-muted">({{ ("monthly.guide_doc" if g.lang == lang else ("monthly.guide_doc_" + g.lang)) | t(lang) }})</span><span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a></li>
+          {% endfor %}
+          {% for r in repLinks %}{% if r[0] %}
+          <li><a class="link tap-link inline-flex items-center gap-1.5 font-semibold" href="{{ r[0] }}" target="_blank" rel="noopener" hreflang="{{ r[2] }}">{{ r[1] | t(lang) }}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span>{% icon "arrow-up-right", "size-4 shrink-0" %}</a></li>
+          {% endif %}{% endfor %}
+        </ul>
+      </div>
+    </div>
     {% endif %}
   </div>
   {% if carry.source %}<p class="mt-6 max-w-3xl text-xs text-muted"><strong>{{ "monthly.source" | t(lang) }}:</strong> {{ carry.source[lang] }}</p>{% endif %}
+  {#- One-line pointer to GVR / RLV 101 (/orientation/), whose lessons teach this toolkit -#}
+  {%- set o101Link %}<a class="link font-semibold" href="{{ '/orientation/' | lurl(lang) }}">{{ "nav.orientation" | t(lang) }}</a>{% endset %}
+  <p class="mt-4 flex max-w-3xl items-start gap-2 text-sm leading-relaxed text-muted">{% icon "graduation-cap", "mt-0.5 size-4 shrink-0 text-grape" %}<span>{{ "orientation.monthly_pointer" | t(lang, { link: o101Link }) | safe }}</span></p>
 </section>
 {% endif %}

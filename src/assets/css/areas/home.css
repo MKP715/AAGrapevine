@@ -446,7 +446,9 @@
 /* This month in the Shop (the closing row of the magazines section): compact covers */
 .home-shop .shop-teaser-covers { padding: 0.25rem 0.375rem 0.25rem 0.125rem; }
 .home-shop .shop-teaser-covers img { width: 2.75rem; }
+/* (a size container: at larger text the magazine's name is sized by the column's width — access.css) */
 .home-mag-head {
+  container-type: inline-size;
   color: var(--tone);
   background:
     radial-gradient(90% 120% at 100% 0%, color-mix(in srgb, var(--tone) 16%, transparent), transparent 60%),
@@ -543,6 +545,12 @@ lite-youtube.home-yt > .lyt-playbtn:focus-visible { outline: 3px solid #fff; out
     radial-gradient(60% 80% at 0% 0%, color-mix(in srgb, var(--c-gv) 7%, transparent), transparent 70%),
     radial-gradient(50% 70% at 100% 100%, color-mix(in srgb, var(--c-lv) 6%, transparent), transparent 70%),
     var(--c-surface-2);
+}
+/* Larger text (130%+) or relaxed spacing, 1024–1535px: the 26rem search column grows with the text
+   and would leave the quick links a narrow strip (one chip per line beside an empty corner) — the
+   search and the links stack instead, as on tablets. */
+@media (width >= 64rem) and (width < 96rem) {
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .home-lib-grid { grid-template-columns: minmax(0, 1fr); row-gap: 1.25rem; }
 }
 
 /* ---------- 9. Instagram ---------- */

@@ -16,6 +16,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
+import { scriptJson } from "../script-json.js";
 
 const require = createRequire(import.meta.url);
 
@@ -216,10 +217,8 @@ function micon(name, cls = "size-5", label = "") {
   return `<svg class="icon ${cls}" ${a11y}><use href="#mi-${name}"/></svg>`;
 }
 
-/** JSON that is safe inside <script type="application/json"> and HTML attributes. */
-function safeJson(v) {
-  return JSON.stringify(v).replace(/</g, "\\u003c").replace(/>/g, "\\u003e").replace(/&/g, "\\u0026").replace(/\u2028/g, "\\u2028").replace(/\u2029/g, "\\u2029");
-}
+/** JSON that is safe inside <script type="application/json"> and HTML attributes (the shared serializer). */
+const safeJson = scriptJson;
 
 export default function (eleventyConfig, helpers) {
   const { translateKey, pickLang } = helpers;
@@ -357,6 +356,7 @@ export default function (eleventyConfig, helpers) {
     };
     const art = (item.extra && item.extra.thumb) || item.image;
     if (art && (!meta || art !== meta.image)) o.i = safeUrl(art, null);
+    if (Number(x.audio_bytes) > 0) o.b = Math.round(Number(x.audio_bytes)); // audio file size — shown while Data saver is on (pwa.js)
     if (item.is_new) o.n = 1;
     if (machine(item, lang)) o.m = 1;
     return o;

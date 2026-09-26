@@ -1,0 +1,460 @@
+/* Area styles: access — the "Aa" Reading & display panel (partials/comfort-panel.njk, on every
+   page), the read-aloud highlight, the header's larger-text fallbacks, and the /accessibility/
+   page. Owned by the reading-comfort agent. What the settings DO to the whole site (text scale,
+   relaxed spacing, high contrast, reduced motion) lives in main.css ("READING & DISPLAY
+   SETTINGS"); what data saver does belongs to the offline-app code. Classes: "gvlv-" (panel),
+   "tts-" (read aloud), "ax-" (the page). */
+
+/* ------------------------------------------------------------------ */
+/*  The "Aa" panel — a non-modal dialog under the header, at the right */
+/*  edge of the page container (phones: the full width, 8px margins).  */
+/*  It scrolls on its own when taller than the window (150% text).     */
+/* ------------------------------------------------------------------ */
+.gvlv-panel {
+  position: fixed; z-index: 50;
+  top: calc(var(--header-h) + env(safe-area-inset-top, 0px) + 0.5rem);
+  right: max(0.5rem, calc(max(0px, (100% - var(--container-page)) / 2) + var(--gutter) - 0.5rem));
+  width: min(25rem, calc(100% - 1rem));
+  max-height: calc(100dvh - var(--header-h) - env(safe-area-inset-top, 0px) - 1rem);
+  overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin;
+  padding: 1rem 1.25rem 1.25rem;
+  border: 1px solid var(--c-line); border-radius: var(--radius-card);
+  background: var(--c-surface); color: var(--c-ink);
+  box-shadow: var(--shadow-lift), 0 24px 48px -24px rgb(20 16 40 / 0.35);
+}
+.gvlv-panel:focus { outline: none; }          /* focus lands on its first control; the box itself is not a control */
+@media (width < 40rem) { .gvlv-panel { left: 0.5rem; right: 0.5rem; width: auto; } }
+
+.gvlv-head { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; }
+/* A phone at 130%+ or with relaxed spacing: the title gets the room its icon took, and its size follows
+   the screen width (beside the close button, "Lectura y pantalla" at 150% + relaxed spacing on a 320px
+   phone broke inside its words) */
+@media (width < 40rem) {
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .gvlv-head > .card-h > span:first-child { display: none; }
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .gvlv-head > .card-h { font-size: min(1.25rem, 7.5vw); }
+}
+.gvlv-close { display: grid; place-items: center; flex-shrink: 0; width: 2.75rem; height: 2.75rem; margin-right: -0.5rem;
+  border-radius: 9999px; color: var(--c-muted); }
+.gvlv-close:hover { background: var(--c-surface-2); color: var(--c-ink); }
+.gvlv-note { margin-top: 0.25rem; font-size: 0.8125rem; line-height: 1.45; color: var(--c-muted); }
+
+/* One group per setting: a divider, the legend (icon + name), the choices, a one-line hint.
+   The legend floats so it lays out like a normal block (a fieldset's legend otherwise sits on
+   the border line). */
+.gvlv-group { min-width: 0; margin: 1rem 0 0; padding: 1rem 0 0; border: 0; border-top: 1px solid var(--c-line); }
+.gvlv-legend { float: left; width: 100%; display: flex; align-items: center; gap: 0.5rem; margin: 0 0 0.625rem; padding: 0;
+  font-size: 0.875rem; font-weight: 600; color: var(--c-ink); }
+.gvlv-legend > svg { color: var(--c-gv); }
+.gvlv-group > :not(legend) { clear: both; }
+
+/* Segmented choices (native radios: arrow keys move AND apply). The options share one row and
+   wrap onto a second one when a label doesn't fit (Spanish, 150% text) — never clipped. */
+.gvlv-seg { display: flex; flex-wrap: wrap; gap: 0.25rem; padding: 0.25rem; border-radius: 0.875rem; background: var(--c-surface-2); }
+.gvlv-opt { position: relative; flex: 1 1 auto; min-width: 0; }
+.gvlv-opt > span { display: flex; min-height: 2.75rem; align-items: center; justify-content: center; gap: 0.375rem;
+  padding: 0.375rem 0.75rem; border-radius: 0.625rem; cursor: pointer; text-align: center;
+  font-size: 0.875rem; font-weight: 600; line-height: 1.2; color: var(--c-muted); transition: background-color 0.15s, color 0.15s; }
+.gvlv-opt:hover > span { color: var(--c-ink); }
+.gvlv-opt:has(:checked) > span { background: var(--c-surface); color: var(--c-gv); box-shadow: 0 1px 2px rgb(20 16 40 / 0.14), inset 0 0 0 2px var(--c-gv); }
+.gvlv-opt:has(:focus-visible) > span { outline: 3px solid var(--c-gv); outline-offset: 2px; }
+:root[data-contrast="high"] .gvlv-opt:has(:focus-visible) > span { outline-width: 4px; }
+/* Windows High Contrast (forced colours drop fills and shadows): the chosen option gets a system outline */
+@media (forced-colors: active) {
+  .gvlv-opt:has(:checked) > span { outline: 3px solid Highlight; outline-offset: -3px; }
+  .gvlv-opt:has(:checked:focus-visible) > span { outline-offset: 2px; }
+}
+/* Text size: four equal columns, the "A" (growing like the setting) over the percentage */
+.gvlv-seg[data-n="4"] { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.gvlv-seg[data-n="4"] .gvlv-opt > span { flex-direction: column; gap: 0.125rem; padding-inline: 0.25rem; }
+/* …2 × 2 on a narrow phone at 130%+ or with relaxed spacing, where four labels ("150%") no longer fit
+   side by side (the relaxed letter spacing is !important in @layer base, so the grid gives way instead) */
+@media (width < 25rem) {
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .gvlv-seg[data-n="4"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+.gvlv-a { font-family: var(--font-display); font-weight: 600; line-height: 1; color: inherit; }
+.gvlv-a1 { font-size: 0.8rem; } .gvlv-a2 { font-size: 0.95rem; } .gvlv-a3 { font-size: 1.1rem; } .gvlv-a4 { font-size: 1.28rem; }
+.gvlv-preview { margin-top: 0.625rem; font-family: var(--font-display); font-size: 1.0625rem; line-height: 1.35; color: var(--c-ink); }
+
+.gvlv-hint { margin-top: 0.5rem; font-size: 0.8125rem; line-height: 1.45; color: var(--c-muted); }
+.gvlv-status { margin-top: 0.5rem; font-size: 0.8125rem; font-weight: 600; line-height: 1.45; color: var(--c-ink); overflow-wrap: anywhere; }
+.gvlv-read { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.gvlv-read > * { flex: 1 1 auto; }
+
+/* Filled by the offline-app script (pwa.js); hidden while empty, so no blank band */
+#pwa-slot { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--c-line); }
+#pwa-slot:empty { display: none; }
+
+.gvlv-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.25rem 1rem;
+  margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid var(--c-line); }
+.gvlv-more { display: inline-flex; min-height: 2.75rem; align-items: center; gap: 0.5rem; font-size: 0.875rem; font-weight: 600;
+  color: var(--c-gv); text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--c-gv) 40%, transparent); text-underline-offset: 3px; }
+.gvlv-more:hover { text-decoration-color: currentColor; }
+
+/* The dot on the "Aa" buttons: a setting differs from the defaults, or the page is being read */
+.gvlv-dot { position: absolute; top: 0.4rem; right: 0.4rem; width: 0.5rem; height: 0.5rem; border-radius: 9999px;
+  background: var(--c-lv); box-shadow: 0 0 0 2px var(--c-surface); pointer-events: none; }
+.site-header .gvlv-dot { box-shadow: 0 0 0 2px #fff; }
+:root[data-theme="dark"] .site-header .gvlv-dot { box-shadow: 0 0 0 2px var(--c-paper); }
+
+/* ------------------------------------------------------------------ */
+/*  Read aloud: the chunk being read — a highlighter stroke (dark text  */
+/*  on pale yellow), readable on any background, both themes.          */
+/* ------------------------------------------------------------------ */
+.tts-current { background-color: #fff1a8 !important; box-shadow: 0 0 0 0.3em #fff1a8; border-radius: 0.2em; }
+.tts-current, .tts-current * { color: #1d1a26 !important; text-shadow: none !important; }
+
+/* The read-aloud bar (comfort-panel.njk, app.js gvlvTtsBar): while reading with the panel closed. A
+   small card at the bottom, above the podcast player, the language banner and the offline-app toast
+   (z 41, like the toast). While it is up (html.tts-bar-on, --tts-h) the page keeps that room at its
+   end, sticky columns end above it and keyboard focus is never left under it. */
+.tts-bar {
+  position: fixed; left: 50%; z-index: 41; transform: translateX(-50%);
+  bottom: calc(var(--player-h, 0px) + env(safe-area-inset-bottom, 0px) + 0.75rem);
+  width: min(30rem, calc(100% - 1rem)); max-height: 40vh; overflow-y: auto;
+  /* what is being read, then Pause + Stop; when the words can't have ~10em beside the buttons (a
+     narrow phone, larger text, relaxed spacing) the buttons go to a second row, at the right */
+  display: flex; flex-wrap: wrap; align-items: center; gap: calc(0.5rem * var(--bar-zoom, 1));
+  padding: calc(0.375rem * var(--bar-zoom, 1)) calc(0.375rem * var(--bar-zoom, 1)) calc(0.375rem * var(--bar-zoom, 1)) calc(0.75rem * var(--bar-zoom, 1));
+  border: 1px solid var(--c-line); border-radius: 1rem; background: var(--c-surface); color: var(--c-ink); box-shadow: var(--shadow-lift);
+}
+.tts-bar > * { zoom: var(--bar-zoom, 1); }
+:root.has-lang-banner .tts-bar { bottom: calc(var(--player-h, 0px) + var(--banner-h, 4.5rem) + env(safe-area-inset-bottom, 0px) + 1.25rem); }
+:root.pwa-toast-on .tts-bar { bottom: calc(var(--player-h, 0px) + var(--banner-h, 0px) + var(--pwa-toast-h, 4rem) + env(safe-area-inset-bottom, 0px) + 1.25rem); }
+.tts-bar-icon { display: grid; place-items: center; flex-shrink: 0; width: 2rem; height: 2rem; border-radius: 9999px; background: var(--c-grape-soft); color: var(--c-grape); }
+.tts-bar-text { flex: 1 1 10em; min-width: 0; font-size: 0.8125rem; font-weight: 600; line-height: 1.35; overflow-wrap: anywhere; }
+.tts-bar-actions { display: flex; flex-shrink: 0; align-items: center; gap: 0.5rem; margin-left: auto; }
+.tts-bar-stop { display: grid; place-items: center; flex-shrink: 0; width: 2.75rem; height: 2.75rem; border-radius: 9999px; color: var(--c-muted); }
+.tts-bar-stop:hover { background: var(--c-surface-2); color: var(--c-ink); }
+@media (width < 22.5rem) { .tts-bar-icon { display: none; } }
+@media (width < 40rem) {
+  :root:is([data-text="115"], [data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .tts-bar-icon { display: none; }
+  /* a phone at 130%+ or with relaxed spacing: always the words on their own row, the buttons under them */
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .tts-bar-text { flex-basis: 100%; }
+}
+html:root.tts-bar-on body { padding-bottom: calc(var(--tts-h, 4rem) + var(--pwa-toast-h, 0px) + var(--banner-h, 0px) + var(--player-h, 0px) + env(safe-area-inset-bottom, 0px) + 2rem); }
+html:root.tts-bar-on {
+  --sticky-bottom: calc(var(--tts-h, 4rem) + var(--pwa-toast-h, 0px) + var(--banner-h, 0px) + var(--player-h, 0px) + env(safe-area-inset-bottom, 0px) + 1.5rem);
+  scroll-padding-bottom: var(--sticky-bottom);
+}
+@media print {
+  .tts-current { background: none !important; box-shadow: none !important; }
+  .gvlv-panel, .tts-bar { display: none !important; }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Larger text on phones and small tablets (below 768px): the header  */
+/*  row (logo, name, search, language, menu) keeps its 100% size — it  */
+/*  is drawn to just fit a 320px phone, its buttons are already 44px   */
+/*  touch targets, and bigger it would push the name into the buttons. */
+/*  --header-h follows, so the hero padding, anchors and the panel     */
+/*  still line up under it. The drawer, the panel and the page keep    */
+/*  the larger text.                                                   */
+/* ------------------------------------------------------------------ */
+@media (width < 48rem) {
+  :root[data-text="115"] { --chrome-zoom: 0.8696; }
+  :root[data-text="130"] { --chrome-zoom: 0.7692; }
+  :root[data-text="150"] { --chrome-zoom: 0.6667; }
+  :root:is([data-text="115"], [data-text="130"], [data-text="150"]) { --header-h: calc(4rem * var(--chrome-zoom)); }
+  :root:is([data-text="115"], [data-text="130"], [data-text="150"]) .site-header { zoom: var(--chrome-zoom); }
+}
+/* The small bars at the bottom of a phone screen — the read-aloud bar (above), the offline-app toast
+   (areas/pwa.css .pwa-toast), the language banner (areas/community.css .cm-lang-banner-card) and the
+   podcast mini-player (areas/media.css .media-mini-card) — show their text at 115% at most below
+   640px (their items take this zoom; the bars' own padding and gaps are multiplied by it): at
+   130–150% a bar would cover a quarter of the screen or more. */
+@media (width < 40rem) {
+  :root[data-text="130"] { --bar-zoom: 0.8846; }
+  :root[data-text="150"] { --bar-zoom: 0.7667; }
+}
+
+/* Phones (below 640px): the header row has "Aa" where the search icon is on wider screens; search is
+   the full-width button at the bottom of the drawer. Without JavaScript (no drawer, no "Aa") the
+   search icon stays. */
+@media (width < 40rem) { :root.js .site-search-btn { display: none; } }
+
+/* From 640px the site name sits on one line with the committee line under it, cut with "…" when
+   short of room — with larger text it may wrap instead (never cut). */
+:root:is([data-text="115"], [data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .site-logo [class*="truncate"] {
+  overflow: visible; white-space: normal; text-overflow: clip; }
+
+/* ------------------------------------------------------------------ */
+/*  Larger text / relaxed spacing: the desktop nav needs more than the */
+/*  1280px it gets at 100%, so it waits for a wider window and the     */
+/*  Menu button + drawer stay in use until then (media queries keep    */
+/*  the browser's 16px rem). Measured, EN + ES, nothing truncated or   */
+/*  wrapped — the nav fits from:                                       */
+/*    normal spacing   100% 1248px · 115% 1440 · 130% 1616 · 150% 1872 */
+/*    relaxed spacing  100% 1408px · 115% 1632 · 130% 1840 · 150% 2112 */
+/*  → shown from (rem):     80 · 92 · 104 · 120  /  90 · 104 · 116 · 134 */
+/* ------------------------------------------------------------------ */
+@media (width >= 80rem) {
+  :root:is([data-text="115"], [data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .site-nav { display: none; }
+  :root:is([data-text="115"], [data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .site-menu-btn { display: grid; }
+  :root:is([data-text="115"], [data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .site-drawer { display: block; }
+}
+@media (width >= 90rem) {
+  :root[data-text="100"][data-spacing="relaxed"] .site-nav { display: flex; }
+  :root[data-text="100"][data-spacing="relaxed"] :is(.site-menu-btn, .site-drawer) { display: none; }
+}
+@media (width >= 92rem) {
+  :root[data-text="115"]:not([data-spacing="relaxed"]) .site-nav { display: flex; }
+  :root[data-text="115"]:not([data-spacing="relaxed"]) :is(.site-menu-btn, .site-drawer) { display: none; }
+}
+@media (width >= 104rem) {
+  :root:is([data-text="130"]:not([data-spacing="relaxed"]), [data-text="115"][data-spacing="relaxed"]) .site-nav { display: flex; }
+  :root:is([data-text="130"]:not([data-spacing="relaxed"]), [data-text="115"][data-spacing="relaxed"]) :is(.site-menu-btn, .site-drawer) { display: none; }
+}
+@media (width >= 116rem) {
+  :root[data-text="130"][data-spacing="relaxed"] .site-nav { display: flex; }
+  :root[data-text="130"][data-spacing="relaxed"] :is(.site-menu-btn, .site-drawer) { display: none; }
+}
+@media (width >= 120rem) {
+  :root[data-text="150"]:not([data-spacing="relaxed"]) .site-nav { display: flex; }
+  :root[data-text="150"]:not([data-spacing="relaxed"]) :is(.site-menu-btn, .site-drawer) { display: none; }
+}
+@media (width >= 134rem) {
+  :root[data-text="150"][data-spacing="relaxed"] .site-nav { display: flex; }
+  :root[data-text="150"][data-spacing="relaxed"] :is(.site-menu-btn, .site-drawer) { display: none; }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Larger text (130%+) or relaxed spacing: components of other pages  */
+/*  whose columns were drawn for 100% text get fewer, wider columns.   */
+/*  (The site-wide rules — words that wrap, text columns that move     */
+/*  under their picture, one-column grids on phones — are in main.css.)*/
+/* ------------------------------------------------------------------ */
+@media (width < 40rem) {
+  /* page heroes: the title gets the whole width (the icon tile would squeeze it) */
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .gv-hero-icon { display: none; }
+  /* Published writers: a group's title ("Area 65 (Northeast Texas)") gets the width its icon took */
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .pw-group-icon { display: none; }
+  /* Library quick collections, Search "Explore" tiles: one per row */
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) :is(.lib-cols, .ss-browse) { grid-template-columns: minmax(0, 1fr); }
+}
+@media (width >= 40rem) and (width < 80rem) {
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) :is(.lib-cols, .ss-browse) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) :is(.lib-cols, .ss-browse) > :last-child:nth-child(odd) { grid-column: 1 / -1; }
+}
+@media (width >= 80rem) {
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .lib-cols { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .lib-cols > :last-child:nth-child(3n+1) { grid-column: 1 / -1; }
+}
+@media (width < 48rem) {
+  /* "Add to calendar" dropdowns (Events, Meetings): the menu opens in the flow, under its button,
+     so it can't reach past the edge of the screen */
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .cm-menu-panel { position: static; margin-top: 0.4rem; min-width: 0; }
+  /* Listen: the YouTube Short above its text instead of beside it */
+  :root:is([data-text="150"], [data-spacing="relaxed"]) .listen-short { grid-template-columns: minmax(0, 1fr); }
+  :root:is([data-text="150"], [data-spacing="relaxed"]) .listen-short-video { grid-row: auto; justify-self: start; width: min(100%, 10rem); }
+}
+@media (width < 96rem) {
+  /* Share kit: the QR code over its links (the two side by side leave the links a sliver) */
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) [class*="md:grid-cols-[minmax(0,20rem)_minmax(0,1fr)]"] { grid-template-columns: minmax(0, 1fr); }
+}
+/* Countdowns (Home, Meetings): a number never splits; four tiles become 2 × 2 on phones */
+:root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) :is(.home-count-n, .cm-tile-num) { white-space: nowrap; overflow-wrap: normal !important; }
+@media (width < 40rem) {
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) :is(.home-meet-count, .cm-tiles) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  /* Home "On this site" numbers: one per row */
+  :root:is([data-text="150"], [data-spacing="relaxed"]) .home-stats { grid-template-columns: minmax(0, 1fr); }
+}
+@media (width >= 40rem) and (width < 96rem) {
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .home-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+/* Events: the date strip, and the "Add to calendar" button and its menu, wrap inside their card */
+:root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .cm-date-strip { flex-wrap: wrap; white-space: normal; max-width: 100%; }
+:root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .cm-menu { min-width: 0; max-width: 100%; }
+:root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) :is(.cm-menu > summary, .cm-menu-panel > a, .cm-menu-panel > button, .cm-pinned-actions > a) { white-space: normal !important; }
+/* Monthly toolkit: tips beside their number, month thumbnails' labels */
+@media (width < 48rem) { :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .mp-tiplist { grid-template-columns: minmax(0, 1fr); } }
+:root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .mp-tiplist > li > :last-child { min-width: 0; flex: 1 1 0%; }
+:root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .mp-thumb-label > * { min-width: 0; white-space: normal; }
+/* Listen: the Short's app links */
+:root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .listen-short-links .media-plat { white-space: normal; }
+@media (width < 40rem) {
+  /* big display headings (a magazine's name on its cover, the page title) stay within the width
+     of a phone: they are capped at about 10% of the screen width */
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) main :is(.text-3xl, .text-4xl, .text-5xl, .h-display) { font-size: min(var(--text-3xl), 9.5vw); }
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) main :is(.text-4xl, .text-5xl, .h-display) { font-size: min(var(--text-4xl), 10.5vw); }
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .gv-hero-title { font-size: min(2rem, 10.5vw); }
+  /* Library list view: the text takes the card's width (the page thumbnail would squeeze it) */
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .lib-results[data-view="list"] .lib-media { display: none; }
+}
+/* Meetings: the next-meeting card's buttons (a narrow card): Join, Add to calendar and Share each get
+   the card's whole width (Share with its label) — side by side, "Agregar al calendario" spilled out of its pill */
+@container (width < 30rem) {
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .cm-count-actions { grid-template-columns: minmax(0, 1fr); }
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .cm-count-share { width: 100%; padding-inline: 1.25rem; }
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .cm-count-share-label { position: static; width: auto; height: auto; overflow: visible; clip-path: none; }
+}
+/* Meetings: a meeting time chip ("7:00 PM · Open") may wrap inside */
+:root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .cm-gvg-time { flex-wrap: wrap; white-space: normal; }
+/* Contribute "Record your story by phone": the tap-to-call number may break after "(559)" and never
+   grows past the phone's width (it stays whole: no break inside "726-1216") */
+:root:is([data-text="115"], [data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .cm-rec-num { white-space: normal; font-size: min(1.875rem, 8.5vw); }
+/* …and on a phone at 130%+ the call icon goes above the words, so the number has the pill's whole width */
+@media (width < 40rem) {
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .cm-rec-phone { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+}
+/* Monthly digest: the newsletter reads as ONE column (the two newspaper columns would leave a word or
+   two per line), and below 1536px the tool card goes above it instead of beside it (its 21rem grows
+   with the text and would squeeze the newsletter). */
+:root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .cm-dg-body { display: flex; flex-direction: column; columns: auto; }
+@media screen and (width >= 80rem) {
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .cm-dg-body :is(.cm-dg-intro, .cm-dg-next, .cm-digest-group, .cm-dg-line, .empty-state) { margin-bottom: 0; }
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .cm-dg-body .cm-dg-line + .cm-dg-line { margin-top: -1.5rem; }
+}
+@media (width < 96rem) {
+  :root:is([data-text="130"], [data-text="150"]) .cm-dg-layout { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; grid-template-areas: "tools" "digest" "previews"; }
+}
+/* …and there, from 1024px, the (unfolded) tool card lays its parts out in two columns: language +
+   Copy for WhatsApp | e-mail, print and the steps — not a stack of screen-wide buttons */
+@media (64rem <= width < 96rem) {
+  :root:is([data-text="130"], [data-text="150"]) .cm-dg-tools .card { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: auto 1fr; column-gap: 2.5rem; align-items: start; }
+  :root:is([data-text="130"], [data-text="150"]) .cm-dg-tools .card > .cm-dg-more { grid-column: 2; grid-row: 1 / span 2; }
+  :root:is([data-text="130"], [data-text="150"]) .cm-dg-tools .card > .cm-dg-more > .grid:first-of-type { margin-top: 0; }
+}
+
+/* Footer at 130%+ below 1440px: the about blurb (with the e-mail and neta65.org buttons) gets a row of
+   its own and the four link groups share the row under it — two columns on phones and tablets, four
+   from 1024px at 130% (from 1280px at 150%). Five columns squeezed "Announcements" into its neighbour. */
+@media (width < 90rem) {
+  :root:is([data-text="130"], [data-text="150"]) .site-footer-main { grid-template-columns: minmax(0, 1fr); }
+  :root:is([data-text="130"], [data-text="150"]) .site-footer-groups { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (64rem <= width < 90rem) { :root[data-text="130"] .site-footer-groups { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (80rem <= width < 90rem) { :root[data-text="150"] .site-footer-groups { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+/* Meetings, Grapevine meetings near you: the weekday over its times (the time chips get the card's
+   width), and Directions | Details side by side only when both fit — else one per row, full width */
+:root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .cm-gvg-rows { grid-template-columns: minmax(0, 1fr); }
+:root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .cm-gvg-row { display: block; }
+:root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .cm-gvg-times { margin-top: 0.125rem; }
+:root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .cm-gvg-btns { display: flex; flex-wrap: wrap; }
+:root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .cm-gvg-btns > a { flex: 1 1 auto; width: auto; }
+:root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .cm-gvg-top { flex-wrap: wrap; }
+/* Watch: on phones at 130%+ a video card is the picture over its text again (beside the text, a 40%-wide
+   thumbnail cut off its duration and "Short" labels) */
+@media (width < 40rem) {
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .vid-card { flex-direction: column; align-items: stretch; }
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .vid-card > .vid-thumb { width: 100%; }
+}
+/* Library: a card's main button ("Preview" / "Vista previa") may wrap its label, the row of action
+   buttons wraps instead of losing its last button at the card's edge, and the date · pages · size line
+   wraps inside its parts */
+:root:is([data-text="115"], [data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .lib-btn-main { flex: 1 1 auto; white-space: normal; min-width: 0; border-radius: 1.5rem; }
+:root:is([data-text="115"], [data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .lib-actions { flex-wrap: wrap; }
+:root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .lib-meta > * { white-space: normal; }
+/* Events: a card's buttons (Add to calendar, Details, Flyer) may wrap their label */
+:root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .cm-ev-btns > * { flex-shrink: 1; min-width: 0; max-width: 100%; }
+:root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .cm-ev-btns > a { white-space: normal; }
+/* Share your story: a magazine's deadline card — "Calendar (document)" and "Full calendar" go under the
+   magazine's name instead of squeezing beside it (a column: the row's text-column rule would keep them
+   beside it) */
+:root:is([data-text="130"], [data-text="150"]) .ct-cal-head { flex-direction: column; align-items: flex-start; }
+@media (width < 30rem) { :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .ct-cal-icon { display: none; } }
+/* GVR / RLV 101: a keyboard key's meaning goes under the keys when both don't fit on one line; the "live"
+   card's link may break a long word */
+:root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .o101-keys > div { flex-wrap: wrap; }
+:root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .o101-live-link { overflow-wrap: anywhere; }
+/* Home "From the Drive": three cards to a row (not six) at 130%+ from 1024 to 1439px — six left
+   "DOCUMENT" and the titles a sliver */
+@media (64rem <= width < 90rem) {
+  :root:is([data-text="130"], [data-text="150"]) .home-drive-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+/* Buttons at 130%+ (or relaxed spacing): a label on two or three lines makes a rounded box, not a
+   blob (a one-line button still looks like a pill: 1.5rem is at least half its height), and on phones a
+   long word in a label is hyphenated in the page language instead of running out of the button */
+:root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) :is(main, footer, .gvlv-panel) :is(.btn, .btn-primary, .btn-secondary, .btn-ghost, .btn-lv, .btn-light, .btn-on-dark):not(:is(.mp-poster, .cm-frame) *) { border-radius: 1.5rem; }
+@media (width < 40rem) {
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) :is(main, footer, .gvlv-panel) :is(.btn, .btn-primary, .btn-secondary, .btn-ghost, .btn-lv, .btn-light, .btn-on-dark, .chip):not(:is(.mp-poster, .cm-frame) *) { hyphens: auto; }
+}
+/* …and on the narrowest phones (below 480px) a word too long for its button breaks inside the pill
+   rather than running out of it (the hyphenation dictionary is not on every device) */
+@media (width < 30rem) {
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) :is(main, footer, .gvlv-panel) :is(.btn, .btn-primary, .btn-secondary, .btn-ghost, .btn-lv, .btn-light, .btn-on-dark):not(:is(.mp-poster, .cm-frame) *),
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) :is(main, footer, .gvlv-panel) :is(.btn, .btn-primary, .btn-secondary, .btn-ghost, .btn-lv, .btn-light, .btn-on-dark) * { overflow-wrap: anywhere; }
+}
+/* …as does a long word next to an icon (an icon + text row, a link with an icon, a report section's
+   name) — the text can't move under the icon, so it breaks rather than running past the edge */
+@media (width < 30rem) {
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) main :is(p.flex, li.flex, summary.flex, dd, a.inline-flex, span.inline-flex, .rp-sec-name, .cm-gvg-where):not(:is(.mp-poster, .cm-frame) *),
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) main :is(p.flex, li.flex, summary.flex, a.inline-flex, span.inline-flex, .rp-sec-name) > :not(svg) { overflow-wrap: anywhere; }
+}
+/* Pairs of buttons side by side (the month poster's Share | Print, the district report's WhatsApp |
+   E-mail, Word | Text): one per row on phones at 150% (below 480px at 130% or relaxed spacing) */
+@media (width < 40rem) {
+  :root[data-text="150"] :is(.mp-actions, .rp-act-row) { grid-template-columns: minmax(0, 1fr); }
+}
+@media (width < 30rem) {
+  :root:is([data-text="130"], [data-spacing="relaxed"]) :is(.mp-actions, .rp-act-row) { grid-template-columns: minmax(0, 1fr); }
+}
+/* About "On this site" counters: two to a row on tablets at 130%+, three (not six) from 1024 to 1799px
+   at 115%+ */
+@media (40rem <= width < 64rem) {
+  :root:is([data-text="130"], [data-text="150"]) .about-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (64rem <= width < 112.5rem) {
+  :root:is([data-text="115"], [data-text="130"], [data-text="150"]) .about-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+/* Monthly toolkit "10 ways to put an issue to work": two to a row at 130%+ (five left a word or two per line) */
+@media (width >= 40rem) { :root:is([data-text="130"], [data-text="150"]) .mp-ways { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+/* Listen, the big player at 150%: the −15 · play · +30 buttons grow less than the text (2.25rem and 3rem,
+   0.25rem apart: 192px), and below 360px they keep their 100% sizes (44px and 64px), so the three fit
+   inside the player — beside the episode art at 768px and on a phone the +30 crossed its edge */
+:root[data-text="150"] .media-player .media-skip { width: 2.25rem; height: 2.25rem; }
+:root[data-text="150"] .media-player .media-play { width: 3rem; height: 3rem; }
+:root[data-text="150"] .media-player :has(> .media-play) { gap: 0.25rem; }
+@media (width < 22.5rem) {
+  :root[data-text="150"] .media-player .media-skip { width: 44px; height: 44px; }
+  :root[data-text="150"] .media-player .media-play { width: 64px; height: 64px; }
+}
+/* Events: with relaxed spacing a date range ("25–27") in its 5rem tile is a little smaller (1.35rem, not
+   1.5rem), so the spaced-out figures stay inside the tile */
+@media (width >= 40rem) { :root[data-spacing="relaxed"] .cm-tile-range .cm-tile-day { font-size: 1.35rem; } }
+/* Committee pages' tabs (Meetings · Events · … · Announcements) below 360px at 150%: the tab icons go, so
+   the current tab's name fits in its pill inside the row that scrolls sideways */
+@media (width < 22.5rem) { :root[data-text="150"] .cm-subnav-link > svg { display: none; } }
+/* Home Instagram tiles: the date on the picture may wrap onto two lines; from 1024 to 1279px, six tiles to
+   a row, the account's name ("Grapevine", "La Viña") is left to screen readers — the Instagram icon stays
+   (beside the date it ran past the tile's edge). In the base layer with !important: main.css un-truncates
+   .truncate at larger text the same way, and its one-line, overflow-hidden box must win here. */
+:root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .home-ig-meta time { flex-shrink: 1; min-width: 0; text-align: right; }
+@layer base {
+  @media (64rem <= width < 80rem) {
+    :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .home-ig-meta > span > .truncate {
+      position: absolute !important; width: 1px !important; height: 1px !important; margin: -1px !important; overflow: hidden !important;
+      clip-path: inset(50%) !important; white-space: nowrap !important; }
+  }
+}
+/* Home magazine columns: the name ("Grapevine", "La Viña") and the kicker never break inside a word next
+   to the floated cover — a word that doesn't fit beside it moves below it — and the name is at most
+   10% of the column's width (.home-mag-head is a size container: home.css) */
+:root:is([data-text="115"], [data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .home-mag-head :is(h3, p) { overflow-wrap: normal; }
+:root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .home-mag-head h3 { font-size: min(2.6rem, 10cqi); }
+/* Shop: "20 days left" may wrap; a catalog's thumbnail is narrower on phones (its text gets the room);
+   at 150% below 1280px the catalogs and customer service are stacked (as below 1024px), so the catalog
+   covers keep a readable width */
+:root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .shop-days { white-space: normal; }
+@media (64rem <= width < 80rem) { :root[data-text="150"] .shop-cat-help { grid-template-columns: minmax(0, 1fr); } }
+@media (width < 40rem) {
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .shop-cat-thumb { width: 4.5rem; }
+}
+
+/* ------------------------------------------------------------------ */
+/*  /accessibility/ — "ax-"                                            */
+/* ------------------------------------------------------------------ */
+.ax-list { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.875rem; }
+.ax-list > li { display: flex; gap: 0.75rem; align-items: flex-start; }
+.ax-list > li > .step-num { margin-top: 0.1rem; }
+.ax-keys { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; }
+.ax-key { display: inline-flex; align-items: center; gap: 0.5rem; }
+/* Joining by phone: how to dial · the numbers · the keys. One column on narrow cards; two (the
+   steps over the keys, the numbers beside them) on medium; three side by side on wide cards. */
+.ax-dial { display: grid; gap: 2rem; grid-template-areas: "steps" "numbers" "keys"; }
+.ax-dial-steps { grid-area: steps; } .ax-dial-numbers { grid-area: numbers; } .ax-dial-keys { grid-area: keys; }
+@container (width >= 44rem) { .ax-dial { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-areas: "steps numbers" "keys numbers"; column-gap: 3rem; } }
+@container (width >= 60rem) { .ax-dial { grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) minmax(0, 1fr); grid-template-areas: "steps numbers keys"; } }
+kbd.ax-kbd, .ax-list kbd { display: inline-flex; min-width: 2.25rem; align-items: center; justify-content: center; padding: 0.125rem 0.5rem;
+  border: 1px solid var(--c-line); border-bottom-width: 2px; border-radius: 0.5rem; background: var(--c-surface);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.875rem; font-weight: 700; color: var(--c-ink); }
+.ax-num { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-weight: 600; letter-spacing: 0.02em; }

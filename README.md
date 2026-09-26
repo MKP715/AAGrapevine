@@ -38,6 +38,22 @@ Sitio web del **Comité de Grapevine y La Viña del Área 65 del Noreste de Texa
   Grapevine** de los grupos de AA de nuestra Área y de las áreas cercanas (de las 8 listas de reuniones que usa
   la página del Grupo Rowlett). El **informe de GV/LV** para la reunión del distrito está en
   `/es/monthly/#report` (la antigua página *Distritos* ya no existe; su dirección lleva allí).
+- **RLV / GVR 101** (`/es/orientation/`): seis lecciones breves para los nuevos RLV y GVR (el Panel 77 empieza
+  en enero de 2027), cada una con preguntas de repaso; también como **diapositivas** para una reunión del
+  distrito ("Presentar diapositivas") y como **hoja para imprimir** (una por lección). El texto está en
+  `config/orientation.yml` (inglés y español en el mismo archivo).
+- **Instalar como app y usar sin conexión:** menú **Aa** (arriba en cada página) → **Sin conexión y app**:
+  **Instalar la app** (en iPhone o iPad: Safari → Compartir → **Agregar a inicio**) y **Guardar páginas
+  clave** (Inicio, Reuniones, el kit del mes, Comparte tu historia, Tienda, Accesibilidad y RLV / GVR 101),
+  que luego se abren sin señal; las páginas que se abren también se guardan (las últimas 80). El **Ahorro de
+  datos** apaga las imágenes, las vistas previas de video y el arte animado. Detalles:
+  [Install the app, offline use and Data saver](#install-the-app-offline-use-and-data-saver).
+- **Lectura y pantalla:** el mismo menú **Aa** agranda el texto (hasta 150%), da más espacio entre líneas y
+  letras, pone alto contraste, detiene las animaciones y lee la página en voz alta; se guarda solo en ese
+  dispositivo. La página **Accesibilidad** (`/es/accessibility/`, enlace al pie de cada página) explica
+  esos ajustes, los subtítulos de los videos, los videos en lengua de señas (ASL), el audio y **cómo unirse
+  por teléfono** a nuestras reuniones de Zoom (números y código para teléfono: `config/site.yml` →
+  `phone_access`).
 - **Ajustes** (reunión del comité, Zoom, correo, eventos de cada mes como la mesa en CityWide Dallas):
   archivo `config/site.yml`.
   **Corregir una traducción:** `data/translations/overrides.yml`.
@@ -77,7 +93,7 @@ No paid services, no passwords or API keys required.
 7. [Running the update right now](#7-running-the-update-right-now)
 8. [Is everything working?](#8-is-everything-working)
 9. [Instagram: how the site reads it (please read)](#9-instagram-how-the-site-reads-it-please-read)
-10. [Optional upgrades](#10-optional-upgrades) (Google API key · Instagram token · weekly e-mail)
+10. [Optional upgrades](#10-optional-upgrades) (Google API key · Instagram token · monthly e-mail)
 11. [First-run checklist](#11-first-run-checklist) (and what to expect on day 1)
 12. [Using your own address (custom domain)](#12-using-your-own-address-custom-domain)
 13. [Replacing the old site](#13-replacing-the-old-site)
@@ -108,12 +124,12 @@ It also runs within a few minutes whenever someone saves a change to the setting
 | **Editorial calendar** (Grapevine) and suggested topics (La Viña) | Upcoming themes and story deadlines | **Contribute** |
 | **Grapevine Weekly Open meeting** (web page) | Current day, time and Zoom details | **Meetings** |
 | **La Viña's weekly open meeting** (from the settings, `lavina_weekly_open:` — an official La Viña flyer) | Thursdays in Spanish, first date, Zoom details | **Meetings** (one line on Home · Listen · Watch · monthly posters) |
-| **Official stores** (aagrapevine.org / aalavina.org store pages) | **Book of the Month** (title, cover, percent, sale price, dates) and **subscription prices** per region (U.S. · Canada · International; print / digital / complete) | **Shop** (a short teaser on Home, the monthly posters and the weekly e-mail) |
+| **Official stores** (aagrapevine.org / aalavina.org store pages) | **Book of the Month** (title, cover, percent, sale price, dates) and **subscription prices** per region (U.S. · Canada · International; print / digital / complete) | **Shop** (a short teaser on Home, the monthly posters and the monthly digest) |
 | **Daily quote** (the home pages of aagrapevine.org and aalavina.org) | Grapevine's *Daily Quote* and La Viña's *Cita Diaria*: the quote as published (never translated), who said it, the book it comes from, the official e-mail sign-up | **Home** |
 | **Record your story by phone** (aagrapevine.org/audio-portal, aalavina.org/graba-tu-historia) | Grapevine's *Audio Project* and La Viña's *Graba tu historia*: the phone number, the keys to press, the length, the e-mail address for recordings, Grapevine's story playlists | **Share your story** (`/contribute/#record`; one link on Listen · Watch) |
 | **Committee meeting** (from the settings) | Next dates, countdown, "add to calendar" | **Meetings · Events** |
 | **Local meeting lists** (the 8 intergroup / central office lists the Rowlett Group's meeting page uses — in or at our Area: Dallas Intergroup, Fort Worth Central Office, Tyler Central Service Office, the Spanish-speaking Dallas office, District 71 Abilene; nearby: Arkansas Central Office, OKC Intergroup, Northwest Texas Area 66) | Every meeting with the Grapevine ("GR") type: day, time, place, directions, link to the office's page. A meeting in two lists is shown once; our Area first (by county), nearby areas after | **Meetings** (one line on Home; each meeting is in the site search) |
-| **Monthly events** (from the settings, e.g. our booth at CityWide Dallas) | The next dates, "add to calendar" | **Events · Home · Meetings · calendar feed · weekly e-mail** |
+| **Monthly events** (from the settings, e.g. our booth at CityWide Dallas) | The next dates, "add to calendar" | **Events · Home · Meetings · calendar feed · monthly digest** |
 | **Other calendars** (optional, e.g. the NETA 65 workshop calendar on neta65.org) | Their events, each shown **once** even when it is also in `content/events` (yours wins). *neta65.org currently blocks robots — see [the NETA 65 workshop calendar](#the-neta-65-workshop-calendar)* | **Events** |
 | **Translation** | Every title, teaser and announcement in both languages | Everywhere |
 
@@ -138,6 +154,15 @@ What the newer pages do:
   Its QR code opens that month's page; the three previous months' addresses forward to `/monthly/`.
   The same page holds the **GV/LV report** for district meetings (`/monthly/#report`, see section 4); the old
   `/districts/` address forwards there.
+- **GVR / RLV 101** (`/orientation/`): the orientation for new GVRs and RLVs — six short lessons (5–8 minutes
+  each: goal, key points, "try this at your group", a live example from the site's own data, official links and
+  a 3-question self-check with instant feedback; "lessons done on this device" is kept in the browser only),
+  one page per lesson (`/orientation/<id>/`). The hub has **Present as slides** (a full-screen 16:9 slide show
+  for a projector: arrow keys / Space / Home / End, F for full screen, Esc to exit, swipe on touch;
+  `/orientation/?slides#slide-12` resumes, `#lesson-role` starts a lesson), a **printable handout** (printing
+  the hub gives one Letter sheet per lesson) and a 45-minute plan for district trainers. The lessons live in
+  `config/orientation.yml` (both languages, checked by the build and by `tests/test_orientation.py`); the GVR
+  corner and the Monthly toolkit link to it.
 - **Meetings** (`/meetings/`, renamed from *Committee meeting*; the old `/meeting/` address forwards there,
   `#weekly-open` included): the committee meeting (`#committee-meeting`), the **Grapevine meetings** of local
   groups (`#grapevine-meetings`: our Area first, then each nearby area — filters for place, day, in person /
@@ -150,11 +175,11 @@ What the newer pages do:
   with those details; other pages link there.
 
 **Menus** (`src/_data/nav.js`): What's New · Read · Listen · Watch · Library · Shop ·
-**Get Involved** (monthly toolkit & GV/LV report, share your story, published writers, GVR / RLV
+**Get Involved** (monthly toolkit & GV/LV report, GVR / RLV 101, share your story, published writers, GVR / RLV
 corner) · **Committee** (Meetings — committee meeting, Grapevine meetings & weekly open meetings —, events,
 Portfolio — the committee's reports, notes, slides and workshop files, `/portfolio/` —, photos, announcements).
 The Portfolio was called *Committee documents* (`/documents/`); that address forwards to `/portfolio/`, `#anchors` included.
-Instagram, the weekly digest, the share kit, search and status are in the footer and the phone menu.
+Instagram, the monthly digest, the share kit, search and status are in the footer and the phone menu.
 Each piece of information has one home page; other pages only link to it.
 
 **Wording on the site** (both languages): visitors read "document(s)" / "documento(s)", never "PDF", and
@@ -253,13 +278,14 @@ Common changes:
 | Something we do every month (a booth, a workshop) | `recurring_events:` — see [below](#add-a-recurring-event) |
 | Skip one month of it | `recurring_events:` → that event's `skip_dates: ["2026-12-12"]` |
 | Zoom link, meeting ID, passcode | `meeting:` → `zoom_url`, `meeting_id`, `passcode` |
+| Joining our Zoom meetings by phone (dial-in numbers, the committee's phone passcode) | `phone_access:` — see [below](#joining-our-meetings-by-phone) |
 | Contact e-mail | `site:` → `contact_email` and `meeting:` → `chair_email` |
 | Which Drive panels are shown | `drive:` → `min_panel` |
 | The offices whose Grapevine meetings are listed (our Area and nearby) | `meetings:` → `feeds` (each with `region_label`; `enabled: false` hides the list) |
 | How long the daily PDF search runs | `sources:` → `crawler:` → `minutes_per_run` (default 40; **`0` pauses the PDF search** — everything else keeps updating) |
 | Instagram: official method only | `sources:` → `instagram:` → `anonymous: false` (see [section 9](#9-instagram-how-the-site-reads-it-please-read)) |
 | Another website's calendar on the Events page | `sources:` → `ics_feeds:` (instructions in the comments there) |
-| Weekly e-mail day / length | `digest:` → `weekday`, `days` |
+| Monthly digest: stories per magazine issue / items per section | `digest:` → `highlights`, `per_section` |
 | The site's public address | `site:` → `url` (see [custom domain](#12-using-your-own-address-custom-domain)) |
 
 If a change breaks the file (for example a missing space), the update shows a **red ✗** in the
@@ -296,11 +322,11 @@ To add another one, copy the whole block (from `- key:` down), paste it under th
 change the values. Every date then shows on the **Events** page (with an "Every month" badge); the
 next one always keeps a place in the home page's **Upcoming events** row (the other places go to the
 soonest workshops and other events, so a busy month never pushes the booth off the home page), and it
-is on the **Meeting** page and in the **weekly e-mail**; all of them are in the **calendar feed** — in
+is on the **Meeting** page and in the **monthly digest**; all of them are in the **calendar feed** — in
 both languages, with daylight-saving time handled. Write the Spanish
 yourself (`title_es`, `summary_es`); if you leave it out, the site translates the English
 automatically and marks it "auto-translated". A monthly event never shows as "New" and does not,
-on its own, make the weekly e-mail go out. If a block has a mistake (for example
+on its own, make the monthly e-mail go out. If a block has a mistake (for example
 `weekday: "funday"`), only that event is left out: the site still updates, and the run summary in
 the **Actions** tab shows a yellow **Settings problem** saying what to fix. The same happens for a
 `skip_dates` date that is not one of the event's days (for example the Sunday, or the 1st Saturday):
@@ -314,15 +340,41 @@ meeting's own time zone; the site also shows Central time), `starts` (the first 
 that `day`), `zoom_id` and `passcode`. When La Viña publishes a page for it, put the address in `url`.
 Set `enabled: false` (or delete the block) to take it off the site.
 
+### Joining our meetings by phone
+
+The Accessibility page (`/accessibility/#phone`) tells people how to join the committee meeting and the
+weekly open meetings **by phone** — no internet or app needed — with tap-to-call buttons. The meeting IDs
+come from `meeting:` and the weekly open meetings; `phone_access:` in `config/site.yml` holds the rest:
+
+- `numbers`: Zoom's U.S. dial-in numbers (the ones printed in every Zoom invitation under "Dial by your
+  location"). The first one is used for the tap-to-call buttons.
+- `committee:` → `phone_passcode`: **fill this in.** Our Zoom passcode (`neta65`) has letters, so Zoom
+  gives phone callers a different passcode made of numbers only. Find it in the host's Zoom invitation
+  (the digits after `*` in the "One tap mobile" line, or "Passcode:" under "Dial by your location") and
+  paste it between the quotes. Until then the page says "Ask the chair for the phone passcode".
+- `weekly_open:` → `phone_passcode`: leave it empty — that passcode (`238047`) is numbers only, and callers
+  type the same one.
+
+Joining by phone only works while the host's Zoom settings allow it (Zoom: "Allow participants to join
+by telephone").
+
 ---
 
 ## 4. The monthly GV/LV report
 
-Nothing to edit: **Monthly toolkit → Your monthly report** (`/monthly/#report`) is a two-minute report a
-GVR / RLV can read aloud at the district meeting, in English or Spanish, with a copy button. It fills
-itself in on every update — what is new, the current issues, published writers from our Area, story
-deadlines, coming events and the next committee meeting (`eleventy/filters/community.js` → `reportText`).
-Tips for a good report and the Area's published writers sit beside it. (The old *Districts* page and its
+Nothing to edit: **Monthly toolkit → Your GV/LV report** (`/monthly/#report`) is the report a GVR / RLV
+gives at the district meeting, in English or Spanish, filled in with the current month's data on every update
+(`eleventy/filters/report.js`): the header with blanks for the district and name, the committee meeting, this
+month's issues and "put it to work" tips, story deadlines (and the record-by-phone lines), Book of the Month
+and subscriptions, events of the next 45 days, published writers from our Area, Grapevine meetings (with a
+county picker), the weekly open meetings, new service documents and sign-up links, the Area's asks and the
+member's own notes. Each GVR / RLV can switch sections on and off, reorder and edit them, add their own, and
+copy the result (plain text for WhatsApp, or formatted for e-mail / Word), send it by WhatsApp or e-mail,
+download it (Word .docx or .txt) or print it (`src/assets/js/report.js`). WhatsApp is one tap at any
+length: a short report opens in WhatsApp already written; a full one goes through the phone's share sheet,
+or (on a computer) is copied while WhatsApp opens, ready to paste into a chat. Their changes stay in their own
+browser only, per month and language; nothing is sent anywhere. Without JavaScript the page shows the whole
+report as text. (The old *Districts* page and its
 `content/districts.yml` list were retired; its news feed, calendar, digest and poster links live on
 `/events/`, `/digest/`, `/share/` and in the footer.)
 
@@ -567,11 +619,22 @@ printed value into that office's `feed_obf`. Without any working key, the office
 read instead, so the meetings keep showing. If a list cannot be read — or comes back empty, or its page
 changed format — that office's previous meetings stay on the site until it works again.
 
-### c) Weekly e-mail digest: keep every district informed
+### c) Monthly e-mail digest: keep every district informed
 
-Once a week (Monday by default) the site can e-mail a clean **English + Spanish** summary: the next
-committee meeting with its Zoom link, new announcements, upcoming events, and everything new on the
-site. Send it to one **Google Group** that includes all DCMs / GVRs / RLVs, and the districts get it
+On the **1st of every month** (around 9–10 AM Central) the site can e-mail a clean **English + Spanish**
+edition — the same one GVRs copy from the **Monthly digest** page (`/digest/`):
+
+- **last month's news:** announcements, podcast episodes (a YouTube upload of the same episode is shown
+  once, with an "also on YouTube" link), other videos, new documents and committee files, and stories by
+  writers from Area 65 and the rest of Texas;
+- **this month:** the Grapevine and La Viña issues (theme, number of stories, a few highlights — free
+  to read first), up to 3 "put it to work" tips from `config/carry.yml` and the link to the month's
+  toolkit; the next committee meeting with its Zoom link; the events that are not over yet, the weekly
+  open meetings and how many Grapevine meetings there are near you;
+- story deadlines through the end of next month, La Viña's open topics, the phone story lines, the
+  Book of the Month, the lowest month-to-month subscription price and a pointer to the daily quote.
+
+Send it to one **Google Group** that includes all DCMs / GVRs / RLVs, and the districts get it
 without anyone lifting a finger.
 
 **With a Gmail account** (for example the committee's):
@@ -584,20 +647,27 @@ without anyone lifting a finger.
 | Secret | Value |
 |---|---|
 | `SMTP_SERVER` | `smtp.gmail.com` |
-| `SMTP_PORT` | `587` *(optional — 587 is the default; use 465 if your provider says "SSL")* |
+| `SMTP_PORT` | `587` *(optional — 587 is the default; use 465 if your provider says "SSL")*. The password is only ever sent over an encrypted connection: on 587 the mail server must offer STARTTLS (Gmail does), otherwise the run stops without sending it |
 | `SMTP_USERNAME` | the full Gmail address |
 | `SMTP_PASSWORD` | the 16-letter **app password** (not the normal password) |
 | `DIGEST_TO` | where to send it — ideally one Google Group address; several addresses can be separated by commas (they are sent as **Bcc**, so nobody sees the others) |
 | `DIGEST_FROM` | *(optional)* the "From" address, if different from `SMTP_USERNAME` |
 | `DIGEST_REPLY_TO` | *(optional)* where replies go (default: `contact_email` in the settings) |
 
-4. **Preview first:** Actions → **Weekly e-mail digest** → **Run workflow** (leave *Preview only* ticked) →
-   open the finished run → **Artifacts** → download **digest-preview** → open `digest.html`.
+4. **Preview first:** Actions → **Monthly e-mail digest** → **Run workflow** (leave *Preview only* ticked) →
+   open the finished run → **Artifacts** → download **digest-preview** → open `digest.html`. Type a month
+   such as `2026-11` in the *month* box to preview another edition (written exactly like that: a month
+   typed any other way — `2026-9`, `Oct` — stops the run, and nothing is sent).
 5. To send one right away, run it again with *Preview only* **unticked**.
+6. If a run ever fails with **"It MAY have been sent"**, the connection broke while the e-mail was being
+   handed over: check the Google Group (or a district's inbox) **before** running it again, so nobody
+   gets it twice. Other failures (wrong password, server not reachable) happen before anything is sent
+   and are safe to re-run.
 
-The day and the number of days covered are set in `config/site.yml` → `digest:`. The meeting box uses
-the same `meeting:` settings as the website, including your `note` (and `note_es`, if you add one). If
-nothing is new that week, no e-mail is sent. To stop the digest, delete the `SMTP_PASSWORD` secret.
+How many stories each magazine issue shows and how many items each list shows before "and N more" are
+set in `config/site.yml` → `digest:` (`highlights`, `per_section`). The meeting box uses the same
+`meeting:` settings as the website, including your `note` (and `note_es`, if you add one). If nothing
+was new last month, no e-mail is sent. To stop the digest, delete the `SMTP_PASSWORD` secret.
 
 ---
 
@@ -630,7 +700,7 @@ details are in **[docs/SETUP-GITHUB.md](docs/SETUP-GITHUB.md)**:
   morning after the first uploads. The **committee meeting** dates show right away (from the settings).
 - **Translations:** the first run translates hundreds of titles (up to 40 minutes a day); anything not
   done yet shows in its original language and is finished on the next runs.
-- **Weekly e-mail** stays off until its secrets are added; the **link check** first runs on Sunday.
+- **Monthly e-mail** stays off until its secrets are added; the **link check** first runs on Sunday.
 
 ---
 
@@ -716,6 +786,7 @@ the new **Events** page, in Spanish if they had chosen Spanish on the old site.
 | What you see | Likely cause | What to do |
 |---|---|---|
 | The site did not change today | The run failed, is still running, or the schedule was paused | **Actions** tab: open the latest **Update & Deploy** run. If the workflow shows "disabled", click **Enable workflow**. Then **Run workflow**. |
+| One phone or computer shows an old page, or a page looks unstyled after an update | A copy the browser kept (the site works offline) | Reload the page; if the small "Updated" notice shows, choose **Reload**. Still wrong: close every tab of the site and open it again. Last resort on that device: browser settings → site data for the site → clear (its saved pages go too). |
 | Red ✗ right after editing a settings file | A typo in the YAML (usually indentation or a missing quote) | Open the failed run → the red step shows the line. Fix the file, or undo your change from the file's **History**. The live site is unaffected. |
 | A Drive file does not appear | Wrong folder, folder not public, name contains `PRIVATE`, it is a spreadsheet, or the update hasn't run yet | Check the file is inside the current Panel folder and the root folder is shared "Anyone with the link". Wait for the next run or run it manually. |
 | A flyer did not become an event | No date at the start of the name, or it is not in *flyers* | Rename it like `2027-03-14 Title 9am @ Place.pdf`. |
@@ -730,7 +801,7 @@ the new **Events** page, in Spanish if they had chosen Spanish on the old site.
 | An issue "A content source has stopped updating" appeared | One source has not updated for 7 days (the site keeps its older items) | Open the issue: it names the source, the error and what to check (for Google Drive: is the folder still shared "Anyone with the link"?). It closes itself when the source works again. |
 | Yellow ⚠ "Translation models missing" or "Translation is not working" | The free translation models could not be downloaded (their website was down or moved) | New titles stay in their original language; nothing else is affected. If it lasts more than a few days, send the run's log to whoever helps with the website. |
 | Run fails at "Publish to GitHub Pages" with *environment protection* | The `github-pages` environment only allows certain branches | **Settings → Environments → github-pages** → allow the `main` branch. |
-| The weekly e-mail did not arrive | Secrets missing, wrong app password, not the configured weekday, or nothing new that week | Open the **Weekly e-mail digest** run: it says exactly which. Gmail needs an **app password**. |
+| The monthly e-mail did not arrive | Secrets missing, wrong app password, or nothing new last month (it goes out on the 1st, around 9–10 AM Central) | Open the **Monthly e-mail digest** run: it says exactly which. Gmail needs an **app password**. |
 | An issue "Broken links found by the weekly check" appeared | A link in the settings or in a `content/` file moved | Open the issue; fix the address in `config/site.yml` or the `content/` file. It closes itself when fixed. |
 
 Still stuck? Open the failed run, click the red step, copy the last 20 lines, and send them to
@@ -766,6 +837,85 @@ The matching CSS utilities (cards, buttons, chip rows, `sticky-aside`, `meta-row
 `src/assets/css/main.css`. Two rules to keep: nothing may cover content (sticky columns end above
 the language banner and never grow taller than the window), and the one gap before the footer is
 the footer's own margin.
+
+### Reading & display settings and the Accessibility page
+
+The **Aa** button at the top of every page (in the Menu on phones) opens **Reading & display**: text size
+(100 / 115 / 130 / 150%), spacing (relaxed = the WCAG 1.4.12 text spacing), contrast (high, in light and
+dark mode), motion (follow the device / reduce: the vineyard art stops) and **Read aloud** (the device's
+own voice reads the page, paragraph by paragraph, in the page's language), then Data saver and the
+"Offline & app" part (above). The choices are saved on that device only (`localStorage "gvlv-prefs"`) and
+applied before the page is drawn; nothing is sent anywhere. **Reset to defaults** clears them.
+
+The **Accessibility** page (`/accessibility/`, in the footer) explains the settings and gathers the other
+ways in: YouTube captions, AA Grapevine's American Sign Language playlist and AA's own ASL videos, audio
+(podcasts, the weekly open meetings, recording a story by phone), printing and large print, joining our
+meetings by phone ([above](#joining-our-meetings-by-phone)), and how to report a barrier.
+
+**For maintainers**
+
+| File | What it does |
+|---|---|
+| `src/_includes/partials/comfort-panel.njk` | the panel (included by `header.njk`; the Aa buttons are in the header and the drawer) |
+| `src/_includes/layouts/base.njk` | the first `<head>` script: saved choices → `<html data-text data-spacing data-contrast data-motion data-saver>` |
+| `src/assets/js/app.js` | `GV.prefs` (read / save / apply; event `gvlv:prefs`), `GV.reducedMotion()`, `GV.tts` (read aloud), the panel |
+| `src/assets/css/main.css` → "READING & DISPLAY SETTINGS" | what the settings do site-wide (text scale, spacing, high-contrast colours, reduced motion, larger-text layout rules) |
+| `src/assets/css/areas/access.css` | the panel's look, the read-aloud highlight, the header and nav at larger text, per-page adjustments, the Accessibility page |
+| `src/pages/accessibility.njk`, `src/_i18n/access.json`, `eleventy/filters/access.js` | the page; `links:` in `config/site.yml` holds its official ASL and accessibility links |
+
+### Install the app, offline use and Data saver
+
+For weak signals — church basements, country roads, the long drive to the assembly — the site can be
+installed like an app, works without a connection, and can save data. Everything happens on the
+visitor's own device; nothing is sent anywhere.
+
+**What to tell your group**
+
+- **Install it.** Open the **Aa** menu at the top of any page → **Offline & app** → **Install app**
+  (Chrome, Edge and Samsung Internet on Android, Windows, Mac and ChromeOS). **iPhone / iPad:** Safari →
+  **Share** → **Add to Home Screen**. **Safari on a Mac:** **File → Add to Dock**. The app is called
+  **GV/LV 65**, opens in its own window in the language it was installed from, and has shortcuts to
+  Meetings, Monthly toolkit and Listen (long-press or right-click the icon). The button hides once it is installed.
+- **Use it offline.** Every page opened on the device is kept (the last 80). **Save key pages for
+  offline** (same menu) keeps Home, Meetings, this month's Monthly toolkit, Share your story, Shop,
+  Accessibility and GVR / RLV 101, in the visitor's language, with their styles and scripts — a good
+  idea before a trip. The page open during the very first visit is kept too, with its own styles and
+  scripts. Offline, kept pages open normally under a small "You're offline" notice; any other
+  page shows the offline page (`/offline/`, also "See saved pages" in the menu) with the list of saved
+  pages, and reloads itself when the connection is back. When the connection is so slow that a page
+  takes more than 4 seconds, the kept copy opens instead, with "Slow connection — this is the copy saved …
+  Try again". Audio, video and the official sites always need a connection.
+- **Data saver** (Aa menu: Off / On / Automatic — automatic follows the browser's own data saver and a
+  2G connection; while offline its effects are always on): the hero art stays still, pictures are not downloaded
+  (grey tiles), YouTube previews become **Load video (uses data)** buttons, podcast episodes show their
+  download size (e.g. "70.1 MB") before you press play, and nothing is fetched ahead of time.
+  **Show images** (in the small notice, or the Aa menu) brings the pictures back on that page.
+
+**How updates arrive.** With a connection, pages always come from the site (checked with the site on
+every visit), so a new deploy shows on the next page view. Styles and scripts carry a version in their
+address (`main.css?v=…`: a fingerprint of the site's code, `src/_data/build.js`), so a new page never
+runs with old styles. When the code changes, browsers install the new service worker in the background:
+open tabs and the installed app show **Updated — A new version of the site is ready · Reload**;
+otherwise it takes over the next time the site is opened after all its tabs were closed. The daily
+content update does not change the code fingerprint, so it never triggers that prompt or a new
+download of the styles and scripts.
+
+**For maintainers**
+
+| File | What it does |
+|---|---|
+| `src/pages/manifest.11ty.js` | `/manifest.webmanifest` and `/es/manifest.webmanifest`: name, icons, colours, shortcuts; both the same app (id and scope = the site's base path; the Spanish one opens on `/es/`) |
+| `src/pages/sw.11ty.js` + `src/_includes/pwa/sw-core.js` | `/sw.js`: the cache rules are in the header comment of `sw-core.js`; the pages "Save key pages" keeps are the `save` list in `sw.11ty.js` (Accessibility and GVR 101 join it automatically once those pages exist) |
+| `src/assets/js/pwa.js`, `src/assets/css/areas/pwa.css` | registration and updates, the "Offline & app" part of the Aa menu, the notices, and everything Data saver does |
+| `src/pages/offline.njk` | the offline page (not in the sitemap or the search) |
+| `scripts/dev/make_app_icons.py` | draws `src/assets/img/app-icon-*.png` and `apple-touch-icon-180.png` (`python -m scripts.dev.make_app_icons`) |
+
+The worker only handles GET requests to this site: it never stores anything from other sites (YouTube,
+podcast audio, aagrapevine.org, aalavina.org, Google Drive) and never touches forms. Caches: the app
+shell and styles/scripts are replaced with each code version; kept and saved pages, images (≤ 200) and
+the JSON indexes survive updates. Service workers need `https://` or `http://localhost` (so they work in
+`npm start`); with a custom domain (`PATH_PREFIX=/`) the scope follows automatically. To test a clean
+first visit in Chrome: DevTools → Application → Storage → **Clear site data**.
 
 ---
 

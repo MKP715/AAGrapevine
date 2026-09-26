@@ -226,7 +226,7 @@ pageScripts: ["/assets/js/shop.js"]
 {%- set info = p | readPdfTitleInfo(lang) -%}
 {%- set ex = p.extra or {} -%}
 <a href="{{ p.url }}" target="_blank" rel="noopener" class="card card-link group flex items-stretch overflow-hidden no-underline">
-  <span class="relative w-28 shrink-0 overflow-hidden border-r border-line bg-surface-2 sm:w-36">
+  <span class="shop-cat-thumb relative w-28 shrink-0 overflow-hidden border-r border-line bg-surface-2 sm:w-36">
     {% if ex.thumb %}<img src="{{ ex.thumb }}" alt="" loading="lazy" decoding="async" class="absolute inset-0 size-full object-cover object-top transition duration-300 group-hover:scale-[1.03]">
     {% else %}<span class="read-pdf-ph {{ 'read-accent-lv' if pub == 'lv' else 'read-accent-gv' }} absolute inset-0">{% icon "book-open", "relative size-8" %}</span>{% endif %}
   </span>
@@ -313,10 +313,11 @@ pageScripts: ["/assets/js/shop.js"]
       <div id="bulk" class="card card-pad">
         {% if botm.length %}<h3 class="card-h"><span class="text-vine">{% icon "package", "size-5" %}</span>{{ "shop.bulk_title" | t(lang) }}</h3>{% endif %}
         <p class="{{ 'mt-2' if botm.length }} text-sm leading-relaxed text-muted">{{ "shop.bulk_sub" | t(lang) }}</p>
-        <table class="shop-table mt-4 w-full text-sm">
+        {#- (the roles keep it a table for screen readers where shop.css stacks its cells at large text on a phone) -#}
+        <table class="shop-table shop-bulk mt-4 w-full text-sm" role="table">
           <caption class="sr-only">{{ "shop.bulk_title" | t(lang) }}</caption>
-          <thead><tr><th scope="col">{{ "shop.bulk_qty" | t(lang) }}</th><th scope="col" class="text-right">{{ "shop.bulk_off" | t(lang) }}</th></tr></thead>
-          <tbody>{% for r in bulk.rows %}<tr><th scope="row">{{ r.label }}</th><td class="text-right font-semibold text-vine tabular-nums">{{ "shop.off_each" | t(lang, { amount: r.off }) }}</td></tr>{% endfor %}</tbody>
+          <thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">{{ "shop.bulk_qty" | t(lang) }}</th><th scope="col" role="columnheader" class="text-right">{{ "shop.bulk_off" | t(lang) }}</th></tr></thead>
+          <tbody role="rowgroup">{% for r in bulk.rows %}<tr role="row"><th scope="row" role="rowheader">{{ r.label }}</th><td role="cell" class="text-right font-semibold text-vine tabular-nums">{{ "shop.off_each" | t(lang, { amount: r.off }) }}</td></tr>{% endfor %}</tbody>
         </table>
         <p class="mt-3 text-xs leading-relaxed text-muted">{% if bulk.note %}{{ bulk.note }} {% endif %}{{ "shop.final_price" | t(lang) }}</p>
         {% if bulk.source %}<p class="mt-2 text-xs"><a class="link tap-link inline-flex items-center gap-1" href="{{ bulk.source }}" target="_blank" rel="noopener">{{ "shop.bulk_source" | t(lang) }}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span> {% icon "arrow-up-right", "size-3.5" %}</a></p>{% endif %}
@@ -337,17 +338,17 @@ pageScripts: ["/assets/js/shop.js"]
       {%- set ci = curIssue[p] -%}
       {#- the issue name inside a sentence: "octubre de 2026" on /es/ (as on the home page) -#}
       {%- set ciInSentence = (ci.label | readInSentence(lang, p)) if ci else "" -%}
-      <header class="read-cover {{ 'read-cover--lv' if isLv else 'read-cover--gv' }} relative isolate overflow-hidden p-6 text-white sm:p-7">
+      <header class="read-cover read-cover-head {{ 'read-cover--lv' if isLv else 'read-cover--gv' }} relative isolate overflow-hidden p-6 text-white sm:p-7">
         <svg class="read-cover-art" viewBox="0 0 200 240" fill="none" aria-hidden="true"><g fill="currentColor"><circle cx="82" cy="96" r="17"/><circle cx="116" cy="96" r="17"/><circle cx="150" cy="100" r="15"/><circle cx="66" cy="126" r="17"/><circle cx="100" cy="126" r="17"/><circle cx="134" cy="128" r="17"/><circle cx="82" cy="156" r="17"/><circle cx="116" cy="156" r="17"/><circle cx="100" cy="186" r="17"/></g></svg>
-        <div class="flex items-start gap-5">
+        <div class="shop-mag-row flex items-start gap-5">
           <div class="min-w-0 flex-1">
-            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-white/75">{{ ("read.subs.lv_kicker" if isLv else "read.subs.gv_kicker") | t(lang) }}</p>
-            <h3 id="mag-{{ p }}" class="mt-1 flex items-center gap-2 font-display text-3xl font-semibold">{% icon "grapes", "size-7" %} {{ "La Viña" if isLv else "AA Grapevine" }}</h3>
+            <p class="read-cover-kicker text-xs font-semibold uppercase tracking-[0.18em] text-white/75">{{ ("read.subs.lv_kicker" if isLv else "read.subs.gv_kicker") | t(lang) }}</p>
+            <h3 id="mag-{{ p }}" class="read-cover-title mt-1 flex items-center gap-2 font-display font-semibold">{% icon "grapes", "read-cover-icon size-7 shrink-0" %} <span class="min-w-0">{{ "La Viña" if isLv else "AA Grapevine" }}</span></h3>
             <p class="mt-2 max-w-md text-white/85">{{ ("read.subs.lv_desc" if isLv else "read.subs.gv_desc") | t(lang) }}</p>
           </div>
           {% if ci and ci.cover %}
-          <a class="read-cover-frame mt-1 block w-[5.25rem] shrink-0 rotate-2 sm:w-24" href="{{ '/read/' | lurl(lang) }}#{{ p }}-current" title="{{ 'read.subs.see_issue' | t(lang, {issue: ciInSentence}) }}">
-            <img src="{{ ci.cover }}" width="480" height="686" alt="{{ 'read.cover_alt' | t(lang, {pub: ('La Viña' if isLv else 'Grapevine'), issue: ciInSentence}) }}" class="block aspect-[7/10] w-full rounded-[0.3rem] object-cover">
+          <a class="read-cover-frame shop-mag-cover mt-1 block shrink-0 rotate-2" href="{{ '/read/' | lurl(lang) }}#{{ p }}-current" title="{{ 'read.subs.see_issue' | t(lang, {issue: ciInSentence}) }}">
+            <img src="{{ ci.cover }}" width="480" height="686" loading="lazy" alt="{{ 'read.cover_alt' | t(lang, {pub: ('La Viña' if isLv else 'Grapevine'), issue: ciInSentence}) }}" class="block aspect-[7/10] w-full rounded-[0.3rem] object-cover">
           </a>
           {% endif %}
         </div>
@@ -430,9 +431,9 @@ pageScripts: ["/assets/js/shop.js"]
       <p class="eyebrow flex items-center gap-2 text-lv">{% icon "gift", "size-4 shrink-0" %}<span>{{ "read.subs.ctm_eyebrow" | t(lang) }}</span></p>
       <h2 id="ctm-title" class="h-display mt-2 text-3xl text-balance sm:text-4xl">{{ "read.subs.ctm_title" | t(lang) }}</h2>
       <p class="lead measure mt-4">{{ "read.subs.ctm_text" | t(lang) }}</p>
-      <ul class="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2" role="list">
+      <ul class="shop-ctm-ways mt-6 grid grid-cols-1 gap-3" role="list">
         {% for w in [["landmark", "ctm_w1"], ["hospital", "ctm_w2"], ["sprout", "ctm_w3"], ["map", "ctm_w4"]] %}
-        <li class="flex items-center gap-3 rounded-xl bg-surface p-3 shadow-[var(--shadow-card)]"><span class="grid size-9 shrink-0 place-items-center rounded-lg bg-lv-soft text-lv">{% icon w[0], "size-4" %}</span><span class="text-sm font-medium text-ink">{{ ("read.subs." + w[1]) | t(lang) }}</span></li>
+        <li class="flex items-center gap-3 rounded-xl bg-surface p-3 shadow-[var(--shadow-card)]"><span class="grid size-9 shrink-0 place-items-center rounded-lg bg-lv-soft text-lv">{% icon w[0], "size-4" %}</span><span class="min-w-0 text-sm font-medium text-ink">{{ ("read.subs." + w[1]) | t(lang) }}</span></li>
         {% endfor %}
       </ul>
       <div class="mt-7 flex flex-wrap gap-2 sm:gap-3">
@@ -526,7 +527,7 @@ pageScripts: ["/assets/js/shop.js"]
 
     {#- Customer service: the same section head as the catalogs, then one card with the numbers, laid
         out in shop.css by the card's width (.shop-help-list: label over number on phones, one row
-        each from 24rem, three tiles side by side from 34rem) -#}
+        each from 24rem, three tiles side by side from 34rem — 56rem with relaxed text spacing) -#}
     <section id="help" class="sticky-aside" aria-labelledby="help-title">
       {{ ui.sectionHead("read.subs.help_title" | t(lang), "read.subs.help_text" | t(lang), "", "", "phone", { eyebrow: "shop.nav_help" | t(lang), id: "help-title", lang: lang }) }}
       <div class="card card-pad shop-help">

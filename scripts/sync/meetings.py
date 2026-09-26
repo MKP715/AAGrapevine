@@ -650,7 +650,7 @@ def to_record(m: dict, feed: dict, type_code: str) -> tuple[dict | None, str]:
     parts = split_address(m.get("formatted_address"))
     in_area, g, note = area_of(parts["city"], parts["state"], feed, region)
     if note and (in_area or feed["in_area"]):
-        log.info("%s: %r — %s → %s", feed["id"], name, note, "our Area" if in_area else "nearby")
+        log.info("%s: %r — %s -> %s", feed["id"], name, note, "our Area" if in_area else "nearby")
     lat, lng = _float(m.get("latitude"), -90, 90), _float(m.get("longitude"), -180, 180)
     url = _no_query(m.get("url"))
     if url.startswith("http://"):

@@ -215,7 +215,7 @@
   },
   "media.ig_meta": {
     "en": "Latest Instagram posts from AA Grapevine (@alcoholicsanonymous_gv) and La Viña (@alcoholicosanonimos_lv) — we keep them updated regularly.",
-    "es": "Las publicaciones recientes de Instagram de La Viña (@alcoholicosanonimos_lv) y AA Grapevine (@alcoholicsanonymous_gv) — las mantenemos al día con regularidad."
+    "es": "Las publicaciones recientes de Instagram de La Viña (@alcoholicosanonimos_lv) y de AA Grapevine (@alcoholicsanonymous_gv)."
   },
   "media.ig_follow": { "en": "Follow @{u}", "es": "Seguir a @{u}" },
   "media.ig_jump": { "en": "{name} posts", "es": "Publicaciones de {name}" },

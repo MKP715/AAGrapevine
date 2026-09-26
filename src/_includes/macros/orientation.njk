@@ -1,0 +1,96 @@
+{#- =========================================================================
+    "GVR / RLV 101" — shared pieces of the hub (src/pages/orientation.njk: lessons, slides,
+    handout) and the lesson pages (src/pages/orientation-lesson.njk). Import with context
+    (the live examples read db, carry, site and meeting):
+      {% import "macros/orientation.njk" as o with context %}
+
+    o.live(kind, lang, variant)   the lesson's live example, from the site's own data
+        kind     issue · meeting · tip · botm · deadline · poster (config/orientation.yml `example`)
+        variant  "page" (a card body) · "slide" (the presentation) · "print" (the handout: no link)
+      Every number, date and price comes from the synced data (the Shop, the editorial calendar,
+      the Monthly toolkit, the committee meeting rule), so the example is never stale; a missing
+      source shows one line that points to the page that has it. Markup: .o101-live with
+      .o101-live-label · .o101-live-rows (dl) or .o101-live-main + .o101-live-sub · .o101-live-extra ·
+      .o101-live-link — styled per variant in areas/orientation.css.
+    o.linkList(lesson, lang, cls)  the lesson's "Learn more" links (o101Links: site pages in the page
+      language, La Viña first on /es/), external ones marked for screen readers.
+    ========================================================================= -#}
+
+{% macro live(kind, lang, variant="page") %}
+{%- set m = (db | mpMonths(carry, site, lang))[0] -%}
+{%- set withLink = variant != "print" -%}
+<div class="o101-live o101-live--{{ variant }}">
+{%- if kind == "issue" %}
+  <p class="o101-live-label">{{ "orientation.live_issue_label" | t(lang) }}</p>
+  {%- if m and (m.gv or m.lv) %}
+  {%- set gvRow %}{% if m.gv %}<div><dt>Grapevine · {{ m.gv.label }}</dt><dd>{{ m.gv.theme }}</dd></div>{% endif %}{% endset -%}
+  {%- set lvRow %}{% if m.lv %}<div><dt>La Viña · {{ m.lv.label }}</dt><dd>{{ m.lv.theme }}</dd></div>{% endif %}{% endset %}
+  <dl class="o101-live-rows">{% if lang == "es" %}{{ lvRow | safe }}{{ gvRow | safe }}{% else %}{{ gvRow | safe }}{{ lvRow | safe }}{% endif %}</dl>
+  {%- else %}
+  <p class="o101-live-main">{{ "orientation.live_issue_none" | t(lang) }}</p>
+  {%- endif %}
+  {%- if withLink %}<a class="o101-live-link" href="{{ '/read/' | lurl(lang) }}">{{ "orientation.live_read" | t(lang) }} {% icon "arrow-right", "size-4" %}</a>{% endif %}
+{%- elif kind == "meeting" %}
+  {%- set gvm = (db.meetings.items | where("in_area", true)) | length -%}
+  <p class="o101-live-label">{{ "orientation.live_meeting_label" | t(lang) }}</p>
+  {%- if meeting.next %}
+  <p class="o101-live-main"><time datetime="{{ meeting.next.start }}">{{ meeting.next.start | fmtDate(lang, "long") }}</time></p>
+  <p class="o101-live-sub">{{ "orientation.live_meeting_sub" | t(lang, { time: site.meeting | cmTimeRange(lang) }) }}</p>
+  {%- else %}
+  <p class="o101-live-main">{{ site.meeting | cmRule(lang) }}</p>
+  <p class="o101-live-sub">{{ "orientation.live_meeting_sub" | t(lang, { time: site.meeting | cmTimeRange(lang) }) }}</p>
+  {%- endif %}
+  {%- if gvm %}<p class="o101-live-extra">{{ ("orientation.live_gvm_one" if gvm == 1 else "orientation.live_gvm") | t(lang, { n: gvm }) }}</p>{% endif %}
+  {%- if withLink %}<a class="o101-live-link" href="{{ '/meetings/' | lurl(lang) }}#committee-meeting">{{ "orientation.live_meeting_link" | t(lang) }} {% icon "arrow-right", "size-4" %}</a>{% endif %}
+{%- elif kind == "tip" %}
+  {%- set tip = m.tips[0] if (m and m.tips and m.tips.length) else null -%}
+  {%- if tip %}
+  <p class="o101-live-label">{{ "orientation.live_tip_label" | t(lang, { month: m.monthName }) }}</p>
+  <p class="o101-live-main">{{ tip.title }}</p>
+  <p class="o101-live-sub">{{ tip.text }}</p>
+  {%- if m.gv %}<p class="o101-live-extra">{{ "orientation.live_tip_theme" | t(lang, { theme: m.gv.theme }) }}</p>{% endif %}
+  {%- if withLink %}<a class="o101-live-link" href="{{ m.url }}">{{ "orientation.live_tip_link" | t(lang) }} {% icon "arrow-right", "size-4" %}</a>{% endif %}
+  {%- else %}
+  <p class="o101-live-label">{{ "monthly.ways_title" | t(lang) }}</p>
+  <p class="o101-live-main">{{ "orientation.live_tip_none" | t(lang) }}</p>
+  {%- if withLink %}<a class="o101-live-link" href="{{ '/monthly/' | lurl(lang) }}#ways">{{ "orientation.live_ways_link" | t(lang) }} {% icon "arrow-right", "size-4" %}</a>{% endif %}
+  {%- endif %}
+{%- elif kind == "botm" %}
+  {%- set b = (db.shop | shopBotm(lang))[0] -%}
+  {%- set from = db.shop | shopFromMonthly -%}
+  <p class="o101-live-label">{{ "orientation.live_botm_label" | t(lang) }}{% if b %} · {{ b.mag }}{% endif %}</p>
+  {%- if b %}
+  <p class="o101-live-main" lang="{{ b.itemLang }}">{{ b.title }}</p>
+  <p class="o101-live-sub">{% if b.hasPrices %}{{ "orientation.live_botm_price" | t(lang, { sale: b.sale, price: b.price, date: b.endsLabel }) }}{% elif b.pct and b.endsLabel %}{{ "orientation.live_botm_pct" | t(lang, { pct: b.pct, date: b.endsLabel }) }}{% endif %}</p>
+  {%- else %}
+  <p class="o101-live-main">{{ "orientation.live_botm_none" | t(lang) }}</p>
+  {%- endif %}
+  {%- if from %}<p class="o101-live-extra">{{ "orientation.live_subs_from" | t(lang, { price: from | shopMoney(lang) }) }}</p>{% endif %}
+  {%- if withLink %}<a class="o101-live-link" href="{{ '/shop/' | lurl(lang) }}{{ '#botm' if b else '' }}">{{ ("orientation.live_botm_link" if b else "orientation.live_shop_link") | t(lang) }} {% icon "arrow-right", "size-4" %}</a>{% endif %}
+{%- elif kind == "deadline" %}
+  {%- set ed = db.editorial | readEditorial("gv", lang) -%}
+  {%- set d = ed.upcoming | selectattr("deadline") | first -%}
+  <p class="o101-live-label">{{ "orientation.live_deadline_label" | t(lang) }}</p>
+  {%- if d %}
+  <p class="o101-live-main"{% if d.themeLang and d.themeLang != lang %} lang="{{ d.themeLang }}"{% endif %}>{{ d.theme }}</p>
+  <p class="o101-live-sub">{{ "orientation.live_deadline_sub" | t(lang, { date: d.deadline | fmtDate(lang, "medium"), issue: d.issueLabel }) }}</p>
+  {%- else %}
+  <p class="o101-live-main">{{ "orientation.live_deadline_none" | t(lang) }}</p>
+  {%- endif %}
+  {%- if withLink %}<a class="o101-live-link" href="{{ '/contribute/' | lurl(lang) }}#deadlines">{{ "orientation.live_deadline_link" | t(lang) }} {% icon "arrow-right", "size-4" %}</a>{% endif %}
+{%- elif kind == "poster" %}
+  <p class="o101-live-label">{{ "nav.monthly" | t(lang) }}</p>
+  {%- if m %}<p class="o101-live-main">{{ "orientation.live_poster_label" | t(lang, { month: m.label }) }}</p>{% endif %}
+  <p class="o101-live-sub">{{ "orientation.live_poster_text" | t(lang) }}</p>
+  {%- if withLink %}<a class="o101-live-link" href="{{ m.url if m else ('/monthly/' | lurl(lang)) }}">{{ "orientation.live_poster_link" | t(lang) }} {% icon "arrow-right", "size-4" %}</a>{% endif %}
+{%- endif %}
+</div>
+{% endmacro %}
+
+{% macro linkList(lesson, lang, cls="") %}
+<ul class="o101-links{{ (' ' ~ cls) if cls }}" role="list">
+  {%- for k in lesson.links | o101Links(lang, site) %}
+  <li><a class="link tap-link" href="{{ k.href }}"{% if k.ext %} target="_blank" rel="noopener"{% endif %}>{{ k.label }}{% if k.ext %}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span>{% endif %}</a></li>
+  {%- endfor %}
+</ul>
+{% endmacro %}

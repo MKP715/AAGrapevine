@@ -16,6 +16,8 @@ export default function () {
     drive: cfg.drive || {},
     sources: cfg.sources || {},
     links: cfg.links || {},
+    // Zoom dial-in numbers + callers' passcodes for /accessibility/#phone (eleventy/filters/access.js)
+    phone_access: cfg.phone_access || {},
     digest: cfg.digest || {},
     // Build timestamp (UTC ISO) — shown as "Last updated" in the footer.
     built: new Date().toISOString(),

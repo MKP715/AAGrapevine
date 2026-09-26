@@ -64,13 +64,13 @@ WORKSHOPS = {
         'location: "Grupo Nueva Esperanza, 3401 E Belknap, Fort Worth, TX 76111"\n'
         'url: "https://neta65.org/event/lv-writing-workshop/"\n'
         'flyer: "https://neta65.org/wp-content/uploads/2026/09/New-Writing-Workshop-La-Nueva-Esperanza.jpg"\n'
-        "lang: en\nsummary_es: \"Taller en español para aprender a escribir tu historia para La Viña.\"\n"),
+        "confirmed: true\nlang: en\nsummary_es: \"Taller en español para aprender a escribir tu historia para La Viña.\"\n"),
     "2026-10-03-gv-writing-workshop-arlington.md": (
         'title: "Grapevine Writing Workshop — Arlington"\n'
         'title_es: "Taller de Escritura de Grapevine (en inglés) — Arlington"\n'
         "start: 2026-10-03T14:00:00-05:00\nend: 2026-10-03T17:00:00-05:00\n"
         'location: "Primary Purpose Group – Arlington, 1802 West Division Street, Arlington, TX 76012"\n'
-        'url: "https://neta65.org/event/grapevine-writing-workshop-6/"\nlang: en\n'),
+        'url: "https://neta65.org/event/grapevine-writing-workshop-6/"\nconfirmed: true\nlang: en\n'),
     "2026-10-07-lv-writing-workshop-mansfield.md": (
         'title: "La Viña Writing Workshop (in Spanish) — Mansfield"\n'
         'title_es: "Taller de Escritura de La Viña — Mansfield"\n'
@@ -106,6 +106,8 @@ WORKSHOPS = {
         'location: "DoubleTree by Hilton Hotel Dallas Near the Galleria, 4099 Valley View Ln, Dallas, TX 75244"\n'
         "lang: en\n"),
 }
+# …and as they were before the committee confirmed them (no `confirmed: true`): what the chair is told then.
+UNCONFIRMED = {k: v.replace("confirmed: true\n", "") for k, v in WORKSHOPS.items()}
 # The three 2027 Area assemblies as the chair wrote them (two not final yet: venue to be announced).
 ASSEMBLIES = {
     "2027-03-19-neta65-spring-assembly.md": (
@@ -484,7 +486,9 @@ class FeedDuplicates(TempState):
             vevent("30002", "Grapevine Writing Workshop", "20261010T140000", "20261010T170000",
                    "https://neta65.org/event/grapevine-writing-workshop-6/",
                    "Primary Purpose Group – Arlington, 1802 West Division Street, Arlington, TX, 76012"))
-        ctx, evs = self.build(WORKSHOPS, feed)
+        with self.assertLogs(B.log, "WARNING") as logs:
+            ctx, evs = self.build(UNCONFIRMED, feed)
+        self.assertEqual(len(logs.records), 2)
         feed_only = sorted(B.local_day(ctx, e["extra"]["start"]) for e in evs if e["category"] == "neta65")
         self.assertEqual(feed_only, ["2026-10-10", "2027-01-15"])               # neither date is lost
         self.assertEqual(ctx.feeds[0]["duplicates"], 0)
@@ -497,7 +501,7 @@ class FeedDuplicates(TempState):
         # the Fort Worth workshop is still upcoming on Sep 24 — the chair is asked too; once it is over, not
         fw_ctx = ctx_with(now=datetime(2026, 10, 1, 12, tzinfo=CHI).astimezone(timezone.utc))
         fw_ctx.feeds = [{"key": "neta-65-workshops"}]
-        manual = self.manual_events({k: v for k, v in WORKSHOPS.items() if "fort-worth" in k})
+        manual = self.manual_events({k: v for k, v in UNCONFIRMED.items() if "fort-worth" in k})
         items = B._parse_ics(fw_ctx, {"_ics": feed, "_spec": B.feed_specs(fw_ctx)[0]})
         kept = B.merge_feed_duplicates(fw_ctx, manual, items)
         self.assertEqual(len(kept), 2)
@@ -506,7 +510,8 @@ class FeedDuplicates(TempState):
     def test_another_start_time_is_reported(self):
         feed = ics(vevent("30003", "Grapevine Writing Workshop", "20261003T150000", "20261003T180000",
                           "https://neta65.org/event/grapevine-writing-workshop-6/"))
-        ctx, evs = self.build({k: v for k, v in WORKSHOPS.items() if "arlington" in k}, feed)
+        with self.assertLogs(B.log, "WARNING"):
+            ctx, evs = self.build({k: v for k, v in UNCONFIRMED.items() if "arlington" in k}, feed)
         arl = next(e for e in evs if e["id"] == "ev:manual:2026-10-03-gv-writing-workshop-arlington")
         self.assertEqual((arl["extra"]["feed_match"], arl["extra"]["start"]), ("url", "2026-10-03T19:00:00Z"))   # file wins
         self.assertEqual(ctx.feeds[0]["notes"], [
@@ -517,7 +522,8 @@ class FeedDuplicates(TempState):
     def test_a_venue_now_known_fills_the_tba_place_and_the_chair_is_told(self):
         feed = ics(vevent("30004", "NETA 65 Summer Assembly 2027", "20270625", "20270628",
                           "https://neta65.org/event/summer-assembly-2027/", "Harvey Hotel, 2 Main St, Tyler, TX, 75701"))
-        ctx, evs = self.build(ASSEMBLIES, feed)
+        with self.assertLogs(B.log, "WARNING"):          # a made-up venue (the real file still says TBA)
+            ctx, evs = self.build(ASSEMBLIES, feed)
         summer = next(e for e in evs if e["id"] == "ev:manual:2027-06-25-neta65-summer-assembly")
         self.assertEqual(summer["extra"]["feed_match"], "title")
         self.assertEqual((summer["extra"]["location"], summer["extra"]["city"]), ("Harvey Hotel, 2 Main St, Tyler, TX, 75701", "Tyler"))
@@ -581,6 +587,113 @@ class FeedDuplicates(TempState):
         self.assertEqual(B.merge_feed_duplicates(ctx, manual, dallas), dallas)
 
 
+# --------------------------------------------------------------------------- confirmed: true
+class ConfirmedFiles(TempState):
+    """content/events `confirmed: true`: the committee checked the date, time and place; the NETA 65 calendar
+    never changes them, never shows the same event page as a second event, and the chair gets no note
+    (only an info line in the log). Real case: the committee confirmed Fort Worth (Sat Sep 26) and
+    Arlington (Sat Oct 3) while the calendar listed their pages on Jan 15, 2027 and Oct 10 at 3 PM."""
+
+    def build(self, files, feed_text, now=TODAY):
+        ctx = ctx_with(now=now)
+        manual = self.manual_events(files)
+        feed_items = B._parse_ics(ctx, {"_ics": feed_text, "_spec": B.feed_specs(ctx)[0]})
+        ctx.feeds = [{"key": "neta-65-workshops", "label": "NETA 65 workshops"}]
+        with mock.patch.object(B, "ics_events", lambda c: feed_items), \
+                mock.patch.object(B.Ctx, "items", lambda self, name: manual if name == "manual_events" else []), \
+                self.assertLogs(B.log, "INFO") as logs:
+            evs = B.build_events(ctx)
+        warnings = [r.getMessage() for r in logs.records if r.levelname == "WARNING"]
+        infos = [r.getMessage() for r in logs.records if r.levelname == "INFO" and "is confirmed" in r.getMessage()]
+        return ctx, evs, warnings, infos
+
+    FW = "2026-09-26-lv-writing-workshop-fort-worth.md"
+    ARL = "2026-10-03-gv-writing-workshop-arlington.md"
+
+    def test_the_value(self):
+        files = {f"2027-0{i}-01-x{i}.md": f"title: X{i}\nstart: 2027-0{i}-01\nconfirmed: {v}\n"
+                 for i, v in enumerate(["true", "yes", "sí", "false", "no"], 1)}
+        got = {e["extra"]["slug"]: e["extra"].get("confirmed") for e in self.manual_events(files)}
+        self.assertEqual(got, {"2027-01-01-x1": True, "2027-02-01-x2": True, "2027-03-01-x3": True,
+                               "2027-04-01-x4": None, "2027-05-01-x5": None})
+        self.assertNotIn("confirmed", self.manual_events({"a.md": "title: A\nstart: 2027-01-01\n"})[0]["extra"])
+
+    def test_the_calendars_other_dates_never_show_and_the_chair_is_not_asked(self):
+        feed = ics(
+            vevent("30001", "LV Writing Workshop", "20270115T190000", "20270115T210000",
+                   "https://neta65.org/event/lv-writing-workshop/", "Grupo Hispano, 4800 Ross Ave, Dallas, TX, 75204"),
+            vevent("30002", "Grapevine Writing Workshop", "20261010T150000", "20261010T180000",
+                   "https://neta65.org/event/grapevine-writing-workshop-6/",
+                   "Primary Purpose Group – Arlington, 1802 West Division Street, Arlington, TX, 76012"))
+        files = {k: v for k, v in WORKSHOPS.items() if k in (self.FW, self.ARL)}
+        ctx, evs, warnings, infos = self.build(files, feed)
+        self.assertEqual([e["id"] for e in evs if e["category"] == "neta65"], [])       # no second event
+        by_id = {e["id"]: e for e in evs}
+        fw, arl = by_id["ev:manual:" + self.FW[:-3]], by_id["ev:manual:" + self.ARL[:-3]]
+        self.assertEqual((fw["extra"]["start"], fw["extra"]["end"]), ("2026-09-27T00:00:00Z", "2026-09-27T02:00:00Z"))
+        self.assertEqual((arl["extra"]["start"], arl["extra"]["end"]), ("2026-10-03T19:00:00Z", "2026-10-03T22:00:00Z"))
+        self.assertEqual(fw["extra"]["location"], "Grupo Nueva Esperanza, 3401 E Belknap, Fort Worth, TX 76111")
+        self.assertEqual(ctx.feeds[0]["notes"], [])
+        self.assertEqual(ctx.feeds[0]["duplicates"], 2)
+        self.assertEqual(warnings, [])
+        self.assertEqual(len(infos), 2)
+        self.assertIn("content/events/2026-10-03-gv-writing-workshop-arlington.md is confirmed (confirmed: true): the "
+                      "“NETA 65 workshops” calendar lists its event page (https://neta65.org/event/grapevine-writing-"
+                      "workshop-6/) on 2026-10-10; the file's 2026-10-03 is kept", " ".join(infos))
+        # …and still after the Fort Worth workshop is over (the page's January date never appears)
+        ctx, evs, warnings, infos = self.build(files, feed, now=datetime(2026, 12, 1, 12, tzinfo=CHI).astimezone(timezone.utc))
+        self.assertEqual([e["id"] for e in evs if e["category"] == "neta65"], [])
+        self.assertEqual((ctx.feeds[0]["notes"], warnings), ([], []))
+
+    def test_the_same_day_keeps_the_files_time_and_place(self):
+        feed = ics(vevent("30003", "Grapevine Writing Workshop", "20261003T150000", "20261003T180000",
+                          "https://neta65.org/event/grapevine-writing-workshop-6/", "Other Hall, 9 Main St, Arlington, TX, 76010"))
+        files = {self.ARL: WORKSHOPS[self.ARL]}
+        ctx, evs, warnings, infos = self.build(files, feed)
+        arl = next(e for e in evs if e["id"] == "ev:manual:" + self.ARL[:-3])
+        self.assertEqual((arl["extra"]["start"], arl["extra"]["end"]), ("2026-10-03T19:00:00Z", "2026-10-03T22:00:00Z"))
+        self.assertEqual(arl["extra"]["location"], "Primary Purpose Group – Arlington, 1802 West Division Street, Arlington, TX 76012")
+        self.assertEqual(arl["extra"]["feed_match"], "url")
+        self.assertEqual((ctx.feeds[0]["notes"], warnings), ([], []))
+        self.assertEqual(len(infos), 2)                                      # the time and the place, quietly
+        self.assertIn("says it starts at 3:00 PM; the file's 2:00 PM (Central time) is kept", infos[0])
+        # a confirmed file whose place is still "Venue to be announced" keeps it too
+        tba = {self.ARL: WORKSHOPS[self.ARL].replace(
+            'location: "Primary Purpose Group – Arlington, 1802 West Division Street, Arlington, TX 76012"', 'location: TBA')}
+        ctx, evs, warnings, infos = self.build(tba, feed)
+        arl = next(e for e in evs if e["id"] == "ev:manual:" + self.ARL[:-3])
+        self.assertEqual((arl["extra"]["location"], arl["extra"]["location_tba"]), ("TBA", True))
+        self.assertEqual((ctx.feeds[0]["notes"], warnings), ([], []))
+
+    def test_a_new_file_for_a_reused_page_gets_the_calendars_date(self):
+        """The page of a confirmed file used again for a new workshop: a file for the new date takes it."""
+        feed = ics(vevent("30001", "LV Writing Workshop", "20270115T190000", "20270115T210000",
+                          "https://neta65.org/event/lv-writing-workshop/", "Grupo Hispano, 4800 Ross Ave, Dallas, TX, 75204"))
+        files = {self.FW: WORKSHOPS[self.FW], "2027-01-15-lv-writing-workshop-dallas.md": (
+            'title: "La Viña Writing Workshop — Dallas"\nstart: 2027-01-15T19:00:00-06:00\n'
+            'url: "https://neta65.org/event/lv-writing-workshop/"\nlang: en\n')}
+        ctx, evs, warnings, infos = self.build(files, feed)
+        new = next(e for e in evs if e["id"] == "ev:manual:2027-01-15-lv-writing-workshop-dallas")
+        self.assertEqual(new["extra"]["feed_match"], "url")
+        self.assertEqual(new["extra"]["location"], "Grupo Hispano, 4800 Ross Ave, Dallas, TX, 75204")
+        self.assertEqual([e["id"] for e in evs if e["category"] == "neta65"], [])
+        self.assertEqual((warnings, infos), ([], []))
+
+    def test_the_real_files(self):
+        """content/events: the two workshops the committee confirmed keep their own dates; the Summer Assembly's
+        venue is still to be announced (and its details still tentative)."""
+        folder = ROOT / "content" / "events"
+        evs = {e["extra"]["slug"]: e for e in (A.parse_event(p, CHI) for p in A.content_files(folder))}
+        fw, arl = evs[self.FW[:-3]], evs[self.ARL[:-3]]
+        self.assertIs(fw["extra"].get("confirmed"), True)
+        self.assertIs(arl["extra"].get("confirmed"), True)
+        self.assertEqual(fw["extra"]["start"], "2026-09-27T00:00:00Z")          # Sat Sep 26, 7 PM CDT
+        self.assertEqual(arl["extra"]["start"], "2026-10-03T19:00:00Z")         # Sat Oct 3, 2 PM CDT
+        summer = evs["2027-06-25-neta65-summer-assembly"]
+        self.assertIs(summer["extra"].get("tentative"), True)
+        self.assertTrue(B.location_is_tba(summer["extra"]["location"]))
+
+
 # --------------------------------------------------------------------------- tentative, place in Spanish
 class TentativeAndPlace(TempState):
     def test_tentative_values(self):
@@ -638,7 +751,8 @@ class TentativeAndPlace(TempState):
             'location: "Hilton Tyler, 1 Main St, Tyler, TX 75701"\nlocation_es: "Lugar por anunciarse"\nlang: en\n')})[0]
         ctx = ctx_with()
         with mock.patch.object(B, "ics_events", lambda c: []), \
-                mock.patch.object(B.Ctx, "items", lambda self, name: [ev] if name == "manual_events" else []):
+                mock.patch.object(B.Ctx, "items", lambda self, name: [ev] if name == "manual_events" else []), \
+                self.assertLogs(B.log, "WARNING"):       # a made-up venue (the real file still says TBA)
             evs = B.build_events(ctx)
         e = next(x for x in evs if x["id"] == ev["id"])
         self.assertNotIn("location_tba", e["extra"])
@@ -673,7 +787,7 @@ class MultiDay(TempState):
             got = next(e for e in evs if e["id"] == ev["id"])
             self.assertIs(got["extra"]["past"], past, when)
 
-    def test_weekly_email_shows_the_range_the_place_and_the_note(self):
+    def test_monthly_email_shows_the_range_the_place_and_the_note(self):
         from scripts.notify import send_digest as D
         ev = self.manual_events({"2027-06-25-summer.md": (
             'title: "NETA 65 Summer Assembly 2027"\ntitle_es: "Asamblea de Verano 2027 de NETA 65"\nstart: 2027-06-25\n'
@@ -684,12 +798,12 @@ class MultiDay(TempState):
         self.assertEqual(en["when"], "Fri, Jun 25 – Sun, Jun 27 · details to be confirmed")
         self.assertEqual(es["when"], "vie., 25 de jun. – dom., 27 de jun. · detalles por confirmar")
         self.assertEqual((en["where"], es["where"]), ("Venue to be announced", "Lugar por anunciarse"))
-        # … and it stays in the e-mail through Sunday
+        # … and it stays in the monthly e-mail's "coming up" through Sunday
         with mock.patch.object(D, "load_items", lambda name: [ev] if name == "events" else []):
-            data = D.collect(datetime(2027, 6, 27, 20, 0, tzinfo=CHI).astimezone(timezone.utc), 7, 30, 6)
+            data = D.collect(datetime(2027, 6, 27, 20, 0, tzinfo=CHI).astimezone(timezone.utc))   # the June 2027 edition
         self.assertEqual([e["id"] for e in data["events"]], [ev["id"]])
 
-    def test_weekly_email_uses_the_sites_multi_day_rule(self):
+    def test_monthly_email_uses_the_sites_multi_day_rule(self):
         """A timed event that only runs past midnight is ONE day (as on the website: more than 18 hours, or
         all-day over several dates); an end at midnight belongs to the day before."""
         from scripts.notify import send_digest as D

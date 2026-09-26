@@ -1,4 +1,4 @@
-/* Community pages: What's New, Weekly Digest, the GV/LV report (/monthly/#report), Share Kit, Status, 404.
+/* Community pages: What's New, Monthly Digest, Share Kit, Status, 404 (the /monthly/#report editor: report.js).
    Loaded (defer) before Alpine, so components register on "alpine:init".
    Everything here is a progressive enhancement: pages are fully readable
    without JavaScript. User-visible strings come from data-* attributes
@@ -116,7 +116,7 @@
       };
     });
 
-    /* ---------------- Weekly digest ---------------- */
+    /* ---------------- Monthly digest ---------------- */
     Alpine.data("digestPage", function () {
       return {
         bi: false,
@@ -127,12 +127,6 @@
         },
         src: function (kind) { return "#digest-" + kind + "-" + (this.bi ? "bi" : "one"); },
       };
-    });
-
-    /* ---------------- GV/LV report on /monthly/ (language toggle) ---------------- */
-    Alpine.data("reportBox", function (lang) {
-      // full: the report box is folded to a readable height until "Show the full report"
-      return { rl: lang || "en", full: false };
     });
 
     /* ---------------- Share kit ---------------- */

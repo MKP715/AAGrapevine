@@ -377,7 +377,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
               <a href="{{ href }}" class="line-clamp-3 no-underline after:absolute after:inset-0 group-hover:text-gv"{% if isExt %} target="_blank" rel="noopener"{% endif %}>{{ ttl }}</a>
             </h3>
             <p class="meta-row mt-auto pt-1 text-xs text-faint">
-              <span class="inline-flex items-center gap-1">{% icon it.kind | homeKindIcon, "size-3.5" %}{{ ("kind." ~ it.kind) | t(L) }}</span>
+              <span>{% icon it.kind | homeKindIcon, "size-3.5 inline-block align-[-0.2em] mr-1" %}{{ ("kind." ~ it.kind) | t(L) }}</span>
               {% if it.kind == "article" and it.extra and it.extra.issue_label %}<span>{{ it.extra.issue_label | homeIssueLabel(L) }}</span>
               {% elif it.date %}<time datetime="{{ it.date | isoDate }}">{{ it.date | fmtDate(L, ("month" if (it.extra and it.extra.date_approx) else "short")) }}</time>{% endif %}
             </p>
@@ -560,6 +560,8 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
             </p>
             <h3 id="ep-title" class="mt-2 font-display text-2xl font-semibold leading-snug text-ink sm:text-[1.7rem]" x-ref="title" x-text="title">{{ epTitle }}</h3>
             <p class="mt-1 text-sm text-faint" x-ref="meta" x-text="meta">{{ epMeta }}</p>
+            {#- the audio file's size — only while Data saver is on (areas/pwa.css .pwa-saver-only) -#}
+            {% if ep.extra.audio_bytes %}<p class="pwa-saver-only mt-0.5 text-sm text-faint" x-show="!current"><span class="sr-only">{{ "pwa.audio_size" | t(L) }} </span>{{ ep.extra.audio_bytes | fileSize }}</p>{% endif %}
             {%- set epSum = ep | tx("summary", L) -%}
             {% if epSum %}<p class="mt-3 line-clamp-3 text-sm leading-relaxed text-muted max-sm:hidden lg:line-clamp-4" x-show="!current">{{ epSum | excerpt(300) }}</p>{% endif %}
             {% if ep | machineFor(L) %}<p class="mt-2" x-show="!current">{{ ui.autoNote(ep, L) }}</p>{% endif %}
@@ -601,17 +603,19 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
           <li class="flex items-center gap-3 py-3{{ ' max-sm:hidden' if loop.index > 2 }}">
             <span class="relative size-14 shrink-0 overflow-hidden rounded-xl bg-grape-soft text-grape">
               <span class="absolute inset-0 grid place-items-center" aria-hidden="true">{% icon "headphones", "size-5" %}</span>
-              {% if e.image %}{{ img(e.image, "absolute inset-0 size-full object-cover") }}{% endif %}
+              {#- the ≤480px copy the sync makes (extra.thumb) for a 56px tile, not the 1500–3000px cover art -#}
+              {%- set eArt = e.extra.thumb or e.image -%}
+              {% if eArt %}{{ img(eArt, "absolute inset-0 size-full object-cover") }}{% endif %}
             </span>
             <div class="min-w-0 flex-1">
               {% if otherShow %}<p class="truncate text-[0.68rem] font-semibold uppercase tracking-wider text-grape"{% if L != "en" and not eWeekly %} lang="en"{% endif %}>{{ eShow.short }}</p>{% endif %}
               <p class="line-clamp-2 text-sm font-semibold leading-snug text-ink">{{ et }}</p>
-              <p class="mt-0.5 text-xs text-faint">{{ em }}</p>
+              <p class="mt-0.5 text-xs text-faint">{{ em }}{% if e.extra.audio_bytes %}<span class="pwa-saver-only"> · <span class="sr-only">{{ "pwa.audio_size" | t(L) }} </span>{{ e.extra.audio_bytes | fileSize }}</span>{% endif %}</p>
             </div>
             {% if e.extra.audio_url %}
             <a href="{{ e.extra.audio_url }}" class="home-play grid size-11 shrink-0 place-items-center rounded-full bg-grape-soft text-grape transition"
                :class="isPlaying($el.dataset.id) && 'is-playing'"
-               @click.prevent="play($el)" data-id="{{ e.id }}" data-src="{{ e.extra.audio_url }}" data-title="{{ eFull }}" data-meta="{{ [e.date | fmtDate(L, 'medium'), e.extra.duration_sec | duration] | join(' · ') }}" data-img="{{ e.image or '' }}"
+               @click.prevent="play($el)" data-id="{{ e.id }}" data-src="{{ e.extra.audio_url }}" data-title="{{ eFull }}" data-meta="{{ [e.date | fmtDate(L, 'medium'), e.extra.duration_sec | duration] | join(' · ') }}" data-img="{{ e.extra.thumb or e.image or '' }}"
                aria-label="{{ 'home.play_episode' | t(L, { title: eFull }) }}">
               <span x-show="!isPlaying($el.parentElement.dataset.id)">{% icon "play", "size-5 translate-x-px" %}</span>
               <span x-show="isPlaying($el.parentElement.dataset.id)" x-cloak>{% icon "pause", "size-5" %}</span>
@@ -803,8 +807,8 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
             <ul class="mt-2 space-y-1 text-sm text-muted">
               {#- An outside calendar that only gives a date: the time isn't listed (same wording as /events/), not "all day". -#}
               <li class="flex items-start gap-1.5">{% set whenIcon = "calendar-range" if info.multiDay else "clock" %}{% icon whenIcon, "mt-0.5 size-4 shrink-0 text-faint" %}{{ info.when }}</li>
-              {% if info.location and info.tba %}<li class="flex items-center gap-1.5 italic">{% icon "hourglass", "size-4 shrink-0 text-faint" %}<span class="truncate">{{ info.location }}</span></li>
-              {% elif info.location %}{% set locIcon = "video" if (x.online_url and not x.city) else "map-pin" %}<li class="flex items-center gap-1.5">{% icon locIcon, "size-4 shrink-0 text-faint" %}<span class="truncate">{{ info.location }}</span></li>{% endif %}
+              {% if info.location and info.tba %}<li class="flex items-start gap-1.5 italic">{% icon "hourglass", "mt-0.5 size-4 shrink-0 text-faint" %}<span class="min-w-0 line-clamp-2">{{ info.location }}</span></li>
+              {% elif info.location %}{% set locIcon = "video" if (x.online_url and not x.city) else "map-pin" %}<li class="flex items-start gap-1.5">{% icon locIcon, "mt-0.5 size-4 shrink-0 text-faint" %}<span class="min-w-0 line-clamp-2">{{ info.location }}</span></li>{% endif %}
             </ul>
           </div>
         </article>
@@ -837,7 +841,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
 <section class="home-lib section border-y border-line" aria-labelledby="lib-title">
   <div class="container-page">
     {{ ui.sectionHead("home.lib_title" | t(L), "home.lib_sub" | t(L), "/library/" | lurl(L), "home.lib_browse" | t(L), "library", { eyebrow: "home.lib_eyebrow" | t(L), tone: "text-gv", id: "lib-title", lang: L }) }}
-    <div class="grid gap-5 lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] lg:items-end lg:gap-10">
+    <div class="home-lib-grid grid gap-5 lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] lg:items-end lg:gap-10">
       {#- Searches the document library (library.js reads ?q=); the site-wide search lives at /search/. -#}
       <form action="{{ '/library/' | lurl(L) }}" method="get" role="search">
         <label for="home-lib-q" class="mb-2 block text-sm font-semibold text-ink">{{ "home.lib_search_label" | t(L) }}</label>
@@ -934,7 +938,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
     {% call ui.sectionHead("home.drive_title" | t(L), "home.drive_sub" | t(L), "/portfolio/" | lurl(L), "home.drive_all" | t(L), "folder-open", { eyebrow: "home.drive_eyebrow" | t(L), tone: "text-vine", id: "drive-title", lang: L }) %}
     <a href="{{ '/photos/' | lurl(L) }}" class="btn-ghost btn-sm">{% icon "images", "size-4" %} {{ "nav.photos" | t(L) }}</a>
     {% endcall %}
-    <ul class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6" role="list">
+    <ul class="home-drive-grid grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6" role="list">
       {% for f in driveItems %}
       {%- set pic = f | homeImage -%}
       {%- set isPhoto = f.kind == "photo" or (f.extra and f.extra.is_image) -%}
@@ -1001,3 +1005,13 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
     </ul>
   </div>
 </section>
+
+{#- Structured data (schema.org): who we are (the committee) and this website, for search engines -#}
+{%- set homeAbsLd = ('/' | lurl(L)) | siteUrl(site) -%}
+{%- set siteRootLd = '/' | siteUrl(site) -%}
+<script type="application/ld+json">{{ { "@context": "https://schema.org", "@graph": [
+  { "@type": "Organization", "@id": siteRootLd + "#committee", "name": site | pick(L, "committee"), "url": homeAbsLd,
+    "logo": "/assets/img/app-icon-512.png" | siteUrl(site), "parentOrganization": { "@type": "Organization", "name": "Northeast Texas Area 65 (NETA 65)" } },
+  { "@type": "WebSite", "@id": siteRootLd + "#website", "name": site | pick(L, "title"), "url": homeAbsLd, "inLanguage": "es-US" if L == "es" else "en-US",
+    "publisher": { "@id": siteRootLd + "#committee" } }
+] } | rpJson | safe }}</script>

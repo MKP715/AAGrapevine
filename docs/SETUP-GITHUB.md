@@ -160,7 +160,7 @@ that says what to check; it closes itself when the source works again.
 
 | What | Where |
 |---|---|
-| Weekly bilingual e-mail to the districts | README → *Optional upgrades → Weekly e-mail digest* |
+| Monthly bilingual e-mail to the districts | README → *Optional upgrades → Monthly e-mail digest* |
 | Exact dates for Drive files (Google API key) | README → *Optional upgrades → Google API key* |
 | Instagram the official way (token), or no automated Instagram visits at all | README → *Instagram: how the site reads it* |
 | Your own address, e.g. grapevine.neta65.org | README → *Using your own address* |
@@ -177,8 +177,8 @@ exactly (capital letters, underscores). Secrets can be replaced any time but nev
 |---|---|---|
 | `GOOGLE_API_KEY` | Exact Drive dates | No |
 | `IG_ACCESS_TOKEN`, `IG_BUSINESS_ID` | Official Instagram API | No |
-| `SMTP_SERVER`, `SMTP_USERNAME`, `SMTP_PASSWORD`, `DIGEST_TO` | Weekly e-mail | Only for the e-mail |
-| `SMTP_PORT`, `DIGEST_FROM`, `DIGEST_REPLY_TO` | Weekly e-mail fine-tuning | No |
+| `SMTP_SERVER`, `SMTP_USERNAME`, `SMTP_PASSWORD`, `DIGEST_TO` | Monthly e-mail | Only for the e-mail |
+| `SMTP_PORT`, `DIGEST_FROM`, `DIGEST_REPLY_TO` | Monthly e-mail fine-tuning | No |
 
 ---
 

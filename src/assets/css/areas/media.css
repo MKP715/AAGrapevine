@@ -359,6 +359,19 @@
    the footer is never hidden behind it. The language banner uses the same
    variable to sit above the player. */
 html.has-player body { padding-bottom: calc(var(--player-h, 6rem) + env(safe-area-inset-bottom) + 0.5rem); }
+/* Keyboard focus never lands under the player (WCAG 2.4.11): a focused link behind it scrolls up. */
+html.has-player { scroll-padding-bottom: calc(var(--player-h, 6rem) + var(--banner-h, 0px) + env(safe-area-inset-bottom, 0px) + 1rem); }
+/* The mini-player at larger text or relaxed spacing stays ONE row — artwork · the episode title in at
+   most two lines and the time on one · the buttons (main.css leaves .media-mini out of its "wrap the
+   row, un-truncate the label" rules) — and below 640px its text is 115% at most, like the other bars
+   at the bottom of a phone screen (--bar-zoom, areas/access.css): about a fifth of the screen at most. */
+.media-mini-card { zoom: var(--bar-zoom, 1); }
+:root:is([data-text="115"], [data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .media-mini-title {
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; white-space: normal; }
+/* …and below 1024px the speed button (it is in the big player too) leaves the title that room */
+@media (width < 64rem) {
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .media-mini-card .media-rate { display: none; }
+}
 
 /* WATCH: the featured "Latest video" player. These rules must stay UNLAYERED:
    the vendor lite-yt-embed.css is unlayered too, and an unlayered rule always

@@ -70,7 +70,7 @@ pageScripts: ["/assets/js/read.js"]
 <article id="{{ v.pub }}-current" class="read-issue card @container overflow-hidden" data-pub="{{ v.pub }}" x-show="show('{{ v.pub }}')" aria-labelledby="{{ v.pub }}-current-title">
   <div class="grid grid-cols-1 @4xl:grid-cols-[21rem_minmax(0,1fr)] @6xl:grid-cols-[23rem_minmax(0,1fr)]">
     <header class="read-cover {{ 'read-cover--lv' if isLv else 'read-cover--gv' }}{{ ' has-cover' if v.cover }} relative isolate overflow-hidden p-6 text-white @lg:p-8">
-      {% if v.cover %}<img class="read-cover-blur" src="{{ v.cover }}" alt="" aria-hidden="true">
+      {% if v.cover %}<img class="read-cover-blur" src="{{ v.cover }}" alt="" aria-hidden="true" loading="lazy">
       {% else %}
       <svg class="read-cover-art" viewBox="0 0 200 240" fill="none" aria-hidden="true">
         <path d="M100 10 C 96 40, 120 52, 110 78" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
@@ -84,7 +84,7 @@ pageScripts: ["/assets/js/read.js"]
       <div class="mt-6 flex items-start gap-5 @lg:gap-6 @4xl:flex-col @4xl:items-stretch @4xl:gap-0">
         {% if v.cover %}
         <a class="read-cover-frame block w-[7.25rem] shrink-0 @lg:w-40 @4xl:mx-auto @4xl:w-full @4xl:max-w-[14rem]" href="{{ issueUrl }}" target="_blank" rel="noopener">
-          <img src="{{ v.cover }}" width="480" height="686" alt="{{ 'read.cover_alt' | t(lang, {pub: pubName, issue: (v.label | readInSentence(lang, v.pub))}) }}" class="block aspect-[7/10] w-full rounded-[0.35rem] object-cover">
+          <img src="{{ v.cover }}" width="480" height="686" loading="lazy" alt="{{ 'read.cover_alt' | t(lang, {pub: pubName, issue: (v.label | readInSentence(lang, v.pub))}) }}" class="block aspect-[7/10] w-full rounded-[0.35rem] object-cover">
           <span class="sr-only">({{ "common.external" | t(lang) }})</span>
         </a>
         {% endif %}

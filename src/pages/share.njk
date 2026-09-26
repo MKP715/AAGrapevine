@@ -59,7 +59,7 @@ pageScripts: ["/assets/js/community.js"]
 {% call ui.pageHero(lang, "nav.share" | t(lang), "community.share.hero_sub" | t(lang), "qr-code", "community.share.eyebrow" | t(lang)) %}
 <div class="hero-actions cm-hero-tight">
   <a class="btn-light" href="#posters">{% icon "printer", "size-4" %} {{ "community.share.btn_poster" | t(lang) }}</a>
-  <button type="button" class="btn-on-dark" data-copy="{{ pageUrl }}">{% icon "link", "size-4" %} {{ "community.share.copy_site" | t(lang) }}</button>
+  <button type="button" class="btn-on-dark" data-js-only data-copy="{{ pageUrl }}">{% icon "link", "size-4" %} {{ "community.share.copy_site" | t(lang) }}</button>
 </div>
 {% endcall %}
 
@@ -93,12 +93,12 @@ pageScripts: ["/assets/js/community.js"]
             <p class="eyebrow">{{ ("community.share.qr_" + l) | t(lang) }}</p>
             <div class="mt-2 flex items-center gap-2 rounded-xl bg-surface-2 p-1.5 pl-4">
               {% icon "link", "size-4 shrink-0 text-faint" %}
-              <a href="{{ urls[l] }}" class="tap-link min-w-0 flex-1 truncate font-semibold text-gv no-underline hover:underline" hreflang="{{ l }}">{{ urls[l] | cmShortUrl }}</a>
-              <button type="button" class="btn-secondary btn-sm shrink-0" data-copy="{{ urls[l] }}" aria-label="{{ 'community.copy_link' | t(lang) }}">{% icon "copy", "size-4" %}<span class="hidden sm:inline">{{ "community.copy_link" | t(lang) }}</span></button>
+              <a href="{{ urls[l] }}" class="tap-link min-w-0 flex-1 font-semibold text-gv no-underline [--text-col-min:12em] [overflow-wrap:anywhere] hover:underline" hreflang="{{ l }}">{%- set su = urls[l] | cmShortUrl -%}{%- set cut = su.indexOf("/") -%}{% if cut > 0 %}<span class="min-w-0 [overflow-wrap:anywhere]">{{ su.slice(0, cut + 1) }}<wbr><span class="whitespace-nowrap">{{ su.slice(cut + 1) }}</span></span>{% else %}{{ su }}{% endif %}</a>
+              <button type="button" class="btn-secondary btn-sm shrink-0" data-js-only data-copy="{{ urls[l] }}" aria-label="{{ 'community.copy_link' | t(lang) }}">{% icon "copy", "size-4" %}<span class="hidden sm:inline">{{ "community.copy_link" | t(lang) }}</span></button>
             </div>
             <div class="mt-4 flex flex-wrap gap-2">
               <a class="btn-primary btn-sm" href="{{ svg | cmSvgDataUri }}" download="neta65-grapevine-lavina-qr-{{ l }}.svg">{% icon "download", "size-4" %} {{ "community.share.dl_svg" | t(lang) }}</a>
-              <button type="button" class="btn-secondary btn-sm" data-qr-png="#qr-{{ l }}" data-filename="neta65-grapevine-lavina-qr-{{ l }}.png">{% icon "image-down", "size-4" %} {{ "community.share.dl_png" | t(lang) }}</button>
+              <button type="button" class="btn-secondary btn-sm" data-js-only data-qr-png="#qr-{{ l }}" data-filename="neta65-grapevine-lavina-qr-{{ l }}.png">{% icon "image-down", "size-4" %} {{ "community.share.dl_png" | t(lang) }}</button>
             </div>
           </div>
           {% endfor %}
@@ -110,7 +110,7 @@ pageScripts: ["/assets/js/community.js"]
               <a class="btn-secondary btn-sm" href="https://wa.me/?text={{ shareText | urlencode }}" target="_blank" rel="noopener">{% icon "message-circle", "size-4" %} WhatsApp<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a>
               <a class="btn-secondary btn-sm" href="https://www.facebook.com/sharer/sharer.php?u={{ pageUrl | urlencode }}" target="_blank" rel="noopener">{% icon "thumbs-up", "size-4" %} Facebook<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a>
               <a class="btn-secondary btn-sm" href="{{ '' | cmMailto('community.share.email_subject' | t(lang), shareText) }}">{% icon "mail", "size-4" %} {{ "community.share.email" | t(lang) }}</a>
-              <button type="button" class="btn-secondary btn-sm" data-share="{{ pageUrl }}" data-share-title="{{ site | pick(lang, 'title') }} — NETA 65" data-share-text="{{ 'community.share.msg_short_text' | t(lang, { url: '' }) | trim }}">{% icon "share-2", "size-4" %} {{ "community.share.more" | t(lang) }}</button>
+              <button type="button" class="btn-secondary btn-sm" data-js-only data-share="{{ pageUrl }}" data-share-title="{{ site | pick(lang, 'title') }} — NETA 65" data-share-text="{{ 'community.share.msg_short_text' | t(lang, { url: '' }) | trim }}">{% icon "share-2", "size-4" %} {{ "community.share.more" | t(lang) }}</button>
             </div>
           </div>
         </div>
@@ -128,7 +128,7 @@ pageScripts: ["/assets/js/community.js"]
           <span class="block truncate text-sm font-semibold text-ink">{{ k.label | t(lang) }}</span>
           <span class="block truncate text-xs text-muted">{{ ("/es" if lang == "es" else "") ~ k.path }}</span>
         </a>
-        <button type="button" class="grid size-11 shrink-0 place-items-center rounded-full text-muted hover:bg-surface hover:text-gv" data-copy="{{ abs }}" aria-label="{{ 'community.copy_link' | t(lang) }} — {{ k.label | t(lang) }}">{% icon "copy", "size-4" %}</button>
+        <button type="button" class="grid size-11 shrink-0 place-items-center rounded-full text-muted hover:bg-surface hover:text-gv" data-js-only data-copy="{{ abs }}" aria-label="{{ 'community.copy_link' | t(lang) }} — {{ k.label | t(lang) }}">{% icon "copy", "size-4" %}</button>
       </li>
       {% endfor %}
       </ul>
@@ -160,7 +160,7 @@ pageScripts: ["/assets/js/community.js"]
         </div>
         <figcaption class="cm-no-print mt-4 flex flex-wrap items-center justify-between gap-3">
           <span class="max-w-sm text-sm text-muted"><strong class="text-ink">{{ "community.share.poster_title" | t(lang) }}.</strong> {{ "community.share.poster_sub" | t(lang) }}</span>
-          <button type="button" class="btn-primary" @click="printVariant('poster')" onclick="if(!window.Alpine)window.print()">{% icon "printer", "size-4" %} {{ "community.share.print_poster" | t(lang) }}</button>
+          <button type="button" class="btn-primary" data-js-only @click="printVariant('poster')" onclick="if(!window.Alpine)window.print()">{% icon "printer", "size-4" %} {{ "community.share.print_poster" | t(lang) }}</button>
         </figcaption>
       </figure>
       <figure class="cm-print-flat m-0">
@@ -175,7 +175,7 @@ pageScripts: ["/assets/js/community.js"]
         </div>
         <figcaption class="cm-no-print mt-4 flex flex-wrap items-center justify-between gap-3">
           <span class="max-w-sm text-sm text-muted"><strong class="text-ink">{{ "community.share.tent_title" | t(lang) }}.</strong> {{ "community.share.tent_sub" | t(lang) }}</span>
-          <button type="button" class="btn-secondary" @click="printVariant('tent')">{% icon "printer", "size-4" %} {{ "community.share.print_tent" | t(lang) }}</button>
+          <button type="button" class="btn-secondary" data-js-only @click="printVariant('tent')">{% icon "printer", "size-4" %} {{ "community.share.print_tent" | t(lang) }}</button>
         </figcaption>
       </figure>
     </div>
@@ -196,7 +196,7 @@ pageScripts: ["/assets/js/community.js"]
       <article class="card card-pad">
         <div class="flex items-center justify-between gap-3">
           <h3 class="text-sm font-semibold text-ink">{{ ("community.share.msg_" + m) | t(l) }}</h3>
-          <button type="button" class="btn-secondary btn-sm" data-copy-from="#msg-{{ m }}-{{ l }}"{% if l != lang %} lang="{{ lang }}"{% endif %}>{% icon "copy", "size-4" %} {{ "common.copy" | t(lang) }}</button>
+          <button type="button" class="btn-secondary btn-sm" data-js-only data-copy-from="#msg-{{ m }}-{{ l }}"{% if l != lang %} lang="{{ lang }}"{% endif %}>{% icon "copy", "size-4" %} {{ "common.copy" | t(lang) }}</button>
         </div>
         <p id="msg-{{ m }}-{{ l }}" class="mt-3 rounded-xl bg-surface-2 p-4 text-sm leading-relaxed text-ink">{{ ("community.share.msg_" + m + "_text") | t(l, { url: u }) }}</p>
       </article>

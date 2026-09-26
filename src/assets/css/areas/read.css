@@ -51,6 +51,18 @@
   content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
   background: linear-gradient(180deg, rgb(8 10 24 / 0.42) 0%, rgb(8 10 24 / 0.58) 55%, rgb(8 10 24 / 0.74) 100%);
 }
+/* The narrowest phones (below 360px): the issue's name ("September / October 2026") can't fit beside
+   the cover, so it goes under it instead of being cut off at the card's edge */
+@media (width < 22.5rem) { .read-cover.has-cover > .flex { flex-wrap: wrap; } }
+/* The magazine's name in a cover panel (Shop, About): the panel is a size container and the name is
+   sized by its width (cqi) — 1.5rem in a phone's card up to 1.875rem (from 1.25rem at 130%+ text) — so
+   "AA Grapevine" always fits beside the cover (Shop) or in the panel (About). In a panel narrower than
+   24rem the grapes icon is left out. The kicker is hyphenated in the page language. */
+.read-cover-head { container-type: inline-size; }
+.read-cover-title { font-size: clamp(1.5rem, 8cqi, 1.875rem); line-height: 1.15; }
+.read-cover-kicker { hyphens: auto; }
+@container (width < 24rem) { .read-cover-icon { display: none; } }
+:root:is([data-text="130"], [data-text="150"]) .read-cover-title { font-size: clamp(1.25rem, 11cqi, 1.875rem); }
 .read-cover-frame {
   border-radius: 0.4rem;
   box-shadow: 0 1px 2px rgb(0 0 0 / 0.35), 0 18px 40px -12px rgb(0 0 0 / 0.65), 0 0 0 1px rgb(255 255 255 / 0.14);

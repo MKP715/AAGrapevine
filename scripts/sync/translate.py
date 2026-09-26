@@ -164,7 +164,7 @@ def _download_pair(pair: str, models_dir: Path) -> None:
         digest = ""
         for attempt in range(1, 4):
             try:
-                log.info("downloading translation model %s (≈90 MB) from %s", pair, url)
+                log.info("downloading translation model %s (~90 MB) from %s", pair, url)
                 h = hashlib.sha256()
                 with requests.get(url, stream=True, timeout=(20, 120),
                                   headers={"User-Agent": "NETA65-GrapevineCommitteeBot/2.0"}) as r:
@@ -216,7 +216,7 @@ def _download_pair(pair: str, models_dir: Path) -> None:
         meta = json.loads((unpack / "metadata.json").read_text(encoding="utf-8"))
         want_from, want_to = pair.split("_")
         if meta.get("from_code") != want_from or meta.get("to_code") != want_to:
-            raise RuntimeError(f"package is {meta.get('from_code')}→{meta.get('to_code')}, expected {pair}")
+            raise RuntimeError(f"package is {meta.get('from_code')}->{meta.get('to_code')}, expected {pair}")
         import sentencepiece as spm
         spm.SentencePieceProcessor(model_file=str(unpack / "sentencepiece.model"))  # loads = valid
         if not (unpack / "model" / "model.bin").is_file():
@@ -225,7 +225,7 @@ def _download_pair(pair: str, models_dir: Path) -> None:
         if final.exists():
             shutil.rmtree(final, ignore_errors=True)
         os.replace(unpack, final)
-        log.info("installed translation model %s → %s", pair, final)
+        log.info("installed translation model %s -> %s", pair, final)
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 
@@ -447,7 +447,7 @@ class TranslationCache:
         if dropped or old != snap:
             self.dirty = True
             if dropped:
-                log.info("glossary changed → %d cached translations will be redone", dropped)
+                log.info("glossary changed -> %d cached translations will be redone", dropped)
         return dropped
 
     def sync_overrides(self, overrides: "Overrides") -> int:
@@ -477,7 +477,7 @@ class TranslationCache:
         if dropped or old != snap:
             self.dirty = True
             if dropped:
-                log.info("overrides changed → %d cached translations will be redone", dropped)
+                log.info("overrides changed -> %d cached translations will be redone", dropped)
         return dropped
 
     def reapply(self, direction: str, fix) -> int:
@@ -1518,7 +1518,7 @@ def fix_vulgar_es(text: str, src: str = "") -> str:
         return word[0].upper() + word[1:] if m.group(0)[0].isupper() else word
     out = _COGER.sub(repl, text)
     if out != text:
-        log.debug("rewrote vulgar 'coger': %r → %r", text[:80], out[:80])
+        log.debug("rewrote vulgar 'coger': %r -> %r", text[:80], out[:80])
     return out
 
 
@@ -2267,7 +2267,7 @@ def main(argv: list[str] | None = None) -> int:
         t0 = time.monotonic()
         out, machine = tr.translate_markdown(text, src, tgt) if a.markdown else tr.translate([text], src, tgt)[0]
         ms = (time.monotonic() - t0) * 1000
-        print(f"[{src}→{tgt}{'' if machine else ', unchanged/override'}, {ms:.0f} ms] {out if out is not None else '(translation unavailable)'}")
+        print(f"[{src}->{tgt}{'' if machine else ', unchanged/override'}, {ms:.0f} ms] {out if out is not None else '(translation unavailable)'}")
     if a.save:
         tr.save()
     return 0

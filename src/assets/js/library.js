@@ -422,7 +422,7 @@
     if (!h) return;
     var top = h.getBoundingClientRect().top;
     if (top > window.innerHeight * 0.7 || top < 0) {
-      var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      var reduce = window.GV && window.GV.reducedMotion ? window.GV.reducedMotion() : window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       h.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
     }
   }
