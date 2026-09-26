@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-25T15:20:59Z",
+ "updated": "2026-09-26T14:34:32Z",
  "fixture": false,
  "profiles": {
   "gv": {
@@ -7,10 +7,10 @@
    "name": "AA Grapevine",
    "url": "https://www.instagram.com/alcoholicsanonymous_gv/",
    "full_name": "AA Grapevine Magazine",
-   "followers": 16871,
-   "posts": 3900,
+   "followers": 16875,
+   "posts": 3901,
    "owner_id": "48108439509",
-   "checked": "2026-09-25T15:20:55Z",
+   "checked": "2026-09-26T14:34:29Z",
    "avatar": "/assets/cache/ig/_avatar_gv.webp"
   },
   "lv": {
@@ -18,14 +18,100 @@
    "name": "La Viña",
    "url": "https://www.instagram.com/alcoholicosanonimos_lv/",
    "full_name": "Revista La Viña",
-   "followers": 2418,
-   "posts": 2940,
+   "followers": 2419,
+   "posts": 2941,
    "owner_id": "48275839129",
-   "checked": "2026-09-25T15:20:58Z",
+   "checked": "2026-09-26T14:34:32Z",
    "avatar": "/assets/cache/ig/_avatar_lv.webp"
   }
  },
  "items": [
+  {
+   "id": "ig:Ddv7k9OF7rC",
+   "source": "instagram",
+   "kind": "post",
+   "url": "https://www.instagram.com/p/Ddv7k9OF7rC/",
+   "title": "“Alcohol en latín se dice spiritus y se usa la misma palabra para denominar la más…",
+   "summary": "“Alcohol en latín se dice spiritus y se usa la misma palabra para denominar la más sublime experiencia religiosa y el veneno más depravador. Por lo tanto, la fórmula útil será: spiritus contra spiritum”. \"“La correspondencia de Bill W. con Carl Jung” DR. C. G. JUNG, ENERO DE 1963 De El lenguaje del corazón\" Cita Diaria en www.aalavina.org",
+   "lang": "es",
+   "date": "2026-09-26T11:30:15Z",
+   "first_seen": "2026-09-26T14:34:32Z",
+   "image": "/assets/cache/ig/Ddv7k9OF7rC.webp",
+   "tags": [],
+   "category": "lv",
+   "status": "ok",
+   "extra": {
+    "shortcode": "Ddv7k9OF7rC",
+    "account": "lv",
+    "username": "alcoholicosanonimos_lv",
+    "media_type": "image",
+    "thumb": "/assets/cache/ig/Ddv7k9OF7rC.webp",
+    "embed_url": "https://www.instagram.com/p/Ddv7k9OF7rC/embed/captioned/",
+    "permalink": "https://www.instagram.com/p/Ddv7k9OF7rC/",
+    "is_reel": false,
+    "manual": false,
+    "strategy": "profile_embed",
+    "caption_known": true,
+    "embed_checked": null
+   },
+   "i18n": {
+    "title": {
+     "en": "“Alcohol in Latin is said spiritus and the same word is used to name the more …",
+     "es": "“Alcohol en latín se dice spiritus y se usa la misma palabra para denominar la más…"
+    },
+    "summary": {
+     "en": "“Alcohol in Latin is said spiritus and the same word is used to name the most sublime religious experience and the most depraved poison. Therefore, the useful formula will be: spiritus contra spiritum”. \"The Bill W. correspondence with Carl Jung\" DR. C. G. JUNG, JUNG, JERO 1963 Language of the Heart\" Daily Quote in www.aalavina.org",
+     "es": "“Alcohol en latín se dice spiritus y se usa la misma palabra para denominar la más sublime experiencia religiosa y el veneno más depravador. Por lo tanto, la fórmula útil será: spiritus contra spiritum”. \"“La correspondencia de Bill W. con Carl Jung” DR. C. G. JUNG, ENERO DE 1963 De El lenguaje del corazón\" Cita Diaria en www.aalavina.org"
+    }
+   },
+   "machine": [
+    "en"
+   ],
+   "is_new": true
+  },
+  {
+   "id": "ig:Ddv7lABFw1z",
+   "source": "instagram",
+   "kind": "post",
+   "url": "https://www.instagram.com/p/Ddv7lABFw1z/",
+   "title": "“Spiritual growth and experiences are not limited to orthodox believers in a deity, any…",
+   "summary": "“Spiritual growth and experiences are not limited to orthodox believers in a deity, any more than the disease of alcoholism is limited to skid-row bums.” Casper, Wyo., September 1969, From: “Is ‘Agnostic’ a Nasty Word?”, AA Grapevine Daily Quote at www.aagrapevine.org",
+   "lang": "en",
+   "date": "2026-09-26T11:30:14Z",
+   "first_seen": "2026-09-26T14:34:32Z",
+   "image": "/assets/cache/ig/Ddv7lABFw1z.webp",
+   "tags": [],
+   "category": "gv",
+   "status": "ok",
+   "extra": {
+    "shortcode": "Ddv7lABFw1z",
+    "account": "gv",
+    "username": "alcoholicsanonymous_gv",
+    "media_type": "image",
+    "thumb": "/assets/cache/ig/Ddv7lABFw1z.webp",
+    "embed_url": "https://www.instagram.com/p/Ddv7lABFw1z/embed/captioned/",
+    "permalink": "https://www.instagram.com/p/Ddv7lABFw1z/",
+    "is_reel": false,
+    "manual": false,
+    "strategy": "profile_embed",
+    "caption_known": true,
+    "embed_checked": null
+   },
+   "i18n": {
+    "title": {
+     "en": "“Spiritual growth and experiences are not limited to orthodox believers in a deity, any…",
+     "es": "“El crecimiento espiritual y las experiencias no se limitan a los creyentes ortodoxos en una deidad, ningún …"
+    },
+    "summary": {
+     "en": "“Spiritual growth and experiences are not limited to orthodox believers in a deity, any more than the disease of alcoholism is limited to skid-row bums.” Casper, Wyo., September 1969, From: “Is ‘Agnostic’ a Nasty Word?”, AA Grapevine Daily Quote at www.aagrapevine.org",
+     "es": "“El crecimiento espiritual y las experiencias no se limitan a los creyentes ortodoxos en una deidad, más que la enfermedad del alcoholismo se limita a los bums de esquiar”. Casper, Wyo., septiembre de 1969, de: “es ‘agnóstico’ una palabra desagradable?”, AA Grapevine Cita diaria en www.aagrapevine.org"
+    }
+   },
+   "machine": [
+    "es"
+   ],
+   "is_new": true
+  },
   {
    "id": "ig:Ddtu0JsFzEt",
    "source": "instagram",

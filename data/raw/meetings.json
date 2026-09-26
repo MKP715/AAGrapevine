@@ -1,25 +1,22 @@
 {
  "source": "meetings",
- "updated": "2026-09-25T15:25:59Z",
- "attempted": "2026-09-25T15:25:59Z",
+ "updated": "2026-09-26T14:38:58Z",
+ "attempted": "2026-09-26T14:38:58Z",
  "ok": true,
  "error": null,
  "stats": {
   "offices": 8,
-  "offices_ok": 7,
-  "listed": 4963,
-  "grapevine": 22,
+  "offices_ok": 8,
+  "listed": 5899,
+  "grapevine": 24,
   "meetings": 23,
   "in_area": 13,
   "nearby": 10,
   "inactive": 0,
   "incomplete": 0,
   "duplicates_merged": 1,
-  "kept_from_before": 2,
-  "requests": 7,
-  "warnings": [
-   "Arkansas Central Office: feed: arkansascentraloffice.org did not answer; page: arkansascentraloffice.org did not answer"
-  ]
+  "kept_from_before": 0,
+  "requests": 8
  },
  "items": [
   {
@@ -1091,8 +1088,8 @@
    "method": "feed",
    "key_from": "config",
    "error": null,
-   "updated": "2026-09-25T15:24:53Z",
-   "attempted": "2026-09-25T15:24:53Z",
+   "updated": "2026-09-26T14:38:02Z",
+   "attempted": "2026-09-26T14:38:02Z",
    "note": null
   },
   {
@@ -1105,8 +1102,8 @@
    "method": "feed",
    "key_from": "config",
    "error": null,
-   "updated": "2026-09-25T15:24:53Z",
-   "attempted": "2026-09-25T15:24:53Z",
+   "updated": "2026-09-26T14:38:02Z",
+   "attempted": "2026-09-26T14:38:02Z",
    "note": null
   },
   {
@@ -1119,8 +1116,8 @@
    "method": "page",
    "key_from": null,
    "error": null,
-   "updated": "2026-09-25T15:24:53Z",
-   "attempted": "2026-09-25T15:24:53Z",
+   "updated": "2026-09-26T14:38:02Z",
+   "attempted": "2026-09-26T14:38:02Z",
    "note": null
   },
   {
@@ -1133,8 +1130,8 @@
    "method": "feed",
    "key_from": null,
    "error": null,
-   "updated": "2026-09-25T15:24:53Z",
-   "attempted": "2026-09-25T15:24:53Z",
+   "updated": "2026-09-26T14:38:02Z",
+   "attempted": "2026-09-26T14:38:02Z",
    "note": null
   },
   {
@@ -1147,8 +1144,8 @@
    "method": "feed",
    "key_from": null,
    "error": null,
-   "updated": "2026-09-25T15:24:53Z",
-   "attempted": "2026-09-25T15:24:53Z",
+   "updated": "2026-09-26T14:38:02Z",
+   "attempted": "2026-09-26T14:38:02Z",
    "note": null
   },
   {
@@ -1156,13 +1153,14 @@
    "name": "Arkansas Central Office",
    "url": "https://arkansascentraloffice.org",
    "lang": "en",
-   "ok": false,
+   "ok": true,
    "count": 2,
-   "method": null,
+   "method": "feed",
    "key_from": null,
-   "error": "feed: arkansascentraloffice.org did not answer; page: arkansascentraloffice.org did not answer",
-   "updated": "2026-09-24T22:37:36Z",
-   "attempted": "2026-09-25T15:24:53Z"
+   "error": null,
+   "updated": "2026-09-26T14:38:02Z",
+   "attempted": "2026-09-26T14:38:02Z",
+   "note": null
   },
   {
    "id": "okcintergroup",
@@ -1174,8 +1172,8 @@
    "method": "feed",
    "key_from": null,
    "error": null,
-   "updated": "2026-09-25T15:24:53Z",
-   "attempted": "2026-09-25T15:24:53Z",
+   "updated": "2026-09-26T14:38:02Z",
+   "attempted": "2026-09-26T14:38:02Z",
    "note": null
   },
   {
@@ -1188,8 +1186,8 @@
    "method": "feed",
    "key_from": null,
    "error": null,
-   "updated": "2026-09-25T15:24:53Z",
-   "attempted": "2026-09-25T15:24:53Z",
+   "updated": "2026-09-26T14:38:02Z",
+   "attempted": "2026-09-26T14:38:02Z",
    "note": null
   }
  ],

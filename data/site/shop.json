@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-25T15:24:53Z",
+ "updated": "2026-09-26T14:37:44Z",
  "fixture": false,
  "botm": [
   {
@@ -645,7 +645,7 @@
      "currency": "USD",
      "sku": "LO1M",
      "url": "https://www.aalavina.org/tienda/suscripcion-digital-la-vina-1-mes",
-     "image": null,
+     "image": "/assets/cache/shop/22cfbba7bd5d3dc3.webp",
      "volume": []
     },
     {
@@ -656,7 +656,7 @@
      "currency": "USD",
      "sku": "LO1A",
      "url": "https://www.aalavina.org/tienda/suscripcion-digital-la-vina-1-ano",
-     "image": null,
+     "image": "/assets/cache/shop/22cfbba7bd5d3dc3.webp",
      "volume": []
     },
     {
@@ -667,7 +667,7 @@
      "currency": "USD",
      "sku": "LO2A",
      "url": "https://www.aalavina.org/tienda/suscripcion-digital-la-vina-2-anos",
-     "image": null,
+     "image": "/assets/cache/shop/22cfbba7bd5d3dc3.webp",
      "volume": []
     },
     {
@@ -678,7 +678,7 @@
      "currency": "USD",
      "sku": "LO3A",
      "url": "https://www.aalavina.org/tienda/suscripcion-digital-la-vina-3-anos",
-     "image": null,
+     "image": "/assets/cache/shop/22cfbba7bd5d3dc3.webp",
      "volume": []
     }
    ]
@@ -821,7 +821,7 @@
      "currency": "USD",
      "sku": "LO1MCA",
      "url": "https://www.aalavina.org/tienda/canada-suscripcion-digital-la-vina-1-mes",
-     "image": null,
+     "image": "/assets/cache/shop/22cfbba7bd5d3dc3.webp",
      "volume": []
     },
     {
@@ -832,7 +832,7 @@
      "currency": "USD",
      "sku": "LO1ACA",
      "url": "https://www.aalavina.org/tienda/canada-suscripcion-digital-la-vina-1-ano",
-     "image": null,
+     "image": "/assets/cache/shop/22cfbba7bd5d3dc3.webp",
      "volume": []
     },
     {
@@ -843,7 +843,7 @@
      "currency": "USD",
      "sku": "LO2ACA",
      "url": "https://www.aalavina.org/tienda/canada-suscripcion-digital-la-vina-2-anos",
-     "image": null,
+     "image": "/assets/cache/shop/22cfbba7bd5d3dc3.webp",
      "volume": []
     },
     {
@@ -854,7 +854,7 @@
      "currency": "USD",
      "sku": "LO3ACA",
      "url": "https://www.aalavina.org/tienda/canada-suscripcion-digital-la-vina-3-anos",
-     "image": null,
+     "image": "/assets/cache/shop/22cfbba7bd5d3dc3.webp",
      "volume": []
     }
    ]
@@ -872,7 +872,7 @@
      "currency": "USD",
      "sku": "LO1MINT",
      "url": "https://www.aalavina.org/tienda/internacional-suscripcion-digital-la-vina-1-mes",
-     "image": null,
+     "image": "/assets/cache/shop/0c190b7624e92eba.webp",
      "volume": []
     },
     {
@@ -883,7 +883,7 @@
      "currency": "USD",
      "sku": "LO1AINT",
      "url": "https://www.aalavina.org/tienda/internacional-suscripcion-digital-la-vina-1-ano",
-     "image": null,
+     "image": "/assets/cache/shop/0c190b7624e92eba.webp",
      "volume": []
     },
     {
@@ -894,7 +894,7 @@
      "currency": "USD",
      "sku": "LO2AINT",
      "url": "https://www.aalavina.org/tienda/internacional-suscripcion-digital-la-vina-2-anos",
-     "image": null,
+     "image": "/assets/cache/shop/0c190b7624e92eba.webp",
      "volume": []
     },
     {
@@ -905,7 +905,7 @@
      "currency": "USD",
      "sku": "LO3AINT",
      "url": "https://www.aalavina.org/tienda/internacional-suscripcion-digital-la-vina-3-anos",
-     "image": null,
+     "image": "/assets/cache/shop/0c190b7624e92eba.webp",
      "volume": []
     }
    ]

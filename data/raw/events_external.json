@@ -1,7 +1,7 @@
 {
  "source": "events_external",
- "updated": "2026-09-25T15:26:09Z",
- "attempted": "2026-09-25T15:26:09Z",
+ "updated": "2026-09-26T14:38:58Z",
+ "attempted": "2026-09-26T14:38:58Z",
  "ok": true,
  "error": null,
  "stats": {
@@ -18,7 +18,7 @@
   "online_es": 0,
   "items": 0,
   "new": 0,
-  "requests": 44
+  "requests": 37
  },
  "items": [],
  "first_harvest": "2026-09-23T16:43:55Z",
