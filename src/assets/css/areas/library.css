@@ -274,8 +274,8 @@
 .lib-btn-main { flex: 1; padding-inline: 0.75rem; border: 1px solid var(--c-line); background: var(--c-surface); color: var(--c-ink); }
 .lib-btn-main:hover { border-color: var(--c-gv); background: var(--c-surface); color: var(--c-gv); }
 .lib-icon { padding: 0; width: 2.75rem; }
-/* Mouse users get slightly smaller icon buttons (touch keeps 44px targets). */
-@media (pointer: fine) { .lib-btn { min-height: 2.5rem; min-width: 2.5rem; } .lib-icon { width: 2.5rem; } }
+/* Mouse users get slightly smaller icon buttons from 640px (phones and touch screens keep 44px targets). */
+@media (pointer: fine) and (width >= 40rem) { .lib-btn { min-height: 2.5rem; min-width: 2.5rem; } .lib-icon { width: 2.5rem; } }
 /* Very narrow cards: the main button shows its icon only (label stays in aria-label). */
 @container (width < 15rem) {
   .lib-btn-main { flex: none; width: 2.75rem; padding: 0; }

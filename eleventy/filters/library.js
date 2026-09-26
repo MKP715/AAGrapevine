@@ -35,6 +35,7 @@
 // search index as if no content had been synced yet (to check empty states).
 import { openSync, readSync, closeSync, readFileSync } from "node:fs";
 import path from "node:path";
+import { scriptJson } from "../script-json.js";
 import orientationData from "../../src/_data/orientation.js"; // GVR / RLV 101 lessons (config/orientation.yml)
 
 const EMPTY = () => !!process.env.LIB_EMPTY;
@@ -1050,7 +1051,7 @@ export default function (eleventyConfig, helpers) {
   eleventyConfig.addFilter("libColsConfig", (cols) => (cols || []).map((c) => ({ key: c.key, code: c.code, label: c.label, icon: c.icon, tone: c.tone })));
   eleventyConfig.addFilter("libNum", (n, lang) => fmtNum(n, lang));
   // JSON for <script type="application/json"> blocks: "<" escaped so data can never close the tag.
-  eleventyConfig.addFilter("jsonScript", (v) => JSON.stringify(v ?? null).replace(/</g, "\\u003c"));
+  eleventyConfig.addFilter("jsonScript", scriptJson); // the shared serializer (eleventy/script-json.js)
   eleventyConfig.addFilter("libIndexJson", (db, lang) => JSON.stringify(libraryIndex(db, lang, helpers)));
   const searchCache = new Map(); // one index per language per build (search.njk + search-index.json share it)
   const getSearch = (db, nav, lang, site) => {

@@ -1,6 +1,6 @@
 {#- Reading & display settings — the "Aa" panel (included by partials/header.njk, right after the
     <header>, so it is never inside the header's backdrop-filter and #pwa-slot is in the page from
-    the first byte). Opened by the "Aa" buttons (header from 640px, drawer top bar) through
+    the first byte). Opened by the "Aa" buttons (the header at every width, the drawer) through
     Alpine.store("gvlv"); the logic is app.js (gvlvPanel + GV.prefs + GV.tts), the look is
     areas/access.css (.gvlv-*).
     A NON-modal dialog: focus moves in when it opens, Escape closes it and puts focus back on the
@@ -63,8 +63,11 @@
     <p class="gvlv-hint" x-show="!tts.supported" x-cloak>{{ "comfort.read_none" | t(L) }}</p>
   </fieldset>
 
-  {% call seg("saver", "comfort.saver", "comfort.saver_hint", "gauge", [["off", "comfort.off" | t(L)], ["on", "comfort.on" | t(L)], ["auto", "comfort.auto" | t(L)]], L) %}
+  {#- (the status line comes before the hint: a hidden line after the hint would give it the relaxed
+      spacing's paragraph gap, main.css "p:not(:last-child)") -#}
+  {% call seg("saver", "comfort.saver", "", "gauge", [["off", "comfort.off" | t(L)], ["on", "comfort.on" | t(L)], ["auto", "comfort.auto" | t(L)]], L) %}
   <p class="gvlv-status" x-show="p.saver === 'auto' && saverOn" x-cloak>{{ "comfort.saver_active" | t(L) }}</p>
+  <p class="gvlv-hint">{{ "comfort.saver_hint" | t(L) }}</p>
   {% endcall %}
 
   {#- The offline-app script (pwa.js) fills this: install the app, save pages for offline, offline status -#}
@@ -73,5 +76,20 @@
   <div class="gvlv-foot">
     <a class="gvlv-more" href="{{ '/accessibility/' | lurl(L) }}">{% icon "accessibility", "size-4 shrink-0" %}<span>{{ "comfort.more" | t(L) }}</span></a>
     <button type="button" class="btn-ghost btn-sm" @click="reset()" :disabled="!$store.gvlv.custom">{% icon "rotate-ccw", "size-4" %} {{ "comfort.reset" | t(L) }}</button>
+  </div>
+</div>
+{#- The read-aloud bar: shown while the page is being read (or paused) and the panel is closed —
+    what is being read + Pause / Resume + Stop (app.js gvlvTtsBar; look: areas/access.css .tts-bar). -#}
+<div class="tts-bar" x-data="gvlvTtsBar" x-show="visible()" x-effect="sync()" x-cloak data-js-only data-tts-skip
+     role="region" aria-label="{{ 'comfort.read' | t(L) }}"
+     data-read-now="{{ 'comfort.read_now' | t(L) }}" data-read-paused="{{ 'comfort.read_paused' | t(L) }}" data-read-top="{{ 'comfort.read_top' | t(L) }}">
+  <span class="tts-bar-icon" aria-hidden="true">{% icon "volume-2", "size-4" %}</span>
+  <p class="tts-bar-text" x-text="text()"></p>
+  <div class="tts-bar-actions">
+    <button type="button" class="btn-primary btn-sm shrink-0" @click="toggle()">
+      <span x-show="tts.state === 'playing'">{% icon "pause", "size-4" %}</span><span x-show="tts.state !== 'playing'" x-cloak>{% icon "play", "size-4" %}</span>
+      <span x-show="tts.state === 'playing'">{{ "comfort.read_pause" | t(L) }}</span><span x-show="tts.state !== 'playing'" x-cloak>{{ "comfort.read_resume" | t(L) }}</span>
+    </button>
+    <button type="button" class="tts-bar-stop" @click="stop()" aria-label="{{ 'comfort.read_stop' | t(L) }}">{% icon "square", "size-4" %}</button>
   </div>
 </div>

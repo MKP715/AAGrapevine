@@ -30,6 +30,12 @@
    banner (the poster can't shrink below 16rem): it scrolls with the page until the banner goes. */
 @media screen and (width >= 64rem) and (height < 45rem) { :root.has-lang-banner .mp-poster-col { position: static; } }
 @media (width >= 96rem) { .mp-layout { grid-template-columns: minmax(0, 38rem) minmax(0, 1fr); } }
+/* Larger text (130%+) or relaxed spacing: rem grows with the text size (32rem is 768px at 150%), so
+   the poster column is also capped at 42% of the row — the toolkit column keeps room for its words
+   and nothing is pushed past the screen (1024–1440px). */
+@media (width >= 64rem) {
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .mp-layout { grid-template-columns: minmax(0, min(32rem, 42%)) minmax(0, 1fr); }
+}
 .mp-poster-col { width: 100%; max-width: 38rem; margin-inline: auto; min-width: 0; }
 .mp-toolkit { display: flex; flex-direction: column; gap: 1.25rem; min-width: 0; }
 /* Download across the full width, Share | Print below it: equal buttons at every width (no ragged
@@ -94,6 +100,7 @@
   padding: 56px; background: var(--p-bg); color: var(--p-ink);
   font-family: var(--font-sans); font-size: 23px; line-height: 1.3; font-weight: 400; letter-spacing: 0; text-align: left;
   -webkit-print-color-adjust: exact; print-color-adjust: exact; color-scheme: light;
+  contain: strict; /* a fixed 1080 × 1350 sheet: its layout never affects the page (13 of them on the hub) */
 }
 .mp-poster.mp-roomy { font-size: 25px; }
 .mp-poster.mp-snug { font-size: 23px; }

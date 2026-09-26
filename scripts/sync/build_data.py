@@ -790,7 +790,7 @@ def ics_events(ctx: Ctx) -> list[dict]:
                 except Exception as e:
                     st.update({"state": "error", "error": f"the calendar file could not be read ({type(e).__name__})"})
             level = log.info if st["state"] == "ok" else log.warning
-            level("ics feed %s → %s%s", spec["key"], st["state"], f" ({st['error']})" if st.get("error") else "")
+            level("ics feed %s -> %s%s", spec["key"], st["state"], f" ({st['error']})" if st.get("error") else "")
             state[url] = st
             changed = True
             health.update({"state": st["state"], "http_status": st["http_status"], "error": st["error"],
@@ -1460,7 +1460,10 @@ def weekly_open_labels(it: dict) -> dict[str, dict]:
     own = {"en": f"{_clock(h, m, 'en')} {tz_en}", "es": f"{_clock(h, m, 'es')} ({tz_es})"}
     cen = {"en": f"{_clock(c.hour, c.minute, 'en')} Central", "es": f"{_clock(c.hour, c.minute, 'es')} (hora del Centro)"}
     at_es = "al" if (c.hour, c.minute) == (12, 0) else "a las" if c.hour % 12 != 1 else "a la"
-    when = {"en": f"{WEEKDAYS_EN[ci]} at {cen['en']}", "es": f"{WEEKDAYS_ES[ci]} {at_es} {cen['es']}"}
+    # Spanish schedules take the article and the plural ("los miércoles", "los sábados"); the line
+    # starts with a capital because the pages show it on a line of its own. A sentence that puts it
+    # after other words lower-cases the first letter (send_digest, the district report).
+    when = {"en": f"{WEEKDAYS_EN[ci]} at {cen['en']}", "es": f"Los {WEEKDAYS_ES[ci].lower()} {at_es} {cen['es']}"}
     zid, pw = clean_text(ex.get("zoom_id")), clean_text(ex.get("passcode"))
     same_tz = tzname == "America/Chicago"
     en = f"Join live on {WEEKDAYS_EN[ci]} at {cen['en']}" + ("" if same_tz else f" ({own['en']})")
@@ -2403,7 +2406,7 @@ def main(argv: list[str] | None = None) -> int:
             if completed:
                 raise
             log.error("could not save the translation cache: %s: %s", type(e).__name__, e)
-    log.info("wrote %s → %s", counts, out_dir)
+    log.info("wrote %s -> %s", counts, out_dir)
     log.info("translations: %s", {k: v for k, v in status["translations"].items()})
     log.info("build_data finished in %.1fs", time.monotonic() - t0)
     return 0

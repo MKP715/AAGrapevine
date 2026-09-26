@@ -54,6 +54,33 @@
 @media (width < 40rem) {
   .cm-entry { column-gap: 0.75rem; }
 }
+/* A phone at 150% text or with relaxed spacing (and a narrow one, below 384px, at 115–130%): the
+   entry's icon and picture go ABOVE the words (icon at the left, picture at the right), which get the
+   entry's whole width — beside them the text column was two or three words wide and broke inside
+   words. The rail through the icons goes (it would run through the text), and "Show N more" lines up
+   with the text again. The "source · time" meta row gets a line of its own under the badge (beside it,
+   main.css's rule for text columns in a row left it 7em wide: "6:30 a. m. CDT" broke and was clipped;
+   that one is in @layer base with !important, after main.css's own rule there, to take its place). */
+@media (width < 40rem) {
+  :root:is([data-text="150"], [data-spacing="relaxed"]) .cm-timeline::before { display: none; }
+  :root:is([data-text="150"], [data-spacing="relaxed"]) .cm-entry { grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "icon thumb" "text text"; row-gap: 0.625rem; }
+  :root:is([data-text="150"], [data-spacing="relaxed"]) .cm-entry > .cm-entry-icon { grid-area: icon; }
+  :root:is([data-text="150"], [data-spacing="relaxed"]) .cm-entry > :not(.cm-entry-icon, .cm-thumb) { grid-area: text; }
+  :root:is([data-text="150"], [data-spacing="relaxed"]) .cm-entry > .cm-thumb { grid-area: thumb; justify-self: end; align-self: start; }
+  :root:is([data-text="150"], [data-spacing="relaxed"]) .cm-day > .ml-12 { margin-left: 0; }
+}
+@media (width < 24rem) {
+  :root:is([data-text="115"], [data-text="130"]) .cm-timeline::before { display: none; }
+  :root:is([data-text="115"], [data-text="130"]) .cm-entry { grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "icon thumb" "text text"; row-gap: 0.625rem; }
+  :root:is([data-text="115"], [data-text="130"]) .cm-entry > .cm-entry-icon { grid-area: icon; }
+  :root:is([data-text="115"], [data-text="130"]) .cm-entry > :not(.cm-entry-icon, .cm-thumb) { grid-area: text; }
+  :root:is([data-text="115"], [data-text="130"]) .cm-entry > .cm-thumb { grid-area: thumb; justify-self: end; align-self: start; }
+  :root:is([data-text="115"], [data-text="130"]) .cm-day > .ml-12 { margin-left: 0; }
+}
+@layer base {
+  @media (width < 40rem) { :root:is([data-text="150"], [data-spacing="relaxed"]) main .cm-entry .flex > .meta-row.min-w-0 { flex-basis: 100% !important; } }
+  @media (width < 24rem) { :root:is([data-text="115"], [data-text="130"]) main .cm-entry .flex > .meta-row.min-w-0 { flex-basis: 100% !important; } }
+}
 /* The filter bar (< 1536px): ONE line of chips (chip-row-nowrap) under the header, sticky only in
    windows at least 40rem tall (a shorter window keeps all of its height for the feed). Entries and
    day headings that get focus or a jump land below it (scroll-padding-top covers the header only). */
@@ -105,6 +132,22 @@
   bottom: calc(var(--player-h, 0px) + env(safe-area-inset-bottom, 0px) + 0.75rem);
   transition: bottom 0.25s ease;
 }
+/* The card: the question, then Switch + Close. When the question can't have ~7em beside the buttons
+   (a narrow phone), and always on a phone at 130%+ or with relaxed spacing, the buttons go to a second
+   row, at the right — the question is never squeezed into a column of single letters. Below 640px the text is
+   115% at most (--bar-zoom, areas/access.css): the banner never covers much of a phone screen. */
+.cm-lang-banner-card {
+  flex-wrap: wrap; max-height: 40vh; overflow-y: auto;
+  gap: calc(0.5rem * var(--bar-zoom, 1)) calc(0.75rem * var(--bar-zoom, 1));
+  padding: calc(0.5rem * var(--bar-zoom, 1)) calc(0.5rem * var(--bar-zoom, 1)) calc(0.5rem * var(--bar-zoom, 1)) calc(1rem * var(--bar-zoom, 1));
+}
+.cm-lang-banner-card > * { zoom: var(--bar-zoom, 1); }
+.cm-lang-banner-card > p { flex: 1 1 7em; }
+.cm-lang-banner-actions { display: flex; flex-shrink: 0; align-items: center; gap: 0.5rem; margin-left: auto; }
+@media (width < 40rem) {
+  :root:is([data-text="115"], [data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .cm-lang-banner-icon { display: none; }
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .cm-lang-banner-card > p { flex-basis: 100%; }
+}
 
 /* ------------------------------------------------------------------ */
 /*  Shared bits (segmented control, text previews)                     */
@@ -116,8 +159,12 @@
   color: var(--c-muted); cursor: pointer; transition: background-color 0.15s, color 0.15s;
 }
 .cm-seg > span:hover { color: var(--c-ink); }
-.cm-seg > input:checked + span { background: var(--c-surface); color: var(--c-ink); box-shadow: var(--shadow-card); }
+/* The chosen option: a surface pill with a 2px blue ring and blue text (like the Aa panel's options),
+   so it stands out from the track in both themes (≥ 3:1, WCAG 1.4.11) — not only by a fill. */
+.cm-seg > input:checked + span { background: var(--c-surface); color: var(--c-gv); box-shadow: var(--shadow-card), inset 0 0 0 2px var(--c-gv); }
 .cm-seg > input:focus-visible + span { outline: 3px solid var(--c-gv); outline-offset: 2px; }
+/* Windows High Contrast (forced colours drop fills and shadows): the chosen option gets a system outline */
+@media (forced-colors: active) { .cm-seg > input:checked + span { outline: 3px solid Highlight; outline-offset: -3px; } }
 .cm-pre {
   margin: 0; padding: 0.25rem 1rem 1rem; max-height: 24rem; overflow: auto;
   white-space: pre-wrap; overflow-wrap: anywhere; font-family: ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;
@@ -162,6 +209,8 @@
 .cm-dg-previews { grid-area: previews; align-self: end; }
 .cm-digest { grid-area: digest; }
 @media (width < 64rem) {
+  /* without JavaScript the tool card is hidden (data-js-only): no empty row for it */
+  :root:not(.js) .cm-dg-layout { grid-template-areas: "digest" "previews"; }
   :root.js .cm-dg-layout:not(.is-more) .cm-dg-more { display: none; }
   .cm-dg-layout.is-more [aria-controls="dg-more"] .icon { transform: rotate(180deg); }
 }
@@ -178,6 +227,10 @@
    (next meeting, last month's news and this month's issues, then what's coming up this month).
    .cm-dg-line = a one-line pointer row (Instagram, subscriptions, the daily quote). */
 .cm-dg-body { display: flex; flex-direction: column; gap: 2.25rem; }
+/* The newsletter's standalone links ("117 more updates since …", "See all …") are at least 24px tall
+   with a mouse too (WCAG 2.5.8; tap-link makes them 44px on phones and touch screens). Padding on an
+   inline link grows its target without moving the text. */
+.cm-dg-layout a.tap-link { padding-block: 0.25rem; }
 .cm-dg-news, .cm-dg-side { display: contents; }
 .cm-dg-body .cm-dg-line + .cm-dg-line { margin-top: -1.5rem; }
 @media screen and (width >= 80rem) {
@@ -317,6 +370,7 @@
   display: block; font-family: var(--font-display); font-size: clamp(1.5rem, 1.25rem + 1vw, 1.875rem);
   font-weight: 600; line-height: 1.15; font-variant-numeric: tabular-nums; white-space: nowrap;
 }
+.cm-rec-num > span { white-space: nowrap; } /* the parts of the number (contribute.njk) never break inside */
 /* A key to press on the keypad (1, #, 2 …): a small key cap inside the sentence. */
 .cm-rec-key {
   display: inline-grid; place-items: center; min-width: 1.6em; height: 1.6em; padding: 0 0.3em; margin-inline: 0.1em;

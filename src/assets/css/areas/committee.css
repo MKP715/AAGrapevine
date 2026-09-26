@@ -499,6 +499,11 @@
   @media (width >= 64rem) {
     .cm-gvm-filters { grid-template-columns: minmax(14rem, 1.6fr) minmax(10rem, 0.8fr) minmax(11rem, 0.9fr) auto; align-items: end; }
     .cm-gvm-field--q { grid-column: auto; }
+    /* larger text (130%+) or relaxed spacing: the rem minimums above grow with the text and would push
+       the "Include nearby areas" switch off the screen — the tablet layout instead (search, then
+       day | how, then the switch, each on its own row) */
+    :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .cm-gvm-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) :is(.cm-gvm-field--q, .cm-gvm-toggle) { grid-column: 1 / -1; }
   }
   .cm-gvm-label { display: block; margin-bottom: 0.4rem; font-size: 0.8rem; font-weight: 600; color: var(--c-ink); }
   .cm-gvm-select { appearance: none; -webkit-appearance: none; cursor: pointer; padding-right: 2.5rem; background-image: none; }

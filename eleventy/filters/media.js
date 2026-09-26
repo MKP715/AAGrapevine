@@ -16,6 +16,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
+import { scriptJson } from "../script-json.js";
 
 const require = createRequire(import.meta.url);
 
@@ -216,10 +217,8 @@ function micon(name, cls = "size-5", label = "") {
   return `<svg class="icon ${cls}" ${a11y}><use href="#mi-${name}"/></svg>`;
 }
 
-/** JSON that is safe inside <script type="application/json"> and HTML attributes. */
-function safeJson(v) {
-  return JSON.stringify(v).replace(/</g, "\\u003c").replace(/>/g, "\\u003e").replace(/&/g, "\\u0026").replace(/\u2028/g, "\\u2028").replace(/\u2029/g, "\\u2029");
-}
+/** JSON that is safe inside <script type="application/json"> and HTML attributes (the shared serializer). */
+const safeJson = scriptJson;
 
 export default function (eleventyConfig, helpers) {
   const { translateKey, pickLang } = helpers;

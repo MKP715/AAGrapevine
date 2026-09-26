@@ -554,6 +554,8 @@ links:
   gv_store: "https://www.aagrapevine.org/store"
   lv_store: "https://www.aalavina.org/tienda"
   carry_the_message: "https://www.aagrapevine.org/carry-the-message"
+  # La Viña's own Carry the Message page (in Spanish): the Spanish pages and the Spanish report use it.
+  lleva_el_mensaje: "https://www.aalavina.org/lleva-el-mensaje"
   gv_share_story: "https://www.aagrapevine.org/share"
   gv_audio_project: "https://www.aagrapevine.org/audio-portal"
   gv_photo_contest: "https://www.aagrapevine.org/photocontest"
@@ -580,6 +582,8 @@ links:
   asl_playlist: "https://www.youtube.com/playlist?list=PL32cyZpp2liBOcLY6M6rEh1qFL7MKSFI7"
   aa_big_book: "https://www.aa.org/the-big-book"
   aa_twelve_and_twelve: "https://www.aa.org/twelve-steps-twelve-traditions"
+  # the same page in Spanish, with each Step and Tradition read aloud in Spanish (the Spanish page's audio)
+  aa_twelve_and_twelve_es: "https://www.aa.org/es/twelve-steps-twelve-traditions"
   aa_accessibility_resources: "https://www.aa.org/sites/default/files/literature/eng-accessibility-resources-1025.pdf"
   aa_access_email: "access@aa.org"
   # Story submissions, as given on the official guideline pages (gv_guidelines / lv_guidelines).

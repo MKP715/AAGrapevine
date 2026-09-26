@@ -76,7 +76,7 @@ the backup, and any past day can be inspected or restored.
 | `data/state/*.json` | Resumable state (`crawl-state.json`; `ics_feeds.json` = the last good copy + last answer of each outside calendar) | sync modules, `build_data.py` |
 | `data/translations/cache.json` | Translation memory (one entry per line) | `translate.py` |
 | `data/site/*.json` | What templates read | `build_data.py` only |
-| `src/assets/cache/{pdf,ig,articles,pod}/` | Small WebP thumbnails (≤ 480 px): PDF covers, Instagram posts, story images, podcast covers | sync modules |
+| `src/assets/cache/{pdf,ig,articles,pod}/` | Small WebP thumbnails (≤ 480 px): PDF covers, Instagram posts, story images, podcast covers; plus a 128 px JPEG copy of each magazine cover (`articles/<key>.jpg`) for the monthly e-mail — classic Outlook for Windows shows no WebP | sync modules |
 | `src/` | Eleventy templates, CSS, JS, images | people |
 | `scripts/sync/` | The sync pipeline | — |
 | `scripts/notify/send_digest.py` | Monthly e-mail | — |
@@ -117,8 +117,9 @@ Runs on the 1st of every month at 15:05 UTC — 9:05 AM Central in winter (CST) 
 (CDT), so always after 6 AM Texas time and after the morning updates of `update.yml` (10:17 and
 12:07 UTC) — and exits immediately unless the four secrets `SMTP_SERVER`, `SMTP_USERNAME`,
 `SMTP_PASSWORD`, `DIGEST_TO` exist. A manual run defaults to **preview** (`--dry-run`, uploaded as the
-`digest-preview` artifact) and takes an optional *month* (`--month YYYY-MM`); unticking *Preview only*
-sends immediately. The public address comes from the Pages API (`gh api repos/:repo/pages`), falling
+`digest-preview` artifact) and takes an optional *month* (`--month YYYY-MM`; anything typed there is
+passed on — spaces removed — so a mistyped month makes `send_digest` exit 2 instead of sending this
+month's edition); unticking *Preview only* sends immediately. The public address comes from the Pages API (`gh api repos/:repo/pages`), falling
 back to `site.url`.
 
 `scripts/notify/send_digest.py` (standard library only; PyYAML for `config/site.yml` — a small reader is
@@ -141,7 +142,8 @@ builds the same **edition** as the `/digest/` page (`eleventy/filters/community.
 - **this month's issues**: Grapevine's issue of the month and La Viña's bimonthly issue (key = the
   month or the one before) from `articles.json` — count, free-to-read count, `digest.highlights`
   stories (free to read first, members' stories before "In Every Issue", Area 65 then Texas writers,
-  then the magazine's order), the Grapevine theme from the editorial calendar (as on `/monthly/`), up to
+  then the magazine's order), the Grapevine theme (as on `/monthly/`: the issue's own once it is out, else the
+  editorial calendar's), up to
   3 tips of `config/carry.yml` for the month and the link to `/monthly/YYYY-MM/`;
 - **writers**: `spotlight.json` stories by Area 65 / Texas writers whose `extra.pub_date` is in the
   previous month (every story is in exactly one edition);
@@ -153,15 +155,29 @@ builds the same **edition** as the `/digest/` page (`eleventy/filters/community.
   meetings (La Viña's from its `starts` date); the number of Grapevine meetings in our Area and nearby;
 - **share your story**: deadlines from today through the end of next month, La Viña's 3 open topics of
   the month (the `/monthly/` rotation), the phone story lines of `audio_project.json`;
-- Book of the Month (compact; an offer past its last day is left out), the cheapest subscription
-  (`shopFromMonthly`) and a pointer to the daily quote on the home page;
+- Book of the Month (compact; an offer past its last day is left out), the lowest month-to-month
+  subscription price, said as exactly that (`shopFromMonthly`'s month-to-month plans; a yearly plan costs
+  less per month) and a pointer to the daily quote on the home page;
 - English half then Spanish half (La Viña first there), from the `i18n` fields build_data produced;
-  `digest.per_section` items per list + "and N more";
-- subject `Grapevine / La Viña — October 2026 · Novedades de octubre`; multipart HTML + plain text,
-  RFC 2047 headers, `List-Unsubscribe`, several recipients → Bcc;
+  `digest.per_section` items per list + "and N more"; in the Spanish half issue labels read as in a
+  sentence ("septiembre/octubre de 2026", `in_sentence` = community.js `issueInSentence`), times say
+  "(hora del Centro)" instead of CDT/CST, and Grapevine's issue, writers and Weekly Open say "(en inglés)"
+  (La Viña's "(in Spanish)" in the English half); items with the same date are listed in the site's order
+  (`js_order` = JavaScript's `localeCompare`);
+- subject `Grapevine / La Viña — October 2026 edition · Edición de octubre de 2026`; multipart HTML +
+  plain text, RFC 2047 headers, `List-Unsubscribe`, several recipients → Bcc;
+- sending: port 465 = SSL; any other port must offer STARTTLS, or the run stops before the password is
+  sent (`RuntimeError`, exit 1). Connecting and logging in are tried 3 times on network trouble; the
+  message is handed over **once** — a failure then is reported as "It MAY have been sent — check before
+  re-running" (never retried: a retry could e-mail every district twice);
 - nothing new last month (no news and no writers) → nothing sent (exit 0): the issues, dates, deadlines
   and Book of the Month come round every month, so on their own they never send an e-mail (nor do they
-  when the daily updates have stopped). Exit 1 = SMTP failure, 2 = not configured.
+  when the daily updates have stopped). Exit 1 = SMTP failure, 2 = not configured or `--month` not YYYY-MM.
+
+`tests/test_digest_parity.py` builds the same editions with `buildMonthlyDigest` (Node.js) and
+`send_digest.collect` — a small data set with the edge cases and the repository's own data — and
+fails on any difference in what they pick, so a rule changed on one side only is caught by the
+Code check.
 
 ```bash
 python -m scripts.notify.send_digest --dry-run                          # → .tmp/digest.html + .tmp/digest.txt
@@ -195,7 +211,9 @@ on `workflow_dispatch`. `permissions: contents: read`, nothing published; the bo
 never trigger it (pushed with `GITHUB_TOKEN`). Job `build`: `npm ci` →
 `PATH_PREFIX=/<repository name>/ I18N_STRICT=1 npx @11ty/eleventy` → the same sanity checks as
 *Update & Deploy* (`index.html`, `es/index.html`, `assets/css/main.css`). Job `tests`: Python 3.12,
-`pip install -r requirements.txt`, `python -m unittest discover -s tests -v` (no translation models
+`pip install -r requirements.txt`, Node.js 22 + `npm ci` (the tests that run the site's own JavaScript
+through `tests/nodejs.py` — the district report, the offline worker, the digest parity, the one-tap
+phone links — are skipped without them), `python -m unittest discover -s tests -v` (no translation models
 are downloaded, so model tests are skipped; the rest runs offline in a few seconds), then
 `send_digest --dry-run` into the runner's temp folder (a smoke test of the optional e-mail). Dependabot
 PRs therefore show a ✓/✗ before merging (the chair merges only on green), and a push that breaks the

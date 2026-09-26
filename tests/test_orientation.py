@@ -127,6 +127,47 @@ class OrientationFileTest(unittest.TestCase):
                         self.assertIn(k["pub"], ("gv", "lv"))
 
 
+class OrientationFactsTest(unittest.TestCase):
+    """Facts the lessons teach, as the official pages give them (checked September 2026)."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.lessons = {l["id"]: l for l in yaml.safe_load(FILE.read_text(encoding="utf-8"))["lessons"]}
+
+    def text(self, lesson: str, lang: str) -> str:
+        l = self.lessons[lesson]
+        parts = [p["text"][lang] for p in l["points"]] + [l["try"][lang]]
+        parts += [q["why"][lang] for q in l["check"]] + [o[lang] for q in l["check"] for o in q["options"]]
+        return " ".join(parts)
+
+    def test_how_the_magazines_are_supported(self):
+        # aalavina.org/Historia-de-LV: La Viña is published by AA Grapevine "con el apoyo de la Junta de
+        # Servicios Generales como un servicio a la comunidad" — the General Service Board is funded by
+        # the groups' contributions, so the lesson never says the magazines take none
+        self.assertIn("General Service Board", self.text("magazines", "en"))
+        self.assertIn("Junta de Servicios Generales", self.text("magazines", "es"))
+        self.assertNotRegex(self.text("magazines", "en"), r"(?i)(don't|do not) take group contributions|fully self-supporting")
+        self.assertNotRegex(self.text("magazines", "es"), r"(?i)no reciben contribuciones")
+
+    def test_meeting_in_print(self):
+        # aagrapevine.org/history-aa-grapevine: members in the armed services overseas called it their
+        # "meeting in print" — the slide shows the text without its title, so the text says it
+        first = self.lessons["magazines"]["points"][0]["text"]
+        self.assertIn("meeting in print", first["en"])
+        self.assertIn("reunión impresa", first["es"])
+        self.assertIn("armed forces", first["en"])
+
+    def test_wording_that_stays_true_for_the_whole_panel(self):
+        role = self.text("role", "en") + " " + self.text("role", "es")
+        self.assertNotRegex(role, r"starts in \{panel_start\}|empieza en \{panel_start\}")
+
+    def test_anonymity_is_about_the_public_level(self):
+        # Tradition Eleven: press, radio, films (today: anything public) — not members' own chats
+        self.assertNotIn("WhatsApp", self.text("traditions", "en"))
+        self.assertIn("outside AA", self.text("traditions", "en"))
+        self.assertIn("fuera de AA", self.text("traditions", "es"))
+
+
 class OrientationStringsTest(unittest.TestCase):
     def test_ui_strings_in_both_languages(self):
         data = json.loads(I18N.read_text(encoding="utf-8"))

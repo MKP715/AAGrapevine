@@ -39,11 +39,18 @@ export function render(data) {
       icon("app-icon-maskable-192.png", 192, "maskable"),
       icon("app-icon-maskable-512.png", 512, "maskable"),
     ],
+    // Pages "Save key pages for offline" keeps (sw.11ty.js), so every shortcut opens without a signal too.
     shortcuts: [
       { name: t("nav.meetings"), url: `${home}meetings/` },
       { name: t("nav.monthly"), url: `${home}monthly/` },
-      { name: t("nav.listen"), url: `${home}listen/` },
+      { name: t("nav.orientation"), url: `${home}orientation/` },
     ].map((s) => ({ ...s, icons: [icon("app-icon-192.png", 192, "any")] })),
+    // The richer install sheet (Chrome): the home page on a phone, GVR / RLV 101 on a computer, in the
+    // manifest's language (src/assets/img/app-screenshot-<lang>-<narrow|wide>.webp)
+    screenshots: [
+      { src: `${base}assets/img/app-screenshot-${lang}-narrow.webp`, sizes: "1080x1920", type: "image/webp", form_factor: "narrow", label: t("pwa.manifest.shot_narrow") },
+      { src: `${base}assets/img/app-screenshot-${lang}-wide.webp`, sizes: "1920x1080", type: "image/webp", form_factor: "wide", label: t("pwa.manifest.shot_wide") },
+    ],
     prefer_related_applications: false,
   };
   return JSON.stringify(manifest, null, 2) + "\n";

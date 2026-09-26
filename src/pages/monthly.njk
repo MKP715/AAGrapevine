@@ -134,8 +134,14 @@ pageScripts: ["/assets/js/monthly.js", "/assets/js/report.js"]
             <label class="rp-label" for="rp-role">{{ "report.f_role" | t(lang) }}</label>
             <select id="rp-role" class="input rp-select" x-effect="$el.value = prof.role" @change="setProf('role', $event.target.value)">
               <option value="">{{ "report.f_role_none" | t(lang) }}</option>
+              {#- La Viña first on Spanish pages -#}
+              {%- if lang == "es" %}
+              <option value="rlv">{{ "report.role_rlv" | t(lang) }}</option>
+              <option value="gvr">{{ "report.role_gvr" | t(lang) }}</option>
+              {%- else %}
               <option value="gvr">{{ "report.role_gvr" | t(lang) }}</option>
               <option value="rlv">{{ "report.role_rlv" | t(lang) }}</option>
+              {%- endif %}
               <option value="both">{{ "report.role_both" | t(lang) }}</option>
               <option value="chair">{{ "report.role_chair_label" | t(lang) }}</option>
               <option value="dcm">{{ "report.role_dcm" | t(lang) }}</option>
@@ -152,7 +158,7 @@ pageScripts: ["/assets/js/monthly.js", "/assets/js/report.js"]
           </div>
           <fieldset class="rp-f rp-f-lang">
             <legend class="rp-label">{{ "report.f_lang" | t(lang) }}</legend>
-            <div class="grid grid-cols-2 gap-1 rounded-full border border-line bg-surface p-1">
+            <div class="grid grid-cols-2 gap-1 rounded-full border border-line bg-surface-2 p-1">
               {%- for l in (["es", "en"] if lang == "es" else ["en", "es"]) %}
               <label class="cm-seg"><input type="radio" name="rp-lang" value="{{ l }}" class="sr-only" :checked="rl === '{{ l }}'" @change="setLang('{{ l }}')"><span lang="{{ l }}">{{ ("community.lang_name_" + l) | t(lang) }}</span></label>
               {%- endfor %}
@@ -173,7 +179,7 @@ pageScripts: ["/assets/js/monthly.js", "/assets/js/report.js"]
             <template x-for="s in list()" :key="s.id">
               <li class="rp-sec" :class="{ 'is-off': !s.on, 'is-empty': s.empty, 'is-open': open[s.id], 'is-active': active === s.id }">
                 <div class="rp-sec-row">
-                  <label class="rp-check"><input type="checkbox" :checked="s.on" @change="toggle(s.id)" :aria-labelledby="'rp-t-' + s.id"></label>
+                  <label class="rp-check"><input type="checkbox" :checked="s.on" @change="toggle(s.id)" :aria-label="say('include', s.title)"></label>
                   <button type="button" class="rp-sec-btn" :data-rp-edit="s.id" :aria-expanded="open[s.id] ? 'true' : 'false'" :aria-controls="'rp-ed-' + s.id" @click="toggleOpen(s.id)">
                     <span class="rp-num" aria-hidden="true"><span x-show="s.header">{% icon "heading", "size-3.5" %}</span><span x-show="!s.header" x-text="s.num || '–'"></span></span>
                     <span class="rp-sec-name">
@@ -284,7 +290,7 @@ pageScripts: ["/assets/js/monthly.js", "/assets/js/report.js"]
               </div>
             </div>
           </div>
-          <div id="rp-doc-wrap" class="rp-doc-wrap" x-ref="doc" :class="{ 'is-open': full }" tabindex="0" role="region" aria-label="{{ 'report.preview_label' | t(lang) }}">
+          <div id="rp-doc-wrap" class="rp-doc-wrap" data-tts-skip x-ref="doc" :class="{ 'is-open': full }" tabindex="0" role="region" aria-label="{{ 'report.preview_label' | t(lang) }}">
             <div class="rp-doc" :lang="rl" x-html="preview()"></div>
           </div>
           <div class="rp-fold">
@@ -343,12 +349,20 @@ pageScripts: ["/assets/js/monthly.js", "/assets/js/report.js"]
       <p class="text-ink">{{ carry.story_note[lang] }} <a class="link font-semibold" href="{{ '/contribute/' | lurl(lang) }}">{{ "nav.contribute" | t(lang) }}</a></p>
     </div>
     {% endif %}
-    {% if carry.quote %}
-    <figure class="card card-pad mp-quote">
-      {% icon "quote", "size-6 text-grape" %}
-      <blockquote class="mt-2 font-display text-xl text-ink">{{ carry.quote[lang] }}</blockquote>
-      {% if carry.quote.cite %}<figcaption class="mt-2 text-sm text-muted">— {{ carry.quote.cite[lang] }}</figcaption>{% endif %}
-    </figure>
+    {#- The representatives' official guides: a pointer in our own words + the documents (never quoted) -#}
+    {%- set guides = db.pdfs | mpGuides(lang) if carry.guides else [] -%}
+    {% if guides.length %}
+    <div class="card card-pad flex gap-4">
+      <span class="mp-tipicon">{% icon "notebook-pen", "size-5" %}</span>
+      <div class="min-w-0">
+        <p class="text-ink">{{ carry.guides[lang] }}</p>
+        <ul class="mt-1 space-y-0.5" role="list">
+          {% for g in guides %}
+          <li><a class="link tap-link inline-flex flex-wrap items-baseline gap-x-1.5 font-semibold" href="{{ g.url }}" target="_blank" rel="noopener" hreflang="{{ g.lang }}"><span{% if g.lang != lang %} lang="{{ g.lang }}"{% endif %}>{{ g.title }}</span><span class="text-sm font-normal text-muted">({{ ("monthly.guide_doc" if g.lang == lang else ("monthly.guide_doc_" + g.lang)) | t(lang) }})</span><span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a></li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
     {% endif %}
   </div>
   {% if carry.source %}<p class="mt-6 max-w-3xl text-xs text-muted"><strong>{{ "monthly.source" | t(lang) }}:</strong> {{ carry.source[lang] }}</p>{% endif %}

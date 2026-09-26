@@ -326,3 +326,20 @@ pageScripts: ["/assets/js/committee.js"]
 </div>
 
 {% cmPreviewDialog lang %}
+
+{#- Structured data (schema.org): the upcoming events, for search engines' event listings. Online
+    ones (the committee meeting, Zoom workshops) point to this page; a place that isn't known yet is
+    left out (an event needs one). No personal names; the organizer is the committee. -#}
+{%- set ldEvents = [] -%}
+{%- for ev in upcoming %}{% if loop.index <= 30 and not ev.later %}
+{%- set onlineEv = ev.committee or ev.isOnline -%}
+{%- if onlineEv or (ev.location and not ev.locationTba) -%}
+{%- set _ld = ldEvents.push({ "@type": "Event", "name": ev.title, "startDate": ev.startIso, "endDate": ev.endIso,
+  "eventStatus": "https://schema.org/EventScheduled",
+  "eventAttendanceMode": "https://schema.org/OnlineEventAttendanceMode" if onlineEv else "https://schema.org/OfflineEventAttendanceMode",
+  "location": { "@type": "VirtualLocation", "url": pageAbs + "#" + ev.anchor } if onlineEv else { "@type": "Place", "name": ev.location, "address": ev.location },
+  "organizer": { "@type": "Organization", "name": site | pick(lang, "committee"), "url": ('/' | lurl(lang)) | siteUrl(site) },
+  "isAccessibleForFree": true, "inLanguage": "es-US" if lang == "es" else "en-US", "url": pageAbs + "#" + ev.anchor }) -%}
+{%- endif -%}
+{% endif %}{% endfor -%}
+{% if ldEvents | length %}<script type="application/ld+json">{{ { "@context": "https://schema.org", "@graph": ldEvents } | rpJson | safe }}</script>{% endif %}

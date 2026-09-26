@@ -48,6 +48,8 @@ const nav = {
     // Accessibility: the reading settings explained, captions, ASL, audio, joining meetings by phone,
     // printing (src/pages/accessibility.njk). Also linked from the "Aa" panel.
     { key: "nav.accessibility", url: "/accessibility/", page: "accessibility", icon: "accessibility", group: "site" },
+    // Saved pages & app (/offline/): what is saved on this device, "Save key pages", installing the site.
+    { key: "nav.offline", url: "/offline/", page: "offline", icon: "hard-drive-download", group: "site" },
     { key: "nav.share", url: "/share/", page: "share", icon: "qr-code", group: "site" },
     { key: "nav.search", url: "/search/", page: "search", icon: "search", group: "site" },
     { key: "nav.status", url: "/status/", page: "status", icon: "activity", group: "site" },

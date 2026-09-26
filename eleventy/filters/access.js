@@ -7,6 +7,8 @@
 // callers' passcodes from `phone_access:` (config/site.yml).
 
 const digitsOf = (s) => String(s ?? "").replace(/\D+/g, "");
+// a title that already names its language: "La Viña Open Meeting (in Spanish)", "… (en inglés)"
+const LANG_NOTE = /\((?:in|en) (?:english|spanish|inglés|español)\)/i;
 const isDigits = (s) => /^\d+$/.test(String(s ?? "").trim());
 
 /** "+1 346 248 7799" → "+13462487799" (U.S. numbers only; anything else → ""). */
@@ -18,10 +20,11 @@ export function telOf(number) {
 }
 
 /** Zoom's "one tap mobile" link: dial, then the meeting ID and # after a pause; with a passcode,
- *  ",,,,*<passcode>#" (the form Zoom prints in its invitations). */
+ *  ",,,,*<passcode>#" (the form Zoom prints in its invitations). In a URL a raw "#" starts the
+ *  fragment (Android's dialer drops everything after it), so it is written %23 (RFC 3966). */
 export function oneTap(tel, meetingDigits, passcode) {
   if (!tel || !meetingDigits) return "";
-  return `tel:${tel},,${meetingDigits}#` + (isDigits(passcode) ? `,,,,*${String(passcode).trim()}#` : "");
+  return `tel:${tel},,${meetingDigits}%23` + (isDigits(passcode) ? `,,,,*${String(passcode).trim()}%23` : "");
 }
 
 /** The passcode a caller types: the configured phone passcode, else the meeting passcode when it
@@ -33,8 +36,12 @@ export function phonePasscode(configured, meetingPasscode) {
 }
 
 /**
- * → { numbers: [{ display, tel, city }], meetings: [{ key, titles, id, digits, pass, askChair,
+ * → { numbers: [{ display, tel, city }], meetings: [{ key, titles, notes, starts, id, digits, pass, askChair,
  *      details, call, callCity }], ok }
+ * notes[i]: "(en inglés)" / "(in Spanish)" when titles[i] is a meeting held in the other language and
+ * its title doesn't say so already (La Viña's English title does: "… (in Spanish)"), else "".
+ * starts[i]: "November 5" / "5 de noviembre" while titles[i] (a weekly open meeting) has not started yet
+ * (weeklyOpen's `starts`), else "".
  * meetings: the committee meeting, then one entry per Zoom ROOM of the weekly open meetings (the
  * Grapevine Weekly Open and La Viña's open meeting share one room: one entry, both titles, the page
  * language's meeting first — cmWeeklyAll's order).
@@ -51,7 +58,7 @@ export function axPhone(site, weekly, lang = "en", t = (k) => k) {
   if (cDigits) {
     const pass = phonePasscode(pa.committee?.phone_passcode, m.passcode);
     meetings.push({
-      key: "committee", titles: [t("nav.meeting")], id: String(m.meeting_id), digits: cDigits, pass,
+      key: "committee", titles: [t("nav.meeting")], notes: [""], starts: [""], id: String(m.meeting_id), digits: cDigits, pass,
       askChair: !pass && !!String(m.passcode || "").trim(), details: "/meetings/#committee-meeting",
       call: first ? oneTap(first.tel, cDigits, pass) : "", callCity: first ? first.city : "",
     });
@@ -63,15 +70,30 @@ export function axPhone(site, weekly, lang = "en", t = (k) => k) {
     if (!rooms.has(k)) {
       const pass = phonePasscode(pa.weekly_open?.phone_passcode, w.passcode);
       rooms.set(k, {
-        key: "weekly-" + w.zoomDigits, titles: [], id: w.zoomId || w.zoomDigits, digits: w.zoomDigits, pass,
+        key: "weekly-" + w.zoomDigits, titles: [], notes: [], starts: [], id: w.zoomId || w.zoomDigits, digits: w.zoomDigits, pass,
         askChair: false, askHost: !pass && !!w.passcode, details: "/meetings/#weekly-open",
         call: first ? oneTap(first.tel, w.zoomDigits, pass) : "", callCity: first ? first.city : "",
       });
     }
-    if (w.title) rooms.get(k).titles.push(w.title);
+    if (w.title) {
+      const r = rooms.get(k);
+      const other = (w.lang === "en" || w.lang === "es") && w.lang !== lang && !LANG_NOTE.test(w.title);
+      r.titles.push(w.title);
+      r.notes.push(other ? t(w.lang === "en" ? "access.in_english" : "access.in_spanish") : "");
+      r.starts.push(startsLabel(w.starts, lang));
+    }
   }
   meetings.push(...rooms.values());
   return { numbers, meetings, ok: numbers.length > 0 && meetings.length > 0 };
+}
+
+/** A first meeting that is still ahead ({ iso }) → "November 5" / "5 de noviembre" (Central time). */
+function startsLabel(starts, lang) {
+  const d = starts && starts.iso ? new Date(starts.iso) : null;
+  if (!d || Number.isNaN(d.getTime())) return "";
+  try {
+    return new Intl.DateTimeFormat(lang === "es" ? "es-US" : "en-US", { month: "long", day: "numeric", timeZone: "America/Chicago" }).format(d);
+  } catch (e) { return ""; }
 }
 
 const AUDIO_RE = /\baudio|\bp[oó]dcast/i; // "audio", "audiobook(s)", "audiolibro(s)", "podcast", "pódcast"

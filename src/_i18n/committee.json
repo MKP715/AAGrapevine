@@ -713,7 +713,7 @@
   },
   "committee.docs.meta_desc": {
     "en": "The portfolio of the NETA 65 Grapevine / La Viña Committee: reports, meeting notes, slides, workshop materials and flyers from our Google Drive.",
-    "es": "El portafolio del Comité de Grapevine / La Viña de NETA 65: informes, notas de reuniones, presentaciones, materiales de talleres y volantes de nuestro Google Drive."
+    "es": "El portafolio del Comité de Grapevine y La Viña de NETA 65: informes, notas de reuniones, presentaciones, materiales de talleres y volantes."
   },
   "committee.docs.moved_text": {
     "en": "The committee's reports, notes, slides and workshop files are now in our Portfolio:",
@@ -1228,8 +1228,8 @@
     "es": "2027-01-10 Bienvenidos nuevos RLV"
   },
   "committee.meetings.meta_desc": {
-    "en": "All the meetings in one place: the NETA 65 Grapevine / La Viña Committee's monthly Zoom meeting, AA groups in and near our Area that read Grapevine or La Viña in their meetings, and the weekly open meetings of AA Grapevine and La Viña.",
-    "es": "Todas las reuniones en un solo lugar: la reunión mensual por Zoom del Comité de Grapevine / La Viña de NETA 65, los grupos de AA de nuestra Área y de áreas cercanas que leen Grapevine o La Viña en sus reuniones, y las reuniones abiertas semanales de AA Grapevine y La Viña."
+    "en": "Our committee's monthly Zoom meeting, AA groups in and near NETA 65 that read Grapevine or La Viña, and the weekly open meetings of both magazines.",
+    "es": "La reunión mensual del comité por Zoom, grupos de AA en NETA 65 y cerca que leen La Viña o Grapevine, y las reuniones abiertas semanales de ambas revistas."
   },
   "committee.meetings.eyebrow": {
     "en": "Committee · Meetings",

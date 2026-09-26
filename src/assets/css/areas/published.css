@@ -66,6 +66,7 @@
 @media (width >= 40rem) { .pw-results { gap: 3rem; } }
 .pw-results > [hidden] { display: none; }
 .pw-group-head { display: flex; align-items: flex-start; gap: 0.875rem; margin-bottom: 1.25rem; }
+.pw-group-head > .min-w-0 { overflow-wrap: anywhere; } /* a long word never pushes the page sideways (larger text on a phone) */
 .pw-group-icon { display: grid; place-items: center; flex-shrink: 0; width: 2.75rem; height: 2.75rem; border-radius: 0.9rem; background: var(--c-surface-2); color: var(--c-muted); }
 .pw-group-icon[data-scope="neta65"], .pw-avatar[data-scope="neta65"] { background: var(--c-vine-soft); color: var(--c-vine); }
 .pw-group-icon[data-scope="texas"], .pw-avatar[data-scope="texas"] { background: var(--c-gv-soft); color: var(--c-gv); }

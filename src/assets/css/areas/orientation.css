@@ -20,10 +20,10 @@
 .o101-bar > span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--c-vine), var(--c-gv)); transition: width 0.35s ease; }
 
 /* Keyboard legend (Present as slides) */
-.o101-keys { display: grid; grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr)); gap: 0.625rem 1.25rem; }
+.o101-keys { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(10rem, 100%), 1fr)); gap: 0.625rem 1.25rem; }
 .o101-keys > div { display: flex; align-items: center; gap: 0.5rem; min-width: 0; }
 .o101-keys dt { display: flex; gap: 0.25rem; flex-shrink: 0; }
-.o101-keys dd { font-size: 0.875rem; color: var(--c-muted); }
+.o101-keys dd { min-width: 0; font-size: 0.875rem; color: var(--c-muted); overflow-wrap: anywhere; }
 .o101-keys kbd { display: inline-grid; place-items: center; min-width: 1.75rem; height: 1.75rem; padding: 0 0.4rem; border: 1px solid var(--c-line); border-bottom-width: 2px;
   border-radius: 0.4rem; background: var(--c-surface); color: var(--c-ink); font: 600 0.75rem/1 var(--font-sans); }
 /* Shown only when JavaScript is off (the slide show needs it) */
@@ -85,12 +85,21 @@
 .is-done > .o101-toc-link .o101-toc-n { background: var(--c-vine-soft); color: var(--c-vine); }
 .o101-toc-min { flex-shrink: 0; font-size: 0.75rem; color: var(--c-muted); white-space: nowrap; }
 .o101-toc-done { display: grid; flex-shrink: 0; color: var(--c-vine); }
+/* Phones and tablets: the list is folded behind "All 6 lessons" (orientation.js; open without JavaScript) */
+@media (width < 64rem) {
+  :root.js [data-o101-toc]:not(.is-open) .o101-toc { display: none; }
+  [data-o101-toc].is-open [data-o101-toc-btn] .icon { transform: rotate(180deg); }
+}
 
 /* Self-check: the radio is visually replaced by the letter circle (it stays focusable; the focus
    ring is drawn on the whole answer). Right = vine, wrong = danger, both with an icon + text
    (.o101-q raises them above the :has(:checked) state). */
 .o101-q fieldset { margin: 0; padding: 0; border: 0; }
-.o101-q-legend { padding: 0; }
+/* width: a legend is sized to its content by default — at 150% text with relaxed spacing on a 320px
+   phone that is wider than its fieldset; it takes the fieldset's width and wraps instead */
+.o101-q-legend { padding: 0; width: 100%; max-width: 100%; }
+/* long Spanish words at 150% on a 320px phone break instead of pushing the answers out of the card */
+.o101-q-legend, .o101-opt > span { overflow-wrap: anywhere; }
 .o101-opts { display: grid; gap: 0.5rem; margin-top: 1rem; }
 .o101-opt { position: relative; display: flex; align-items: center; gap: 0.75rem; min-height: 2.75rem; padding: 0.55rem 0.75rem;
   border: 1px solid var(--c-line); border-radius: 0.75rem; background: var(--c-surface); cursor: pointer; line-height: 1.35;
@@ -106,6 +115,11 @@
 .o101-q .o101-opt.is-right .o101-opt-letter { border-color: var(--c-vine); background: var(--c-vine); color: var(--c-surface); }
 .o101-q .o101-opt.is-wrong { border-color: var(--c-danger); background: color-mix(in srgb, var(--c-danger) 7%, var(--c-surface)); }
 .o101-q .o101-opt.is-wrong .o101-opt-letter { border-color: var(--c-danger); background: var(--c-danger); color: var(--c-surface); }
+/* Windows High Contrast (forced colours drop fills): the chosen answer keeps a system outline and a filled letter */
+@media (forced-colors: active) {
+  .o101-opt:has(input:checked) { outline: 3px solid Highlight; outline-offset: 1px; }
+  .o101-opt:has(input:checked) .o101-opt-letter { forced-color-adjust: none; background: Highlight; color: HighlightText; border-color: Highlight; }
+}
 .o101-fb { display: flex; align-items: flex-start; gap: 0.5rem; margin-top: 0.875rem; font-size: 0.875rem; line-height: 1.5; color: var(--c-ink); }
 .o101-fb:empty { display: none; }
 .o101-fb .icon { width: 1.1rem; height: 1.1rem; margin-top: 0.1rem; }
@@ -134,13 +148,23 @@
 .o101-deck-main { flex: 1; min-height: 0; display: grid; place-items: center; padding: 0.5rem; }
 /* The 16:9 stage fills the room left by the progress line (4px), the control bar (3.5rem) and the padding */
 .o101-stage { position: relative; width: min(100%, calc((100dvh - 4px - 3.5rem - 1rem) * 16 / 9)); aspect-ratio: 16 / 9;
-  --u: 1cqh; /* the type unit: 1% of the stage height (a portrait phone switches to its width, below) */
+  /* the type unit: 1% of the stage height, times the Aa text size (--text-scale, main.css: 1 at 100%);
+     a portrait phone or a short window (a phone held sideways, a zoomed-in browser) switches to a
+     fluid stage with a rem floor, below */
+  --u: calc(1cqh * var(--text-scale, 1));
   container-type: size; overflow: hidden; border-radius: 0.75rem; background: radial-gradient(120% 120% at 100% 0%, var(--d-bg2) 0%, var(--d-bg) 55%);
   box-shadow: 0 20px 60px -20px rgb(0 0 0 / 0.8); touch-action: pan-y pinch-zoom; user-select: none; }
 .o101-slide { position: absolute; inset: 0; display: flex; padding: calc(7 * var(--u)) 7cqw; font-size: calc(3.6 * var(--u)); line-height: 1.35; }
+/* Larger text: a slide that no longer fits scrolls on its own (the arrow keys scroll it first: orientation.js);
+   the grape art then ends at the slide's edge, so it never adds a scroll of its own */
+:root:not([data-text="100"]) .o101-slide { overflow-y: auto; }
+:root:not([data-text="100"]) .o101-s-body { justify-content: safe center; }
+:root:not([data-text="100"]) .o101-s-art { bottom: calc(-7 * var(--u)); }
+/* …while the QR code keeps about its own size (bigger text needs no bigger code; the words get the room) */
+:root:not([data-text="100"]) .o101-s-qr-svg { width: min(calc(40 * var(--u)), 42cqh); height: min(calc(40 * var(--u)), 42cqh); }
 .o101-s-body { position: relative; z-index: 1; display: flex; flex-direction: column; justify-content: center; width: 100%; min-width: 0; }
 .o101-s-center { align-items: center; text-align: center; }
-.o101-s-art { position: absolute; z-index: 0; right: -2cqw; bottom: -calc(12 * var(--u)); height: calc(78 * var(--u)); width: auto; color: rgb(255 255 255 / 0.06); pointer-events: none; }
+.o101-s-art { position: absolute; z-index: 0; right: -2cqw; bottom: calc(-12 * var(--u)); height: calc(78 * var(--u)); width: auto; color: rgb(255 255 255 / 0.06); pointer-events: none; }
 .o101-s-center .o101-s-art { right: 50%; transform: translateX(50%); color: rgb(255 255 255 / 0.05); }
 .o101-s-eyebrow { font-size: calc(2.6 * var(--u)); font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--d-gold); }
 .o101-s-display { margin-top: calc(2 * var(--u)); font-family: var(--font-display); font-size: calc(10.5 * var(--u)); font-weight: 600; line-height: 1.05; letter-spacing: -0.01em; text-wrap: balance; }
@@ -227,7 +251,8 @@
 
 /* The control bar */
 .o101-deck-bar { flex-shrink: 0; display: flex; align-items: center; gap: 0.5rem; height: 3.5rem;
-  padding: 0 max(0.75rem, env(safe-area-inset-right)) env(safe-area-inset-bottom) max(0.75rem, env(safe-area-inset-left)); }
+  /* (the safe areas are divided by the bar's zoom, below: they stay the size the phone needs) */
+  padding: 0 max(0.75rem, calc(env(safe-area-inset-right) / var(--deck-zoom, 1))) calc(env(safe-area-inset-bottom) / var(--deck-zoom, 1)) max(0.75rem, calc(env(safe-area-inset-left) / var(--deck-zoom, 1))); }
 .o101-deck-btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; min-width: 2.75rem; min-height: 2.75rem; padding: 0 0.75rem;
   border-radius: 999px; border: 1px solid rgb(255 255 255 / 0.22); background: rgb(255 255 255 / 0.08); color: #fff;
   font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: background-color 0.15s; }
@@ -238,19 +263,36 @@
   .o101-deck-btn--text > span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   .o101-deck-count { min-width: 3.5rem; }
 }
+/* On a phone (upright below 768px, or sideways) the control bar keeps its 100% size at larger text,
+   like the header row (areas/access.css --chrome-zoom): its buttons are already 44px touch targets,
+   and at 130–150% the five controls no longer fit — Exit and Fullscreen went off the screen. The
+   slide itself still grows with the text size. */
+.o101-deck-bar { zoom: var(--deck-zoom, 1); }
+@media (width < 48rem), (height < 32rem) {
+  :root[data-text="115"] .o101-deck-bar { --deck-zoom: 0.8696; }
+  :root[data-text="130"] .o101-deck-bar { --deck-zoom: 0.7692; }
+  :root[data-text="150"] .o101-deck-bar { --deck-zoom: 0.6667; }
+}
 
-/* A phone held upright: the stage fills the screen (no 16:9 letterbox), type follows the width, the two-
-   column slides stack, and a slide that is still too long scrolls on its own. */
-@media (orientation: portrait) and (width < 48rem) {
+/* A phone held upright — or any short window (a phone held sideways, a browser zoomed to 200–400%):
+   the stage fills the screen (no 16:9 letterbox), the two-column slides stack, and a slide that is
+   still too long scrolls on its own. Type follows the width upright and the height sideways, never
+   below 0.3rem — so browser zoom and the Aa text size make it bigger (WCAG 1.4.4, 1.4.10). */
+@media (orientation: portrait) and (width < 48rem), (height < 32rem) {
   .o101-deck-main { padding: 0.5rem; place-items: stretch; }
-  .o101-stage { --u: 1.25cqw; width: 100%; height: 100%; aspect-ratio: auto; }
+  .o101-stage { --u: max(1.25cqw, 0.3rem); width: 100%; height: 100%; aspect-ratio: auto; }
   .o101-slide { overflow-y: auto; padding: calc(7 * var(--u)) calc(6 * var(--u)); }
+  .o101-s-art { bottom: calc(-7 * var(--u)); }
   .o101-s-body { justify-content: safe center; }
   .o101-s-display { font-size: calc(8.5 * var(--u)); }
   .o101-s-split, .o101-s-split--close { grid-template-columns: minmax(0, 1fr); align-items: start; align-content: safe center; gap: calc(6 * var(--u)); }
   .o101-s-agenda { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; grid-auto-flow: row; gap: calc(3.5 * var(--u)); }
   .o101-s-points p, .o101-s-goal, .o101-s-lead { max-width: none; }
   .o101-s-qr { justify-self: center; }
+}
+@media (orientation: landscape) and (height < 32rem) {
+  .o101-stage { --u: max(1.25cqh, 0.3rem); }        /* sideways: 844 × 390 → body text ≈ 17px */
+  .o101-deck-bar { height: 2.75rem; }              /* the buttons are 2.75rem: a slimmer bar, more slide */
 }
 
 /* ---------- 4. Print ---------- */

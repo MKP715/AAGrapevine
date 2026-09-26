@@ -25,8 +25,10 @@ eleventyExcludeFromCollections: true
 {% call ui.pageHero(lang, "pwa.offline.title" | t(lang), "pwa.offline.sub" | t(lang), "", "pwa.offline.eyebrow" | t(lang), { eyebrowIcon: "wifi-off", titleId: "offline-title" }) %}
 <div class="hero-actions" data-pwa-offline-copy
      data-title-online="{{ 'pwa.offline.title_online' | t(lang) }}" data-sub-online="{{ 'pwa.offline.sub_online' | t(lang) }}"
+     data-title-direct="{{ 'pwa.offline.title' | t(lang) }}" data-sub-direct="{{ 'pwa.offline.sub_direct' | t(lang) }}"
      data-home-label="{{ 'pwa.offline.home' | t(lang) }}">
-  {#- No JavaScript (or online): a plain link home. With JavaScript and no connection: reload this address. -#}
+  {#- No JavaScript, or this page opened on purpose (online or offline): a plain link home. With
+      JavaScript, standing in for a page that isn't saved: reload that address. -#}
   <a class="btn-light" href="{{ '/' | lurl(lang) }}" data-pwa-retry>{% icon "refresh-cw", "size-4" %} <span>{{ "pwa.offline.retry" | t(lang) }}</span></a>
 </div>
 {% endcall %}
@@ -46,7 +48,7 @@ eleventyExcludeFromCollections: true
 
 {#- ============ How it works (the four things a visitor can do about a weak signal) ============ -#}
 <section class="section container-page pt-10 sm:pt-12" aria-labelledby="pwa-how-h">
-  {{ ui.sectionHead("pwa.offline.how_h" | t(lang), "pwa.offline.how_sub" | t(lang), "", "", "wifi-low", { eyebrow: "pwa.offline.how_eyebrow" | t(lang), tone: "text-vine", id: "pwa-how-h", lang: lang }) }}
+  {{ ui.sectionHead("pwa.offline.how_h" | t(lang), "pwa.offline.how_sub" | t(lang), "", "", "wifi", { eyebrow: "pwa.offline.how_eyebrow" | t(lang), tone: "text-vine", id: "pwa-how-h", lang: lang }) }}
   <ul class="grid-cards-4" role="list">
     {% for c in how %}
     <li class="card card-pad flex flex-col gap-3">

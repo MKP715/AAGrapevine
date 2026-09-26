@@ -3,6 +3,10 @@
     "en": "NETA 65 Grapevine & La Viña Committee",
     "es": "Comité de Grapevine y La Viña de NETA 65"
   },
+  "site.home_title_tail": {
+    "en": "NETA 65 Committee",
+    "es": "Comité de NETA 65"
+  },
   "site.description": {
     "en": "Northeast Texas Area 65 Grapevine and La Viña Committee — new stories, podcasts, videos and service resources for GVRs, RLVs, districts and groups.",
     "es": "Comité de Grapevine y La Viña del Área 65 del Noreste de Texas: historias, podcasts, videos y recursos de servicio para RLV, GVR, distritos y grupos."
@@ -515,6 +519,10 @@
   "nav.accessibility": {
     "en": "Accessibility",
     "es": "Accesibilidad"
+  },
+  "nav.offline": {
+    "en": "Saved pages & app",
+    "es": "Páginas guardadas y app"
   },
   "comfort.button": {
     "en": "Reading & display settings",

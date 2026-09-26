@@ -603,7 +603,9 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
           <li class="flex items-center gap-3 py-3{{ ' max-sm:hidden' if loop.index > 2 }}">
             <span class="relative size-14 shrink-0 overflow-hidden rounded-xl bg-grape-soft text-grape">
               <span class="absolute inset-0 grid place-items-center" aria-hidden="true">{% icon "headphones", "size-5" %}</span>
-              {% if e.image %}{{ img(e.image, "absolute inset-0 size-full object-cover") }}{% endif %}
+              {#- the ≤480px copy the sync makes (extra.thumb) for a 56px tile, not the 1500–3000px cover art -#}
+              {%- set eArt = e.extra.thumb or e.image -%}
+              {% if eArt %}{{ img(eArt, "absolute inset-0 size-full object-cover") }}{% endif %}
             </span>
             <div class="min-w-0 flex-1">
               {% if otherShow %}<p class="truncate text-[0.68rem] font-semibold uppercase tracking-wider text-grape"{% if L != "en" and not eWeekly %} lang="en"{% endif %}>{{ eShow.short }}</p>{% endif %}
@@ -613,7 +615,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
             {% if e.extra.audio_url %}
             <a href="{{ e.extra.audio_url }}" class="home-play grid size-11 shrink-0 place-items-center rounded-full bg-grape-soft text-grape transition"
                :class="isPlaying($el.dataset.id) && 'is-playing'"
-               @click.prevent="play($el)" data-id="{{ e.id }}" data-src="{{ e.extra.audio_url }}" data-title="{{ eFull }}" data-meta="{{ [e.date | fmtDate(L, 'medium'), e.extra.duration_sec | duration] | join(' · ') }}" data-img="{{ e.image or '' }}"
+               @click.prevent="play($el)" data-id="{{ e.id }}" data-src="{{ e.extra.audio_url }}" data-title="{{ eFull }}" data-meta="{{ [e.date | fmtDate(L, 'medium'), e.extra.duration_sec | duration] | join(' · ') }}" data-img="{{ e.extra.thumb or e.image or '' }}"
                aria-label="{{ 'home.play_episode' | t(L, { title: eFull }) }}">
               <span x-show="!isPlaying($el.parentElement.dataset.id)">{% icon "play", "size-5 translate-x-px" %}</span>
               <span x-show="isPlaying($el.parentElement.dataset.id)" x-cloak>{% icon "pause", "size-5" %}</span>
@@ -839,7 +841,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
 <section class="home-lib section border-y border-line" aria-labelledby="lib-title">
   <div class="container-page">
     {{ ui.sectionHead("home.lib_title" | t(L), "home.lib_sub" | t(L), "/library/" | lurl(L), "home.lib_browse" | t(L), "library", { eyebrow: "home.lib_eyebrow" | t(L), tone: "text-gv", id: "lib-title", lang: L }) }}
-    <div class="grid gap-5 lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] lg:items-end lg:gap-10">
+    <div class="home-lib-grid grid gap-5 lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] lg:items-end lg:gap-10">
       {#- Searches the document library (library.js reads ?q=); the site-wide search lives at /search/. -#}
       <form action="{{ '/library/' | lurl(L) }}" method="get" role="search">
         <label for="home-lib-q" class="mb-2 block text-sm font-semibold text-ink">{{ "home.lib_search_label" | t(L) }}</label>
@@ -1003,3 +1005,13 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
     </ul>
   </div>
 </section>
+
+{#- Structured data (schema.org): who we are (the committee) and this website, for search engines -#}
+{%- set homeAbsLd = ('/' | lurl(L)) | siteUrl(site) -%}
+{%- set siteRootLd = '/' | siteUrl(site) -%}
+<script type="application/ld+json">{{ { "@context": "https://schema.org", "@graph": [
+  { "@type": "Organization", "@id": siteRootLd + "#committee", "name": site | pick(L, "committee"), "url": homeAbsLd,
+    "logo": "/assets/img/app-icon-512.png" | siteUrl(site), "parentOrganization": { "@type": "Organization", "name": "Northeast Texas Area 65 (NETA 65)" } },
+  { "@type": "WebSite", "@id": siteRootLd + "#website", "name": site | pick(L, "title"), "url": homeAbsLd, "inLanguage": "es-US" if L == "es" else "en-US",
+    "publisher": { "@id": siteRootLd + "#committee" } }
+] } | rpJson | safe }}</script>

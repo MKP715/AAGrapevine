@@ -2,6 +2,8 @@
 // alternates (en / es / x-default) so search engines pair the translations.
 // Built from collections.all, so new pages are picked up automatically.
 // A page opts out with `sitemap: false` in its front matter.
+// No <lastmod> (every daily build would stamp every page with today's date — search engines learn to
+// ignore a date that always moves) and no <changefreq> (ignored by Google).
 // Pages that must always be listed (both languages) are checked at build time: if one is
 // missing (renamed, excluded by mistake) the build log says so. Not checked in ONLY= dev builds.
 const REQUIRED = ["/", "/whats-new/", "/published/", "/read/", "/monthly/", "/digest/"];
@@ -17,7 +19,6 @@ const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replac
 export function render(data) {
   const base = String(data.site?.url || "").replace(/\/$/, "");
   const abs = (u) => base + u;
-  const lastmod = String(data.site?.built || new Date().toISOString()).slice(0, 10);
 
   // Collect HTML page URLs (skip feeds, JSON, .ics, 404 and opted-out pages).
   // Eleventy only puts the FIRST page of a paginated template in collections
@@ -49,8 +50,6 @@ export function render(data) {
     const depth = en.split("/").filter(Boolean).length;
     out.push("  <url>");
     out.push(`    <loc>${esc(abs(u))}</loc>`);
-    out.push(`    <lastmod>${lastmod}</lastmod>`);
-    out.push("    <changefreq>daily</changefreq>");
     out.push(`    <priority>${en === "/" ? "1.0" : depth <= 1 ? "0.8" : "0.5"}</priority>`);
     if (hasEn && hasEs) {
       out.push(`    <xhtml:link rel="alternate" hreflang="en" href="${esc(abs(en))}"/>`);

@@ -225,7 +225,7 @@ def _download_pair(pair: str, models_dir: Path) -> None:
         if final.exists():
             shutil.rmtree(final, ignore_errors=True)
         os.replace(unpack, final)
-        log.info("installed translation model %s → %s", pair, final)
+        log.info("installed translation model %s -> %s", pair, final)
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 
@@ -447,7 +447,7 @@ class TranslationCache:
         if dropped or old != snap:
             self.dirty = True
             if dropped:
-                log.info("glossary changed → %d cached translations will be redone", dropped)
+                log.info("glossary changed -> %d cached translations will be redone", dropped)
         return dropped
 
     def sync_overrides(self, overrides: "Overrides") -> int:
@@ -477,7 +477,7 @@ class TranslationCache:
         if dropped or old != snap:
             self.dirty = True
             if dropped:
-                log.info("overrides changed → %d cached translations will be redone", dropped)
+                log.info("overrides changed -> %d cached translations will be redone", dropped)
         return dropped
 
     def reapply(self, direction: str, fix) -> int:
@@ -1518,7 +1518,7 @@ def fix_vulgar_es(text: str, src: str = "") -> str:
         return word[0].upper() + word[1:] if m.group(0)[0].isupper() else word
     out = _COGER.sub(repl, text)
     if out != text:
-        log.debug("rewrote vulgar 'coger': %r → %r", text[:80], out[:80])
+        log.debug("rewrote vulgar 'coger': %r -> %r", text[:80], out[:80])
     return out
 
 

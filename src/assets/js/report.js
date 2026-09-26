@@ -637,16 +637,35 @@
           window.addEventListener("afterprint", restore);
           this.$nextTick(function () { window.print(); if (!("onafterprint" in window)) restore(); });
         },
+        // One tap, whatever the report's length. Short enough for a wa.me link: WhatsApp opens with it
+        // written in. Longer (the usual full report): a phone's share sheet takes the whole text
+        // (WhatsApp is in it); elsewhere the text is copied and WhatsApp opens, to paste it into a chat.
+        // Only when neither can work (the share sheet fails, copying is blocked) the help box shows.
         whatsapp: function () {
-          var url = "https://wa.me/?text=" + encodeURIComponent(this.plain());
-          if (url.length > WA_MAX) {
-            this.waLong = true;
-            this.$nextTick(function () { var h = document.getElementById("rp-wa-title"); if (h) h.focus(); });
+          var self = this, text = this.plain();
+          var url = "https://wa.me/?text=" + encodeURIComponent(text);
+          this.waLong = false;
+          if (url.length <= WA_MAX) {
+            openLink(url, true);
+            this.flash(fmt(this.ui.opening, { app: "WhatsApp" }));
             return;
           }
-          this.waLong = false;
-          openLink(url, true);
-          this.flash(fmt(this.ui.opening, { app: "WhatsApp" }));
+          var touch = !!(window.matchMedia && window.matchMedia("(pointer: coarse)").matches);
+          if (touch && navigator.share) {
+            navigator.share({ text: text }).catch(function (e) { if (!e || e.name !== "AbortError") self.waHelp(); });
+            return;
+          }
+          // copied synchronously, while the tap still counts and before WhatsApp takes the focus
+          if (legacyCopy(text)) {
+            openLink("https://wa.me/", true);
+            this.flash(this.ui.wa_copied);
+            return;
+          }
+          this.waHelp();
+        },
+        waHelp: function () {
+          this.waLong = true;
+          this.$nextTick(function () { var h = document.getElementById("rp-wa-title"); if (h) h.focus(); });
         },
         closeWa: function () {
           this.waLong = false;
@@ -676,7 +695,8 @@
             var el = box.querySelector('[data-sec="' + id + '"]');
             var oy = getComputedStyle(box).overflowY;
             if (!el || (oy !== "auto" && oy !== "scroll") || box.scrollHeight <= box.clientHeight + 4) return;
-            var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+            // the site's own "Less motion" choice counts too (an explicit behavior overrides the CSS rule)
+            var reduce = window.GV && GV.reducedMotion ? GV.reducedMotion() : (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
             box.scrollTo({ top: Math.max(0, el.offsetTop - 16), behavior: reduce ? "auto" : "smooth" });
           });
         },

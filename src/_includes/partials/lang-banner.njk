@@ -17,11 +17,15 @@
      x-transition:leave="transition duration-200 ease-in" x-transition:leave-end="translate-y-4 opacity-0"
      class="cm-lang-banner pointer-events-none fixed inset-x-0 z-40 px-3 sm:px-4"
      role="region" aria-label="{{ 'community.banner.region' | t(O) }}" lang="{{ O }}">
-  <div class="pointer-events-auto mx-auto flex max-w-lg items-center gap-3 rounded-2xl border border-line bg-surface/95 py-2 pl-4 pr-2 text-ink shadow-[var(--shadow-lift)] backdrop-blur-md">
-    <span class="grid size-9 shrink-0 place-items-center rounded-full bg-gv-soft text-gv max-[359px]:hidden">{% icon "languages", "size-5" %}</span>
-    <p class="min-w-0 flex-1 text-sm font-semibold leading-snug">{{ "community.banner.q" | t(O) }}</p>
-    <a href="{{ page.url | altLangUrl(L) }}" hreflang="{{ O }}" class="btn-primary btn-sm shrink-0" data-lang-switch @click="remember('switched')">{{ "community.banner.cta" | t(O) }}</a>
-    <button type="button" class="grid size-11 shrink-0 place-items-center rounded-full text-muted hover:bg-surface-2 hover:text-ink sm:size-10" @click="dismiss()" aria-label="{{ 'community.banner.dismiss' | t(O) }}" title="{{ 'community.banner.dismiss' | t(O) }}">{% icon "x", "size-5" %}</button>
+  {#- the question, then Switch + Close (.cm-lang-banner-card: they go to a second row, at the right,
+      on a narrow phone and at larger text or relaxed spacing) -#}
+  <div class="cm-lang-banner-card pointer-events-auto mx-auto flex max-w-lg items-center rounded-2xl border border-line bg-surface/95 text-ink shadow-[var(--shadow-lift)] backdrop-blur-md">
+    <span class="cm-lang-banner-icon grid size-9 shrink-0 place-items-center rounded-full bg-gv-soft text-gv max-[359px]:hidden">{% icon "languages", "size-5" %}</span>
+    <p class="min-w-0 text-sm font-semibold leading-snug">{{ "community.banner.q" | t(O) }}</p>
+    <div class="cm-lang-banner-actions">
+      <a href="{{ page.url | altLangUrl(L) }}" hreflang="{{ O }}" class="btn-primary btn-sm shrink-0" data-lang-switch @click="remember('switched')">{{ "community.banner.cta" | t(O) }}</a>
+      <button type="button" class="grid size-11 shrink-0 place-items-center rounded-full text-muted hover:bg-surface-2 hover:text-ink sm:size-10" @click="dismiss()" aria-label="{{ 'community.banner.dismiss' | t(O) }}" title="{{ 'community.banner.dismiss' | t(O) }}">{% icon "x", "size-5" %}</button>
+    </div>
   </div>
 </div>
 <script>

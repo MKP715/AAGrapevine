@@ -72,7 +72,7 @@ pageScripts: ["/assets/js/orientation.js"]
     {% for l in O.lessons %}
     {%- set url = ('/orientation/' + l.id + '/') | lurl(lang) -%}
     <li class="card card-link group relative flex flex-col p-5 sm:p-6" data-o101-card="{{ l.id }}" data-n="{{ l.n }}">
-      <div class="flex items-center gap-3">
+      <div class="flex flex-wrap items-center gap-x-3 gap-y-2">
         <span class="grid size-11 shrink-0 place-items-center rounded-xl {{ tones[loop.index0 % 6] }}">{% icon l.icon, "size-5" %}</span>
         <span class="eyebrow">{{ "orientation.lesson_n" | t(lang, { n: l.n }) }}</span>
         <span class="badge-muted ml-auto">{% icon "clock", "size-3" %} {{ "orientation.minutes" | t(lang, { n: l.minutes }) }}</span>

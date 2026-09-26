@@ -19,8 +19,12 @@
      Capped: 120 static files, 200 images (the oldest go first).
    * JSON indexes (search, media, library): NETWORK FIRST, the saved copy when offline or after 6 s.
    Caches: gvlv-shell-<version> (app shell) and gvlv-static-<version> are replaced by each new
-   version; gvlv-pages-v1, gvlv-saved-v1, gvlv-img-v1 and gvlv-data-v1 are kept across versions, so a
-   site update never deletes what a visitor saved. activate deletes every other gvlv-* cache.
+   version; gvlv-pages-v1, gvlv-saved-v1, gvlv-saved-assets-v1, gvlv-img-v1 and gvlv-data-v1 are kept
+   across versions, so a site update never deletes what a visitor saved — including the styles and
+   scripts a saved page asks for (its old ?v= address): gvlv-saved-assets-v1 holds exactly the files
+   the saved pages use (pruneSavedAssets). activate deletes every other gvlv-* cache.
+   Only addresses inside the scope (the base path) are ever stored: other sites on the same origin
+   (GitHub Pages projects) are never kept or listed.
    Updates: a new version installs in the background and WAITS; pwa.js shows "Updated — reload" and
    sends SKIP_WAITING when the visitor chooses it (otherwise it takes over once every tab is closed). */
 "use strict";
@@ -33,6 +37,7 @@ const CACHE = {
   static: PREFIX + "static-" + V,
   pages: PREFIX + "pages-v1",
   saved: PREFIX + "saved-v1",
+  savedAssets: PREFIX + "saved-assets-v1",
   img: PREFIX + "img-v1",
   data: PREFIX + "data-v1",
 };
@@ -70,12 +75,22 @@ self.addEventListener("activate", (event) => {
     // GitHub Pages); page() asks the site itself instead.
     if (self.registration.navigationPreload) { try { await self.registration.navigationPreload.disable(); } catch (e) { /* not supported */ } }
     await self.clients.claim(); // the first visit is looked after at once (offline works after one visit)
-    // The page(s) open while the worker starts (a first visit) are kept too — usually straight from
-    // the browser's HTTP cache, so this costs no extra data.
+    // The page(s) open while the worker starts (a first visit) are kept too, with the styles and
+    // scripts they asked for — usually straight from the browser's HTTP cache, so this costs no extra
+    // data. (Those files loaded before the worker was in charge: without them the page would open
+    // offline with none of its own scripts — Home's countdown and player, for one.)
+    // (matchAll returns every tab of the ORIGIN — on GitHub Pages other projects share it: only ours)
     const wins = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
     await Promise.all(wins.map(async (c) => {
+      if (!inScope(c.url)) return;
       const key = pageKey(c.url);
-      try { const res = await fetch(c.url, { credentials: "same-origin" }); if (keepable(res, key)) await keepPage(key, res); } catch (e) { /* offline */ }
+      try {
+        const res = await fetch(c.url, { credentials: "same-origin" });
+        if (!keepable(res, key)) return;
+        const html = await res.clone().text();
+        await keepPage(key, res);
+        await keepFiles(html, c.url);
+      } catch (e) { /* offline */ }
     }));
   })());
 });
@@ -104,8 +119,11 @@ function pageKey(url) {
   return u.origin + u.pathname.replace(/index\.html$/, "");
 }
 function isHtml(res) { return /text\/html/i.test(res.headers.get("content-type") || ""); }
+function inScope(url) {
+  try { const u = new URL(url); return u.origin === self.location.origin && u.pathname.startsWith(BASE); } catch (e) { return false; }
+}
 function keepable(res, key) {
-  return res && res.status === 200 && res.type === "basic" && isHtml(res) && !/\/404\.html$/.test(key) &&
+  return res && res.status === 200 && res.type === "basic" && isHtml(res) && inScope(key) && !/\/404\.html$/.test(key) &&
     key !== self.location.origin + CONFIG.offline.en && key !== self.location.origin + CONFIG.offline.es;
 }
 const ENT = { amp: "&", lt: "<", gt: ">", quot: '"', "#39": "'", "#x27": "'", nbsp: " " };
@@ -127,7 +145,12 @@ async function keepPage(key, res) {
   await pages.delete(key); // re-added at the end: the list stays in "last opened" order
   await pages.put(key, copy.clone());
   const saved = await caches.open(CACHE.saved);
-  if (await saved.match(key)) await saved.put(key, copy); // a saved page stays fresh too
+  if (await saved.match(key)) {
+    // a saved page stays fresh too — and so do the styles and scripts it asks for (this version's)
+    const html = await copy.clone().text();
+    await saved.put(key, copy);
+    if (await keepAssets(html, key)) await pruneSavedAssets();
+  }
   await trim("pages");
 }
 
@@ -188,6 +211,11 @@ function immutable(url) { return url.searchParams.has("v") || /\/assets\/fonts\/
 
 async function staleWhileRevalidate(event, url, which) {
   const req = event.request;
+  // The app shell (logo, icons, favicon, this version's CSS and JS) is answered as it is: it was
+  // fetched fresh when this version installed, and a new version brings a new shell. (Refreshing it
+  // would put the copy into another cache that caches.match never reaches — every page view again.)
+  const shellHit = await (await caches.open(CACHE.shell)).match(req);
+  if (shellHit) return shellHit;
   const hit = await caches.match(req);
   const refresh = () => fetch(req).then(async (res) => {
     if (res.ok && res.status === 200 && res.type === "basic") {
@@ -263,15 +291,21 @@ function chicagoMonth() {
 
 function saveList(lang) {
   const pre = lang === "es" ? BASE + "es/" : BASE;
+  const hasHub = CONFIG.save.includes("monthly/");
   return CONFIG.save.map((path) => {
-    // "monthly/{month}/" = this month's toolkit page (the hub if that page isn't there)
-    if (path.includes("{month}")) return [pre + path.replace("{month}", chicagoMonth()), pre + path.replace("{month}/", "")];
+    // "monthly/{month}/" = this month's toolkit page (the hub if that page isn't there — unless the hub
+    // is on the list anyway: then a missing month page is simply skipped)
+    if (path.includes("{month}")) {
+      const month = pre + path.replace("{month}", chicagoMonth());
+      return hasHub ? [month] : [month, pre + path.replace("{month}/", "")];
+    }
     return [pre + path];
   });
 }
 
+/* The site's own styles, scripts and fonts a page asks for (<script src>, <link rel=stylesheet|preload>). */
 const ASSET_RE = /<(?:script|link)\b[^>]*?\b(?:src|href)="([^"]+)"[^>]*>/gi;
-async function keepAssets(html, pageUrl) {
+function assetUrls(html, pageUrl) {
   const urls = new Set();
   let m;
   ASSET_RE.lastIndex = 0;
@@ -280,41 +314,105 @@ async function keepAssets(html, pageUrl) {
     if (/^<link/i.test(tag) && !/rel="(?:stylesheet|preload)"/i.test(tag)) continue;
     try {
       const u = new URL(m[1].replace(/&amp;/g, "&"), pageUrl);
-      if (u.origin === self.location.origin && u.pathname.startsWith(BASE) && /\.(css|js|woff2)$/.test(u.pathname)) urls.add(u.href);
+      if (inScope(u.href) && /\.(css|js|woff2)$/.test(u.pathname)) urls.add(u.href);
     } catch (e) { /* not a URL */ }
   }
+  return urls;
+}
+
+/* A first visit's page (kept in activate): the styles and scripts it asked for, into this version's
+   static cache (they are not in any of our caches yet). */
+async function keepFiles(html, pageUrl) {
   const cache = await caches.open(CACHE.static);
-  await Promise.all([...urls].map(async (u) => {
-    if (await caches.match(u)) return;
-    try { const res = await fetch(u, { credentials: "same-origin" }); if (res.ok && res.type === "basic") await cache.put(u, res); } catch (e) { /* offline again */ }
+  await Promise.all([...assetUrls(html, pageUrl)].map(async (u) => {
+    try {
+      if (await caches.match(u)) return;
+      const res = await fetch(u, { credentials: "same-origin" });
+      if (res && res.ok && res.type === "basic") await cache.put(u, res);
+    } catch (e) { /* offline again */ }
   }));
+  await trim("static");
+}
+
+/* A saved page's files go into gvlv-saved-assets-v1, which outlives site updates: the saved copy asks
+   for them by their ?v= address, and gvlv-static-<version> is deleted by the next version. Copied from
+   the caches when they are there (no download), fetched otherwise. → how many files were added. */
+async function keepAssets(html, pageUrl) {
+  const cache = await caches.open(CACHE.savedAssets);
+  let added = 0;
+  await Promise.all([...assetUrls(html, pageUrl)].map(async (u) => {
+    if (await cache.match(u)) return;
+    try {
+      const have = await caches.match(u);
+      const res = have || await fetch(u, { credentials: "same-origin" });
+      if (res && res.ok && res.type === "basic") { await cache.put(u, have ? have.clone() : res); added += 1; }
+    } catch (e) { /* offline again */ }
+  }));
+  return added;
+}
+
+/* Keep only the files the saved pages still ask for (older versions' files go once no saved copy
+   needs them any more). */
+let pruning = Promise.resolve();
+function pruneSavedAssets() {
+  pruning = pruning.then(async () => {
+    const saved = await caches.open(CACHE.saved);
+    const need = new Set();
+    for (const req of await saved.keys()) {
+      const res = await saved.match(req);
+      if (res) for (const u of assetUrls(await res.text(), req.url)) need.add(u);
+    }
+    const cache = await caches.open(CACHE.savedAssets);
+    for (const req of await cache.keys()) if (!need.has(req.url)) await cache.delete(req);
+  }).catch(() => {});
+  return pruning;
+}
+
+/* Last month's toolkit page, saved last month, is not this month's key page: it goes (in this language). */
+async function dropOldMonths(lang, saved) {
+  const re = new RegExp("^" + (self.location.origin + BASE + (lang === "es" ? "es/" : "")).replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "monthly/(\\d{4}-\\d{2})/$");
+  const now = chicagoMonth();
+  for (const req of await saved.keys()) {
+    const m = re.exec(req.url);
+    if (m && m[1] !== now) await saved.delete(req);
+  }
 }
 
 async function savePages(lang, reply) {
   const list = saveList(lang);
   const saved = await caches.open(CACHE.saved);
-  let done = 0, ok = 0;
-  const failed = [];
-  reply({ type: "SAVE_PROGRESS", done, total: list.length });
+  await dropOldMonths(lang, saved).catch(() => {});
+  let done = 0, ok = 0, total = list.length;
+  const failed = [], keys = new Set();
+  reply({ type: "SAVE_PROGRESS", done, total });
   for (const tries of list) {
-    let good = false;
+    let good = false, dup = false;
     for (const u of tries) {
       try {
         const res = await fetch(u, { credentials: "same-origin", cache: "no-cache" });
         if (!res.ok || res.type !== "basic" || !isHtml(res)) continue;
         const key = pageKey(res.url || u);
+        if (!inScope(key)) continue;
+        if (keys.has(key)) { dup = true; break; } // the same page again (a redirect): counted once
         const copy = await stamp(res);
         await keepAssets(await copy.clone().text(), key);
         await saved.put(key, copy);
+        keys.add(key);
         good = true;
         break;
       } catch (e) { /* try the next address, or give up on this page */ }
     }
-    done += 1;
-    if (good) ok += 1; else failed.push(tries[0]);
-    reply({ type: "SAVE_PROGRESS", done, total: list.length });
+    // no page for this month (yet) while the hub is saved anyway: not a failure, not counted
+    const noMonth = !good && tries.length === 1 && /\/monthly\/\d{4}-\d{2}\/$/.test(tries[0]) && CONFIG.save.includes("monthly/");
+    if (dup || noMonth) total -= 1;
+    else {
+      done += 1;
+      if (good) ok += 1; else failed.push(tries[0]);
+    }
+    reply({ type: "SAVE_PROGRESS", done, total });
   }
-  reply({ type: "SAVE_DONE", saved: ok, total: list.length, failed });
+  await pruneSavedAssets();
+  reply({ type: "SAVE_DONE", saved: ok, total, failed });
 }
 
 /* ------------------------------------------------------------------ messages from pwa.js */

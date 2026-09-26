@@ -50,8 +50,8 @@ lessons:
           en: "Our meeting in print"
           es: "Nuestra reunión impresa"
         text:
-          en: "Both magazines are made of AA members' stories: experience, strength and hope you can carry in your pocket. AA members serving overseas gave Grapevine that name in its first years."
-          es: "Las dos revistas están hechas de historias de miembros de AA: experiencia, fortaleza y esperanza que puedes llevar en el bolsillo. Miembros de AA que servían en el extranjero le dieron ese nombre a Grapevine en sus primeros años."
+          en: "Both magazines are made of AA members' stories: their experience, strength and hope. In Grapevine's first years, AA members serving overseas in the armed forces called it their “meeting in print”, and the name stuck."
+          es: "Las dos revistas reúnen historias de miembros de AA: su experiencia, fortaleza y esperanza. En los primeros años de Grapevine, miembros de AA en servicio militar fuera del país la llamaron su «reunión impresa», y el nombre se quedó."
       - title:
           en: "Two magazines, one publisher"
           es: "Dos revistas, una sola editorial"
@@ -65,11 +65,11 @@ lessons:
           en: "In print, online, in the apps, or as audio: podcasts and recorded stories. Each home group can choose what works best for its members."
           es: "Impresa, en línea, en las aplicaciones o en audio: podcasts e historias grabadas. Cada grupo base puede elegir lo que mejor les sirva a sus miembros."
       - title:
-          en: "Supported by its readers"
-          es: "La sostienen sus lectores"
+          en: "How the magazines are supported"
+          es: "Cómo se sostienen las revistas"
         text:
-          en: "The magazines don't take group contributions. Subscriptions and the sale of books and other items pay their way, so every subscription is also a form of service."
-          es: "Las revistas no reciben contribuciones de los grupos. Se sostienen con las suscripciones y la venta de libros y otros artículos, así que cada suscripción también es una forma de servicio."
+          en: "Grapevine pays its way with subscriptions and the sale of books and other items. La Viña is also supported by the General Service Board as a service to the Fellowship. Either way, every subscription is a form of service."
+          es: "Grapevine se sostiene con suscripciones y con la venta de libros y otros artículos. La Viña también cuenta con el apoyo de la Junta de Servicios Generales como un servicio a la Comunidad. Cada suscripción es un servicio."
       - title:
           en: "Many voices, not AA policy"
           es: "Muchas voces, no la política de AA"
@@ -115,16 +115,16 @@ lessons:
           en: "La Viña comes out every two months; Grapevine comes out every month."
           es: "La Viña sale cada dos meses; Grapevine sale cada mes."
       - q:
-          en: "How are the magazines supported?"
-          es: "¿Cómo se sostienen las revistas?"
+          en: "How is Grapevine supported?"
+          es: "¿Cómo se sostiene Grapevine?"
         options:
           - { en: "With a share of each group's Seventh Tradition", es: "Con una parte de la Séptima Tradición de cada grupo" }
           - { en: "With grants from outside AA", es: "Con donaciones de fuera de AA" }
           - { en: "With subscriptions and the sale of books and items", es: "Con las suscripciones y la venta de libros y artículos" }
         answer: 3
         why:
-          en: "They don't take group contributions: readers support them through subscriptions and purchases."
-          es: "No reciben contribuciones de los grupos: sus lectores las sostienen con suscripciones y compras."
+          en: "Grapevine pays its way through subscriptions and sales. La Viña is also supported by the General Service Board as a service to the Fellowship."
+          es: "Grapevine se sostiene con suscripciones y ventas. La Viña también cuenta con el apoyo de la Junta de Servicios Generales como un servicio a la Comunidad."
 
   # ------------------------------------------------------------------
   - id: role
@@ -172,11 +172,11 @@ lessons:
           en: "The Area committee meets on Zoom {rule_lc}, {time} Central time. Every AA member is welcome, and you don't need to register."
           es: "El comité del Área se reúne por Zoom {rule_lc}, {time} (hora del Centro). Todos los miembros de AA son bienvenidos y no hace falta registrarse."
       - title:
-          en: "A new panel in {panel_start}"
-          es: "Un nuevo panel en {panel_start}"
+          en: "Panel {panel}, from {panel_start}"
+          es: "Panel {panel}, a partir de {panel_start}"
         text:
-          en: "Panel {panel} of our Area starts in {panel_start}. This site is your toolbox for it: the Monthly toolkit, the district report, resource kits, deadlines and prices."
-          es: "El Panel {panel} de nuestra Área empieza en {panel_start}. Este sitio es tu caja de herramientas: el Kit del mes, el informe para el distrito, los kits de recursos, las fechas límite y los precios."
+          en: "Panel {panel} of our Area runs for two years from {panel_start}. This site is your toolbox for it: the Monthly toolkit, the district report, resource kits, deadlines and prices."
+          es: "El Panel {panel} de nuestra Área dura dos años a partir de {panel_start}. Este sitio es tu caja de herramientas: el Kit del mes, el informe para el distrito, los kits de recursos, las fechas límite y los precios."
     try:
       en: "At the next business meeting, tell your group you're their new GVR or RLV, then register on the official page that same week."
       es: "En la próxima reunión de trabajo, cuéntale a tu grupo que eres su nuevo RLV o GVR, y regístrate en la página oficial esa misma semana."
@@ -273,7 +273,7 @@ lessons:
           es: "Compártelas con otros servicios"
         text:
           en: "Offer copies to the members who serve in H&I, Corrections, PI or CPC: a magazine can go where a meeting can't."
-          es: "Ofrece ejemplares a los miembros que sirven en H&I, Correccionales, IP o CCP: una revista puede llegar a donde una reunión no llega."
+          es: "Ofrece ejemplares a los miembros que sirven en Hospitales e Instituciones (H&I), Correccionales, IP o CCP: una revista puede llegar a donde una reunión no llega."
     try:
       en: "Pick one of the 10 ways this month and try it, then tell your district how it went."
       es: "Escoge una de las 10 maneras este mes y ponla en práctica; luego cuéntale a tu distrito cómo te fue."
@@ -381,7 +381,7 @@ lessons:
       - link: carry_the_message
         pub: gv
         label: { en: "Carry the Message (aagrapevine.org)", es: "Carry the Message (aagrapevine.org, en inglés)" }
-      - url: "https://www.aalavina.org/lleva-el-mensaje"
+      - link: lleva_el_mensaje
         pub: lv
         label: { en: "Lleva el Mensaje (aalavina.org, in Spanish)", es: "Lleva el Mensaje (aalavina.org)" }
     check:
@@ -450,8 +450,8 @@ lessons:
           en: "Record it by phone"
           es: "Grábala por teléfono"
         text:
-          en: "Not a writer? A member can record their story by phone for Grapevine's Audio Project or La Viña's \"Graba tu historia\". The steps are on our site."
-          es: "¿No te gusta escribir? Puedes grabar tu historia por teléfono para \"Graba tu historia\" de La Viña o para el Proyecto de Audio de Grapevine. Los pasos están en nuestro sitio."
+          en: "Not a writer? A member can record their story by phone for Grapevine's Audio Project or La Viña's “Graba tu historia”. The steps are on our site."
+          es: "¿No te gusta escribir? Puedes grabar tu historia por teléfono para “Graba tu historia” de La Viña o para el Proyecto de Audio de Grapevine. Los pasos están en nuestro sitio."
       - title:
           en: "Host a writing workshop"
           es: "Organiza un taller de escritura"
@@ -463,7 +463,7 @@ lessons:
           es: "El anonimato de quien escribe"
         text:
           en: "Writers usually sign with a first name and last initial, plus their city. Read each magazine's short guidelines together before anyone sends a story."
-          es: "Quien escribe suele firmar con su nombre de pila y la inicial de su apellido, además de su ciudad. Lean juntos la guía breve de cada revista antes de enviar una historia."
+          es: "Quien escribe suele firmar con su nombre de pila y la inicial de su apellido, además de su ciudad. Lee con tu grupo la guía breve de cada revista antes de que alguien envíe una historia."
     try:
       en: "Announce the next deadline and its theme, and invite anyone interested to write for 15 minutes after the meeting."
       es: "Anuncia la próxima fecha límite y su tema, e invita a quien quiera a escribir 15 minutos al terminar la reunión."
@@ -537,8 +537,8 @@ lessons:
           en: "Anonymity in photos, posters and chats"
           es: "Anonimato en fotos, carteles y chats"
         text:
-          en: "No faces or full names of members in photos, posters, flyers or WhatsApp groups. Take pictures of the table, not of the people."
-          es: "Nada de caras ni nombres completos de miembros en fotos, carteles, volantes o grupos de WhatsApp. Fotografía la mesa, no a las personas."
+          en: "No faces or full names of members in public posts, posters, flyers or chats that people outside AA can see. Take pictures of the table, not of the people."
+          es: "Nada de caras ni nombres completos de miembros en publicaciones, carteles, volantes o chats que vean personas fuera de AA. Fotografía la mesa, no a las personas."
       - title:
           en: "Attraction, not promotion"
           es: "Atracción, no promoción"
@@ -561,11 +561,11 @@ lessons:
           en: "Report back every month"
           es: "Informa cada mes"
         text:
-          en: "Your district wants to hear from you. The monthly GV/LV report on this site is ready to copy, and you can edit it to fit your group."
-          es: "Tu distrito quiere saber de ti. El informe mensual de GV/LV de este sitio está listo para copiar, y puedes editarlo para tu grupo."
+          en: "Your district wants to hear from you. The monthly GV/LV report on this site is ready to copy: choose its sections and edit it to fit your group."
+          es: "Tu distrito quiere saber de ti. El informe mensual de GV/LV de este sitio está listo para copiar: elige sus secciones y edítalo para tu grupo."
     try:
-      en: "Before the next district meeting, copy this month's report, add one thing your group did and read it in two minutes."
-      es: "Antes de la próxima reunión del distrito, copia el informe de este mes, añade algo que hizo tu grupo y léelo en dos minutos."
+      en: "Before the next district meeting, copy this month's report, keep the sections your district needs, add one thing your group did and read it in a few minutes."
+      es: "Antes de la próxima reunión del distrito, copia el informe de este mes, deja las secciones que tu distrito necesita, añade algo que hizo tu grupo y léelo en pocos minutos."
     discuss:
       en: "How can your group share the magazines online and still protect everyone's anonymity?"
       es: "¿Cómo puede tu grupo compartir las revistas en línea y proteger el anonimato de todos?"
@@ -601,8 +601,8 @@ lessons:
           en: "The stories are copyrighted by AA Grapevine, Inc.; a link or the issue itself shares them the right way."
           es: "Las historias tienen derechos de autor de AA Grapevine, Inc.; un enlace o la edición misma las comparte de la manera correcta."
       - q:
-          en: "What does \"attraction rather than promotion\" mean for a GVR or RLV?"
-          es: "¿Qué significa \"atracción en vez de promoción\" para un RLV o GVR?"
+          en: "What does “attraction rather than promotion” mean for a GVR or RLV?"
+          es: "¿Qué significa “atracción en vez de promoción” para un RLV o GVR?"
         options:
           - { en: "Sell as many subscriptions as you can", es: "Vender todas las suscripciones que puedas" }
           - { en: "Pay for ads on social media", es: "Pagar anuncios en las redes sociales" }

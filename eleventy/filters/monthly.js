@@ -4,9 +4,10 @@
 // (one poster page per month × language).
 //
 // Everything here is read from data the site already has — nothing is typed in:
-//   db.editorial   Grapevine themes per issue (extra.issue_key), story deadlines (extra.deadline),
-//                  La Viña's evergreen suggested topics (extra.evergreen)
-//   db.articles    issues[] — the Grapevine issue on the stands, La Viña's bimonthly issue
+//   db.editorial   Grapevine themes per issue (extra.issue_key) until the issue is out, story
+//                  deadlines (extra.deadline), La Viña's evergreen suggested topics (extra.evergreen)
+//   db.articles    issues[] — the Grapevine issue on the stands (its own theme, once it is out),
+//                  La Viña's bimonthly issue
 //   carry          config/carry.yml — the 10 ways and the "put it to work" tips per GV issue
 //   db.events      committee meetings, the monthly recurring events (CityWide Dallas booth …),
 //                  workshops and assemblies
@@ -21,6 +22,7 @@
 // Filters:   mpMonths(db, carry, site, lang)            → [model, …] for the whole window
 //            mpMonth(key, db, carry, site, lang)        → one model
 //            mpQr(url, label)                           → QR code SVG (qrSvg from community.js)
+//            mpGuides(pdfs, lang)                       → the GVR / RLV guides in the Library (repGuides)
 // Dev/test:  MONTHLY_NOW=2026-12-15 fixes "today" (the window and the "past" checks).
 
 import { qrSvg } from "./community.js";
@@ -231,16 +233,20 @@ export function monthModel(key, db = {}, carry = {}, site = {}, lang = "en", now
   const gvEd = editorial.filter((i) => i && i.extra && i.extra.publication === "gv");
   const issues = (db.articles && db.articles.issues) || [];
 
-  /* Grapevine issue on the stands (theme from the editorial calendar; else the synced issue) */
+  /* Grapevine issue on the stands. Its theme is ONE name everywhere (this page, the month pages, the
+     monthly e-mail, the district report, Read and Home): the theme the issue itself carries once it
+     is out (the synced issue, "Loneliness"); before that, the editorial calendar's call for stories
+     ("Dealing with Loneliness"). scripts/notify/send_digest.py gv_theme() follows the same rule. */
   const gvIssue = issues.find((i) => i && i.publication === "gv" && i.key === key) || null;
   const themed = gvEd.filter((i) => i.extra.issue_key === key);
-  const themes = themed.map((i) => tr(i, "title", L)).filter(Boolean);
-  const theme = themes.length ? themes.join(" / ") : gvIssue ? tr(gvIssue, "theme", L) : "";
+  const own = gvIssue ? tr(gvIssue, "theme", L) : "";
+  const themes = own ? [own] : themed.map((i) => tr(i, "title", L)).filter(Boolean);
+  const theme = themes.join(" / ");
   const gv = theme ? {
     key, theme, themes, label: monthLabel(key, L),
-    summary: themed.length ? tr(themed[0], "summary", L) : tr(gvIssue, "description", L),
+    summary: own ? tr(gvIssue, "description", L) : tr(themed[0], "summary", L),
     url: gvIssue ? gvIssue.url : "", cover: gvIssue ? gvIssue.cover || "" : "",
-    machine: L === "es" && themed.some((i) => (i.machine || []).includes("es")),
+    machine: L === "es" && (own ? (gvIssue.machine || []).includes("es") : themed.some((i) => (i.machine || []).includes("es"))),
   } : null;
 
   /* La Viña's bimonthly issue, when the synced one covers this month */
@@ -391,6 +397,23 @@ export function monthModel(key, db = {}, carry = {}, site = {}, lang = "en", now
   };
 }
 
+/**
+ * The representatives' official guides among the Library's documents (db.pdfs): Grapevine's GVR
+ * Workbook and La Viña's RLV manual, the newest of each → [{ pub, title, url, lang }], the page
+ * language's magazine first ([] when neither is there). The page links to them and never quotes them.
+ */
+export function repGuides(pdfs, lang = "en") {
+  const docs = ((pdfs && pdfs.items) || [])
+    .filter((i) => i && i.url && i.status !== "gone")
+    .sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
+  const gv = docs.find((i) => i.category === "gvr" && /workbook/i.test(`${i.title || ""} ${(i.tags || []).join(" ")}`));
+  const lv = docs.find((i) => i.category === "rlv" && /manual/i.test(i.title || ""));
+  const out = [];
+  if (gv) out.push({ pub: "gv", title: gv.title, url: gv.url, lang: gv.lang || "en" });
+  if (lv) out.push({ pub: "lv", title: lv.title, url: lv.url, lang: lv.lang || "es" });
+  return lang === "es" ? out.reverse() : out;
+}
+
 export default function (eleventyConfig) {
   eleventyConfig.addGlobalData("monthlyKeys", () => windowKeys());
   eleventyConfig.addGlobalData("monthlyPages", () => {
@@ -426,4 +449,5 @@ export default function (eleventyConfig) {
   eleventyConfig.addFilter("mpMonths", (db, carry, site, lang) => months(db, carry, site, lang));
   eleventyConfig.addFilter("mpMonth", (key, db, carry, site, lang) => months(db, carry, site, lang).find((m) => m.key === key) || monthModel(key, db || {}, carry || {}, site || {}, lang));
   eleventyConfig.addFilter("mpQr", (url, label = "") => qrSvg(url, { label, cls: "mp-qr-svg", margin: 2 }));
+  eleventyConfig.addFilter("mpGuides", (pdfs, lang) => repGuides(pdfs, lang));
 }

@@ -188,8 +188,9 @@ pageScripts: ["/assets/js/community.js"]
                 </div>
                 <h3 class="mt-1 text-[0.98rem] font-semibold leading-snug text-ink">
                   {% if href %}
-                  <a href="{{ href }}" class="cm-entry-link no-underline hover:text-gv"{% if it._ext %} target="_blank" rel="noopener"{% endif %}>{{ title }}{% if it._ext %}<span class="sr-only"> {{ "community.new_tab" | t(lang) }}</span>{% endif %}</a>
-                  {% else %}{{ title }}{% endif %}
+                  {#- a line may break after a "/" ("septiembre/<wbr>octubre"), not inside a word, on a phone at large text -#}
+                  <a href="{{ href }}" class="cm-entry-link no-underline hover:text-gv"{% if it._ext %} target="_blank" rel="noopener"{% endif %}>{{ title | escape | replace("/", "/<wbr>") | safe }}{% if it._ext %}<span class="sr-only"> {{ "community.new_tab" | t(lang) }}</span>{% endif %}</a>
+                  {% else %}{{ title | escape | replace("/", "/<wbr>") | safe }}{% endif %}
                 </h3>
                 {% if summary and not it._isGroup %}<p class="measure mt-1 line-clamp-2 text-sm leading-relaxed text-muted">{{ summary | excerpt(220) }}</p>{% endif %}
                 {%- set meta -%}

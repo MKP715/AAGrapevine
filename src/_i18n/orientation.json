@@ -1,7 +1,7 @@
 {
   "orientation.meta_desc": {
     "en": "GVR / RLV 101: six short bilingual lessons for new Grapevine and La Viña representatives, with slides for your district and a printable handout.",
-    "es": "RLV / GVR 101: seis lecciones breves y bilingües para nuevos representantes de La Viña y Grapevine, con diapositivas para tu distrito y una hoja para imprimir."
+    "es": "RLV / GVR 101: seis lecciones breves y bilingües para nuevos representantes de La Viña y Grapevine, con diapositivas y una hoja para imprimir."
   },
   "orientation.eyebrow": { "en": "Get involved · Orientation", "es": "Participa · Orientación" },
   "orientation.hero_sub": {
@@ -98,8 +98,8 @@
     "es": "Las revistas, el servicio y la mesa de literatura. En cada pregunta de repaso, léela, deja que el grupo responda y luego muestra la respuesta."
   },
   "orientation.plan3": {
-    "en": "Subscriptions and gifts, stories and audio, and the Traditions. The \"This month\" boxes show live examples from this site.",
-    "es": "Suscripciones y regalos, historias y audio, y las Tradiciones. Los recuadros \"Este mes\" muestran ejemplos en vivo de este sitio."
+    "en": "Subscriptions and gifts, stories and audio, and the Traditions. The “This month” boxes show live examples from this site.",
+    "es": "Suscripciones y regalos, historias y audio, y las Tradiciones. Los recuadros “Este mes” muestran ejemplos en vivo de este sitio."
   },
   "orientation.plan4_t": { "en": "Close", "es": "Cierre" },
   "orientation.plan4": {
@@ -152,6 +152,7 @@
   "orientation.check_status": { "en": "{n} of 3 answered correctly", "es": "{n} de 3 respuestas correctas" },
   "orientation.lesson_done": { "en": "Lesson complete — saved on this device.", "es": "Lección terminada: quedó guardada en este dispositivo." },
   "orientation.aside_title": { "en": "Your lessons", "es": "Tus lecciones" },
+  "orientation.toc_all": { "en": "All {n} lessons", "es": "Las {n} lecciones" },
   "orientation.current": { "en": "current lesson", "es": "lección actual" },
   "orientation.prev": { "en": "Previous lesson", "es": "Lección anterior" },
   "orientation.next": { "en": "Next lesson", "es": "Lección siguiente" },
@@ -178,13 +179,13 @@
   "orientation.live_ways_link": { "en": "Read the 10 ways", "es": "Lee las 10 maneras" },
   "orientation.live_botm_label": { "en": "Book of the Month", "es": "Libro del mes" },
   "orientation.live_botm_price": { "en": "{sale} instead of {price}, until {date}", "es": "{sale} en vez de {price}, hasta el {date}" },
-  "orientation.live_botm_pct": { "en": "{pct}% off until {date}", "es": "{pct} % de descuento hasta el {date}" },
+  "orientation.live_botm_pct": { "en": "{pct}% off until {date}", "es": "{pct}% de descuento hasta el {date}" },
   "orientation.live_subs_from": { "en": "Subscriptions start at {price} a month.", "es": "Las suscripciones empiezan en {price} al mes." },
   "orientation.live_botm_link": { "en": "See the offer", "es": "Ver la oferta" },
   "orientation.live_botm_none": { "en": "This month's offers are in the Shop.", "es": "Las ofertas de este mes están en la Tienda." },
   "orientation.live_shop_link": { "en": "Open the Shop", "es": "Abrir la Tienda" },
   "orientation.live_deadline_label": { "en": "Next Grapevine story deadline", "es": "Próxima fecha límite de Grapevine" },
-  "orientation.live_deadline_sub": { "en": "Send it by {date} for the {issue} issue.", "es": "Envíala antes del {date} para la edición de {issue}." },
+  "orientation.live_deadline_sub": { "en": "Send it by {date} for the {issue} issue.", "es": "Envíala a más tardar el {date} para la edición de {issue}." },
   "orientation.live_deadline_link": { "en": "See every theme and deadline", "es": "Ver todos los temas y fechas" },
   "orientation.live_deadline_none": { "en": "Open themes and deadlines are on Share your story.", "es": "Los temas abiertos y las fechas límite están en Comparte tu historia." },
   "orientation.live_poster_label": { "en": "The {month} poster", "es": "El cartel de {month}" },
@@ -227,7 +228,7 @@
     "en": "Six short lessons, about {min} minutes in all, with a self-check — and slides for your district.",
     "es": "Seis lecciones breves, unos {min} minutos en total, con preguntas de repaso y diapositivas para tu distrito."
   },
-  "orientation.monthly_pointer": { "en": "New GVR or RLV? {link} shows how to use this toolkit in six short lessons.", "es": "¿Eres RLV o GVR nuevo? {link} te muestra cómo usar este kit en seis lecciones breves." },
+  "orientation.monthly_pointer": { "en": "New GVR or RLV? {link}: six short lessons on the basics, including how to use this toolkit.", "es": "¿Eres RLV o GVR nuevo? {link}: seis lecciones breves sobre lo básico, incluido cómo usar este kit." },
 
   "search.kw.orientation": {
     "en": "orientation training new GVR RLV representative onboarding course lessons slides presentation handout panel rotation 101",

@@ -268,7 +268,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
   <aside class="card listen-short" aria-labelledby="listen-short-title">
     <div class="listen-short-video">
       <lite-youtube videoid="{{ shortId }}" class="media-lyt listen-lyt" params="rel=0&amp;playsinline=1&amp;hl={{ lang }}"
-                    style="background-image: url('{{ shortId | ytThumb('oar2') }}');" playlabel="{{ 'media.play' | t(lang) }}: {{ shortTitle }}">
+                    style="background-image: url('{{ shortId | ytThumb }}');" playlabel="{{ 'media.play' | t(lang) }}: {{ shortTitle }}">
         <a href="{{ shortUrl }}" class="lyt-playbtn" title="{{ 'media.play' | t(lang) }}: {{ shortTitle }}" target="_blank" rel="noopener">
           <span class="lyt-visually-hidden">{{ "media.play" | t(lang) }}: {{ shortTitle }}</span>
         </a>
@@ -473,7 +473,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
       <div class="flex items-center gap-2 px-2.5 pt-1 pb-2.5 sm:gap-3 sm:px-3.5">
         <img :src="art(ep)" alt="" width="48" height="48" class="size-11 shrink-0 rounded-lg object-cover sm:size-12" x-show="art(ep)" referrerpolicy="no-referrer" @load="$el.style.visibility = ''" @error="$el.style.visibility = 'hidden'">
         <div class="min-w-0 flex-1">
-          <p class="truncate text-sm font-semibold text-ink" x-text="ep.t"></p>
+          <p class="media-mini-title truncate text-sm font-semibold text-ink" x-text="ep.t" :title="ep.t"></p>
           <p class="truncate text-xs tabular-nums text-muted">
             <span x-show="$store.audio.error" class="text-danger">{{ "media.retry" | t(lang) }}?</span>
             <span x-show="!$store.audio.error"><span x-text="clock($store.audio.time)"></span> / <span x-text="clock($store.audio.durFor(ep))"></span><span class="hidden sm:inline" x-text="showName(ep) ? ' · ' + showName(ep) : ''"></span></span>

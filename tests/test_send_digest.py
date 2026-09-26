@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import json
 import os
+import smtplib
 import subprocess
 import sys
 import tempfile
@@ -119,7 +120,8 @@ class DigestCase(unittest.TestCase):
         (self.tmp_path / "carry.yml").write_text(CARRY, encoding="utf-8")
         for name in ("whatsnew", "events", "announcements"):
             self.write(name, {"items": []})
-        for p in (mock.patch.object(D, "SITE_DIR", self.site_dir), mock.patch.object(D, "CONFIG_PATH", self.tmp_path / "site.yml"),
+        for p in (mock.patch.object(D, "SITE_DIR", self.site_dir), mock.patch.object(D, "ASSET_DIR", self.tmp_path / "src"),
+                  mock.patch.object(D, "CONFIG_PATH", self.tmp_path / "site.yml"),
                   mock.patch.object(D, "CARRY_PATH", self.tmp_path / "carry.yml"), mock.patch.dict(os.environ, {"SITE_URL": SITE})):
             p.start()
             self.addCleanup(p.stop)
@@ -216,9 +218,9 @@ class DigestCase(unittest.TestCase):
         self.write("weekly_open", {"items": [
             item("weekly_open", "meeting", "grapevine", None, "Grapevine Weekly Open AA Meeting",
                  i18n={"title": {"en": "Grapevine Weekly Open AA Meeting", "es": "Grapevine Weekly Open AA Meeting"},
-                       "when": {"en": "Wednesdays at 11:00 AM Central", "es": "Miércoles a las 11:00 a. m. (hora del Centro)"}}),
+                       "when": {"en": "Wednesdays at 11:00 AM Central", "es": "Los miércoles a las 11:00 a. m. (hora del Centro)"}}),
             item("weekly_open_lv", "meeting", "lavina", None, "Reunión Abierta de La Viña", extra={"starts": "2026-11-05"},
-                 i18n={"title": {"en": "La Viña Open Meeting", "es": "Reunión Abierta de La Viña"}, "when": {"en": "Thursdays", "es": "Jueves"}}),
+                 i18n={"title": {"en": "La Viña Open Meeting", "es": "Reunión Abierta de La Viña"}, "when": {"en": "Thursdays", "es": "Los jueves"}}),
         ]})
         self.write("meetings", {"items": [{"id": f"m{i}", "day": i % 7, "in_area": i < 3, "attendance": "in_person"} for i in range(5)]
                    + [{"id": "inactive", "day": 1, "in_area": True, "attendance": "inactive"}]})
@@ -227,7 +229,9 @@ class DigestCase(unittest.TestCase):
         self.write("quote", {"items": [{"id": "q", "text": "One day at a time."}]})
         self.write("instagram", {"profiles": {"gv": {"username": "alcoholicsanonymous_gv"}, "lv": {"username": "alcoholicosanonimos_lv"}}})
         self.write("shop", {"botm": [offer("gv"), offer("lv")], "subscriptions": [
-            {"pub": "gv", "plans": [{"term_months": 12, "price": 36.0}, {"term_months": 1, "price": 2.99}]}]})
+            {"pub": "gv", "plans": [{"type": "print", "term_months": 12, "price": 24.0},     # $2 a month, but for a year
+                                    {"type": "complete", "term_months": 1, "price": 6.0},
+                                    {"type": "digital", "term_months": 1, "price": 2.99}]}]})
 
 
 class EditionWindow(DigestCase):
@@ -302,8 +306,9 @@ class Sections(DigestCase):
     def test_this_months_issues_highlights_and_tips(self):
         gv, lv = self.data["issues"]
         self.assertEqual((gv["key"], gv["count"], gv["free"], gv["cover"]), ("2026-10", 4, 2, "/assets/cache/articles/gv.webp"))
-        # the theme of this month's Grapevine comes from the editorial calendar (like /monthly/)
-        self.assertEqual(gv["theme"], {"en": "Dealing with Loneliness", "es": "Tratar con la soledad"})
+        # the theme of this month's Grapevine is the issue's own once it is out (like /monthly/, Read
+        # and the district report) — not the editorial calendar's call for stories
+        self.assertEqual(gv["theme"], {"en": "Loneliness", "es": "Soledad"})
         # free to read first, members' stories before "In Every Issue" pages, Texas writers first
         self.assertEqual([a["id"] for a in gv["highlights"]], ["gv:a3", "gv:a2"])
         # La Viña's bimonthly issue that began last month is still this month's
@@ -335,16 +340,18 @@ class Sections(DigestCase):
         self.assertTrue(self.data["quote"])
 
     def test_subject(self):
-        self.assertEqual(D.subject_of(self.data, D.load_config()), "Grapevine / La Viña — October 2026 · Novedades de octubre")
+        # the edition's name in both languages (its news is from the month before)
+        self.assertEqual(D.subject_of(self.data, D.load_config()),
+                         "Grapevine / La Viña — October 2026 edition · Edición de octubre de 2026")
         jan = D.collect(datetime(2027, 1, 1, 15, 5, tzinfo=timezone.utc))
-        self.assertEqual(D.subject_of(jan, {}), "Grapevine / La Viña — January 2027 · Novedades de enero")
+        self.assertEqual(D.subject_of(jan, {}), "Grapevine / La Viña — January 2027 edition · Edición de enero de 2027")
 
     def test_dry_run_preview_in_both_languages(self):
         html, text = self.preview()
         en, es = self.halves(text)
         for line in ("Monthly Digest — October 2026 edition", "What's new in September · Coming up in October",
                      "In September: 1 magazine story, 1 podcast episode", "NEXT COMMITTEE MEETING: Wed, Oct 21, 2026 · 7:00 PM CDT",
-                     "THIS MONTH IN THE MAGAZINES", "* Grapevine — October 2026: “Dealing with Loneliness” (4 stories · 2 free to read)",
+                     "THIS MONTH IN THE MAGAZINES", "* Grapevine — October 2026: “Loneliness” (4 stories · 2 free to read)",
                      "PUT IT TO WORK", f"This month's toolkit (October 2026): {SITE}/monthly/2026-10/",
                      "WRITERS FROM AREA 65 & TEXAS (2)", "PODCASTS (1)", "* [Podcast] Gated Communities (S11 · E12 · 32 min · Sep 20)",
                      "also on YouTube: https://www.youtube.com/watch?v=abc", "COMMITTEE UPLOADS (1)", "Photos: Booth (5 new photos)",
@@ -352,7 +359,8 @@ class Sections(DigestCase):
                      "* Grapevine meetings near you: 3 meetings every week in our Area, plus 2 in nearby areas",
                      "SHARE YOUR STORY — UPCOMING DEADLINES", "* Due October 1 — “Fun in Sobriety” (Grapevine, May 2027)",
                      "* Record your story by phone: Grapevine (559) 726-1216 · La Viña (559) 670-1601",
-                     "Subscriptions from $2.99 a month", "A daily quote from Grapevine and La Viña, on our home page",
+                     f"Month-to-month subscriptions from $2.99 — {SITE}/shop/#subscriptions",
+                     "A daily quote from Grapevine and La Viña, on our home page",
                      "Grapevine and La Viña on Instagram: @alcoholicsanonymous_gv · @alcoholicosanonimos_lv"):
             self.assertIn(line, en)
         self.assertNotIn("Earlier this morning", text)
@@ -362,20 +370,44 @@ class Sections(DigestCase):
         for line in ("Resumen mensual — Edición de octubre de 2026", "Novedades de septiembre · Lo que viene en octubre",
                      "En septiembre: 1 historia de las revistas", "ESTE MES EN LAS REVISTAS", "PONLA A TRABAJAR",
                      f"El kit de este mes (octubre de 2026): {SITE}/es/monthly/2026-10/", "LO QUE VIENE EN OCTUBRE",
-                     "Todos los miembros de AA son bienvenidos.", "7:00 p. m. CDT", "Graba tu historia por teléfono",
-                     "Suscripciones desde $2.99 al mes"):
+                     "Todos los miembros de AA son bienvenidos.", "7:00 p. m. (hora del Centro)", "Graba tu historia por teléfono",
+                     "Suscripciones mes a mes desde $2.99", "* Fecha límite: 1 de octubre — “ES Fun in Sobriety” (Grapevine, mayo de 2027)",
+                     "* Cada semana: Grapevine Weekly Open AA Meeting (en inglés) — los miércoles a las 11:00 a. m. (hora del Centro)",
+                     "sin fecha límite. Ideas para este mes:"):
             self.assertIn(line, es)
-        self.assertLess(es.index("* La Viña — Septiembre / Octubre 2026"), es.index("* Grapevine — Octubre 2026"))
-        self.assertLess(en.index("* Grapevine — October 2026"), en.index("* La Viña — September / October 2026"))
+        # Spanish months inside a line: lower-case, with "de"; the other magazine's language said once
+        self.assertLess(es.index("* La Viña — septiembre/octubre de 2026: “Servicio en AA”"),
+                        es.index("* Grapevine — octubre de 2026 (en inglés): “Soledad”"))
+        self.assertLess(en.index("* Grapevine — October 2026: "), en.index("* La Viña — September / October 2026 (in Spanish): "))
+        self.assertIn("(Grapevine, octubre de 2026, en inglés)", es)                  # a Texas writer's story
+        self.assertIn("— Victor R., Grand Prairie, Texas (La Viña, in Spanish)", en)
+        self.assertNotIn("CDT", es)
+        self.assertNotRegex(es, r"(Enero|Febrero|Marzo|Abril|Mayo|Junio|Julio|Agosto|Septiembre|Octubre|Noviembre|Diciembre) \d{4}")
         # HTML: both halves, escaped, the Spanish cells marked lang="es", tap-to-call, absolute cover
-        self.assertIn("<title>Grapevine / La Viña — October 2026 · Novedades de octubre</title>", html)
-        self.assertEqual(html.count("October 2026 edition"), 1)
-        self.assertEqual(html.count("Edición de octubre de 2026"), 1)
+        self.assertIn("<title>Grapevine / La Viña — October 2026 edition · Edición de octubre de 2026</title>", html)
+        body = html.split("</head>", 1)[1]
+        self.assertEqual(body.count("October 2026 edition"), 1)
+        self.assertEqual(body.count("Edición de octubre de 2026"), 1)
         self.assertIn('lang="es"', html)
         self.assertIn('href="tel:+15597261216"', html)
-        self.assertIn(f'src="{SITE}/assets/cache/articles/gv.webp"', html)
+        # classic Outlook for Windows shows no WebP: without a JPEG / PNG copy the cover is left out
+        self.assertNotIn(".webp", html)
         self.assertIn("At Wit&#x27;s End", html)
         self.assertIn(f'href="{SITE}/es/meetings/#grapevine-meetings"', html)
+        self.assertIn("May 2027 issue</span> · ", html)                                    # the deadline rows
+        self.assertIn("Edición de mayo de 2027</span> · ", html)
+        self.assertIn("(en inglés)", html)
+
+    def test_covers_go_out_as_jpeg(self):
+        # the JPEG copy made next to a cover (scripts/sync/articles.py email_copy) is what the e-mail shows
+        jpg = self.tmp_path / "src" / "assets" / "cache" / "articles" / "gv.jpg"
+        jpg.parent.mkdir(parents=True)
+        jpg.write_bytes(b"\xff\xd8\xff\xd9")
+        html, _ = self.preview()
+        self.assertIn(f'src="{SITE}/assets/cache/articles/gv.jpg"', html)
+        self.assertNotIn(".webp", html)
+        self.assertEqual(D.email_image("https://example.org/x.webp"), "")
+        self.assertEqual(D.email_image("/assets/img/logo.png"), "/assets/img/logo.png")
 
     def test_nothing_new_means_no_email(self):
         for name in ("whatsnew", "episodes", "videos", "announcements", "spotlight"):
@@ -443,6 +475,183 @@ class BookOfTheMonth(DigestCase):
         self.assertEqual(D.botm_block(data, "es", D.Links(SITE))["month_url"], f"{SITE}/es/monthly/2026-09/")
 
 
+class Wording(unittest.TestCase):
+    """Small wording rules of the e-mail (both halves)."""
+
+    def test_page_counts(self):
+        doc = lambda n: item("pdf:x", "pdf", "crawl", "2026-09-01", "Form", extra={"pages": n, "host": "www.aalavina.org"})  # noqa: E731
+        self.assertEqual(D.item_meta(doc(1), "en"), "1 page · aalavina.org")
+        self.assertEqual(D.item_meta(doc(1), "es"), "1 página · aalavina.org")
+        self.assertEqual(D.item_meta(doc(4), "en"), "4 pages · aalavina.org")
+        self.assertEqual(D.item_meta(doc(4), "es"), "4 páginas · aalavina.org")
+
+    def test_spanish_months_inside_a_line(self):
+        self.assertEqual(D.in_sentence("Septiembre / Octubre 2026", "es"), "septiembre/octubre de 2026")
+        self.assertEqual(D.in_sentence("Octubre 2026", "es"), "octubre de 2026")
+        self.assertEqual(D.in_sentence("octubre de 2026", "es"), "octubre de 2026")        # already right
+        self.assertEqual(D.in_sentence("September / October 2026", "en"), "September / October 2026")
+        self.assertEqual(D.in_sentence("Edición especial", "es"), "Edición especial")       # not a month label
+        art = {"kind": "article", "extra": {"issue_label": "May 2027"}}
+        self.assertEqual(D.issue_label(art, "es"), "mayo de 2027")                         # no i18n: the local rule
+        self.assertEqual(D.issue_label(art, "en"), "May 2027")
+        art["i18n"] = {"issue_label": {"en": "May 2027", "es": "Mayo 2027"}}
+        self.assertEqual(D.issue_label(art, "es"), "mayo de 2027")
+
+    def test_times_and_the_weekly_open_pill(self):
+        t = datetime(2026, 10, 22, 0, 0, tzinfo=timezone.utc)                             # 7 PM CDT
+        self.assertEqual(D.fmt_time(t, "en"), "7:00 PM CDT")
+        self.assertEqual(D.fmt_time(t, "es"), "7:00 p. m. (hora del Centro)")
+        self.assertEqual(D.fmt_time(datetime(2026, 12, 17, 1, 0, tzinfo=timezone.utc), "en"), "7:00 PM CST")
+        wo = item("pod:wo", "episode", "podcast", "2026-08-27", "Grapevine Weekly Open AA Meeting", category="wo")
+        self.assertEqual(D.item_label(wo, "en")[0], "Weekly Open")
+        self.assertEqual(D.item_label(wo, "es")[0], "Reunión Abierta Semanal")
+        self.assertEqual(D.item_label(dict(wo, category="gv"), "es")[0], "Podcast")
+
+
+class FakeSMTP:
+    """Stands in for smtplib.SMTP / SMTP_SSL and records what the digest asks of the mail server.
+    Each test makes its own subclass (Sending.make_server), so the settings and the log are its own."""
+    offers_starttls = True
+    connect_errors: list = []       # raised by the next connections, in order
+    login_error: Exception | None = None
+    send_error: Exception | None = None
+    log: list = []
+
+    def __init__(self, host, port, timeout=None, context=None):
+        cls = type(self)
+        if cls.connect_errors:
+            raise cls.connect_errors.pop(0)
+        cls.log.append(("connect", host, port))
+        self.encrypted = bool(context)                     # only SMTP_SSL is given the TLS context here
+
+    def ehlo(self):
+        type(self).log.append(("ehlo",))
+
+    def has_extn(self, name):
+        return name.lower() == "starttls" and type(self).offers_starttls
+
+    def starttls(self, context=None):
+        self.encrypted = True
+        type(self).log.append(("starttls",))
+
+    def login(self, user, password):
+        type(self).log.append(("login", "encrypted" if self.encrypted else "PLAIN TEXT"))
+        if type(self).login_error:
+            raise type(self).login_error
+
+    def send_message(self, msg, from_addr=None, to_addrs=None):
+        type(self).log.append(("send", tuple(to_addrs or ())))
+        if type(self).send_error:
+            raise type(self).send_error
+        return {}
+
+    def quit(self):
+        type(self).log.append(("quit",))
+
+    def close(self):
+        pass
+
+
+class Sending(unittest.TestCase):
+    """send(): the password only over an encrypted connection; retries only before the message goes."""
+
+    def setUp(self):
+        env = {"SMTP_SERVER": "smtp.example.org", "SMTP_PORT": "587", "SMTP_USERNAME": "digest@example.org",
+               "SMTP_PASSWORD": "app-password"}
+        for p in (mock.patch.dict(os.environ, env), mock.patch.object(D.time, "sleep", lambda s: None)):
+            p.start()
+            self.addCleanup(p.stop)
+        self.msg = D.build_message("Subject", "<p>x</p>", "x", "digest@example.org", "Committee",
+                                   ["a@example.org", "b@example.org"], "chair@example.org")
+
+    def make_server(self, **kw):
+        cls = type("Server", (FakeSMTP,), {"log": [], "connect_errors": list(kw.pop("connect_errors", [])), **kw})
+        for name in ("SMTP", "SMTP_SSL"):
+            p = mock.patch.object(D.smtplib, name, cls)
+            p.start()
+            self.addCleanup(p.stop)
+        return cls
+
+    @staticmethod
+    def steps(server) -> list[str]:
+        return [e[0] for e in server.log]
+
+    def test_starttls_before_the_password(self):
+        server = self.make_server()
+        D.send(self.msg, "digest@example.org", ["a@example.org", "b@example.org"])
+        self.assertEqual(self.steps(server), ["connect", "ehlo", "starttls", "ehlo", "login", "send", "quit"])
+        self.assertIn(("login", "encrypted"), server.log)
+        self.assertIn(("send", ("a@example.org", "b@example.org")), server.log)
+
+    def test_no_starttls_means_no_password(self):
+        server = self.make_server(offers_starttls=False)
+        with self.assertRaises(RuntimeError) as cm:
+            D.send(self.msg, "digest@example.org", ["a@example.org"])
+        self.assertIn("does not offer STARTTLS", str(cm.exception))
+        self.assertNotIn("login", self.steps(server))                    # the password never left
+        self.assertNotIn("send", self.steps(server))
+        self.assertEqual(self.steps(server).count("connect"), 1)        # a missing STARTTLS is not retried
+
+    def test_port_465_is_ssl_from_the_start(self):
+        with mock.patch.dict(os.environ, {"SMTP_PORT": "465"}):
+            server = self.make_server(offers_starttls=False)
+            D.send(self.msg, "digest@example.org", ["a@example.org"])
+        self.assertEqual(self.steps(server), ["connect", "ehlo", "login", "send", "quit"])
+        self.assertIn(("login", "encrypted"), server.log)
+
+    def test_connection_trouble_is_retried_before_sending(self):
+        server = self.make_server(connect_errors=[ConnectionRefusedError("refused"), TimeoutError("slow")])
+        D.send(self.msg, "digest@example.org", ["a@example.org"])
+        self.assertEqual(self.steps(server).count("send"), 1)
+        self.make_server(connect_errors=[ConnectionRefusedError("x")] * 3)
+        with self.assertRaises(RuntimeError) as cm:
+            D.send(self.msg, "digest@example.org", ["a@example.org"])
+        self.assertIn("Could not reach the mail server smtp.example.org:587", str(cm.exception))
+
+    def test_a_failure_while_sending_is_never_retried(self):
+        for err in (smtplib.SMTPServerDisconnected("gone"), TimeoutError("timed out"), ConnectionResetError("reset")):
+            with self.subTest(error=type(err).__name__):
+                server = self.make_server(send_error=err)
+                with self.assertRaises(RuntimeError) as cm:
+                    D.send(self.msg, "digest@example.org", ["a@example.org", "b@example.org"])
+                self.assertIn("MAY have been sent", str(cm.exception))
+                self.assertEqual(self.steps(server).count("send"), 1)   # one try: nobody gets it twice
+                self.assertEqual(self.steps(server).count("connect"), 1)
+
+    def test_refusals_are_reported(self):
+        self.make_server(login_error=smtplib.SMTPAuthenticationError(535, b"bad"))
+        with self.assertRaisesRegex(RuntimeError, "App Password"):
+            D.send(self.msg, "digest@example.org", ["a@example.org"])
+        self.make_server(send_error=smtplib.SMTPRecipientsRefused({"a@example.org": (550, b"no")}))
+        with self.assertRaisesRegex(RuntimeError, "All recipients were refused"):
+            D.send(self.msg, "digest@example.org", ["a@example.org"])
+        self.make_server(send_error=smtplib.SMTPDataError(554, b"spam"))
+        with self.assertRaisesRegex(RuntimeError, "it was not sent"):
+            D.send(self.msg, "digest@example.org", ["a@example.org"])
+
+
+class MonthArgument(DigestCase):
+    def test_a_mistyped_month_stops_before_anything_is_sent(self):
+        self.full_month()
+        env = {"SMTP_SERVER": "smtp.example.org", "SMTP_USERNAME": "u@example.org", "SMTP_PASSWORD": "p",
+               "DIGEST_TO": "group@example.org"}
+        out = self.tmp_path / "out"
+        with mock.patch.dict(os.environ, env), mock.patch.object(D, "send") as send:
+            for bad in ("2026-9", "Oct", "2026-13", "", "2026-10 "):
+                with self.subTest(month=bad):
+                    self.assertEqual(D.main(["--as-of", "2026-10-01", "--month", bad]), 2)
+                    self.assertEqual(D.main(["--dry-run", "--as-of", "2026-10-01", "--month", bad, "--out-dir", str(out)]), 2)
+            send.assert_not_called()
+            self.assertFalse(out.exists())
+            self.assertEqual(D.main(["--as-of", "2026-10-01", "--month", "2026-10"]), 0)
+            send.assert_called_once()
+
+    def test_the_workflow_passes_any_month_on(self):
+        wf = (ROOT / ".github" / "workflows" / "monthly-digest.yml").read_text(encoding="utf-8")
+        self.assertIn('if [ -n "$month" ]; then args+=(--month "$month"); fi', wf)
+        self.assertNotIn("=~ ^[0-9]{4}", wf)          # no silent filter: the script rejects a bad month
+
+
 class RealData(unittest.TestCase):
     """The command itself, on the repository's own data (like the check workflow): it must always build."""
 
@@ -458,7 +667,7 @@ class RealData(unittest.TestCase):
                 text = (Path(tmp) / "digest.txt").read_text(encoding="utf-8")
                 self.assertIn("Versión en español más abajo", html)
                 self.assertIn("Resumen mensual — Edición de", text)
-            self.assertIn("January 2027 · Novedades de enero", r.stdout)
+            self.assertIn("January 2027 edition · Edición de enero de 2027", r.stdout)
 
 
 if __name__ == "__main__":

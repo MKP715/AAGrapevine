@@ -281,7 +281,11 @@
     var supported = !!(synth && window.SpeechSynthesisUtterance);
     var BLOCK = "h1,h2,h3,h4,h5,h6,p,li,dt,dd,blockquote,figcaption,caption,td,th,summary,pre";
     var SKIP = "nav,footer,button,select,textarea,input,label,legend,script,style,template,noscript,svg,canvas,iframe,audio,video,dialog:not([open])," +
-      "[aria-hidden='true'],[hidden],[inert],.sr-only,[role='button'],[role='tab'],[class*='btn'],.chip,[data-tts-skip],lite-youtube";
+      "[aria-hidden='true'],[hidden],[inert],.sr-only,[role='button'],[role='tab'],[class*='btn'],.chip,[data-tts-skip],lite-youtube," +
+      "details:not([open]) > :not(summary)"; // a closed <details> still has boxes in current Chrome
+    // "has a letter or a digit" (not only punctuation or emoji). Built at run time: an older browser
+    // without Unicode property escapes would reject a /\p{L}/u literal and stop this whole file.
+    var WORDISH = (function () { try { return new RegExp("[\\p{L}\\p{N}]", "u"); } catch (e) { return /[A-Za-z0-9À-ɏ]/; } })();
     var chunks = [], idx = 0, state = "idle", token = 0, done = false, empty = false, cur = null, fns = [];
     var MAX = 240;
 
@@ -323,7 +327,9 @@
           var ok = vis.get(el);
           if (ok === undefined) {
             var cs = getComputedStyle(el);
-            ok = !!el.getClientRects().length && cs.visibility !== "hidden" && !hiddenEl(el);
+            ok = !!el.getClientRects().length && cs.visibility !== "hidden" && !hiddenEl(el) &&
+              // not rendered (inside a closed <details>, display: none, visibility: hidden …)
+              !(el.checkVisibility && !el.checkVisibility({ visibilityProperty: true }));
             vis.set(el, ok);
           }
           return ok ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
@@ -336,7 +342,12 @@
         // by the Spanish voice (the block is split where the language changes)
         var l = n.parentElement.closest("[lang]");
         var tl = ((l && l.getAttribute("lang")) || pageLang).slice(0, 2).toLowerCase();
-        if (last && last.el === b && last.lang === tl) { last.text += " " + n.nodeValue; continue; }
+        // (the next piece of the same block: a space between them unless one is there already, or the
+        // piece starts with punctuation — "in print" + ", here" is "in print, here", not "print , here")
+        if (last && last.el === b && last.lang === tl) {
+          last.text += (/\s$/.test(last.text) || /^[\s,.;:!?%)\]}»”’]/.test(n.nodeValue) ? "" : " ") + n.nodeValue;
+          continue;
+        }
         // a new block (or the same block again after a nested one, or another language): a new
         // chunk, in document order
         last = { el: b, text: n.nodeValue, lang: tl, heading: /^H[1-6]$/.test(b.tagName) };
@@ -345,7 +356,7 @@
       var out = [], section = "";
       list.forEach(function (c) {
         var t = c.text.replace(/\s+/g, " ").trim();
-        if (!t || !/[\p{L}\p{N}]/u.test(t)) return;
+        if (!t || !WORDISH.test(t)) return;
         if (c.heading) section = t;
         split(t).forEach(function (piece) { out.push({ el: c.el, text: piece, lang: c.lang, section: section }); });
       });
@@ -372,8 +383,9 @@
       cur = c ? c.el : null;
       if (!cur) return;
       cur.classList.add("tts-current");
-      var r = cur.getBoundingClientRect(), top = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
-      if (r.top < top || r.bottom > window.innerHeight) {
+      // (the bottom edge: above the read-aloud bar, the language banner and the player — scroll-padding-bottom)
+      var rcs = getComputedStyle(document.documentElement), r = cur.getBoundingClientRect(), top = parseFloat(rcs.scrollPaddingTop) || 0;
+      if (r.top < top || r.bottom > window.innerHeight - (parseFloat(rcs.scrollPaddingBottom) || 0)) {
         try { cur.scrollIntoView({ behavior: GV.reducedMotion() ? "auto" : "smooth", block: r.height > window.innerHeight * 0.6 ? "start" : "center" }); } catch (e) { cur.scrollIntoView(); }
       }
     }
@@ -460,6 +472,12 @@
         tts: GV.tts.state(),
         init: function () {
           var self = this;
+          // Was the last press a pointer on an "Aa" button? (Clicking one moves focus onto it: that
+          // must not close the panel before its own click toggles it. A keyboard Tab onto one must.)
+          document.addEventListener("pointerdown", function (e) {
+            self._ptrTrigger = !!(e.target && e.target.closest && e.target.closest('[aria-controls="gvlv-panel"]'));
+          }, true);
+          document.addEventListener("keydown", function () { self._ptrTrigger = false; }, true);
           window.addEventListener("gvlv:prefs", function (e) { self.p = Object.assign({}, e.detail); self.saverOn = GV.prefs.saverActive(); });
           GV.tts.on(function (s) { self.tts = s; });
           this.$watch("$store.gvlv.open", function (v) {
@@ -505,10 +523,21 @@
         onFocusOut: function (e) {
           var to = e.relatedTarget;
           if (!Alpine.store("gvlv").open || !to || this.$root.contains(to)) return;
-          if (to.closest && to.closest('[aria-controls="gvlv-panel"]')) return;
+          // Focus left the panel: close it, so it never hides the focused control (WCAG 2.4.11) — even
+          // when that control is another "Aa" button reached with Tab (the Accessibility page has one
+          // right after the panel). A pointer press on an "Aa" button is left to that button's click.
+          if (this._ptrTrigger && to.closest && to.closest('[aria-controls="gvlv-panel"]')) return;
           this.close(false);
         },
-        ttsToggle: function () { GV.tts.toggle(); },
+        // Read aloud. On a phone the panel covers the page, so once reading starts it closes (focus back
+        // on the button that opened it) and the read-aloud bar at the bottom (gvlvTtsBar) takes over.
+        ttsToggle: function () {
+          var starting = this.tts.state !== "playing";
+          GV.tts.toggle();
+          var phone = false;
+          try { phone = window.matchMedia("(max-width: 39.99rem)").matches; } catch (e) {}
+          if (starting && phone && GV.tts.state().state === "playing") this.close(true);
+        },
         ttsStop: function () { GV.tts.stop(); var m = this.$refs.ttsMain; if (m) m.focus(); },
         statusText: function () {
           var s = this.tts, el = this.$root, sec = s.section || el.getAttribute("data-read-top");
@@ -517,6 +546,41 @@
           if (s.state === "paused") return el.getAttribute("data-read-paused").replace("{section}", sec);
           if (s.done) return el.getAttribute("data-read-done");
           return "";
+        },
+      };
+    });
+
+    /* The read-aloud bar (partials/comfort-panel.njk, areas/access.css .tts-bar): while the page is
+       being read (or paused) and the panel is closed, a small bar at the bottom says what is being
+       read and has Pause / Resume and Stop — so reading is never left running with no control in
+       sight (phones close the panel when reading starts). While it is shown <html> gets
+       .tts-bar-on and --tts-h (its height): the page keeps that room at its end and keyboard focus
+       is never left under it (scroll-padding-bottom). */
+    Alpine.data("gvlvTtsBar", function () {
+      return {
+        tts: GV.tts.state(),
+        init: function () {
+          var self = this;
+          GV.tts.on(function (s) { self.tts = s; });
+          if (window.ResizeObserver) new ResizeObserver(function () { self.measure(); }).observe(this.$root);
+        },
+        visible: function () { return this.tts.state !== "idle" && !Alpine.store("gvlv").open; },
+        measure: function () {
+          var root = document.documentElement, on = this.visible(), h = on ? Math.ceil(this.$root.getBoundingClientRect().height) : 0;
+          root.classList.toggle("tts-bar-on", !!h);
+          if (h) root.style.setProperty("--tts-h", h + "px"); else root.style.removeProperty("--tts-h");
+        },
+        sync: function () { var self = this; this.visible(); this.$nextTick(function () { self.measure(); }); },
+        text: function () {
+          var el = this.$root, sec = this.tts.section || el.getAttribute("data-read-top");
+          return el.getAttribute(this.tts.state === "paused" ? "data-read-paused" : "data-read-now").replace("{section}", sec);
+        },
+        toggle: function () { GV.tts.toggle(); },
+        stop: function () {
+          GV.tts.stop();
+          // the bar goes away with the button that had focus: put it on the visible "Aa" button
+          var t = [].slice.call(document.querySelectorAll(".gvlv-trigger, .site-menu-btn")).filter(function (b) { return b.offsetParent !== null; })[0];
+          if (t) t.focus({ preventScroll: true });
         },
       };
     });
@@ -580,7 +644,9 @@
         toggleTheme: function () {
           this.theme = this.theme === "dark" ? "light" : "dark";
           document.documentElement.setAttribute("data-theme", this.theme);
-          try { localStorage.setItem("theme", this.theme); } catch (e) {}
+          // "gvlv-theme": our own key (mkp715.github.io is one origin shared by every Pages project, and
+          // a bare "theme" is a common key there). base.njk reads it before the first paint.
+          try { localStorage.setItem("gvlv-theme", this.theme); } catch (e) {}
         },
       };
     });

@@ -93,7 +93,7 @@ pageScripts: ["/assets/js/community.js"]
             <p class="eyebrow">{{ ("community.share.qr_" + l) | t(lang) }}</p>
             <div class="mt-2 flex items-center gap-2 rounded-xl bg-surface-2 p-1.5 pl-4">
               {% icon "link", "size-4 shrink-0 text-faint" %}
-              <a href="{{ urls[l] }}" class="tap-link min-w-0 flex-1 truncate font-semibold text-gv no-underline hover:underline" hreflang="{{ l }}">{{ urls[l] | cmShortUrl }}</a>
+              <a href="{{ urls[l] }}" class="tap-link min-w-0 flex-1 font-semibold text-gv no-underline [overflow-wrap:anywhere] hover:underline" hreflang="{{ l }}">{%- set su = urls[l] | cmShortUrl -%}{%- set cut = su.indexOf("/") -%}{% if cut > 0 %}<span class="min-w-0 [overflow-wrap:anywhere]">{{ su.slice(0, cut + 1) }}<wbr><span class="whitespace-nowrap">{{ su.slice(cut + 1) }}</span></span>{% else %}{{ su }}{% endif %}</a>
               <button type="button" class="btn-secondary btn-sm shrink-0" data-copy="{{ urls[l] }}" aria-label="{{ 'community.copy_link' | t(lang) }}">{% icon "copy", "size-4" %}<span class="hidden sm:inline">{{ "community.copy_link" | t(lang) }}</span></button>
             </div>
             <div class="mt-4 flex flex-wrap gap-2">

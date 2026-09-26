@@ -250,7 +250,7 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
   {% if d %}
   <a class="cm-rec-phone {{ 'cm-rec-phone--lv' if isLv else 'cm-rec-phone--gv' }} mt-5" href="tel:{{ d.tel }}">
     <span class="cm-rec-phone-icon">{% icon "phone", "size-5" %}</span>
-    <span class="min-w-0"><span class="block text-sm font-semibold {{ 'text-lv-strong' if isLv else 'text-gv-strong' }}">{{ "community.rec.call" | t(lang) }}</span> <span class="cm-rec-num">{{ d.phone }}</span></span>
+    <span class="min-w-0"><span class="block text-sm font-semibold {{ 'text-lv-strong' if isLv else 'text-gv-strong' }}">{{ "community.rec.call" | t(lang) }}</span> <span class="cm-rec-num">{#- "(559)" and "726-1216" never break inside (larger text: it may break between them) -#}{% for part in d.phone.split(" ") %}<span>{{ part }}</span>{% if not loop.last %} {% endif %}{% endfor %}</span></span>
   </a>
   {% if isLv and d.long_distance %}<p class="mt-2 flex items-start gap-1.5 text-sm text-muted">{% icon "info", "mt-0.5 size-4 shrink-0" %}<span>{{ "community.rec.long_distance" | t(lang) }}</span></p>{% endif %}
 

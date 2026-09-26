@@ -20,6 +20,9 @@
      <html data-motion="reduce">): no animation loop — one still picture is painted, and
      repainted at the right size on every resize. Changing either while the page is open works.
      Data saver (<html data-saver="on">, also while offline) gets the same still picture.
+   - Battery: the lights run for 25 s, then settle into the still picture; moving the mouse over
+     the hero (or touching it) brings them back for 20 s. Phones and tablets (a coarse pointer) and
+     low-power computers (4 cores or fewer) start with the still picture — a touch wakes it.
    - Loading the file twice, or on a page without a hero, is harmless (it does nothing).
    Optional API: window.GVHeroArt.init(root) sets up heroes added later; GVHeroArt.pause()
    and .resume(); window.GV_CANVAS.start()/.stop() are kept for older callers. */
@@ -423,14 +426,21 @@
   // ======================= SETUP (generalized initialization) =======================
   // Nothing above this line was changed; below: sizing, start / pause, events.
   let dprNow=0,onScreen=true,held=false,alive=true,resizeTimer=null,ro=null,io=null;
+  // Battery: `idle` = the lights have settled into the still picture (see the header comment).
+  const RUN_FOR=25000,WAKE_FOR=20000;
+  const LOW_POWER=(function(){try{return window.matchMedia("(pointer: coarse)").matches||(navigator.hardwareConcurrency||8)<=4}catch(e){return false}})();
+  let idle=LOW_POWER,idleTimer=null;
   cvs=canvasEl;
   ctx=cvs.getContext("2d");
-  function running(){return alive&&!held&&!reducedMotion&&onScreen&&tabVisible&&W>0&&H>0}
+  function running(){return alive&&!held&&!idle&&!reducedMotion&&onScreen&&tabVisible&&W>0&&H>0}
   // Start or stop the draw loop to match the current state.
   function sync(){
-    if(running()){if(!raf){lastDrawTime=0;raf=requestAnimationFrame(draw)}}
+    if(running()){if(!raf){lastDrawTime=0;raf=requestAnimationFrame(draw);armIdle(RUN_FOR)}}
     else if(raf){cancelAnimationFrame(raf);raf=null}
   }
+  function armIdle(ms){clearTimeout(idleTimer);idleTimer=setTimeout(function(){idle=true;sync();paintStill()},ms)}
+  // A pointer moving over the hero (or a touch on it) wakes the lights for a while.
+  function wake(){if(!alive||reducedMotion)return;if(idle){idle=false;sync()}if(raf)armIdle(WAKE_FOR)}
   // A still picture: the static layer plus one pass of the original draw() for the lights.
   function paintStill(){
     if(raf||!scene||!W||!H)return;
@@ -459,6 +469,7 @@
   }
   function onResize(){clearTimeout(resizeTimer);resizeTimer=setTimeout(resize,150)}
   function onMove(e){
+    wake();
     const rect=hero.getBoundingClientRect();
     const pt=e.touches?e.touches[0]:e;
     if(!pt)return;
@@ -468,6 +479,7 @@
   function onVisChange(){tabVisible=!document.hidden;sync()}
   hero.addEventListener("mousemove",onMove);
   hero.addEventListener("touchmove",onMove,{passive:true});
+  hero.addEventListener("touchstart",wake,{passive:true});
   hero.addEventListener("mouseleave",onLeave);
   document.addEventListener("visibilitychange",onVisChange);
   window.addEventListener("resize",onResize);
@@ -487,7 +499,7 @@
     resume:function(){held=false;resize();sync()},
     setReducedMotion:function(m){reducedMotion=!!m;sync();if(reducedMotion)paintStill()},
     destroy:function(){
-      alive=false;sync();clearTimeout(resizeTimer);
+      alive=false;sync();clearTimeout(resizeTimer);clearTimeout(idleTimer);hero.removeEventListener("touchstart",wake);
       if(ro)ro.disconnect();
       if(io)io.disconnect();
       hero.removeEventListener("mousemove",onMove);hero.removeEventListener("touchmove",onMove);hero.removeEventListener("mouseleave",onLeave);

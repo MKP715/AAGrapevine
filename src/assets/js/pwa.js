@@ -253,7 +253,8 @@
      and the language banner, and the page keeps room for it at the end (pwa.css). */
   var bar = null, toast = null, barRO = null, toastRO = null;
   function barKind() {
-    if (!state.online) return hidden.offline ? "" : "offline";
+    // the offline page's own hero already says "You're offline — this page isn't saved…": no second notice
+    if (!state.online) return hidden.offline || isOfflinePage ? "" : "offline";
     if (state.copyFrom !== null && !hidden.copy) return "copy";
     return "";
   }
@@ -329,11 +330,12 @@
       var html = kind === "update"
         ? '<span class="pwa-toast-icon">' + icon("refresh", "size-5") + '</span><p class="pwa-toast-text"><strong>' + esc(T("Updated", "Actualizado")) + "</strong> " +
           esc(T("A new version of the site is ready.", "Hay una versión nueva del sitio.")) + "</p>" +
-          '<button type="button" class="btn-primary btn-sm shrink-0" data-pwa-act="update">' + esc(T("Reload", "Recargar")) + "</button>"
+          '<div class="pwa-toast-actions"><button type="button" class="btn-primary btn-sm shrink-0" data-pwa-act="update">' + esc(T("Reload", "Recargar")) + "</button>"
         : '<span class="pwa-toast-icon">' + icon("image", "size-5") + '</span><p class="pwa-toast-text"><strong>' + esc(T("Data saver is on", "Ahorro de datos activado")) + "</strong> " +
           esc(T("Images and video previews are off.", "Las imágenes y las vistas previas de video están apagadas.")) + "</p>" +
-          '<button type="button" class="btn-secondary btn-sm shrink-0" data-pwa-act="show-images">' + esc(T("Show images", "Mostrar imágenes")) + "</button>";
-      html += '<button type="button" class="pwa-toast-close" data-pwa-act="close-toast" data-kind="' + kind + '" aria-label="' + esc(T("Close this notice", "Cerrar este aviso")) + '">' + icon("x", "size-5") + "</button>";
+          '<div class="pwa-toast-actions"><button type="button" class="btn-secondary btn-sm shrink-0" data-pwa-act="show-images">' + esc(T("Show images", "Mostrar imágenes")) + "</button>";
+      // (the action and Close stay together: on a narrow screen they share a second row)
+      html += '<button type="button" class="pwa-toast-close" data-pwa-act="close-toast" data-kind="' + kind + '" aria-label="' + esc(T("Close this notice", "Cerrar este aviso")) + '">' + icon("x", "size-5") + "</button></div>";
       toast.innerHTML = html;
       toast.setAttribute("data-kind", kind);
     }
@@ -454,7 +456,7 @@
       esc(state.saved ? T("Update saved pages", "Actualizar las páginas guardadas") : T("Save key pages for offline", "Guardar páginas clave")) + "</button>";
     if (s) h += '<p class="pwa-progress" data-pwa-progress><progress max="1"></progress><span></span></p>';
     else if (state.lastSave) h += '<p class="pwa-status">' + esc(state.lastSave) + "</p>";
-    else if (!inCard) h += '<p class="pwa-hint">' + esc(T("Meetings, this month's toolkit, Share your story, the Shop and more, in your language.", "Reuniones, el kit de este mes, Comparte tu historia, la Tienda y más, en tu idioma.")) + "</p>"; // (a card says it already)
+    else if (!inCard) h += '<p class="pwa-hint">' + esc(T("Meetings, this month's toolkit and district report, the GVR / RLV 101 lessons, the Shop and more, in your language.", "Reuniones, el kit y el informe del mes, las lecciones de RLV / GVR 101, la Tienda y más, en tu idioma.")) + "</p>"; // (a card says it already)
     return h;
   }
 
@@ -509,7 +511,7 @@
     var b = e.target.closest && e.target.closest("[data-pwa-act], [data-pwa-retry]");
     if (!b) return;
     if (b.hasAttribute("data-pwa-retry")) {
-      if (!isOfflinePage || (state.online && !isFallback)) return; // online on /offline/: a plain link home
+      if (!isFallback) return; // /offline/ opened on purpose (online or not): a plain link home
       e.preventDefault();
       location.reload();
       return;
@@ -586,11 +588,15 @@
   /* ================================================================= The offline page ========== */
   function offlinePageCopy() {
     var box = document.querySelector("[data-pwa-offline-copy]");
-    if (!box || isFallback || !state.online) return;
-    // Opened on purpose while online: "Pages saved on this device", and the button goes home.
+    // Standing in for a page that isn't saved: the page's own words ("This page isn't saved…") and
+    // "Try again" are right.
+    if (!box || isFallback) return;
+    // Opened on purpose ("See saved pages"): online, "Pages saved on this device"; offline, "You're
+    // offline" and that the pages below open without a connection. The button goes home.
     var h1 = document.querySelector(".gv-hero-title > span:last-child"), sub = document.querySelector(".gv-hero-sub");
-    if (h1 && box.getAttribute("data-title-online")) h1.textContent = box.getAttribute("data-title-online");
-    if (sub && box.getAttribute("data-sub-online")) sub.textContent = box.getAttribute("data-sub-online");
+    var copy = function (el, attr) { var v = box.getAttribute(attr); if (el && v) el.textContent = v; };
+    copy(h1, state.online ? "data-title-online" : "data-title-direct");
+    copy(sub, state.online ? "data-sub-online" : "data-sub-direct");
     var btn = box.querySelector("[data-pwa-retry]");
     if (btn) {
       btn.setAttribute("href", HOME);

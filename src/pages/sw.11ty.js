@@ -6,8 +6,9 @@
 //   shell     what is saved on install: styles, scripts, the two main fonts, the logo and app icons,
 //             and the two offline pages (/offline/, /es/offline/)
 //   save      the pages "Save key pages for offline" keeps, in the visitor's language: home, Meetings,
-//             this month's Monthly toolkit page ({month}, worked out in the worker — the hub when that
-//             page is missing), Contribute, Shop, and Accessibility / GVR 101 when those pages exist
+//             the Monthly toolkit hub (with the district report editor) and this month's page ({month},
+//             worked out in the worker — skipped when it is missing), Contribute, Shop, and
+//             Accessibility / GVR 101 (the hub and every lesson page) when those pages exist
 // Registered by src/assets/js/pwa.js with scope = base. Served from the base path, so its scope
 // can cover the whole site.
 import fs from "node:fs";
@@ -35,10 +36,17 @@ export function render(data) {
     if (p.url) urls.add(p.url);
     for (const h of p.data?.pagination?.hrefs || []) urls.add(h);
   }
-  const save = ["", "meetings/", "monthly/{month}/", "contribute/", "shop/"];
+  // The Monthly toolkit hub ("monthly/": the nav's "Monthly toolkit", the app shortcut and the district
+  // report editor, #report) AND this month's page; then Contribute, the Shop, the optional pages and
+  // each GVR / RLV 101 lesson (what a GVR opens at a district meeting in a church basement).
+  const save = ["", "meetings/", "monthly/", "monthly/{month}/", "contribute/", "shop/"];
   for (const group of OPTIONAL) {
     const hit = group.find((p) => urls.has("/" + p));
     if (hit) save.push(hit);
+  }
+  for (const l of data.orientation?.lessons || []) {
+    const p = `orientation/${l.id}/`;
+    if (l.id && urls.has("/" + p) && !save.includes(p)) save.push(p);
   }
 
   const a = (p) => base + p;

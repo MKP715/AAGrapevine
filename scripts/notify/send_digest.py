@@ -16,8 +16,8 @@ Edition "2026-10" (sent October 1) holds — the same rules as the website's /di
   * coming up THIS month: events not over yet (a monthly series once), the weekly open meetings,
     the number of Grapevine meetings in our Area and nearby
   * story deadlines through the end of NEXT month, La Viña's open topics, the phone story lines
-  * Book of the Month (compact; the prices live on /shop/#botm), the cheapest subscription and a
-    pointer to the daily quote on the home page
+  * Book of the Month (compact; the prices live on /shop/#botm), the lowest month-to-month
+    subscription price and a pointer to the daily quote on the home page
   * each section in English first, then in Spanish (titles are already translated)
 
 Standard library only (smtplib + email.mime) so it runs anywhere without installing the sync
@@ -33,7 +33,8 @@ Usage (from the repo root):
 Environment (GitHub secrets in .github/workflows/monthly-digest.yml):
 
     SMTP_SERVER     e.g. smtp.gmail.com                  (required to send)
-    SMTP_PORT       587 (STARTTLS, default) or 465 (SSL)
+    SMTP_PORT       587 (STARTTLS, default) or 465 (SSL). On any port but 465 the server MUST offer
+                    STARTTLS: the password is never sent unencrypted (the run stops instead)
     SMTP_USERNAME   the mailbox login                    (required to send)
     SMTP_PASSWORD   an APP password, not your normal one (required to send)
     DIGEST_TO       one address (e.g. a Google Group) or several, comma-separated
@@ -42,7 +43,12 @@ Environment (GitHub secrets in .github/workflows/monthly-digest.yml):
     DIGEST_REPLY_TO optional reply-to (default: site.contact_email from config)
     SITE_URL        optional public site address (overrides site.url from config)
 
-Exit codes: 0 = sent / previewed / nothing to do, 1 = sending failed, 2 = not configured.
+Sending: connecting and logging in are tried up to 3 times; the message itself is handed over
+ONCE — if the connection breaks at that point the run fails with "it MAY have been sent" instead of
+trying again (a second try could e-mail every district twice).
+
+Exit codes: 0 = sent / previewed / nothing to do, 1 = sending failed, 2 = not configured or a
+--month that is not YYYY-MM.
 """
 from __future__ import annotations
 
@@ -56,6 +62,7 @@ import smtplib
 import socket
 import ssl
 import time
+import unicodedata
 from datetime import date, datetime, timedelta, timezone
 from email.header import Header
 from email.mime.multipart import MIMEMultipart
@@ -68,9 +75,11 @@ ROOT = Path(__file__).resolve().parents[2]
 CONFIG_PATH = ROOT / "config" / "site.yml"
 CARRY_PATH = ROOT / "config" / "carry.yml"
 SITE_DIR = ROOT / "data" / "site"
+ASSET_DIR = ROOT / "src"   # the site's own files (/assets/… → src/assets/…)
 
 # Copies of rules in scripts/sync/ and eleventy/filters/ (kept here so this script runs with the
-# standard library alone, without importing the sync pipeline) — keep them equal:
+# standard library alone, without importing the sync pipeline) — keep them equal
+# (tests/test_digest_parity.py builds the same editions with community.js and compares them):
 MULTI_DAY_MIN_HOURS = 18                             # build_data.MULTI_DAY_MIN_H: a timed event over several days
 EVERY_ISSUE = re.compile(r"(?i)in every issue|en cada (?:edici[oó]n|n[uú]mero)")  # build_data._EVERY_ISSUE
 SE_SUFFIX = re.compile(r"(?i)\s*[\[(]\s*(?:season|temporada)\s*\d+\s*[,;.·-]?\s*(?:episode|episodio|ep\.?)\s*\d+\s*[\])]\s*$")
@@ -138,6 +147,7 @@ T = {
         "meetings_n": ("{n} meetings", "1 meeting"),
         "story": "Share your story — upcoming deadlines",
         "due": "Due {date}",
+        "issue_of": "{issue} issue",
         "lv_anytime": "La Viña takes stories on its suggested themes anytime — no deadline. This month, why not:",
         "record": "Record your story by phone",
         "record_how": "How to record by phone",
@@ -159,7 +169,7 @@ T = {
         "footer_why": "You are receiving this monthly summary from the {committee}.",
         "footer_unsub": "To stop receiving it, reply with \"unsubscribe\".",
         "footer_anon": "Feel free to forward it to your group or district — and please protect everyone's anonymity.",
-        "pages": "{n} pages",
+        "pages": ("{n} pages", "1 page"),
         "min": "{n} min",
         "episode_se": "S{s} · E{e}",
         "botm_title": "Book of the Month — {pct}% off",
@@ -167,10 +177,12 @@ T = {
         "botm_regular": "(regular {price})",
         "botm_until": "until {date}",
         "botm_more": "Book of the Month details on our shop page",
-        "subs_from": "Subscriptions from {amount} a month",
+        "subs_from": "Month-to-month subscriptions from {amount}",
         "quote": "A daily quote from Grapevine and La Viña, on our home page",
         "quote_link": "Read today's quote",
         "full_calendar": "Full calendar",
+        "in_other": "in Spanish",          # after something written in the other language
+        "weekly_open": "Weekly Open",      # the pill of the Grapevine Weekly Open podcast
     },
     "es": {
         "lang_name": "Español",
@@ -220,7 +232,8 @@ T = {
         "meetings_n": ("{n} reuniones", "1 reunión"),
         "story": "Comparte tu historia — próximas fechas límite",
         "due": "Fecha límite: {date}",
-        "lv_anytime": "La Viña recibe historias sobre sus temas sugeridos en cualquier momento, sin fecha límite. Este mes, ¿por qué no?:",
+        "issue_of": "Edición de {issue}",
+        "lv_anytime": "La Viña recibe historias sobre sus temas sugeridos en cualquier momento, sin fecha límite. Ideas para este mes:",
         "record": "Graba tu historia por teléfono",
         "record_how": "Cómo grabar por teléfono",
         "story_cta": "Cómo enviar una historia",
@@ -241,7 +254,7 @@ T = {
         "footer_why": "Recibes este resumen mensual del {committee}.",
         "footer_unsub": "Para dejar de recibirlo, responde con \"cancelar\".",
         "footer_anon": "Puedes reenviarlo a tu grupo o distrito — y, por favor, protege el anonimato de todos.",
-        "pages": "{n} páginas",
+        "pages": ("{n} páginas", "1 página"),
         "min": "{n} min",
         "episode_se": "T{s} · E{e}",
         "botm_title": "Libro del mes — {pct}% de descuento",
@@ -249,10 +262,12 @@ T = {
         "botm_regular": "(precio regular {price})",
         "botm_until": "hasta el {date}",
         "botm_more": "Detalles del libro del mes en nuestra página de la tienda",
-        "subs_from": "Suscripciones desde {amount} al mes",
+        "subs_from": "Suscripciones mes a mes desde {amount}",
         "quote": "Una cita diaria de Grapevine y La Viña, en nuestra página de inicio",
         "quote_link": "Lee la cita de hoy",
         "full_calendar": "Calendario completo",
+        "in_other": "en inglés",
+        "weekly_open": "Reunión Abierta Semanal",
     },
 }
 
@@ -502,12 +517,13 @@ def fmt_day(dt: datetime, lang: str, weekday: bool = True, year: bool = False) -
 
 
 def fmt_time(dt: datetime, lang: str) -> str:
+    """"7:00 PM CDT" / "7:00 p. m. (hora del Centro)": Central time. The Spanish half says it in
+    words, like the rest of the Spanish site (CDT / CST are English abbreviations)."""
     d = to_central(dt)
-    tz = d.tzname() or "CT"
     h = d.hour % 12 or 12
-    if lang == "es":   # "7:00 p. m. CDT", the site's spelling (no-break spaces: never split across lines)
-        return f"{h}:{d.minute:02d} {'a.' if d.hour < 12 else 'p.'} m. {tz}"
-    return f"{h}:{d.minute:02d} {'AM' if d.hour < 12 else 'PM'} {tz}"
+    if lang == "es":   # the site's spelling (no-break spaces: never split across lines)
+        return f"{h}:{d.minute:02d} {'a.' if d.hour < 12 else 'p.'} m. (hora del Centro)"
+    return f"{h}:{d.minute:02d} {'AM' if d.hour < 12 else 'PM'} {d.tzname() or 'CT'}"
 
 
 def fmt_month_day(ymd: str | date, lang: str) -> str:
@@ -551,6 +567,34 @@ def is_machine(item: dict, lang: str) -> bool:
 
 def one_line(v: Any) -> str:
     return re.sub(r"\s+", " ", str(v or "")).strip()
+
+
+# JavaScript's a.localeCompare(b) (en-US, the Unicode root order) — how the website sorts ids and titles
+# that tie — so the e-mail lists things in the same order: spaces and punctuation < digits < letters;
+# accents, then case (lower-case first) only break ties. Curly quotes and the no-break space count as
+# their plain forms ("variants"). Characters not listed here go after the letters.
+_COLLATE = {c: i for i, c in enumerate(
+    " _-\u2013\u2014,;:!\u00a1?\u00bf.\u2026\u00b7'\"\u00ab\u00bb()[]{}@*/\\&#%\u2022`^\u00b0\u00a9\u00ae+<=>|~$\u00a3\u20ac"
+    "0123456789abcdefghijklmnopqrstuvwxyz")}
+_VARIANT = {"\u00a0": (" ", 1), "\u2018": ("'", 1), "\u2019": ("'", 2), "\u201c": ('"', 1), "\u201d": ('"', 2)}
+
+
+def js_order(v: Any) -> tuple:
+    """A sort key: sorted(xs, key=js_order) == xs.sort((a, b) => a.localeCompare(b)) for ids and titles."""
+    s = str(v or "")
+    primary: list[int] = []
+    accent: list[int] = []
+    case: list[int] = []
+    for c in unicodedata.normalize("NFD", s):
+        if unicodedata.combining(c):
+            if accent:
+                accent[-1] = 1
+            continue
+        plain, variant = _VARIANT.get(c, (c, 1 if c.isupper() else 0))
+        primary.append(_COLLATE.get(plain.lower(), 1000 + ord(plain.lower())))
+        accent.append(0)
+        case.append(variant)
+    return tuple(primary), tuple(accent), tuple(case), s
 
 
 def media_title(item: dict, lang: str) -> str:
@@ -660,7 +704,7 @@ def item_label(item: dict, lang: str) -> tuple[str, str, str]:
         # Two shows (config sources.podcasts): the magazine's podcast ("gv") and the
         # Grapevine Weekly Open AA Meeting ("wo"), which gets its own pill.
         show = item.get("category") or (item.get("extra") or {}).get("show")
-        return ("Weekly Open" if show == "wo" else "Podcast"), C["grape"], C["grape_soft"]
+        return (T[lang]["weekly_open"] if show == "wo" else "Podcast"), C["grape"], C["grape_soft"]
     if kind in ("video", "video_file") and src != "drive":
         return "Video", C["grape"], C["grape_soft"]
     if kind == "pdf" and src != "drive":
@@ -676,16 +720,48 @@ def item_label(item: dict, lang: str) -> tuple[str, str, str]:
 
 
 def localize_months(label: str, lang: str) -> str:
-    """'October 2026' ⇄ 'Octubre 2026' so issue labels read naturally in each section."""
+    """'October 2026' ⇄ 'octubre 2026' so issue labels read naturally in each section (Spanish month
+    names are lower-case; in_sentence adds the "de")."""
     src, dst = ("en", "es") if lang == "es" else ("es", "en")
     for a, b in zip(MONTHS[src], MONTHS[dst]):
-        label = re.sub(rf"\b{a}\b", b.capitalize(), label, flags=re.I)
+        label = re.sub(rf"\b{a}\b", b if lang == "es" else b.capitalize(), label, flags=re.I)
     return label
 
 
+def in_sentence(label: str, lang: str) -> str:
+    """An issue label inside a line of text (community.js issueInSentence): Spanish months lower-case
+    and "de" before the year — "Septiembre / Octubre 2026" → "septiembre/octubre de 2026"."""
+    s = one_line(label)
+    if lang != "es":
+        return s
+    m = re.fullmatch(r"(.*?)\s+(?:de\s+)?(\d{4})", s)
+    if not m:
+        return s
+    months = [w.lower() if w.lower() in MONTHS["es"] else w for w in re.split(r"\s*/\s*", m.group(1))]
+    return f"{'/'.join(months)} de {m.group(2)}"
+
+
 def issue_label(item: dict, lang: str) -> str:
+    """The item's issue as it reads inside a line: "October 2026" / "octubre de 2026"."""
     label = ((item.get("i18n") or {}).get("issue_label") or {}).get(lang)
-    return str(label).strip() if label else localize_months(str((item.get("extra") or {}).get("issue_label") or ""), lang)
+    return in_sentence(str(label).strip() if label else localize_months(str((item.get("extra") or {}).get("issue_label") or ""), lang), lang)
+
+
+def pub_of(item: dict) -> str:
+    """'lv' for La Viña (in Spanish), 'gv' for Grapevine (in English)."""
+    ex = item.get("extra") or {}
+    return "lv" if ex.get("publication") == "lv" or item.get("source") == "lavina" or item.get("category") == "lv" else "gv"
+
+
+def other_lang(pub: str, lang: str) -> str:
+    """" (in Spanish)" after La Viña in the English half, " (en inglés)" after Grapevine in the
+    Spanish half (like the website and the district report); "" when the magazine is in `lang`."""
+    return f" ({T[lang]['in_other']})" if (pub == "lv") != (lang == "es") else ""
+
+
+def lc_first(s: str) -> str:
+    """The first letter lower-case: a schedule ("Los miércoles a las …") inside a sentence."""
+    return s[:1].lower() + s[1:] if s else s
 
 
 def item_meta(item: dict, lang: str) -> str:
@@ -713,7 +789,8 @@ def item_meta(item: dict, lang: str) -> str:
             parts.append(T[lang]["min"].format(n=max(1, round(int(ex["duration_sec"]) / 60))))
     elif kind == "pdf" and item.get("source") != "drive":
         if ex.get("pages"):
-            parts.append(T[lang]["pages"].format(n=ex["pages"]))
+            many, one = T[lang]["pages"]
+            parts.append(one if str(ex["pages"]).strip() == "1" else many.format(n=ex["pages"]))
         host = str(ex.get("host") or "").replace("www.", "")
         if host:
             parts.append(host)
@@ -832,7 +909,7 @@ def month_news(now: datetime, ed: dict) -> dict[str, list[dict]]:
     for name in NEWS_SOURCES:
         for it in load_items(name):
             add(it, False)
-    items = sorted(found.values(), key=lambda i: str(i.get("id")))
+    items = sorted(found.values(), key=lambda i: js_order(i.get("id")))
     items.sort(key=lambda i: parse_dt(i["_when"]), reverse=True)
     items = merge_twins(items)
     out = {g: [i for i in items if i["_group"] == g] for g in NEWS_GROUPS}
@@ -840,11 +917,31 @@ def month_news(now: datetime, ed: dict) -> dict[str, list[dict]]:
     return out
 
 
-def gv_theme(ed: dict, lang: str) -> str:
-    """This month's Grapevine theme from the editorial calendar (the /monthly/ page's rule)."""
+def gv_theme(ed: dict, lang: str, issue: dict | None = None) -> str:
+    """This month's Grapevine theme — the /monthly/ month model's rule (monthly.js), so the e-mail,
+    the website and the district report give the issue ONE name: the theme the issue itself carries
+    once it is out (`issue`, its entry in articles.json issues[]), else the editorial calendar's."""
+    own = tr(issue, "theme", lang)
+    if own:
+        return own
     themed = [i for i in load_items("editorial")
               if (i.get("extra") or {}).get("publication") == "gv" and (i.get("extra") or {}).get("issue_key") == ed["key"]]
     return " / ".join(t for t in (tr(i, "title", lang) for i in themed) if t)
+
+
+def email_image(path: str) -> str:
+    """A picture every mail program shows. Classic Outlook for Windows shows no WebP, so one of the
+    site's WebP thumbnails (a magazine cover) goes out as the JPEG / PNG copy made next to it
+    (scripts/sync/articles.py email_copy) — or not at all (""), never as a blank box."""
+    if not path or not path.lower().endswith(".webp"):
+        return path or ""
+    if path.startswith(("http://", "https://")):
+        return ""
+    for ext in (".jpg", ".png"):
+        alt = path[: -len(".webp")] + ext
+        if (ASSET_DIR / alt.lstrip("/")).is_file():
+            return alt
+    return ""
 
 
 def month_issues(ed: dict, n: int) -> list[dict]:
@@ -868,13 +965,13 @@ def month_issues(ed: dict, n: int) -> list[dict]:
         first = lst[0]
 
         def theme(lang: str) -> str:
-            cal = gv_theme(ed, lang) if pub == "gv" and key == ed["key"] else ""
+            cal = gv_theme(ed, lang, meta) if pub == "gv" and key == ed["key"] else ""
             return one_line(cal or ((meta.get("i18n") or {}).get("theme") or {}).get(lang)
                             or ((first.get("i18n") or {}).get("issue_theme") or {}).get(lang)
                             or meta.get("theme") or first["extra"].get("issue_theme") or first["extra"].get("topic"))
 
         def label(lang: str) -> str:
-            return one_line(((meta.get("i18n") or {}).get("label") or {}).get(lang)) or issue_label(first, lang) or key
+            return in_sentence(one_line(((meta.get("i18n") or {}).get("label") or {}).get(lang)) or issue_label(first, lang) or key, lang)
 
         ranked = sorted(enumerate(lst), key=lambda x: (x[1]["extra"].get("free") is not True, is_department(x[1]),
                                                        scope_rank(x[1]), x[0]))
@@ -990,7 +1087,13 @@ def weekly_open(ed: dict) -> dict[str, list[dict]]:
         pub = "lv" if w.get("source") == "lavina" else "gv"
         for lang in ("en", "es"):
             label = short_date(date.fromisoformat(starts), lang) if is_date_only(starts) and date.fromisoformat(starts) >= ed["first"] else ""
-            out[lang].append({"pub": pub, "title": tr(w, "title", lang), "when": tr(w, "when", lang) or tr(w, "day", lang), "starts": label})
+            title = tr(w, "title", lang)
+            note = other_lang(pub, lang)          # "(en inglés)" / "(in Spanish)" unless the title says it
+            if note and note.strip().lower() not in title.lower():
+                title += note
+            # the schedule follows other words here: "… — los miércoles a las 11:00 a. m. (hora del Centro)"
+            when = tr(w, "when", lang) or tr(w, "day", lang)
+            out[lang].append({"pub": pub, "title": title, "when": lc_first(when) if lang == "es" else when, "starts": label})
     for lang in out:
         mine = "lv" if lang == "es" else "gv"
         out[lang].sort(key=lambda r: r["pub"] != mine)
@@ -1001,7 +1104,7 @@ def lv_topics(ed: dict) -> dict[str, list[dict]]:
     """La Viña's suggested topics (no deadline): 3, rotating by month (monthly.js lvTopics)."""
     topics = sorted((i for i in load_items("editorial")
                      if (i.get("extra") or {}).get("publication") == "lv" and (i.get("extra") or {}).get("evergreen")),
-                    key=lambda i: str(i.get("id")))
+                    key=lambda i: js_order(i.get("id")))
     picked: list[dict] = []
     if topics:
         idx = int(ed["key"][:4]) * 12 + int(ed["key"][5:7])
@@ -1018,7 +1121,7 @@ def story_deadlines(now: datetime, ed: dict) -> list[dict]:
     last = ed["next_last"].isoformat()
     out = [i for i in load_items("editorial") if i.get("status") != "gone" and is_date_only((i.get("extra") or {}).get("deadline"))
            and today <= i["extra"]["deadline"] <= last]
-    out.sort(key=lambda i: (i["extra"]["deadline"], one_line(i.get("title"))))
+    out.sort(key=lambda i: (i["extra"]["deadline"], js_order(one_line(i.get("title")))))
     return out
 
 
@@ -1039,7 +1142,7 @@ def month_writers(ed: dict) -> dict[str, list[dict]]:
         seen.add(key)
         out[scope].append(it)
     for lst in out.values():
-        lst.sort(key=lambda i: one_line(i.get("title")))
+        lst.sort(key=lambda i: js_order(one_line(i.get("title"))))
         lst.sort(key=lambda i: i["extra"]["pub_date"], reverse=True)
     return out
 
@@ -1069,14 +1172,13 @@ def audio_lines() -> dict[str, dict]:
 
 
 def subs_from() -> float | None:
-    """The lowest monthly subscription price (shop.js shopFromMonthly)."""
+    """The lowest MONTH-TO-MONTH subscription price (shop.js shopFromMonthly: $2.99, digital), shown as
+    exactly that ("Month-to-month subscriptions from $2.99") — never as "subscriptions from … a month":
+    a yearly plan costs less per month. None without a month-to-month plan (the line is left out)."""
     plans = [p for s in (load_file("shop").get("subscriptions") or []) if isinstance(s, dict)
              for p in (s.get("plans") or []) if isinstance(p, dict) and isinstance(p.get("price"), (int, float)) and p["price"] > 0]
     monthly = [float(p["price"]) for p in plans if p.get("term_months") == 1]
-    if monthly:
-        return min(monthly)
-    rates = [float(p["price"]) / p["term_months"] for p in plans if isinstance(p.get("term_months"), int) and p["term_months"] > 0]
-    return round(min(rates), 2) if rates else None
+    return min(monthly) if monthly else None
 
 
 def collect(now: datetime, edition: str | None = None, max_per: int = 5, highlights: int = 3) -> dict:
@@ -1267,10 +1369,12 @@ def _esc(s: Any) -> str:
 
 
 def subject_of(data: dict, cfg: dict) -> str:
-    """"Grapevine / La Viña — October 2026 · Novedades de octubre"."""
+    """"Grapevine / La Viña — October 2026 edition · Edición de octubre de 2026" — the edition's
+    name in both languages (its news is from the month before, so never "Novedades de octubre")."""
     title = (cfg.get("site") or {}).get("title") or "Grapevine / La Viña"
     k = data["edition"]["key"]
-    return f"{title} — {month_label(k, 'en')} · Novedades de {month_word(k, 'es')}"
+    return (f"{title} — {T['en']['edition'].format(month=month_label(k, 'en'))}"
+            f" · {T['es']['edition'].format(month=month_label(k, 'es'))}")
 
 
 def render_html(data: dict, cfg: dict, links: Links, max_per: int, subject: str) -> str:
@@ -1426,8 +1530,9 @@ def render_lang_html(lang: str, data: dict, cfg: dict, links: Links, max_per: in
     body = []
     for iss in ordered_issues(data, lang):
         color = C["lv"] if iss["is_lv"] else C["gv"]
-        cover = (f'<td width="64" style="padding:0 14px 0 0;vertical-align:top;"><img src="{_esc(links.asset(iss["cover"]))}" width="64" alt="" '
-                 f'style="display:block;width:64px;height:auto;border:0;border-radius:6px;"></td>') if iss["cover"] else ""
+        pic = email_image(iss["cover"])
+        cover = (f'<td width="64" style="padding:0 14px 0 0;vertical-align:top;"><img src="{_esc(links.asset(pic))}" width="64" alt="" '
+                 f'style="display:block;width:64px;height:auto;border:0;border-radius:6px;"></td>') if pic else ""
         many, one = t["stories"]
         count = one if iss["count"] == 1 else many.format(n=iss["count"])
         if iss["free"]:
@@ -1443,7 +1548,7 @@ def render_lang_html(lang: str, data: dict, cfg: dict, links: Links, max_per: in
                       f'<div style="{small}">{_esc(meta)}</div></td></tr>')
         body.append(f"""<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 16px;"><tr>
   {cover}<td style="vertical-align:top;">
-    {pill(iss['name'], color, C['lv_soft'] if iss['is_lv'] else C['gv_soft'])}<span style="font-size:13px;font-weight:bold;color:{C['ink']};">{_esc(iss['label'][lang])}</span>
+    {pill(iss['name'], color, C['lv_soft'] if iss['is_lv'] else C['gv_soft'])}<span style="font-size:13px;font-weight:bold;color:{C['ink']};">{_esc(iss['label'][lang])}</span>{f'<span style="font-size:12px;color:{C["muted"]};">{_esc(other_lang(iss["pub"], lang))}</span>' if other_lang(iss["pub"], lang) else ""}
     {theme}
     <div style="font-size:12px;color:{C['muted']};margin-bottom:8px;">{_esc(count)}</div>
     {table(hl)}
@@ -1475,7 +1580,9 @@ def render_lang_html(lang: str, data: dict, cfg: dict, links: Links, max_per: in
             for it in lst[:max_per]:
                 place = writer_place(it, lang)
                 label, fg, bg = item_label(it, lang)
-                meta = " · ".join(x for x in (writer_name(it, lang) + (f", {place}" if place else ""), issue_label(it, lang)) if x)
+                issue = issue_label(it, lang)
+                meta = " · ".join(x for x in (writer_name(it, lang) + (f", {place}" if place else ""),
+                                              (issue + other_lang(pub_of(it), lang)).strip()) if x)
                 rows.append(row(f'{pill(label, fg, bg)}<a href="{_esc(it["url"])}" style="{link_style}">{_esc(tx(it, "title", lang))}</a><div style="{small}">{_esc(meta)}</div>'))
             body.append(table(rows))
         parts.append(section(t["writers"], C["lv"], "".join(body), "/published/", 0, n_writers))
@@ -1525,9 +1632,12 @@ def render_lang_html(lang: str, data: dict, cfg: dict, links: Links, max_per: in
         for d in data["deadlines"]:
             lv = (d.get("extra") or {}).get("publication") == "lv"
             due = t["due"].format(date=fmt_month_day(d["extra"]["deadline"], lang))
+            # "May 2027 issue · Due October 1" / "Edición de mayo de 2027 · Fecha límite: 1 de octubre"
+            issue = issue_label(d, lang)
+            meta_issue = f'<span style="color:{C["muted"]};">{_esc(t["issue_of"].format(issue=issue))}</span> · ' if issue else ""
             rows.append(row(f'{pill("La Viña" if lv else "Grapevine", C["lv"] if lv else C["gv"], C["lv_soft"] if lv else C["gv_soft"])}'
                             f'<strong>{_esc(tx(d, "title", lang))}</strong><div style="font-size:13px;margin-top:2px;">'
-                            f'<span style="color:{C["muted"]};">{_esc(issue_label(d, lang))}</span> · <strong style="color:{C["lv_strong"]};">{_esc(due)}</strong></div>'))
+                            f'{meta_issue}<strong style="color:{C["lv_strong"]};">{_esc(due)}</strong></div>'))
         body = table(rows) if rows else ""
         if topics:
             items = "".join(f'<li style="margin:2px 0;">“{_esc(x["text"])}”' + (f' <span lang="es" style="color:{C["muted"]};font-style:italic;">— {_esc(x["es"])}</span>' if lang != "es" and x["es"] != x["text"] else "") + "</li>" for x in topics)
@@ -1542,7 +1652,7 @@ def render_lang_html(lang: str, data: dict, cfg: dict, links: Links, max_per: in
                      f'<div style="margin-top:4px;font-size:13px;"><a href="{_esc(links.page("/contribute/", lang) + "#record")}" style="color:{C["gv"]};">{_esc(t["record_how"])} →</a></div></div>')
         parts.append(section(t["story"], C["lv"], body, "/contribute/", label=t["story_cta"]))
 
-    # ---- Book of the Month (compact) + the cheapest subscription
+    # ---- Book of the Month (compact) + the lowest month-to-month subscription price
     if bm["rows"]:
         rows = []
         for r in bm["rows"]:
@@ -1630,7 +1740,7 @@ def render_text(data: dict, cfg: dict, links: Links, max_per: int) -> str:
                 if iss["free"]:
                     count += " · " + t["free_n"].format(n=iss["free"])
                 theme = f": “{iss['theme'][lang]}”" if iss["theme"][lang] else ""
-                out.append(f"* {iss['name']} — {iss['label'][lang]}{theme} ({count})")
+                out.append(f"* {iss['name']} — {iss['label'][lang]}{other_lang(iss['pub'], lang)}{theme} ({count})")
                 for a in iss["highlights"][:max_per]:
                     free = f" — {t['free']}" if (a.get("extra") or {}).get("free") is True else ""
                     out.append(f"  - “{title_of(a, lang)}”{free}")
@@ -1654,7 +1764,10 @@ def render_text(data: dict, cfg: dict, links: Links, max_per: int) -> str:
                 out.append(f"{t['group_' + key]}:")
                 for it in W[key][:max_per]:
                     place = writer_place(it, lang)
-                    out.append(f"* “{tx(it, 'title', lang)}” — {writer_name(it, lang)}{', ' + place if place else ''} ({item_label(it, lang)[0]}, {issue_label(it, lang)})")
+                    # "(La Viña, September / October 2026, in Spanish)"
+                    where = ", ".join(x for x in (item_label(it, lang)[0], issue_label(it, lang),
+                                                  T[lang]["in_other"] if other_lang(pub_of(it), lang) else "") if x)
+                    out.append(f"* “{tx(it, 'title', lang)}” — {writer_name(it, lang)}{', ' + place if place else ''} ({where})")
                     out.append(f"  {it['url']}")
             out += [f"  → {links.page('/published/', lang)}", ""]
         # last month's lists
@@ -1717,7 +1830,7 @@ def render_text(data: dict, cfg: dict, links: Links, max_per: int) -> str:
                 out.append(f"  {r['url']}")
             out.append(f"  → {t['botm_more']}: {bm['more_url']}")
         if data["subs_from"]:
-            out.append(f"{t['subs_from'].format(amount=fmt_money(data['subs_from']))}: {links.page('/shop/', lang)}#subscriptions")
+            out.append(f"{t['subs_from'].format(amount=fmt_money(data['subs_from']))} — {links.page('/shop/', lang)}#subscriptions")
         if data["quote"]:
             out.append(f"{t['quote']}: {links.page('/', lang)}")
         out.append("")
@@ -1761,43 +1874,89 @@ def build_message(subject: str, html_body: str, text_body: str, from_addr: str, 
     return msg
 
 
+# Network trouble worth another try — but only while connecting and logging in, never once the
+# message itself is on its way (see send()).
+TRANSIENT = (smtplib.SMTPServerDisconnected, smtplib.SMTPConnectError, socket.timeout, ConnectionError,
+             TimeoutError, socket.gaierror)
+NO_STARTTLS = ("The mail server does not offer STARTTLS; refusing to send the password unencrypted. "
+               "Use a server that supports STARTTLS on port 587, or SSL on port 465 (SMTP_PORT).")
+
+
+def _close(conn: smtplib.SMTP) -> None:
+    try:
+        conn.quit()
+    except (smtplib.SMTPException, OSError):
+        try:
+            conn.close()
+        except OSError:
+            pass
+
+
+def connect(server: str, port: int, user: str, password: str, ctx: ssl.SSLContext) -> smtplib.SMTP:
+    """An encrypted, logged-in connection. Port 465 is SSL from the start; any other port must
+    switch to TLS with STARTTLS before the password is sent — a server (or anyone in between)
+    that leaves STARTTLS out of its EHLO reply gets no password: RuntimeError."""
+    if port == 465:
+        conn: smtplib.SMTP = smtplib.SMTP_SSL(server, port, context=ctx, timeout=60)
+    else:
+        conn = smtplib.SMTP(server, port, timeout=60)
+    try:
+        conn.ehlo()
+        if port != 465:
+            if not conn.has_extn("starttls"):
+                raise RuntimeError(NO_STARTTLS)
+            conn.starttls(context=ctx)
+            conn.ehlo()
+        if user:
+            conn.login(user, password)
+    except BaseException:
+        _close(conn)
+        raise
+    return conn
+
+
 def send(msg: MIMEMultipart, from_addr: str, recipients: list[str]) -> None:
+    """Connect and log in (up to 3 tries on network trouble), then hand the message over ONCE.
+    A failure after that point is never retried: the server may already have accepted the e-mail,
+    and a second try could send the whole district list a second copy."""
     server = os.environ.get("SMTP_SERVER", "").strip()
     port = int((os.environ.get("SMTP_PORT") or "587").strip() or 587)
     user = os.environ.get("SMTP_USERNAME", "").strip()
     password = os.environ.get("SMTP_PASSWORD", "")
     ctx = ssl.create_default_context()
+    conn: smtplib.SMTP | None = None
     last_err: Exception | None = None
     for attempt in range(1, 4):
         try:
-            if port == 465:
-                conn: smtplib.SMTP = smtplib.SMTP_SSL(server, port, context=ctx, timeout=60)
-            else:
-                conn = smtplib.SMTP(server, port, timeout=60)
-                conn.ehlo()
-                if conn.has_extn("starttls"):
-                    conn.starttls(context=ctx)
-                    conn.ehlo()
-            with conn:
-                if user:
-                    conn.login(user, password)
-                refused = conn.send_message(msg, from_addr=from_addr, to_addrs=recipients)
-            if refused:
-                log(f"WARNING: {len(refused)} recipient(s) were refused by the mail server")
-            return
+            conn = connect(server, port, user, password, ctx)
+            break
         except smtplib.SMTPAuthenticationError as e:
             raise RuntimeError(
                 "The mail server rejected the username/password. For Gmail you need an *App Password* "
                 "(Google Account → Security → 2-Step Verification → App passwords), not your normal password."
             ) from e
-        except smtplib.SMTPRecipientsRefused as e:
-            raise RuntimeError(f"All recipients were refused: {list(e.recipients)}") from e
-        except (smtplib.SMTPServerDisconnected, smtplib.SMTPConnectError, socket.timeout, ConnectionError,
-                TimeoutError, socket.gaierror) as e:
+        except TRANSIENT as e:
             last_err = e
-            log(f"attempt {attempt}/3 failed ({type(e).__name__}: {e}); retrying…")
-            time.sleep(10 * attempt)
-    raise RuntimeError(f"Could not reach the mail server {server}:{port}: {last_err}")
+            if attempt < 3:
+                log(f"attempt {attempt}/3 failed ({type(e).__name__}: {e}); retrying…")
+                time.sleep(10 * attempt)
+    if conn is None:
+        raise RuntimeError(f"Could not reach the mail server {server}:{port}: {last_err}")
+    try:
+        refused = conn.send_message(msg, from_addr=from_addr, to_addrs=recipients)
+    except smtplib.SMTPRecipientsRefused as e:
+        raise RuntimeError(f"All recipients were refused: {list(e.recipients)}") from e
+    except (smtplib.SMTPSenderRefused, smtplib.SMTPDataError) as e:
+        raise RuntimeError(f"The mail server refused the e-mail ({type(e).__name__}: {e}); it was not sent.") from e
+    except Exception as e:
+        raise RuntimeError(
+            f"The connection failed while the e-mail was being handed over ({type(e).__name__}: {e}). "
+            "It MAY have been sent — check the mailbox or the group before re-running, "
+            "so nobody gets it twice.") from e
+    finally:
+        _close(conn)
+    if refused:
+        log(f"WARNING: {len(refused)} recipient(s) were refused by the mail server")
 
 
 def step_summary(lines: list[str]) -> None:
@@ -1840,8 +1999,10 @@ def main(argv: list[str] | None = None) -> int:
         now = datetime(d.year, d.month, d.day, 15, 5, tzinfo=timezone.utc)
     else:
         now = datetime.now(timezone.utc).replace(microsecond=0)
-    if args.month and not re.fullmatch(r"\d{4}-(0[1-9]|1[0-2])", args.month):
-        log(f"--month must look like 2026-10 (got {args.month!r})")
+    if args.month is not None and not re.fullmatch(r"\d{4}-(0[1-9]|1[0-2])", args.month):
+        log(f"--month must look like 2026-10 (got {args.month!r}) — nothing was built or sent")
+        step_summary(["### E-mail digest", f"Stopped: the month {args.month!r} is not a YYYY-MM month like 2026-10. "
+                      "Nothing was sent — run it again with the month written like that, or leave the box empty."])
         return 2
 
     max_per = args.max_per_section or _positive(digest_cfg.get("per_section"), 5)

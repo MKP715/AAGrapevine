@@ -49,7 +49,7 @@ pageScripts: ["/assets/js/community.js"]
     language the visitor picked in the tool card (bi = both languages). -#}
 <div x-data="digestPage()">
 {% call ui.pageHero(lang, "nav.digest" | t(lang), "community.digest.hero_sub" | t(lang), "newspaper", "community.digest.eyebrow" | t(lang)) %}
-<div class="hero-actions cm-hero-tight">
+<div class="hero-actions cm-hero-tight" data-js-only>
   <button type="button" class="btn-light" data-copy-from="#digest-wa-one" :data-copy-from="src('wa')">{% icon "message-circle", "size-4" %} {{ "community.digest.copy_wa" | t(lang) }}</button>
   <button type="button" class="btn-on-dark" onclick="window.print()">{% icon "printer", "size-4" %} {{ "community.digest.print_short" | t(lang) }}</button>
 </div>
@@ -66,7 +66,9 @@ pageScripts: ["/assets/js/community.js"]
   <div class="cm-dg-layout" :class="{ 'is-js': true, 'is-more': more }">
 
     {#- ============ Tool card ============ -#}
-    <aside class="cm-dg-tools cm-no-print" aria-label="{{ 'community.digest.toolbar_aria' | t(lang) }}">
+    {#- (JavaScript only: without it, copying and printing come from the browser — the text previews below
+        can be selected and copied) -#}
+    <aside class="cm-dg-tools cm-no-print" aria-label="{{ 'community.digest.toolbar_aria' | t(lang) }}" data-js-only>
       <div class="sticky-aside">
       <div class="card p-3 sm:p-4 lg:p-6">
         <fieldset>
@@ -183,10 +185,11 @@ pageScripts: ["/assets/js/community.js"]
                   {% if iss.theme[lang] %}
                   <p class="mt-1.5 font-display text-xl font-semibold leading-snug text-ink">“{{ iss.theme[lang] }}”{% if iss.theme[other] and iss.theme[other] != iss.theme[lang] %}<span x-show="bi" x-cloak lang="{{ other }}" class="font-sans text-sm font-normal italic text-muted"> / {{ iss.theme[other] }}</span>{% endif %}</p>
                   {% endif %}
-                  <p class="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-muted">
+                  {#- a meta-row: the "·" is drawn by CSS and never starts a line -#}
+                  <p class="meta-row mt-1 text-xs text-muted">
                     <span>{{ ("community.digest.n_stories_one" if iss.count == 1 else "community.digest.n_stories") | t(lang, { n: iss.count }) }}</span>
-                    {% if iss.free %}<span class="inline-flex gap-x-2 whitespace-nowrap"><span aria-hidden="true">·</span>{{ "community.wn.free_n" | t(lang, { n: iss.free }) }}</span>
-                    {% else %}<span class="inline-flex items-center gap-1 whitespace-nowrap" title="{{ 'community.wn.subscriber_help' | t(lang) }}"><span aria-hidden="true">·</span>{% icon "lock", "size-3" %} {{ "community.wn.subscriber_all" | t(lang) }}</span>{% endif %}
+                    {% if iss.free %}<span>{{ "community.wn.free_n" | t(lang, { n: iss.free }) }}</span>
+                    {% else %}<span title="{{ 'community.wn.subscriber_help' | t(lang) }}">{% icon "lock", "mr-1 size-3 align-[-0.1em]" %}{{ "community.wn.subscriber_all" | t(lang) }}</span>{% endif %}
                   </p>
                 </div>
               </div>
@@ -311,12 +314,12 @@ pageScripts: ["/assets/js/community.js"]
               <div class="min-w-0 flex-1">
                 <a class="font-semibold leading-snug text-ink no-underline after:absolute after:inset-0 hover:text-gv" href="{{ it | cmHref(lang) }}"{% if it._ext %} target="_blank" rel="noopener"{% endif %}>{{ title }}</a>
                 {% if otherTitle and otherTitle != title %}<p class="text-sm italic text-muted" x-show="bi" x-cloak lang="{{ other }}">{{ otherTitle }}</p>{% endif %}
-                <p class="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-muted">
+                <p class="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-muted">
                   {% if se %}<span class="badge-gv">{{ se }}</span>{% endif %}
                   <span>{% if it.source == "podcast" %}{{ it.extra.show_name or "Podcast" }}{% elif it.source == "youtube" %}YouTube{% if isWeeklyVideo %} ·&nbsp;{{ "media.show_short_weekly" | t(lang) }}{% endif %}{% elif it.source == "drive" or it.source == "committee" %}NETA 65{% elif it.source == "lavina" or it.category == "lv" or (it.extra.host and "lavina" in it.extra.host) %}La Viña{% else %}Grapevine{% endif %}</span>
-                  {#- separator + value in one unbreakable item: a wrap never leaves a dangling "·" -#}
-                  {% if it._when %}<span class="inline-flex gap-x-2 whitespace-nowrap"><span aria-hidden="true">·</span><time datetime="{{ it._when | isoDate }}">{{ it._when | fmtDate(lang, "month" if it._approx else "short") }}</time></span>{% endif %}
-                  {% if it._twin %}<span class="inline-flex gap-x-2 whitespace-nowrap"><span aria-hidden="true">·</span><a class="link relative z-10" href="{{ it._twin | cmHref(lang) }}"{% if it._twin._ext %} target="_blank" rel="noopener"{% endif %}>{{ "community.digest.twin" | t(lang) }}<span class="sr-only"> — {{ title }}{% if it._twin._ext %} {{ "community.new_tab" | t(lang) }}{% endif %}</span></a></span>{% endif %}
+                  {#- a row with a link in it: gap only, no "·" (spec 1.11) — so no line ever starts with one -#}
+                  {% if it._when %}<time class="whitespace-nowrap" datetime="{{ it._when | isoDate }}">{{ it._when | fmtDate(lang, "month" if it._approx else "short") }}</time>{% endif %}
+                  {% if it._twin %}<span class="whitespace-nowrap"><a class="link relative z-10" href="{{ it._twin | cmHref(lang) }}"{% if it._twin._ext %} target="_blank" rel="noopener"{% endif %}>{{ "community.digest.twin" | t(lang) }}<span class="sr-only"> — {{ title }}{% if it._twin._ext %} {{ "community.new_tab" | t(lang) }}{% endif %}</span></a></span>{% endif %}
                   {{ ui.autoNote(it, lang) }}
                 </p>
               </div>
@@ -471,8 +474,9 @@ pageScripts: ["/assets/js/community.js"]
                 {% if o.gloss %}<span class="block text-xs text-muted">{{ o.gloss }}</span>{% endif %}
                 <p class="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-muted">
                   <span class="{{ 'badge-lv' if o.isLv else 'badge-gv' }}">{{ o.pubName }}</span>
-                  <span><span class="text-sm font-semibold text-ink">{{ o.sale }}</span>{% if o.price %} {{ "community.digest.botm_regular" | t(lang, { price: o.price }) }}{% endif %}</span>
-                  {% if o.endsLabel %}<span class="inline-flex gap-x-2 whitespace-nowrap"><span aria-hidden="true">·</span><time datetime="{{ o.ends }}">{{ "community.digest.botm_ends" | t(lang, { date: o.endsLabel }) }}</time></span>{% endif %}
+                  {#- price · until …: a meta-row (the "·" is drawn by CSS and never starts a line) -#}
+                  <span class="meta-row"><span><span class="text-sm font-semibold text-ink">{{ o.sale }}</span>{% if o.price %} {{ "community.digest.botm_regular" | t(lang, { price: o.price }) }}{% endif %}</span>
+                  {% if o.endsLabel %}<time datetime="{{ o.ends }}">{{ "community.digest.botm_ends" | t(lang, { date: o.endsLabel }) }}</time>{% endif %}</span>
                   {% if o.machine and o.gloss %}<span class="auto-note" title="{{ 'common.auto_translated_help' | t(lang) }}">{% icon "languages", "size-3" %} {{ "common.auto_translated" | t(lang) }}</span>{% endif %}
                 </p>
               </div>
@@ -505,7 +509,9 @@ pageScripts: ["/assets/js/community.js"]
         <span class="cm-qr-sm size-20 shrink-0 overflow-hidden rounded-lg bg-white p-1 ring-1 ring-line">{{ homeAbs | qrSvg("", "size-full") | safe }}</span>
         <div class="min-w-0 text-sm">
           <p class="font-semibold text-ink">{{ "community.digest.scan" | t(lang) }}</p>
-          <p class="break-all text-gv">{{ homeAbs | cmShortUrl }}</p>
+          {#- the address breaks after the site's name ("mkp715.github.io/" + "AAGrapevine/es"), never inside a word -#}
+          {%- set su = homeAbs | cmShortUrl -%}{%- set cut = su.indexOf("/") %}
+          <p class="text-gv [overflow-wrap:anywhere]">{% if cut > 0 %}{{ su.slice(0, cut + 1) }}<wbr><span class="whitespace-nowrap">{{ su.slice(cut + 1) }}</span>{% else %}{{ su }}{% endif %}</p>
           <p class="mt-1 text-xs text-muted">{{ "community.digest.generated" | t(lang, { date: site.built | fmtDate(lang, "medium") }) }}</p>
         </div>
       </footer>

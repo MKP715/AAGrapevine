@@ -547,7 +547,8 @@ function shapeEvent(it, site, lang, now, descOverride) {
   let link = it.url ? localPath(it.url, lang) : "";
   const flyerView = x.flyer_url || (it.source === "drive" && /drive\.google\.com/.test(it.url || "") ? it.url : null);
   const flyerId = driveFileId(flyerView);
-  const flyerThumb = x.flyer_thumb || (flyerId ? `https://lh3.googleusercontent.com/d/${flyerId}=w600` : null);
+  // the flyer tile on /events/ is 7.5rem (120px) wide: a 320px copy is sharp on 2× screens
+  const flyerThumb = x.flyer_thumb || (flyerId ? `https://lh3.googleusercontent.com/d/${flyerId}=w320` : null);
   // The place in this language: content/events `location_es` / `location_en` → i18n.location (build_data
   // also writes "Lugar por anunciarse" for an English "Venue to be announced"); else as written.
   const locText = String(H.pickLang(it, "location", lang) || x.location || "").trim();

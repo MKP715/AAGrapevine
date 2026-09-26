@@ -118,7 +118,11 @@ jobs:
           args=()
           # (the preview goes to the runner's temp folder: upload-artifact skips hidden folders like .tmp/)
           if [ "$MODE" = "preview" ]; then args+=(--dry-run --out-dir "$RUNNER_TEMP/digest-preview"); fi
-          if [[ "${MONTH:-}" =~ ^[0-9]{4}-(0[1-9]|1[0-2])$ ]]; then args+=(--month "$MONTH"); fi
+          # Any "month" typed in is passed on (spaces removed), so a mistyped one ("2026-9", "Oct")
+          # stops the run (send_digest exits 2) instead of sending this month's edition to everyone.
+          month="${MONTH:-}"
+          month="${month//[[:space:]]/}"
+          if [ -n "$month" ]; then args+=(--month "$month"); fi
           python -m scripts.notify.send_digest "${args[@]}"
 
       - name: Keep the preview

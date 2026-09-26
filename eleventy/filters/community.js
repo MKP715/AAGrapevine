@@ -673,7 +673,9 @@ export function monthNews(db, ed, now = Date.now()) {
     if (!t || t > now + DAY) return;
     const ymd = ymdChicago(it._when);
     if (ymd < ed.prevFirst || ymd > ed.prevLast) return;
-    if (it.kind === "announcement" && it.extra?.expires && ms(it.extra.expires) + DAY < now) return;
+    // an announcement is over after its `expires` day (Central time) — the rule of /announcements/, the
+    // home page, build_data and the e-mail (send_digest.py; tests/test_digest_parity.py compares them)
+    if (it.kind === "announcement" && it.extra?.expires && String(it.extra.expires).slice(0, 10) < ymdChicago(new Date(now))) return;
     found.set(raw.id, it);
   };
   for (const i of db?.whatsnew?.items || []) add(i, true);
@@ -694,7 +696,8 @@ const scopeRank = (a) => ({ neta65: 0, texas: 1 })[a?.extra?.geo?.scope] ?? 2;
  * The magazine issues on the stands in the edition's month: Grapevine's issue of that month and
  * La Viña's bimonthly issue (key = the month, or the month before) — each from articles.json
  * (the latest synced issue gets its cover and official page from `issues`; the theme of this
- * month's Grapevine issue comes from the editorial calendar, like /monthly/).
+ * month's Grapevine issue is the /monthly/ month model's: the issue's own theme once it is out,
+ * else the editorial calendar's).
  * highlights: `n` stories — free to read first, then members' stories (not "In Every Issue"),
  * Area 65 and Texas writers first, then in the magazine's own order.
  */
@@ -709,8 +712,8 @@ export function monthIssues(db, ed, mm = {}, n = 3) {
     const meta = (db?.articles?.issues || []).find((i) => i && i.publication === pub && i.key === key) || null;
     const first = list[0];
     const pick = (l) => {
-      const fromCalendar = pub === "gv" && key === ed.key ? clean(mm[l]?.gv?.theme) : "";
-      return fromCalendar || clean(meta?.i18n?.theme?.[l] || first.i18n?.issue_theme?.[l] || meta?.theme || first.extra.issue_theme || first.extra.topic);
+      const fromMonth = pub === "gv" && key === ed.key ? clean(mm[l]?.gv?.theme) : "";
+      return fromMonth || clean(meta?.i18n?.theme?.[l] || first.i18n?.issue_theme?.[l] || meta?.theme || first.extra.issue_theme || first.extra.topic);
     };
     const label = (l) => clean(meta?.i18n?.label?.[l] || first.i18n?.issue_label?.[l]) || issueLabel(first.extra.issue_label || meta?.label || key, l);
     const ranked = list.map((a, i) => ({ a, i }))
@@ -998,7 +1001,8 @@ export function monthlyDigestText(md, langs, style, site, t, media = {}) {
 
   // Share your story: deadlines through next month, La Viña's open topics, the phone story lines
   const lvTopics = md.lvTopics[main] || [];
-  const phones = [["Grapevine", md.audio.gv], ["La Viña", md.audio.lv]].filter(([, d]) => d);
+  // La Viña first in a Spanish message (the site's order on /es/)
+  const phones = (main === "es" ? [["La Viña", md.audio.lv], ["Grapevine", md.audio.gv]] : [["Grapevine", md.audio.gv], ["La Viña", md.audio.lv]]).filter(([, d]) => d);
   if (md.deadlines.length || lvTopics.length || phones.length) {
     out.push(head(both("community.digest.deadlines"), "✍️"));
     for (const d of md.deadlines) {

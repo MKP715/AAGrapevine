@@ -17,7 +17,6 @@ so the edges stay crisp. Only Pillow + numpy (both already installed for the con
 """
 from __future__ import annotations
 
-import math
 from pathlib import Path
 
 import numpy as np

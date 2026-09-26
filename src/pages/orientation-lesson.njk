@@ -87,12 +87,16 @@ eleventyComputed:
       </section>
     </div>
 
-    {#- The six lessons: where you are, what's done (a short companion: sticky beside the lesson) -#}
+    {#- The six lessons: where you are, what's done (a short companion: sticky beside the lesson).
+        Below 1024px (with JavaScript) the list is folded behind "All 6 lessons", so it doesn't sit
+        between the lesson and its self-check; the hero's "See all lessons" and the previous / next
+        cards cover the way around. -#}
     <div class="sticky-aside">
-      <nav class="card card-pad" aria-labelledby="toc-title">
+      <nav class="card card-pad" aria-labelledby="toc-title" data-o101-toc>
         <h2 id="toc-title" class="card-h"><span>{% icon "graduation-cap", "size-5" %}</span>{{ "orientation.aside_title" | t(lang) }}</h2>
         <p class="mt-1 text-sm text-muted" data-js-only data-o101-progress data-total="{{ total }}" data-t="{{ 'orientation.progress' | t(lang) }}" data-t-all="{{ 'orientation.progress_all' | t(lang) }}"><span data-o101-count>{{ "orientation.progress" | t(lang, { n: 0, total: total }) }}</span></p>
-        <ol class="o101-toc mt-4" role="list">
+        <button type="button" class="btn-secondary btn-sm mt-3 w-full lg:hidden" data-js-only data-o101-toc-btn aria-expanded="false" aria-controls="o101-toc-list">{{ "orientation.toc_all" | t(lang, { n: total }) }} {% icon "chevron-down", "size-4 transition" %}</button>
+        <ol id="o101-toc-list" class="o101-toc mt-4" role="list">
           {% for x in O.lessons %}
           {%- set here = x.id == l.id -%}
           <li data-o101-card="{{ x.id }}">

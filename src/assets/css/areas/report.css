@@ -46,6 +46,19 @@
 @media (width >= 112.5rem) and (height >= 56rem) {   /* the details card (about 44rem in Spanish) fits under the header */
   .rp-settings { position: sticky; top: var(--sticky-top); }
 }
+/* Larger text (130%+): the columns above are in rem (they grow with the text) but the breakpoints
+   are not, so at 1920px / 150% the sections column would shrink to nothing and at 1024–1440 the
+   preview would be a sliver. The editor keeps its phone layout (details · sections · preview, one
+   column) at every width, nothing is pinned, and the report scrolls inside its own box. Relaxed
+   spacing only unpins (the columns still fit). main.css releases .rp-main with the other sticky
+   columns; the rules here also cover the details card. */
+:root:is([data-text="130"], [data-text="150"]) .rp-grid { grid-template-columns: minmax(0, 1fr); grid-template-areas: "settings" "side" "main"; }
+@media (width >= 112.5rem) { :root:is([data-text="130"], [data-text="150"]) .rp-fields { display: flex; flex-wrap: wrap; gap: 1rem; } }
+:root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) :is(.rp-main, .rp-settings) { position: static; }
+@media (width >= 64rem) {
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .rp-out { max-height: none; min-height: 0; }
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .rp-doc-wrap { max-height: min(40rem, 75dvh); }
+}
 
 /* ---------- 3. Your details ---------- */
 .rp-settings-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem 1rem; }
@@ -106,6 +119,13 @@
 @media (width < 40rem) { .rp-sec-edit-label { display: none; } }
 .rp-move { display: flex; justify-content: flex-end; min-width: 4.5rem; }   /* the header row keeps the column, so every "Edit" lines up */
 @media (width < 40rem), (pointer: coarse) { .rp-move { min-width: 5.5rem; } }
+/* Phones with larger text or relaxed spacing: the ↑ / ↓ buttons go on their own line under the title
+   (lined up with it), so the title and "Edit" keep the whole row and nothing is drawn over them. */
+@media (width < 40rem) {
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .rp-sec-row { grid-template-columns: auto minmax(0, 1fr); }
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .rp-move { grid-column: 1 / -1; min-width: 0; padding-left: 2.75rem; justify-content: flex-start; }
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .rp-move:not(:has(button)) { display: none; }
+}
 .rp-icon-btn {
   display: grid; place-items: center; width: 2.25rem; height: 2.25rem; border-radius: 999px; color: var(--c-muted); cursor: pointer;
   transition: background-color 0.15s, color 0.15s;

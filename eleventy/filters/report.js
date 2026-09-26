@@ -25,6 +25,7 @@
 import { eventWhen, eventWhere, writersPick, spotlightOf, spotlightHomeDays, writerName, issueLabelOf, issueInSentence } from "./community.js";
 import { digestShop, weeklyOpenAll, gvMeetings, chicagoDayEndMs } from "./committee.js";
 import { monthModel, nowDate, chicagoYmd, shortDate, timeRange, monthLabel } from "./monthly.js";
+import { scriptJson } from "../script-json.js";
 
 const LOC = { en: "en-US", es: "es-US" };
 const DAY = 864e5;
@@ -250,7 +251,10 @@ function sectionsFor(L, ctx) {
       out.push(T("e_intro", { n: EVENT_DAYS }));
       for (const ev of evs.slice(0, 10)) {
         const where = eventWhere(ev, L);
-        const bits = [eventWhen(ev, L, now.getTime())];
+        // Spanish: "(hora del Centro)" in place of the CDT / CST abbreviation, as the committee line
+        // above and the Spanish e-mail digest say it (committee.js whenText)
+        const when = eventWhen(ev, L, now.getTime());
+        const bits = [L === "es" ? when.replace(/\s*\b(?:CDT|CST|CT)\b/g, " (hora del Centro)") : when];
         if (ev._recurring) bits.push(T("e_monthly"));
         if (ev._tentative) bits.push(T("e_tbc"));
         out.push(`• ${bits.join(" · ")} — ${clean(H.pickLang(ev, "title", L)) || clean(ev.title)}${where ? ` (${where})` : ""}`);
@@ -458,9 +462,9 @@ export function composeText(sections) {
 export const reportText = (model, lang) => composeText(((model && model.langs && model.langs[lang]) || { sections: [] }).sections);
 
 // The editor's own strings, in the page language (report.js reads them from the JSON).
-const UI_KEYS = ["saved_idle", "saved", "not_saved", "move_up", "move_down", "moved", "included", "excluded", "reset_done", "removed", "added",
+const UI_KEYS = ["saved_idle", "saved", "not_saved", "move_up", "move_down", "moved", "include", "included", "excluded", "reset_done", "removed", "added",
   "reset_all_confirm", "reset_all_done", "lang_done", "blanks", "blanks_one", "blanks_none", "read_time", "read_time_one",
-  "copied_text", "copied_html", "copied_plain", "copy_failed", "downloaded", "mail_long", "opening", "text_hint", "header_hint", "n_placeholder"];
+  "copied_text", "copied_html", "copied_plain", "copy_failed", "downloaded", "mail_long", "opening", "wa_copied", "text_hint", "header_hint", "n_placeholder"];
 export function uiStrings(lang) {
   const o = Object.fromEntries(UI_KEYS.map((k) => [k, t(`report.${k}`, lang)]));
   o.lang_en = t("community.lang_name_en", lang);
@@ -469,7 +473,7 @@ export function uiStrings(lang) {
 }
 
 /** JSON that is safe inside <script type="application/json"> (no "</script>", no "<!--"). */
-export const safeJson = (v) => JSON.stringify(v ?? null).replace(/[<\u2028\u2029]/g, (c) => "\\u" + c.charCodeAt(0).toString(16).padStart(4, "0"));
+export const safeJson = scriptJson; // the shared serializer (eleventy/script-json.js)
 
 export default function (eleventyConfig, helpers) {
   if (helpers) H = { ...H, ...helpers };

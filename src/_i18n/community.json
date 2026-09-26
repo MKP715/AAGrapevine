@@ -87,7 +87,7 @@
   "community.sub.copy_rss": { "en": "Copy feed link", "es": "Copiar enlace del canal" },
   "community.sub.copy_ics": { "en": "Copy calendar link", "es": "Copiar enlace del calendario" },
 
-  "community.digest.meta_desc": { "en": "A printable, shareable monthly summary for GVRs, RLVs and district chairs: last month's news and this month's dates, ready for WhatsApp or e-mail in English, Spanish or both.", "es": "Un resumen mensual para imprimir y compartir, pensado para RLV, GVR y coordinadores de distrito: las novedades del mes pasado y las fechas de este mes, listo para WhatsApp o correo en español, inglés o ambos." },
+  "community.digest.meta_desc": { "en": "A printable, shareable monthly summary for GVRs, RLVs and district chairs: last month's news and this month's dates, for WhatsApp or e-mail.", "es": "Un resumen mensual para imprimir y compartir, para RLV, GVR y coordinadores: las novedades del mes pasado y las fechas de este mes, para WhatsApp o correo." },
   "community.digest.eyebrow": { "en": "Stay updated · Monthly digest", "es": "Mantente al día · Resumen mensual" },
   "community.digest.hero_sub": { "en": "Last month at a glance and what's coming up this month — ready for WhatsApp, e-mail or your district meeting.", "es": "El mes pasado de un vistazo y lo que viene este mes: listo para WhatsApp, correo o la reunión de tu distrito." },
   "community.digest.toolbar_aria": { "en": "Share this digest", "es": "Compartir este resumen" },
@@ -261,6 +261,7 @@
   "community.status.sources_title": { "en": "Sources", "es": "Fuentes" },
   "community.status.sources_eyebrow": { "en": "What we keep up to date", "es": "Lo que mantenemos al día" },
   "community.status.sources_sub": { "en": "If a source can't be updated, nothing is lost — what it found before stays on the site, and the next update tries again.", "es": "Si una fuente no se puede actualizar, no se pierde nada: lo que ya encontró sigue en el sitio y la próxima actualización lo vuelve a intentar." },
+  "community.status.table_aria": { "en": "Sources table", "es": "Tabla de fuentes" },
   "community.status.col_source": { "en": "Source", "es": "Fuente" },
   "community.status.col_status": { "en": "Status", "es": "Estado" },
   "community.status.col_updated": { "en": "Last updated", "es": "Última actualización" },

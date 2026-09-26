@@ -7,7 +7,8 @@
 {%- set L = lang or "en" -%}
 {%- set pageTitle = (titleKey | t(L)) if titleKey else (title or "") -%}
 {%- set siteTitle = site | pick(L, "title") -%}
-{%- set fullTitle = (pageTitle + " · " + siteTitle + " — NETA 65") if (pageTitle and pageKey != "home") else (siteTitle + " — " + ("site.tagline" | t(L))) -%}
+{#- home: "Grapevine / La Viña — NETA 65 Committee" (the tagline would say Grapevine & La Viña twice) -#}
+{%- set fullTitle = (pageTitle + " · " + siteTitle + " — NETA 65") if (pageTitle and pageKey != "home") else (siteTitle + " — " + ("site.home_title_tail" | t(L))) -%}
 {%- set desc = (descKey | t(L)) if descKey else (description or ("site.description" | t(L))) -%}
 {%- set alt = page.url | altLangUrl(L) -%}
 <!doctype html>
@@ -32,6 +33,17 @@
       d.setAttribute("data-contrast", p.contrast === "high" ? "high" : "normal");
       d.setAttribute("data-motion", p.motion === "reduce" ? "reduce" : "auto");
       d.setAttribute("data-saver", p.saver === "on" || (p.saver !== "off" && (c.saveData === true || /^(slow-2g|2g)$/.test(c.effectiveType || "") || navigator.onLine === false)) ? "on" : "off");
+      // The body font, early (a preload competes with the stylesheet, so only this one: the display
+      // font has a measured fallback, main.css — except on the home page, whose big hero title in
+      // Fraunces would still move a little when it arrives). Not with Data saver on: the site then
+      // uses the fallback faces and the device's own fonts (areas/pwa.css).
+      if (d.getAttribute("data-saver") !== "on") {
+        ["{{ '/assets/fonts/inter-latin-wght-normal.woff2' | url }}"{% if pageKey == "home" %}, "{{ '/assets/fonts/fraunces-latin-opsz-normal.woff2' | url }}"{% endif %}].forEach(function (href) {
+          var f = document.createElement("link");
+          f.rel = "preload"; f.as = "font"; f.type = "font/woff2"; f.crossOrigin = "anonymous"; f.href = href;
+          document.head.appendChild(f);
+        });
+      }
     })(document.documentElement);
   </script>
   <title>{{ fullTitle }}</title>
@@ -65,25 +77,33 @@
   {%- if pageKey != "404" %}
   <meta property="og:url" content="{{ page.url | siteUrl(site) }}">
   {%- endif %}
-  <meta property="og:image" content="{{ (ogImage or '/assets/img/og-default.png') | siteUrl(site) }}">
+  {#- the share picture: the page's own, else the committee's card in the page language (1200 × 630) -#}
+  <meta property="og:image" content="{{ (ogImage or ('/assets/img/og-default-es.png' if L == 'es' else '/assets/img/og-default.png')) | siteUrl(site) }}">
+  {%- if not ogImage %}
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="{{ siteTitle }} — {{ 'site.tagline' | t(L) }}">
+  {%- endif %}
   <meta property="og:locale" content="{{ 'es_US' if L == 'es' else 'en_US' }}">
+  <meta property="og:locale:alternate" content="{{ 'en_US' if L == 'es' else 'es_US' }}">
   <meta name="twitter:card" content="summary_large_image">
-  <link rel="icon" href="/favicon.ico" sizes="any">
+  {#- favicon.ico holds a 16px picture only: no sizes="any" (Chrome would prefer it over the 32px PNG on 2x screens) -#}
+  <link rel="icon" href="/favicon.ico">
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/logo-32x32.png">
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/img/logo-192x192.png">
   <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon-180.png">
-  <link rel="preload" href="/assets/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="/assets/fonts/fraunces-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
   <script>
-    // Theme before paint (no flash): saved choice → OS preference. html.js: JS is on, so CSS can
-    // draw JS-folded blocks (digest tools, report box, kit groups) folded from the first paint.
+    // Theme before paint (no flash): saved choice ("gvlv-theme"; the older bare "theme" key once, when
+    // it holds one of ours) → OS preference. Only "dark" / "light" are ever applied: the origin is
+    // shared with other GitHub Pages projects, whose "theme" may say "system" or "auto".
+    // html.js: JS is on, so CSS can draw JS-folded blocks (digest tools, report box, kit groups)
+    // folded from the first paint.
     document.documentElement.classList.add("js");
     (function () {
-      try {
-        var t = localStorage.getItem("theme");
-        if (!t) t = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-        document.documentElement.setAttribute("data-theme", t);
-      } catch (e) {}
+      var ok = function (v) { return v === "dark" || v === "light"; }, t = null;
+      try { t = localStorage.getItem("gvlv-theme"); if (!ok(t)) t = localStorage.getItem("theme"); } catch (e) {}
+      if (!ok(t)) { try { t = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"; } catch (e) { t = "light"; } }
+      document.documentElement.setAttribute("data-theme", t);
     })();
     window.SITE = { lang: "{{ L }}", base: "{{ '/' | url }}", tz: "{{ site.timezone }}" };
   </script>

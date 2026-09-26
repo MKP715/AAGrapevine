@@ -48,6 +48,18 @@
   :root[data-saver="on"]:not(.pwa-imgs) .pwa-lyt-label { flex-direction: column; gap: 0.25rem; max-width: calc(100% - 0.75rem); padding: 0.5rem 0.625rem; border-radius: 0.875rem; font-size: 0.75rem; }
 }
 
+/* Fonts: with Data saver on, the web fonts are never downloaded (a first visit saves 110–240 KB) —
+   the text uses the fallback faces measured to the same size (main.css), so nothing moves, or the
+   device's own fonts. The printable posters, share frames and the handout keep the real ones. */
+:root[data-saver="on"] {
+  --font-sans: "Inter Fallback", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Fraunces Fallback", ui-serif, Georgia, "Times New Roman", serif;
+}
+:root[data-saver="on"] :is(.mp-poster, .cm-frame, .o101-handout) {
+  --font-sans: "Inter Variable", "Inter Fallback", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Fraunces Variable", "Fraunces Fallback", ui-serif, Georgia, serif;
+}
+
 /* Only shown while Data saver is on (episode sizes on Home and Listen: "70.1 MB"). revert-layer:
    the element's own display (a utility class, or span → inline, p → block) comes back. */
 .pwa-saver-only { display: none; }
@@ -59,13 +71,14 @@
    columns and the Aa panel all start below it). Nothing is covered: it is part of the header.
    z-index 49: under the header (50) and its menus, over sticky bars (20) and the toasts (40). */
 .pwa-bar {
-  position: fixed; inset-inline: 0; top: calc(4rem + env(safe-area-inset-top, 0px)); z-index: 49;
+  /* --chrome-zoom: below 768px the header row keeps its 100% size at larger text (areas/access.css) */
+  position: fixed; inset-inline: 0; top: calc(4rem * var(--chrome-zoom, 1) + env(safe-area-inset-top, 0px)); z-index: 49;
   border-block: 1px solid color-mix(in srgb, var(--c-lv) 28%, transparent);
   background: var(--c-lv-soft); color: var(--c-ink);
   box-shadow: 0 8px 18px -12px rgb(20 16 40 / 0.4);
 }
 .pwa-bar[hidden] { display: none; }
-:root.pwa-bar-on { --header-h: calc(4rem + var(--pwa-bar-h, 2.75rem)); }
+:root.pwa-bar-on { --header-h: calc(4rem * var(--chrome-zoom, 1) + var(--pwa-bar-h, 2.75rem)); }
 .pwa-bar-inner { display: flex; align-items: center; gap: 0.625rem; min-height: 2.75rem; padding-block: 0.25rem; }
 .pwa-bar-icon { display: grid; place-items: center; flex-shrink: 0; width: 1.75rem; height: 1.75rem; border-radius: 9999px; background: var(--c-surface); color: var(--c-lv-strong); }
 .pwa-bar-text { flex: 1 1 auto; min-width: 0; font-size: 0.875rem; line-height: 1.4; color: var(--c-ink); }
@@ -85,21 +98,33 @@
 .pwa-toast {
   position: fixed; left: 50%; z-index: 41; transform: translateX(-50%);
   bottom: calc(var(--player-h, 0px) + env(safe-area-inset-bottom, 0px) + 0.75rem);
-  width: min(34rem, calc(100% - 1.5rem));
-  display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 0.5rem 0.5rem 0.875rem;
+  width: min(34rem, calc(100% - 1.5rem)); max-height: 40vh; overflow-y: auto;
+  /* the words, then the action + Close; when the words can't have ~12em beside the buttons (a phone,
+     larger text, relaxed spacing) the buttons go to a second row, at the right. Below 640px the text
+     is 115% at most (--bar-zoom, areas/access.css). */
+  display: flex; flex-wrap: wrap; align-items: center; gap: calc(0.5rem * var(--bar-zoom, 1)) calc(0.75rem * var(--bar-zoom, 1));
+  padding: calc(0.5rem * var(--bar-zoom, 1)) calc(0.5rem * var(--bar-zoom, 1)) calc(0.5rem * var(--bar-zoom, 1)) calc(0.875rem * var(--bar-zoom, 1));
   border: 1px solid var(--c-line); border-radius: 1rem;
   background: color-mix(in srgb, var(--c-surface) 96%, transparent); color: var(--c-ink);
   box-shadow: var(--shadow-lift); backdrop-filter: blur(12px);
 }
+.pwa-toast > * { zoom: var(--bar-zoom, 1); }
 :root.has-lang-banner .pwa-toast { bottom: calc(var(--player-h, 0px) + var(--banner-h, 4.5rem) + env(safe-area-inset-bottom, 0px) + 1.25rem); }
 .pwa-toast[hidden] { display: none; }
 .pwa-toast-icon { display: grid; place-items: center; flex-shrink: 0; width: 2.25rem; height: 2.25rem; border-radius: 9999px; background: var(--c-gv-soft); color: var(--c-gv); }
-.pwa-toast-text { flex: 1 1 auto; min-width: 0; font-size: 0.875rem; line-height: 1.4; }
+.pwa-toast-text { flex: 1 1 12em; min-width: 0; font-size: 0.875rem; line-height: 1.4; }
 .pwa-toast-text strong { display: block; font-weight: 700; }
+.pwa-toast-actions { display: flex; flex-shrink: 0; align-items: center; gap: 0.5rem; margin-left: auto; }
 .pwa-toast-close:hover { background: var(--c-surface-2); color: var(--c-ink); }
-@media (width < 25rem) { .pwa-toast-icon { display: none; } .pwa-toast { gap: 0.5rem; } }
+@media (width < 25rem) { .pwa-toast-icon { display: none; } }
+@media (width < 40rem) {
+  :root:is([data-text="115"], [data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .pwa-toast-icon { display: none; }
+  /* a phone at 130%+ or with relaxed spacing: always the words on their own row, the buttons under them */
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .pwa-toast-text { flex-basis: 100%; }
+}
 :root.pwa-toast-on body { padding-bottom: calc(var(--pwa-toast-h, 4rem) + var(--banner-h, 0px) + var(--player-h, 0px) + env(safe-area-inset-bottom, 0px) + 1.75rem); }
-:root.pwa-toast-on { --sticky-bottom: calc(var(--pwa-toast-h, 4rem) + var(--banner-h, 0px) + var(--player-h, 0px) + env(safe-area-inset-bottom, 0px) + 1.25rem); }
+:root.pwa-toast-on { --sticky-bottom: calc(var(--pwa-toast-h, 4rem) + var(--banner-h, 0px) + var(--player-h, 0px) + env(safe-area-inset-bottom, 0px) + 1.25rem);
+  scroll-padding-bottom: var(--sticky-bottom); } /* keyboard focus is never left under the toast (WCAG 2.4.11) */
 
 @media print { .pwa-bar, .pwa-toast { display: none !important; } }
 

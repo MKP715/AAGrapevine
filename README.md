@@ -370,7 +370,9 @@ and subscriptions, events of the next 45 days, published writers from our Area, 
 county picker), the weekly open meetings, new service documents and sign-up links, the Area's asks and the
 member's own notes. Each GVR / RLV can switch sections on and off, reorder and edit them, add their own, and
 copy the result (plain text for WhatsApp, or formatted for e-mail / Word), send it by WhatsApp or e-mail,
-download it (Word .docx or .txt) or print it (`src/assets/js/report.js`). Their changes stay in their own
+download it (Word .docx or .txt) or print it (`src/assets/js/report.js`). WhatsApp is one tap at any
+length: a short report opens in WhatsApp already written; a full one goes through the phone's share sheet,
+or (on a computer) is copied while WhatsApp opens, ready to paste into a chat. Their changes stay in their own
 browser only, per month and language; nothing is sent anywhere. Without JavaScript the page shows the whole
 report as text. (The old *Districts* page and its
 `content/districts.yml` list were retired; its news feed, calendar, digest and poster links live on
@@ -630,7 +632,7 @@ edition — the same one GVRs copy from the **Monthly digest** page (`/digest/`)
   toolkit; the next committee meeting with its Zoom link; the events that are not over yet, the weekly
   open meetings and how many Grapevine meetings there are near you;
 - story deadlines through the end of next month, La Viña's open topics, the phone story lines, the
-  Book of the Month, the cheapest subscription and a pointer to the daily quote.
+  Book of the Month, the lowest month-to-month subscription price and a pointer to the daily quote.
 
 Send it to one **Google Group** that includes all DCMs / GVRs / RLVs, and the districts get it
 without anyone lifting a finger.
@@ -645,7 +647,7 @@ without anyone lifting a finger.
 | Secret | Value |
 |---|---|
 | `SMTP_SERVER` | `smtp.gmail.com` |
-| `SMTP_PORT` | `587` *(optional — 587 is the default; use 465 if your provider says "SSL")* |
+| `SMTP_PORT` | `587` *(optional — 587 is the default; use 465 if your provider says "SSL")*. The password is only ever sent over an encrypted connection: on 587 the mail server must offer STARTTLS (Gmail does), otherwise the run stops without sending it |
 | `SMTP_USERNAME` | the full Gmail address |
 | `SMTP_PASSWORD` | the 16-letter **app password** (not the normal password) |
 | `DIGEST_TO` | where to send it — ideally one Google Group address; several addresses can be separated by commas (they are sent as **Bcc**, so nobody sees the others) |
@@ -654,8 +656,13 @@ without anyone lifting a finger.
 
 4. **Preview first:** Actions → **Monthly e-mail digest** → **Run workflow** (leave *Preview only* ticked) →
    open the finished run → **Artifacts** → download **digest-preview** → open `digest.html`. Type a month
-   such as `2026-11` in the *month* box to preview another edition.
+   such as `2026-11` in the *month* box to preview another edition (written exactly like that: a month
+   typed any other way — `2026-9`, `Oct` — stops the run, and nothing is sent).
 5. To send one right away, run it again with *Preview only* **unticked**.
+6. If a run ever fails with **"It MAY have been sent"**, the connection broke while the e-mail was being
+   handed over: check the Google Group (or a district's inbox) **before** running it again, so nobody
+   gets it twice. Other failures (wrong password, server not reachable) happen before anything is sent
+   and are safe to re-run.
 
 How many stories each magazine issue shows and how many items each list shows before "and N more" are
 set in `config/site.yml` → `digest:` (`highlights`, `per_section`). The meeting box uses the same
@@ -872,7 +879,8 @@ visitor's own device; nothing is sent anywhere.
 - **Use it offline.** Every page opened on the device is kept (the last 80). **Save key pages for
   offline** (same menu) keeps Home, Meetings, this month's Monthly toolkit, Share your story, Shop,
   Accessibility and GVR / RLV 101, in the visitor's language, with their styles and scripts — a good
-  idea before a trip. Offline, kept pages open normally under a small "You're offline" notice; any other
+  idea before a trip. The page open during the very first visit is kept too, with its own styles and
+  scripts. Offline, kept pages open normally under a small "You're offline" notice; any other
   page shows the offline page (`/offline/`, also "See saved pages" in the menu) with the list of saved
   pages, and reloads itself when the connection is back. When the connection is so slow that a page
   takes more than 4 seconds, the kept copy opens instead, with "Slow connection — this is the copy saved …

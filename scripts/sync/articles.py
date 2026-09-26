@@ -689,6 +689,30 @@ def local_thumb(http, img_url: str, key: str) -> tuple[str, int, int] | None:
         return None
 
 
+def email_copy(site_path: str) -> str | None:
+    """A JPEG copy of a cover thumbnail we made (/assets/cache/articles/<key>.webp → <key>.jpg, 128 px
+    wide: shown at 64 px in the monthly e-mail, sharp on 2x screens). Classic Outlook for Windows
+    can't show WebP, so scripts/notify/send_digest.py sends this copy instead. Made once; returns its
+    site path, or None (not one of our thumbnails, or no Pillow)."""
+    if not (isinstance(site_path, str) and site_path.startswith("/assets/cache/articles/") and site_path.endswith(".webp")):
+        return None
+    src = THUMB_DIR / site_path.rsplit("/", 1)[-1]
+    dest = src.with_suffix(".jpg")
+    out = site_path[: -len(".webp")] + ".jpg"
+    if dest.exists():
+        return out
+    try:
+        from PIL import Image
+        with Image.open(src) as im:
+            rgb = im.convert("RGB")
+        rgb.thumbnail((128, 128 * 3))
+        rgb.save(dest, "JPEG", quality=82, optimize=True, progressive=True)
+        return out
+    except Exception as e:
+        log.debug("e-mail copy failed for %s: %s", site_path, e)
+        return None
+
+
 def thumb_size(site_path: str) -> tuple[int, int] | None:
     """(width, height) of a thumbnail we made earlier, or None."""
     try:
@@ -1027,6 +1051,9 @@ def _run(args) -> None:
         print(json.dumps({"stats": stats, "errors": errors, "issues": issues, "archive_state": archive_state,
                           "sample": [i for i in merged if i["id"] in touched][:5]}, ensure_ascii=False, indent=1))
         return
+    # The monthly e-mail shows the covers too: a small JPEG copy of each (email_copy).
+    for iss in issues.values():
+        email_copy(iss.get("cover"))
     ok = not errors
     save_raw(SOURCE, merged, ok=ok, error="; ".join(errors) if errors else None, stats=stats,
              extra={"issues": issues, "detail_state": detail_state, "archive_state": archive_state})

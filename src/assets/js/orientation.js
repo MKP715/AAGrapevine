@@ -7,12 +7,14 @@
       the pages then simply show no progress. Drawn into [data-o101-card=<id>] (the Done badge, the
       card's call to action, the lesson list's check mark), [data-o101-progress] (count + bar + "Start
       over") and the hub's resume button [data-o101-resume] ("Continue: lesson 3").
-   2. Self-check (lesson pages) — [data-o101-quiz]: instant feedback on each answer; when all three are
-      right the lesson is saved as done. Nothing is sent anywhere.
+   2. Self-check (lesson pages) — [data-o101-quiz]: feedback on the answer chosen (a click or tap, Space
+      or Enter, or leaving the question — not each arrow-key move); when all three are right the lesson
+      is saved as done. Nothing is sent anywhere.
    3. Slide show (hub) — #o101-deck-tpl is cloned into a full-screen dialog by "Present as slides"
       [data-o101-present] or on load at ?slides. #slide-N (resume) or #lesson-<id> picks the first slide.
       Keys: → ↓ Space PageDown next · ← ↑ Shift+Space PageUp back · Home / End · F full screen ·
-      Esc exits. Click or tap the right two thirds (next) or the left third (back); swipe on touch.
+      Esc exits. A slide taller than the screen (larger text, a phone, a zoomed browser) scrolls on
+      its own: ↓ Space PageDown (↑ Shift+Space PageUp) scroll it first and turn the page at its end. Click or tap the right two thirds (next) or the left third (back); swipe on touch.
       The rest of the page is inert while it is open; a live region reads "Slide 3 of 45: <title>";
       focus returns to the button that opened it.
    4. Print — [data-o101-print] prints the page (the hub prints as the handout, see orientation.css). */
@@ -106,6 +108,14 @@
     }
     var pr = e.target.closest && e.target.closest("[data-o101-print]");
     if (pr) { window.print(); }
+    // A lesson page on a phone: "All 6 lessons" unfolds the lesson list (orientation.css)
+    var tb = e.target.closest && e.target.closest("[data-o101-toc-btn]");
+    if (tb) {
+      var box = tb.closest("[data-o101-toc]");
+      var open = !(box && box.classList.contains("is-open"));
+      if (box) box.classList.toggle("is-open", open);
+      tb.setAttribute("aria-expanded", String(open));
+    }
   });
   // Another tab finished a lesson: redraw.
   window.addEventListener("storage", function (e) { if (e.key === KEY || e.key === null) render(); });
@@ -136,16 +146,26 @@
       }
     }
 
+    /* An answer is graded when the visitor chooses it: a click or tap, Space or Enter on it, or
+       leaving the question with it selected. Moving through the answers with the arrow keys (native
+       radios select as they move) only selects — so keyboard and screen-reader users can hear every
+       answer before choosing, without "Not quite" / "Right!" giving the answer away. */
     Array.prototype.forEach.call(qs, function (q, i) {
       var answer = q.getAttribute("data-answer");
       var fb = q.querySelector("[data-o101-fb]");
-      q.addEventListener("change", function (e) {
-        var input = e.target;
-        if (!input || input.type !== "radio") return;
+      var arrowed = false, graded = null;
+      function clearMarks() {
+        q.classList.remove("is-right");
+        q.querySelectorAll(".o101-opt").forEach(function (lab) { lab.classList.remove("is-right", "is-wrong"); });
+      }
+      function grade(input) {
+        if (!input || input.type !== "radio" || !input.checked) return;
+        if (graded === input.value) return; // already said: don't read it out again
+        graded = input.value;
         var ok = input.value === answer;
         right[i] = ok;
+        clearMarks();
         q.classList.toggle("is-right", ok);
-        q.querySelectorAll(".o101-opt").forEach(function (lab) { lab.classList.remove("is-right", "is-wrong"); });
         var lab = input.closest(".o101-opt");
         if (lab) lab.classList.add(ok ? "is-right" : "is-wrong");
         if (fb) {
@@ -154,6 +174,32 @@
             (ok ? " " + esc(q.getAttribute("data-why") || "") : "") + "</span>";
         }
         check();
+      }
+      q.addEventListener("keydown", function (e) {
+        arrowed = /^(Arrow(Up|Down|Left|Right))$/.test(e.key);
+      });
+      q.addEventListener("pointerdown", function () { arrowed = false; });
+      q.addEventListener("keyup", function (e) {
+        if ((e.key === " " || e.key === "Enter") && e.target && e.target.type === "radio") grade(e.target);
+      });
+      q.addEventListener("change", function (e) {
+        var input = e.target;
+        if (!input || input.type !== "radio") return;
+        if (arrowed) {
+          // just moved here: selected, not graded yet (a previous grade no longer applies)
+          arrowed = false;
+          if (graded !== null && graded !== input.value) {
+            graded = null; right[i] = false; clearMarks();
+            if (fb) { fb.className = "o101-fb"; fb.textContent = ""; }
+            check();
+          }
+          return;
+        }
+        grade(input);
+      });
+      q.addEventListener("focusout", function (e) {
+        if (e.relatedTarget && q.contains(e.relatedTarget)) return;
+        grade(q.querySelector("input[type=radio]:checked"));
       });
     });
   }
@@ -195,6 +241,7 @@
     if (prev && prev !== slides[i]) { prev.hidden = true; prev.classList.remove("is-in", "is-in-back"); }
     var s = slides[i];
     s.hidden = false;
+    if (s !== prev) s.scrollTop = 0; // a slide that scrolls (larger text, phones) starts at its top
     s.classList.remove("is-in", "is-in-back");
     if (dir) { void s.offsetWidth; s.classList.add(dir < 0 ? "is-in-back" : "is-in"); }
     cur = i;
@@ -242,14 +289,30 @@
     return !!(el && el.closest && el.closest("a, button, input, select, textarea, label, summary, [contenteditable]"));
   }
 
+  /* A slide that is taller than the stage and not yet at that end: scroll it (a few lines for an
+     arrow, most of a screen for Space / Page keys) instead of turning the page. true = scrolled. */
+  function scrollSlide(dir, small) {
+    var s = slides[cur];
+    if (!s || s.scrollHeight <= s.clientHeight + 2) return false;
+    var atEnd = dir > 0 ? s.scrollTop + s.clientHeight >= s.scrollHeight - 2 : s.scrollTop <= 1;
+    if (atEnd) return false;
+    var step = small ? Math.max(40, s.clientHeight * 0.15) : s.clientHeight * 0.85;
+    var reduce = window.GV && window.GV.reducedMotion ? window.GV.reducedMotion() : false;
+    try { s.scrollBy({ top: dir * step, behavior: reduce ? "auto" : "smooth" }); } catch (err) { s.scrollTop += dir * step; }
+    return true;
+  }
+
   function onKey(e) {
     if (!deck) return;
     if (e.altKey || e.ctrlKey || e.metaKey) return;
     var k = e.key;
     var onControl = interactive(e.target);
     if ((k === " " || k === "Enter") && onControl) return; // let buttons and links do their job
-    if (k === "ArrowRight" || k === "ArrowDown" || k === "PageDown" || (k === " " && !e.shiftKey)) { e.preventDefault(); go(cur + 1, 1); }
-    else if (k === "ArrowLeft" || k === "ArrowUp" || k === "PageUp" || (k === " " && e.shiftKey)) { e.preventDefault(); go(cur - 1, -1); }
+    var fwd = k === "ArrowDown" || k === "PageDown" || (k === " " && !e.shiftKey);
+    var back = k === "ArrowUp" || k === "PageUp" || (k === " " && e.shiftKey);
+    if ((fwd || back) && scrollSlide(fwd ? 1 : -1, k === "ArrowDown" || k === "ArrowUp")) { e.preventDefault(); return; }
+    if (k === "ArrowRight" || fwd) { e.preventDefault(); go(cur + 1, 1); }
+    else if (k === "ArrowLeft" || back) { e.preventDefault(); go(cur - 1, -1); }
     else if (k === "Home") { e.preventDefault(); go(0, -1); }
     else if (k === "End") { e.preventDefault(); go(slides.length - 1, 1); }
     else if (k === "f" || k === "F") { e.preventDefault(); toggleFull(); }

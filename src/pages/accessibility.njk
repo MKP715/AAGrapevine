@@ -61,6 +61,16 @@ descKey: access.meta_desc
       </div>
     </li>
     {% endfor %}
+    {#- The offline app (feature 14): a link card across the whole row (6 settings + 1 never leaves an
+        orphan) — the page it opens explains saving pages and installing, and switches to its online wording. -#}
+    <li class="card card-link group relative flex flex-col gap-4 p-5 sm:col-span-2 sm:flex-row sm:items-center lg:col-span-3">
+      <span class="grid size-11 shrink-0 place-items-center rounded-xl bg-vine-soft text-vine">{% icon "hard-drive-download", "size-5" %}</span>
+      <div class="min-w-0 flex-1">
+        <h3 class="h-card"><a class="no-underline after:absolute after:inset-0 after:rounded-[var(--radius-card)] hover:text-gv" href="{{ '/offline/' | lurl(lang) }}">{{ "access.f_offline_t" | t(lang) }}</a></h3>
+        <p class="mt-1 text-sm leading-relaxed text-muted">{{ "access.f_offline" | t(lang) }}</p>
+      </div>
+      <span class="inline-flex shrink-0 items-center gap-1.5 text-sm font-semibold text-gv" aria-hidden="true">{{ "access.f_offline_cta" | t(lang) }} {% icon "arrow-right", "size-4 transition group-hover:translate-x-0.5" %}</span>
+    </li>
   </ul>
 
   <div class="panel-muted mt-5">
@@ -141,22 +151,23 @@ descKey: access.meta_desc
     </li>
     {% endif %}{% endfor %}
   </ul>
-  {% if audio.types %}
-  <div class="panel-muted mt-5 flex w-fit max-w-full gap-3">
+  {#- What the official stores say about audio in their subscriptions — only when one of them does;
+      otherwise just the way to the subscription details (a statement that something is NOT there
+      helps nobody). -#}
+  {% if audio.audio.length %}
+  <div class="panel-muted mt-5 flex gap-3">
     <span class="mt-0.5 shrink-0 text-lv">{% icon "shopping-bag", "size-5" %}</span>
     <div class="min-w-0 text-sm leading-relaxed text-ink">
       <p class="font-semibold">{{ "access.aud_subs_t" | t(lang) }}</p>
-      {% if audio.audio.length %}
       <p class="mt-1">{{ "access.aud_subs_some" | t(lang) }}</p>
       <ul class="mt-2 space-y-1.5" role="list">
         {% for a in audio.audio %}<li><span class="font-semibold">{{ "La Viña" if a.pub == "lv" else "Grapevine" }}</span> — “{{ a.text }}”</li>{% endfor %}
       </ul>
-      {% else %}
-      <p class="mt-1 measure">{{ "access.aud_subs_none" | t(lang) }}</p>
-      {% endif %}
-      <p class="mt-2"><a class="link" href="{{ '/shop/' | lurl(lang) }}#subscriptions">{{ "access.aud_subs_link" | t(lang) }}</a></p>
+      <p class="mt-2"><a class="link tap-link" href="{{ '/shop/' | lurl(lang) }}#subscriptions">{{ "access.aud_subs_link" | t(lang) }}</a></p>
     </div>
   </div>
+  {% else %}
+  <p class="mt-5 text-sm"><a class="link tap-link inline-flex items-center gap-1.5" href="{{ '/shop/' | lurl(lang) }}#subscriptions">{% icon "shopping-bag", "size-4 shrink-0 text-lv" %}<span>{{ "access.aud_subs_link" | t(lang) }}</span></a></p>
   {% endif %}
 </section>
 
@@ -169,8 +180,11 @@ descKey: access.meta_desc
     {% for mt in phone.meetings %}
     <article class="card card-pad @container" aria-labelledby="ph-{{ mt.key }}">
       {%- set many = mt.titles | length > 1 -%}
-      <h3 id="ph-{{ mt.key }}" class="card-h"><span class="text-vine">{% icon "phone", "size-5" %}</span><span>{{ ("access.aud_weekly_t" | t(lang)) if many else mt.titles[0] }}</span></h3>
-      {% if many %}<ul class="mt-2 space-y-1 text-sm leading-snug text-muted" role="list">{% for tt in mt.titles %}<li>{{ tt }}</li>{% endfor %}</ul>{% endif %}
+      {#- a weekly meeting that hasn't started yet (La Viña's, from November 5) says so, like /meetings/ -#}
+      {#- a meeting in the other language says so ("(en inglés)"); one that hasn't started yet says when
+          it starts, as a separate phrase ("· starts November 5"), like /meetings/ -#}
+      <h3 id="ph-{{ mt.key }}" class="card-h"><span class="text-vine">{% icon "phone", "size-5" %}</span><span>{{ ("access.aud_weekly_t" | t(lang)) if many else mt.titles[0] }}{% if not many and (mt.notes[0] or mt.starts[0]) %} <span class="font-sans text-base font-normal text-muted">{{ mt.notes[0] }}{% if mt.notes[0] and mt.starts[0] %} {% endif %}{% if mt.starts[0] %}<span aria-hidden="true">·</span> {{ "access.ph_starts" | t(lang, { date: mt.starts[0] }) }}{% endif %}</span>{% endif %}</span></h3>
+      {% if many %}<ul class="mt-2 space-y-1 text-sm leading-snug text-muted" role="list">{% for tt in mt.titles %}<li>{{ tt }}{% if mt.notes[loop.index0] %} {{ mt.notes[loop.index0] }}{% endif %}{% if mt.starts[loop.index0] %} <span aria-hidden="true">·</span> {{ "access.ph_starts" | t(lang, { date: mt.starts[loop.index0] }) }}{% endif %}</li>{% endfor %}</ul>{% endif %}
       <dl class="mt-4 grid gap-3 @min-[22rem]:grid-cols-2">
         <div class="rounded-xl bg-surface-2 p-4">
           <dt class="eyebrow">{{ "committee.meeting.id" | t(lang) }}</dt>
@@ -185,7 +199,8 @@ descKey: access.meta_desc
           {% endif %}
         </div>
       </dl>
-      <div class="mt-5 flex flex-wrap gap-2.5">
+      {#- phones: the two buttons are one full-width column (no ragged stack of two widths) -#}
+      <div class="mt-5 grid grid-cols-1 gap-2 sm:flex sm:flex-wrap sm:gap-2.5">
         {% if mt.call %}<a class="btn-primary" href="{{ mt.call }}">{% icon "phone-call", "size-4" %} {{ "access.ph_call" | t(lang, { city: mt.callCity }) }}</a>{% endif %}
         {% if mt.askChair and chairMail %}<a class="btn-secondary" href="mailto:{{ chairMail }}?subject={{ ('access.ph_ask_subject' | t(lang)) | urlencode }}">{% icon "mail", "size-4" %} {{ "access.ph_ask_btn" | t(lang) }}</a>{% endif %}
       </div>

@@ -3,6 +3,8 @@
     "en": "Stories, podcasts, meetings and service resources of the Northeast Texas Area 65 Grapevine and La Viña Committee — in English and Spanish, even on a weak signal.",
     "es": "Historias, podcasts, reuniones y recursos de servicio del Comité de Grapevine y La Viña del Área 65 del Noreste de Texas, en español e inglés, aun con poca señal."
   },
+  "pwa.manifest.shot_narrow": { "en": "The home page on a phone: the next committee meeting and what's new", "es": "La página de inicio en un celular: la próxima reunión del comité y las novedades" },
+  "pwa.manifest.shot_wide": { "en": "GVR / RLV 101 on a computer: six short lessons for new representatives", "es": "RLV / GVR 101 en una computadora: seis lecciones breves para nuevos representantes" },
   "pwa.audio_size": { "en": "Download size:", "es": "Tamaño de descarga:" },
   "pwa.offline.page_title": { "en": "Saved pages", "es": "Páginas guardadas" },
   "pwa.offline.meta_desc": {
@@ -14,6 +16,10 @@
   "pwa.offline.sub": {
     "en": "This page isn't saved on this device yet. The pages below are, and they open without a connection.",
     "es": "Esta página todavía no está guardada en este dispositivo. Las de abajo sí, y se abren sin conexión."
+  },
+  "pwa.offline.sub_direct": {
+    "en": "Pages saved on this device still open without a connection.",
+    "es": "Las páginas guardadas en este dispositivo se siguen abriendo sin conexión."
   },
   "pwa.offline.title_online": { "en": "Pages saved on this device", "es": "Páginas guardadas en este dispositivo" },
   "pwa.offline.sub_online": {
@@ -28,8 +34,8 @@
   "pwa.offline.loading": { "en": "Looking for saved pages…", "es": "Buscando páginas guardadas…" },
   "pwa.offline.empty_title": { "en": "Nothing is saved on this device yet", "es": "Todavía no hay nada guardado en este dispositivo" },
   "pwa.offline.empty_text": {
-    "en": "When you're back online, open the Aa menu at the top of the page and choose “Save key pages for offline”. The pages you open are kept too.",
-    "es": "Cuando vuelvas a tener conexión, abre el menú Aa arriba en la página y elige “Guardar páginas clave”. Las páginas que abres también se guardan."
+    "en": "Open the Aa menu at the top of the page and choose “Save key pages for offline” (you need a connection for that). The pages you open are kept too.",
+    "es": "Abre el menú Aa arriba en la página y elige «Guardar páginas clave» (para eso necesitas conexión). Las páginas que abres también se guardan."
   },
   "pwa.offline.nojs": {
     "en": "Turn on JavaScript to see the pages saved on this device.",
@@ -47,13 +53,13 @@
   },
   "pwa.offline.how1_h": { "en": "Pages you open are kept", "es": "Las páginas que abres se guardan" },
   "pwa.offline.how1_t": {
-    "en": "The last 80 pages you opened on this device open again without a connection. Audio, video and images need one.",
-    "es": "Las últimas 80 páginas que abriste en este dispositivo se vuelven a abrir sin conexión. El audio, el video y las imágenes sí la necesitan."
+    "en": "The last 80 pages you opened on this device open again without a connection. Audio, video and pictures from other sites (covers, thumbnails) need one.",
+    "es": "Las últimas 80 páginas que abriste en este dispositivo se vuelven a abrir sin conexión. El audio, el video y las imágenes de otros sitios (portadas, miniaturas) sí la necesitan."
   },
   "pwa.offline.how2_h": { "en": "Save key pages before you go", "es": "Guarda las páginas clave antes de salir" },
   "pwa.offline.how2_t": {
-    "en": "One tap in the Aa menu saves Meetings, this month's toolkit, Share your story, the Shop and more, in your language.",
-    "es": "Un toque en el menú Aa guarda Reuniones, el kit de este mes, Comparte tu historia, la Tienda y más, en tu idioma."
+    "en": "One tap in the Aa menu saves Meetings, this month's toolkit and district report, the GVR / RLV 101 lessons, Share your story and the Shop, in your language.",
+    "es": "Un toque en el menú Aa guarda Reuniones, el kit y el informe del mes, las lecciones de RLV / GVR 101, Comparte tu historia y la Tienda, en tu idioma."
   },
   "pwa.offline.how3_h": { "en": "Install it like an app", "es": "Instálalo como una app" },
   "pwa.offline.how3_t": {

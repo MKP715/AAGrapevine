@@ -22,7 +22,10 @@
    44px below 640px and on any touch screen (pointer: coarse). Never override with min-h-9!.
    Sticky rules and the z-index scale: see "Sticky rules" below (nothing may cover content).
    ===================================================================== */
-@import "tailwindcss";
+/* source(none): Tailwind reads ONLY the folders below for class names (not the whole repo — synced
+   data, tests and scripts would add stray utilities, so a content-only build could change main.css
+   under the same ?v=, which the service worker treats as unchanging). */
+@import "tailwindcss" source(none);
 
 @source "../../_includes";
 @source "../../pages";
@@ -54,14 +57,33 @@
   unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1E00-1E9F, U+2020, U+2113, U+A720-A7FF; }
 @font-face { font-family: "Fraunces Variable"; font-style: italic; font-display: swap; font-weight: 100 900;
   src: url("../fonts/fraunces-latin-opsz-italic.woff2") format("woff2-variations"); }
+/* Fallback faces with the web fonts' measurements (Georgia / Arial scaled to the same text width and
+   line box — measured in Chrome over a line of English and Spanish at the sizes the site uses: Fraunces'
+   optical-size axis makes it wider in small type), so the page doesn't move when the
+   web fonts arrive: base.njk needs to preload only Inter, and the hero title in Fraunces no longer
+   jumps (CLS) on a weak signal. Semibold+ text uses the bold faces (Arial Bold / Georgia Bold). */
+@font-face { font-family: "Inter Fallback"; font-weight: 100 500; src: local("Arial"), local("ArialMT");
+  size-adjust: 106.63%; ascent-override: 90.88%; descent-override: 22.6%; line-gap-override: 0%; }
+@font-face { font-family: "Inter Fallback"; font-weight: 501 900; src: local("Arial Bold"), local("Arial-BoldMT");
+  size-adjust: 101.09%; ascent-override: 95.85%; descent-override: 23.84%; line-gap-override: 0%; }
+@font-face { font-family: "Fraunces Fallback"; font-weight: 100 500; src: local("Georgia");
+  size-adjust: 103.74%; ascent-override: 94.47%; descent-override: 25.06%; line-gap-override: 0%; }
+@font-face { font-family: "Fraunces Fallback"; font-weight: 501 900; src: local("Georgia Bold"), local("Georgia-Bold");
+  size-adjust: 91.52%; ascent-override: 107.08%; descent-override: 28.41%; line-gap-override: 0%; }
+@font-face { font-family: "Fraunces Fallback"; font-style: italic; font-weight: 100 500; src: local("Georgia Italic"), local("Georgia-Italic");
+  size-adjust: 97.78%; ascent-override: 100.22%; descent-override: 26.59%; line-gap-override: 0%; }
+@font-face { font-family: "Fraunces Fallback"; font-style: italic; font-weight: 501 900; src: local("Georgia Bold Italic"), local("Georgia-BoldItalic");
+  size-adjust: 87.33%; ascent-override: 112.22%; descent-override: 29.77%; line-gap-override: 0%; }
+@font-face { font-family: "Inter Fallback"; font-style: italic; font-weight: 100 900; src: local("Arial Italic"), local("Arial-ItalicMT");
+  size-adjust: 106.99%; ascent-override: 90.57%; descent-override: 22.53%; line-gap-override: 0%; }
 
 /* ---------- Theme tokens ----------
    Use as Tailwind utilities: bg-paper, bg-surface, text-ink, text-muted,
    border-line, bg-gv, text-gv, bg-gv-soft, bg-lv, text-lv, bg-grape,
    text-vine, … They automatically switch in dark mode. */
 @theme {
-  --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-display: "Fraunces Variable", ui-serif, Georgia, "Times New Roman", serif;
+  --font-sans: "Inter Variable", "Inter Fallback", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Fraunces Variable", "Fraunces Fallback", ui-serif, Georgia, "Times New Roman", serif;
 
   --color-paper: var(--c-paper);
   --color-surface: var(--c-surface);
@@ -225,8 +247,9 @@
      · at 130%+ (or relaxed spacing) the base 2–4 column grids become one column on phones;
      · one-line labels (truncate) wrap instead of ending in "…"; no-wrap runs wrap below 768px;
      · buttons, links, chips and badges never grow wider than their box; dropdowns stay on screen.
-     The printable posters and share frames (.mp-poster, .cm-frame) and the header row keep their
-     own layout (the header is handled in areas/access.css). ---- */
+     The printable posters and share frames (.mp-poster, .cm-frame), the header row and the podcast
+     mini-player (.media-mini, a one-row bar at the bottom of the screen) keep their own layout (the
+     header is handled in areas/access.css, the player in areas/media.css). ---- */
   :root:is([data-text="115"], [data-text="130"], [data-text="150"], [data-spacing="relaxed"]) :is(main, footer, .gvlv-panel, #mobile-drawer) :not(.mp-poster, .cm-frame, :is(.mp-poster, .cm-frame) *) { overflow-wrap: break-word; }
   /* e-mail addresses, phone links and web addresses have no spaces: they may break anywhere */
   :root:is([data-text="115"], [data-text="130"], [data-text="150"], [data-spacing="relaxed"]) :is(main, footer) :is(a[href^="mailto:"], a[href^="tel:"], .break-all, code, kbd, .font-mono, [class*="-url"]):not(:is(.mp-poster, .cm-frame) *) { overflow-wrap: anywhere; }
@@ -234,8 +257,8 @@
      picture, a date tile or a button): at 130%+ the text column never gets narrower than ~7
      characters — when it can't
      have that much room beside its neighbours it moves onto its own line below them. */
-  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) main :is(.flex:has(> :is(.min-w-0, p, h2, h3, h4)), :has(> .flex-1)):not(.flex-col, .flex-col-reverse, .chip-row, .chip-row-nowrap, .flex-nowrap, :is(.mp-poster, .cm-frame) *) { flex-wrap: wrap !important; }
-  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) main :is(.flex:not(.flex-col, .flex-col-reverse, .chip-row, .chip-row-nowrap, .flex-nowrap) > :is(.min-w-0, p, h2, h3, h4), .flex-1):not(svg, img, picture, video, :is(.mp-poster, .cm-frame) *) { flex: 1 1 0% !important; min-width: min(100%, 7em) !important; }
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) main :is(.flex:has(> :is(.min-w-0, p, h2, h3, h4)), :has(> .flex-1)):not(.flex-col, .flex-col-reverse, .chip-row, .chip-row-nowrap, .flex-nowrap, :is(.mp-poster, .cm-frame, .media-mini) *) { flex-wrap: wrap !important; }
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) main :is(.flex:not(.flex-col, .flex-col-reverse, .chip-row, .chip-row-nowrap, .flex-nowrap) > :is(.min-w-0, p, h2, h3, h4), .flex-1):not(svg, img, picture, video, :is(.mp-poster, .cm-frame, .media-mini) *) { flex: 1 1 0% !important; min-width: min(100%, 7em) !important; }
   /* a grid with no column template of its own gets one flexible column (an implicit "auto" column
      is as wide as its widest word or picture, and would push past the screen). Not important:
      every grid-cols-* utility and area style still wins. */
@@ -247,23 +270,38 @@
     :root[data-text="150"] main :is(.grid-cols-2, .grid-cols-3, .grid-cols-4):not(:is(.mp-poster, .cm-frame) *) { grid-template-columns: minmax(0, 1fr) !important; }
     :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) main :is(p, li, dd, dt, h1, h2, h3, h4, td, th, figcaption, blockquote) { hyphens: auto; }
   }
-  :root:is([data-text="115"], [data-text="130"], [data-text="150"], [data-spacing="relaxed"]) :is(.truncate, [class*=":truncate"]):not(:is(.mp-poster, .cm-frame, .site-header) *) {
+  :root:is([data-text="115"], [data-text="130"], [data-text="150"], [data-spacing="relaxed"]) :is(.truncate, [class*=":truncate"]):not(:is(.mp-poster, .cm-frame, .site-header, .media-mini) *) {
     overflow: visible !important; white-space: normal !important; text-overflow: clip !important; overflow-wrap: anywhere; }
   @media (width < 48rem) {
-    :root:is([data-text="115"], [data-text="130"], [data-text="150"], [data-spacing="relaxed"]) :is(.whitespace-nowrap, .text-nowrap, .meta-row > *):not(:is(.mp-poster, .cm-frame, .site-header) *) { white-space: normal !important; }
+    :root:is([data-text="115"], [data-text="130"], [data-text="150"], [data-spacing="relaxed"]) :is(.whitespace-nowrap, .text-nowrap, .meta-row > *):not(:is(.mp-poster, .cm-frame, .site-header, .media-mini) *) { white-space: normal !important; }
   }
   :root:is([data-text="115"], [data-text="130"], [data-text="150"], [data-spacing="relaxed"]) :is(main, footer) :is(a, button, summary, .chip, .badge, [class*="badge-"]) { max-width: 100%; }
+  /* …in a chip row too, from 1024px where it wraps instead of scrolling sideways: its items don't
+     shrink (flex-shrink: 0), so each one is capped at the row's width and a long chip label wraps
+     onto a second line instead of running past the screen */
+  @media (width >= 64rem) {
+    :root:is([data-text="115"], [data-text="130"], [data-text="150"], [data-spacing="relaxed"]) main .chip-row > * { max-width: 100%; }
+    :root:is([data-text="115"], [data-text="130"], [data-text="150"], [data-spacing="relaxed"]) main .chip-row .chip { white-space: normal; }
+  }
   :root:is([data-text="115"], [data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .cm-menu-panel { min-width: min(14.5rem, calc(100vw - 2 * var(--gutter))); max-width: calc(100vw - 2 * var(--gutter)); }
   :root:is([data-text="115"], [data-text="130"], [data-text="150"], [data-spacing="relaxed"]) main select { max-width: 100%; }
   :root:is([data-text="115"], [data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .section-head-actions :is(.flex, .inline-flex) { flex-wrap: wrap !important; }
   /* a label + badge (or + action) row spread to both ends: the badge goes under the label when
      both don't fit; a pill of chips (All · English · Spanish) wraps onto a second row */
-  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) main .flex.justify-between:not(.flex-col, .flex-col-reverse, .chip-row, .chip-row-nowrap, .flex-nowrap, :has(> svg:last-child)) { flex-wrap: wrap !important; }
-  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) main :is(.flex, .inline-flex):has(> .chip):not(.chip-row, .chip-row-nowrap) { flex-wrap: wrap !important; }
-  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) main .inline-flex.rounded-full:has(> .chip) { border-radius: 1.25rem; }
-  /* side columns stop sticking at 130%+ (their bigger content would need its own scrollbar) */
-  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) :is(.sticky-aside, .sticky-aside-xl) {
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) main .flex.justify-between:not(.flex-col, .flex-col-reverse, .chip-row, .chip-row-nowrap, .flex-nowrap, :has(> svg:last-child), .media-mini *) { flex-wrap: wrap !important; }
+  :root:is([data-text="115"], [data-text="130"], [data-text="150"], [data-spacing="relaxed"]) main :is(.flex, .inline-flex):has(> .chip):not(.chip-row, .chip-row-nowrap) { flex-wrap: wrap !important; }
+  /* (important: rounded-full is a utility, a later layer; 1.5rem looks the same as a full pill on one
+     row and gives a wrapped pill rounded corners instead of a blob) */
+  :root:is([data-text="115"], [data-text="130"], [data-text="150"], [data-spacing="relaxed"]) main :is(.flex, .inline-flex).rounded-full:has(> .chip):not(.chip-row, .chip-row-nowrap) { border-radius: 1.5rem !important; }
+  /* side columns stop sticking at 130%+ (their bigger content would need its own scrollbar) — the
+     shared asides and the pages' own pinned columns (the report preview, the month poster) */
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) :is(.sticky-aside, .sticky-aside-xl, .rp-main, .mp-poster-col) {
     position: static !important; max-height: none !important; overflow: visible !important; -webkit-mask-image: none !important; mask-image: none !important; }
+  /* panel titles (card-h: an icon + the title as bare text, which is an anonymous flex item that
+     can't shrink below its longest word): a long Spanish word breaks instead of pushing the page
+     sideways (overflow-wrap is inherited, so the anonymous item's min-content can shrink; important:
+     the "break-word" rule above has an id in its :is() and would win) */
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) :is(main, .gvlv-panel) .card-h { overflow-wrap: anywhere !important; }
   /* a table in a rounded card: the card scrolls sideways instead of cutting the table off (at any
      text size — the Spanish Status table is wider than its card at 768px) */
   main .overflow-hidden:has(> table, > div > table) { overflow-x: auto !important; }
@@ -712,6 +750,10 @@
 /* …and every sticky column (sticky-aside, the library facets, the Listen player, the month
    poster) ends above it: --sticky-bottom is taken off their max-height. */
 :root.has-lang-banner { --sticky-bottom: calc(var(--banner-h, 4.5rem) + var(--player-h, 0px) + env(safe-area-inset-bottom, 0px) + 0.75rem); }
+/* …and keyboard focus is never left under them (WCAG 2.4.11): tabbing onto a link that is on screen
+   but behind the banner scrolls it up above the banner (the player and the offline-app toast do
+   the same: media.css, pwa.css). */
+:root.has-lang-banner { scroll-padding-bottom: calc(var(--banner-h, 4.5rem) + var(--player-h, 0px) + env(safe-area-inset-bottom, 0px) + 1rem); }
 
 /* End of the page: the footer's mt-16 (64px) is the ONLY gap after the last section, on every page.
    The last plain section (section / section-tight / page-start — directly in <main> or in one
@@ -725,6 +767,29 @@ main > :not(script, template, dialog, style):not(:has(~ :not(script, template, d
 /* A control that only works with JavaScript: hidden without it (html.js is set in <head>), shown
    from the first paint with it — unlike x-cloak, which pops it in when Alpine starts. */
 :root:not(.js) [data-js-only] { display: none !important; }
+/* …and its stand-in without JavaScript (e.g. an e-mail address as text where the button copies it) */
+:root.js [data-nojs-only] { display: none !important; }
+
+/* Print: always on white paper with the LIGHT colours, whatever the screen theme (dark text tokens
+   would print pale grey on white). High contrast keeps its stronger light values. (The digest, the
+   share kit, the posters and the GVR 101 handout set their own print colours too.) */
+@media print {
+  :root { color-scheme: light !important; }
+  :root[data-theme="dark"] {
+    --c-paper: #fbf8f2; --c-surface: #ffffff; --c-surface-2: #f4efe6; --c-ink: #1d1a26; --c-muted: #57526a; --c-faint: #6e6980; --c-line: #e6dfd2;
+    --c-gv: #0a5fa8; --c-gv-strong: #07457c; --c-gv-soft: #e5f0fa; --c-lv: #b8430b; --c-lv-strong: #8f3207; --c-lv-soft: #fdeee3;
+    --c-grape: #5b2a86; --c-grape-soft: #f1e8f8; --c-vine: #2f6e2c; --c-vine-soft: #e7f3e3; --c-danger: #b42318;
+  }
+  :root[data-theme="dark"][data-contrast="high"] {
+    --c-paper: #ffffff; --c-surface: #ffffff; --c-surface-2: #f0ede6; --c-ink: #000000; --c-muted: #22202c; --c-faint: #34313f; --c-line: #5f596d;
+    --c-gv: #063e73; --c-gv-strong: #042b52; --c-gv-soft: #e2edf9; --c-lv: #7a2b05; --c-lv-strong: #5c2003; --c-lv-soft: #fcebdc;
+    --c-grape: #44206a; --c-grape-soft: #eee3f7; --c-vine: #1b4c19; --c-vine-soft: #e2f0dd; --c-danger: #8a1a11;
+  }
+  html, body { background: #fff !important; }
+  /* on paper the hero is a plain title: no buttons, and the block after it doesn't tuck into it */
+  :is(.gv-hero, .page-hero) .hero-actions { display: none !important; }
+  .page-overlap { margin-top: 0 !important; }
+}
 
 /* Print: the site header prints once at the top (logo + name), not fixed over the content */
 @media print {

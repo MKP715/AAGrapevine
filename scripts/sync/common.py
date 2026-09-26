@@ -574,7 +574,7 @@ class PoliteSession:
                 if r.status_code in (429, 500, 502, 503, 504) and attempt < self.retries:
                     ra = r.headers.get("Retry-After")
                     backoff = float(ra) if ra and ra.isdigit() else 5.0 * attempt
-                    self.log.warning("%s %s → %s, retry in %.0fs", method, url, r.status_code, backoff)
+                    self.log.warning("%s %s -> %s, retry in %.0fs", method, url, r.status_code, backoff)
                     time.sleep(min(backoff, 60))
                     continue
                 return r

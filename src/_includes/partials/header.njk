@@ -52,21 +52,25 @@
       {%- endfor %}
     </nav>
 
-    {#- Phones: search, language and menu are 44px touch targets (40px from 640px, with a mouse
-        in mind); the language pill drops its icon below 390px so everything fits at 320px. The
-        theme toggle lives in the drawer below 640px. Search opens /search/ (no overlay). -#}
+    {#- Phones: "Aa" (reading & display settings), language and menu are 44px touch targets (40px
+        from 640px, with a mouse in mind); the language pill drops its icon below 390px so
+        everything fits at 320px. Below 640px search is the full-width button at the bottom of the
+        drawer (the icon here comes back without JavaScript, when the drawer can't open: areas/
+        access.css .site-search-btn), and the theme toggle lives in the drawer. Search opens
+        /search/ (no overlay). -#}
     <div class="ml-auto flex shrink-0 items-center gap-0.5 min-[390px]:gap-1 xl:ml-2">
-      <a href="{{ '/search/' | lurl(L) }}" class="grid size-11 place-items-center rounded-full transition hover:bg-white/10 sm:size-10" :class="solid && 'hover:bg-surface-2'" aria-label="{{ 'nav.search' | t(L) }}"{% if pageKey == 'search' %} aria-current="page"{% endif %}>{% icon "search", "size-5" %}</a>
+      <a href="{{ '/search/' | lurl(L) }}" class="site-search-btn grid size-11 place-items-center rounded-full transition hover:bg-white/10 sm:size-10" :class="solid && 'hover:bg-surface-2'" aria-label="{{ 'nav.search' | t(L) }}"{% if pageKey == 'search' %} aria-current="page"{% endif %}>{% icon "search", "size-5" %}</a>
       <a href="{{ alt }}" hreflang="{{ L | otherLang }}" lang="{{ L | otherLang }}"
          class="inline-flex min-h-11 min-w-11 items-center justify-center gap-1.5 rounded-full border px-2.5 text-xs font-bold tracking-wide no-underline transition min-[390px]:px-3 sm:min-h-10"
          :class="solid ? 'border-line hover:border-gv hover:text-gv' : 'border-white/30 hover:bg-white/10'"
          aria-label="{{ 'nav.switch_lang_aria' | t(L) }}" data-lang-switch>
         {% icon "languages", "size-4 max-[389px]:hidden" %}<span>{{ "ES" if L == "en" else "EN" }}</span>
       </a>
-      {#- Reading & display settings ("Aa"): opens the panel below (#gvlv-panel). From 640px it sits
-          here next to the theme toggle; on phones both live in the drawer's top bar. The dot says
-          that the visitor changed a setting (or that the page is being read aloud). -#}
-      <button type="button" data-js-only class="gvlv-trigger relative hidden size-10 place-items-center rounded-full transition hover:bg-white/10 sm:grid" :class="solid && 'hover:bg-surface-2'"
+      {#- Reading & display settings ("Aa"): opens the panel below (#gvlv-panel). It sits here at
+          every width — on phones in the place of the search icon, one tap away for low-vision
+          visitors (the drawer's top bar has it too). The dot says that the visitor changed a
+          setting (or that the page is being read aloud). -#}
+      <button type="button" data-js-only class="gvlv-trigger relative grid size-11 place-items-center rounded-full transition hover:bg-white/10 sm:size-10" :class="solid && 'hover:bg-surface-2'"
               @click="$store.gvlv.toggle($el)" :aria-expanded="$store.gvlv.open.toString()" aria-expanded="false" aria-controls="gvlv-panel" aria-haspopup="dialog">
         {% icon "a-large-small", "size-5" %}<span class="sr-only">{{ "comfort.button" | t(L) }}</span>
         <span class="gvlv-dot" x-show="$store.gvlv.custom || $store.gvlv.speaking" x-cloak aria-hidden="true"></span>

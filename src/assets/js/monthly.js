@@ -25,8 +25,11 @@
 
   /* Fill the canvas: the poster's type (all in em) is sized to the largest step at which every
      block still fits its column — busy months (many events, long Spanish titles) step down,
-     quiet months step up, so no poster is left with a half-empty page. Binary search, ~8 layouts
-     per poster. Without JS the CSS size (by density) is used. The PNG and the print use this DOM. */
+     quiet months step up, so no poster is left with a half-empty page. Binary search, ~8 layouts,
+     done on a hidden copy one step per task (the page never freezes, the visible poster changes
+     once) and only for the full-size poster of a month page: the hub's thumbnails keep the CSS size
+     (by density), like without JS — fitting 13 of them froze a phone for seconds. The PNG and the
+     print use this DOM. */
   var BLOCKS = ".mp-b, .mp-foot, .mp-head, .mp-row, .mp-col, .mp-body, .mp-board, .mp-cover, .mp-strip, .mp-page, .mp-main, .mp-stub, .mp-side, .mp-content, .mp-top";
   // Layout boxes in poster px (offset* ignore the scale and the tilted cork cards' rotation).
   function box(el, p) {
@@ -46,18 +49,34 @@
     return false;
   }
   function fit(p) {
-    p.style.fontSize = "";
-    var base = parseFloat(getComputedStyle(p).fontSize) || 23;
-    var lo = 16, hi = Math.min(base * 1.25, 28);
-    if (overflowing(p)) hi = base; else lo = base;
-    for (var n = 0; n < 7; n++) {
-      var mid = (lo + hi) / 2;
-      p.style.fontSize = mid + "px";
-      if (overflowing(p)) hi = mid; else lo = mid;
-    }
-    p.style.fontSize = Math.floor(lo * 4) / 4 + "px";
+    // the copy: same classes and content, unscaled, positioned (so offsetParent stops at it), out of sight
+    var holder = document.createElement("div");
+    holder.setAttribute("aria-hidden", "true");
+    holder.style.cssText = "position:absolute;left:-12000px;top:0;width:1080px;visibility:hidden;pointer-events:none;";
+    var c = p.cloneNode(true);
+    c.removeAttribute("data-mp-poster");
+    c.removeAttribute("aria-labelledby");
+    Array.prototype.forEach.call(c.querySelectorAll("[id]"), function (el) { el.removeAttribute("id"); });
+    c.style.position = "relative";
+    c.style.fontSize = "";
+    holder.appendChild(c);
+    document.body.appendChild(holder);
+    var base = parseFloat(getComputedStyle(c).fontSize) || 23;
+    var lo = 16, hi = Math.min(base * 1.25, 28), n = 0;
+    if (overflowing(c)) hi = base; else lo = base;
+    (function step() {
+      if (n++ < 7) {
+        var mid = (lo + hi) / 2;
+        c.style.fontSize = mid + "px";
+        if (overflowing(c)) hi = mid; else lo = mid;
+        setTimeout(step, 0); // one layout per task
+        return;
+      }
+      holder.remove();
+      p.style.fontSize = Math.floor(lo * 4) / 4 + "px";
+    })();
   }
-  var fitAll = function () { Array.prototype.forEach.call(document.querySelectorAll("[data-mp-poster]"), fit); };
+  var fitAll = function () { Array.prototype.forEach.call(document.querySelectorAll(".mp-stage:not(.mp-stage--thumb) [data-mp-poster]"), fit); };
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitAll); else fitAll();
 
   var poster = document.querySelector(".mp-print-root [data-mp-poster]");
