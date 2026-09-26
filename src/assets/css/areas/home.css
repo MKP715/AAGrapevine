@@ -446,7 +446,9 @@
 /* This month in the Shop (the closing row of the magazines section): compact covers */
 .home-shop .shop-teaser-covers { padding: 0.25rem 0.375rem 0.25rem 0.125rem; }
 .home-shop .shop-teaser-covers img { width: 2.75rem; }
+/* (a size container: at larger text the magazine's name is sized by the column's width — access.css) */
 .home-mag-head {
+  container-type: inline-size;
   color: var(--tone);
   background:
     radial-gradient(90% 120% at 100% 0%, color-mix(in srgb, var(--tone) 16%, transparent), transparent 60%),

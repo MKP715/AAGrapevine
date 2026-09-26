@@ -300,7 +300,7 @@ pageScripts: ["/assets/js/read.js"]
   {% call ui.sectionHead("read.gvr.kits_title" | t(lang), "read.gvr.kits_sub" | t(lang), "", "", "folder-open", { eyebrow: "read.gvr.kits_eyebrow" | t(lang), id: "kits-title", lang: lang }) %}{{ ui.freshness(db.pdfs.updated, lang) }}{% endcall %}
 
   {% if gvrKit.length or rlvKit.length %}
-  <div class="mb-8 flex flex-col gap-3 rounded-[var(--radius-card)] border border-line bg-surface p-3 sm:flex-row sm:items-center">
+  <div class="mb-8 flex flex-col gap-3 rounded-[var(--radius-card)] border border-line bg-surface p-3 sm:flex-row sm:items-center" data-js-only>
     <div class="chip-row" role="group" aria-label="{{ 'read.gvr.kit_filter' | t(lang) }}">
       <button type="button" class="chip" aria-pressed="true" :aria-pressed="(kit === 'all').toString()" @click="kit = 'all'">{{ "common.all" | t(lang) }}</button>
       {% for k in kitOrder %}

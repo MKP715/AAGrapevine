@@ -66,10 +66,10 @@ descKey: read.about.meta_desc
     {#- @container: when the card is wide (two cards side by side on a big screen) the story
         keeps a readable line length and the facts move into a column beside it -#}
     <article class="card @container overflow-hidden">
-      <header class="read-cover {{ 'read-cover--lv' if isLv else 'read-cover--gv' }} relative isolate overflow-hidden px-6 py-6 text-white sm:px-8">
+      <header class="read-cover read-cover-head {{ 'read-cover--lv' if isLv else 'read-cover--gv' }} relative isolate overflow-hidden px-6 py-6 text-white sm:px-8">
         <svg class="read-cover-art w-36!" viewBox="0 0 200 240" fill="none" aria-hidden="true"><g fill="currentColor"><circle cx="82" cy="96" r="17"/><circle cx="116" cy="96" r="17"/><circle cx="66" cy="126" r="17"/><circle cx="100" cy="126" r="17"/><circle cx="134" cy="128" r="17"/><circle cx="82" cy="156" r="17"/><circle cx="116" cy="156" r="17"/><circle cx="100" cy="186" r="17"/></g></svg>
-        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-white/70">{{ ("read.about.lv_kicker" if isLv else "read.about.gv_kicker") | t(lang) }}</p>
-        <h3 class="mt-1 flex items-center gap-2 font-display text-3xl font-semibold">{% icon "grapes", "size-7" %} {{ "La Viña" if isLv else "AA Grapevine" }}</h3>
+        <p class="read-cover-kicker text-xs font-semibold uppercase tracking-[0.18em] text-white/70">{{ ("read.about.lv_kicker" if isLv else "read.about.gv_kicker") | t(lang) }}</p>
+        <h3 class="read-cover-title mt-1 flex items-center gap-2 font-display font-semibold">{% icon "grapes", "read-cover-icon size-7 shrink-0" %} <span class="min-w-0">{{ "La Viña" if isLv else "AA Grapevine" }}</span></h3>
       </header>
       <div class="grid grid-cols-1 p-6 sm:p-8 @3xl:grid-cols-[minmax(0,1fr)_12rem] @3xl:gap-x-10">
         <div class="measure">
@@ -128,8 +128,8 @@ descKey: read.about.meta_desc
     {{ ui.sectionHead("read.about.contact_title" | t(lang), "read.about.contact_text" | t(lang), "", "", "mail", { eyebrow: "read.about.contact_eyebrow" | t(lang), id: "contact-title", lang: lang }) }}
     <div class="card card-pad">
       <div class="flex flex-wrap items-center gap-2">
-        <a class="btn-primary max-w-full" href="mailto:{{ site.contact_email }}">{% icon "send", "size-4" %} <span class="truncate">{{ site.contact_email }}</span></a>
-        <button type="button" class="btn-secondary" data-copy="{{ site.contact_email }}">{% icon "copy", "size-4" %} {{ "common.copy" | t(lang) }}</button>
+        <a class="btn-primary max-w-full" href="mailto:{{ site.contact_email }}">{% icon "send", "size-4 shrink-0" %} <span class="min-w-0 truncate">{{ site.contact_email | replace("@", "@<wbr>") | safe }}</span></a>
+        <button type="button" class="btn-secondary" data-js-only data-copy="{{ site.contact_email }}">{% icon "copy", "size-4" %} {{ "common.copy" | t(lang) }}</button>
       </div>
       <ul class="mt-5 grid gap-1 border-t border-line pt-4 text-sm">
         <li><a class="link tap-link" href="{{ '/meetings/' | lurl(lang) }}#committee-meeting">{{ "nav.meeting" | t(lang) }}</a></li>
@@ -152,7 +152,7 @@ descKey: read.about.meta_desc
         <span>{{ "read.about.first_sync" | t(lang) }}</span>
       {% endif %}
     </p>
-    <dl class="grid grid-cols-2 gap-px bg-line sm:grid-cols-3 lg:grid-cols-6">
+    <dl class="about-stats grid grid-cols-2 gap-px bg-line sm:grid-cols-3 lg:grid-cols-6">
       {% for c in counts %}
       <div class="bg-surface p-5">
         <dt class="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-muted">{% icon c.icon, "size-3.5" %} {{ ("read.about.n_" + c.k) | t(lang) }}</dt>

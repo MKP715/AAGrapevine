@@ -349,9 +349,11 @@ pageScripts: ["/assets/js/monthly.js", "/assets/js/report.js"]
       <p class="text-ink">{{ carry.story_note[lang] }} <a class="link font-semibold" href="{{ '/contribute/' | lurl(lang) }}">{{ "nav.contribute" | t(lang) }}</a></p>
     </div>
     {% endif %}
-    {#- The representatives' official guides: a pointer in our own words + the documents (never quoted) -#}
+    {#- The representatives' official guides: a pointer in our own words + the documents (never quoted)
+        + the official GVR / RLV resource pages (config/site.yml links.gvr_resources / rlv_resources) -#}
     {%- set guides = db.pdfs | mpGuides(lang) if carry.guides else [] -%}
-    {% if guides.length %}
+    {%- set repLinks = [[site.links.gvr_resources, "read.subs.all_gvr", "en"], [site.links.rlv_resources, "read.subs.all_rlv", "es"]] if carry.guides else [] -%}
+    {% if guides.length or (repLinks | length and site.links.gvr_resources) %}
     <div class="card card-pad flex gap-4">
       <span class="mp-tipicon">{% icon "notebook-pen", "size-5" %}</span>
       <div class="min-w-0">
@@ -360,6 +362,9 @@ pageScripts: ["/assets/js/monthly.js", "/assets/js/report.js"]
           {% for g in guides %}
           <li><a class="link tap-link inline-flex flex-wrap items-baseline gap-x-1.5 font-semibold" href="{{ g.url }}" target="_blank" rel="noopener" hreflang="{{ g.lang }}"><span{% if g.lang != lang %} lang="{{ g.lang }}"{% endif %}>{{ g.title }}</span><span class="text-sm font-normal text-muted">({{ ("monthly.guide_doc" if g.lang == lang else ("monthly.guide_doc_" + g.lang)) | t(lang) }})</span><span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a></li>
           {% endfor %}
+          {% for r in repLinks %}{% if r[0] %}
+          <li><a class="link tap-link inline-flex items-center gap-1.5 font-semibold" href="{{ r[0] }}" target="_blank" rel="noopener" hreflang="{{ r[2] }}">{{ r[1] | t(lang) }}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span>{% icon "arrow-up-right", "size-4 shrink-0" %}</a></li>
+          {% endif %}{% endfor %}
         </ul>
       </div>
     </div>

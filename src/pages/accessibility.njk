@@ -63,7 +63,7 @@ descKey: access.meta_desc
     {% endfor %}
     {#- The offline app (feature 14): a link card across the whole row (6 settings + 1 never leaves an
         orphan) — the page it opens explains saving pages and installing, and switches to its online wording. -#}
-    <li class="card card-link group relative flex flex-col gap-4 p-5 sm:col-span-2 sm:flex-row sm:items-center lg:col-span-3">
+    <li class="card card-link group relative flex flex-col gap-4 p-5 sm:col-span-full sm:flex-row sm:items-center">
       <span class="grid size-11 shrink-0 place-items-center rounded-xl bg-vine-soft text-vine">{% icon "hard-drive-download", "size-5" %}</span>
       <div class="min-w-0 flex-1">
         <h3 class="h-card"><a class="no-underline after:absolute after:inset-0 after:rounded-[var(--radius-card)] hover:text-gv" href="{{ '/offline/' | lurl(lang) }}">{{ "access.f_offline_t" | t(lang) }}</a></h3>

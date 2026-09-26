@@ -161,10 +161,10 @@ pageScripts: ["/assets/js/orientation.js"]
     </div>
     <div class="card card-pad">
       <h3 class="card-h"><span class="text-vine">{% icon "list-checks", "size-5" %}</span>{{ "orientation.before_title" | t(lang) }}</h3>
-      <div class="mt-4 grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,24rem)] lg:items-center 2xl:grid-cols-[minmax(0,1fr)_minmax(0,28rem)]">
-        <ul class="grid grid-cols-1 gap-3 text-sm leading-relaxed text-ink sm:grid-cols-2" role="list">
+      <div class="o101-before mt-4 grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,24rem)] lg:items-center 2xl:grid-cols-[minmax(0,1fr)_minmax(0,28rem)]">
+        <ul class="o101-before-list grid grid-cols-1 gap-3 text-sm leading-relaxed text-ink" role="list">
           {% for k in ["before1", "before2", "before3", "before4"] %}
-          <li class="flex gap-2.5">{% icon "check", "mt-0.5 size-4 shrink-0 text-vine" %}<span>{{ ("orientation." + k) | t(lang) }}</span></li>
+          <li class="flex gap-2.5">{% icon "check", "mt-0.5 size-4 shrink-0 text-vine" %}<span class="min-w-0">{{ ("orientation." + k) | t(lang) }}</span></li>
           {% endfor %}
         </ul>
         <p class="flex gap-2.5 rounded-xl bg-surface-2 p-4 text-sm leading-relaxed text-muted">{% icon "shield-check", "mt-0.5 size-4 shrink-0 text-vine" %}<span>{{ "orientation.anon_note" | t(lang) }}</span></p>

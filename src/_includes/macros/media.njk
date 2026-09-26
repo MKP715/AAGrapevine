@@ -21,8 +21,8 @@
     <div class="media-share-quote">
       <blockquote class="rounded-2xl border border-line bg-surface p-4 font-display text-lg leading-snug text-ink [overflow-wrap:anywhere]">{{ announcement }}</blockquote>
       <div class="mt-4 grid grid-cols-1 gap-2 min-[25rem]:flex min-[25rem]:flex-wrap sm:gap-3">
-        <button type="button" class="btn-primary btn-sm" data-copy="{{ announcement }}">{% icon "copy", "size-4" %} {{ "media.copy_announcement" | t(lang) }}</button>
-        <button type="button" class="btn-secondary btn-sm" data-share="{{ shareUrl }}" data-share-title="{{ shareTitle }}"{% if shareText %} data-share-text="{{ shareText }}"{% endif %}>{% icon "share-2", "size-4" %} {{ "media.share_page" | t(lang) }}</button>
+        <button type="button" class="btn-primary btn-sm" data-js-only data-copy="{{ announcement }}">{% icon "copy", "size-4" %} {{ "media.copy_announcement" | t(lang) }}</button>
+        <button type="button" class="btn-secondary btn-sm" data-js-only data-share="{{ shareUrl }}" data-share-title="{{ shareTitle }}"{% if shareText %} data-share-text="{{ shareText }}"{% endif %}>{% icon "share-2", "size-4" %} {{ "media.share_page" | t(lang) }}</button>
       </div>
     </div>
   </div>

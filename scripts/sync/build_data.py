@@ -1099,28 +1099,62 @@ def _local_clock(ctx: Ctx, v: Any) -> str:
     return f"{(d.hour % 12) or 12}:{d.minute:02d} {'AM' if d.hour < 12 else 'PM'}"
 
 
+def is_confirmed(ev: dict) -> bool:
+    """A content/events file with `confirmed: true`: the committee checked its date, time and place, and
+    they win over any calendar feed for good (see merge_feed_duplicates)."""
+    return (ev.get("extra") or {}).get("confirmed") is True and ev.get("category") not in GENERATED_EVENTS
+
+
 def merge_feed_duplicates(ctx: Ctx, primary: list[dict], feed: list[dict]) -> list[dict]:
     """→ the feed events that are NOT on the calendar yet. A feed event that is the same real event as one
     already there (content/events, a dated Drive flyer, the committee meeting, a `recurring_events:` date)
     is dropped and only fills what a hand-written event leaves out; the same event in a second feed is
     dropped too. ctx.feeds gets the duplicates and the notes for the chair (`notes`: what the feed says
-    that the file does not — see fill_from_feed — and an event page listed on another date)."""
+    that the file does not — see fill_from_feed — and an event page listed on another date).
+
+    A file marked `confirmed: true` wins for good: a feed event with the same event page (url:) is never
+    shown, whatever its date (not as a second event, not as a changed date), the file keeps its own
+    date, time and place, and what the feed says otherwise is only an info line in the log (no note for
+    the chair: the committee already checked)."""
     kept: list[dict] = []
     dups: dict[str, int] = {}
     notes: dict[str, list[str]] = {}
+    infos: list[str] = []
+    held: dict[str, dict] = {}              # event page → the confirmed file that owns it
+    for p in primary:
+        key = event_url_key(p.get("url"))
+        if key and is_confirmed(p):
+            held.setdefault(key, p)
 
     def note(ev: dict, msg: str) -> None:
         key = (ev.get("extra") or {}).get("feed") or ""
         if msg not in notes.setdefault(key, []):
             notes[key].append(msg)
 
+    def info(msg: str) -> None:
+        if msg not in infos:
+            infos.append(msg)
+
+    def count(ev: dict) -> None:
+        feed_key = ev["extra"].get("feed") or ""
+        dups[feed_key] = dups.get(feed_key, 0) + 1
+
     for ev in feed:
         match = next(((p, how) for p in primary if (how := same_event(ctx, p, ev))), None)
         if match:
             for msg in fill_from_feed(ctx, match[0], match[1], ev):
-                note(ev, msg)
-            feed_key = ev["extra"].get("feed") or ""
-            dups[feed_key] = dups.get(feed_key, 0) + 1
+                if is_confirmed(match[0]):
+                    info(msg)
+                else:
+                    note(ev, msg)
+            count(ev)
+            continue
+        owner = held.get(event_url_key(ev.get("url")) or "")
+        if owner is not None:                # the page of a confirmed file, listed on another date
+            info(f"{_written_in(owner)} is confirmed (confirmed: true): {_feed_name(ctx, ev['extra'].get('feed'))} "
+                 f"lists its event page ({owner.get('url')}) on {_event_day(ctx, ev)}; the file's "
+                 f"{_event_day(ctx, owner)} is kept and the calendar's date is not shown.")
+            count(ev)
             continue
         if any(same_event(ctx, k, ev) == "url"
                or (k["extra"].get("uid") == ev["extra"].get("uid") and k["extra"].get("start") == ev["extra"].get("start"))
@@ -1131,7 +1165,7 @@ def merge_feed_duplicates(ctx: Ctx, primary: list[dict], feed: list[dict]) -> li
     # changed on neta65.org (or a page used again for another workshop). Nothing is merged; the chair checks.
     for p in primary:
         key = event_url_key(p.get("url"))
-        if not key or p.get("category") in GENERATED_EVENTS or event_end_ts(ctx, p) < ctx.now_ts:
+        if not key or p.get("category") in GENERATED_EVENTS or is_confirmed(p) or event_end_ts(ctx, p) < ctx.now_ts:
             continue
         day = _event_day(ctx, p)
         on_page = [ev for ev in feed if event_url_key(ev.get("url")) == key]
@@ -1152,6 +1186,8 @@ def merge_feed_duplicates(ctx: Ctx, primary: list[dict], feed: list[dict]) -> li
     if dups:
         log.info("ics feeds: %d event(s) already on the calendar (content/events, a flyer, the committee's own "
                  "events) — shown once", sum(dups.values()))
+    for msg in infos:
+        log.info("ics feeds: %s", msg)
     for msg in (m for ms in notes.values() for m in ms):
         log.warning("ics feeds: check %s", msg)
     return kept
@@ -1162,7 +1198,9 @@ def fill_from_feed(ctx: Ctx, keep: dict, how: str, dup: dict) -> list[str]:
     feed says something the file does not. The event-page link, the flyer and the online link are copied
     only on a sure match (the same event page, or the same start); a place the file gives as "Venue to be
     announced" is replaced by the feed's real venue on a sure match too (the chair is told to update the
-    file). Nothing is copied onto the committee's own events (the meeting, `recurring_events:`)."""
+    file). Nothing is copied onto the committee's own events (the meeting, `recurring_events:`).
+    A file marked `confirmed: true` keeps its own date, time and place (no end, venue or time is taken
+    from the feed); what the feed says otherwise comes back as info lines, not as notes for the chair."""
     kx, dx = keep.setdefault("extra", {}), dup.get("extra") or {}
     kx["also_in_feed"] = dx.get("feed")
     kx["feed_match"] = how
@@ -1180,6 +1218,15 @@ def fill_from_feed(ctx: Ctx, keep: dict, how: str, dup: dict) -> list[str]:
             keep["url"] = dup["url"]
     feed_loc = clean_text(dx.get("location"))
     mine = clean_text(kx.get("location"))
+    if is_confirmed(keep):
+        said = f"{_written_in(keep)} is confirmed (confirmed: true)"
+        if not same_start and not _is_all_day(keep) and not _is_all_day(dup):
+            notes.append(f"{said}: {cal} says it starts at {_local_clock(ctx, dx.get('start'))}; the file's "
+                         f"{_local_clock(ctx, kx.get('start'))} (Central time) is kept.")
+        if feed_loc and not location_is_tba(feed_loc) and not _same_place(feed_loc, mine):
+            notes.append(f"{said}: {cal} gives the place “{feed_loc}”; the file's "
+                         f"“{mine or 'no place'}” is kept.")
+        return notes
     if feed_loc and not location_is_tba(feed_loc):
         if not mine:
             kx["location"] = feed_loc
@@ -1204,6 +1251,15 @@ def fill_from_feed(ctx: Ctx, keep: dict, how: str, dup: dict) -> list[str]:
                      f"the file says {_local_clock(ctx, kx.get('start'))} (Central time). If the time changed, "
                      "correct start: and end: in the file.")
     return notes
+
+
+def _same_place(a: Any, b: Any) -> bool:
+    """'Grupo X, 1 Main St, Tyler, TX, 75702, United States' ~ 'Grupo X, 1 Main St, Tyler, TX 75702' (commas,
+    spaces, accents and the country left out)."""
+    def norm(v: Any) -> str:
+        return re.sub(r"(unitedstates|usa)$", "", re.sub(r"[^a-z0-9]+", "", fold(clean_text(v))))
+    na, nb = norm(a), norm(b)
+    return bool(na) and bool(nb) and (na == nb or na.startswith(nb) or nb.startswith(na))
 
 
 def _same_start(a: Any, b: Any) -> bool:

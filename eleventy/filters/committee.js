@@ -1574,7 +1574,7 @@ export default function (eleventyConfig, helpers) {
   <div class="mt-5 grid gap-2">
     ${rows.map((r) => `
     <details class="cm-howto">
-      <summary>${icon(r.ic, "size-4 text-gv")} <span>${esc(t(`committee.sub.howto_${r.k}`, L))}</span>${icon("chevron-down", "size-4 ml-auto opacity-60 cm-chev")}</summary>
+      <summary>${icon(r.ic, "size-4 text-gv")} <span class="min-w-0 hyphens-auto [overflow-wrap:anywhere]">${esc(t(`committee.sub.howto_${r.k}`, L))}</span>${icon("chevron-down", "size-4 ml-auto opacity-60 cm-chev")}</summary>
       <div class="cm-howto-body">
         <a class="${r.cls} btn-sm w-full" href="${esc(r.href)}"${r.href.startsWith("http") ? ' target="_blank" rel="noopener"' : ""}>${icon(r.ic, "size-4")} ${esc(r.label)}${r.href.startsWith("http") ? ext : ""}</a>
         <p>${esc(t(`committee.sub.howto_${r.k}_text`, L))}</p>
@@ -1584,7 +1584,7 @@ export default function (eleventyConfig, helpers) {
   <div class="mt-5 border-t border-line pt-5">
     <p class="eyebrow">${esc(t("committee.sub.url_label", L))}</p>
     <p class="cm-feed-url mt-2" translate="no">${esc(feed)}</p>
-    <button type="button" class="btn-secondary btn-sm mt-3 w-full" data-copy="${esc(feed)}">${icon("copy", "size-4")} ${esc(t("committee.sub.copy_aria", L))}</button>
+    <button type="button" class="btn-secondary btn-sm mt-3 w-full" data-js-only data-copy="${esc(feed)}">${icon("copy", "size-4")} ${esc(t("committee.sub.copy_aria", L))}</button>
     <p class="mt-3 text-xs leading-relaxed text-muted">${esc(t("committee.sub.url_help", L))}</p>
     <p class="mt-2 text-xs leading-relaxed text-muted">${esc(t("committee.sub.other_lang", L))} <a class="link cm-feed-other" href="${esc(otherFeed)}" hreflang="${other}" translate="no">${esc(otherFeed.replace(/^https?:\/\//, ""))}</a></p>
   </div>

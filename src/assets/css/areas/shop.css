@@ -66,6 +66,18 @@
 .shop-days.is-urgent { background: color-mix(in srgb, var(--c-danger) 12%, var(--c-surface)); color: var(--c-danger); }
 .shop-buy { min-height: 3rem; padding-inline: 1.375rem; font-size: 1rem; }
 
+/* ---------- The two magazine cards (#magazines): kicker + name + blurb beside the current cover ----------
+   The card head is a size container. The name is sized by the head's width (cqi): 1.5rem in a phone's
+   card up to 1.875rem, so "AA Grapevine" never runs under the cover. In a head narrower than 24rem the
+   grapes icon is left out; below 360px the cover is smaller. At 130%+ text (the cover grows with the
+   text, the card doesn't) the cover goes under the blurb instead of beside it. The kicker ("The
+   international journal of AA") is hyphenated in the page language instead of breaking anywhere.
+   (The name, the kicker and the icon: .read-cover-head / -title / -kicker / -icon in read.css.) */
+.shop-mag-cover { width: 5.25rem; }
+@media (width >= 40rem) { .shop-mag-cover { width: 6rem; } }
+@media (width < 22.5rem) { .shop-mag-cover { width: 4.5rem; } }
+:root:is([data-text="130"], [data-text="150"]) .shop-mag-row { flex-direction: column; gap: 1.25rem; }
+
 /* ---------- Subscription switch (native radios, styled as segmented pills) ---------- */
 .shop-controls { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 1rem 1.5rem; margin-bottom: 1.75rem; }
 .shop-seg-field { min-width: 0; margin: 0; padding: 0; border: 0; }
@@ -122,6 +134,34 @@
 .shop-table thead th.text-right { text-align: right; }
 .shop-table tbody th { font-weight: 500; color: var(--c-ink); text-align: left; }
 .shop-table tbody tr:last-child > * { border-bottom: 0; }
+/* The bulk-discount table at 130%+ or relaxed spacing: two equal columns whose words may break, so it
+   never runs past its card ("DESCUENTO", "$0.50 menos por libro" at 150%) — and on a phone at 150%
+   (below 360px at 130%), where two columns leave a word or two per line, each row is its quantity over
+   its discount, and the heading row is left to screen readers (the markup's roles keep it a table) */
+:root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .shop-bulk { table-layout: fixed; }
+:root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .shop-bulk :is(th, td) { overflow-wrap: anywhere; hyphens: auto; }
+@media (width < 30rem) {
+  :root[data-text="150"] .shop-bulk :is(tbody, tr, th, td) { display: block; }
+  :root[data-text="150"] .shop-bulk thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  :root[data-text="150"] .shop-bulk tr { padding-block: 0.5rem; border-bottom: 1px solid var(--c-line); }
+  :root[data-text="150"] .shop-bulk tr:first-child { padding-top: 0; }
+  :root[data-text="150"] .shop-bulk tr:last-child { padding-bottom: 0; border-bottom: 0; }
+  :root[data-text="150"] .shop-bulk :is(th, td) { padding: 0; border: 0; text-align: left; }
+}
+@media (width < 22.5rem) {
+  :root[data-text="130"] .shop-bulk :is(tbody, tr, th, td) { display: block; }
+  :root[data-text="130"] .shop-bulk thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  :root[data-text="130"] .shop-bulk tr { padding-block: 0.5rem; border-bottom: 1px solid var(--c-line); }
+  :root[data-text="130"] .shop-bulk tr:first-child { padding-top: 0; }
+  :root[data-text="130"] .shop-bulk tr:last-child { padding-bottom: 0; border-bottom: 0; }
+  :root[data-text="130"] .shop-bulk :is(th, td) { padding: 0; border: 0; text-align: left; }
+}
+
+/* Carry the Message, the four places a gift goes (Correctional facilities, …): two tiles to a row from
+   640px when each gets at least 14rem (the icon + a two-line label; at 150% text that is 336px), so at
+   larger text beside the "How it works" card (1024–1439px) they are one to a row instead of running
+   over each other */
+@media (width >= 40rem) { .shop-ctm-ways { grid-template-columns: repeat(auto-fit, minmax(min(100%, max(14rem, 45%)), 1fr)); } }
 
 /* ---------- Catalogs + customer service (one band) ----------
    Stacked below 1024px (catalogs, then customer service); from 1024px two equal columns, so customer
@@ -147,7 +187,15 @@
 @container (width >= 24rem) {
   .shop-help-list > li { display: grid; grid-template-columns: minmax(0, 13rem) auto; justify-content: start; align-items: center; column-gap: 1.5rem; }
 }
+/* (relaxed text spacing makes "+1 (570) 567-0431" about a quarter wider: three tiles only from 56rem) */
 @container (width >= 34rem) {
+  :root:not([data-spacing="relaxed"]) .shop-help-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  :root:not([data-spacing="relaxed"]) .shop-help-list > li { display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; padding: 0 1.25rem; border-top: 0; }
+  :root:not([data-spacing="relaxed"]) .shop-help-list > li + li { border-left: 1px solid var(--c-line); }
+  :root:not([data-spacing="relaxed"]) .shop-help-list > li:first-child { padding-left: 0; }
+  :root:not([data-spacing="relaxed"]) .shop-help-list > li:last-child { padding-right: 0; }
+}
+@container (width >= 56rem) {
   .shop-help-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .shop-help-list > li { display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; padding: 0 1.25rem; border-top: 0; }
   .shop-help-list > li + li { border-left: 1px solid var(--c-line); }

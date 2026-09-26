@@ -236,7 +236,7 @@
 @layer base {
   /* ---- relaxed text spacing (WCAG 1.4.12). Not inside the fixed-size printable posters and share
      frames (.mp-poster, .cm-frame: artwork drawn to exact print sizes, kept as designed) ---- */
-  :root[data-spacing="relaxed"] body, :root[data-spacing="relaxed"] body *:not(:is(.mp-poster, .cm-frame, .mp-poster *, .cm-frame *, .site-logo *)) {
+  :root[data-spacing="relaxed"] body, :root[data-spacing="relaxed"] body *:not(:is(.mp-poster, .cm-frame, .mp-poster *, .cm-frame *, .site-logo *, .cm-tile-num)) {
     line-height: 1.5 !important; letter-spacing: 0.12em !important; word-spacing: 0.16em !important; }
   :root[data-spacing="relaxed"] body :is(p, li, dd, dt, td, th, blockquote, figcaption, label, summary):not(:is(.mp-poster, .cm-frame) *) { line-height: 1.7 !important; }
   :root[data-spacing="relaxed"] :is(main, footer, .gvlv-panel) p:not(:last-child):not(:is(.mp-poster, .cm-frame) *) { margin-bottom: 2em !important; }
@@ -251,14 +251,18 @@
      mini-player (.media-mini, a one-row bar at the bottom of the screen) keep their own layout (the
      header is handled in areas/access.css, the player in areas/media.css). ---- */
   :root:is([data-text="115"], [data-text="130"], [data-text="150"], [data-spacing="relaxed"]) :is(main, footer, .gvlv-panel, #mobile-drawer) :not(.mp-poster, .cm-frame, :is(.mp-poster, .cm-frame) *) { overflow-wrap: break-word; }
-  /* e-mail addresses, phone links and web addresses have no spaces: they may break anywhere */
-  :root:is([data-text="115"], [data-text="130"], [data-text="150"], [data-spacing="relaxed"]) :is(main, footer) :is(a[href^="mailto:"], a[href^="tel:"], .break-all, code, kbd, .font-mono, [class*="-url"]):not(:is(.mp-poster, .cm-frame) *) { overflow-wrap: anywhere; }
+  /* e-mail addresses, phone links and web addresses have no spaces: they may break anywhere (important:
+     the "break-word" rule above has an id in its :is() and would win) */
+  :root:is([data-text="115"], [data-text="130"], [data-text="150"], [data-spacing="relaxed"]) :is(main, footer) :is(a[href^="mailto:"], a[href^="tel:"], .break-all, code, kbd, .font-mono, [class*="-url"]):not(:is(.mp-poster, .cm-frame) *) { overflow-wrap: anywhere !important; }
+  /* a button's label may wrap onto a second line, centred, instead of running out of its pill */
+  :root:is([data-text="115"], [data-text="130"], [data-text="150"], [data-spacing="relaxed"]) :is(main, footer, .gvlv-panel) :is(.btn, .btn-primary, .btn-secondary, .btn-ghost, .btn-lv, .btn-light, .btn-on-dark):not(:is(.mp-poster, .cm-frame) *) { white-space: normal; text-align: center; }
   /* a row with a text column that may shrink (min-w-0 / flex-1 / a paragraph or heading next to a
      picture, a date tile or a button): at 130%+ the text column never gets narrower than ~7
      characters — when it can't
-     have that much room beside its neighbours it moves onto its own line below them. */
+     have that much room beside its neighbours it moves onto its own line below them. A column that
+     needs more sets --text-col-min (a web address beside its Copy button: [--text-col-min:12em]). */
   :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) main :is(.flex:has(> :is(.min-w-0, p, h2, h3, h4)), :has(> .flex-1)):not(.flex-col, .flex-col-reverse, .chip-row, .chip-row-nowrap, .flex-nowrap, :is(.mp-poster, .cm-frame, .media-mini) *) { flex-wrap: wrap !important; }
-  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) main :is(.flex:not(.flex-col, .flex-col-reverse, .chip-row, .chip-row-nowrap, .flex-nowrap) > :is(.min-w-0, p, h2, h3, h4), .flex-1):not(svg, img, picture, video, :is(.mp-poster, .cm-frame, .media-mini) *) { flex: 1 1 0% !important; min-width: min(100%, 7em) !important; }
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) main :is(.flex:not(.flex-col, .flex-col-reverse, .chip-row, .chip-row-nowrap, .flex-nowrap) > :is(.min-w-0, p, h2, h3, h4), .flex-1):not(svg, img, picture, video, :is(.mp-poster, .cm-frame, .media-mini) *) { flex: 1 1 0% !important; min-width: min(100%, var(--text-col-min, 7em)) !important; }
   /* a grid with no column template of its own gets one flexible column (an implicit "auto" column
      is as wide as its widest word or picture, and would push past the screen). Not important:
      every grid-cols-* utility and area style still wins. */
@@ -270,11 +274,50 @@
     :root[data-text="150"] main :is(.grid-cols-2, .grid-cols-3, .grid-cols-4):not(:is(.mp-poster, .cm-frame) *) { grid-template-columns: minmax(0, 1fr) !important; }
     :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) main :is(p, li, dd, dt, h1, h2, h3, h4, td, th, figcaption, blockquote) { hyphens: auto; }
   }
+  /* 130%+ on a laptop screen, like the browser's own zoom (which would show the tablet layout there): a
+     card grid of four to six columns (lg:grid-cols-4/5/6) has two columns below 1440px at 150% (below
+     1280px at 130%), a three-column one (lg:grid-cols-3) below 1280px at 150% (the home page's Drive
+     thumbnails: three, areas/access.css) */
+  /* (a card that spans three or more of the columns, lg:col-span-3…6, spans the two instead: a span
+     wider than the grid would add an implicit column that takes the width from the others) */
+  @media (64rem <= width < 90rem) {
+    :root[data-text="150"] main :is(.lg\:grid-cols-4, .lg\:grid-cols-5, .lg\:grid-cols-6):not(.home-drive-grid, :is(.mp-poster, .cm-frame) *) { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+    :root[data-text="150"] main :is(.lg\:grid-cols-4, .lg\:grid-cols-5, .lg\:grid-cols-6):not(.home-drive-grid, :is(.mp-poster, .cm-frame) *) > :is([class*="lg:col-span-3"], [class*="lg:col-span-4"], [class*="lg:col-span-5"], [class*="lg:col-span-6"]) { grid-column: 1 / -1 !important; }
+  }
+  @media (64rem <= width < 80rem) {
+    :root[data-text="130"] main :is(.lg\:grid-cols-4, .lg\:grid-cols-5, .lg\:grid-cols-6):not(.home-drive-grid, :is(.mp-poster, .cm-frame) *) { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+    :root[data-text="130"] main :is(.lg\:grid-cols-4, .lg\:grid-cols-5, .lg\:grid-cols-6):not(.home-drive-grid, :is(.mp-poster, .cm-frame) *) > :is([class*="lg:col-span-3"], [class*="lg:col-span-4"], [class*="lg:col-span-5"], [class*="lg:col-span-6"]) { grid-column: 1 / -1 !important; }
+    :root[data-text="150"] main .lg\:grid-cols-3:not(:is(.mp-poster, .cm-frame) *) { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+    :root[data-text="150"] main .lg\:grid-cols-3:not(:is(.mp-poster, .cm-frame) *) > [class*="lg:col-span-3"] { grid-column: 1 / -1 !important; }
+  }
+  /* …and a main column + sidebar (layout-aside: a lesson, the events list, the shop's catalogs) at 150%
+     has the sidebar under the main column below 1280px, as below 1024px (its 20rem are 480px there,
+     which left the main column 400px); at 130% the sidebar is at most a third of the row */
+  @media (64rem <= width < 80rem) {
+    :root[data-text="130"] .layout-aside { grid-template-columns: minmax(0, 1fr) min(20rem, 34%) !important; }
+    :root[data-text="150"] .layout-aside { grid-template-columns: minmax(0, 1fr) !important; }
+  }
+  /* …and a six-column row of thumbnails (xl:grid-cols-5/6: the home page's newest documents) has three
+     columns below 1800px at 150% (below 1536px at 130%) */
+  @media (80rem <= width < 112.5rem) {
+    :root[data-text="150"] main :is(.xl\:grid-cols-5, .xl\:grid-cols-6):not(:is(.mp-poster, .cm-frame) *) { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+  }
+  @media (80rem <= width < 96rem) {
+    :root[data-text="130"] main :is(.xl\:grid-cols-5, .xl\:grid-cols-6):not(:is(.mp-poster, .cm-frame) *) { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+  }
+  /* (on wider screens only the short texts of cards and columns: headings, card titles, labels) */
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) main :is(h1, h2, h3, h4, dt, .h-card, .card-h, .eyebrow) { hyphens: auto; }
   :root:is([data-text="115"], [data-text="130"], [data-text="150"], [data-spacing="relaxed"]) :is(.truncate, [class*=":truncate"]):not(:is(.mp-poster, .cm-frame, .site-header, .media-mini) *) {
     overflow: visible !important; white-space: normal !important; text-overflow: clip !important; overflow-wrap: anywhere; }
   @media (width < 48rem) {
     :root:is([data-text="115"], [data-text="130"], [data-text="150"], [data-spacing="relaxed"]) :is(.whitespace-nowrap, .text-nowrap, .meta-row > *):not(:is(.mp-poster, .cm-frame, .site-header, .media-mini) *) { white-space: normal !important; }
   }
+  /* …and at 130%+ a date · place · time row wraps inside its parts on any screen (a meta-row clips what
+     runs past its edge: "10:00 a. m. CDT" beside a thumbnail was cut off at 1280px) */
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .meta-row > *:not(:is(.mp-poster, .cm-frame, .site-header, .media-mini) *) { white-space: normal !important; }
+  /* …as does a no-wrap run inside a text link (the end of a web address kept in one piece,
+     "AAGrapevine/es" on Share: it ran under the Copy button at 1280px) */
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) :is(main, footer) .tap-link :is(.whitespace-nowrap, .text-nowrap):not(:is(.mp-poster, .cm-frame) *) { white-space: normal !important; }
   :root:is([data-text="115"], [data-text="130"], [data-text="150"], [data-spacing="relaxed"]) :is(main, footer) :is(a, button, summary, .chip, .badge, [class*="badge-"]) { max-width: 100%; }
   /* …in a chip row too, from 1024px where it wraps instead of scrolling sideways: its items don't
      shrink (flex-shrink: 0), so each one is capped at the row's width and a long chip label wraps
@@ -282,6 +325,22 @@
   @media (width >= 64rem) {
     :root:is([data-text="115"], [data-text="130"], [data-text="150"], [data-spacing="relaxed"]) main .chip-row > * { max-width: 100%; }
     :root:is([data-text="115"], [data-text="130"], [data-text="150"], [data-spacing="relaxed"]) main .chip-row .chip { white-space: normal; }
+  }
+  /* …and a chip label wider than the row (a show's name with its count at 150% on a phone) wraps
+     inside the pill with the count kept beside it, never pushed out of the pill: the label is the
+     chip's own text (an anonymous flex item, which shrinks once a word may break) and the count
+     (the last small number: media-chip-n, cm-wn-count, cm-chip-count, a tabular-nums span) keeps
+     its width. Important: the chip is a utility (a later layer), the break-word rule has an id. */
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) main .chip:not(:is(.mp-poster, .cm-frame) *) { min-width: 0; white-space: normal !important; overflow-wrap: anywhere !important; border-radius: 1.5rem !important; }
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) main .chip > :is(.media-chip-n, .cm-wn-count, .cm-chip-count, .tabular-nums) { flex-shrink: 0; white-space: nowrap !important; overflow-wrap: normal !important; }
+  /* (below 360px at 150% a chip in a sideways-scrolling row is at most ~190px wide: its leading icon
+     goes and the row's end fade is 1rem, so a two-word label keeps whole words beside its count) */
+  @media (width < 22.5rem) {
+    :root[data-text="150"] main :is(.chip-row, .chip-row-nowrap) .chip > svg:first-child:not(:last-child) { display: none !important; }
+    :root[data-text="150"] main :is(.chip-row, .chip-row-nowrap) { padding-right: 1rem !important;
+      -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 1rem), transparent) !important; mask-image: linear-gradient(to right, #000 calc(100% - 1rem), transparent) !important; }
+    :root[data-text="150"] main :is(.chip-row, .chip-row-nowrap).is-scrolled {
+      -webkit-mask-image: linear-gradient(to right, transparent, #000 1rem, #000 calc(100% - 1rem), transparent) !important; mask-image: linear-gradient(to right, transparent, #000 1rem, #000 calc(100% - 1rem), transparent) !important; }
   }
   :root:is([data-text="115"], [data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .cm-menu-panel { min-width: min(14.5rem, calc(100vw - 2 * var(--gutter))); max-width: calc(100vw - 2 * var(--gutter)); }
   :root:is([data-text="115"], [data-text="130"], [data-text="150"], [data-spacing="relaxed"]) main select { max-width: 100%; }
@@ -405,11 +464,15 @@
    <p class="meta-row text-xs text-faint"><time …>Sep 24</time><span>Grapevine</span><span>7 p.m.</span></p>
    The "·" separators are drawn by CSS and are never at the start of a line: every item carries
    its dot on the left, and the row is shifted left by one dot width and clipped there, so an item
-   that starts a line has its dot in the hidden strip. Items never break inside. Screen readers
-   skip the dots. Only for rows of short, NON-focusable items (a row with links: gap only, no dots). */
+   that starts a line has its dot in the hidden strip. Items don't break inside (except at larger
+   text, and an item marked whitespace-normal!): an item that does wrap has a hanging indent, so its
+   second line starts one dot width in — at the visible edge for the first item of a line, never in
+   the hidden strip. Screen readers skip the dots. Only for rows of short, NON-focusable items (a row
+   with links: gap only, no dots). */
 @utility meta-row { display: flex; flex-wrap: wrap; align-items: baseline; row-gap: 0.125rem;
   margin-left: -1.1em; clip-path: inset(-0.5rem -0.5rem -0.5rem 1.1em);
-  & > * { white-space: nowrap; }
+  & > * { white-space: nowrap; padding-left: 1.1em; text-indent: -1.1em; }
+  & > * *, & > *::before { text-indent: 0; }
   & > *::before { content: "·"; content: "·" / ""; display: inline-block; width: 1.1em; text-align: center; color: var(--c-faint); } }
 
 @utility input { @apply min-h-11 w-full rounded-xl border border-line bg-surface px-4 text-ink placeholder:text-faint focus:border-gv focus:ring-2 focus:ring-gv/30 focus:outline-none; }
@@ -788,6 +851,11 @@ main > :not(script, template, dialog, style):not(:has(~ :not(script, template, d
   html, body { background: #fff !important; }
   /* on paper the hero is a plain title: no buttons, and the block after it doesn't tuck into it */
   :is(.gv-hero, .page-hero) .hero-actions { display: none !important; }
+  /* …and no screen-only controls: the "On this page" chip row (cut off at the page edge, and its links
+     go nowhere on paper), the buttons and links that need JavaScript (data-js-only: Open settings,
+     Copy, Share, Present…; not the blocks: the Monthly hub prints its district report, .rp-app) and
+     action buttons (Print, filters) */
+  .page-nav, :is(button, a, summary)[data-js-only], button:is(.btn, .btn-primary, .btn-secondary, .btn-ghost, .btn-lv, .btn-light, .btn-on-dark, .chip) { display: none !important; }
   .page-overlap { margin-top: 0 !important; }
 }
 

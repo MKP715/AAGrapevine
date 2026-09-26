@@ -267,6 +267,10 @@
   box-shadow: 0 1px 2px rgb(0 0 0 / 0.08), 0 28px 50px -26px rgb(0 0 0 / 0.45);
   container-type: inline-size; font-family: var(--font-sans);
   -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  /* the artwork's own text spacing, whatever the page around it has: relaxed spacing (main.css) leaves
+     the frame out, but letter-, word-spacing and line-height are inherited from the card around it and
+     made the URL, "Scan to visit" and the footer lines run into each other (on paper too) */
+  letter-spacing: 0; word-spacing: 0; line-height: 1.5;
 }
 @media screen and (width >= 96rem) { .cm-frame { max-width: 38rem; } } /* bigger previews on wide screens */
 .cm-sheet { position: absolute; inset: 0; display: flex; flex-direction: column; }

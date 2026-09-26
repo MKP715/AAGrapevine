@@ -340,7 +340,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
               {% if s.spotify %}<li><a class="media-plat" href="{{ s.spotify }}" target="_blank" rel="noopener"><span class="media-plat-icon text-vine">{% icon "spotify", "size-4" %}</span>{{ "media.spotify" | t(lang) }}</a></li>{% endif %}
               {% if s.amazon %}<li><a class="media-plat" href="{{ s.amazon }}" target="_blank" rel="noopener"><span class="media-plat-icon text-gv">{% icon "music", "size-4" %}</span>{{ "media.amazon" | t(lang) }}</a></li>{% endif %}
               {% if s.web %}<li><a class="media-plat" href="{{ s.web }}" target="_blank" rel="noopener"><span class="media-plat-icon text-lv">{% icon "grapes", "size-4" %}</span>{{ "media.web_short" | t(lang) }}</a></li>{% endif %}
-              {% if s.feed %}<li><button type="button" class="media-plat" data-copy="{{ s.feed }}" title="{{ 'media.rss_help' | t(lang) }}" aria-label="{{ 'media.copy_rss' | t(lang) }}: {{ s.name }}"><span class="media-plat-icon text-lv">{% icon "rss", "size-4" %}</span>{{ "media.copy_rss" | t(lang) }}</button></li>{% endif %}
+              {% if s.feed %}<li data-js-only><button type="button" class="media-plat" data-copy="{{ s.feed }}" title="{{ 'media.rss_help' | t(lang) }}" aria-label="{{ 'media.copy_rss' | t(lang) }}: {{ s.name }}"><span class="media-plat-icon text-lv">{% icon "rss", "size-4" %}</span>{{ "media.copy_rss" | t(lang) }}</button></li>{% endif %}
             </ul>
           </div>
         </div>

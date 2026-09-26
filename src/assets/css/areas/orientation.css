@@ -41,6 +41,13 @@
 .o101-sheet-mini > .o101-sheet-mini-qr { width: 1.2rem; height: 1.2rem; justify-self: end; border-radius: 0.15rem; background:
   repeating-conic-gradient(var(--c-ink) 0 25%, transparent 0 50%) 0 0 / 0.3rem 0.3rem; opacity: 0.6; }
 
+/* "Before you start" (the trainers' checklist): two columns when each gets at least 14em of its text
+   (≈ 200px; at 150% text ≈ 300px) — by the list's own width, which beside the anonymity note from
+   1024px is narrow at larger text. Beside the note, at 130%+ the note is at most 45% of the row. */
+@media (width >= 40rem) { .o101-before-list { grid-template-columns: repeat(auto-fit, minmax(min(100%, max(14em, 45%)), 1fr)); } }
+@media (width >= 64rem) { :root:is([data-text="130"], [data-text="150"]) .o101-before { grid-template-columns: minmax(0, 1fr) minmax(0, min(24rem, 45%)); } }
+@media (width >= 96rem) { :root:is([data-text="130"], [data-text="150"]) .o101-before { grid-template-columns: minmax(0, 1fr) minmax(0, min(28rem, 45%)); } }
+
 /* The trainers' plan: numbered steps */
 .o101-plan { display: grid; gap: 1.25rem 2rem; }
 @media (width >= 40rem) { .o101-plan { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
@@ -69,9 +76,13 @@
   font-size: 0.875rem; font-weight: 600; color: var(--c-gv); text-decoration: none; }
 .o101-live--page .o101-live-link:hover { text-decoration: underline; }
 
-/* "Learn more" links: one column, two from 640px */
+/* "Learn more" links: one column, two when the lesson column is 34rem wide (≈ from 600px, and from
+   1024px beside the lesson list). By the column's own width (.o101-lesson is a size container: the
+   template's @container), not the screen's, so at 130%+ text the links stay one column while the
+   column is narrow: rem in a container query is the page's text size. Same step as the "Try this" |
+   live example pair above them (@min-[34rem]:grid-cols-2). */
 .o101-links { display: grid; gap: 0.25rem 1.5rem; }
-@media (width >= 40rem) { .o101-links { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.625rem 1.5rem; } }
+@container (width >= 34rem) { .o101-links { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.625rem 1.5rem; } }
 
 /* The lesson list beside the lesson */
 .o101-toc { display: grid; gap: 0.125rem; }

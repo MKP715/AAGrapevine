@@ -315,6 +315,131 @@ html:root.tts-bar-on {
   :root:is([data-text="130"], [data-text="150"]) .cm-dg-tools .card > .cm-dg-more > .grid:first-of-type { margin-top: 0; }
 }
 
+/* Footer at 130%+ below 1440px: the about blurb (with the e-mail and neta65.org buttons) gets a row of
+   its own and the four link groups share the row under it — two columns on phones and tablets, four
+   from 1024px at 130% (from 1280px at 150%). Five columns squeezed "Announcements" into its neighbour. */
+@media (width < 90rem) {
+  :root:is([data-text="130"], [data-text="150"]) .site-footer-main { grid-template-columns: minmax(0, 1fr); }
+  :root:is([data-text="130"], [data-text="150"]) .site-footer-groups { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (64rem <= width < 90rem) { :root[data-text="130"] .site-footer-groups { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (80rem <= width < 90rem) { :root[data-text="150"] .site-footer-groups { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+/* Meetings, Grapevine meetings near you: the weekday over its times (the time chips get the card's
+   width), and Directions | Details side by side only when both fit — else one per row, full width */
+:root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .cm-gvg-rows { grid-template-columns: minmax(0, 1fr); }
+:root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .cm-gvg-row { display: block; }
+:root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .cm-gvg-times { margin-top: 0.125rem; }
+:root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .cm-gvg-btns { display: flex; flex-wrap: wrap; }
+:root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .cm-gvg-btns > a { flex: 1 1 auto; width: auto; }
+:root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .cm-gvg-top { flex-wrap: wrap; }
+/* Watch: on phones at 130%+ a video card is the picture over its text again (beside the text, a 40%-wide
+   thumbnail cut off its duration and "Short" labels) */
+@media (width < 40rem) {
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .vid-card { flex-direction: column; align-items: stretch; }
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .vid-card > .vid-thumb { width: 100%; }
+}
+/* Library: a card's main button ("Preview" / "Vista previa") may wrap its label, the row of action
+   buttons wraps instead of losing its last button at the card's edge, and the date · pages · size line
+   wraps inside its parts */
+:root:is([data-text="115"], [data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .lib-btn-main { flex: 1 1 auto; white-space: normal; min-width: 0; border-radius: 1.5rem; }
+:root:is([data-text="115"], [data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .lib-actions { flex-wrap: wrap; }
+:root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .lib-meta > * { white-space: normal; }
+/* Events: a card's buttons (Add to calendar, Details, Flyer) may wrap their label */
+:root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .cm-ev-btns > * { flex-shrink: 1; min-width: 0; max-width: 100%; }
+:root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .cm-ev-btns > a { white-space: normal; }
+/* Share your story: a magazine's deadline card — "Calendar (document)" and "Full calendar" go under the
+   magazine's name instead of squeezing beside it (a column: the row's text-column rule would keep them
+   beside it) */
+:root:is([data-text="130"], [data-text="150"]) .ct-cal-head { flex-direction: column; align-items: flex-start; }
+@media (width < 30rem) { :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .ct-cal-icon { display: none; } }
+/* GVR / RLV 101: a keyboard key's meaning goes under the keys when both don't fit on one line; the "live"
+   card's link may break a long word */
+:root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .o101-keys > div { flex-wrap: wrap; }
+:root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .o101-live-link { overflow-wrap: anywhere; }
+/* Home "From the Drive": three cards to a row (not six) at 130%+ from 1024 to 1439px — six left
+   "DOCUMENT" and the titles a sliver */
+@media (64rem <= width < 90rem) {
+  :root:is([data-text="130"], [data-text="150"]) .home-drive-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+/* Buttons at 130%+ (or relaxed spacing): a label on two or three lines makes a rounded box, not a
+   blob (a one-line button still looks like a pill: 1.5rem is at least half its height), and on phones a
+   long word in a label is hyphenated in the page language instead of running out of the button */
+:root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) :is(main, footer, .gvlv-panel) :is(.btn, .btn-primary, .btn-secondary, .btn-ghost, .btn-lv, .btn-light, .btn-on-dark):not(:is(.mp-poster, .cm-frame) *) { border-radius: 1.5rem; }
+@media (width < 40rem) {
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) :is(main, footer, .gvlv-panel) :is(.btn, .btn-primary, .btn-secondary, .btn-ghost, .btn-lv, .btn-light, .btn-on-dark, .chip):not(:is(.mp-poster, .cm-frame) *) { hyphens: auto; }
+}
+/* …and on the narrowest phones (below 480px) a word too long for its button breaks inside the pill
+   rather than running out of it (the hyphenation dictionary is not on every device) */
+@media (width < 30rem) {
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) :is(main, footer, .gvlv-panel) :is(.btn, .btn-primary, .btn-secondary, .btn-ghost, .btn-lv, .btn-light, .btn-on-dark):not(:is(.mp-poster, .cm-frame) *),
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) :is(main, footer, .gvlv-panel) :is(.btn, .btn-primary, .btn-secondary, .btn-ghost, .btn-lv, .btn-light, .btn-on-dark) * { overflow-wrap: anywhere; }
+}
+/* …as does a long word next to an icon (an icon + text row, a link with an icon, a report section's
+   name) — the text can't move under the icon, so it breaks rather than running past the edge */
+@media (width < 30rem) {
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) main :is(p.flex, li.flex, summary.flex, dd, a.inline-flex, span.inline-flex, .rp-sec-name, .cm-gvg-where):not(:is(.mp-poster, .cm-frame) *),
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) main :is(p.flex, li.flex, summary.flex, a.inline-flex, span.inline-flex, .rp-sec-name) > :not(svg) { overflow-wrap: anywhere; }
+}
+/* Pairs of buttons side by side (the month poster's Share | Print, the district report's WhatsApp |
+   E-mail, Word | Text): one per row on phones at 150% (below 480px at 130% or relaxed spacing) */
+@media (width < 40rem) {
+  :root[data-text="150"] :is(.mp-actions, .rp-act-row) { grid-template-columns: minmax(0, 1fr); }
+}
+@media (width < 30rem) {
+  :root:is([data-text="130"], [data-spacing="relaxed"]) :is(.mp-actions, .rp-act-row) { grid-template-columns: minmax(0, 1fr); }
+}
+/* About "On this site" counters: two to a row on tablets at 130%+, three (not six) from 1024 to 1799px
+   at 115%+ */
+@media (40rem <= width < 64rem) {
+  :root:is([data-text="130"], [data-text="150"]) .about-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (64rem <= width < 112.5rem) {
+  :root:is([data-text="115"], [data-text="130"], [data-text="150"]) .about-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+/* Monthly toolkit "10 ways to put an issue to work": two to a row at 130%+ (five left a word or two per line) */
+@media (width >= 40rem) { :root:is([data-text="130"], [data-text="150"]) .mp-ways { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+/* Listen, the big player at 150%: the −15 · play · +30 buttons grow less than the text (2.25rem and 3rem,
+   0.25rem apart: 192px), and below 360px they keep their 100% sizes (44px and 64px), so the three fit
+   inside the player — beside the episode art at 768px and on a phone the +30 crossed its edge */
+:root[data-text="150"] .media-player .media-skip { width: 2.25rem; height: 2.25rem; }
+:root[data-text="150"] .media-player .media-play { width: 3rem; height: 3rem; }
+:root[data-text="150"] .media-player :has(> .media-play) { gap: 0.25rem; }
+@media (width < 22.5rem) {
+  :root[data-text="150"] .media-player .media-skip { width: 44px; height: 44px; }
+  :root[data-text="150"] .media-player .media-play { width: 64px; height: 64px; }
+}
+/* Events: with relaxed spacing a date range ("25–27") in its 5rem tile is a little smaller (1.35rem, not
+   1.5rem), so the spaced-out figures stay inside the tile */
+@media (width >= 40rem) { :root[data-spacing="relaxed"] .cm-tile-range .cm-tile-day { font-size: 1.35rem; } }
+/* Committee pages' tabs (Meetings · Events · … · Announcements) below 360px at 150%: the tab icons go, so
+   the current tab's name fits in its pill inside the row that scrolls sideways */
+@media (width < 22.5rem) { :root[data-text="150"] .cm-subnav-link > svg { display: none; } }
+/* Home Instagram tiles: the date on the picture may wrap onto two lines; from 1024 to 1279px, six tiles to
+   a row, the account's name ("Grapevine", "La Viña") is left to screen readers — the Instagram icon stays
+   (beside the date it ran past the tile's edge). In the base layer with !important: main.css un-truncates
+   .truncate at larger text the same way, and its one-line, overflow-hidden box must win here. */
+:root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .home-ig-meta time { flex-shrink: 1; min-width: 0; text-align: right; }
+@layer base {
+  @media (64rem <= width < 80rem) {
+    :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .home-ig-meta > span > .truncate {
+      position: absolute !important; width: 1px !important; height: 1px !important; margin: -1px !important; overflow: hidden !important;
+      clip-path: inset(50%) !important; white-space: nowrap !important; }
+  }
+}
+/* Home magazine columns: the name ("Grapevine", "La Viña") and the kicker never break inside a word next
+   to the floated cover — a word that doesn't fit beside it moves below it — and the name is at most
+   10% of the column's width (.home-mag-head is a size container: home.css) */
+:root:is([data-text="115"], [data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .home-mag-head :is(h3, p) { overflow-wrap: normal; }
+:root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .home-mag-head h3 { font-size: min(2.6rem, 10cqi); }
+/* Shop: "20 days left" may wrap; a catalog's thumbnail is narrower on phones (its text gets the room);
+   at 150% below 1280px the catalogs and customer service are stacked (as below 1024px), so the catalog
+   covers keep a readable width */
+:root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .shop-days { white-space: normal; }
+@media (64rem <= width < 80rem) { :root[data-text="150"] .shop-cat-help { grid-template-columns: minmax(0, 1fr); } }
+@media (width < 40rem) {
+  :root:is([data-text="130"], [data-text="150"], [data-spacing="relaxed"]) .shop-cat-thumb { width: 4.5rem; }
+}
+
 /* ------------------------------------------------------------------ */
 /*  /accessibility/ — "ax-"                                            */
 /* ------------------------------------------------------------------ */

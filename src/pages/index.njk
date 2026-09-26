@@ -938,7 +938,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
     {% call ui.sectionHead("home.drive_title" | t(L), "home.drive_sub" | t(L), "/portfolio/" | lurl(L), "home.drive_all" | t(L), "folder-open", { eyebrow: "home.drive_eyebrow" | t(L), tone: "text-vine", id: "drive-title", lang: L }) %}
     <a href="{{ '/photos/' | lurl(L) }}" class="btn-ghost btn-sm">{% icon "images", "size-4" %} {{ "nav.photos" | t(L) }}</a>
     {% endcall %}
-    <ul class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6" role="list">
+    <ul class="home-drive-grid grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6" role="list">
       {% for f in driveItems %}
       {%- set pic = f | homeImage -%}
       {%- set isPhoto = f.kind == "photo" or (f.extra and f.extra.is_image) -%}

@@ -280,7 +280,7 @@ pageScripts: ["/assets/js/community.js"]
           <li class="flex items-center gap-3 px-5 py-2">
             <span class="grid size-9 shrink-0 place-items-center rounded-lg bg-lv-soft text-lv">{% icon "rss", "size-4" %}</span>
             <a class="tap-link min-w-0 flex-1 text-sm font-semibold text-ink no-underline hover:text-gv" href="{{ f.href }}" hreflang="{{ f.hl }}">{{ f.label | t(lang) }}</a>
-            <button type="button" class="grid size-11 shrink-0 place-items-center rounded-full text-muted hover:bg-surface-2 hover:text-gv" data-copy="{{ f.href }}" aria-label="{{ 'community.sub.copy_rss' | t(lang) }} — {{ f.label | t(lang) }}" title="{{ 'community.sub.copy_rss' | t(lang) }}">{% icon "copy", "size-4" %}</button>
+            <button type="button" class="grid size-11 shrink-0 place-items-center rounded-full text-muted hover:bg-surface-2 hover:text-gv" data-js-only data-copy="{{ f.href }}" aria-label="{{ 'community.sub.copy_rss' | t(lang) }} — {{ f.label | t(lang) }}" title="{{ 'community.sub.copy_rss' | t(lang) }}">{% icon "copy", "size-4" %}</button>
           </li>
           {% endfor %}
           <li class="px-5 pb-2.5 pt-0 text-xs leading-relaxed text-muted">{{ "community.sub.rss_help" | t(lang) }}</li>
@@ -290,7 +290,7 @@ pageScripts: ["/assets/js/community.js"]
               <a class="tap-link block text-sm font-semibold text-ink no-underline hover:text-gv" href="{{ ics | cmWebcal }}">{{ "community.sub.ics" | t(lang) }}</a>
               <span class="block text-xs leading-relaxed text-muted">{{ "community.sub.ics_help" | t(lang) }}</span>
             </span>
-            <button type="button" class="grid size-11 shrink-0 place-items-center rounded-full text-muted hover:bg-surface-2 hover:text-gv" data-copy="{{ ics }}" aria-label="{{ 'community.sub.copy_ics' | t(lang) }}" title="{{ 'community.sub.copy_ics' | t(lang) }}">{% icon "copy", "size-4" %}</button>
+            <button type="button" class="grid size-11 shrink-0 place-items-center rounded-full text-muted hover:bg-surface-2 hover:text-gv" data-js-only data-copy="{{ ics }}" aria-label="{{ 'community.sub.copy_ics' | t(lang) }}" title="{{ 'community.sub.copy_ics' | t(lang) }}">{% icon "copy", "size-4" %}</button>
           </li>
           <li class="flex items-center gap-3 px-5 py-2">
             <span class="grid size-9 shrink-0 place-items-center rounded-lg bg-gv-soft text-gv">{% icon "newspaper", "size-4" %}</span>

@@ -144,7 +144,8 @@ story_note:
 
 # A pointer to the representatives' own guides (Grapevine's GVR Workbook, La Viña's RLV manual), in
 # our own words — never their text. The Monthly toolkit links to the documents themselves (their
-# copies in the Library, data/site/pdfs.json: eleventy/filters/monthly.js repGuides).
+# copies in the Library, data/site/pdfs.json: eleventy/filters/monthly.js repGuides) and to the official
+# GVR / RLV resource pages (config/site.yml links.gvr_resources / links.rlv_resources).
 guides:
   en: "Serving as your group's GVR or RLV? The official guides for representatives explain the job in detail."
   es: "¿Te toca servir como RLV o GVR de tu grupo? Las guías oficiales para representantes explican el servicio con detalle."

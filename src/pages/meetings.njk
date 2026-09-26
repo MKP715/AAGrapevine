@@ -233,7 +233,7 @@ pageScripts: ["/assets/js/committee.js"]
       <p class="mt-2 max-w-[65ch] leading-relaxed text-muted">{{ "committee.meeting.contact_text" | t(lang) }}</p>
       <div class="mt-auto flex flex-wrap gap-2.5 pt-5">
         <a class="btn-primary" href="{{ (m.chair_email or site.contact_email) | mailto('committee.meeting.mail_subject' | t(lang)) }}">{% icon "mail", "size-4" %} {{ "committee.meeting.write_chair" | t(lang) }}</a>
-        <button type="button" class="btn-secondary max-w-full" data-js-only data-copy="{{ m.chair_email or site.contact_email }}">{% icon "copy", "size-4" %} <span class="truncate">{{ m.chair_email or site.contact_email }}</span></button>
+        <button type="button" class="btn-secondary max-w-full" data-js-only data-copy="{{ m.chair_email or site.contact_email }}">{% icon "copy", "size-4 shrink-0" %} <span class="min-w-0 truncate">{{ (m.chair_email or site.contact_email) | replace("@", "@<wbr>") | safe }}</span></button>
         {#- without JavaScript: the address as text, to select and copy -#}
         <span class="self-center font-mono text-sm text-ink select-all break-all" data-nojs-only>{{ m.chair_email or site.contact_email }}</span>
       </div>

@@ -63,9 +63,9 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
 {%- set restRows = ed.upcoming | rejectattr("isNext") -%}
 {#- @container: the rows below the next deadline run in two columns when the card is wide -#}
 <div class="card @container flex flex-col overflow-hidden {{ 'read-accent-lv' if isLv else 'read-accent-gv' }}">
-  <div class="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-b border-line px-5 py-4 sm:px-6">
+  <div class="ct-cal-head flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-b border-line px-5 py-4 sm:px-6">
     <h3 class="flex items-center gap-2 font-display text-xl font-semibold">
-      <span class="grid size-9 place-items-center rounded-xl {{ 'bg-lv-soft text-lv' if isLv else 'bg-gv-soft text-gv' }}">{% icon "grapes", "size-5" %}</span>
+      <span class="ct-cal-icon grid size-9 place-items-center rounded-xl {{ 'bg-lv-soft text-lv' if isLv else 'bg-gv-soft text-gv' }}">{% icon "grapes", "size-5" %}</span>
       {{ "La Viña" if isLv else "Grapevine" }}
     </h3>
     <p class="flex flex-wrap items-center gap-x-4 text-sm font-semibold {{ 'text-lv' if isLv else 'text-gv' }}">
@@ -196,7 +196,7 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
         <p class="text-xs font-semibold uppercase tracking-wider text-muted">{{ "read.contrib.by_email" | t(lang) }}</p>
         <div class="mt-1 flex items-center justify-between gap-2">
           <a class="link tap-link min-w-0 break-all" href="mailto:{{ email }}">{{ email }}</a>
-          <button type="button" class="btn-ghost btn-sm -my-1 min-w-11 shrink-0 px-2.5!" data-copy="{{ email }}" aria-label="{{ 'common.copy' | t(lang) }}: {{ email }}">{% icon "copy", "size-4" %}</button>
+          <button type="button" class="btn-ghost btn-sm -my-1 min-w-11 shrink-0 px-2.5!" data-js-only data-copy="{{ email }}" aria-label="{{ 'common.copy' | t(lang) }}: {{ email }}">{% icon "copy", "size-4" %}</button>
         </div>
       </dd>
     </div>
@@ -206,7 +206,7 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
         <p class="text-xs font-semibold uppercase tracking-wider text-muted">{{ "read.contrib.by_mail" | t(lang) }}</p>
         <div class="mt-1 flex items-start justify-between gap-2">
           <address class="min-w-0 not-italic text-ink">{{ mail }}</address>
-          <button type="button" class="btn-ghost btn-sm -my-1 min-w-11 shrink-0 px-2.5!" data-copy="{{ mail }}" aria-label="{{ 'common.copy' | t(lang) }}: {{ mail }}">{% icon "copy", "size-4" %}</button>
+          <button type="button" class="btn-ghost btn-sm -my-1 min-w-11 shrink-0 px-2.5!" data-js-only data-copy="{{ mail }}" aria-label="{{ 'common.copy' | t(lang) }}: {{ mail }}">{% icon "copy", "size-4" %}</button>
         </div>
       </dd>
     </div>
@@ -282,7 +282,7 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
     <p class="mt-1 text-sm leading-relaxed text-muted">{{ "community.rec.diy_text" | t(lang, {formats: (d.formats | join(orWord)) or ("WAV" ~ orWord ~ "MP3")}) }}</p>
     <div class="mt-2 flex items-center justify-start gap-2">
       <a class="link tap-link min-w-0 break-all" href="mailto:{{ d.email }}">{{ d.email }}</a>
-      <button type="button" class="btn-ghost btn-sm -my-1 min-w-11 shrink-0 px-2.5!" data-copy="{{ d.email }}" aria-label="{{ 'common.copy' | t(lang) }}: {{ d.email }}">{% icon "copy", "size-4" %}</button>
+      <button type="button" class="btn-ghost btn-sm -my-1 min-w-11 shrink-0 px-2.5!" data-js-only data-copy="{{ d.email }}" aria-label="{{ 'common.copy' | t(lang) }}: {{ d.email }}">{% icon "copy", "size-4" %}</button>
     </div>
   </div>
   {% endif %}
