@@ -153,12 +153,16 @@
     "es": "Publicaciones recientes de LV y GV"
   },
   "nav.about": {
-    "en": "About",
-    "es": "Acerca de"
+    "en": "About us",
+    "es": "Quiénes somos"
   },
   "nav.digest": {
     "en": "Monthly digest",
     "es": "Resumen mensual"
+  },
+  "nav.digest_desc": {
+    "en": "What's new each month — by e-mail or WhatsApp",
+    "es": "Las novedades de cada mes, por correo o WhatsApp"
   },
   "nav.share": {
     "en": "QR codes & posters",

@@ -305,7 +305,7 @@
 /* Poster */
 .cm-p-band {
   display: grid; grid-template-columns: auto 1fr; align-items: center; column-gap: 4cqw; row-gap: 3cqw;
-  padding: 5.5cqw 7cqw 5cqw; color: #fff;
+  padding: 5cqw 7cqw 4.5cqw; color: #fff;
   background: radial-gradient(120% 140% at 100% 0%, #0a5fa8 0%, #0b3f73 45%, #0f1730 100%);
 }
 .cm-p-logo { display: inline-flex; border-radius: 1.6cqw; background: #fff; padding: 1.2cqw 1.8cqw; }
@@ -314,17 +314,27 @@
 .cm-p-title { grid-column: 1 / -1; font-family: var(--font-display); font-size: 8.6cqw; font-weight: 600; line-height: 1; letter-spacing: -0.01em; white-space: nowrap; }
 .cm-p-title em, .cm-t-title em { font-style: italic; font-weight: 500; }
 .cm-p-title em { color: #f7b27c; }
-.cm-p-main { flex: 1; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: space-evenly; gap: 1.8cqw; padding: 4cqw 8cqw 2.5cqw; text-align: center; }
+.cm-p-main { flex: 1; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: space-evenly; gap: 1.8cqw; padding: 3.5cqw 8cqw 2.5cqw; text-align: center; }
 .cm-p-head { max-width: 80cqw; font-family: var(--font-display); font-size: 4.9cqw; font-weight: 600; line-height: 1.15; color: var(--pk-ink); text-wrap: balance; }
 .cm-p-alt { color: var(--pk-amber); font-style: italic; }
 .cm-p-main .cm-p-alt { font-size: 4cqw; }
 .cm-p-sub { max-width: 72cqw; font-size: 2.7cqw; line-height: 1.45; color: var(--pk-muted); text-wrap: balance; }
 .cm-p-qrwrap { display: flex; flex-direction: column; align-items: center; gap: 1.3cqw; }
-.cm-p-qr { display: block; width: 34cqw; height: 34cqw; padding: 1.8cqw; border: 0.5cqw solid var(--pk-line); border-radius: 3cqw; background: #fff; }
-.cm-p-scan { font-size: 2.7cqw; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--pk-blue); }
+/* above the code: the app icon beside "Scan to visit" and "Also works as an app" (an <img>, so it prints) */
+.cm-p-app { display: flex; align-items: center; gap: 2cqw; text-align: left; }
+.cm-p-app > img { flex-shrink: 0; width: 7.5cqw; height: 7.5cqw; }
+.cm-p-app > span { display: flex; flex-direction: column; gap: 0.3cqw; }
+.cm-p-qr { display: block; width: 31.5cqw; height: 31.5cqw; padding: 1.7cqw; border: 0.5cqw solid var(--pk-line); border-radius: 3cqw; background: #fff; }
+.cm-p-scan { font-size: 2.7cqw; font-weight: 700; line-height: 1.3; letter-spacing: 0.12em; text-transform: uppercase; color: var(--pk-blue); }
+.cm-p-appnote { font-size: 2.4cqw; font-weight: 600; line-height: 1.3; color: var(--pk-muted); }
 .cm-p-url { font-size: 3.5cqw; font-weight: 700; color: var(--pk-ink); }
-.cm-p-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1cqw 4cqw; padding: 3cqw 7cqw; border-top: 0.4cqw solid var(--pk-line); font-size: 2.2cqw; color: var(--pk-muted); }
-.cm-p-daily { font-weight: 700; line-height: 1.4; color: var(--pk-ink); }
+/* foot: what and who on the left, "Questions?" + the committee's e-mail on the right */
+.cm-p-foot { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 1cqw 4cqw; padding: 3cqw 7cqw; border-top: 0.4cqw solid var(--pk-line); font-size: 2.2cqw; line-height: 1.4; color: var(--pk-muted); }
+.cm-p-who, .cm-p-ask { display: flex; flex-direction: column; gap: 0.4cqw; }
+.cm-p-ask { align-items: flex-end; text-align: right; }
+.cm-p-ask strong { font-size: 2.7cqw; font-weight: 700; color: var(--pk-ink); white-space: nowrap; }
+.cm-p-ask .cm-p-ico { color: var(--pk-blue); }
+.cm-p-daily { font-weight: 700; color: var(--pk-ink); }
 .cm-p-ico { width: 3.2cqw; height: 3.2cqw; margin-right: 0.6cqw; vertical-align: -0.8cqw; color: var(--pk-grape); }
 
 /* Table tent: two halves, the top one upside-down so both read upright once folded */
@@ -332,17 +342,24 @@
 .cm-t-flip { transform: rotate(180deg); }
 .cm-t-fold { position: relative; height: 0; border-top: 0.35cqw dashed #97a0ae; }
 .cm-t-fold > span { position: absolute; left: 50%; top: 0; transform: translate(-50%, -50%); padding: 0 2cqw; background: #fff; font-size: 1.9cqw; letter-spacing: 0.12em; text-transform: uppercase; color: #6b7280; white-space: nowrap; }
-.cm-t-qr { flex-shrink: 0; padding: 1.4cqw; border: 0.4cqw solid var(--pk-line); border-radius: 2.4cqw; background: #fff; }
+/* the code column (exactly as wide as the QR code): the app icon, centred, and "Also works as an app"
+   under it, above the code (an <img>, so it prints) */
+.cm-t-code { flex-shrink: 0; width: min-content; display: flex; flex-direction: column; align-items: center; gap: 1.6cqw; }
+.cm-t-app { display: flex; flex-direction: column; align-items: center; gap: 0.8cqw; font-size: 2cqw; font-weight: 600; line-height: 1.25; color: var(--pk-muted); text-align: center; text-wrap: balance; }
+.cm-t-app > img { width: 6.5cqw; height: 6.5cqw; }
+.cm-t-qr { padding: 1.4cqw; border: 0.4cqw solid var(--pk-line); border-radius: 2.4cqw; background: #fff; }
 .cm-t-qr svg { display: block; width: 29cqw; height: 29cqw; }
-.cm-t-text { display: flex; min-width: 0; flex-direction: column; gap: 1.4cqw; }
-.cm-t-top { display: flex; align-items: center; gap: 2cqw; font-size: 2.1cqw; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--pk-muted); }
+.cm-t-text { display: flex; min-width: 0; flex-direction: column; gap: 1.2cqw; }
+.cm-t-top { display: flex; align-items: center; gap: 2cqw; font-size: 2.1cqw; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--pk-muted); text-wrap: balance; }
 .cm-t-top img { height: 6cqw; width: auto; }
 .cm-t-title { font-family: var(--font-display); font-size: 7cqw; font-weight: 600; line-height: 1; color: var(--pk-navy); }
 .cm-t-title em { color: var(--pk-amber); }
-.cm-t-head { font-size: 3.1cqw; font-weight: 600; line-height: 1.3; color: var(--pk-ink); }
+.cm-t-head { font-size: 3.1cqw; font-weight: 600; line-height: 1.3; color: var(--pk-ink); text-wrap: balance; }
 .cm-t-head.cm-p-alt { font-size: 2.8cqw; font-weight: 500; }
 .cm-t-scan { font-size: 2.5cqw; color: var(--pk-blue); overflow-wrap: anywhere; }
 .cm-t-daily { font-size: 2.1cqw; font-weight: 600; color: var(--pk-muted); }
+.cm-t-ask { font-size: 2.1cqw; color: var(--pk-muted); }
+.cm-t-ask strong { color: var(--pk-ink); white-space: nowrap; }
 /* bilingual tent carries twice the words: tighten it */
 .cm-t-bi { gap: 4cqw; padding-block: 4cqw; }
 .cm-t-bi .cm-t-qr svg { width: 25cqw; height: 25cqw; }
@@ -351,6 +368,8 @@
 .cm-t-bi .cm-t-head { font-size: 2.6cqw; }
 .cm-t-bi .cm-t-head.cm-p-alt { font-size: 2.4cqw; }
 .cm-t-bi .cm-t-daily { display: none; }
+.cm-t-bi .cm-t-app { font-size: 1.8cqw; }
+.cm-t-bi .cm-t-app > img { width: 5.5cqw; height: 5.5cqw; }
 
 @page cm-letter { size: letter portrait; margin: 0.35in; }
 @media print {

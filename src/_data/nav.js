@@ -12,14 +12,18 @@ const nav = {
     { key: "nav.library", url: "/library/", icon: "library", page: "library" },
     { key: "nav.shop", url: "/shop/", icon: "shopping-bag", page: "shop", descKey: "nav.shop_desc" },
     {
-      // The representatives' pages first (the corner, the course for new ones, the monthly tools),
-      // then the pages for any member (share a story, read who got published). The header menu,
-      // the phone drawer and the footer all follow this order.
+      // The representatives' pages first (the corner, the course for new ones, the monthly tools:
+      // the toolkit and the digest that passes the month's news on), then the pages for any member
+      // (share a story, read who got published). The header menu, the phone drawer and the footer
+      // all follow this order.
       key: "nav.get_involved", icon: "hand-heart", children: [
         { key: "nav.gvr", url: "/gvr/", icon: "badge-check", page: "gvr", descKey: "nav.gvr_desc" },
         // GVR / RLV 101: six short sessions for new representatives (config/orientation.yml), with slides and a handout.
         { key: "nav.orientation", url: "/orientation/", icon: "sprout", page: "orientation", descKey: "nav.orientation_desc" },
         { key: "nav.monthly", url: "/monthly/", icon: "calendar-heart", page: "monthly", descKey: "nav.monthly_desc" },
+        // Monthly digest: last month's news and this month's dates, to paste into a WhatsApp group or
+        // send by e-mail (it was in the footer's "Stay updated" column).
+        { key: "nav.digest", url: "/digest/", icon: "newspaper", page: "digest", descKey: "nav.digest_desc" },
         { key: "nav.contribute", url: "/contribute/", icon: "pen-line", page: "contribute", descKey: "nav.contribute_desc" },
         { key: "nav.published", url: "/published/", icon: "award", page: "published", descKey: "nav.published_desc" },
       ],
@@ -38,12 +42,13 @@ const nav = {
       ],
     },
   ],
-  // Pages outside the header menus. group "stay" → the footer's "Stay updated" column (next to the
-  // RSS and calendar feeds); group "site" → the footer's bottom bar. The phone drawer lists them
-  // all under "More" (except Search, which has its own button there). `icon`: a Lucide name, or a
-  // local icon from src/_includes/icons (instagram).
+  // Pages outside the header menus. group "stay" → the footer's "Stay updated" column (after the
+  // official aagrapevine.org / aalavina.org sites, before the RSS and calendar feeds); group "site" →
+  // the footer's bottom bar (right side, with "Last updated"), except About, which is a button beside
+  // the e-mail and neta65.org ones under the footer's about blurb. The phone drawer lists them all
+  // under "More" (except Search, which has its own button there). `icon`: a Lucide name, or a local
+  // icon from src/_includes/icons (instagram).
   footer: [
-    { key: "nav.digest", url: "/digest/", page: "digest", icon: "newspaper", group: "stay" },
     // A media feed (like Listen / Watch), not a way to take part: footer + drawer "More", and linked
     // from the home page and /photos/.
     { key: "nav.instagram", url: "/instagram/", page: "instagram", icon: "instagram", group: "stay" },

@@ -11,7 +11,8 @@ pageScripts: ["/assets/js/community.js"]
 {% import "macros/ui.njk" as ui with context %}
 {#- QR codes & posters (the "Share the site" page, /share/): QR codes (generated at build from site.url — they update
     themselves if the site ever moves), a letter-size poster and a table tent
-    (screen previews double as the print layout), and ready-made messages. -#}
+    (screen previews double as the print layout), and ready-made messages. The app icon sits above
+    every QR code (the site installs as an app) and the posters carry the committee's e-mail. -#}
 {%- set other = lang | otherLang -%}
 {%- set urls = { en: '/' | siteUrl(site), es: '/es/' | siteUrl(site), bi: '/' | siteUrl(site) } -%}
 {%- set pageUrl = '/' | lurl(lang) | siteUrl(site) -%}
@@ -32,26 +33,42 @@ pageScripts: ["/assets/js/community.js"]
   {% if v == "bi" %}<p class="cm-p-head cm-p-alt" lang="es">{{ "community.share.p_head" | t("es") }}</p>
   {% else %}<p class="cm-p-sub" lang="{{ v }}">{{ "community.share.p_sub" | t(v) }}</p>{% endif %}
   <div class="cm-p-qrwrap">
+    {#- The app icon above the code says "this opens our site — which also installs as an app"; it is an
+        <img> (printed; a CSS background may be dropped by the print dialog) -#}
+    <p class="cm-p-app"><img src="/assets/img/app-icon-192.png" alt="" width="192" height="192"><span>
+      <span class="cm-p-scan">{{ pv("community.share.p_scan", v) }}{% if v == "bi" %} · <span lang="es">{{ "community.share.p_scan" | t("es") }}</span>{% endif %}</span>
+      <span class="cm-p-appnote">{{ pv("community.share.p_app", v) }}{% if v == "bi" %} · <span lang="es">{{ "community.share.p_app" | t("es") }}</span>{% endif %}</span>
+    </span></p>
     <svg class="cm-p-qr" role="img" lang="{{ lang }}" aria-label="{{ 'community.share.qr_alt' | t(lang, { url: u }) }}"><use href="#qr-sym-{{ 'es' if v == 'es' else 'en' }}"></use></svg>
-    <p class="cm-p-scan">{{ pv("community.share.p_scan", v) }}{% if v == "bi" %} · <span lang="es">{{ "community.share.p_scan" | t("es") }}</span>{% endif %}</p>
     <p class="cm-p-url">{{ u | cmShortUrl }}</p>
   </div>
 </div>
+{#- Foot: what the site is and who runs it on the left, the committee's e-mail on the right -#}
 <div class="cm-p-foot">
-  <span class="cm-p-daily">{% icon "grapes", "cm-p-ico" %} {{ pv("community.share.p_daily", v) }}{% if v == "bi" %}<br><span lang="es">{{ "community.share.p_daily" | t("es") }}</span>{% endif %}</span>
-  <span>{{ pv("community.share.p_footer", v) }} · {{ site.contact_email }}</span>
+  <span class="cm-p-who">
+    <span class="cm-p-daily">{% icon "grapes", "cm-p-ico" %} {{ pv("community.share.p_daily", v) }}{% if v == "bi" %}<br><span lang="es">{{ "community.share.p_daily" | t("es") }}</span>{% endif %}</span>
+    <span>{{ pv("community.share.p_footer", v) }}</span>
+  </span>
+  <span class="cm-p-ask">
+    <span>{{ pv("community.share.p_questions", v) }}{% if v == "bi" %} · <span lang="es">{{ "community.share.p_questions" | t("es") }}</span>{% endif %}</span>
+    <strong>{% icon "mail", "cm-p-ico" %} {{ site.contact_email }}</strong>
+  </span>
 </div>
 {% endmacro %}
 {% macro tentHalf(v, urls) %}
 {%- set u = urls[v] -%}
-<div class="cm-t-qr"><svg role="img" lang="{{ lang }}" aria-label="{{ 'community.share.qr_alt' | t(lang, { url: u }) }}"><use href="#qr-sym-{{ 'es' if v == 'es' else 'en' }}"></use></svg></div>
+<div class="cm-t-code">
+  <span class="cm-t-app"><img src="/assets/img/app-icon-192.png" alt="" width="192" height="192"><span>{{ pv("community.share.p_app", v) }}{% if v == "bi" %}<br><span lang="es">{{ "community.share.p_app" | t("es") }}</span>{% endif %}</span></span>
+  <div class="cm-t-qr"><svg role="img" lang="{{ lang }}" aria-label="{{ 'community.share.qr_alt' | t(lang, { url: u }) }}"><use href="#qr-sym-{{ 'es' if v == 'es' else 'en' }}"></use></svg></div>
+</div>
 <div class="cm-t-text">
   <span class="cm-t-top"><img src="/assets/img/logo-wide.png" alt="" width="128" height="63"> {{ pv("community.share.p_kicker", v) }}</span>
-  <span class="cm-t-title">Grapevine <em>&amp;</em> La Viña</span>
+  <span class="cm-t-title">Grapevine <em>&amp;</em> <span class="whitespace-nowrap">La Viña</span></span>
   <span class="cm-t-head">{{ pv("community.share.p_head", v) }}</span>
   {% if v == "bi" %}<span class="cm-t-head cm-p-alt" lang="es">{{ "community.share.p_head" | t("es") }}</span>{% endif %}
   <span class="cm-t-scan">{{ pv("community.share.p_scan", v) }}{% if v == "bi" %} · <span lang="es">{{ "community.share.p_scan" | t("es") }}</span>{% endif %} → <strong>{{ u | cmShortUrl }}</strong></span>
   <span class="cm-t-daily">{{ pv("community.share.p_daily", v) }}</span>
+  <span class="cm-t-ask">{{ pv("community.share.p_questions", v) }}{% if v == "bi" %} · <span lang="es">{{ "community.share.p_questions" | t("es") }}</span>{% endif %} <strong>{{ site.contact_email }}</strong></span>
 </div>
 {% endmacro %}
 
@@ -80,6 +97,7 @@ pageScripts: ["/assets/js/community.js"]
             <label class="cm-seg"><input type="radio" name="qr-lang" class="sr-only" :checked="qrLang === '{{ l }}'" @change="qrLang = '{{ l }}'" {% if l == lang %}checked{% endif %}><span>{{ ("community.share.qr_" + l) | t(lang) }}</span></label>
             {% endfor %}
           </div>
+          <p class="-mb-1.5 flex items-center gap-2.5 text-sm font-semibold text-ink"><img src="/assets/img/app-icon-192.png" alt="" width="192" height="192" class="size-9 shrink-0 rounded-[0.6rem]" loading="lazy">{{ "community.share.p_app" | t(lang) }}</p>
           {% for l in ["en", "es"] %}
           <div id="qr-{{ l }}" class="w-full max-w-[15rem] rounded-2xl bg-white p-3 shadow-[var(--shadow-lift)] ring-1 ring-line" x-show="qrLang === '{{ l }}'"{% if l != lang %} x-cloak{% endif %}>
             {{ urls[l] | qrSvg("community.share.qr_alt" | t(lang, { url: urls[l] }), "block h-auto w-full") | safe }}
