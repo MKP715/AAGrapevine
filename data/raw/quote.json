@@ -1,77 +1,89 @@
 {
  "source": "quote",
- "updated": "2026-09-25T16:01:10Z",
- "attempted": "2026-09-25T16:01:10Z",
+ "updated": "2026-09-26T10:52:57Z",
+ "attempted": "2026-09-26T10:52:57Z",
  "ok": true,
  "error": null,
  "stats": {
   "fetched": 2,
   "parsed": 2,
   "requests": 2,
-  "today": "2026-09-25",
-  "new": 0
+  "today": "2026-09-26",
+  "new": 2
  },
  "items": [
   {
-   "id": "quote:gv:2026-09-25",
+   "id": "quote:gv:2026-09-26",
    "source": "quote",
    "kind": "quote",
    "url": "https://www.aagrapevine.org/#quote-of-the-day",
-   "title": "Grapevine Daily Quote September 25",
+   "title": "Grapevine Daily Quote September 26",
    "summary": "",
    "lang": "en",
-   "date": "2026-09-25",
-   "first_seen": "2026-09-25T14:14:34Z",
-   "last_seen": "2026-09-25T14:14:34Z",
+   "date": "2026-09-26",
+   "first_seen": "2026-09-26T10:52:57Z",
+   "last_seen": "2026-09-26T10:52:57Z",
    "image": null,
    "tags": [],
    "category": null,
    "status": "ok",
    "extra": {
     "pub": "gv",
-    "text": "During his first AA years every AA has had plenty of the urge to revolt against authority. I know I did, and can’t claim to be over it yet. I’ve also served my time as a maker of rules, a regulator of other people’s conduct ... I can now look back upon such experiences with much amusement. And gratitude as well.",
-    "attribution": "AA Co-Founder, Bill W., September 1945",
-    "source": "“’Rules’ Dangerous but Unity Vital”, The Language of the Heart",
+    "text": "Spiritual growth and experiences are not limited to orthodox believers in a deity, any more than the disease of alcoholism is limited to skid-row bums.",
+    "attribution": "Casper, Wyo., September 1969",
+    "source": "“Is ‘Agnostic’ a Nasty Word?”, AA Grapevine",
     "source_lang": "en",
     "signup_url": "https://visitor.r20.constantcontact.com/manage/optin?v=001oGSL6wu1SRbyFplJFVXhsJmfiAwT9-c8UsT0fdV_rGWo0nkmyqyZNeqCr7gepkDIDRIYDlBrj6ttjM9WOm4EDDB8yJl8CthuzoJnKQ3qUlp0CvlcGgRGoOKITxJOzyVP1RIKrqxIgSXuW3sVMidP0w0o3wKFt4t9",
-    "date_label": "September 25",
+    "date_label": "September 26",
     "date_from_heading": true,
     "block": "teaser",
-    "node": "node-84215"
+    "node": "node-84216"
    }
   },
   {
-   "id": "quote:lv:2026-09-25",
+   "id": "quote:lv:2026-09-26",
    "source": "quote",
    "kind": "quote",
    "url": "https://www.aalavina.org/#quote-of-the-day",
-   "title": "Cita Diaria con La Viña Septiembre 25",
+   "title": "Cita Diaria con La Viña Septiembre 26",
    "summary": "",
    "lang": "es",
-   "date": "2026-09-25",
-   "first_seen": "2026-09-25T14:14:34Z",
-   "last_seen": "2026-09-25T14:14:34Z",
+   "date": "2026-09-26",
+   "first_seen": "2026-09-26T10:52:57Z",
+   "last_seen": "2026-09-26T10:52:57Z",
    "image": null,
    "tags": [],
    "category": null,
    "status": "ok",
    "extra": {
     "pub": "lv",
-    "text": "Mi nuevo amigo me preguntó cuándo había bebido por última vez, si había comido y si dormí bajo techo esa noche. Me contó su historia… Mis esperanzas se fortalecieron aún más; supe que había hallado una forma de vivir sin la bebida.",
-    "attribution": "“La novia de nadie”. MORENO VALLEY, CALIFORNIA, DICIEMBRE DE 1992",
-    "source": "I Am Responsible",
-    "source_lang": "en",
+    "text": "Alcohol en latín se dice spiritus y se usa la misma palabra para denominar la más sublime experiencia religiosa y el veneno más depravador. Por lo tanto, la fórmula útil será: spiritus contra spiritum.",
+    "attribution": "“La correspondencia de Bill W. con Carl Jung”. DR. C. G. JUNG, ENERO DE 1963",
+    "source": "El lenguaje del corazón",
+    "source_lang": "es",
     "signup_url": "https://visitor.r20.constantcontact.com/d.jsp?llr=bxlrwznab&p=oi&m=bxlrwznab&sit=kh8qe8aib&f=1296d075-37d3-4fbc-99e3-4c207bededf1",
-    "date_label": "25 de septiembre",
+    "date_label": "26 de septiembre",
     "date_from_heading": true,
     "block": "teaser",
-    "node": "node-84224"
+    "node": "node-84225"
    }
   }
  ],
  "first_harvest": "2026-09-25T14:14:34Z",
  "history": {
   "gv": [
+   {
+    "pub": "gv",
+    "lang": "en",
+    "date": "2026-09-26",
+    "heading": "Grapevine Daily Quote September 26",
+    "text": "Spiritual growth and experiences are not limited to orthodox believers in a deity, any more than the disease of alcoholism is limited to skid-row bums.",
+    "attribution": "Casper, Wyo., September 1969",
+    "source": "“Is ‘Agnostic’ a Nasty Word?”, AA Grapevine",
+    "source_lang": "en",
+    "url": "https://www.aagrapevine.org/#quote-of-the-day",
+    "signup_url": "https://visitor.r20.constantcontact.com/manage/optin?v=001oGSL6wu1SRbyFplJFVXhsJmfiAwT9-c8UsT0fdV_rGWo0nkmyqyZNeqCr7gepkDIDRIYDlBrj6ttjM9WOm4EDDB8yJl8CthuzoJnKQ3qUlp0CvlcGgRGoOKITxJOzyVP1RIKrqxIgSXuW3sVMidP0w0o3wKFt4t9"
+   },
    {
     "pub": "gv",
     "lang": "en",
@@ -86,6 +98,18 @@
    }
   ],
   "lv": [
+   {
+    "pub": "lv",
+    "lang": "es",
+    "date": "2026-09-26",
+    "heading": "Cita Diaria con La Viña Septiembre 26",
+    "text": "Alcohol en latín se dice spiritus y se usa la misma palabra para denominar la más sublime experiencia religiosa y el veneno más depravador. Por lo tanto, la fórmula útil será: spiritus contra spiritum.",
+    "attribution": "“La correspondencia de Bill W. con Carl Jung”. DR. C. G. JUNG, ENERO DE 1963",
+    "source": "El lenguaje del corazón",
+    "source_lang": "es",
+    "url": "https://www.aalavina.org/#quote-of-the-day",
+    "signup_url": "https://visitor.r20.constantcontact.com/d.jsp?llr=bxlrwznab&p=oi&m=bxlrwznab&sit=kh8qe8aib&f=1296d075-37d3-4fbc-99e3-4c207bededf1"
+   },
    {
     "pub": "lv",
     "lang": "es",

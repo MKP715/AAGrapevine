@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-25T16:01:11Z",
+ "updated": "2026-09-26T10:52:58Z",
  "fixture": false,
  "items": [
   {
@@ -32,6 +32,7 @@
     "body_md": "A Spanish-language workshop on writing your story for La Viña, hosted by Grupo Nueva Esperanza in Fort Worth. A NETA 65 Grapevine / La Viña workshop.",
     "slug": "2026-09-26-lv-writing-workshop-fort-worth",
     "file": "content/events/2026-09-26-lv-writing-workshop-fort-worth.md",
+    "confirmed": true,
     "own_i18n": {
      "title": {
       "es": "Taller de Escritura de La Viña — Fort Worth"
@@ -92,6 +93,7 @@
     "body_md": "Learn how to write your story for Grapevine and La Viña, and hear from members who have been published. Hosted by the Primary Purpose Group in Arlington.",
     "slug": "2026-10-03-gv-writing-workshop-arlington",
     "file": "content/events/2026-10-03-gv-writing-workshop-arlington.md",
+    "confirmed": true,
     "own_i18n": {
      "title": {
       "es": "Taller de Escritura de Grapevine (en inglés) — Arlington"
