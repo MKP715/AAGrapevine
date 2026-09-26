@@ -15,9 +15,12 @@
   border-radius: 2px;
 }
 /* One entry: icon bubble · text · thumbnail. From 640px the thumbnail has a FIXED 8rem slot
-   (left edges line up down the feed; an entry without a picture leaves it empty) and the text
-   column stops at 72ch, so on wide screens the thumbnail stays next to its text instead of
-   drifting to the far edge (justify-content: start). Phones: the thumbnail keeps its own width. */
+   (an entry without a picture leaves it empty) and the text column stops at 72ch, so in the
+   one-column layout (< 1280px) the thumbnail stays next to its text instead of drifting to the
+   far edge (justify-content: start). The pictures sit at the slot's right end: square, cover and
+   document pictures end where the video pictures do, so the feed has one straight right edge.
+   From 1280px, beside the side column(s), that edge is the timeline column's own edge (the slot
+   takes what the 72ch text leaves: .cm-wn-layout below). Phones: the thumbnail keeps its own width. */
 .cm-entry {
   display: grid; grid-template-columns: 2.5rem minmax(0, 1fr) auto; align-items: start; column-gap: 0.875rem;
   margin-inline: -0.75rem; padding: 0.75rem; border-radius: 0.9rem;
@@ -25,7 +28,7 @@
 }
 @media (width >= 40rem) {
   .cm-entry { grid-template-columns: 2.5rem minmax(0, 72ch) 8rem; justify-content: start; }
-  .cm-entry > .cm-thumb { justify-self: start; }
+  .cm-entry > .cm-thumb { justify-self: end; }
 }
 .cm-entry:hover, .cm-entry:focus-within { background: var(--c-surface); box-shadow: var(--shadow-card); }
 .cm-entry-icon { position: relative; z-index: 1; box-shadow: 0 0 0 4px var(--c-paper); }
@@ -81,16 +84,18 @@
   @media (width < 40rem) { :root:is([data-text="150"], [data-spacing="relaxed"]) main .cm-entry .flex > .meta-row.min-w-0 { flex-basis: 100% !important; } }
   @media (width < 24rem) { :root:is([data-text="115"], [data-text="130"]) main .cm-entry .flex > .meta-row.min-w-0 { flex-basis: 100% !important; } }
 }
-/* The filter bar (< 1536px): ONE line of chips (chip-row-nowrap) under the header, sticky only in
-   windows at least 40rem tall (a shorter window keeps all of its height for the feed). Entries and
-   day headings that get focus or a jump land below it (scroll-padding-top covers the header only). */
+/* The filter bar (until the three-column layout below): ONE line of chips (chip-row-nowrap) under
+   the header, sticky only in windows at least 40rem tall (a shorter window keeps all of its height
+   for the feed). Entries and day headings that get focus or a jump land below it
+   (scroll-padding-top covers the header only). */
 @media (height >= 40rem) { .cm-chipbar { position: sticky; top: var(--header-h); z-index: 20; } }
 :root:not(.js) .cm-chipbar { display: none; }
-/* On a desktop (mouse: no sideways swipe) every chip must fit on the one line: from 1024px the
-   icons go (the labels say it), and where the timeline is narrowest (1280–1439px, beside the
-   subscribe column) the counts go too. From 1536px the chips are a column with icons and counts. */
-@media (64rem <= width < 96rem) { .cm-chipbar .chip > svg { display: none; } }
-@media (80rem <= width < 90rem) { .cm-chipbar .cm-wn-count { display: none; } }
+/* On a desktop (mouse: no sideways swipe) every chip must fit on the one line: from 1024px the bar
+   shows the labels only — no icons, no counts (the day headings give the filtered counts) — and where
+   it is narrowest (1280–1439px, beside the subscribe column) the chips are a little slimmer; measured
+   in EN and ES. In three columns the chips are a list with icons and counts. */
+@media (width >= 64rem) { .cm-chipbar :is(.chip > svg, .cm-wn-count) { display: none; } }
+@media (80rem <= width < 90rem) { .cm-chipbar .cm-chips { gap: 0.375rem; } .cm-chipbar .chip { padding-inline: 0.625rem; } }
 .cm-wn-main .cm-entry, .cm-wn-main .cm-day-head { scroll-margin-top: 4.5rem; }
 /* The subscribe card, 768–1279px (under the timeline): two columns — title + e-mail | the feeds. */
 @media (width >= 48rem) and (width < 80rem) {
@@ -99,24 +104,46 @@
   .cm-wn-sub-mail { grid-column: 1; grid-row: 2; }
   .cm-wn-sub-list { grid-column: 2; grid-row: 1 / span 2; border-top: 0; border-left: 1px solid var(--c-line); }
 }
-/* Page layout (full width on desktop):
+/* Page layout — the site's container grid: the columns start and end at the container-page edges
+   (the hero's), with the site's gutters, and the timeline column is filled to its right edge (no
+   empty band beside it; from 1280px the entries' picture slot takes what the 72ch text leaves):
    < 1280px   one column — timeline, then the subscribe card (two columns inside from 768px);
-   ≥ 1280px   timeline + sticky subscribe column (sticky-aside-xl, 22rem — it fits a 720px-tall window);
-   ≥ 1536px   the filter chips become a sticky list on the left of the timeline, so the
-              timeline keeps a readable width on wide screens instead of one giant column. */
+   ≥ 1280px   timeline + sticky subscribe column (sticky-aside-xl) with layout-aside's 3rem gutter;
+              22rem, not layout-aside's 20rem: the card then fits a 720px-tall window (at 20rem it
+              wraps to more lines and has to scroll);
+   three columns when the page is at least 89.25rem wide (1536px at 100% text): the filter chips
+              (a sticky list) · the timeline · the subscribe column, so the timeline keeps a readable
+              width instead of one giant column. .cm-wn-main steps aside (display: contents) so the
+              three share ONE grid; the gutters are tracks of their own (3rem, as layout-sidebar and
+              layout-aside) so each side can have its own;
+   ≥ 104.5rem (1800px at 100%) the side columns take the site's wide-screen widths: the chips
+              layout-sidebar's 18rem + 3rem, the subscribe column layout-aside's 24rem + 4rem — at
+              1920px the timeline starts where /library/'s list does and ends where /events/'s does.
+   The three-column steps are container queries on the page wrapper (.cm-wn-page): rem there is the
+   READING text size, so at 130–150% text (fewer rems across) the page keeps the two-column layout
+   with the one-line filter bar instead of squeezing the timeline between two wide side columns. */
+.cm-wn-page { container-type: inline-size; }
 .cm-wn-layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2.5rem; }
-@media (width >= 80rem) { .cm-wn-layout { grid-template-columns: minmax(0, 1fr) 22rem; gap: 3rem; } }
-@media (width >= 96rem) {
-  .cm-wn-layout { grid-template-columns: minmax(0, 1fr) 22rem; gap: 3.5rem; }
-  .cm-wn-main { display: grid; grid-template-columns: 14rem minmax(0, 1fr); column-gap: 2.5rem; align-items: start; }
-  .cm-wn-main > .cm-chipbar { grid-column: 1; grid-row: 1; top: calc(var(--header-h) + 1.5rem); }
-  .cm-wn-main > .cm-wn-feed { grid-column: 2; grid-row: 1; }
+@media (width >= 80rem) {
+  .cm-wn-layout { grid-template-columns: minmax(0, 1fr) 22rem; gap: 3rem; }
+  .cm-entry { grid-template-columns: 2.5rem minmax(0, 72ch) minmax(8rem, 1fr); }
+}
+.cm-wn-filter-title { display: none; }
+@container (width >= 89.25rem) {
+  .cm-wn-layout { grid-template-columns: 14rem 3rem minmax(0, 1fr) 3rem 22rem; column-gap: 0; }
+  .cm-wn-main { display: contents; }
+  .cm-wn-main > .cm-chipbar { grid-column: 1; grid-row: 1; align-self: start; top: var(--sticky-top);
+    margin: 0; padding: 0; background: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .cm-wn-main > .cm-wn-feed { grid-column: 3; grid-row: 1; }
+  .cm-wn-layout > .cm-wn-aside { grid-column: 5; grid-row: 1; }
+  .cm-wn-filter-title { display: block; }
   .cm-chipbar .cm-chips { flex-direction: column; flex-wrap: nowrap; gap: 0.375rem; overflow: visible; margin: 0; padding: 0;
     -webkit-mask-image: none; mask-image: none; }
   .cm-chipbar .chip { width: 100%; }
-  .cm-chipbar .cm-wn-count { margin-left: auto; }
+  .cm-chipbar .chip > svg { display: block; }
+  .cm-chipbar .cm-wn-count { display: inline-grid; margin-left: auto; }
 }
-@media (width >= 112.5rem) { .cm-wn-main { grid-template-columns: 15rem minmax(0, 1fr); column-gap: 3rem; } }
+@container (width >= 104.5rem) { .cm-wn-layout { grid-template-columns: 18rem 3rem minmax(0, 1fr) 4rem 24rem; } }
 
 /* Hero action rows on the smallest phones (< 400px): a little less side padding on the
    buttons so a two-button row stays on ONE line and the hero keeps its standard height. */
@@ -347,9 +374,29 @@
 }
 @media (width >= 112.5rem) { .cm-st-layout { grid-template-columns: minmax(0, 1fr) 34rem; } }
 
+/* Open-source credits (the last section, "Built with open-source software"): one column; two when the
+   list is at least 48rem wide (its @container), filled column by column (--rows) so the list still
+   reads top to bottom. */
+.cm-st-credits { display: grid; grid-template-columns: minmax(0, 1fr); }
+.cm-st-credits > li + li { border-top: 1px solid var(--c-line); }
+@container (width >= 48rem) {
+  .cm-st-credits { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(var(--rows, 5), auto); grid-auto-flow: column; }
+  .cm-st-credits > li.cm-st-credit-c2top { border-top: 0; }
+  .cm-st-credits > li.cm-st-credit-c1 { border-right: 1px solid var(--c-line); }
+}
+
 /* ------------------------------------------------------------------ */
 /*  Record your story by phone (/contribute/#record)                    */
 /* ------------------------------------------------------------------ */
+/* The Grapevine + La Viña pairs of /contribute/ (the story lines, the theme deadlines): one column,
+   side by side — the same height, stretched by the grid (contribute.njk) — when their section is at
+   least 59.5rem wide. A container query on the section (.cm-pairs), so rem is the READING text size:
+   side by side from 1024px at 100% text (as lg:), from about 1330px at 130% and 1536px at 150%.
+   Narrower, side by side each card would be a phone's width in reading-size rems: very tall, with
+   a long empty stretch in the shorter one. */
+.cm-pairs { container-type: inline-size; }
+:is(.cm-rec-pair, .cm-dl-pair) { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.25rem; }
+@container (width >= 59.5rem) { :is(.cm-rec-pair, .cm-dl-pair) { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; } }
 /* The story line: ONE big tel: link (at least 64px tall, the number in large type) in the magazine's
    soft tone; the caption above the number uses the strong tone (small text on a soft fill). Full width
    on phones; from 640px only as wide as its content (a wide card never leaves the bar mostly empty). */

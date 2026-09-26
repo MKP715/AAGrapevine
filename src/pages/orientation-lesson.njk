@@ -11,11 +11,12 @@ eleventyComputed:
   title: "{{ (((orientation.lessons | o101Lesson(op.id)).title | o101Text(op.lang)) + ' · ' + ('nav.orientation' | t(op.lang))) | safe }}"
   description: "{{ ((orientation.lessons | o101Lesson(op.id)).summary | o101Text(op.lang)) | safe }}"
 ---
-{#- ONE lesson of "GVR / RLV 101" (/orientation/<id>/ × en/es; the hub is orientation.njk, the content
-    config/orientation.yml). Flow: hero (lesson n of 6) → the lesson (goal, key points, try this + the
-    live example from the site's data, learn more) with the lesson list beside it (sticky-aside) →
-    self-check (band; instant feedback, nothing sent — a lesson whose 3 answers are right is saved as
-    "done on this device" by orientation.js) → previous / next lesson. -#}
+{#- ONE session of "GVR / RLV 101" (/orientation/<id>/ × en/es; the hub is orientation.njk, the content
+    config/orientation.yml, whose data calls them `lessons` — on screen they are always "sessions").
+    Flow: hero (session n of 6) → the session (goal, key points, try this + the live example from the
+    site's data, learn more) with the session list beside it (sticky-aside) → quick review (band; instant
+    feedback, nothing sent — a session whose 3 answers are right is saved as "done on this device" by
+    orientation.js) → previous / next session. -#}
 {% import "macros/ui.njk" as ui with context %}
 {% import "macros/orientation.njk" as o with context %}
 {%- set O = orientation -%}
@@ -28,8 +29,8 @@ eleventyComputed:
 
 {% call ui.pageHero(lang, l.title | o101Text(lang), l.summary | o101Text(lang) | escape, l.icon, "orientation.lesson_eyebrow" | t(lang, { n: l.n, total: total })) %}
 <div class="hero-actions">
-  <a class="btn-light" href="{{ hub }}#lessons">{% icon "layout-grid", "size-4" %} {{ "orientation.all_lessons" | t(lang) }}</a>
-  <a class="btn-on-dark max-md:hidden" href="{{ hub }}?slides#lesson-{{ l.id }}" data-js-only>{% icon "presentation", "size-4" %} {{ "orientation.present_lesson" | t(lang) }}</a>
+  <a class="btn-light" href="{{ hub }}#sessions">{% icon "layout-grid", "size-4" %} {{ "orientation.all_lessons" | t(lang) }}</a>
+  <a class="btn-on-dark max-md:hidden" href="{{ hub }}?slides#session-{{ l.id }}" data-js-only>{% icon "presentation", "size-4" %} {{ "orientation.present_lesson" | t(lang) }}</a>
 </div>
 {% endcall %}
 
@@ -87,13 +88,13 @@ eleventyComputed:
       </section>
     </div>
 
-    {#- The six lessons: where you are, what's done (a short companion: sticky beside the lesson).
-        Below 1024px (with JavaScript) the list is folded behind "All 6 lessons", so it doesn't sit
-        between the lesson and its self-check; the hero's "See all lessons" and the previous / next
-        cards cover the way around. -#}
+    {#- The six sessions: where you are, what's done (a short companion: sticky beside the session).
+        Below 1024px (with JavaScript) the list is folded behind "All 6 sessions", so it doesn't sit
+        between the session and its review questions; the hero's "See all sessions" and the previous /
+        next cards cover the way around. -#}
     <div class="sticky-aside">
       <nav class="card card-pad" aria-labelledby="toc-title" data-o101-toc>
-        <h2 id="toc-title" class="card-h"><span>{% icon "graduation-cap", "size-5" %}</span>{{ "orientation.aside_title" | t(lang) }}</h2>
+        <h2 id="toc-title" class="card-h"><span>{% icon "sprout", "size-5" %}</span>{{ "orientation.aside_title" | t(lang) }}</h2>
         <p class="mt-1 text-sm text-muted" data-js-only data-o101-progress data-total="{{ total }}" data-t="{{ 'orientation.progress' | t(lang) }}" data-t-all="{{ 'orientation.progress_all' | t(lang) }}"><span data-o101-count>{{ "orientation.progress" | t(lang, { n: 0, total: total }) }}</span></p>
         <button type="button" class="btn-secondary btn-sm mt-3 w-full lg:hidden" data-js-only data-o101-toc-btn aria-expanded="false" aria-controls="o101-toc-list">{{ "orientation.toc_all" | t(lang, { n: total }) }} {% icon "chevron-down", "size-4 transition" %}</button>
         <ol id="o101-toc-list" class="o101-toc mt-4" role="list">
@@ -114,7 +115,7 @@ eleventyComputed:
   </div>
 </div>
 
-{#- ---------- Self-check ---------- -#}
+{#- ---------- Quick review (3 questions) ---------- -#}
 <section id="check" class="section section-band" aria-labelledby="check-title">
   <div class="container-page">
     {{ ui.sectionHead("orientation.check_title" | t(lang), "orientation.check_sub" | t(lang), "", "", "circle-help", { eyebrow: "orientation.check_eyebrow" | t(lang), tone: "text-vine", id: "check-title", lang: lang }) }}
@@ -151,7 +152,7 @@ eleventyComputed:
   </div>
 </section>
 
-{#- ---------- Previous / next lesson (closing block) ---------- -#}
+{#- ---------- Previous / next session (closing block) ---------- -#}
 <nav class="section container-page" aria-label="{{ 'orientation.prevnext_label' | t(lang) }}">
   <ul class="grid grid-cols-1 gap-5 sm:grid-cols-2" role="list">
     <li class="card card-link group relative flex items-center gap-4 p-5">

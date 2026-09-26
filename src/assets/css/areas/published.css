@@ -148,8 +148,16 @@
 }
 .pw-flag { display: inline-flex; align-items: center; gap: 0.3rem; }
 
-/* "Show all N stories" under a long group */
-.pw-showall { margin-top: 1.5rem; text-align: center; }
+/* "See more" under a group: "Show all N from our Area" / "Show 12 more", with "Showing 12 of 30" (or
+   the longer period it opens) under the button. JavaScript only (data-js-only). */
+.pw-showall { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; margin-top: 1.5rem; text-align: center; }
+.pw-showall[hidden] { display: none; }
+.pw-showall > .btn-secondary { max-width: 100%; white-space: normal; }
+.pw-showall-note { font-size: 0.8rem; line-height: 1.4; color: var(--c-muted); }
+.pw-showall-note:empty { display: none; }
+/* the default view's stories past the first 12 of a group: listed without JavaScript; with it
+   (html.js, set in <head>) hidden from the first paint, then published.js takes over */
+:root.js .pw-card[data-pw-over] { display: none; }
 
 /* ---------- empty state + nudge ---------- */
 .pw-empty {

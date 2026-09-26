@@ -29,13 +29,18 @@ pageScripts: ["/assets/js/committee.js"]
 {%- set m = site.meeting -%}
 {%- set di = db.status | cmDriveInfo(site) -%}
 
-{#- Badge per event group -#}
-{% macro groupBadge(ev) %}
-{%- if ev.committee %}<span class="badge-gv">{% icon "users", "size-3" %} {{ "committee.events.badge_committee" | t(lang) }}</span>
-{%- elif ev.category == "lv-calendar" %}<span class="badge-lv">{% icon "grapes", "size-3" %} {{ "committee.events.badge_lv" | t(lang) }}</span>
-{%- elif ev.category == "gv-calendar" or ev.group == "calendar" %}<span class="badge-gv">{% icon "grapes", "size-3" %} {{ "committee.events.badge_gv" | t(lang) }}</span>
-{%- else %}<span class="badge-vine">{% icon "map-pin", "size-3" %} NETA 65</span>{% endif -%}
-{% endmacro %}
+{#- The kind of an event, in words and in its colour (eventTone: eleventy/filters/event-tone.js; the
+    colours are the .ev-tone-* rules in committee.css). The card carries .ev-tone-<kind>; this badge
+    names the kind, so the colour is never the only signal. An event from Grapevine's or La Viña's own
+    calendar keeps saying so ("La Viña calendar"). -#}
+{% macro kindBadge(ev, kind) %}
+{%- set kindIcon = { committee: "users", gv: "grapes", lv: "grapes", booth: "store", assembly: "landmark", other: "map-pin" } -%}
+{%- if kind == "gv" and ev.category == "gv-calendar" %}{% set label = "committee.events.badge_gv" | t(lang) %}
+{%- elif kind == "lv" and ev.category == "lv-calendar" %}{% set label = "committee.events.badge_lv" | t(lang) %}
+{%- elif kind == "other" %}{% set label = ("committee.events.kind.neta" if ev.group == "neta" else "committee.events.kind.event") | t(lang) %}
+{%- else %}{% set label = ("committee.events.kind." + kind) | t(lang) %}{% endif -%}
+<span class="badge ev-badge">{% icon kindIcon[kind], "size-3" %} {{ label }}</span>
+{%- endmacro %}
 
 {#- "Add to calendar" dropdown (Google / Outlook links work without JS; .ics download needs JS) -#}
 {% macro calMenu(ev, dark=false) %}
@@ -100,6 +105,19 @@ pageScripts: ["/assets/js/committee.js"]
         {{ "committee.events.show_all_meetings" | t(lang) }}
       </label>
     </div>
+    {#- the colour key: only the kinds on this page (committee meeting · Grapevine · La Viña · booth ·
+        assembly · other), each card's badge says its kind in words too -#}
+    {%- set kinds = upcoming | eventToneSet %}
+    {% if kinds | length > 1 %}
+    <div class="ev-legend">
+      <span class="ev-legend-label" id="ev-legend-label">{{ "committee.events.legend" | t(lang) }}</span>
+      <ul class="ev-legend-list" role="list" aria-labelledby="ev-legend-label">
+        {%- for k in kinds %}
+        <li class="ev-tone-{{ k }}"><span class="ev-dot" aria-hidden="true"></span>{{ ("committee.events.kind." + k) | t(lang) }}</li>
+        {%- endfor %}
+      </ul>
+    </div>
+    {% endif %}
   </div>
   <p class="sr-only" aria-live="polite" x-text="countText()"></p>
 
@@ -149,22 +167,22 @@ pageScripts: ["/assets/js/committee.js"]
     <h2 id="month-{{ grp.key }}" class="cm-month-title">{{ grp.items[0].monthLabel }}</h2>
     <ol class="grid gap-4">
       {% for ev in grp.items %}
-      {%- set tone = 'gv' if ev.committee or ev.category == 'gv-calendar' else ('lv' if ev.category == 'lv-calendar' else 'vine') %}
+      {%- set kind = ev | eventTone %}
       <li id="{{ ev.anchor }}" data-group="{{ ev.group }}" data-committee="{{ '1' if ev.committee else '0' }}"{% if ev.later %} data-later{% endif %}{% if ev.committee or ev.later %} data-dflt-hidden{% endif %} data-cm-expire="{{ ev.expireIso }}" x-show="show($el)">
-        <article class="card cm-event">
+        <article class="card cm-event ev-accent ev-tone-{{ kind }}">
           {#- the date: a tile column from 640px; on a phone a strip above the title (+ Share as an icon) -#}
-          <div class="cm-date-tile cm-tone-{{ tone }}{{ ' cm-tile-range' if ev.tile.range }} max-sm:hidden" aria-hidden="true">
+          <div class="cm-date-tile{{ ' cm-tile-range' if ev.tile.range }} max-sm:hidden" aria-hidden="true">
             <span class="cm-tile-mon">{{ ev.tile.mon }}</span>
             <span class="cm-tile-day">{{ ev.tile.day }}</span>
             <span class="cm-tile-wd">{{ ev.tile.wd }}</span>
           </div>
           <div class="min-w-0 flex-1">
             <div class="mb-2.5 flex items-center justify-between gap-3 sm:hidden">
-              <p class="cm-date-strip cm-tone-{{ tone }}" aria-hidden="true">{% icon "calendar", "size-3.5" %}<span>{{ ev.tile.wd }} · {{ ev.tile.mon }} {{ ev.tile.day }}</span></p>
+              <p class="cm-date-strip" aria-hidden="true">{% icon "calendar", "size-3.5" %}<span>{{ ev.tile.wd }} · {{ ev.tile.mon }} {{ ev.tile.day }}</span></p>
               <button type="button" class="btn-ghost -my-1 -mr-2 size-11 shrink-0 p-0" data-js-only data-share="{{ pageAbs }}#{{ ev.anchor }}" data-share-title="{{ ev.title }}" data-share-text="{{ ev.shareWhen }}" aria-label="{{ 'common.share' | t(lang) }}: {{ ev.title }}">{% icon "share-2", "size-4" %}</button>
             </div>
             <div class="flex flex-wrap items-center gap-1.5">
-              {{ groupBadge(ev) }}
+              {{ kindBadge(ev, kind) }}
               {% if ev.tentative %}{{ ui.tentativeBadge(lang) }}{% endif %}
               {% if ev.recurring %}<span class="badge-muted">{% icon "repeat", "size-3" %} {{ "committee.events.badge_recurring" | t(lang) }}</span>{% endif %}
               {% if ev.isNew %}<span class="badge-new">{{ "common.new" | t(lang) }}</span>{% endif %}
@@ -287,7 +305,7 @@ pageScripts: ["/assets/js/committee.js"]
     <ol class="divide-y divide-line border-t border-line">
       {% for ev in past | limit(40) %}
       <li id="{{ ev.anchor }}" class="flex flex-wrap items-center gap-x-4 gap-y-1 px-5 py-3.5 sm:px-6">
-        <time class="w-32 shrink-0 text-sm font-semibold text-muted" datetime="{{ ev.startIso }}">{{ ev.startIso | fmtDate(lang, "short") }}</time>
+        <time class="inline-flex w-32 shrink-0 items-center gap-2.5 text-sm font-semibold text-muted" datetime="{{ ev.startIso }}"><span class="ev-dot ev-tone-{{ ev | eventTone }}" aria-hidden="true"></span>{{ ev.startIso | fmtDate(lang, "short") }}</time>
         <span class="min-w-[11rem] flex-1 break-words font-medium text-ink">{{ ev.title }}{% if ev.location and not ev.locationTba %} <span class="text-sm font-normal text-muted">· {{ ev.location }}</span>{% endif %}</span>
         {% if ev.flyer %}<a class="btn-ghost btn-sm" href="{{ ev.flyer.view }}" target="_blank" rel="noopener" data-cm-preview="{{ ev.flyer.preview }}" data-cm-title="{{ ev.title }}" data-cm-open="{{ ev.flyer.view }}">{% icon "eye", "size-4" %} {{ "committee.events.view_flyer" | t(lang) }}</a>
         {% elif ev.link and ev.linkExternal %}<a class="btn-ghost btn-sm" href="{{ ev.link }}" target="_blank" rel="noopener">{% icon "external-link", "size-4" %} {{ "committee.events.details" | t(lang) }}</a>{% endif %}
@@ -302,7 +320,7 @@ pageScripts: ["/assets/js/committee.js"]
     <h2 id="ev-src-title" class="card-h"><span>{% icon "sparkles", "size-5" %}</span>{{ "committee.events.sources_title" | t(lang) }}</h2>
     <p class="mt-1.5 text-sm text-muted">{{ "committee.events.sources_sub" | t(lang) }}</p>
     <ul class="mt-5 grid gap-5 md:grid-cols-3">
-      {% for s in [["meetings", "users", "bg-gv-soft text-gv"], ["flyers", "folder-up", "bg-vine-soft text-vine"], ["calendars", "grapes", "bg-lv-soft text-lv"]] %}
+      {% for s in [["meetings", "users", "bg-grape-soft text-grape"], ["flyers", "folder-up", "bg-vine-soft text-vine"], ["calendars", "grapes", "bg-lv-soft text-lv"]] %}
       <li class="flex gap-3.5">
         <span class="grid size-10 shrink-0 place-items-center rounded-xl {{ s[2] }}">{% icon s[1], "size-5" %}</span>
         <div class="min-w-0">

@@ -1,0 +1,396 @@
+# =====================================================================
+#  History of Grapevine & La Viña — the timeline on the About page
+#  (/about/#history, /es/about/#history). Read by src/_data/history.js
+#  (templates see it as history.*); checked by tests/test_history.py.
+#
+#  Source: the committee's previous site, https://neta65.github.io/Grapevine/#about
+#  (its data file https://neta65.github.io/Grapevine/data/timeline.csv, 40 rows),
+#  copied on 2026-09-26. Every row is kept, in the same order and with the
+#  same wording, except: headings in sentence case (the site's style), curly
+#  quotes and apostrophes (“ ” ’ in English, « » in Spanish), and a few Spanish
+#  slips fixed (the personal "a" in 1944; "Escrita" — it is the Preamble — in
+#  June 1947; the full stop after the closing quote in 1949; "y para quienes"
+#  in 2001 Audio Grapevine).
+#
+#  For the chair to check against the official histories (kept as copied):
+#  December 1950 names Dr. Bob, who died in November 1950; 1961 calls
+#  "AA Today" the 25th-anniversary book (A.A.'s 25th anniversary was 1960);
+#  the 1962 GVR Advisory Action wording; the 1958 date of Victor E.; the 2020
+#  date of the Carry the Message Project; "spiritual streaks" in September 2023.
+#
+#  Format
+#  - milestones: oldest first (the page groups them by decade). Each one:
+#      year:  as shown — "June 1944", "Summer 1996" or "1948" (an English
+#             month or season, then the year). The Spanish label ("Junio de
+#             1944", "Verano de 1996") and the <time> value are made from it.
+#      type:  grapevine | lavina | both
+#      title: { en, es }   a short heading
+#      desc:  { en, es }   one or two sentences
+#    Both languages are required: the site build stops if one is missing.
+#  - official: the official histories, linked under the timeline.
+# =====================================================================
+
+official:
+  grapevine: "https://www.aagrapevine.org/history-aa-grapevine"
+  lavina: "https://www.aagrapevine.org/history-aa-lavina"
+
+milestones:
+  - year: "June 1944"
+    type: grapevine
+    title:
+      en: "The AA Grapevine debuts"
+      es: "Debuta el AA Grapevine"
+    desc:
+      en: "An eight-page bulletin created by four women and two men in New York debuts with a print run of 1,200 copies — connecting members, especially soldiers overseas in WWII."
+      es: "Un boletín de ocho páginas creado por cuatro mujeres y dos hombres en Nueva York debuta con un tiraje de 1,200 copias — conectando a miembros, especialmente a soldados en el extranjero durante la Segunda Guerra Mundial."
+
+  - year: "1945"
+    type: grapevine
+    title:
+      en: "Adopted as the national journal"
+      es: "Adoptado como la revista nacional"
+    desc:
+      en: "Following a Fellowship-wide vote, the Grapevine is officially adopted as the national journal of Alcoholics Anonymous."
+      es: "Tras una votación de toda la Comunidad, el Grapevine es adoptado oficialmente como la revista nacional de Alcohólicos Anónimos."
+
+  - year: "April 1946"
+    type: grapevine
+    title:
+      en: "The Twelve Traditions published"
+      es: "Se publican las Doce Tradiciones"
+    desc:
+      en: "Bill W. publishes the “Twelve Suggested Points for A.A. Tradition” — the Grapevine serves as the crucial medium for testing and communicating these unifying principles."
+      es: "Bill W. publica los «Doce Puntos Sugeridos para la Tradición de A.A.» — el Grapevine sirve como medio crucial para probar y comunicar estos principios unificadores."
+
+  - year: "June 1947"
+    type: grapevine
+    title:
+      en: "The A.A. Preamble first appears"
+      es: "Aparece por primera vez el Preámbulo de A.A."
+    desc:
+      en: "Written by an editor based on the Big Book’s foreword, a statement defining the Fellowship appears for the first time and is quickly adopted worldwide."
+      es: "Escrita por un editor basándose en el prólogo del Libro Grande, una declaración que define la Comunidad aparece por primera vez y es rápidamente adoptada mundialmente."
+
+  - year: "1948"
+    type: grapevine
+    title:
+      en: "AA Grapevine, Inc. formed"
+      es: "Se forma AA Grapevine, Inc."
+    desc:
+      en: "Incorporated as a separate corporate entity with a dedicated board of directors, establishing its organizational independence."
+      es: "Incorporada como entidad corporativa separada con una junta directiva dedicada, estableciendo su independencia organizacional."
+
+  - year: "September 1948"
+    type: grapevine
+    title:
+      en: "Digest-size format adopted"
+      es: "Se adopta el formato de bolsillo"
+    desc:
+      en: "Transitions from a large newsletter to the compact, pocket-sized digest format — a shape retained ever since."
+      es: "Transición de un boletín grande al formato compacto de bolsillo — una forma que se mantiene hasta hoy."
+
+  - year: "1949"
+    type: grapevine
+    title:
+      en: "Becomes the international journal"
+      es: "Se convierte en la revista internacional"
+    desc:
+      en: "As readership expands to Canada, Europe, and beyond, the subtitle changes to “The International Monthly Journal of Alcoholics Anonymous.”"
+      es: "A medida que la lectura se expande a Canadá, Europa y más allá, el subtítulo cambia a «La Revista Mensual Internacional de Alcohólicos Anónimos»."
+
+  - year: "July 1950"
+    type: grapevine
+    title:
+      en: "First International Convention coverage"
+      es: "Primera cobertura de Convención Internacional"
+    desc:
+      en: "Special coverage of the first A.A. International Convention in Cleveland, where the Twelve Traditions are officially adopted by the Fellowship."
+      es: "Cobertura especial de la primera Convención Internacional de A.A. en Cleveland, donde las Doce Tradiciones son adoptadas oficialmente por la Comunidad."
+
+  - year: "December 1950"
+    type: grapevine
+    title:
+      en: "“Your Third Legacy” proposal"
+      es: "Propuesta «Su Tercer Legado»"
+    desc:
+      en: "Bill W. and Dr. Bob use the Grapevine to introduce the proposal for a General Service Conference."
+      es: "Bill W. y el Dr. Bob usan el Grapevine para presentar la propuesta de una Conferencia de Servicios Generales."
+
+  - year: "December 1955"
+    type: grapevine
+    title:
+      en: "“Man on the Bed” painting"
+      es: "Pintura «El Hombre en la Cama»"
+    desc:
+      en: "The iconic painting by Robert M. makes its first appearance in the centerfold and becomes one of the most recognized pieces of A.A. artwork."
+      es: "La icónica pintura de Robert M. aparece por primera vez en la página central y se convierte en una de las obras de arte más reconocidas de A.A."
+
+  - year: "January 1958"
+    type: grapevine
+    title:
+      en: "Bill W.’s “Emotional Sobriety”"
+      es: "«Sobriedad Emocional» de Bill W."
+    desc:
+      en: "Bill W. publishes “The Next Frontier: Emotional Sobriety” — a landmark article about depression and growth."
+      es: "Bill W. publica «La Próxima Frontera: Sobriedad Emocional» — un artículo histórico sobre la depresión y el crecimiento."
+
+  - year: "1958"
+    type: grapevine
+    title:
+      en: "Victor E. cartoon debuts"
+      es: "Debuta la caricatura de Victor E."
+    desc:
+      en: "The beloved, wordless comic strip character “Victor E.” first appears, bringing lighthearted humor to the daily struggles and triumphs of recovery."
+      es: "El querido personaje de tira cómica sin palabras «Victor E.» aparece por primera vez, trayendo humor ligero a las luchas diarias y triunfos de la recuperación."
+
+  - year: "1961"
+    type: grapevine
+    title:
+      en: "First Grapevine book published"
+      es: "Se publica el primer libro del Grapevine"
+    desc:
+      en: "“AA Today” is published to commemorate A.A.’s 25th anniversary, beginning Grapevine’s broader publishing efforts."
+      es: "«AA Hoy» se publica para conmemorar el 25 aniversario de A.A., iniciando los esfuerzos editoriales más amplios del Grapevine."
+
+  - year: "1962"
+    type: grapevine
+    title:
+      en: "GVR program formalized"
+      es: "Se formaliza el programa de GVR"
+    desc:
+      en: "A Conference Advisory Action recommends rotating delegates become Grapevine representatives, formalizing the GVR program."
+      es: "Una Acción Consultiva de la Conferencia recomienda que los delegados rotativos se conviertan en representantes de Grapevine, formalizando el programa de GVR."
+
+  - year: "December 1970"
+    type: grapevine
+    title:
+      en: "Bill W.’s final article"
+      es: "Último artículo de Bill W."
+    desc:
+      en: "Co-founder Bill W.’s last article is published, shortly before his passing in January 1971. He contributed over 150 articles."
+      es: "Se publica el último artículo del cofundador Bill W., poco antes de su fallecimiento en enero de 1971. Contribuyó con más de 150 artículos."
+
+  - year: "1971"
+    type: grapevine
+    title:
+      en: "Corporate restructuring"
+      es: "Reestructuración corporativa"
+    desc:
+      en: "AA Grapevine, Inc. changes from a stock corporation to a Membership Corporation with General Service Board trustees as members."
+      es: "AA Grapevine, Inc. cambia de una corporación por acciones a una Corporación de Membresía con custodios de la Junta de Servicios Generales como miembros."
+
+  - year: "1978"
+    type: grapevine
+    title:
+      en: "Circulation reaches 100,000"
+      es: "La circulación alcanza 100,000"
+    desc:
+      en: "Under strong editorial leadership, circulation nearly doubles and passes the 100,000 milestone."
+      es: "Bajo un fuerte liderazgo editorial, la circulación casi se duplica y supera la marca de 100,000."
+
+  - year: "1985"
+    type: grapevine
+    title:
+      en: "Best of the Grapevine published"
+      es: "Se publica Lo Mejor del Grapevine"
+    desc:
+      en: "The first “Best of the Grapevine” anthology is published, compiling favorite stories from the first four decades."
+      es: "Se publica la primera antología «Lo Mejor del Grapevine», recopilando historias favoritas de las primeras cuatro décadas."
+
+  - year: "1986"
+    type: grapevine
+    title:
+      en: "Conference recognizes Grapevine"
+      es: "La Conferencia reconoce al Grapevine"
+    desc:
+      en: "The General Service Conference formally recognizes the Grapevine as the international journal of Alcoholics Anonymous."
+      es: "La Conferencia de Servicios Generales reconoce formalmente al Grapevine como la revista internacional de Alcohólicos Anónimos."
+
+  - year: "1988"
+    type: grapevine
+    title:
+      en: "The Language of the Heart published"
+      es: "Se publica El Lenguaje del Corazón"
+    desc:
+      en: "A hardcover anthology of over 150 articles by Bill W. is published, documenting A.A.’s spiritual principles."
+      es: "Se publica una antología de pasta dura con más de 150 artículos de Bill W., documentando los principios espirituales de A.A."
+
+  - year: "June 1989"
+    type: grapevine
+    title:
+      en: "First full-color cover"
+      es: "Primera portada a todo color"
+    desc:
+      en: "The June 1989 issue features the Grapevine’s first full-color cover, modernizing its visual presentation."
+      es: "La edición de junio de 1989 presenta la primera portada a todo color del Grapevine, modernizando su presentación visual."
+
+  - year: "July 1995"
+    type: lavina
+    title:
+      en: "Spanish edition pilot"
+      es: "Edición piloto en español"
+    desc:
+      en: "A special Conference-approved Spanish edition is produced — the pilot project that leads directly to La Viña’s launch."
+      es: "Se produce una edición especial en español aprobada por la Conferencia — el proyecto piloto que lleva directamente al lanzamiento de La Viña."
+
+  - year: "Summer 1996"
+    type: lavina
+    title:
+      en: "La Viña debuts"
+      es: "Debuta La Viña"
+    desc:
+      en: "The first issue of La Viña, A.A.’s bimonthly Spanish-language magazine, is published — rapidly becoming a vital lifeline for Spanish-speaking alcoholics."
+      es: "Se publica el primer número de La Viña, la revista bimestral en español de A.A. — convirtiéndose rápidamente en un vínculo vital para los alcohólicos de habla hispana."
+
+  - year: "1997"
+    type: grapevine
+    title:
+      en: "Grapevine goes online"
+      es: "Grapevine se conecta en línea"
+    desc:
+      en: "aagrapevine.org launches, marking the transition of the “meeting in print” into the digital age."
+      es: "Se lanza aagrapevine.org, marcando la transición de «la reunión impresa» a la era digital."
+
+  - year: "2001"
+    type: lavina
+    title:
+      en: "La Viña recognized as permanent"
+      es: "La Viña reconocida como permanente"
+    desc:
+      en: "The General Service Conference officially recognizes La Viña as an essential, permanent service to the Spanish-speaking fellowship worldwide."
+      es: "La Conferencia de Servicios Generales reconoce oficialmente a La Viña como un servicio esencial y permanente para la comunidad hispanohablante en todo el mundo."
+
+  - year: "2001"
+    type: grapevine
+    title:
+      en: "Audio Grapevine launches"
+      es: "Se lanza Audio Grapevine"
+    desc:
+      en: "Audio formats introduced, making stories of recovery accessible to visually impaired members and those who prefer listening."
+      es: "Se introducen formatos de audio, haciendo las historias de recuperación accesibles para miembros con discapacidad visual y para quienes prefieren escuchar."
+
+  - year: "2004"
+    type: grapevine
+    title:
+      en: "Digital story archive opens"
+      es: "Se abre el archivo digital de historias"
+    desc:
+      en: "Subscribers gain searchable access to thousands of stories, historical letters, and humor dating all the way back to 1944."
+      es: "Los suscriptores obtienen acceso de búsqueda a miles de historias, cartas históricas y humor que se remontan hasta 1944."
+
+  - year: "2008"
+    type: lavina
+    title:
+      en: "La Viña online archive"
+      es: "Archivo en línea de La Viña"
+    desc:
+      en: "The La Viña digital archive launches, allowing Spanish-speaking members worldwide to search past stories and articles."
+      es: "Se lanza el archivo digital de La Viña, permitiendo a los miembros de habla hispana en todo el mundo buscar historias y artículos pasados."
+
+  - year: "March 2009"
+    type: grapevine
+    title:
+      en: "Full-color magazine redesign"
+      es: "Rediseño de revista a todo color"
+    desc:
+      en: "A complete visual makeover — full-color throughout while maintaining the beloved digest format and member-driven content."
+      es: "Una renovación visual completa — todo a color manteniendo el querido formato de bolsillo y contenido escrito por miembros."
+
+  - year: "2012"
+    type: both
+    title:
+      en: "The Daily Quote begins"
+      es: "Comienza la Cita Diaria"
+    desc:
+      en: "The Daily Quote email service launches, delivering a daily snippet of inspiration or reflection directly to members’ inboxes."
+      es: "Se lanza el servicio de correo de la Cita Diaria, entregando un fragmento diario de inspiración o reflexión directamente a las bandejas de entrada de los miembros."
+
+  - year: "2019"
+    type: grapevine
+    title:
+      en: "Grapevine’s 75th anniversary"
+      es: "75 aniversario del Grapevine"
+    desc:
+      en: "Celebrates 75 years of continuous publication as a vital connection point for the growing global A.A. fellowship."
+      es: "Celebra 75 años de publicación continua como un punto de conexión vital para la creciente comunidad mundial de A.A."
+
+  - year: "2020"
+    type: both
+    title:
+      en: "Carry the Message Project"
+      es: "Proyecto Lleva el Mensaje"
+    desc:
+      en: "Formal initiative enabling members and groups to sponsor gift subscriptions for alcoholics in prisons, treatment facilities, and nursing homes."
+      es: "Iniciativa formal que permite a los miembros y grupos patrocinar suscripciones de regalo para alcohólicos en prisiones, centros de tratamiento y hogares de ancianos."
+
+  - year: "Summer 2021"
+    type: lavina
+    title:
+      en: "La Viña’s 25th anniversary"
+      es: "25 aniversario de La Viña"
+    desc:
+      en: "La Viña celebrates a quarter-century of carrying the message of recovery to the Hispanic community worldwide."
+      es: "La Viña celebra un cuarto de siglo llevando el mensaje de recuperación a la comunidad hispana en todo el mundo."
+
+  - year: "2021"
+    type: grapevine
+    title:
+      en: "A.A. Preamble revised"
+      es: "Se revisa el Preámbulo de A.A."
+    desc:
+      en: "Conference approves changing “men and women” to “people” — a significant editorial milestone since the Preamble originated in the Grapevine."
+      es: "La Conferencia aprueba cambiar «hombres y mujeres» por «personas» — un hito editorial significativo ya que el Preámbulo se originó en el Grapevine."
+
+  - year: "July 2021"
+    type: both
+    title:
+      en: "Social media launch"
+      es: "Lanzamiento en redes sociales"
+    desc:
+      en: "Official Instagram accounts for Grapevine and La Viña launch, entering the social media era."
+      es: "Se lanzan las cuentas oficiales de Instagram de Grapevine y La Viña, entrando en la era de las redes sociales."
+
+  - year: "October 2021"
+    type: both
+    title:
+      en: "The Grapevine podcast"
+      es: "El podcast de Grapevine"
+    desc:
+      en: "“The AA Grapevine Half-Hour Variety Hour” launches — a free weekly audio platform."
+      es: "Se lanza «The AA Grapevine Half-Hour Variety Hour» — una plataforma de audio semanal gratuita."
+
+  - year: "September 2023"
+    type: both
+    title:
+      en: "Official mobile apps launch"
+      es: "Lanzamiento de apps móviles oficiales"
+    desc:
+      en: "Grapevine and La Viña apps launch on iOS and Android — read, listen, track sobriety, and build spiritual streaks."
+      es: "Las apps de Grapevine y La Viña se lanzan en iOS y Android — lee, escucha, registra la sobriedad y construye rachas espirituales."
+
+  - year: "June 2024"
+    type: grapevine
+    title:
+      en: "Grapevine’s 80th anniversary"
+      es: "80 aniversario del Grapevine"
+    desc:
+      en: "What started as an eight-page bulletin now reaches hundreds of thousands across print, web, podcast, and app platforms worldwide."
+      es: "Lo que comenzó como un boletín de ocho páginas ahora llega a cientos de miles a través de plataformas impresas, web, podcast y apps en todo el mundo."
+
+  - year: "July 2025"
+    type: grapevine
+    title:
+      en: "International Convention — Vancouver"
+      es: "Convención Internacional — Vancouver"
+    desc:
+      en: "Special coverage of the 2025 International Convention celebrating A.A.’s 90th anniversary."
+      es: "Cobertura especial de la Convención Internacional 2025 celebrando el 90 aniversario de A.A."
+
+  - year: "2025"
+    type: both
+    title:
+      en: "Fellowship-wide survey ordered"
+      es: "Se ordena encuesta de toda la Comunidad"
+    desc:
+      en: "The 75th Conference directs the Grapevine Board to survey the full Fellowship on relevance, usefulness, and viability."
+      es: "La 75ª Conferencia ordena a la Junta de Grapevine encuestar a toda la Comunidad sobre relevancia, utilidad y viabilidad."

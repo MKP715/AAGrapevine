@@ -9,7 +9,11 @@
        with each card's data-date (extra.pub_date), so a page built yesterday is still exact
      - magazine: All | Grapevine | La Viña, and a search box (writer, city, county, title)
      - live counts on every choice, an aria-live result line, empty states with ways to
-       widen the list, a "more Texas writers" nudge, "Show all N stories" per group
+       widen the list, a "more Texas writers" nudge
+     - "see more" per group: each group shows its 12 most recent stories (C.limit); Area 65 then
+       offers "Show all N from our Area" (or, when all are shown and the longest period holds
+       more, that period), the other groups "Show 12 more" → "Show all N stories"; keyboard focus
+       moves to the first story that appears
      - shareable URLs: ?scope=texas&days=90&pub=lv&q=dallas (defaults are left out)
    Strings and settings come from <script id="pw-config"> (eleventy/filters/published.js). */
 (function () {
@@ -22,7 +26,7 @@
   try { C = JSON.parse(cfgEl.textContent); } catch (e) { return; }
   var S = C.s || {};
   var LIST = (C.listDays || [60, 90]).map(Number);
-  var LIMIT = Number(C.limit) || 24;
+  var LIMIT = Number(C.limit) || 12;
   var SCOPES = { neta65: ["neta65"], texas: ["neta65", "texas"], all: ["neta65", "texas", "other", "unknown"] };
   var ALIAS = { area65: "neta65", "area-65": "neta65", neta: "neta65", tx: "texas", everyone: "all", todos: "all" };
   var PUBS = ["all", "gv", "lv"];
@@ -79,6 +83,7 @@
       n: sec.querySelector("[data-group-n]"),
       more: sec.querySelector(".pw-showall"),
       moreBtn: sec.querySelector("[data-pw-showall]"),
+      moreNote: sec.querySelector(".pw-showall [data-note]"),
       cards: [],
     };
     Array.prototype.forEach.call(sec.querySelectorAll(".pw-card"), function (el) {
@@ -91,7 +96,8 @@
 
   /* ---------- state ---------- */
   var state = { scope: DEF.scope, days: DEF.days, pub: DEF.pub, q: "" };
-  var expanded = {};
+  // how many stories each group shows (LIMIT until "see more"; reset whenever a filter changes)
+  var showN = {};
 
   function tokens(q) { return norm(q).split(" ").filter(Boolean); }
   function matches(c, st, toks) {
@@ -173,24 +179,41 @@
   function render(opts) {
     opts = opts || {};
     var toks = tokens(state.q), total = 0;
+    var longest = LIST[LIST.length - 1];
     groups.forEach(function (g) {
-      var shown = 0, matched = 0;
+      var shown = 0, matched = 0, cap = showN[g.key] || LIMIT;
       g.cards.forEach(function (c) {
         var ok = matches(c, state, toks);
         if (ok) matched++;
-        var vis = ok && (expanded[g.key] || shown < LIMIT);
+        var vis = ok && shown < cap;
         if (vis) shown++;
         c.el.hidden = !vis;
       });
       total += matched;
       g.el.hidden = matched === 0;
       if (g.n) g.n.textContent = stories(matched);
-      var extra = !expanded[g.key] && matched > LIMIT;
-      if (g.more) g.more.hidden = !extra;
-      if (extra && g.moreBtn) {
-        var lab = g.moreBtn.querySelector("[data-label]");
-        if (lab) lab.textContent = fill(S.show_all, { n: num(matched) });
+      // see more: the rest of this group, or — Area 65 all shown — the longest period, if it has more
+      var left = matched - shown, label = "", note = "", mode = "more", widenTo = 0;
+      if (left > 0) {
+        label = g.key === "neta65" ? fill(S.show_all_area, { n: num(matched) })
+          : left <= LIMIT ? fill(S.show_all, { n: num(matched) }) : fill(S.show_more, { k: num(LIMIT) });
+        note = fill(S.shown_of, { shown: num(shown), n: num(matched) });
+      } else if (g.key === "neta65" && state.scope === "neta65" && matched > 0 && longest > state.days) {
+        var wider = count({ days: longest });
+        if (wider > matched) {
+          label = fill(S.show_all_area, { n: num(wider) });
+          note = fill(S.widen_note, { days: longest });
+          mode = "widen"; widenTo = longest;
+        }
       }
+      if (g.more) g.more.hidden = !label;
+      if (label && g.moreBtn) {
+        var lab = g.moreBtn.querySelector("[data-label]");
+        if (lab) lab.textContent = label;
+        g.moreBtn.setAttribute("data-mode", mode);
+        if (widenTo) g.moreBtn.setAttribute("data-v", String(widenTo)); else g.moreBtn.removeAttribute("data-v");
+      }
+      if (g.moreNote) g.moreNote.textContent = note;
     });
 
     syncControls();
@@ -242,9 +265,21 @@
   }
   function change(over, focusName) {
     for (var k in over) state[k] = over[k];
-    expanded = {};
+    showN = {};
     render();
     if (focusName) focusChoice(focusName);
+  }
+  /* After "see more": keyboard focus goes to the first story that just appeared (its link), so a
+     keyboard or screen-reader user carries on reading where the new stories start. */
+  function visibleNow(g) { return g.cards.map(function (c) { return !c.el.hidden; }); }
+  function focusFirstNew(g, before) {
+    for (var i = 0; i < g.cards.length; i++) {
+      if (!before[i] && !g.cards[i].el.hidden) {
+        var a = g.cards[i].el.querySelector("a");
+        if (a) { a.focus(); return true; }
+      }
+    }
+    return false;
   }
 
   form.addEventListener("change", function (e) {
@@ -302,14 +337,23 @@
       var key2 = b.getAttribute("data-pw-showall");
       var g = null;
       for (var i = 0; i < groups.length; i++) if (groups[i].key === key2) g = groups[i];
-      expanded[key2] = true;
-      render({ keepUrl: true });
-      // keep keyboard users in place: move to the first card that just appeared
-      if (g) {
-        var vis = g.cards.filter(function (c) { return !c.el.hidden; });
-        var first = vis[LIMIT] && vis[LIMIT].el.querySelector("a");
-        if (first) first.focus();
+      if (!g) return;
+      var before = visibleNow(g);
+      if (b.getAttribute("data-mode") === "widen") {
+        // Area 65, all shown: open the longest period (the period chips follow)
+        var d = Number(b.getAttribute("data-v"));
+        if (LIST.indexOf(d) === -1) return;
+        change({ days: d });
+        if (!focusFirstNew(g, before)) focusChoice("days");
+        return;
       }
+      var shownNow = before.filter(Boolean).length;
+      var matchedNow = 0, toks2 = tokens(state.q);
+      g.cards.forEach(function (c) { if (matches(c, state, toks2)) matchedNow++; });
+      // Area 65: all of it at once; the others: 12 more (all of them when 12 or fewer are left)
+      showN[key2] = key2 === "neta65" || matchedNow - shownNow <= LIMIT ? Infinity : shownNow + LIMIT;
+      render({ keepUrl: true });
+      focusFirstNew(g, before);
     }
   });
 
@@ -319,6 +363,9 @@
   // the controls start disabled (useless without this script); switch them on
   Array.prototype.forEach.call(form.querySelectorAll("[data-pw-ctl]"), function (el) { el.disabled = false; });
   render();
+  // the stories past the first 12 were listed for readers without JavaScript; render() has given
+  // every card its own `hidden` now, so the first-paint rule (published.css) can go
+  Array.prototype.forEach.call(results.querySelectorAll("[data-pw-over]"), function (el) { el.removeAttribute("data-pw-over"); });
   // A tab left open past midnight: recount the windows when the page is shown again.
   document.addEventListener("visibilitychange", function () {
     if (document.visibilityState !== "visible") return;

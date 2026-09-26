@@ -13,7 +13,9 @@ pageScripts: ["/assets/js/published.js"]
     View model: eleventy/filters/published.js → pwView. EVERY story of the longest window is
     rendered here; the DEFAULT view (config/site.yml spotlight.default_scope + the first
     list_days window, both magazines, no search) is visible without JavaScript and the rest
-    carry `hidden`. /assets/js/published.js then filters these same cards in place:
+    carry `hidden`. Each group shows its 12 most recent stories (V.limit) and then "see more";
+    the default view's stories past the 12 carry data-pw-over (shown without JavaScript, hidden
+    from the first paint with it, published.css). /assets/js/published.js then filters these same cards in place:
     scope / period / magazine / search, counts, empty states, URL state ?scope=&days=&pub=&q=,
     recounting the windows from the browser's own today (America/Chicago) with data-date. -#}
 {% import "macros/ui.njk" as ui with context %}
@@ -30,7 +32,7 @@ pageScripts: ["/assets/js/published.js"]
     card repeats 150+ times, so each icon is defined once. Add a new card icon to CARD_ICONS. -#}
 {%- set CARD_ICONS = "quote,map-pin,globe,user-round,feather,grapes,lock,lock-open,sparkles,languages" -%}
 {% macro pwCard(it, lang) -%}
-<article class="pw-card" data-scope="{{ it.scope }}" data-pub="{{ it.pub }}" data-date="{{ it.date }}" data-s="{{ it.search }}"{% if not it.visible %} hidden{% endif %}><div class="pw-card-in">
+<article class="pw-card" data-scope="{{ it.scope }}" data-pub="{{ it.pub }}" data-date="{{ it.date }}" data-s="{{ it.search }}"{% if it.over %} data-pw-over{% elif not it.visible %} hidden{% endif %}><div class="pw-card-in">
 <div class="pw-media" data-pub="{{ it.pub }}">
 <div class="pw-tile" aria-hidden="true"><span class="pw-tile-mark">{{ "quote" | pwIcon("size-6") | safe }}</span><span class="pw-tile-pub">{{ pubName[it.pub] }}</span>{% if it.issue %}<span class="pw-tile-issue">{{ it.issue }}</span>{% endif %}</div>
 {%- if it.image %}<img src="{{ it.image }}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.remove()">{% endif %}
@@ -144,8 +146,20 @@ pageScripts: ["/assets/js/published.js"]
           {{ pwCard(it, lang) }}
           {%- endfor %}
         </div>
-        <div class="pw-showall"{% if not g.hiddenByLimit %} hidden{% endif %}>
-          <button type="button" class="btn-secondary" data-pw-showall="{{ g.key }}">{% icon "chevron-down", "size-4" %}<span data-label>{{ "published.show_all" | t(lang, {n: g.matchCount}) }}</span></button>
+        {#- "see more": Area 65 → "Show all N from our Area" (every story of the window, or — when all
+            are shown and a longer window holds more — that window); other groups → "Show 12 more",
+            then "Show all N stories". JavaScript only: without it every story of the view shows. -#}
+        {%- if g.hiddenByLimit and g.key == "neta65" %}{% set moreLabel = "published.show_all_area" | t(lang, {n: g.matchCount}) %}
+        {%- elif g.hiddenByLimit and g.hiddenByLimit <= V.limit %}{% set moreLabel = "published.show_all" | t(lang, {n: g.matchCount}) %}
+        {%- elif g.hiddenByLimit %}{% set moreLabel = "published.show_more" | t(lang, {k: V.limit}) %}
+        {%- elif g.widen %}{% set moreLabel = "published.show_all_area" | t(lang, {n: g.widen.n}) %}
+        {%- else %}{% set moreLabel = "" %}{% endif %}
+        <div class="pw-showall" data-js-only{% if not moreLabel %} hidden{% endif %}>
+          <button type="button" class="btn-secondary" data-pw-showall="{{ g.key }}" data-mode="{{ 'widen' if (g.widen and not g.hiddenByLimit) else 'more' }}"{% if g.widen %} data-v="{{ g.widen.days }}"{% endif %} aria-describedby="pw-more-{{ g.key }}">{% icon "chevron-down", "size-4" %}<span data-label>{{ moreLabel }}</span></button>
+          <p id="pw-more-{{ g.key }}" class="pw-showall-note" data-note>
+            {%- if g.hiddenByLimit %}{{ "published.shown_of" | t(lang, {shown: g.shownCount, n: g.matchCount}) }}
+            {%- elif g.widen %}{{ "published.widen_note" | t(lang, {days: g.widen.days}) }}{% endif -%}
+          </p>
         </div>
       </section>
       {%- endfor %}

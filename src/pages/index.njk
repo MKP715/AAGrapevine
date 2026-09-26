@@ -544,9 +544,14 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
     {%- set epSE = ep | mediaSE(L) -%}
     {#- A Weekly Open title already names the meeting's date ("Meeting of September 16, 2026"). -#}
     {%- set epMeta = ([ep.extra.duration_sec | duration] if (epShow and epShow.weekly) else [ep.date | fmtDate(L, "medium"), ep.extra.duration_sec | duration]) | join(" · ") -%}
-    <div class="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1.45fr)_minmax(0,1fr)] lg:items-start" x-data="homePlayer">
+    {#- Side by side (from 1024px) the two cards are the same height (the grid stretches them; they
+        stack at 150% text below 1280px, home.css .home-lw). Each one's footer is anchored to its
+        bottom (mt-auto): the player in the episode card (the extra height of a shorter episode card
+        sits between its text and the player), the weekly open meetings link in "More episodes"
+        (there the episode rows share the extra height: the list grows and so does each row). -#}
+    <div class="home-lw grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1.45fr)_minmax(0,1fr)]" x-data="homePlayer">
       <article class="home-episode card relative flex flex-col overflow-hidden p-5 sm:p-7" aria-labelledby="ep-title">
-        <div class="relative flex items-start gap-4 sm:gap-5">
+        <div class="relative mb-5 flex items-start gap-4 sm:gap-5">
           <div class="relative size-20 shrink-0 overflow-hidden rounded-2xl bg-grape-soft shadow-[var(--shadow-card)] sm:size-40">
             <span class="absolute inset-0 grid place-items-center text-grape" aria-hidden="true">{% icon "headphones", "size-10" %}</span>
             {% if ep.extra.thumb or ep.image %}<img x-ref="art" src="{{ ep.extra.thumb or ep.image }}" alt="" width="160" height="160" loading="lazy" decoding="async" referrerpolicy="no-referrer" class="absolute inset-0 size-full object-cover" onerror="this.style.visibility='hidden'">{% endif %}
@@ -568,7 +573,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
           </div>
         </div>
         {#- The player sits in the same frame as the Listen page's player (media-player) -#}
-        <div class="media-player relative mt-5">
+        <div class="media-player relative mt-auto">
           {% if ep.extra.audio_url %}
           <audio x-ref="audio" class="home-audio w-full" controls preload="none" src="{{ ep.extra.audio_url }}">
             {{ "home.audio_fallback" | t(L) }} <a href="{{ ep.extra.audio_url }}">{{ "home.download_episode" | t(L) }}</a>.
@@ -590,7 +595,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
 
       <div class="card card-pad flex flex-col">
         <h3 class="card-h"><span class="text-grape!">{% icon "list-music", "size-5" %}</span>{{ "home.more_episodes" | t(L) }}</h3>
-        <ul class="mt-2 divide-y divide-line" role="list">
+        <ul class="mt-2 flex grow flex-col divide-y divide-line{{ ' mb-3' if (wo and wo.extra) }}" role="list">
           {% for e in moreEps %}
           {%- set et = e | mediaTitle(L) -%}
           {%- set eShow = e | mediaShowOf(epShows) -%}
@@ -600,7 +605,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
           {#- Rows of the other show say which show (like the badge on /listen/), and so does the player title. -#}
           {%- set otherShow = eShow and epShow and eShow.key != epShow.key -%}
           {%- set eFull = (eShow.short ~ " · " ~ et) if otherShow else et -%}
-          <li class="flex items-center gap-3 py-3{{ ' max-sm:hidden' if loop.index > 2 }}">
+          <li class="flex grow items-center gap-3 py-3{{ ' max-sm:hidden' if loop.index > 2 }}">
             <span class="relative size-14 shrink-0 overflow-hidden rounded-xl bg-grape-soft text-grape">
               <span class="absolute inset-0 grid place-items-center" aria-hidden="true">{% icon "headphones", "size-5" %}</span>
               {#- the ≤480px copy the sync makes (extra.thumb) for a 56px tile, not the 1500–3000px cover art -#}
@@ -627,7 +632,7 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
         {% if wo and wo.extra %}
         {#- both weekly open meetings in one line (as on /listen/ and /watch/); details on /meetings/ -#}
         {%- set woWhen = D.weekly_open.items | mediaWeeklyDays(L) -%}
-        <a href="{{ '/meetings/#weekly-open' | lurl(L) }}" class="group mt-3 flex items-start gap-3 rounded-xl bg-gv-soft/60 p-3.5 no-underline transition hover:bg-gv-soft">
+        <a href="{{ '/meetings/#weekly-open' | lurl(L) }}" class="group mt-auto flex items-start gap-3 rounded-xl bg-gv-soft/60 p-3.5 no-underline transition hover:bg-gv-soft">
           <span class="grid size-10 shrink-0 place-items-center rounded-lg bg-surface text-gv">{% icon "video", "size-5" %}</span>
           <span class="min-w-0">
             <span class="block text-sm font-semibold text-ink group-hover:text-gv">{{ ("home.weekly_opens" if D.weekly_open.items.length > 1 else "home.weekly_open") | t(L) }}</span>
@@ -783,20 +788,21 @@ pageStyles: ["/assets/vendor/lite-yt-embed.css"]
       {#- date tile, "when" line and place — the same rules as /events/ (a date RANGE for an event over
           several days, the place in the page language, "Venue to be announced" without a map pin) -#}
       {%- set info = e | homeEventInfo(L) -%}
-      {%- if e.category == "committee" or e.category == "gv-calendar" %}{% set tone = "gv" %}{% elif e.category == "lv-calendar" %}{% set tone = "lv" %}{% elif e.category == "flyer" or e.category == "recurring" or e.category == "neta65" %}{% set tone = "vine" %}{% else %}{% set tone = "grape" %}{% endif -%}
+      {#- the kind's colour, the same as on /events/ (eventTone: committee · gv · lv · booth · assembly · other) -#}
+      {%- set tone = e | eventTone -%}
       {#- A monthly recurring event (e.g. the CityWide Dallas booth) opens its card on /events/ -#}
       {%- set href = (("/events/#" ~ (e | homeEventAnchor)) if e.category == "recurring" else (e.url or x.flyer_url or x.online_url or "/events/")) | lurl(L) -%}
       {%- set et = e | tx("title", L) -%}
       <li{% if loop.index > 3 %} class="max-sm:hidden"{% endif %}>
-        <article class="card card-link group relative flex h-full gap-4 p-4 sm:flex-col sm:p-5">
-          <div class="home-datetile home-tone-{{ tone }}{{ ' is-range' if info.tile.range }}" aria-hidden="true">
+        <article class="card card-link ev-accent ev-tone-{{ tone }} group relative flex h-full gap-4 p-4 sm:flex-col sm:p-5">
+          <div class="home-datetile{{ ' is-range' if info.tile.range }}" aria-hidden="true">
             <span class="home-datetile-month">{{ info.tile.mon }}</span>
             <span class="home-datetile-day">{{ info.tile.day }}</span>
             <span class="home-datetile-wd">{{ info.tile.wd }}</span>
           </div>
           <div class="min-w-0 flex-1">
             <p class="flex flex-wrap items-center gap-1.5">
-              <span class="{{ 'badge-' ~ tone }}">{{ ("home.evcat." ~ (e.category or "manual")) | t(L) }}</span>
+              <span class="badge ev-badge">{{ ("home.evcat." ~ (e.category or "manual")) | t(L) }}</span>
               {% if info.tentative %}{{ ui.tentativeBadge(L) }}{% endif %}
               {% if e.lang and e.lang != L and e.lang != "und" and ((e | machineFor(L)) or et == e.title) %}<span class="badge-muted uppercase" title="{{ ('lang.' ~ e.lang) | t(L) }}">{{ e.lang }}</span>{% endif %}
             </p>

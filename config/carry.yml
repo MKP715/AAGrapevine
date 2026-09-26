@@ -147,8 +147,8 @@ story_note:
 # copies in the Library, data/site/pdfs.json: eleventy/filters/monthly.js repGuides) and to the official
 # GVR / RLV resource pages (config/site.yml links.gvr_resources / links.rlv_resources).
 guides:
-  en: "Serving as your group's GVR or RLV? The official guides for representatives explain the job in detail."
-  es: "¿Te toca servir como RLV o GVR de tu grupo? Las guías oficiales para representantes explican el servicio con detalle."
+  en: "Serving as your group's GVR or RLV? The official guides for representatives explain the service position in detail."
+  es: "¿Te toca servir como RLV o GVR de tu grupo? Las guías oficiales para representantes explican el puesto de servicio con detalle."
 
 # Tips per Grapevine issue ("YYYY-MM"). Theme names come from the synced data (see the header).
 tips:

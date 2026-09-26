@@ -571,10 +571,6 @@
     "en": "Flyer",
     "es": "Volante"
   },
-  "committee.events.badge_committee": {
-    "en": "Committee",
-    "es": "Comité"
-  },
   "committee.events.badge_gv": {
     "en": "Grapevine calendar",
     "es": "Calendario de Grapevine"
@@ -586,6 +582,42 @@
   "committee.events.badge_recurring": {
     "en": "Every month",
     "es": "Cada mes"
+  },
+  "committee.events.kind.committee": {
+    "en": "Committee meeting",
+    "es": "Reunión del comité"
+  },
+  "committee.events.kind.gv": {
+    "en": "Grapevine",
+    "es": "Grapevine"
+  },
+  "committee.events.kind.lv": {
+    "en": "La Viña",
+    "es": "La Viña"
+  },
+  "committee.events.kind.booth": {
+    "en": "Literature booth",
+    "es": "Mesa de literatura"
+  },
+  "committee.events.kind.assembly": {
+    "en": "Area assembly",
+    "es": "Asamblea de Área"
+  },
+  "committee.events.kind.other": {
+    "en": "Other events",
+    "es": "Otros eventos"
+  },
+  "committee.events.kind.neta": {
+    "en": "NETA 65",
+    "es": "NETA 65"
+  },
+  "committee.events.kind.event": {
+    "en": "Event",
+    "es": "Evento"
+  },
+  "committee.events.legend": {
+    "en": "Color key",
+    "es": "Clave de colores"
   },
   "committee.events.tentative": {
     "en": "Details to be confirmed",
@@ -928,8 +960,8 @@
     "es": "Talleres"
   },
   "committee.docs.cat.workshops_desc": {
-    "en": "Writing-workshop and GVR / RLV training materials",
-    "es": "Materiales de talleres de escritura y de capacitación para RLV / GVR"
+    "en": "Writing-workshop and GVR / RLV orientation materials",
+    "es": "Materiales de talleres de escritura y de orientación para RLV / GVR"
   },
   "committee.docs.cat.flyers": {
     "en": "Flyers",

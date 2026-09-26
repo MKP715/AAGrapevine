@@ -223,25 +223,108 @@
 .read-progress { height: 0.5rem; border-radius: 999px; background: var(--c-surface-2); overflow: hidden; }
 .read-progress > span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--c-vine), var(--c-gv)); transition: width 0.35s ease; }
 
-/* Open-source credits (About): one column; two when the list is at least 48rem wide (its
-   @container), filled column by column (--rows) so the list still reads top to bottom. */
-.read-credit-list { display: grid; grid-template-columns: minmax(0, 1fr); }
-.read-credit-list > li + li { border-top: 1px solid var(--c-line); }
-@container (width >= 48rem) {
-  .read-credit-list { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(var(--rows, 5), auto); grid-auto-flow: column; }
-  .read-credit-list > li.read-credit-c2top { border-top: 0; }
-  .read-credit-list > li.read-credit-c1 { border-right: 1px solid var(--c-line); }
+/* ---------- History of Grapevine & La Viña (About #history; config/history.yml → src/_data/history.js) ----------
+   Narrow: one rail on the left, the milestones in one column. When the timeline is at least 58rem wide
+   (its @container — so larger reading text keeps the one column longer): the rail in the middle and
+   the milestones taking turns left and right inside each decade, the right one a little lower so
+   the dots never meet. The turns are worked out per filter (side.<filter> → hs-*), so a filtered
+   decade still alternates.
+   Filters and "Show all" are two attributes on .read-hist that Alpine sets — data-f (all · gv · lv)
+   and data-open (0 · 1); the rules below do the rest, on screens with JavaScript only: without it,
+   and on paper, every milestone shows. Collapsed = the first 7 of the filter (narrow) or 12 (from
+   40rem): hx7-* / hx12-* mark the milestones past that, dx7-* / dx12-* a decade with none before
+   it, hn-* a decade with none in the filter, bn7-* / bn12-* the button when there is nothing more.
+   --tone is the publication's colour (gv · lv · vine = both magazines); its name is always in the
+   text too. Nothing moves: no scroll or reveal animations.
+   The three filter chips wrap (never a sideways scroll that hides the last one); in one column a
+   milestone is at most 46rem wide (a readable line at 150% text on a wide screen); in a very narrow
+   timeline (a 320px phone, or 150% text) the rail moves closer to the edge so the cards keep room. */
+.read-hist { --hist-rail: 0.75rem; --hist-pad: 2.25rem; --hist-gap: 5rem; container-type: inline-size; }
+.read-hist-bar { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.75rem; }
+/* the publication's colour in its filter chip, ringed so it still shows on the pressed (blue) chip */
+.read-hist-dot { width: 0.625rem; height: 0.625rem; flex-shrink: 0; border-radius: 50%; box-shadow: 0 0 0 2px var(--c-surface); }
+.read-hist-decades { position: relative; display: grid; gap: 2rem; }
+.read-hist-decades::before {
+  content: ""; position: absolute; top: 0.75rem; bottom: 0; left: var(--hist-rail); width: 2px; margin-left: -1px; border-radius: 1px;
+  background: color-mix(in srgb, var(--c-muted) 35%, var(--c-line));
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 4rem), transparent);
+          mask-image: linear-gradient(to bottom, #000 calc(100% - 4rem), transparent);
 }
-
-/* Timeline (About) */
-.read-timeline { position: relative; }
-.read-timeline::before {
-  content: ""; position: absolute; left: 0.6rem; top: 0.5rem; bottom: 0.5rem; width: 2px;
-  background: linear-gradient(to bottom, var(--c-gv), var(--c-lv), var(--c-vine));
+.read-hist-dec { position: relative; display: flex; margin-bottom: 1rem; font-size: 1rem; }
+.read-hist-dec > span {
+  display: inline-flex; align-items: center; min-height: 1.875rem; padding: 0.15rem 0.85rem; border-radius: 999px;
+  background: var(--c-ink); color: var(--c-paper); font-weight: 600; letter-spacing: 0.01em; font-variant-numeric: tabular-nums;
+  box-shadow: 0 0 0 4px var(--c-paper);
 }
-@media (width >= 48rem) {
-  .read-timeline::before { left: 0; right: 0; top: 0.6rem; bottom: auto; width: auto; height: 2px;
-    background: linear-gradient(to right, var(--c-gv), var(--c-lv), var(--c-vine)); }
+.read-hist-list { display: grid; gap: 1rem; padding-left: var(--hist-pad); }
+.read-hist-item { --tone: var(--c-gv); position: relative; max-width: 46rem; }
+.read-hist-item[data-t="lavina"] { --tone: var(--c-lv); }
+.read-hist-item[data-t="both"] { --tone: var(--c-vine); }
+/* the dot on the rail (::after) and a short line to the card (::before) */
+.read-hist-item::before, .read-hist-item::after { content: ""; position: absolute; top: 1.45rem; left: calc(var(--hist-rail) - var(--hist-pad)); }
+.read-hist-item::before { width: calc(var(--hist-pad) - var(--hist-rail)); height: 2px; margin-top: -1px; background: color-mix(in srgb, var(--tone) 45%, transparent); }
+.read-hist-item::after { width: 0.875rem; height: 0.875rem; border-radius: 50%; background: var(--tone); box-shadow: 0 0 0 3px var(--c-paper); transform: translate(-50%, -50%); }
+.read-hist-card { padding: 1rem 1.125rem 1.125rem; box-shadow: inset 0 3px 0 var(--tone), var(--shadow-card); break-inside: avoid; }
+.read-hist-meta { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.25rem 0.75rem; }
+.read-hist-when { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--tone); }
+.read-hist-foot { display: flex; flex-direction: column; align-items: flex-start; gap: 1rem; margin-top: 2rem; padding-left: var(--hist-pad); }
+.read-hist-more { width: 100%; }
+.read-hist-more > [data-l] { display: none; }
+.read-hist[data-open="0"][data-f="all"] .read-hist-more > [data-l="all"],
+.read-hist[data-open="0"][data-f="gv"] .read-hist-more > [data-l="gv"],
+.read-hist[data-open="0"][data-f="lv"] .read-hist-more > [data-l="lv"],
+.read-hist[data-open="1"] .read-hist-more > [data-l="less"] { display: inline; }
+.read-hist[data-open="1"] .read-hist-more > svg { rotate: 180deg; }
+/* phones: the three chips a little tighter so they stay on one line at 390px (EN and ES) — and at
+   360px too, where the colour dots step aside (the chips' words say which magazine anyway) */
+@container (width < 30rem) {
+  .read-hist-bar { gap: 0.375rem; }
+  .read-hist-bar > .chip { padding-inline: 0.625rem; }
+}
+@container (width < 22rem) { .read-hist-dot { display: none; } }
+@container (width < 20rem) {
+  .read-hist-decades, .read-hist-foot { --hist-rail: 0.5rem; --hist-pad: 1.5rem; }
+  .read-hist-card { padding-inline: 0.875rem; }
+}
+@container (width >= 40rem) {
+  .read-hist-more { width: auto; }
+}
+@container (width >= 58rem) {
+  .read-hist-bar { justify-content: center; }
+  .read-hist-decades::before { left: 50%; }
+  .read-hist-dec { justify-content: center; }
+  .read-hist-list { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--hist-gap); row-gap: 1.25rem; align-items: start; padding-left: 0; }
+  .read-hist-item { grid-column: 1; justify-self: end; width: min(100%, 40rem); }
+  .read-hist-item::before, .read-hist-item::after { left: auto; right: calc(var(--hist-gap) / -2); }
+  .read-hist-item::before { width: calc(var(--hist-gap) / 2); }
+  .read-hist-item::after { transform: translate(50%, -50%); }
+  :is(.read-hist[data-f="all"] .hs-all, .read-hist[data-f="gv"] .hs-gv, .read-hist[data-f="lv"] .hs-lv) { grid-column: 2; justify-self: start; margin-top: 2.75rem; }
+  :is(.read-hist[data-f="all"] .hs-all, .read-hist[data-f="gv"] .hs-gv, .read-hist[data-f="lv"] .hs-lv)::before,
+  :is(.read-hist[data-f="all"] .hs-all, .read-hist[data-f="gv"] .hs-gv, .read-hist[data-f="lv"] .hs-lv)::after { right: auto; left: calc(var(--hist-gap) / -2); }
+  :is(.read-hist[data-f="all"] .hs-all, .read-hist[data-f="gv"] .hs-gv, .read-hist[data-f="lv"] .hs-lv)::after { transform: translate(-50%, -50%); }
+  .read-hist-foot { align-items: center; padding-left: 0; text-align: center; }
+}
+@media screen {
+  :root.js .read-hist[data-f="gv"] :is(.read-hist-item[data-t="lavina"], .hn-gv),
+  :root.js .read-hist[data-f="lv"] :is(.read-hist-item[data-t="grapevine"], .hn-lv) { display: none; }
+  @container (width < 40rem) {
+    :root.js .read-hist[data-open="0"][data-f="all"] :is(.hx7-all, .dx7-all),
+    :root.js .read-hist[data-open="0"][data-f="gv"] :is(.hx7-gv, .dx7-gv),
+    :root.js .read-hist[data-open="0"][data-f="lv"] :is(.hx7-lv, .dx7-lv),
+    :root.js .read-hist[data-f="all"] .bn7-all, :root.js .read-hist[data-f="gv"] .bn7-gv, :root.js .read-hist[data-f="lv"] .bn7-lv { display: none; }
+  }
+  @container (width >= 40rem) {
+    :root.js .read-hist[data-open="0"][data-f="all"] :is(.hx12-all, .dx12-all),
+    :root.js .read-hist[data-open="0"][data-f="gv"] :is(.hx12-gv, .dx12-gv),
+    :root.js .read-hist[data-open="0"][data-f="lv"] :is(.hx12-lv, .dx12-lv),
+    :root.js .read-hist[data-f="all"] .bn12-all, :root.js .read-hist[data-f="gv"] .bn12-gv, :root.js .read-hist[data-f="lv"] .bn12-lv { display: none; }
+  }
+}
+@media print {
+  .read-hist-bar { display: none !important; }
+  .read-hist-card { box-shadow: inset 0 3px 0 var(--tone); }
+  /* browsers leave out backgrounds on paper: the decade label becomes dark text in an outline */
+  .read-hist-dec > span { background: none; color: var(--c-ink); box-shadow: none; border: 1px solid var(--c-line); }
 }
 
 /* Big number (deadlines, stats) uses tabular figures */

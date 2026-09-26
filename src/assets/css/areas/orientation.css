@@ -2,7 +2,7 @@
    "GVR / RLV 101" — /orientation/ (src/pages/orientation.njk) and the lesson pages
    (orientation-lesson.njk), with src/_includes/macros/orientation.njk and assets/js/orientation.js.
    Owner: the orientation area. Class prefix: o101-.
-   1. Hub: welcome + progress, keys, the handout miniature, the trainers' plan
+   1. Hub: welcome + progress, keys, the handout miniature, the facilitators' plan
    2. Lesson: goal, key points, the live example (.o101-live--page), links, lesson list, self-check
    3. The slide show (.o101-deck): a full-screen dialog with ONE fixed high-contrast palette (navy,
       white, gold) in both site themes; a 16:9 stage whose type is sized in container units (--u = 1cqh),
@@ -41,14 +41,14 @@
 .o101-sheet-mini > .o101-sheet-mini-qr { width: 1.2rem; height: 1.2rem; justify-self: end; border-radius: 0.15rem; background:
   repeating-conic-gradient(var(--c-ink) 0 25%, transparent 0 50%) 0 0 / 0.3rem 0.3rem; opacity: 0.6; }
 
-/* "Before you start" (the trainers' checklist): two columns when each gets at least 14em of its text
+/* "Before you start" (the facilitators' checklist): two columns when each gets at least 14em of its text
    (≈ 200px; at 150% text ≈ 300px) — by the list's own width, which beside the anonymity note from
    1024px is narrow at larger text. Beside the note, at 130%+ the note is at most 45% of the row. */
 @media (width >= 40rem) { .o101-before-list { grid-template-columns: repeat(auto-fit, minmax(min(100%, max(14em, 45%)), 1fr)); } }
 @media (width >= 64rem) { :root:is([data-text="130"], [data-text="150"]) .o101-before { grid-template-columns: minmax(0, 1fr) minmax(0, min(24rem, 45%)); } }
 @media (width >= 96rem) { :root:is([data-text="130"], [data-text="150"]) .o101-before { grid-template-columns: minmax(0, 1fr) minmax(0, min(28rem, 45%)); } }
 
-/* The trainers' plan: numbered steps */
+/* The facilitators' plan: numbered steps */
 .o101-plan { display: grid; gap: 1.25rem 2rem; }
 @media (width >= 40rem) { .o101-plan { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (width >= 80rem) { .o101-plan { grid-template-columns: repeat(4, minmax(0, 1fr)); } }

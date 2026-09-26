@@ -66,7 +66,7 @@ pageScripts: ["/assets/js/monthly.js", "/assets/js/report.js"]
           {%- for d in m.deadlines %}{% if d.due and d.due.startsWith(m.key) %}{% set _n = dueNow.push(d) %}{% endif %}{% endfor -%}
           <ul class="mt-5 flex flex-wrap gap-2" role="list" aria-label="{{ 'monthly.dates' | t(lang) }}">
             {% for d in dueNow %}<li class="badge-gv">{% icon "pen-line", "size-3" %} {{ d.theme }} · {{ d.dueLabel }}</li>{% endfor %}
-            {% for d in m.dates %}{% if d.kind != "event" %}{% set dIcon = "video" if d.kind == "committee" else "repeat" %}<li class="badge-muted">{% icon dIcon, "size-3" %} {{ ("monthly.committee" | t(lang)) if d.kind == "committee" else d.title }} · {{ d.dayLabel }}</li>{% endif %}{% endfor %}
+            {% for d in m.dates %}{% if d.kind != "event" %}{% set dIcon = "video" if d.kind == "committee" else "repeat" %}<li class="badge ev-badge ev-tone-{{ d | eventTone }}">{% icon dIcon, "size-3" %} {{ ("monthly.committee" | t(lang)) if d.kind == "committee" else d.title }} · {{ d.dayLabel }}</li>{% endif %}{% endfor %}
           </ul>
 
           {% if m.tips.length %}
@@ -371,8 +371,8 @@ pageScripts: ["/assets/js/monthly.js", "/assets/js/report.js"]
     {% endif %}
   </div>
   {% if carry.source %}<p class="mt-6 max-w-3xl text-xs text-muted"><strong>{{ "monthly.source" | t(lang) }}:</strong> {{ carry.source[lang] }}</p>{% endif %}
-  {#- One-line pointer to GVR / RLV 101 (/orientation/), whose lessons teach this toolkit -#}
+  {#- One-line pointer to GVR / RLV 101 (/orientation/), whose sessions include this toolkit -#}
   {%- set o101Link %}<a class="link font-semibold" href="{{ '/orientation/' | lurl(lang) }}">{{ "nav.orientation" | t(lang) }}</a>{% endset %}
-  <p class="mt-4 flex max-w-3xl items-start gap-2 text-sm leading-relaxed text-muted">{% icon "graduation-cap", "mt-0.5 size-4 shrink-0 text-grape" %}<span>{{ "orientation.monthly_pointer" | t(lang, { link: o101Link }) | safe }}</span></p>
+  <p class="mt-4 flex max-w-3xl items-start gap-2 text-sm leading-relaxed text-muted">{% icon "sprout", "mt-0.5 size-4 shrink-0 text-grape" %}<span>{{ "orientation.monthly_pointer" | t(lang, { link: o101Link }) | safe }}</span></p>
 </section>
 {% endif %}

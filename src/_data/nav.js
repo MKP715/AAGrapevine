@@ -14,8 +14,8 @@ const nav = {
     {
       key: "nav.get_involved", icon: "hand-heart", children: [
         { key: "nav.monthly", url: "/monthly/", icon: "calendar-heart", page: "monthly", descKey: "nav.monthly_desc" },
-        // GVR / RLV 101: six short lessons for new representatives (config/orientation.yml), with slides and a handout.
-        { key: "nav.orientation", url: "/orientation/", icon: "graduation-cap", page: "orientation", descKey: "nav.orientation_desc" },
+        // GVR / RLV 101: six short sessions for new representatives (config/orientation.yml), with slides and a handout.
+        { key: "nav.orientation", url: "/orientation/", icon: "sprout", page: "orientation", descKey: "nav.orientation_desc" },
         { key: "nav.contribute", url: "/contribute/", icon: "pen-line", page: "contribute", descKey: "nav.contribute_desc" },
         { key: "nav.published", url: "/published/", icon: "award", page: "published", descKey: "nav.published_desc" },
         { key: "nav.gvr", url: "/gvr/", icon: "badge-check", page: "gvr", descKey: "nav.gvr_desc" },

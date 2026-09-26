@@ -7,10 +7,10 @@ titleKey: nav.gvr
 descKey: read.gvr.meta_desc
 pageScripts: ["/assets/js/read.js"]
 ---
-{#- GVR / RLV CORNER — the group representative's home: what the job is, a first-steps
+{#- GVR / RLV CORNER — the group representative's home: what the service position is (never "job"), a first-steps
     checklist (saved in the browser), the official GVR and RLV resource kits (db.pdfs,
     category gvr/rlv or found on /gvr-resources and /recursos), ideas for the home group
-    and next steps. Flow (docs: ui.njk): hero → page nav → the job → first steps (band) →
+    and next steps. Flow (docs: ui.njk): hero → page nav → the position → first steps (band) →
     resource kits → ideas → next steps. -#}
 {% import "macros/ui.njk" as ui with context %}
 {%- set L = site.links -%}
@@ -152,18 +152,19 @@ pageScripts: ["/assets/js/read.js"]
 {% endcall %}
 
 <div class="container-page page-overlap">{{ ui.pageNav([
-  { href: "#job", label: "read.gvr.nav_job" | t(lang), icon: "hand-heart" },
+  { href: "#position", label: "read.gvr.nav_job" | t(lang), icon: "hand-heart" },
   { href: "#steps", label: "read.gvr.nav_steps" | t(lang), icon: "list-checks" },
   { href: "#kits", label: "read.gvr.see_kits" | t(lang), icon: "folder-open" },
   { href: "#ideas", label: "read.gvr.nav_ideas" | t(lang), icon: "lightbulb" },
   { href: "#next", label: "common.next_steps" | t(lang), icon: "compass" }
 ], lang) }}</div>
 
-{#- ---------- The job ---------- -#}
-<section id="job" class="section container-page pt-10 sm:pt-12" aria-labelledby="job-title">
+{#- ---------- The service position (#job: this section's older address, kept working) ---------- -#}
+<section id="position" class="section container-page pt-10 sm:pt-12" aria-labelledby="position-title">
+  <span id="job" aria-hidden="true"></span>
   <div class="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.35fr)] lg:gap-10 2xl:gap-14">
     <div>
-      {{ ui.sectionHead("read.gvr.job_title" | t(lang), "read.gvr.job_text" | t(lang), "", "", "hand-heart", { eyebrow: "read.gvr.job_eyebrow" | t(lang), tone: "text-vine", id: "job-title", lang: lang }) }}
+      {{ ui.sectionHead("read.gvr.job_title" | t(lang), "read.gvr.job_text" | t(lang), "", "", "hand-heart", { eyebrow: "read.gvr.job_eyebrow" | t(lang), tone: "text-vine", id: "position-title", lang: lang }) }}
       <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div class="panel-muted p-4! sm:p-4!">
           <p class="font-display text-lg font-semibold text-gv">GVR</p>
@@ -175,9 +176,9 @@ pageScripts: ["/assets/js/read.js"]
         </div>
       </div>
       <p class="mt-5 flex items-start gap-2 text-sm leading-relaxed text-muted">{% icon "users-round", "mt-0.5 size-4 shrink-0 text-vine" %}<span><strong class="text-ink">{{ "read.gvr.who_t" | t(lang) }}</strong> {{ "read.gvr.who" | t(lang) }}</span></p>
-      {#- GVR / RLV 101 (/orientation/): the lessons for new representatives — the first stop for someone new -#}
+      {#- GVR / RLV 101 (/orientation/): the sessions for new representatives — the first stop for someone new -#}
       <div class="card card-link group relative mt-6 flex items-start gap-4 p-5">
-        <span class="grid size-12 shrink-0 place-items-center rounded-xl bg-grape-soft text-grape">{% icon "graduation-cap", "size-6" %}</span>
+        <span class="grid size-12 shrink-0 place-items-center rounded-xl bg-grape-soft text-grape">{% icon "sprout", "size-6" %}</span>
         <div class="min-w-0 flex-1">
           <p class="eyebrow text-grape">{{ "orientation.gvr_eyebrow" | t(lang) }}</p>
           <h3 class="h-card mt-1"><a class="no-underline after:absolute after:inset-0 after:rounded-[var(--radius-card)] group-hover:text-gv" href="{{ '/orientation/' | lurl(lang) }}">{{ "orientation.gvr_title" | t(lang) }}</a></h3>

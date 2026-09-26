@@ -456,7 +456,7 @@
       esc(state.saved ? T("Update saved pages", "Actualizar las páginas guardadas") : T("Save key pages for offline", "Guardar páginas clave")) + "</button>";
     if (s) h += '<p class="pwa-progress" data-pwa-progress><progress max="1"></progress><span></span></p>';
     else if (state.lastSave) h += '<p class="pwa-status">' + esc(state.lastSave) + "</p>";
-    else if (!inCard) h += '<p class="pwa-hint">' + esc(T("Meetings, this month's toolkit and district report, the GVR / RLV 101 lessons, the Shop and more, in your language.", "Reuniones, el kit y el informe del mes, las lecciones de RLV / GVR 101, la Tienda y más, en tu idioma.")) + "</p>"; // (a card says it already)
+    else if (!inCard) h += '<p class="pwa-hint">' + esc(T("Meetings, this month's toolkit and district report, the GVR / RLV 101 sessions, the Shop and more, in your language.", "Reuniones, el kit y el informe del mes, las sesiones de RLV / GVR 101, la Tienda y más, en tu idioma.")) + "</p>"; // (a card says it already)
     return h;
   }
 

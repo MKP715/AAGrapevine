@@ -159,6 +159,22 @@
     "en": "Show all {n} stories",
     "es": "Ver las {n} historias"
   },
+  "published.show_all_area": {
+    "en": "Show all {n} from our Area",
+    "es": "Ver las {n} historias del Área"
+  },
+  "published.show_more": {
+    "en": "Show {k} more",
+    "es": "Ver {k} más"
+  },
+  "published.shown_of": {
+    "en": "Showing {shown} of {n}",
+    "es": "Se muestran {shown} de {n}"
+  },
+  "published.widen_note": {
+    "en": "Stories from the last {days} days",
+    "es": "Historias de los últimos {days} días"
+  },
   "published.badge.neta65": {
     "en": "Area 65",
     "es": "Área 65"

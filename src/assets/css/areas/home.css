@@ -492,6 +492,10 @@
 @media (width >= 80rem) { .home-mag-cover { width: 8rem; } }
 
 /* ---------- 6. Listen & watch ---------- */
+/* The episode card + "More episodes" (index.njk .home-lw): side by side from 1024px, the same height
+   (the grid stretches both). At 150% text below 1280px they stack, as the site's other main + side
+   pairs do there (main.css .layout-aside): side by side "More episodes" was about 16rem wide. */
+@media (64rem <= width < 80rem) { :root[data-text="150"] .home-lw { grid-template-columns: minmax(0, 1fr); } }
 .home-episode::before {
   content: ""; position: absolute; inset: 0; pointer-events: none;
   background: radial-gradient(70% 90% at 100% 0%, color-mix(in srgb, var(--c-grape) 10%, transparent), transparent 70%);

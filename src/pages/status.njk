@@ -13,13 +13,30 @@ pageScripts: ["/assets/js/community.js"]
     colour alone. Order: the hero pill (how many sources are up to date) · three numbers · the sources
     (a table from 768px, compact rows on a phone) · the optional outside calendars (collapsed) · the
     document library and translations · how an update works · behind the scenes (the one GitHub
-    Actions button). Maintainer-only words live in the collapsed "Technical details" disclosures. -#}
+    Actions button) · the open-source credits ("Built with open-source software", a tinted band, last).
+    Maintainer-only words live in the collapsed "Technical details" disclosures. -#}
 {%- set sv = db.status | cmStatus -%}
 {%- set total = sv.sources | length -%}
 {%- set feedsDown = sv.feeds | whereNot("state", "ok") | length -%}
 {%- set actionsUrl = "https://github.com/MKP715/AAGrapevine/actions" -%}
 {#- how the committee adds an event by hand (content/events/README.md) — linked from a calendar we can't read -#}
 {%- set eventsHowtoUrl = "https://github.com/MKP715/AAGrapevine/blob/main/content/events/README.md" -%}
+{#- Credits: the website stack + the translation models — [name, url, licence, key of community.status.cr_*] -#}
+{%- set credits = [
+  ["Eleventy", "https://www.11ty.dev", "MIT", "eleventy"],
+  ["Tailwind CSS", "https://tailwindcss.com", "MIT", "tailwind"],
+  ["Alpine.js", "https://alpinejs.dev", "MIT", "alpine"],
+  ["MiniSearch", "https://github.com/lucaong/minisearch", "MIT", "minisearch"],
+  ["GLightbox", "https://github.com/biati-digital/glightbox", "MIT", "glightbox"],
+  ["lite-youtube-embed", "https://github.com/paulirish/lite-youtube-embed", "Apache-2.0", "liteyt"],
+  ["Lucide", "https://lucide.dev", "ISC", "lucide"],
+  ["markdown-it", "https://github.com/markdown-it/markdown-it", "MIT", "markdownit"],
+  ["Fraunces", "https://github.com/undercasetype/Fraunces", "OFL-1.1", "fraunces"],
+  ["Inter", "https://rsms.me/inter/", "OFL-1.1", "inter"],
+  ["CTranslate2", "https://github.com/OpenNMT/CTranslate2", "MIT", "ct2"],
+  ["Argos Translate", "https://github.com/argosopentech/argos-translate", "MIT", "argos"],
+  ["OPUS-MT", "https://github.com/Helsinki-NLP/Opus-MT", "CC-BY-4.0", "opusmt"]
+] -%}
 {%- set srcIcons = { drive: "folder-open", articles: "newspaper", pdfs: "file-text", youtube: "youtube", podcasts: "headphones", instagram: "instagram", editorial: "pen-line", events_external: "calendar-days", announcements: "megaphone", manual_events: "calendar-plus", weekly_open: "video", shop: "shopping-bag", meetings: "map-pin", audio_project: "mic", quote: "quote", translations: "languages" } -%}
 
 {#- A source's status badge (the same in the table and the phone rows) -#}
@@ -251,7 +268,7 @@ pageScripts: ["/assets/js/community.js"]
 </section>
 
 {#- ============ How an update works + behind the scenes ============ -#}
-<section class="section container-page pt-0 pb-0" aria-labelledby="sched-title">
+<section class="section container-page pt-0" aria-labelledby="sched-title">
   {{ ui.sectionHead("community.status.sched_title" | t(lang), "community.status.sched_sub" | t(lang), "", "", "calendar-clock", { eyebrow: "community.status.sched_eyebrow" | t(lang), id: "sched-title", lang: lang }) }}
   <ol class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" role="list">
     {% for k in ["1", "2", "3", "4"] %}
@@ -267,5 +284,29 @@ pageScripts: ["/assets/js/community.js"]
       <p class="mt-1 max-w-2xl text-sm leading-relaxed text-muted">{{ "community.status.actions_text" | t(lang) }}</p>
     </div>
     <a class="btn-secondary shrink-0" href="{{ actionsUrl }}" target="_blank" rel="noopener">{% icon "git-branch", "size-4" %} {{ "community.status.actions_btn" | t(lang) }}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a>
+  </div>
+</section>
+
+{#- ============ Built with open-source software (moved here from /about/) ============ -#}
+<section id="credits" class="section section-band" aria-labelledby="credits-title">
+  <div class="container-page">
+    {{ ui.sectionHead("community.status.credits_title" | t(lang), "community.status.credits_sub" | t(lang), "", "", "heart", { eyebrow: "community.status.credits_eyebrow" | t(lang), tone: "text-grape", id: "credits-title", lang: lang }) }}
+    {#- one list, split into two columns when it is wide (community.css .cm-st-credits) -#}
+    {%- set half = ((credits.length + 1) / 2) | round(0, "floor") %}
+    <div class="@container">
+      <ul class="cm-st-credits card overflow-hidden" style="--rows: {{ half }}">
+        {% for c in credits %}
+        <li class="{{ 'cm-st-credit-c1' if loop.index <= half }}{{ ' cm-st-credit-c2top' if loop.index == half + 1 }}">
+          <a class="group flex min-h-14 items-center gap-3 px-4 py-2.5 no-underline transition hover:bg-surface-2" href="{{ c[1] }}" target="_blank" rel="noopener">
+            <span class="min-w-0 flex-1">
+              <span class="block font-semibold text-ink group-hover:text-gv">{{ c[0] }}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></span>
+              <span class="block text-xs text-muted">{{ ("community.status.cr_" + c[3]) | t(lang) }}</span>
+            </span>
+            <span class="badge-muted shrink-0 font-mono">{{ c[2] }}</span>
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
   </div>
 </section>

@@ -31,8 +31,10 @@ export const PW_GROUPS = ["neta65", "texas", "other", "unknown"];
 /** The scope filter: which groups each choice shows (Area 65 first, then Texas, then the rest). */
 export const PW_SCOPES = { neta65: ["neta65"], texas: ["neta65", "texas"], all: ["neta65", "texas", "other", "unknown"] };
 const PUBS = ["all", "gv", "lv"];
-/** Cards shown per group before a "Show all N stories" button (divisible by 2, 3 and 4 columns). */
-export const PW_GROUP_LIMIT = 24;
+/** Cards shown per group before "see more" (divisible by 2, 3, 4 and 6 columns). Area 65 is the
+ *  highlight: its 12 most recent stories, then "Show all N from our Area"; the other groups show 12
+ *  more per click ("Show 12 more"). Without JavaScript every story of the default view shows. */
+export const PW_GROUP_LIMIT = 12;
 const ANONYMOUS = /^\s*(anonymous|an[oó]nim[oa]|anon\.?)\s*$/i;
 const YMD = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -213,17 +215,29 @@ function pwView(db, lang, h) {
   }
 
   const defCut = cutoffs[defDays];
+  const longest = listDays[listDays.length - 1];
   const groups = PW_GROUPS.map((key) => {
     const all = items.filter((i) => i.scope === key);
-    let shown = 0;
+    let n = 0;
+    // visible: one of the first PW_GROUP_LIMIT stories of the default view; over: in the default view
+    // but past the limit — shown without JavaScript, hidden from the first paint with it (html.js)
     const rows = all.map((i) => {
       const match = i.date >= defCut && inScope(i, defScope);
-      const visible = match && shown < PW_GROUP_LIMIT;
-      if (match) shown++;
-      return { ...i, visible };
+      const visible = match && n < PW_GROUP_LIMIT;
+      const over = match && !visible;
+      if (match) n++;
+      return { ...i, visible, over };
     });
-    const matchCount = rows.filter((i) => i.date >= defCut && inScope(i, defScope)).length;
-    return { key, items: rows, total: all.length, matchCount, hiddenByLimit: Math.max(0, matchCount - PW_GROUP_LIMIT) };
+    const matchCount = n;
+    const hiddenByLimit = Math.max(0, matchCount - PW_GROUP_LIMIT);
+    // Our Area, all shown but the longest window holds more of it: "Show all N from our Area" widens
+    // the period (published.js does the same from the browser's own today).
+    let widen = null;
+    if (key === "neta65" && defScope === "neta65" && matchCount > 0 && !hiddenByLimit && longest > defDays) {
+      const more = all.filter((i) => i.date >= cutoffs[longest]).length;
+      if (more > matchCount) widen = { days: longest, n: more };
+    }
+    return { key, items: rows, total: all.length, matchCount, shownCount: matchCount - hiddenByLimit, hiddenByLimit, widen };
   }).filter((g) => g.total > 0);
 
   const shownTotal = counts[defDays][defScope].all;
@@ -259,7 +273,7 @@ function pwMailto(email, subject, body) {
 const JS_KEYS = [
   "status.neta65.one", "status.neta65.other", "status.texas.one", "status.texas.other",
   "status.all.one", "status.all.other", "status.pub", "status.q",
-  "n_stories.one", "n_stories.other", "show_all",
+  "n_stories.one", "n_stories.other", "show_all", "show_all_area", "show_more", "shown_of", "widen_note",
   "empty.neta65", "empty.texas", "empty.all", "empty.filtered",
   "more.texas", "more.all", "btn.texas", "btn.all",
 ];
