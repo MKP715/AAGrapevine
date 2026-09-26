@@ -223,6 +223,7 @@
 .o101-live--slide .o101-live-link { margin-top: calc(3 * var(--u)); display: inline-flex; align-items: center; gap: 0.8cqw; font-size: calc(3 * var(--u)); font-weight: 600;
   color: var(--d-accent); text-decoration: underline; text-underline-offset: calc(0.4 * var(--u)); }
 .o101-live--slide .o101-live-link .icon { width: 1em; height: 1em; }
+.o101-live--slide .o101-live-extra a { color: var(--d-accent); font-weight: 600; }
 
 /* Self-check: ask the room, then show the answer */
 .o101-s-opts { margin-top: calc(5 * var(--u)); display: grid; gap: calc(2.4 * var(--u)); }

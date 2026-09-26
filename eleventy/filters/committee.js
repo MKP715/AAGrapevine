@@ -364,7 +364,7 @@ function localPath(url, lang) {
 // manual event whose file name slug equals one of these gets a prefixed anchor
 // instead, so a deep link never jumps to the wrong place.
 const RESERVED_IDS = new Set([
-  "main", "mobile-drawer", "subscribe", "how-docs", "how-to-post", "share-photos", "albums",
+  "main", "mobile-drawer", "subscribe", "how-docs", "how-to-post", "share-photos", "how-events", "albums",
   "ev-upcoming-title", "ev-next-title", "cm-preview", "cm-preview-title", "cm-lb-i18n", "item",
 ]);
 // Anchor for a hand-written item: its file-name slug (the data links to
@@ -374,6 +374,9 @@ function itemAnchor(slug, fallback) {
   if (/^[a-z0-9][a-z0-9-]{0,99}$/.test(s) && !RESERVED_IDS.has(s) && !/^(month-|docs-|cm-)/.test(s)) return s;
   return fallback;
 }
+
+// A writing or recording workshop, by its title (English or Spanish) — cmWorkshops
+const WORKSHOP_RE = /(writing|recording) workshop|taller de (escritura|grabaci)/i;
 
 // The id of an event's card on /events/ ("ev-recurring-citywide-dallas-2026-10-10"), so other
 // pages (home, search, announcements) can link straight to it.
@@ -824,6 +827,25 @@ export function documentTabs(items, lang = "en") {
   const extra = list.filter((x) => !x.builtin).sort((a, b) => a.label.localeCompare(b.label));
   const panelLabels = [...new Set(docs.map((it) => panelOf(it).label).filter(Boolean))];
   return { tabs: [...builtin, ...extra], total: docs.length, multiPanel: panels.size > 1, panels: panelLabels };
+}
+
+/**
+ * A committee Drive file shown on the page it is about (the Portfolio stays its home): the newest
+ * Drive item whose title (as uploaded or translated) or file name matches `pattern` (a regular
+ * expression, case-insensitive), optionally only in one Drive `category` ("flyers", "workshops" …).
+ * n = 0 (default): that item, or null — then the page shows nothing. n > 0: up to n items, newest first.
+ *   {% set f = db.drive.items | driveMatch("editorial calendar|calendario editorial") %}
+ */
+export function driveMatch(items, pattern, category = "", n = 0) {
+  let re;
+  try { re = new RegExp(String(pattern || ""), "i"); } catch { return n > 0 ? [] : null; }
+  if (!pattern) return n > 0 ? [] : null;
+  const texts = (it) => [it.title, it.i18n?.title?.en, it.i18n?.title?.es, it.extra?.name].filter(Boolean);
+  const list = (items || [])
+    .filter((it) => it && it.source === "drive" && it.status !== "gone" && (!category || it.category === category)
+      && texts(it).some((s) => re.test(String(s))))
+    .sort(byNewest);
+  return n > 0 ? list.slice(0, n) : list[0] || null;
 }
 
 /**
@@ -1410,6 +1432,9 @@ export function gvMeetings(data, lang = "en", site = {}) {
     // groups (places) — one card each
     places: groups.reduce((n, g) => n + g.placeCount, 0),
     nearbyPlaces: groups.slice(1).reduce((n, g) => n + g.placeCount, 0),
+    // meetings held in Spanish (lang "es" or the "S" type) — /es/ points to La Viña's weekly open
+    // meeting when there are none
+    spanish: all.filter((c) => c.spanish).length,
     areaGroup: groups[0],
     nearbyGroups: groups.slice(1),
     updated: d.updated || null,
@@ -1432,6 +1457,9 @@ export default function (eleventyConfig, helpers) {
   eleventyConfig.addFilter("cmEvents", (items, site, lang) => normalizeEvents(EMPTY ? [] : items, site, lang));
   eleventyConfig.addFilter("cmDocTabs", (items, lang) => documentTabs(EMPTY ? [] : items, lang));
   eleventyConfig.addFilter("cmAlbums", (items, lang) => photoAlbums(EMPTY ? [] : items, lang));
+  // A committee Drive file on the page it is about (La Viña's flyer on /meetings/, the "Share your
+  // story" flyers, the editorial calendar on /monthly/) — see driveMatch
+  eleventyConfig.addFilter("driveMatch", (items, pattern, category, n) => driveMatch(EMPTY ? [] : items, pattern, category || "", Number(n) || 0));
   eleventyConfig.addFilter("cmAnnouncements", (items) => announcementList(EMPTY ? [] : items));
   eleventyConfig.addFilter("cmRule", (cfg, lang) => meetingRuleText(cfg, lang));
   eleventyConfig.addFilter("cmTimeRange", (cfg, lang) => meetingTimeRange(cfg, lang));
@@ -1496,12 +1524,22 @@ export default function (eleventyConfig, helpers) {
   });
 
   // The next date of each monthly recurring event (config/site.yml `recurring_events:`), soonest
-  // first — the "Also every month" box on /meetings/.
+  // first. (No page shows it now — the booth's home is /events/ and Home's upcoming events; kept,
+  // with tests/test_recurring_events.py, for a page that needs the next dates again.)
   eleventyConfig.addFilter("cmRecurringNext", (items, site, lang) => {
     const seen = new Set();
     return normalizeEvents(EMPTY ? [] : items, site, lang, { monthsBack: 0, monthsAhead: 0 })
       .filter((e) => e.recurring && !e.past && !seen.has(e.series) && seen.add(e.series));
   });
+
+  // Share your story (#workshop): the next `n` writing / recording workshops — from the same list
+  // /events/ shows (normalizeEvents: Drive flyers, hand-written events, the GV/LV calendars), upcoming,
+  // with a title like "Grapevine Writing Workshop" or "Taller de Grabación de La Viña" (the page
+  // language's title or the original one). Each card links to the event's own card on /events/.
+  eleventyConfig.addFilter("cmWorkshops", (items, site, lang, n = 3) =>
+    normalizeEvents(EMPTY ? [] : items, site, lang, { monthsBack: 0, monthsAhead: 0 })
+      .filter((e) => !e.past && !e.committee && (WORKSHOP_RE.test(e.title) || WORKSHOP_RE.test(e.item?.title || "")))
+      .slice(0, n));
 
   // Next committee meeting as an event (for the pinned card & calendar buttons)
   eleventyConfig.addFilter("cmNextMeeting", (site, lang) => {

@@ -282,6 +282,10 @@ lavina_weekly_open:
   summary_en: "A weekly virtual open AA meeting in Spanish where two members share their experience, strength and hope. It is recorded to be published as a podcast. Let's keep extending this powerful lifeline together!"
   url: ""                       # La Viña's page for the meeting, once there is one
   source: "Official La Viña flyer (November 2026), shared with the committee"
+  # The flyer itself on the committee's Google Drive: the newest Drive file whose title or file name
+  # matches this (a regular expression, capitals ignored) gets a "See the flyer" link on the La Viña
+  # card at /meetings/#weekly-open. No match → no link. Change it if the flyer is renamed.
+  flyer_match: "reuni[oó]n abierta de la vi[nñ]a|la vi[nñ]a open meeting"
 
 # ---------------------------------------------------------------------
 #  Joining our Zoom meetings BY PHONE — the "Join by phone" part of the

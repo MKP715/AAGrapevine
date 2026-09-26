@@ -113,8 +113,8 @@
     "es": "Comparte tu historia"
   },
   "nav.contribute_desc": {
-    "en": "Write for Grapevine or La Viña",
-    "es": "Escribe para La Viña o Grapevine"
+    "en": "Write or record your story for Grapevine or La Viña",
+    "es": "Escribe o graba tu historia para La Viña o Grapevine"
   },
   "nav.shop": {
     "en": "Shop",
@@ -161,8 +161,8 @@
     "es": "Resumen mensual"
   },
   "nav.share": {
-    "en": "Share kit & QR",
-    "es": "Kit para compartir y QR"
+    "en": "QR codes & posters",
+    "es": "Códigos QR y carteles"
   },
   "nav.search": {
     "en": "Search",
@@ -463,6 +463,10 @@
   "kind.photo": {
     "en": "Photo",
     "es": "Foto"
+  },
+  "kind.flyer": {
+    "en": "Flyer",
+    "es": "Volante"
   },
   "kind.document": {
     "en": "Document",

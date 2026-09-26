@@ -388,14 +388,6 @@ html:root.tts-bar-on {
 @media (width < 30rem) {
   :root:is([data-text="130"], [data-spacing="relaxed"]) :is(.mp-actions, .rp-act-row) { grid-template-columns: minmax(0, 1fr); }
 }
-/* About "On this site" counters: two to a row on tablets at 130%+, three (not six) from 1024 to 1799px
-   at 115%+ */
-@media (40rem <= width < 64rem) {
-  :root:is([data-text="130"], [data-text="150"]) .about-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
-@media (64rem <= width < 112.5rem) {
-  :root:is([data-text="115"], [data-text="130"], [data-text="150"]) .about-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-}
 /* Monthly toolkit "10 ways to put an issue to work": two to a row at 130%+ (five left a word or two per line) */
 @media (width >= 40rem) { :root:is([data-text="130"], [data-text="150"]) .mp-ways { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 /* Listen, the big player at 150%: the −15 · play · +30 buttons grow less than the text (2.25rem and 3rem,

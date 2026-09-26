@@ -8,19 +8,11 @@ descKey: read.about.meta_desc
 ---
 {#- ABOUT — what and who first: the two magazines and their history (config/history.yml, a timeline by
     decade), our NETA 65 committee; then privacy & anonymity | contact; how the site stays up to date
-    (two lines, the live numbers, a link to /status/ — the step-by-step and the open-source credits live
-    only on /status/). An "On this page" nav after the hero; every section opens with ui.sectionHead.
+    (#how: two lines and a link to /status/ — no numbers here: the totals are on Home and /status/, the
+    footer says "Last updated", and the step-by-step and the open-source credits live only on /status/).
+    An "On this page" nav after the hero; every section opens with ui.sectionHead.
     (The "not an official site" note is the footer's disclaimer.) -#}
 {% import "macros/ui.njk" as ui with context %}
-{%- set st = db.status -%}
-{%- set counts = [
-  { k: "articles", icon: "book-open", n: st | readSourceCount("articles") },
-  { k: "pdfs", icon: "file-text", n: st | readSourceCount("pdfs") },
-  { k: "podcasts", icon: "headphones", n: st | readSourceCount("podcasts") },
-  { k: "youtube", icon: "circle-play", n: st | readSourceCount("youtube") },
-  { k: "instagram", icon: "instagram", n: st | readSourceCount("instagram") },
-  { k: "drive", icon: "folder-open", n: st | readSourceCount("drive") }
-] -%}
 {%- set H = history -%}
 {#- On /es/ La Viña comes first wherever both magazines appear -#}
 {%- set pubs = ["lv", "gv"] if lang == "es" else ["gv", "lv"] -%}
@@ -183,28 +175,8 @@ descKey: read.about.meta_desc
   </section>
 </div>
 
-{#- ---------- How this site stays up to date: two lines, the live numbers, the full status ---------- -#}
+{#- ---------- How this site stays up to date: two lines and the link to the full status ---------- -#}
 <section id="how" class="container-page section pt-0" aria-labelledby="how-title">
   {{ ui.sectionHead("read.about.how_title" | t(lang), "read.about.how_sub" | t(lang), '/status/' | lurl(lang), "read.about.status_link" | t(lang), "refresh-cw", { eyebrow: "read.about.how_eyebrow" | t(lang), id: "how-title", lang: lang }) }}
-  <div class="card overflow-hidden">
-    <p class="flex flex-wrap items-center gap-x-2 gap-y-1 border-b border-line px-5 py-3.5 text-sm font-semibold text-ink sm:px-6">
-      <span class="relative flex size-2.5" aria-hidden="true"><span class="absolute inline-flex size-full animate-ping rounded-full bg-vine opacity-60"></span><span class="relative inline-flex size-2.5 rounded-full bg-vine"></span></span>
-      {% if st.generated and (st | readSourceCount("articles") or st | readSourceCount("pdfs") or st | readSourceCount("youtube")) %}
-        <span>{{ "read.about.last_sync" | t(lang) }} <time datetime="{{ st.generated }}" data-local-time>{{ st.generated | fmtDate(lang, "datetime") }}</time></span>
-      {% else %}
-        <span>{{ "read.about.first_sync" | t(lang) }}</span>
-      {% endif %}
-    </p>
-    <dl class="about-stats grid grid-cols-2 gap-px bg-line sm:grid-cols-3 lg:grid-cols-6">
-      {% for c in counts %}
-      <div class="bg-surface p-5">
-        <dt class="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-muted">{% icon c.icon, "size-3.5" %} {{ ("read.about.n_" + c.k) | t(lang) }}</dt>
-        {% if c.n %}<dd class="read-num mt-1 font-display text-3xl font-semibold text-ink">{{ c.n }}</dd>
-        {% elif c.k == "drive" and st.generated %}<dd class="mt-2 flex items-center gap-1.5 text-sm font-medium leading-snug text-vine">{% icon "folder-up", "size-4 shrink-0" %} {{ "read.about.n_drive_zero" | t(lang) }}</dd>
-        {% else %}<dd class="read-num mt-1 font-display text-3xl font-semibold text-ink">—</dd>{% endif %}
-      </div>
-      {% endfor %}
-    </dl>
-  </div>
-  <p class="mt-4 flex max-w-3xl gap-2.5 text-sm leading-relaxed text-muted"><span class="mt-0.5 text-gv">{% icon "shield-check", "size-4" %}</span><span><strong class="font-semibold text-ink">{{ "read.about.polite_title" | t(lang) }}.</strong> {{ "read.about.polite_text" | t(lang) }}</span></p>
+  <p class="flex max-w-3xl gap-2.5 text-sm leading-relaxed text-muted"><span class="mt-0.5 text-gv">{% icon "shield-check", "size-4" %}</span><span><strong class="font-semibold text-ink">{{ "read.about.polite_title" | t(lang) }}.</strong> {{ "read.about.polite_text" | t(lang) }}</span></p>
 </section>

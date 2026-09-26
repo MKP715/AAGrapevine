@@ -12,13 +12,16 @@ const nav = {
     { key: "nav.library", url: "/library/", icon: "library", page: "library" },
     { key: "nav.shop", url: "/shop/", icon: "shopping-bag", page: "shop", descKey: "nav.shop_desc" },
     {
+      // The representatives' pages first (the corner, the course for new ones, the monthly tools),
+      // then the pages for any member (share a story, read who got published). The header menu,
+      // the phone drawer and the footer all follow this order.
       key: "nav.get_involved", icon: "hand-heart", children: [
-        { key: "nav.monthly", url: "/monthly/", icon: "calendar-heart", page: "monthly", descKey: "nav.monthly_desc" },
+        { key: "nav.gvr", url: "/gvr/", icon: "badge-check", page: "gvr", descKey: "nav.gvr_desc" },
         // GVR / RLV 101: six short sessions for new representatives (config/orientation.yml), with slides and a handout.
         { key: "nav.orientation", url: "/orientation/", icon: "sprout", page: "orientation", descKey: "nav.orientation_desc" },
+        { key: "nav.monthly", url: "/monthly/", icon: "calendar-heart", page: "monthly", descKey: "nav.monthly_desc" },
         { key: "nav.contribute", url: "/contribute/", icon: "pen-line", page: "contribute", descKey: "nav.contribute_desc" },
         { key: "nav.published", url: "/published/", icon: "award", page: "published", descKey: "nav.published_desc" },
-        { key: "nav.gvr", url: "/gvr/", icon: "badge-check", page: "gvr", descKey: "nav.gvr_desc" },
       ],
     },
     {

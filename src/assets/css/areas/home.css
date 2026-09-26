@@ -346,11 +346,10 @@
   .home-spot-empty > :last-child { grid-column: auto; flex-direction: column; align-items: stretch; }
 }
 
-/* ---------- 3. Fresh strip ---------- */
+/* ---------- Card rail (6. "New on YouTube") ---------- */
 /* Mobile: horizontal scroll-snap row that bleeds to the screen edges (all items).
-   ≥ 40rem: a grid that always shows FULL rows of the 10 "fresh" items:
-   2 columns × 3 rows · 3 × 2 from 1024px (cards ≥ 300px) · 4 × 2 from 1280px · 5 × 2 from 1800px.
-   Videos (.home-rail--videos, 5 cards): 2 × 2 · 4 × 1 from 1024px · 5 × 1 from 1800px. */
+   ≥ 40rem: a grid that always shows FULL rows —
+   videos (.home-rail--videos, 5 cards): 2 × 2 · 4 × 1 from 1024px · 5 × 1 from 1800px. */
 .home-rail {
   display: grid;
   grid-auto-flow: column;
@@ -375,11 +374,6 @@
     padding: 0;
   }
 }
-@media (width >= 64rem) { .home-rail { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-@media (width >= 80rem) { .home-rail { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
-@media (width >= 112.5rem) { .home-rail { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
-@media (40rem <= width < 80rem) { .home-rail:not(.home-rail--videos) > .home-rail-item:nth-child(n+7) { display: none; } }
-@media (80rem <= width < 112.5rem) { .home-rail:not(.home-rail--videos) > .home-rail-item:nth-child(n+9) { display: none; } }
 @media (width >= 64rem) { .home-rail--videos { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 @media (width >= 112.5rem) { .home-rail--videos { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
 @media (40rem <= width < 112.5rem) { .home-rail--videos > .home-rail-item:nth-child(n+5) { display: none; } }

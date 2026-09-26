@@ -95,14 +95,6 @@
     "en": "Committee meetings, workshops, booths and Grapevine / La Viña events for Northeast Texas Area 65. Updates automatically.",
     "es": "Reuniones del comité, talleres, mesas y eventos de Grapevine / La Viña del Área 65 del Noreste de Texas. Se actualiza automáticamente."
   },
-  "committee.meeting.also_monthly": {
-    "en": "Also every month",
-    "es": "También cada mes"
-  },
-  "committee.meeting.also_next": {
-    "en": "Next date: {date}",
-    "es": "Próxima fecha: {date}"
-  },
   "committee.meeting.hero_sub": {
     "en": "{rule} · {time} Central time, on Zoom.",
     "es": "{rule} · {time}, hora del Centro, por Zoom."
@@ -230,6 +222,10 @@
   "committee.meeting.contact_text": {
     "en": "Want the agenda, need help with Zoom, or thinking about becoming a GVR or RLV? Write to our chair — we'd love to hear from you.",
     "es": "¿Quieres la agenda, necesitas ayuda con Zoom o estás pensando en ser RLV o GVR? Escríbele a nuestro coordinador — nos encantará saber de ti."
+  },
+  "committee.meeting.agenda_link": {
+    "en": "Agendas and past reports in the Portfolio",
+    "es": "Agendas e informes anteriores en el Portafolio"
   },
   "committee.meeting.mail_subject": {
     "en": "Grapevine / La Viña committee meeting",
@@ -648,8 +644,20 @@
     "es": "Todavía no hay eventos de NETA 65 en el calendario"
   },
   "committee.events.empty_neta_text": {
-    "en": "Planning a workshop, a booth or a GV/LV event? Put its flyer in the “flyers” folder of the current Panel on the committee's Google Drive, with the date at the start of the file name. By the next morning it shows up here — and in everyone's subscribed calendar.",
-    "es": "¿Estás planeando un taller, una mesa o un evento de GV/LV? Pon su volante en la carpeta “flyers” (volantes) del Panel actual en el Google Drive del comité, con la fecha al inicio del nombre del archivo. A la mañana siguiente aparece aquí — y en los calendarios de todos los suscritos."
+    "en": "Workshops, literature booths and other events the committee plans show up here, with their flyer.",
+    "es": "Aquí aparecen, con su volante, los talleres, las mesas de literatura y otros eventos que planea el comité."
+  },
+  "committee.events.how_link": {
+    "en": "How to add an event",
+    "es": "Cómo agregar un evento"
+  },
+  "committee.events.how_title": {
+    "en": "Add an event",
+    "es": "Agregar un evento"
+  },
+  "committee.events.how_text": {
+    "en": "Put the event's flyer in the “flyers” folder of the current Panel on the committee's Google Drive, with the date at the start of the file name. It shows up on this page after the next update — and in everyone's subscribed calendar.",
+    "es": "Pon el volante del evento en la carpeta “flyers” (volantes) del Panel actual en el Google Drive del comité, con la fecha al inicio del nombre del archivo. Aparece en esta página después de la próxima actualización, y también en los calendarios de todos los suscritos."
   },
   "committee.events.naming_aria": {
     "en": "Flyer file names and the events they create",
@@ -682,14 +690,6 @@
   "committee.events.naming_tip": {
     "en": "The date comes first, as year-month-day. A time (“9am”, “9-11am”) and a place after “@” are optional. Document and image flyers (JPG, PNG) both work.",
     "es": "La fecha va primero, como año-mes-día. La hora (“9am”, “9-11am”) y el lugar después de “@” son opcionales. Sirven volantes en documento o en imagen (JPG, PNG)."
-  },
-  "committee.events.mail_subject": {
-    "en": "Event flyer for the website",
-    "es": "Volante de evento para el sitio web"
-  },
-  "committee.events.send_flyer": {
-    "en": "Email us a flyer",
-    "es": "Envíanos un volante"
   },
   "committee.events.empty_cal_title": {
     "en": "No Grapevine / La Viña calendar events in Texas right now",
@@ -724,12 +724,12 @@
     "es": "Salen de nuestro horario mensual: la reunión del comité (con su enlace de Zoom) y lo que hacemos cada mes, como nuestras mesas de literatura."
   },
   "committee.events.src_flyers": {
-    "en": "Flyers on Google Drive",
-    "es": "Volantes en Google Drive"
+    "en": "NETA 65 events",
+    "es": "Eventos de NETA 65"
   },
   "committee.events.src_flyers_text": {
-    "en": "A flyer on the committee's Google Drive whose name starts with a date, like “2027-03-14 Spring Assembly”, becomes an event with the flyer attached.",
-    "es": "Un volante en el Google Drive del comité cuyo nombre empieza con una fecha, como “2027-03-14 Asamblea de primavera”, se convierte en un evento con el volante incluido."
+    "en": "Events the committee plans, with their flyer attached.",
+    "es": "Los eventos que planea el comité, con su volante incluido."
   },
   "committee.events.src_calendars": {
     "en": "Grapevine & La Viña calendars",
@@ -912,8 +912,8 @@
     "es": "Talleres"
   },
   "committee.docs.goes_flyers": {
-    "en": "Events",
-    "es": "Eventos"
+    "en": "Portfolio · Flyers (and Events, when the file name starts with a date)",
+    "es": "Portafolio · Volantes (y Eventos, si el nombre del archivo empieza con una fecha)"
   },
   "committee.docs.goes_forms": {
     "en": "Sign-ups",
@@ -1306,6 +1306,14 @@
   "committee.gvm.what": {
     "en": "A Grapevine meeting is an AA meeting that uses Grapevine or La Viña — the “Grapevine” (GR) type in the local meeting lists.",
     "es": "Una reunión de Grapevine es una reunión de AA que usa Grapevine o La Viña: en las listas de reuniones locales tiene el tipo “Grapevine” (GR)."
+  },
+  "committee.gvm.no_spanish": {
+    "en": "No group on these lists meets in Spanish yet.",
+    "es": "Todavía ningún grupo de estas listas se reúne en español."
+  },
+  "committee.gvm.no_spanish_link": {
+    "en": "See La Viña's weekly open meeting",
+    "es": "Mira la reunión abierta semanal de La Viña"
   },
   "committee.gvm.times_note": {
     "en": "Times are Central time. Meetings can change, so check the details on the office's site before you go.",

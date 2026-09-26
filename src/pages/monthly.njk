@@ -10,9 +10,11 @@ pageScripts: ["/assets/js/monthly.js", "/assets/js/report.js"]
 ---
 {#- /monthly/ — the "Monthly toolkit" (posters included). Flow (docs: ui.njk): hero → page nav → this month
     (a teaser with a one-line link to next month; the full toolkit lives on the month's own page,
-    monthly-month.njk) → the GV/LV report → all posters (band) → the 10 ways. Prices stay in the shop.
+    monthly-month.njk) → the GV/LV report → all posters (band) → the 10 ways (its header links the full
+    editorial calendar when the committee has it on Drive). Prices stay in the shop.
     #report is the one home of the GV/LV report a GVR / RLV tailors for the district meeting
-    (eleventy/filters/report.js + src/assets/js/report.js; the old /districts/ page redirects here).
+    (eleventy/filters/report.js + src/assets/js/report.js; the old /districts/ page redirects here);
+    its intro points to the Monthly digest (/digest/: for a group chat or e-mail), which points back.
     This page is the canonical home of the district guide
     "how each month's magazine can be useful in carrying the message" (config/carry.yml). -#}
 {% import "macros/ui.njk" as ui with context %}
@@ -103,7 +105,12 @@ pageScripts: ["/assets/js/monthly.js", "/assets/js/report.js"]
     the whole report as text in the page language (.rp-nojs). Printing prints only the report. -#}
 {%- set rp = db | rpModel(meeting, carry, site) -%}
 <section id="report" class="section container-page pt-0" aria-labelledby="report-title">
-  {{ ui.sectionHead("community.report.title" | t(lang), "community.report.sub" | t(lang), "", "", "clipboard-list", { eyebrow: "community.report.eyebrow" | t(lang), id: "report-title", lang: lang }) }}
+  {#- one job each: this report is for the district meeting; the Monthly digest is for a group chat or
+      e-mail — a one-line pointer to it (and the digest points back here) -#}
+  {%- set reportSub -%}
+  {{ "community.report.sub" | t(lang) }}<span class="mt-2 flex items-start gap-2 text-sm"><span class="mt-0.5 shrink-0 text-gv">{% icon "mail-open", "size-4" %}</span><span>{{ "monthly.report_digest_hint" | t(lang) }} <a class="link font-semibold" href="{{ '/digest/' | lurl(lang) }}">{{ "nav.digest" | t(lang) }}<span aria-hidden="true"> →</span></a></span></span>
+  {%- endset %}
+  {{ ui.sectionHead("community.report.title" | t(lang), reportSub, "", "", "clipboard-list", { eyebrow: "community.report.eyebrow" | t(lang), id: "report-title", lang: lang }) }}
 
   <div class="rp-nojs card overflow-hidden">
     <p class="flex items-center gap-2 border-b border-line bg-surface-2/60 px-4 py-3 text-sm text-muted sm:px-6">{% icon "info", "size-4 shrink-0" %} {{ "report.nojs_note" | t(lang) }}</p>
@@ -330,8 +337,11 @@ pageScripts: ["/assets/js/monthly.js", "/assets/js/report.js"]
 
 {#- ============ The 10 ways (canonical home of the guide) ============ -#}
 {% if carry.ways.length %}
+{#- the header's link: the full editorial calendar, when the committee has it on Drive (driveMatch;
+    the Portfolio stays its home) -#}
+{%- set edCal = db.drive.items | driveMatch("editorial calendar|calendario editorial") -%}
 <section id="ways" class="section container-page" aria-labelledby="ways-title">
-  {{ ui.sectionHead("monthly.ways_title" | t(lang), (carry.intro[lang] | escape) if carry.intro else "", "", "", "list-checks", { eyebrow: "monthly.put_to_work" | t(lang), id: "ways-title", lang: lang }) }}
+  {{ ui.sectionHead("monthly.ways_title" | t(lang), (carry.intro[lang] | escape) if carry.intro else "", (edCal.extra.view_url or edCal.url) if edCal else "", "monthly.editorial_calendar" | t(lang), "list-checks", { eyebrow: "monthly.put_to_work" | t(lang), id: "ways-title", lang: lang }) }}
   <ol class="mp-ways" role="list">
     {% for w in carry.ways %}
     <li class="card card-pad">

@@ -7,10 +7,12 @@ titleKey: nav.contribute
 descKey: read.contrib.meta_desc
 pageScripts: ["/assets/js/read.js"]
 ---
-{#- SHARE YOUR STORY. Flow (docs: ui.njk): hero → page nav → why write (+ who from our Area got
-    published) → what you can send → how to submit → record your story by phone (db.audio_project)
-    → upcoming themes & deadlines (db.editorial, band) → tips + anonymity → writing workshop (the
-    feature band) → FAQ → closing call to action. -#}
+{#- SHARE YOUR STORY. Flow (docs: ui.njk): hero → page nav (in the order of the sections, #record
+    included) → why write (+ who from our Area got published) → what you can send → how to submit →
+    record your story by phone (db.audio_project) → upcoming themes & deadlines (db.editorial, band;
+    under the two cards, the committee's printable "Share your story" flyers from Drive) → tips +
+    anonymity → writing workshop (the feature band, with the next writing / recording workshops from
+    /events/: cmWorkshops) → FAQ → closing call to action. -#}
 {% import "macros/ui.njk" as ui with context %}
 {%- set L = site.links -%}
 {%- set gvEd = db.editorial.items | readEditorial("gv", lang) -%}
@@ -26,6 +28,10 @@ pageScripts: ["/assets/js/read.js"]
 {%- set pubOrder = ["lv", "gv"] if lang == "es" else ["gv", "lv"] -%}
 {#- The magazines' story lines, as their official pages give them today (scripts/sync/audio_project.py) -#}
 {%- set ap = db.audio_project or {} -%}
+{#- The next writing / recording workshops, from the same list /events/ shows (cmWorkshops) -#}
+{%- set workshops = db.events.items | cmWorkshops(site, lang, 3) -%}
+{#- Printable "Share your story" flyers from the committee's Drive (Portfolio › Flyers), at most 2 -#}
+{%- set storyFlyers = db.drive.items | driveMatch("share your story|comparte tu historia", "flyers", 2) -%}
 
 {#- Deadline attributes shared by every countdown element (live-updated by read.js) -#}
 {% macro dlAttrs(r, lang) -%}
@@ -400,6 +406,7 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
   { href: "#why", label: "read.contrib.nav_why" | t(lang), icon: "heart-handshake" },
   { href: "#what", label: "read.contrib.nav_what" | t(lang), icon: "feather" },
   { href: "#submit", label: "read.contrib.nav_submit" | t(lang), icon: "send" },
+  { href: "#record", label: "read.contrib.nav_record" | t(lang), icon: "mic" },
   { href: "#deadlines", label: "read.contrib.nav_deadlines" | t(lang), icon: "calendar-clock" },
   { href: "#tips", label: "read.contrib.nav_tips" | t(lang), icon: "lightbulb" },
   { href: "#workshop", label: "read.contrib.nav_workshop" | t(lang), icon: "users" },
@@ -502,6 +509,16 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
       {{ ui.emptyState("calendar-clock", "read.contrib.no_themes" | t(lang), "read.contrib.no_themes_text" | t(lang), gvCalendar, "read.contrib.gv_calendar" | t(lang)) }}
       <p class="mt-3 text-center text-sm"><a class="link tap-link" href="{{ lvCalendar }}" target="_blank" rel="noopener">{{ "read.contrib.lv_calendar" | t(lang) }}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a></p>
     {% endif %}
+    {#- Under both cards (not inside them, so the pair stays equal): the committee's printable flyers -#}
+    {% if storyFlyers | length %}
+    <p class="mt-5 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted">
+      <span class="inline-flex items-center gap-1.5 font-semibold text-ink"><span class="text-vine">{% icon "printer", "size-4" %}</span>{{ ("read.contrib.print_flyer" if storyFlyers | length == 1 else "read.contrib.print_flyers") | t(lang) }}</span>
+      {%- for f in storyFlyers %}
+      {%- set ft = f | tx("title", lang) %}
+      <a class="link tap-link" href="{{ f.extra.view_url or f.url }}" target="_blank" rel="noopener"{% if f.lang and f.lang != lang and ft == f.title %} lang="{{ f.lang }}"{% endif %}>{{ ft }}<span class="sr-only"> ({{ "common.external" | t(lang) }})</span></a>{% if not loop.last %}<span aria-hidden="true">·</span>{% endif %}
+      {%- endfor %}
+    </p>
+    {% endif %}
   </div>
 </section>
 
@@ -578,6 +595,30 @@ data-deadline="{{ r.deadline }}" data-t-days="{{ 'read.contrib.due_in' | t(lang)
         {% endif %}
       </div>
     </div>
+    {#- The next writing / recording workshops (cmWorkshops): a date tile in the event's colour
+        (eventTone), the title and the place; each opens its card on /events/. A workshop that has
+        ended hides itself (data-cm-expire, read.js), and the list with it when none is left. -#}
+    {% if workshops | length %}
+    <div class="relative z-10 mt-8 border-t border-white/15 pt-6" data-ws-list>
+      <h3 class="eyebrow flex items-center gap-2 font-sans text-white/75">{% icon "calendar-days", "size-4 shrink-0" %}<span>{{ "read.contrib.ws_next" | t(lang) }}</span></h3>
+      <ul class="read-ws-list mt-3 grid gap-3{{ ' max-w-xl' if workshops | length == 1 }}" style="--n: {{ workshops | length }}" role="list">
+        {% for ev in workshops %}
+        <li data-cm-expire="{{ ev.expireIso }}">
+          <a href="{{ '/events/' | lurl(lang) }}#{{ ev.anchor }}" class="card card-link cm-mini-card ev-accent ev-tone-{{ ev | eventTone }} group h-full">
+            <span class="cm-date-tile{{ ' cm-tile-range' if ev.tile.range }}" aria-hidden="true"><span class="cm-tile-mon">{{ ev.tile.mon }}</span><span class="cm-tile-day">{{ ev.tile.day }}</span><span class="cm-tile-wd">{{ ev.tile.wd }}</span></span>
+            <span class="min-w-0">
+              <span class="block font-display text-lg font-semibold leading-snug text-ink group-hover:text-gv">{{ ev.title }}</span>
+              <span class="sr-only">{{ ev.dateLabel }}</span>
+              {% if ev.location %}<span class="mt-1 flex items-start gap-1.5 text-sm text-muted{{ ' italic' if ev.locationTba }}">{% set wsIcon = "hourglass" if ev.locationTba else "map-pin" %}{% icon wsIcon, "mt-0.5 size-4 shrink-0 text-faint" %}<span class="min-w-0">{{ ev.location }}</span></span>
+              {% elif ev.isOnline %}<span class="mt-1 flex items-start gap-1.5 text-sm text-muted">{% icon "video", "mt-0.5 size-4 shrink-0 text-faint" %}<span class="min-w-0">{{ ("committee.events.online_on" | t(lang, { platform: ev.platform })) if ev.platform else ("committee.events.online" | t(lang)) }}</span></span>{% endif %}
+              {% if ev.tentative %}<span class="mt-1.5 block">{{ ui.tentativeBadge(lang) }}</span>{% endif %}
+            </span>
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
   </div>
 </section>
 

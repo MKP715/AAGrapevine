@@ -165,6 +165,8 @@ pageScripts: ["/assets/js/community.js"]
             {%- set href = it | cmHref(lang) -%}
             {%- set ex = it.extra or {} -%}
             {%- if it._isGroup -%}{%- set kindLabel = "community.wn.photo_group" | t(lang) -%}
+            {#- a flyer from the committee's Drive "flyers" folder is a flyer, not a photo (Portfolio keeps "Image": its file type) -#}
+            {%- elif it.source == "drive" and it.category == "flyers" -%}{%- set kindLabel = "kind.flyer" | t(lang) -%}
             {%- elif it.kind == "episode" and ex.show_name -%}{%- set kindLabel = ex.show_name -%}
             {%- elif it.kind == "video" and (it | mediaVideoKind) == "weekly" -%}{%- set kindLabel = "media.show_short_weekly" | t(lang) -%}
             {%- elif it.kind == "post" and igProfiles[ex.account] -%}{%- set kindLabel = igProfiles[ex.account].name -%}

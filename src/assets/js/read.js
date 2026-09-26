@@ -14,11 +14,6 @@
     } catch (e) { return null; }
   }
   function fill(tpl, n) { return String(tpl || "").replace("{n}", n); }
-  // Lower-case and drop accents so "catalogo" finds "Catálogo" and "vina" finds "Viña".
-  function fold(s) {
-    s = String(s || "").toLowerCase();
-    try { return s.normalize("NFD").replace(/[̀-ͯ]/g, ""); } catch (e) { return s; }
-  }
 
   /* ------------------------------------------------------------------
      Deadlines: <span data-deadline="2026-10-15" data-t-days="{n} days left"
@@ -99,6 +94,23 @@
   function recountSpots() {
     document.querySelectorAll("[data-spot-days]").forEach(function (root) {
       try { recountSpot(root); } catch (e) { /* keep the server-rendered card */ }
+    });
+  }
+
+  /* ------------------------------------------------------------------
+     Share your story › "Next workshops" ([data-ws-list]): each row carries the moment its workshop
+     ends ([data-cm-expire="ISO"], the same attribute as /events/ — committee.js is not loaded here).
+     The page is built once a day, so a workshop that has ended hides itself, and the list with it
+     when none is left. */
+  function expireWorkshops() {
+    var now = Date.now();
+    document.querySelectorAll("[data-ws-list]").forEach(function (list) {
+      var left = 0;
+      list.querySelectorAll("[data-cm-expire]").forEach(function (el) {
+        var t = Date.parse(el.getAttribute("data-cm-expire"));
+        if (t && t <= now) el.hidden = true; else left++;
+      });
+      list.hidden = !left;
     });
   }
 
@@ -195,44 +207,9 @@
         reset: function () { this.done = {}; store(this.key, {}); },
       };
     });
-
-    /* ---------------- Resource-kit filter (kit chips + text search) ---------------- */
-    Alpine.data("kitFilter", function (initialKit) {
-      return {
-        kit: initialKit || "all",
-        q: "",
-        shown: 0,
-        init: function () {
-          var self = this;
-          this.$nextTick(function () { self.recount(); });
-          this.$watch("q", function () { self.recount(); });
-          this.$watch("kit", function () { self.recount(); });
-        },
-        terms: function () { return fold(this.q).trim().split(/\s+/).filter(Boolean); },
-        match: function (el) {
-          if (this.kit !== "all" && el.getAttribute("data-kit") !== this.kit) return false;
-          var t = this.terms();
-          if (!t.length) return true;
-          var hay = el._hay || (el._hay = fold(el.getAttribute("data-text") || el.textContent || ""));
-          for (var i = 0; i < t.length; i++) if (hay.indexOf(t[i]) === -1) return false;
-          return true;
-        },
-        kitVisible: function (k) { return this.kit === "all" || this.kit === k; },
-        recount: function () {
-          var self = this, n = 0;
-          this.$root.querySelectorAll("[data-kit-item]").forEach(function (el) { if (self.match(el)) n++; });
-          this.shown = n;
-        },
-        groupHas: function (el) {
-          var self = this, items = el.querySelectorAll("[data-kit-item]");
-          for (var i = 0; i < items.length; i++) if (self.match(items[i])) return true;
-          return false;
-        },
-      };
-    });
   });
 
-  function refresh() { updateDeadlines(); recountSpots(); }
+  function refresh() { updateDeadlines(); recountSpots(); expireWorkshops(); }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", refresh);
   else refresh();
   // A tab left open past midnight: recount when the page is shown again.
